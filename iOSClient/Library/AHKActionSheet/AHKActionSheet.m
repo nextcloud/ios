@@ -87,18 +87,6 @@ static const CGFloat maxWidth = 414.0f;
     [appearance setAnimationDuration:kDefaultAnimationDuration];
 }
 
-- (instancetype)initWithTitle:(NSString *)title
-{
-    self = [super init];
-
-    if (self) {
-        _title = [title copy];
-        _cancelButtonTitle = @"Cancel";
-    }
-
-    return self;
-}
-
 - (instancetype)initWithView:(UIView *)view title:(NSString *)title
 {
     self = [super init];
@@ -110,11 +98,6 @@ static const CGFloat maxWidth = 414.0f;
     }
     
     return self;
-}
-
-- (instancetype)init
-{
-    return [self initWithTitle:nil];
 }
 
 - (void)dealloc
@@ -363,10 +346,10 @@ static const CGFloat maxWidth = 414.0f;
 
     void(^delayedAnimations)(void) = ^(void) {
         
-        CGFloat width = CGRectGetWidth(self.bounds);
+        CGFloat width = CGRectGetWidth(self.view.bounds);
         if (width > maxWidth) width = maxWidth;
         
-        self.cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.bounds)/2 - width/2), CGRectGetMaxY(self.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
+        self.cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.view.bounds)/2 - width/2), CGRectGetMaxY(self.view.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
     
         // Corner Radius
         self.cancelButton.layer.cornerRadius = 10;
@@ -508,10 +491,9 @@ static const CGFloat maxWidth = 414.0f;
 {
     UIButton *cancelButton;
     
-    CGFloat width = CGRectGetWidth(self.bounds);
+    CGFloat width = CGRectGetWidth(self.view.bounds);
     if (width > maxWidth) width = maxWidth;
 
-    
     // It's hard to check if UIButtonTypeSystem enumeration exists, so we're checking existence of another method that was introduced in iOS 7.
     if ([UIView instancesRespondToSelector:@selector(tintAdjustmentMode)]) {
         cancelButton= [UIButton buttonWithType:UIButtonTypeSystem];
@@ -524,7 +506,7 @@ static const CGFloat maxWidth = 414.0f;
     [cancelButton setAttributedTitle:attrTitle forState:UIControlStateNormal];
     [cancelButton addTarget:self action:@selector(cancelButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     
-    cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.bounds)/2 - width/2), CGRectGetMaxY(self.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
+    cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.view.bounds)/2 - width/2), CGRectGetMaxY(self.view.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
     
     // move the button below the screen (ready to be animated -show)
     cancelButton.transform = CGAffineTransformMakeTranslation(0, self.cancelButtonHeight - kSpaceDivide);
@@ -536,13 +518,13 @@ static const CGFloat maxWidth = 414.0f;
 
 - (void)setUpTableView
 {
-    CGFloat width = CGRectGetWidth(self.bounds);
+    CGFloat width = CGRectGetWidth(self.view.bounds);
     if (width > maxWidth) width = maxWidth;
     
     CGRect statusBarViewRect = [self convertRect:[UIApplication sharedApplication].statusBarFrame fromView:nil];
     CGFloat statusBarHeight = CGRectGetHeight(statusBarViewRect);
     
-    CGRect frame = CGRectMake((CGRectGetWidth(self.bounds)/2 - width/2), statusBarHeight, width, CGRectGetHeight(self.bounds) - statusBarHeight - self.cancelButtonHeight - self.separatorHeight);
+    CGRect frame = CGRectMake((CGRectGetWidth(self.view.bounds)/2 - width/2), statusBarHeight, width, CGRectGetHeight(self.view.bounds) - statusBarHeight - self.cancelButtonHeight - self.separatorHeight);
 
     UITableView *tableView = [[UITableView alloc] initWithFrame:frame];
     
@@ -559,7 +541,7 @@ static const CGFloat maxWidth = 414.0f;
     [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kCellIdentifier];
     [self insertSubview:tableView aboveSubview:self.blurredBackgroundView];
     // move the content below the screen, ready to be animated in -show
-    tableView.contentInset = UIEdgeInsetsMake(CGRectGetHeight(self.bounds), 0, 0, 0);
+    tableView.contentInset = UIEdgeInsetsMake(CGRectGetHeight(self.view.bounds), 0, 0, 0);
     // removes separators below the footer (between empty cells)
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 

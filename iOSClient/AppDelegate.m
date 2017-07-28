@@ -929,12 +929,14 @@
     if (self.maintenanceMode)
         return;
     
+    UIView *view = [(UIButton *)sender superview];
+    
     CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brand];
     
     if ([CCUtility getCreateMenuEncrypted])
-        [menuAdd createMenuEncryptedWithView:self.window.rootViewController.view];
+        [menuAdd createMenuEncryptedWithView:view];
     else
-        [menuAdd createMenuPlainWithView:self.window.rootViewController.view];
+        [menuAdd createMenuPlainWithView:view];
 }
 
 - (void)updateApplicationIconBadgeNumber
