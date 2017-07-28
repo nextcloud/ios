@@ -15,8 +15,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import "AHKActionSheet.h"
 #import "AHKActionSheetViewController.h"
-#import "UIImage+AHKAdditions.h"
-#import "UIWindow+AHKAdditions.h"
 
 
 static const NSTimeInterval kDefaultAnimationDuration = 0.2f;
@@ -55,7 +53,7 @@ static const CGFloat maxWidth = 414.0f;
 @property (strong, nonatomic) NSMutableArray *items;
 @property (weak, nonatomic, readwrite) UIWindow *previousKeyWindow;
 @property (strong, nonatomic) UIWindow *window;
-@property (weak, nonatomic) UIImageView *blurredBackgroundView;
+@property (weak, nonatomic) UIView *blurredBackgroundView;
 @property (weak, nonatomic) UITableView *tableView;
 @property (weak, nonatomic) UIButton *cancelButton;
 @property (weak, nonatomic) UIView *cancelButtonShadowView;
@@ -346,10 +344,9 @@ static const CGFloat maxWidth = 414.0f;
     }
 
     self.previousKeyWindow = [UIApplication sharedApplication].keyWindow;
-    UIImage *previousKeyWindowSnapshot = [self.previousKeyWindow ahk_snapshot];
 
     [self setUpNewWindow];
-    [self setUpBlurredBackgroundWithSnapshot:previousKeyWindowSnapshot];
+    [self setUpBlurredBackgroundWithSnapshot];
     [self setUpCancelButton];
     [self setUpTableView];
     
@@ -492,16 +489,11 @@ static const CGFloat maxWidth = 414.0f;
     [self.window makeKeyAndVisible];
 }
 
-- (void)setUpBlurredBackgroundWithSnapshot:(UIImage *)previousKeyWindowSnapshot
+- (void)setUpBlurredBackgroundWithSnapshot
 {
-    UIImage *blurredViewSnapshot = [previousKeyWindowSnapshot
-                                    ahk_applyBlurWithRadius:self.blurRadius
-                                    tintColor:self.blurTintColor
-                                    saturationDeltaFactor:self.blurSaturationDeltaFactor
-                                    maskImage:nil];
-    UIImageView *backgroundView = [[UIImageView alloc] initWithImage:blurredViewSnapshot];
-    backgroundView.frame = self.bounds;
-    backgroundView.alpha = 0.0f;
+    UIView *backgroundView = [UIView new];
+    backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    backgroundView.frame = [UIScreen mainScreen].bounds;
     [self addSubview:backgroundView];
     self.blurredBackgroundView = backgroundView;
 }
