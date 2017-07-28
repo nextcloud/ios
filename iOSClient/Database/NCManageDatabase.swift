@@ -1462,7 +1462,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_download_session, k_download_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
+        let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_download_session, k_download_session_foreground, Int(k_taskIdentifierDone), Int(k_taskIdentifierDone))
         
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
@@ -1473,7 +1473,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
 
-        let predicate = NSPredicate(format: "account = %@ AND session = %@ AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_download_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
+        let predicate = NSPredicate(format: "account = %@ AND session = %@ AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_download_session_wwan, Int(k_taskIdentifierDone), Int(k_taskIdentifierDone))
         
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
@@ -1484,7 +1484,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
 
-        let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_upload_session, k_upload_session_foreground, k_taskIdentifierDone, k_taskIdentifierDone)
+        let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_upload_session, k_upload_session_foreground, Int(k_taskIdentifierDone), Int(k_taskIdentifierDone))
         
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
@@ -1495,7 +1495,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        let predicate = NSPredicate(format: "account = %@ AND session = %@ AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_upload_session_wwan, k_taskIdentifierDone, k_taskIdentifierDone)
+        let predicate = NSPredicate(format: "account = %@ AND session = %@ AND (sessionTaskIdentifier != %i OR sessionTaskIdentifierPlist != %i)", tableAccount.account, k_upload_session_wwan, Int(k_taskIdentifierDone), Int(k_taskIdentifierDone))
         
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
