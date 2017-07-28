@@ -22,6 +22,8 @@
 {
     [super viewDidLoad];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotateDeviceChangeNotification:) name:UIDeviceOrientationDidChangeNotification object:nil];
+    
     [self.view addSubview:self.actionSheet];
     self.actionSheet.frame = self.view.bounds;
 }
@@ -53,6 +55,11 @@
 #endif
 {
     return UIInterfaceOrientationMaskAll;
+}
+
+-(void)didRotateDeviceChangeNotification:(NSNotification *)notification
+{
+    [self.actionSheet dismissAnimated:NO];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle
