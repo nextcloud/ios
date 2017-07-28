@@ -56,7 +56,6 @@ static const CGFloat maxWidth = 414.0f;
 @property (weak, nonatomic) UIView *blurredBackgroundView;
 @property (weak, nonatomic) UITableView *tableView;
 @property (weak, nonatomic) UIButton *cancelButton;
-@property (weak, nonatomic) UIView *cancelButtonShadowView;
 @end
 
 @implementation AHKActionSheet
@@ -329,7 +328,7 @@ static const CGFloat maxWidth = 414.0f;
     self.previousKeyWindow = [UIApplication sharedApplication].keyWindow;
 
     [self setUpNewWindow];
-    [self setUpBlurredBackgroundWithSnapshot];
+    [self setUpBlurredBackground];
     [self setUpCancelButton];
     [self setUpTableView];
     
@@ -446,7 +445,6 @@ static const CGFloat maxWidth = 414.0f;
         [UIView animateWithDuration:duration animations:^{
             self.blurredBackgroundView.alpha = 0.0f;
             self.cancelButton.transform = CGAffineTransformTranslate(self.cancelButton.transform, 0, self.cancelButtonHeight - kSpaceDivide);
-            self.cancelButtonShadowView.alpha = 0.0f;
 
             // Shortest shift of position sufficient to hide all tableView contents below the bottom margin.
             // contentInset isn't used here (unlike in -show) because it caused weird problems with animations in some cases.
@@ -472,7 +470,7 @@ static const CGFloat maxWidth = 414.0f;
     [self.window makeKeyAndVisible];
 }
 
-- (void)setUpBlurredBackgroundWithSnapshot
+- (void)setUpBlurredBackground
 {
     UIView *backgroundView = [UIView new];
     backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
@@ -555,7 +553,6 @@ static const CGFloat maxWidth = 414.0f;
         // limit alpha to the interval [0, 1]
         CGFloat alpha = (CGFloat)fmax(fmin(alphaWithoutBounds, 1.0f), 0.0f);
         self.blurredBackgroundView.alpha = alpha;
-        self.cancelButtonShadowView.alpha = alpha;
     }
 }
 
