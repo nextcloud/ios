@@ -420,7 +420,7 @@
     
     metadata = [_dataSource objectAtIndex:indexPath.row];
     
-    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
+    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.tabBarController.view title:nil];
     
     actionSheet.animationDuration = 0.2;
     
