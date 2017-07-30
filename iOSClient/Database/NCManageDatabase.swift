@@ -1713,7 +1713,6 @@ class NCManageDatabase: NSObject {
         
         let metadataNet = CCMetadataNet()
         
-        metadataNet.action = actionUploadAsset
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
         metadataNet.fileName = result.fileName
         metadataNet.priority = result.priority

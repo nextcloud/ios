@@ -1728,7 +1728,6 @@
             
             if (cryptated) {
                 
-                metadataNet.action = actionUploadAsset;
                 metadataNet.assetLocalIdentifier = asset.localIdentifier;
                 metadataNet.cryptated = cryptated;
                 metadataNet.fileName = fileName;
@@ -1737,6 +1736,8 @@
                 metadataNet.selectorPost = nil;
                 metadataNet.serverUrl = serverUrl;
                 metadataNet.taskStatus = k_taskStatusResume;
+                
+                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:self];
 
             } else {
             
@@ -1747,9 +1748,9 @@
                 metadataNet.session = session;
                 metadataNet.selector = selectorReadFileUploadFile;
                 metadataNet.serverUrl = serverUrl;
+                
+                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             }
-            
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
 }
@@ -1771,7 +1772,6 @@
         // File not exists
         if (errorCode == 404) {
             
-            metadataNet.action = actionUploadAsset;
             metadataNet.errorCode = 0;
             metadataNet.selector = selectorUploadFile;
             metadataNet.selectorPost = nil;
@@ -1811,7 +1811,6 @@
     // UploadFile
     if ([metadataNet.selector isEqualToString:selectorReadFileUploadFile]) {
         
-        metadataNet.action = actionUploadAsset;
         metadataNet.errorCode = 403;                // File exists 403 Forbidden
         metadataNet.selector = selectorUploadFile;
         metadataNet.selectorPost = nil;
