@@ -371,21 +371,8 @@
         
         fileID = metadata.fileID;
         (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-            
-        metadataNet.action = actionDownloadFile;
-        metadataNet.downloadData = downloadData;
-        metadataNet.downloadPlist = downloadPlist;
-        metadataNet.fileID = fileID;
-        metadataNet.priority = NSOperationQueuePriorityLow;
-        metadataNet.selector = selector;
-        metadataNet.selectorPost = selectorPost;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.session = k_download_session;
-        metadataNet.taskStatus = k_taskStatusResume;
-
-        [app addNetworkingOperationQueue:app.netQueueDownload delegate:app.activeMain metadataNet:metadataNet];
+       
+        [[CCNetworking sharedNetworking] downloadFile:fileID serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:selector selectorPost:selectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:app.activeMain];
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{

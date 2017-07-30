@@ -190,11 +190,7 @@
     // test
     if (app.activeAccount.length == 0)
         return;
-    
-    // verify if is already in progress selectorDownloadSynchronize
-    if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronize] count] > 0)
-        return;
-    
+
     [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
 }
 
@@ -301,8 +297,9 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
-{    
-    [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+{
+    if (errorCode != k_CCErrorFileAlreadyInDownload)
+        [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost

@@ -68,8 +68,6 @@
 // Network Operation
 @property (nonatomic, strong) NSOperationQueue *netQueue;
 
-@property (nonatomic, strong) NSOperationQueue *netQueueDownload;
-@property (nonatomic, strong) NSOperationQueue *netQueueDownloadWWan;
 @property (nonatomic, strong) NSOperationQueue *netQueueUpload;
 @property (nonatomic, strong) NSOperationQueue *netQueueUploadWWan;
 
@@ -157,8 +155,6 @@
 // Operation Networking
 - (void)cancelAllOperations;
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
-
-- (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector;
 
 - (NSInteger)getNumberDownloadInQueues;
 - (NSInteger)getNumberDownloadInQueuesWWan;

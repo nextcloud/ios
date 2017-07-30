@@ -164,14 +164,6 @@
     _netQueue.name = k_queue;
     _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
    
-    _netQueueDownload = [[NSOperationQueue alloc] init];
-    _netQueueDownload.name = k_download_queue;
-    _netQueueDownload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
-
-    _netQueueDownloadWWan = [[NSOperationQueue alloc] init];
-    _netQueueDownloadWWan.name = k_download_queuewwan;
-    _netQueueDownloadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
-    
     _netQueueUpload = [[NSOperationQueue alloc] init];
     _netQueueUpload.name = k_upload_queue;
     _netQueueUpload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
@@ -1312,8 +1304,6 @@
 {
     [_netQueue cancelAllOperations];
     
-    [_netQueueDownload cancelAllOperations];
-    [_netQueueDownloadWWan cancelAllOperations];
     [_netQueueUpload cancelAllOperations];
     [_netQueueUploadWWan cancelAllOperations];
 }
@@ -1329,30 +1319,11 @@
     [netQueue addOperation:operation];
 }
 
-- (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector
-{
-    NSMutableArray *metadatasNet = [[NSMutableArray alloc] init];
-    
-    for (OCnetworking *operation in [self.netQueueDownload operations])
-        if ([operation.metadataNet.selector isEqualToString:selector])
-            [metadatasNet addObject:[operation.metadataNet copy]];
-        
-    for (OCnetworking *operation in [self.netQueueDownloadWWan operations])
-        if ([operation.metadataNet.selector isEqualToString:selector])
-            [metadatasNet addObject:[operation.metadataNet copy]];
-    
-    return metadatasNet;
-}
-
 - (NSInteger)getNumberDownloadInQueues
 {
     NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataDownload];
     
     NSInteger queueNunDownload = [results count];
-    
-    // netQueueDownload
-    for (NSOperation *operation in [self.netQueueDownload operations])
-        if (((OCnetworking *)operation).isExecuting == NO) queueNunDownload++;
     
     return queueNunDownload;
 }
@@ -1362,10 +1333,6 @@
     NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan];
     
     NSInteger queueNumDownloadWWan = [results count];
-    
-    // netQueueDownloadWWan
-    for (NSOperation *operation in [self.netQueueDownloadWWan operations])
-        if (((OCnetworking *)operation).isExecuting == NO) queueNumDownloadWWan++;
     
     return queueNumDownloadWWan;
 }
