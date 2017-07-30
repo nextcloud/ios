@@ -116,7 +116,6 @@
 @property (nonatomic, strong) NSString *password;
 @property (nonatomic, strong) NSString *pathFolder;
 @property NSInteger priority;
-@property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *serverUrlTo;
 @property (nonatomic, strong) NSString *selector;

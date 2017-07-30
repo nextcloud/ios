@@ -1902,7 +1902,6 @@
     [metadataNet setPassword: self.password];
     [metadataNet setPathFolder: self.pathFolder];
     [metadataNet setPriority: self.priority];
-    [metadataNet setQueue: self.queue];
     [metadataNet setServerUrl: self.serverUrl];
     [metadataNet setServerUrlTo: self.serverUrlTo];
     [metadataNet setSelector: self.selector];
