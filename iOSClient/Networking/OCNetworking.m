@@ -140,31 +140,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== downloadFile =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)downloadFile
-{
-    [[CCNetworking sharedNetworking] downloadFile:_metadataNet.fileID serverUrl:_metadataNet.serverUrl downloadData:_metadataNet.downloadData downloadPlist:_metadataNet.downloadPlist selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost session:_metadataNet.session taskStatus:_metadataNet.taskStatus delegate:self];
-}
-
-- (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
-{
-    [self complete];
-    
-    if ([self.delegate respondsToSelector:@selector(downloadFileSuccess:serverUrl:selector:selectorPost:)])
-        [self.delegate downloadFileSuccess:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
-}
-
-- (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [self complete];
- 
-    if ([self.delegate respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
-        [self.delegate downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== uploadFile =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -181,11 +156,6 @@
 - (void)uploadAsset
 {
     [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:_metadataNet delegate:self];
-}
-
-- (void)uploadTemplate
-{
-    [[CCNetworking sharedNetworking] uploadTemplate:_metadataNet.fileNamePrint fileNameCrypto:_metadataNet.fileName serverUrl:_metadataNet.serverUrl session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
 }
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost

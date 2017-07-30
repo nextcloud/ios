@@ -180,17 +180,7 @@
         
         XLFormRowDescriptor *titolo = [self.form formRowWithTag:@"titolo"];
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionUploadTemplate;
-        metadataNet.serverUrl = self.serverUrl;
-        metadataNet.fileName = [CCUtility trasformedFileNamePlistInCrypto:fileNameModel];
-        metadataNet.fileNamePrint = titolo.value;
-        metadataNet.pathFolder = NSTemporaryDirectory();
-        metadataNet.session = k_upload_session_foreground;
-        metadataNet.taskStatus = k_taskStatusResume;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];        
+        [[CCNetworking sharedNetworking] uploadTemplate:titolo.value fileNameCrypto:[CCUtility trasformedFileNamePlistInCrypto:fileNameModel] serverUrl:self.serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:self];
     }
 }
 

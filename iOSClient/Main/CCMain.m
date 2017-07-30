@@ -2219,17 +2219,7 @@
     
     if (fileNameModel) {
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionUploadTemplate;
-        metadataNet.fileName = [CCUtility trasformedFileNamePlistInCrypto:fileNameModel];
-        metadataNet.fileNamePrint = fileName;
-        metadataNet.etag = metadata.etag;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.session = k_upload_session_foreground;
-        metadataNet.taskStatus = k_taskStatusResume;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        [[CCNetworking sharedNetworking] uploadTemplate:fileName fileNameCrypto:[CCUtility trasformedFileNamePlistInCrypto:fileNameModel] serverUrl:serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:self];
     }
 }
 
