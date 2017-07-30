@@ -217,7 +217,6 @@ extern NSString *const urlBaseUploadDB;
 #define actionUnShare                                   @"unShare"
 #define actionUpdateShare                               @"updateShare"
 #define actionUploadFile                                @"uploadFile"
-#define actionUploadAsset                               @"uploadAsset"
 #define actionUploadOnlyPlist                           @"uploadOnlyPlist"
 
 // Metadata : FileType
