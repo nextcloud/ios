@@ -115,7 +115,7 @@
     _networkingOperationQueue.name = k_queue;
     _networkingOperationQueue.maxConcurrentOperationCount = 1;
     
-    [[CCNetworking sharedNetworking] settingDelegate:self];
+    [CCNetworking sharedNetworking].delegate = self;
         
     [self.shareTable registerNib:[UINib nibWithNibName:@"CCCellShareExt" bundle:nil] forCellReuseIdentifier:@"ShareExtCell"];
     

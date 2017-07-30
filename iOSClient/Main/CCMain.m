@@ -146,7 +146,7 @@
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
     
-    [[CCNetworking sharedNetworking] settingDelegate:self];
+    [CCNetworking sharedNetworking].delegate = self;
     
     // Custom Cell
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
@@ -214,7 +214,7 @@
     // Settings this folder & delegate & Loading datasource
     app.directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
     
-    [[CCNetworking sharedNetworking] settingDelegate:self];
+    [CCNetworking sharedNetworking].delegate = self;
     
     // Color
     [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
@@ -341,7 +341,7 @@
         _isFolderEncrypted = NO;
         
         // setting Networking
-        [[CCNetworking sharedNetworking] settingDelegate:self];
+        [CCNetworking sharedNetworking].delegate = self;
         [[CCNetworking sharedNetworking] settingAccount];
         
         // Remove search mode

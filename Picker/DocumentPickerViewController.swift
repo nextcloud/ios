@@ -120,7 +120,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         }
         
         //  MARK: - init Object
-        CCNetworking.shared().settingDelegate(self)
+        CCNetworking.shared().delegate = self
         hud = CCHud.init(view: self.navigationController?.view)
         
         // Theming

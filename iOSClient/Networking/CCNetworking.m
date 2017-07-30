@@ -77,11 +77,6 @@
     return self;
 }
 
-- (void)settingDelegate:(id <CCNetworkingDelegate>)delegate
-{
-    _delegate = delegate;
-}
-
 - (void)settingAccount
 {
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -507,8 +502,7 @@
 - (void)downloadFile:(NSString *)fileID serverUrl:(NSString *)serverUrl downloadData:(BOOL)downloadData downloadPlist:(BOOL)downloadPlist selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate
 {
     // add delegate
-    if (delegate)
-        [_delegates setObject:delegate forKey:fileID];
+    [_delegates setObject:delegate forKey:fileID];
     
     if (fileID.length == 0) {
         
@@ -1548,7 +1542,7 @@
 - (void)verifyDownloadInProgress
 {
 #ifndef EXTENSION
-    
+        
     // No in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground)
         return;
@@ -1627,10 +1621,10 @@
         if (!serverUrl) continue;
         
         if (metadata.sessionTaskIdentifier == k_taskIdentifierError)
-            [self downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
+            [self downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:app.activeMain];
             
         if (metadata.sessionTaskIdentifierPlist == k_taskIdentifierError)
-            [self downloadFile:metadata.fileID serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:nil];
+            [self downloadFile:metadata.fileID serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:metadata.sessionSelector selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:app.activeMain];
             
         [serversUrl addObject:serverUrl];
             

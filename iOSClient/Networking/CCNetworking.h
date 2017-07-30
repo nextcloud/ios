@@ -46,7 +46,6 @@
 
 + (CCNetworking *)sharedNetworking;
 
-- (void)settingDelegate:(id <CCNetworkingDelegate>)delegate;
 - (void)settingAccount;
 
 // Sessions - Task
