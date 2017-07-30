@@ -216,7 +216,6 @@ extern NSString *const urlBaseUploadDB;
 #define actionSubscribingNextcloudServer                @"subscribingNextcloudServer"
 #define actionUnShare                                   @"unShare"
 #define actionUpdateShare                               @"updateShare"
-#define actionUploadOnlyPlist                           @"uploadOnlyPlist"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"

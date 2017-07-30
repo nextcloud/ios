@@ -140,31 +140,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== uploadFile =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)uploadOnlyPlist
-{
-    [[CCNetworking sharedNetworking] uploadFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:YES onlyPlist:YES session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
-}
-
-- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
-{
-    [self complete];
-    
-    if ([self.delegate respondsToSelector:@selector(uploadFileSuccess:fileID:serverUrl:selector:selectorPost:)])
-        [self.delegate uploadFileSuccess:_metadataNet fileID:fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost];
-}
-
-- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [self complete];
-    
-    if ([self.delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-        [self.delegate uploadFileFailure:_metadataNet fileID:fileID serverUrl:serverUrl selector:selector message:message errorCode:errorCode];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== downloadThumbnail =====
 #pragma --------------------------------------------------------------------------------------------
 

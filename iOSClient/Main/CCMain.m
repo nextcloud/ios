@@ -2544,18 +2544,7 @@
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
-    // upload plist file
-    metadataNet.action = actionUploadOnlyPlist;
-    metadataNet.cryptated = YES;
-    metadataNet.fileID = [[NSUUID UUID] UUIDString];
-    metadataNet.fileName = [fileNamePlist stringByAppendingString:@".plist"];
-    metadataNet.priority = NSOperationQueuePriorityVeryLow;
-    metadataNet.selectorPost = selectorReadFolderForced;
-    metadataNet.serverUrl = _serverUrl;
-    metadataNet.session = k_upload_session_foreground;
-    metadataNet.taskStatus = k_taskStatusResume;
-    
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    [[CCNetworking sharedNetworking] uploadFile:[fileNamePlist stringByAppendingString:@".plist"] serverUrl:_serverUrl cryptated:YES onlyPlist:YES session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:selectorReadFolderForced errorCode:0 delegate:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2624,15 +2613,7 @@
         
         //-------------------------- UPLOAD -------------------------------------------//
         
-        metadataNet.action = actionUploadOnlyPlist;
-        metadataNet.fileName = [fileNameCrypto stringByAppendingString:@".plist"];
-        metadataNet.priority = NSOperationQueuePriorityVeryLow;
-        metadataNet.selectorPost = selectorReadFolderForced;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.session = k_upload_session_foreground;
-        metadataNet.taskStatus = k_taskStatusResume;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        [[CCNetworking sharedNetworking] uploadFile:[fileNameCrypto stringByAppendingString:@".plist"] serverUrl:serverUrl cryptated:YES onlyPlist:YES session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:selectorReadFolderForced errorCode:0 delegate:self];
     }
 }
 

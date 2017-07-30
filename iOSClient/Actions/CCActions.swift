@@ -238,16 +238,7 @@ class CCActions: NSObject {
                 }
             }
             
-            metadataNet.action = actionUploadOnlyPlist
-            metadataNet.delegate = delegate
-            metadataNet.fileID = metadata.fileID
-            metadataNet.fileName = metadata.fileName
-            metadataNet.selectorPost = selectorReadFolderForced
-            metadataNet.serverUrl = serverUrl
-            metadataNet.session = k_upload_session_foreground
-            metadataNet.taskStatus = Int(k_taskStatusResume)
-            
-            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+            CCNetworking.shared().uploadFile(metadata.fileName, serverUrl: serverUrl, cryptated: true, onlyPlist: true, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusResume), selector: "", selectorPost: selectorReadFolderForced, errorCode: 0, delegate: delegate)
             
             // delete file in filesystem
             self.deleteFile(metadata: metadata, serverUrl: serverUrl)
