@@ -404,7 +404,6 @@
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-        metadataNet.action = actionUploadAsset;
         metadataNet.assetLocalIdentifier = asset.localIdentifier;
         if (assetsFull) {
             metadataNet.selector = selectorUploadAutoUploadAll;
