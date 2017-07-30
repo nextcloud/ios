@@ -4213,11 +4213,8 @@
             [self swipeDelete:indexPath];
         
         // More
-        if (index == 1) {
-            
-            [cell hideSwipeAnimated:NO];
-            [self performSelector:@selector(swipeMore:) withObject:indexPath afterDelay:0.1];
-        }
+        if (index == 1)
+            [self swipeMore:indexPath];
     }
     
     if (direction == MGSwipeDirectionLeftToRight) {
