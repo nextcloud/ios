@@ -153,10 +153,5 @@
 - (void)cancelAllOperations;
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
 
-- (NSInteger)getNumberDownloadInQueues;
-- (NSInteger)getNumberDownloadInQueuesWWan;
-- (NSInteger)getNumberUploadInQueues;
-- (NSInteger)getNumberUploadInQueuesWWan;
-
 @end
 

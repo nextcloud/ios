@@ -929,8 +929,8 @@
     if (self.maintenanceMode)
         return;
 
-    NSInteger queueDownload = [self getNumberDownloadInQueues] + [self getNumberDownloadInQueuesWWan];
-    NSInteger queueUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
+    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
     
     // Total
     NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil];
@@ -1306,42 +1306,6 @@
     [operation setQueuePriority:metadataNet.priority];
     
     [netQueue addOperation:operation];
-}
-
-- (NSInteger)getNumberDownloadInQueues
-{
-    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataDownload];
-    
-    NSInteger queueNunDownload = [results count];
-    
-    return queueNunDownload;
-}
-
-- (NSInteger)getNumberDownloadInQueuesWWan
-{
-    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan];
-    
-    NSInteger queueNumDownloadWWan = [results count];
-    
-    return queueNumDownloadWWan;
-}
-
-- (NSInteger)getNumberUploadInQueues
-{
-    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
-    
-    NSInteger queueNumUpload = [results count];
-    
-    return queueNumUpload;
-}
-
-- (NSInteger)getNumberUploadInQueuesWWan
-{
-    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan];
-    
-    NSInteger queueNumUploadWWan = [results count];
-    
-    return queueNumUploadWWan;
 }
 
 // Notification change session

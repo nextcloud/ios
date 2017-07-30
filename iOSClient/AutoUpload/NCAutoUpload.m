@@ -488,12 +488,12 @@
     [app.timerProcessAutoUpload invalidate];
     
     NSInteger maxConcurrentUpload = [maxConcurrent integerValue];
-    NSInteger counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
+    NSInteger counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     NSInteger counterNewUpload = 0;
  
     // ------------------------- <selector Auto Upload> -------------------------
     
-    while (counterUploadInQueueAndInLock < maxConcurrentUpload) {
+    while (counterUploadInSessionAndInLock < maxConcurrentUpload) {
         
         metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUpload];
         if (metadataNet) {
@@ -509,7 +509,7 @@
         } else
             break;
         
-        counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
+        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     }
     
     // ------------------------- <selector Auto Upload All> ----------------------
@@ -525,7 +525,7 @@
     
     } else {
     
-        while (counterUploadInQueueAndInLock < maxConcurrentUpload) {
+        while (counterUploadInSessionAndInLock < maxConcurrentUpload) {
         
             metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUploadAll];
             if (metadataNet) {
@@ -541,15 +541,15 @@
             } else
                 break;
             
-            counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
+            counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
         }
     }
     
     // Verify Lock
-    NSInteger counterUploadInQueue = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan];
+    NSInteger counterUploadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
     NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getLockQueueUpload];
 
-    if (counterNewUpload == 0 && counterUploadInQueue == 0 && [tableMetadatasInLock count] > 0) {
+    if (counterNewUpload == 0 && counterUploadInSession == 0 && [tableMetadatasInLock count] > 0) {
         
         // Unlock
         for (tableMetadata *metadata in tableMetadatasInLock) {
