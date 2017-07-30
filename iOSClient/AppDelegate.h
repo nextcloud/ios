@@ -68,9 +68,6 @@
 // Network Operation
 @property (nonatomic, strong) NSOperationQueue *netQueue;
 
-@property (nonatomic, strong) NSOperationQueue *netQueueUpload;
-@property (nonatomic, strong) NSOperationQueue *netQueueUploadWWan;
-
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
 

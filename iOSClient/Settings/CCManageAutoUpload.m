@@ -280,9 +280,6 @@
             
             [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
             
-            [app.netQueueUpload cancelAllOperations];
-            [app.netQueueUploadWWan cancelAllOperations];
-            
             [[CCNetworking sharedNetworking] settingSessionsDownload:NO upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
             
             [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadFull" state:NO];

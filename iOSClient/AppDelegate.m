@@ -164,14 +164,6 @@
     _netQueue.name = k_queue;
     _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
    
-    _netQueueUpload = [[NSOperationQueue alloc] init];
-    _netQueueUpload.name = k_upload_queue;
-    _netQueueUpload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
-    
-    _netQueueUploadWWan = [[NSOperationQueue alloc] init];
-    _netQueueUploadWWan.name = k_upload_queuewwan;
-    _netQueueUploadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
-    
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
         
@@ -1303,9 +1295,6 @@
 - (void)cancelAllOperations
 {
     [_netQueue cancelAllOperations];
-    
-    [_netQueueUpload cancelAllOperations];
-    [_netQueueUploadWWan cancelAllOperations];
 }
 
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
@@ -1343,10 +1332,6 @@
     
     NSInteger queueNumUpload = [results count];
     
-    // netQueueUpload
-    for (NSOperation *operation in [self.netQueueUpload operations])
-        if (((OCnetworking *)operation).isExecuting == NO) queueNumUpload++;
-    
     return queueNumUpload;
 }
 
@@ -1355,10 +1340,6 @@
     NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan];
     
     NSInteger queueNumUploadWWan = [results count];
-    
-    // netQueueUploadWWan
-    for (NSOperation *operation in [self.netQueueUploadWWan operations])
-        if (((OCnetworking *)operation).isExecuting == NO) queueNumUploadWWan++;
     
     return queueNumUploadWWan;
 }

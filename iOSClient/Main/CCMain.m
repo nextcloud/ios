@@ -1790,10 +1790,7 @@
             metadataNet.selectorPost = nil;
             metadataNet.taskStatus = k_taskStatusResume;
             
-            if ([metadataNet.session containsString:@"wwan"])
-                [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
-            else
-                [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
+            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:self];
             
         } else {
             
@@ -1833,10 +1830,7 @@
         metadataNet.selectorPost = nil;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        if ([metadataNet.session containsString:@"wwan"])
-            [app addNetworkingOperationQueue:app.netQueueUploadWWan delegate:self metadataNet:metadataNet];
-        else
-            [app addNetworkingOperationQueue:app.netQueueUpload delegate:self metadataNet:metadataNet];
+        [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:self];
     }
 }
 
@@ -3365,7 +3359,7 @@
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
     
-    if ([app.netQueue operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil] > 0) {
+    if ([app.netQueue operationCount] > 0 || [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil] > 0) {
         
         [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         return;
