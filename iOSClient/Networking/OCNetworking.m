@@ -143,11 +143,6 @@
 #pragma mark ===== uploadFile =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadFile
-{
-    [[CCNetworking sharedNetworking] uploadFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:_metadataNet.cryptated onlyPlist:NO session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];
-}
-
 - (void)uploadOnlyPlist
 {
     [[CCNetworking sharedNetworking] uploadFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl cryptated:YES onlyPlist:YES session:_metadataNet.session taskStatus:_metadataNet.taskStatus selector:_metadataNet.selector selectorPost:_metadataNet.selectorPost errorCode:_metadataNet.errorCode delegate:self];

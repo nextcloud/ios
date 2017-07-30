@@ -141,7 +141,7 @@
     
         if (fileNameModel) {
             
-            [[CCNetworking sharedNetworking] uploadTemplate:_titolo fileNameCrypto:[CCUtility trasformedFileNamePlistInCrypto:fileNameModel] serverUrl:self.serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:self];
+            [[CCNetworking sharedNetworking] uploadTemplate:_titolo fileNameCrypto:[CCUtility trasformedFileNamePlistInCrypto:fileNameModel] serverUrl:self.serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
         }
     }
 }

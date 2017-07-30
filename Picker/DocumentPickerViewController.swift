@@ -559,19 +559,8 @@ extension DocumentPickerViewController {
                     
                         // Upload fileName to Cloud
                     
-                        let metadataNet = CCMetadataNet.init(account: self!.activeAccount)!
-                    
-                        metadataNet.action = actionUploadFile
-                        metadataNet.cryptated = self!.parameterEncrypted
-                        metadataNet.fileName = fileName
-                        metadataNet.fileNamePrint = fileName
-                        metadataNet.serverUrl = self!.serverUrl
-                        metadataNet.session = k_upload_session_foreground
-                        metadataNet.taskStatus = Int(k_taskStatusResume)
-                    
-                        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self!, metadataNet: metadataNet, withUser: self!.activeUser, withPassword: self!.activePassword, withUrl: self!.activeUrl, isCryptoCloudMode: self!.isCryptoCloudMode)
-                        self!.networkingOperationQueue.addOperation(ocNetworking)
-                    
+                        CCNetworking.shared().uploadFile(fileName, serverUrl: self!.serverUrl, cryptated: self!.parameterEncrypted, onlyPlist: false, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusResume), selector: "", selectorPost: "", errorCode: 0, delegate: self)
+                        
                         self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
                     }
                 } catch _ {

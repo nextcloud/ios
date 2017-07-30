@@ -246,17 +246,7 @@
     
         NSString *fileName = [self.filesName objectAtIndex:0];
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:_activeAccount];
-            
-        metadataNet.action = actionUploadFile;
-        metadataNet.cryptated = _localCryptated;
-        metadataNet.fileName = fileName;
-        metadataNet.fileNamePrint = fileName;
-        metadataNet.serverUrl = _serverUrl;
-        metadataNet.session = k_upload_session_foreground;
-        metadataNet.taskStatus = k_taskStatusResume;
-        
-        [self addNetworkingQueue:metadataNet];
+        [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl cryptated:_localCryptated onlyPlist:NO session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
         
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brand];
     }

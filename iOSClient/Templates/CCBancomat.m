@@ -180,7 +180,7 @@
         
         XLFormRowDescriptor *titolo = [self.form formRowWithTag:@"titolo"];
         
-        [[CCNetworking sharedNetworking] uploadTemplate:titolo.value fileNameCrypto:[CCUtility trasformedFileNamePlistInCrypto:fileNameModel] serverUrl:self.serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:self];
+        [[CCNetworking sharedNetworking] uploadTemplate:titolo.value fileNameCrypto:[CCUtility trasformedFileNamePlistInCrypto:fileNameModel] serverUrl:self.serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
     }
 }
 

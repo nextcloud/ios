@@ -659,7 +659,7 @@
                 if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
                     
                     // Upload File
-                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl cryptated:_isPickerCriptate onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl cryptated:_isPickerCriptate onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
                     
                 } else {
                     
@@ -2218,7 +2218,7 @@
     
     if (fileNameModel) {
         
-        [[CCNetworking sharedNetworking] uploadTemplate:fileName fileNameCrypto:[CCUtility trasformedFileNamePlistInCrypto:fileNameModel] serverUrl:serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:self];
+        [[CCNetworking sharedNetworking] uploadTemplate:fileName fileNameCrypto:[CCUtility trasformedFileNamePlistInCrypto:fileNameModel] serverUrl:serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
     }
 }
 
@@ -2717,7 +2717,7 @@
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameTo] && serverUrl) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:serverUrl cryptated:YES onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+            [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:serverUrl cryptated:YES onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
             [self performSelector:@selector(reloadDatasource) withObject:nil];
         });
         
@@ -2738,7 +2738,7 @@
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameTo] && serverUrl) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:serverUrl cryptated:NO onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:serverUrl cryptated:NO onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
             [self performSelector:@selector(reloadDatasource) withObject:nil];
         });
         
@@ -4038,7 +4038,7 @@
                         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint]];
                         
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
                         });
                         
                         timer += 0.1;
