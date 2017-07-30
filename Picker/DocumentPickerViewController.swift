@@ -319,19 +319,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             // if plist do not exists, download it
             if CCUtility.isCryptoPlistString(fileName) && FileManager.default.fileExists(atPath: "\(directoryUser)/\(fileName)") == false {
                 
-                let metadataNet = CCMetadataNet.init(account: activeAccount)!
-                
-                metadataNet.action = actionDownloadFile
-                metadataNet.downloadData = false
-                metadataNet.downloadPlist = true
-                metadataNet.fileID = fileID
-                metadataNet.selector = selectorLoadPlist
-                metadataNet.serverUrl = self.serverUrl
-                metadataNet.session = k_download_session_foreground
-                metadataNet.taskStatus = Int(k_taskStatusResume)
-                
-                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, isCryptoCloudMode: isCryptoCloudMode)
-                networkingOperationQueue.addOperation(ocNetworking)
+                CCNetworking.shared().downloadFile(fileID, serverUrl: self.serverUrl, downloadData: false, downloadPlist: true, selector: selectorLoadPlist, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
             }
         }
         
@@ -807,21 +795,8 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 
             } else {
             
-                // Download file
-                let metadataNet = CCMetadataNet.init(account: activeAccount)!
-            
-                metadataNet.action = actionDownloadFile
-                metadataNet.downloadData = true
-                metadataNet.downloadPlist = false
-                metadataNet.fileID = metadata?.fileID
-                metadataNet.selector = selectorLoadFileView
-                metadataNet.serverUrl = self.serverUrl
-                metadataNet.session = k_download_session_foreground
-                metadataNet.taskStatus = Int(k_taskStatusResume)
-            
-                let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl, isCryptoCloudMode: self.isCryptoCloudMode)
-                networkingOperationQueue.addOperation(ocNetworking)
-                
+                CCNetworking.shared().downloadFile(metadata?.fileID, serverUrl: self.serverUrl, downloadData: true, downloadPlist: false, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
+
                 hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
             }
             

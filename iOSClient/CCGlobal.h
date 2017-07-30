@@ -195,7 +195,6 @@ extern NSString *const urlBaseUploadDB;
 // Metadata.Net ACTION
 #define actionCreateFolder                              @"createFolder"
 #define actionDeleteFileDirectory                       @"deleteFileOrFolder"
-#define actionDownloadFile                              @"downloadFile"
 #define actionDownloadThumbnail                         @"downloadThumbnail"
 #define actionGetActivityServer                         @"getActivityServer"
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"

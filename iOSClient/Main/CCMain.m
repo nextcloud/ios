@@ -1577,20 +1577,7 @@
             
         if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName]] == NO && [metadata.session length] == 0) {
         
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-                
-            metadataNet.action = actionDownloadFile;
-            metadataNet.downloadData = NO;
-            metadataNet.downloadPlist = YES;
-            metadataNet.fileID = metadata.fileID;
-            metadataNet.selector = selectorLoadPlist;
-            metadataNet.serverUrl = serverUrl;
-            metadataNet.session = k_download_session_foreground;
-            metadataNet.taskStatus = k_taskStatusResume;
-            
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-            
-            //[[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:selectorLoadPlist selectorPost:nil session:k_download_session_foreground taskStatus:k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:selectorLoadPlist selectorPost:nil session:k_download_session_foreground taskStatus:k_taskStatusResume delegate:self];
         }
     }
 }
