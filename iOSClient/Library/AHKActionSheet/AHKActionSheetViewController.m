@@ -12,7 +12,7 @@
 @interface AHKActionSheetViewController ()
 
 @property (nonatomic) BOOL viewAlreadyAppear;
-@property (nonatomic) UIDeviceOrientation storeOrientation;
+@property (nonatomic) UIInterfaceOrientation storeOrientation;
 
 @end
 
@@ -24,8 +24,8 @@
 {
     [super viewDidLoad];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotateDeviceChangeNotification:) name:UIDeviceOrientationDidChangeNotification object:nil];
-    self.storeOrientation = [[UIDevice currentDevice] orientation];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotateDeviceChangeNotification:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    _storeOrientation = [[UIApplication sharedApplication] statusBarOrientation];
 
     [self.view addSubview:self.actionSheet];
     self.actionSheet.frame = self.view.bounds;
@@ -70,20 +70,13 @@
 
 -(void)didRotateDeviceChangeNotification:(NSNotification *)notification
 {
-    UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
+    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
     
-    // Ignore changes in device orientation if unknown, face up, or face down.
-    if (!UIDeviceOrientationIsValidInterfaceOrientation(currentOrientation)) {
-        return;
-    }
-    
-    //BOOL isLandscape = UIDeviceOrientationIsLandscape(currentOrientation);
-    //BOOL isPortrait = UIDeviceOrientationIsPortrait(currentOrientation);
-    
-    if (currentOrientation != self.storeOrientation) {
+    if (currentOrientation != _storeOrientation) {
         [self.actionSheet dismissAnimated:NO];
-        self.storeOrientation = currentOrientation;
     }
+    
+    _storeOrientation = currentOrientation;
 }
 
 @end
