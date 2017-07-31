@@ -316,7 +316,7 @@
     
     [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
     
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
@@ -438,7 +438,7 @@
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             
-            [app cancelAllOperations];
+            [app.netQueue cancelAllOperations];
             [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
             
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];

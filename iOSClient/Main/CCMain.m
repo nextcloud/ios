@@ -3381,7 +3381,7 @@
     [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:NO];
     
     // STOP, erase all in  queue networking
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

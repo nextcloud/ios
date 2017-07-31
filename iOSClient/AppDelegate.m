@@ -1292,11 +1292,6 @@
     });
 }
 
-- (void)cancelAllOperations
-{
-    [_netQueue cancelAllOperations];
-}
-
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
 {
     id operation;

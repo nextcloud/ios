@@ -205,7 +205,7 @@
 {
     [self deselectFormRow:sender];
     
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     // Brand
@@ -260,7 +260,7 @@
 {    
     [self deselectFormRow:sender];
     
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     // Brand
@@ -314,7 +314,7 @@
 
 - (void)deleteAccount:(NSString *)account
 {
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
@@ -358,7 +358,7 @@
         return;
     }
 
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     // change account

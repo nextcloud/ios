@@ -150,7 +150,6 @@
 - (void)changeTheming:(UIViewController *)vc;
 
 // Operation Networking
-- (void)cancelAllOperations;
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
 
 @end
