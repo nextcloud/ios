@@ -46,8 +46,6 @@
 @property (nonatomic, copy) NSString *etag;
 @property (nonatomic, copy) NSString *permissions;
 @property (nonatomic, copy) NSString *ocId;
-@property double quotaUsed;
-@property double quotaAvailable;
 @property BOOL isFavorite;
 
 @end

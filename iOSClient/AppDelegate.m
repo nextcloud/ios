@@ -304,7 +304,7 @@
 {    
     [MagicalRecord cleanUp];
 
-    NSLog(@"[LOG] bye bye, Crypto Cloud !");
+    NSLog(@"[LOG] bye bye, Nextcloud !");
 }
 
 //

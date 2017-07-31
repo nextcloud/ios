@@ -190,10 +190,6 @@
         _currentFile = [OCFileDto new];
 
         _xmlBucket = nil;
-    } else if ([elementName isEqualToString:@"d:quota-used-bytes"]) {
-        _currentFile.quotaUsed = (double)[_xmlChars doubleValue];
-    } else if ([elementName isEqualToString:@"d:quota-available-bytes"]) {
-        _currentFile.quotaAvailable = (double)[_xmlChars doubleValue];
     } else if ([elementName isEqualToString:@"oc:favorite"]) {
         _currentFile.isFavorite = [_xmlChars boolValue];
     }

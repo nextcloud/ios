@@ -216,19 +216,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"PROPFIND";
 	NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     
-    /*
-	NSString *depthHeader = nil;
-	if (depth <= 0)
-		depthHeader = @"0";
-	else if (depth == 1)
-		depthHeader = @"1";
-	else
-		depthHeader = @"infinity";
-    [request setValue: depthHeader forHTTPHeaderField: @"Depth"];
-    */
-    
     [request setValue: depth forHTTPHeaderField: @"Depth"];
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><D:creationdate/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:displayname/><D:quota-available-bytes/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:quota-used-bytes/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><id xmlns=\"http://owncloud.org/ns\"/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     
@@ -246,19 +235,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"PROPFIND";
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     
-    /*
-    NSString *depthHeader = nil;
-    if (depth <= 0)
-        depthHeader = @"0";
-    else if (depth == 1)
-        depthHeader = @"1";
-    else
-        depthHeader = @"infinity";
-    [request setValue: depthHeader forHTTPHeaderField: @"Depth"];
-    */ 
-    
     [request setValue: depth forHTTPHeaderField: @"Depth"];
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><D:creationdate/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:displayname/><D:quota-available-bytes/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:quota-used-bytes/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><id xmlns=\"http://owncloud.org/ns\"/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     
@@ -302,7 +280,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     
     // OCFileDto
-    body = [body stringByAppendingString:@"<d:resourcetype/><oc:fileid/><d:getcontenttype/><d:getetag/><d:creationdate/><oc:size/><d:getcontentlength/><d:getlastmodified/><oc:id/><oc:permissions/><d:quota-available-bytes/><d:quota-used-bytes/><oc:favorite/>"];
+    body = [body stringByAppendingString:@"<d:resourcetype/><oc:fileid/><d:getcontenttype/><d:getetag/><oc:size/><d:getcontentlength/><d:getlastmodified/><oc:id/><oc:permissions/><oc:favorite/>"];
     
     if (dateLastModified.length > 0) {
         
@@ -357,7 +335,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     body = @"<?xml version=\"1.0\"?><oc:filter-files xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><oc:filter-rules><oc:favorite>1</oc:favorite></oc:filter-rules><d:prop>"; //<oc:id/></d:prop></oc:filter-files>";
     
     // OCFileDto
-    body = [body stringByAppendingString:@"<d:resourcetype/><oc:fileid/><d:getcontenttype/><d:getetag/><d:creationdate/><oc:size/><d:getcontentlength/><d:getlastmodified/><oc:id/><oc:permissions/><d:quota-available-bytes/><d:quota-used-bytes/><oc:favorite/>"];
+    body = [body stringByAppendingString:@"<d:resourcetype/><oc:fileid/><d:getetag/><oc:size/><d:getlastmodified/><oc:id/><oc:permissions/><oc:favorite/>"];
     
     body = [NSString stringWithFormat:@"%@</d:prop></oc:filter-files>", body];
     
