@@ -1878,6 +1878,7 @@
     [metadataNet setCryptated: self.cryptated];
     [metadataNet setDate: self.date];
     [metadataNet setDelegate: self.delegate];
+    [metadataNet setDepth: self.depth];
     [metadataNet setDirectory: self.directory];
     [metadataNet setDirectoryID: self.directoryID];
     [metadataNet setDirectoryIDTo: self.directoryIDTo];

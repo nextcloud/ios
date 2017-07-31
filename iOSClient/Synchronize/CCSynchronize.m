@@ -67,6 +67,7 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
     
+    metadataNet.depth = @"1";
     metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;

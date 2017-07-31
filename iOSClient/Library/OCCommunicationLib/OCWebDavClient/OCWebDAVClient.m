@@ -58,7 +58,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
 @interface OCWebDAVClient()
 
-- (void)mr_listPath:(NSString *)path depth:(NSUInteger)depth onCommunication:
+- (void)mr_listPath:(NSString *)path depth:(NSString *)depth onCommunication:
 (OCCommunication *)sharedOCCommunication
             success:(void(^)(NSHTTPURLResponse *, id))success
             failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure;
@@ -207,7 +207,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 }
 
 
-- (void)mr_listPath:(NSString *)path depth:(NSUInteger)depth onCommunication:
+- (void)mr_listPath:(NSString *)path depth:(NSString *)depth onCommunication:
 (OCCommunication *)sharedOCCommunication
             success:(void(^)(NSHTTPURLResponse *, id))success
             failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
@@ -215,6 +215,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"PROPFIND";
 	NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
+    
+    /*
 	NSString *depthHeader = nil;
 	if (depth <= 0)
 		depthHeader = @"0";
@@ -223,7 +225,9 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 	else
 		depthHeader = @"infinity";
     [request setValue: depthHeader forHTTPHeaderField: @"Depth"];
+    */
     
+    [request setValue: depth forHTTPHeaderField: @"Depth"];
     [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><D:creationdate/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:displayname/><D:quota-available-bytes/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:quota-used-bytes/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
@@ -233,7 +237,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)mr_listPath:(NSString *)path depth:(NSUInteger)depth withUserSessionToken:(NSString*)token onCommunication:
+- (void)mr_listPath:(NSString *)path depth:(NSString *)depth withUserSessionToken:(NSString*)token onCommunication:
 (OCCommunication *)sharedOCCommunication
             success:(void(^)(NSHTTPURLResponse *operation, id response, NSString *token))success
             failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *, NSString *token))failure {
@@ -241,6 +245,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"PROPFIND";
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
+    
+    /*
     NSString *depthHeader = nil;
     if (depth <= 0)
         depthHeader = @"0";
@@ -249,7 +255,9 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     else
         depthHeader = @"infinity";
     [request setValue: depthHeader forHTTPHeaderField: @"Depth"];
+    */ 
     
+    [request setValue: depth forHTTPHeaderField: @"Depth"];
     [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><D:creationdate/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:displayname/><D:quota-available-bytes/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:quota-used-bytes/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
@@ -263,21 +271,21 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
          onCommunication: (OCCommunication *)sharedOCCommunication
                  success:(void(^)(NSHTTPURLResponse *, id ))success
                  failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
-	[self mr_listPath:path depth:0 onCommunication:sharedOCCommunication success:success failure:failure];
+	[self mr_listPath:path depth:@"0" onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
-- (void)listPath:(NSString *)path
+- (void)listPath:(NSString *)path depth:(NSString *)depth
  onCommunication:(OCCommunication *)sharedOCCommunication
          success:(void(^)(NSHTTPURLResponse *, id))success
          failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
-	[self mr_listPath:path depth:1 onCommunication:sharedOCCommunication success:success failure:failure];
+	[self mr_listPath:path depth:depth onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
-- (void)listPath:(NSString *)path
+- (void)listPath:(NSString *)path depth:(NSString *)depth
  onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token
          success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success
          failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
-    [self mr_listPath:path depth:1 withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
+    [self mr_listPath:path depth:depth withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
 - (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth dateLastModified:(NSString *)dateLastModified user:(NSString *)user onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {

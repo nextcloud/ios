@@ -349,7 +349,7 @@ class CCActions: NSObject {
         metadataNet.delegate = delegate
         metadataNet.directoryID = directoryID
         metadataNet.fileName = fileName
-        metadataNet.options = depth
+        metadataNet.depth = depth
         metadataNet.priority = Operation.QueuePriority.high.rawValue
         metadataNet.selector = selector
         metadataNet.serverUrl = serverUrl

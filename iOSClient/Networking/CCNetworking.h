@@ -96,6 +96,7 @@
 @property BOOL cryptated;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, weak) id delegate;
+@property (nonatomic, strong) NSString *depth;
 @property BOOL directory;
 @property (nonatomic, strong) NSString *directoryID;
 @property (nonatomic, strong) NSString *directoryIDTo;

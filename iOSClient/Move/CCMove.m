@@ -408,9 +408,10 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
     
     metadataNet.action = actionReadFolder;
-    metadataNet.serverUrl = _serverUrl;
-    metadataNet.selector = selectorReadFolder;
     metadataNet.date = nil;
+    metadataNet.depth = @"1";
+    metadataNet.selector = selectorReadFolder;
+    metadataNet.serverUrl = _serverUrl;
     
     [self addNetworkingQueue:metadataNet];
     

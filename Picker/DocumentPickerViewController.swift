@@ -255,6 +255,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         let metadataNet = CCMetadataNet.init(account: activeAccount)!
 
         metadataNet.action = actionReadFolder
+        metadataNet.depth = "1"
         metadataNet.serverUrl = self.serverUrl
         metadataNet.selector = selectorReadFolder
         

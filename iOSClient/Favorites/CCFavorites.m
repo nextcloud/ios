@@ -203,6 +203,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     metadataNet.action = actionReadFolder;
+    metadataNet.depth = @"1";
     metadataNet.directoryID = directoryID;
     
     if ([CCUtility getFavoriteOffline])

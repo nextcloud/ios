@@ -423,7 +423,7 @@
 ///-----------------------------------
 /// @name Read folder
 ///-----------------------------------
-- (void) readFolder: (NSString *) path withUserSessionToken:(NSString *)token
+- (void) readFolder: (NSString *) path depth:(NSString *)depth withUserSessionToken:(NSString *)token
     onCommunication:(OCCommunication *)sharedOCCommunication
      successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest
      failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
@@ -438,7 +438,7 @@
     request = [self getRequestWithCredentials:request];
     
     
-    [request listPath:path onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+    [request listPath:path depth:depth onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
         if (successRequest) {
             NSData *responseData = (NSData*) responseObject;
             

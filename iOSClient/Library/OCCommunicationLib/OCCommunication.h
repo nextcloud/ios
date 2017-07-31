@@ -295,7 +295,7 @@ typedef enum {
  * @param sharedOCCommunication -> OCCommunication Singleton of communication to add the operation on the queue.
  *
  */
-- (void) readFolder: (NSString *) path withUserSessionToken:(NSString *)token
+- (void) readFolder: (NSString *) path depth:(NSString *)depth withUserSessionToken:(NSString *)token
     onCommunication:(OCCommunication *)sharedOCCommunication
      successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest
      failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest;

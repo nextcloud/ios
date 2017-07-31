@@ -221,7 +221,7 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication readFolder:_metadataNet.serverUrl withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    [communication readFolder:_metadataNet.serverUrl depth:_metadataNet.depth withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
@@ -386,7 +386,7 @@
         dateLastModified = [dateFormatter stringFromDate:_metadataNet.date];
     }
     
-    [communication search:path folder:folder fileName: [NSString stringWithFormat:@"%%%@%%", _metadataNet.fileName] depth:_metadataNet.options dateLastModified:dateLastModified withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    [communication search:path folder:folder fileName: [NSString stringWithFormat:@"%%%@%%", _metadataNet.fileName] depth:_metadataNet.depth dateLastModified:dateLastModified withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];

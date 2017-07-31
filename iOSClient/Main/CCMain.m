@@ -2001,6 +2001,7 @@
 
     metadataNet.action = actionReadFolder;
     metadataNet.date = [NSDate date];
+    metadataNet.depth = @"1";
     metadataNet.directoryID = directory.directoryID;
     metadataNet.priority = NSOperationQueuePriorityHigh;
     metadataNet.selector = selectorReadFolder;
