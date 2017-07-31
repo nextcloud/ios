@@ -321,11 +321,19 @@
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:_activeUrl];
     if ([autoUploadPath length] > 0)
         [[CCSynchronize sharedSynchronize] synchronizedFolder:autoUploadPath selector:selectorReadFolder];
-
-    // Execute : after 1 sec.
     
+    // Execute : after 1 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    
+        // verify Download
+        [[CCNetworking sharedNetworking] verifyDownloadInProgress];
+        if (_activeMain)
+            [[CCNetworking sharedNetworking] verifyDownloadInError:self.activeMain];
         
+        // verify Upload
+        [[CCNetworking sharedNetworking] verifyUploadInProgress];
+        [[CCNetworking sharedNetworking] verifyUploadInError];
+
         if (_activeMain) {
             NSLog(@"[LOG] Request Server Capabilities");
             [_activeMain requestServerCapabilities];

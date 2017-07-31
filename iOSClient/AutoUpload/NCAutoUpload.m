@@ -559,13 +559,11 @@
         }
     }
     
-    // verify Download/Upload 
-    if (counterNewUpload == 0) {
-        
-        [[CCNetworking sharedNetworking] verifyDownloadInProgress];
-        [[CCNetworking sharedNetworking] verifyUploadInProgress];
+    // In background verify Upload in error
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        [[CCNetworking sharedNetworking] verifyUploadInError];
     }
-
+    
     // Start Timer
     app.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:app selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
 }

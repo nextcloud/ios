@@ -66,9 +66,11 @@
 - (void)uploadTemplate:(NSString *)fileNamePrint fileNameCrypto:(NSString *)fileNameCrypto serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
-// Verify
+// Verify Download/Upload
 - (void)verifyDownloadInProgress;
+- (void)verifyDownloadInError:(id)delegate;
 - (void)verifyUploadInProgress;
+- (void)verifyUploadInError;
 
 @end
 
