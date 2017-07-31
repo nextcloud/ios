@@ -77,7 +77,6 @@
     BOOL _isSearchMode;
     NSString *_searchFileName;
     NSMutableArray *_searchResultMetadatas;
-    NSString *_depth;
     NSString *_noFilesSearchTitle;
     NSString *_noFilesSearchDescription;
     NSTimer *_timerWaitInput;
@@ -133,7 +132,6 @@
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     _searchResultMetadatas = [NSMutableArray new];
     _searchFileName = @"";
-    _depth = @"infinity";
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = @"";
     
@@ -2019,7 +2017,7 @@
 {
     NSString *home = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
     
-    [[CCActions sharedInstance] search:home fileName:_searchFileName depth:_depth date:nil selector:selectorSearch delegate:self];
+    [[CCActions sharedInstance] search:home fileName:_searchFileName depth:@"infinity" date:nil selector:selectorSearch delegate:self];
 
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
