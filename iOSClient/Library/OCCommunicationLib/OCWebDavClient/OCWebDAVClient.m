@@ -217,7 +217,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 	NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     
     [request setValue: depth forHTTPHeaderField: @"Depth"];
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><D:creationdate/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:displayname/><D:quota-available-bytes/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:quota-used-bytes/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     
@@ -236,7 +236,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     
     [request setValue: depth forHTTPHeaderField: @"Depth"];
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><D:creationdate/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:displayname/><D:quota-available-bytes/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:quota-used-bytes/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:getcontenttype/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     
