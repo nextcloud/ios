@@ -32,6 +32,7 @@
 #import "OCFrameworkConstants.h"
 #import "OCCapabilities.h"
 #import "CTAssetCheckmark.h"
+#import "JDStatusBarNotification.h"
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 
@@ -3315,9 +3316,12 @@
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
     
-    if ([app.netQueue operationCount] > 0 || [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil] > 0) {
+    NSUInteger numInSession = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", app.activeAccount] sorted:nil ascending:NO] count];
+    NSUInteger numInQueue = [app.netQueue operationCount];
+    
+    if (numInSession+numInQueue > 0) {
         
-        [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];        
         return;
     }
     
@@ -3380,10 +3384,6 @@
 {
     [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:NO];
     
-    // STOP, erase all in  queue networking
-    [app.netQueue cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
