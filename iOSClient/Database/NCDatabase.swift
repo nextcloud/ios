@@ -215,6 +215,7 @@ class tableQueueDownload: Object {
     dynamic var downloadPlist: Bool = false
     dynamic var selector = ""
     dynamic var selectorPost = ""
+    dynamic var serverUrl = ""
     dynamic var session = ""
 
     override static func primaryKey() -> String {

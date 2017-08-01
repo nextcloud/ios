@@ -1165,7 +1165,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    func addMetadatas(_ metadatas: [tableMetadata], serverUrl: String) -> [tableMetadata]? {
+    func addMetadatas(_ metadatas: [tableMetadata], serverUrl: String?) -> [tableMetadata]? {
         
         guard self.getAccountActive() != nil else {
             return nil
@@ -1183,8 +1183,10 @@ class NCManageDatabase: NSObject {
             print("Could not write to database: ", error)
         }
         
-        if let directoryID = self.getDirectoryID(serverUrl) {
-            self.setDateReadDirectory(directoryID: directoryID)
+        if let serverUrl = serverUrl {
+            if let directoryID = self.getDirectoryID(serverUrl) {
+                self.setDateReadDirectory(directoryID: directoryID)
+            }
         }
         
         return Array(metadatas.map { tableMetadata.init(value:$0) })
@@ -1609,7 +1611,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Queue Download
     
-    func addQueueDownload(metadataNet: CCMetadataNet) -> Bool {
+    func addQueueDownload(fileID: String, downloadData: Bool, downloadPlist: Bool, selector: String, selectorPost: String?, serverUrl: String, session: String) -> Bool {
         
         guard let tableAccount = self.getAccountActive() else {
             return false
@@ -1631,16 +1633,17 @@ class NCManageDatabase: NSObject {
                     let addObject = tableQueueDownload()
                         
                     addObject.account = tableAccount.account
-                    addObject.fileID = metadataNet.fileID
-                    addObject.downloadData = metadataNet.downloadData
-                    addObject.downloadPlist = metadataNet.downloadPlist
-                    addObject.selector = metadataNet.selector
+                    addObject.fileID = fileID
+                    addObject.downloadData = downloadData
+                    addObject.downloadPlist = downloadPlist
+                    addObject.selector = selector
                         
-                    if let selectorPost = metadataNet.selectorPost {
+                    if let selectorPost = selectorPost {
                         addObject.selectorPost = selectorPost
                     }
-                        
-                    addObject.session = metadataNet.session
+                    
+                    addObject.serverUrl = serverUrl
+                    addObject.session = session
                     
                     realm.add(addObject, update: true)
                 }
@@ -1651,6 +1654,43 @@ class NCManageDatabase: NSObject {
         }
         
         return true
+    }
+    
+    func addQueueDownload(metadatasNet: [CCMetadataNet]) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                for metadataNet in metadatasNet {
+                        
+                    // Add new
+                    let addObject = tableQueueDownload()
+                    
+                    addObject.account = tableAccount.account
+                    addObject.fileID = metadataNet.fileID
+                    addObject.downloadData = metadataNet.downloadData
+                    addObject.downloadPlist = metadataNet.downloadPlist
+                    addObject.selector = metadataNet.selector
+                    
+                    if let selectorPost = metadataNet.selectorPost {
+                        addObject.selectorPost = selectorPost
+                    }
+                    
+                    addObject.serverUrl = metadataNet.serverUrl
+                    addObject.session = metadataNet.session
+                    
+                    realm.add(addObject, update: true)
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
 
     func getQueueDownload() -> CCMetadataNet? {
@@ -1675,6 +1715,7 @@ class NCManageDatabase: NSObject {
         metadataNet.downloadPlist = result.downloadPlist
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost
+        metadataNet.serverUrl = result.serverUrl
         metadataNet.session = result.session
         metadataNet.taskStatus = Int(k_taskStatusResume)
         
@@ -1690,6 +1731,25 @@ class NCManageDatabase: NSObject {
         
         return metadataNet
     }
+    
+    func countQueueDownload(session: String?) -> Int {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return 0
+        }
+        
+        let realm = try! Realm()
+        let results : Results<tableQueueDownload>
+        
+        if let session = session {
+            results = realm.objects(tableQueueDownload.self).filter("account = %@ AND session = %@", tableAccount.account, session)
+        } else {
+            results = realm.objects(tableQueueDownload.self).filter("account = %@", tableAccount.account)
+        }
+        
+        return results.count
+    }
+
     
     //MARK: -
     //MARK: Table Queue Upload

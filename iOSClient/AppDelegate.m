@@ -232,7 +232,7 @@
     }
     
     // Start Timer
-    self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
+    self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
     
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
@@ -356,7 +356,7 @@
 #pragma mark ===== Process Auto Upload < k_timerProcess seconds > =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)processAutoUpload
+- (void)processAutoDownloadUpload
 {
     // Test Maintenance
     if (self.maintenanceMode)
@@ -385,13 +385,31 @@
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
     
-    NSInteger maxConcurrentUpload = [maxConcurrent integerValue];
+    NSInteger maxConcurrentDownloadUpload = [maxConcurrent integerValue];
+    
+    NSInteger counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
     NSInteger counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
+    
     NSInteger counterNewUpload = 0;
+
+    // ------------------------- <selector Auto Download> -------------------------
+    
+    while (counterDownloadInSession < maxConcurrentDownloadUpload) {
+        
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueDownload];
+        if (metadataNet) {
+            
+            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileID serverUrl:metadataNet.serverUrl downloadData:metadataNet.downloadData downloadPlist:metadataNet.downloadPlist selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:app.activeMain];
+                        
+        } else
+            break;
+        
+        counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+    }
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    while (counterUploadInSessionAndInLock < maxConcurrentUpload) {
+    while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
         
         metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUpload];
         if (metadataNet) {
@@ -423,7 +441,7 @@
         
     } else {
         
-        while (counterUploadInSessionAndInLock < maxConcurrentUpload) {
+        while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
             
             metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUploadAll];
             if (metadataNet) {
@@ -445,7 +463,7 @@
     
     // ------------------------- <selector Upload File> -------------------------
 
-    while (counterUploadInSessionAndInLock < maxConcurrentUpload) {
+    while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
         
         metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadFile];
         if (metadataNet) {
@@ -484,7 +502,7 @@
     }
     
     // Start Timer
-    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:app selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
+    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:app selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1050,7 +1068,7 @@
     NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
     
     // Total
-    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil];
+    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:nil] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     

@@ -320,6 +320,7 @@
     
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:app.activeAccount];
     [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];

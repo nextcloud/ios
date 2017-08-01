@@ -1527,6 +1527,18 @@
     // if exists postselector call self with selectorPost
     if ([selectorPost length] > 0)
         [self downloadFileSuccess:fileID serverUrl:serverUrl selector:selectorPost selectorPost:nil];
+    
+    // Auto Download Upload
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        
+        // ONLY BACKGROUND
+        [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+        
+    } else {
+        
+        // ONLY FOREFROUND
+        [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+    }
 }
 
 - (void)downloadSelectedFilesFolders
@@ -1587,7 +1599,7 @@
 
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // Auto Upload
+    // Auto Download Upload
     if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
                 
         if ([[NCManageDatabase sharedInstance] getPriorityQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier] > k_priorityAutoUploadStop) {
@@ -1637,7 +1649,7 @@
 
 - (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    // Auto Upload
+    // Auto Download Upload
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         
         // ONLY BACKGROUND

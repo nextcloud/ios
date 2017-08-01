@@ -353,8 +353,9 @@
     NSString *titleSection, *numberTitle;
     NSInteger typeOfSession = 0;
     
-    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session];
-    NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session_wwan];
+    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session];
+    NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
+    
     NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
     NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
     
@@ -438,7 +439,7 @@
     // Footer Download
     if ([titleSection containsString:@"download"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session];
+        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session];
         
         // element or elements ?
         if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -455,7 +456,7 @@
     // Footer Download WWAN
     if ([titleSection containsString:@"download"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session_wwan];
+        NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
         
         // element or elements ?
         if (queueDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);

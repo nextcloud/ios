@@ -346,11 +346,14 @@
 - (void)SynchronizeMetadatas:(NSArray *)metadatas withDownload:(BOOL)withDownload
 {
     NSString *oldDirectoryID, *serverUrl, *fileID;
+    NSMutableArray *metadataToAdd = [NSMutableArray new];
+    NSMutableArray *metadataNetToAdd = [NSMutableArray new];
 
     for (tableMetadata *metadata in metadatas) {
         
         NSString *selector, *selectorPost;
         BOOL downloadData = NO, downloadPlist = NO;
+        CCMetadataNet *metadataNet = [CCMetadataNet new];
         
         if ([metadata.type isEqualToString: k_metadataType_file]) {
             downloadData = YES;
@@ -371,10 +374,20 @@
         }
         
         fileID = metadata.fileID;
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        [metadataToAdd addObject:metadata];
        
-        [[CCNetworking sharedNetworking] downloadFile:fileID serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:selector selectorPost:selectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:app.activeMain];
+        metadataNet.fileID = fileID;
+        metadataNet.downloadData = downloadData;
+        metadataNet.downloadPlist = downloadPlist;
+        metadataNet.selector = selector;
+        metadataNet.selectorPost = selectorPost;
+        metadataNet.serverUrl = serverUrl;
+        metadataNet.session = k_download_session;
+        [metadataNetToAdd addObject:metadataNet];
     }
+    
+    (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd serverUrl:nil];
+    [[NCManageDatabase sharedInstance] addQueueDownloadWithMetadatasNet:metadataNetToAdd];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [app.activeMain reloadDatasource:serverUrl];
