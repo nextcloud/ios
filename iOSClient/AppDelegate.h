@@ -152,5 +152,7 @@
 // Operation Networking
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
 
+- (void)loadAutoUpload:(NSNumber *)maxConcurrent;
+
 @end
 
