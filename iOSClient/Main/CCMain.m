@@ -5043,13 +5043,12 @@
     
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
-        return [tableView dequeueReusableCellWithIdentifier:@"CellMainTransfer"];
-    }
+    if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
+        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (!serverUrl)
-        return [tableView dequeueReusableCellWithIdentifier:@"CellMainTransfer"];
+        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
     
     if ([metadata.session isEqualToString:@""] || metadata.session == nil) typeCell = @"CellMain";
     else typeCell = @"CellMainTransfer";
