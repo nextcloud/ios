@@ -44,7 +44,7 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
 // Timer Process
-@property (nonatomic, strong) NSTimer *timerProcessAutoUpload;
+@property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
 @property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
 
 // For LMMediaPlayerView
@@ -152,7 +152,7 @@
 // Operation Networking
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
 
-- (void)loadAutoUpload:(NSNumber *)maxConcurrent;
+- (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent;
 
 @end
 
