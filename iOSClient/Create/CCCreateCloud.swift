@@ -31,8 +31,8 @@ class CreateMenuAdd: NSObject {
 
     let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor.black]
     let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: NCBrandColor.sharedInstance.cryptocloud] as [String : Any]
-    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue-Bold", size: 16)!, NSForegroundColorAttributeName: UIColor.black] as [String : Any]
-    let fontDisable = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor.black]
+    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue-Bold", size: 17)!, NSForegroundColorAttributeName: UIColor.black] as [String : Any]
+    let fontDisable = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor.darkGray]
 
     let colorLightGray = UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1)
     let colorGray = UIColor(colorLiteralRed: 150.0/255.0, green: 150.0/255.0, blue: 150.0/255.0, alpha: 1)
