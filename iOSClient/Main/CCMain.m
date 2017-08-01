@@ -1588,7 +1588,7 @@
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Auto Upload
-    if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll]) {
+    if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
                 
         if ([[NCManageDatabase sharedInstance] getPriorityQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier] > k_priorityAutoUploadStop) {
         
@@ -1599,18 +1599,18 @@
                 [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
             }
             
-            [app messageNotification:@"_automatic_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            if (errorCode != kCFURLErrorCancelled)
+                [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             
         } else {
             
             // Delete record on Table Auto Upload
-            if ([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll])
-                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier selector:selector];
+            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier selector:selector];
             
             // Activity
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Too many error, file deleted" type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
             
-            [app messageNotification:@"_automatic_upload_file_" description:@"Too many error, file deleted, see Activity for more info" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [app messageNotification:@"_upload_file_" description:@"Too many error, file deleted, see Activity for more info" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
     } else {
@@ -1626,7 +1626,7 @@
         }
     
         // Print error
-        else if (errorCode != kCFURLErrorCancelled && errorCode != 403) {
+        else if (errorCode != kCFURLErrorCancelled) {
         
             [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
@@ -1736,7 +1736,7 @@
                 metadataNet.serverUrl = serverUrl;
                 metadataNet.taskStatus = k_taskStatusResume;
                 
-                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:self];
+                (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
 
             } else {
             
@@ -1775,8 +1775,8 @@
             metadataNet.selector = selectorUploadFile;
             metadataNet.selectorPost = nil;
             metadataNet.taskStatus = k_taskStatusResume;
-            
-            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:self];
+                        
+            (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
             
         } else {
             
@@ -1815,7 +1815,7 @@
         metadataNet.selectorPost = nil;
         metadataNet.taskStatus = k_taskStatusResume;
         
-        [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:self];
+        (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
     }
 }
 

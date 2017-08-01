@@ -353,7 +353,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Process Auto Upload k_timerProcess seconds =====
+#pragma mark ===== Process Auto Upload < k_timerProcess seconds > =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)processAutoUpload
@@ -441,6 +441,27 @@
             
             counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
         }
+    }
+    
+    // ------------------------- <selector Upload File> -------------------------
+
+    while (counterUploadInSessionAndInLock < maxConcurrentUpload) {
+        
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadFile];
+        if (metadataNet) {
+            
+            // Priority Error only in Foreground
+            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
+                continue;
+            
+            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+            
+            counterNewUpload++;
+            
+        } else
+            break;
+        
+        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     }
     
     // Verify Lock
