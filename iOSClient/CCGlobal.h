@@ -74,7 +74,7 @@ extern NSString *const urlBaseUploadDB;
 #define k_databaseDefault                               @"nextcloud.realm"
 
 // Picker select image
-#define k_pickerControllerMax                           100.0
+#define k_pickerControllerMax                           1000.0
 
 // define Nextcloud IOS
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
