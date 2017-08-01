@@ -207,6 +207,21 @@ class tablePhotoLibrary: Object {
     }
 }
 
+class tableQueueDownload: Object {
+    
+    dynamic var account = ""
+    dynamic var fileID = ""
+    dynamic var downloadData: Bool = false
+    dynamic var downloadPlist: Bool = false
+    dynamic var selector = ""
+    dynamic var selectorPost = ""
+    dynamic var session = ""
+
+    override static func primaryKey() -> String {
+        return "fileID"
+    }
+}
+
 class tableQueueUpload: Object {
     
     dynamic var account = ""

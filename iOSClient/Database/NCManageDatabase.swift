@@ -57,11 +57,11 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 4,
+            schemaVersion: 5,
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
-                if (oldSchemaVersion < 4) {
+                if (oldSchemaVersion < 5) {
                     // Nothing to do!
                     // Realm will automatically detect new properties and removed properties
                     // And will update the schema on disk automatically
@@ -1607,6 +1607,91 @@ class NCManageDatabase: NSObject {
     }
 
     //MARK: -
+    //MARK: Table Queue Download
+    
+    func addQueueDownload(metadataNet: CCMetadataNet) -> Bool {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return false
+        }
+        
+        let realm = try! Realm()
+        
+        if realm.isInWriteTransaction {
+            
+            print("[LOG] Could not write to database, addQueueDownload is already in write transaction")
+            return false
+            
+        } else {
+            
+            do {
+                try realm.write {
+                    
+                    // Add new
+                    let addObject = tableQueueDownload()
+                        
+                    addObject.account = tableAccount.account
+                    addObject.fileID = metadataNet.fileID
+                    addObject.downloadData = metadataNet.downloadData
+                    addObject.downloadPlist = metadataNet.downloadPlist
+                    addObject.selector = metadataNet.selector
+                        
+                    if let selectorPost = metadataNet.selectorPost {
+                        addObject.selectorPost = selectorPost
+                    }
+                        
+                    addObject.session = metadataNet.session
+                    
+                    realm.add(addObject, update: true)
+                }
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
+                return false
+            }
+        }
+        
+        return true
+    }
+
+    func getQueueDownload() -> CCMetadataNet? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableQueueDownload.self).filter("account = %@", tableAccount.account).first else {
+            realm.cancelWrite()
+            return nil
+        }
+        
+        let metadataNet = CCMetadataNet()
+        
+        metadataNet.fileID = result.fileID
+        metadataNet.downloadData = result.downloadData
+        metadataNet.downloadPlist = result.downloadPlist
+        metadataNet.selector = result.selector
+        metadataNet.selectorPost = result.selectorPost
+        metadataNet.session = result.session
+        metadataNet.taskStatus = Int(k_taskStatusResume)
+        
+        // delete record
+        realm.delete(result)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return nil
+        }
+        
+        return metadataNet
+    }
+    
+    //MARK: -
     //MARK: Table Queue Upload
     
     func addQueueUpload(metadataNet: CCMetadataNet) -> Bool {
@@ -1650,6 +1735,7 @@ class NCManageDatabase: NSObject {
                 }
             } catch let error {
                 print("[LOG] Could not write to database: ", error)
+                return false
             }
         }
         
@@ -1895,6 +1981,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return nil
         }
 
         return ["\(serverUrl)\(fileName)" : share]
