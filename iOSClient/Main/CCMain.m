@@ -5772,7 +5772,7 @@
     
         CCMain *viewController = [app.listMainVC objectForKey:serverUrlPush];
         
-        if (viewController.isViewLoaded == false || viewController == nil) {
+        if (!viewController) {
             
             viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMainVC"];
             
