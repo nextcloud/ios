@@ -143,26 +143,26 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
             
-        let addAccount = tableAccount()
+        let addObject = tableAccount()
             
-        addAccount.account = account
+        addObject.account = account
             
         // Brand
         if NCBrandOptions.sharedInstance.use_default_auto_upload {
                 
-            addAccount.autoUpload = true
-            addAccount.autoUploadImage = true
-            addAccount.autoUploadVideo = true
+            addObject.autoUpload = true
+            addObject.autoUploadImage = true
+            addObject.autoUploadVideo = true
 
-            addAccount.autoUploadWWAnVideo = true
+            addObject.autoUploadWWAnVideo = true
         }
             
-        addAccount.password = password
-        addAccount.url = url
-        addAccount.user = user
-        addAccount.username = user
+        addObject.password = password
+        addObject.url = url
+        addObject.user = user
+        addObject.username = user
 
-        realm.add(addAccount)
+        realm.add(addObject)
         
         do {
             try realm.commitWrite()
@@ -258,11 +258,8 @@ class NCManageDatabase: NSObject {
         }
         
         if result.autoUploadFileName.characters.count > 0 {
-                
             return result.autoUploadFileName
-                
         } else {
-                
             return NCBrandOptions.sharedInstance.folderDefaultAutoUpload
         }
     }
@@ -276,11 +273,8 @@ class NCManageDatabase: NSObject {
         }
         
         if result.autoUploadDirectory.characters.count > 0 {
-                
             return result.autoUploadDirectory
-                
         } else {
-                
             return CCUtility.getHomeServerUrlActiveUrl(activeUrl)
         }
     }
@@ -472,20 +466,20 @@ class NCManageDatabase: NSObject {
                     if realm.objects(tableActivity.self).filter("idActivity = %d", activity.idActivity).first == nil {
                         
                         // Add new Activity
-                        let addActivity = tableActivity()
+                        let addObject = tableActivity()
                 
-                        addActivity.account = tableAccount.account
+                        addObject.account = tableAccount.account
                 
                         if let date = activity.date {
-                            addActivity.date = date as NSDate
+                            addObject.date = date as NSDate
                         }
                         
-                        addActivity.idActivity = Double(activity.idActivity)
-                        addActivity.link = activity.link
-                        addActivity.note = activity.subject
-                        addActivity.type = k_activityTypeInfo
+                        addObject.idActivity = Double(activity.idActivity)
+                        addObject.link = activity.link
+                        addObject.note = activity.subject
+                        addObject.type = k_activityTypeInfo
 
-                        realm.add(addActivity)
+                        realm.add(addObject)
                     }
                 }
             }
@@ -520,18 +514,18 @@ class NCManageDatabase: NSObject {
                 try realm.write {
                 
                     // Add new Activity
-                    let addActivity = tableActivity()
+                    let addObject = tableActivity()
                 
-                    addActivity.account = tableAccount.account
-                    addActivity.action = action
-                    addActivity.file = file
-                    addActivity.fileID = fileID
-                    addActivity.note = noteReplacing
-                    addActivity.selector = selector
-                    addActivity.type = type
-                    addActivity.verbose = verbose
+                    addObject.account = tableAccount.account
+                    addObject.action = action
+                    addObject.file = file
+                    addObject.fileID = fileID
+                    addObject.note = noteReplacing
+                    addObject.selector = selector
+                    addObject.type = type
+                    addObject.verbose = verbose
                 
-                    realm.add(addActivity)
+                    realm.add(addObject)
                 }
             } catch let error {
                 print("[LOG] Could not write to database: ", error)
@@ -618,11 +612,11 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
 
-                let addCertificates = tableCertificates()
+                let addObject = tableCertificates()
             
-                addCertificates.certificateLocation = certificateLocation
+                addObject.certificateLocation = certificateLocation
             
-                realm.add(addCertificates)
+                realm.add(addObject)
             }
         } catch let error {
             print("Could not write to database: ", error)
@@ -658,15 +652,15 @@ class NCManageDatabase: NSObject {
             
                 if result == nil || (result?.isInvalidated)! {
                 
-                    let addDirectory = tableDirectory()
-                    addDirectory.account = tableAccount.account
+                    let addObject = tableDirectory()
+                    addObject.account = tableAccount.account
                 
                     directoryID = NSUUID().uuidString
-                    addDirectory.directoryID = directoryID
+                    addObject.directoryID = directoryID
                 
-                    addDirectory.permissions = permissions
-                    addDirectory.serverUrl = serverUrl
-                    realm.add(addDirectory, update: true)
+                    addObject.permissions = permissions
+                    addObject.serverUrl = serverUrl
+                    realm.add(addObject, update: true)
                 
                 } else {
                 
@@ -953,17 +947,17 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                let addExternalSite = tableExternalSites()
+                let addObject = tableExternalSites()
             
-                addExternalSite.account = tableAccount.account
-                addExternalSite.idExternalSite = externalSites.idExternalSite
-                addExternalSite.icon = externalSites.icon
-                addExternalSite.lang = externalSites.lang
-                addExternalSite.name = externalSites.name
-                addExternalSite.url = externalSites.url
-                addExternalSite.type = externalSites.type
+                addObject.account = tableAccount.account
+                addObject.idExternalSite = externalSites.idExternalSite
+                addObject.icon = externalSites.icon
+                addObject.lang = externalSites.lang
+                addObject.name = externalSites.name
+                addObject.url = externalSites.url
+                addObject.type = externalSites.type
            
-                realm.add(addExternalSite)
+                realm.add(addObject)
             }
         } catch let error {
             print("Could not write to database: ", error)
@@ -1015,18 +1009,18 @@ class NCManageDatabase: NSObject {
         }
         
         // Add new GPS
-        let addGPS = tableGPS()
+        let addObject = tableGPS()
             
-        addGPS.latitude = latitude
-        addGPS.location = location
-        addGPS.longitude = longitude
-        addGPS.placemarkAdministrativeArea = placemarkAdministrativeArea
-        addGPS.placemarkCountry = placemarkCountry
-        addGPS.placemarkLocality = placemarkLocality
-        addGPS.placemarkPostalCode = placemarkPostalCode
-        addGPS.placemarkThoroughfare = placemarkThoroughfare
+        addObject.latitude = latitude
+        addObject.location = location
+        addObject.longitude = longitude
+        addObject.placemarkAdministrativeArea = placemarkAdministrativeArea
+        addObject.placemarkCountry = placemarkCountry
+        addObject.placemarkLocality = placemarkLocality
+        addObject.placemarkPostalCode = placemarkPostalCode
+        addObject.placemarkThoroughfare = placemarkThoroughfare
             
-        realm.add(addGPS)
+        realm.add(addObject)
         
         do {
             try realm.commitWrite()
@@ -1060,20 +1054,20 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                let addLocaFile = tableLocalFile()
+                let addObject = tableLocalFile()
             
-                addLocaFile.account = tableAccount.account
-                addLocaFile.date = metadata.date
-                addLocaFile.etag = metadata.etag
-                addLocaFile.exifDate = NSDate()
-                addLocaFile.exifLatitude = "-1"
-                addLocaFile.exifLongitude = "-1"
-                addLocaFile.fileID = metadata.fileID
-                addLocaFile.fileName = metadata.fileName
-                addLocaFile.fileNamePrint = metadata.fileNamePrint
-                addLocaFile.size = metadata.size
+                addObject.account = tableAccount.account
+                addObject.date = metadata.date
+                addObject.etag = metadata.etag
+                addObject.exifDate = NSDate()
+                addObject.exifLatitude = "-1"
+                addObject.exifLongitude = "-1"
+                addObject.fileID = metadata.fileID
+                addObject.fileName = metadata.fileName
+                addObject.fileNamePrint = metadata.fileNamePrint
+                addObject.size = metadata.size
             
-                realm.add(addLocaFile, update: true)
+                realm.add(addObject, update: true)
             }
         } catch let error {
             print("Could not write to database: ", error)
@@ -2381,22 +2375,22 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableDirectory.self).filter("directoryID = %@", table.directoryID!)
         if (results.count == 0) {
             
-            let addDirectory = tableDirectory()
+            let addObject = tableDirectory()
                 
-            addDirectory.account = table.account!
-            addDirectory.directoryID = table.directoryID!
-            addDirectory.etag = table.rev!
+            addObject.account = table.account!
+            addObject.directoryID = table.directoryID!
+            addObject.etag = table.rev!
             if table.favorite == 1 {
-                addDirectory.favorite = true
+                addObject.favorite = true
             }
-            addDirectory.fileID = table.fileID!
+            addObject.fileID = table.fileID!
             if table.lock == 1 {
-                addDirectory.lock = true
+                addObject.lock = true
             }
-            addDirectory.permissions = table.permissions!
-            addDirectory.serverUrl = table.serverUrl!
+            addObject.permissions = table.permissions!
+            addObject.serverUrl = table.serverUrl!
             
-            realm.add(addDirectory)
+            realm.add(addObject)
         }
         
         do {
@@ -2415,37 +2409,37 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tableLocalFile.self).filter("fileID = %@", table.fileID!)
         if (results.count == 0) {
             
-            let addLocalFile = tableLocalFile()
+            let addObject = tableLocalFile()
             
-            addLocalFile.account = table.account!
+            addObject.account = table.account!
                 
             if table.date != nil {
-                addLocalFile.date = table.date! as NSDate
+                addObject.date = table.date! as NSDate
             } else {
-                addLocalFile.date = NSDate()
+                addObject.date = NSDate()
             }
             
             if (table.rev != nil) {
-                addLocalFile.etag = table.rev!
+                addObject.etag = table.rev!
             } else {
                 realm.cancelWrite()
                 return
             }
             
             if table.exifDate != nil {
-                addLocalFile.exifDate = table.exifDate! as NSDate
+                addObject.exifDate = table.exifDate! as NSDate
             }
-            addLocalFile.exifLatitude = table.exifLatitude!
-            addLocalFile.exifLongitude = table.exifLongitude!
+            addObject.exifLatitude = table.exifLatitude!
+            addObject.exifLongitude = table.exifLongitude!
             if table.favorite == 1 {
-                addLocalFile.favorite = true
+                addObject.favorite = true
             }
-            addLocalFile.fileID = table.fileID!
-            addLocalFile.fileName = table.fileName!
-            addLocalFile.fileNamePrint = table.fileNamePrint!
-            addLocalFile.size = table.size as! Double
+            addObject.fileID = table.fileID!
+            addObject.fileName = table.fileName!
+            addObject.fileNamePrint = table.fileNamePrint!
+            addObject.size = table.size as! Double
 
-            realm.add(addLocalFile)
+            realm.add(addObject)
         }
         
         do {
