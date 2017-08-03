@@ -285,38 +285,21 @@
             
             [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
             
+            // Dismiss
+            [self.delegate loginSuccess:_loginType];
+            [self dismissViewControllerAnimated:YES completion:nil];
+            
         } else {
 
             [[NCManageDatabase sharedInstance] deleteAccount:account];
-        
-            // Add account
             [[NCManageDatabase sharedInstance] addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
+            
+            // Read User Profile
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
+            metadataNet.action = actionGetUserProfile;
+            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withPassword:self.password.text withUrl:[self.baseUrl.text stringByAppendingString:webDAV] isCryptoCloudMode:NO]];
         }
         
-        // Set this account as default
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-        
-        // verifica
-        if ([tableAccount.account isEqualToString:account]) {
-            
-            [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password];
-            
-            [self.delegate loginSuccess:_loginType];
-            
-            // close
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [self dismissViewControllerAnimated:YES completion:nil];
-            });
-            
-        } else {
-            
-            if (_loginType != loginModifyPasswordUser)
-                [[NCManageDatabase sharedInstance] deleteAccount:account];
-            
-            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"Fatal error writing database" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-            [alertView show];
-        }
-
     } else {
         
         if ([error code] != NSURLErrorServerCertificateUntrusted) {
@@ -331,6 +314,33 @@
         
     self.login.enabled = YES;
     self.loadingBaseUrl.hidden = YES;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== User Profile  ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
+    
+    alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+    [alertView show];
+}
+
+- (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
+{
+    // Update User
+    [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+    
+    // Set this account as default
+    (void)[[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
+    
+    // Dismiss
+    [self.delegate loginSuccess:_loginType];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self dismissViewControllerAnimated:YES completion:nil];
+    });
 }
 
 #pragma --------------------------------------------------------------------------------------------

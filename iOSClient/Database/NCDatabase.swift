@@ -52,6 +52,7 @@ class tableAccount: Object {
     dynamic var twitter = ""
     dynamic var url = ""
     dynamic var user = ""
+    dynamic var username = ""
     dynamic var webpage = ""
 }
 

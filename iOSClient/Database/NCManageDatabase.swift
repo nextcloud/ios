@@ -57,11 +57,11 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 5,
+            schemaVersion: 6,
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
-                if (oldSchemaVersion < 5) {
+                if (oldSchemaVersion < 6) {
                     // Nothing to do!
                     // Realm will automatically detect new properties and removed properties
                     // And will update the schema on disk automatically
@@ -408,6 +408,17 @@ class NCManageDatabase: NSObject {
                 
                 guard let result = realm.objects(tableAccount.self).filter("account = %@", tblAccount.account).first else {
                     return
+                }
+                
+                // Copy user -> username 
+                // https://github.com/nextcloud/ios/issues/331
+                if result.username.characters.count == 0 {
+                    result.username = result.user
+                }
+                
+                // Update user with ID
+                if userProfile.id.characters.count > 0 {
+                    result.user = userProfile.id
                 }
                 
                 result.enabled = userProfile.enabled
