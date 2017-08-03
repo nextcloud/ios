@@ -103,7 +103,11 @@
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
         
-        _user.text = app.activeUser;
+        // https://github.com/nextcloud/ios/issues/331
+        tableAccount *tbAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        _user.text = tbAccount.username;
+        //_user.text = app.activeUser;
+        
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }
