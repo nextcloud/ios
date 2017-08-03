@@ -516,7 +516,10 @@
     self.activeUser = activeUser;
     self.activePassword = activePassword;
     
-    self.directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];    
+    self.directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];
+    
+    // Setting Account to CCNetworking
+    [[CCNetworking sharedNetworking] settingAccount];
 }
 
 #pragma --------------------------------------------------------------------------------------------
