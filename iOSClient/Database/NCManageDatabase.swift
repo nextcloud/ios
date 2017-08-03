@@ -160,7 +160,8 @@ class NCManageDatabase: NSObject {
         addAccount.password = password
         addAccount.url = url
         addAccount.user = user
-            
+        addAccount.username = user
+
         realm.add(addAccount)
         
         do {
