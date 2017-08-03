@@ -506,7 +506,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Setting Active Account =====
+#pragma mark ===== Setting Active Account for all APP =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword
