@@ -5783,20 +5783,13 @@
             
             // save self
             [app.listMainVC setObject:viewController forKey:serverUrlPush];
-        }
+            
+            [self.navigationController pushViewController:viewController animated:YES];
         
-        if (viewController) {
-                
-            // OFF SearchBar
-            [viewController cancelSearchBar];
-        
-            @try {
+        } else {
+           
+            if (viewController.isViewLoaded)
                 [self.navigationController pushViewController:viewController animated:YES];
-            } @catch (NSException *e) {
-                NSLog(@"Exception: %@", e);
-            } @finally {
-                NSLog(@"Push View Controller %@", nomeDir);
-            }
         }
     }
 }
