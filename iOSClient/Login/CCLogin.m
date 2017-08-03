@@ -283,8 +283,12 @@
         
         if (_loginType == loginModifyPasswordUser) {
             
-            [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
+            // Change Password
+            tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
             
+            // Setting App active account
+            [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activePassword:tbAccount.password];
+
             // Dismiss
             [self.delegate loginSuccess:_loginType];
             [self dismissViewControllerAnimated:YES completion:nil];
@@ -297,7 +301,7 @@
             // Read User Profile
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
             metadataNet.action = actionGetUserProfile;
-            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withPassword:self.password.text withUrl:[self.baseUrl.text stringByAppendingString:webDAV] isCryptoCloudMode:NO]];
+            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text isCryptoCloudMode:NO]];
         }
         
     } else {
@@ -330,12 +334,15 @@
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
+    // Set this account as default
+    tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
+    
+    // Setting App active account
+    [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activePassword:tbAccount.password];
+    
     // Update User
     [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
-    
-    // Set this account as default
-    (void)[[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
-    
+
     // Dismiss
     [self.delegate loginSuccess:_loginType];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

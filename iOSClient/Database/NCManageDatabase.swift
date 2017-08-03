@@ -170,7 +170,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    func setAccountPassword(_ account: String, password: String) {
+    func setAccountPassword(_ account: String, password: String) -> tableAccount? {
         
         let realm = try! Realm()
         
@@ -178,7 +178,7 @@ class NCManageDatabase: NSObject {
 
         guard let result = realm.objects(tableAccount.self).filter("account = %@", account).first else {
             realm.cancelWrite()
-            return
+            return nil
         }
         
         result.password = password
@@ -187,7 +187,10 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return nil
         }
+        
+        return result
     }
     
     func deleteAccount(_ account: String) {
