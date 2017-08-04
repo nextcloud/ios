@@ -543,9 +543,9 @@
     UIInterfaceOrientation orientationOnLunch = [[UIApplication sharedApplication] statusBarOrientation];
     
     if (orientationOnLunch == UIInterfaceOrientationPortrait)
-        return CGSizeMake(collectionView.frame.size.width / 5.3f, collectionView.frame.size.width / 5.3f);
+        return CGSizeMake(collectionView.frame.size.width / 5.1f, collectionView.frame.size.width / 5.1f);
     else
-        return CGSizeMake(collectionView.frame.size.width / 7.3f, collectionView.frame.size.width / 7.3f);
+        return CGSizeMake(collectionView.frame.size.width / 7.1f, collectionView.frame.size.width / 7.1f);
 }
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
