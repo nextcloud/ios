@@ -1158,6 +1158,10 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
+        if metadata.isInvalidated {
+            return nil
+        }
+        
         let directoryID = metadata.directoryID
         let realm = try! Realm()
         
