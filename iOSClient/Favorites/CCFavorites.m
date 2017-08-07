@@ -424,10 +424,7 @@
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.tabBarController.view title:nil];
     
     actionSheet.animationDuration = 0.2;
-    
-    actionSheet.blurRadius = 0.0f;
-    actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-    
+        
     actionSheet.buttonHeight = 50.0;
     actionSheet.cancelButtonHeight = 50.0f;
     actionSheet.separatorHeight = 5.0f;

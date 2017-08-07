@@ -69,9 +69,6 @@ static const CGFloat maxWidth = 414.0f;
     }
 
     AHKActionSheet *appearance = [self appearance];
-    [appearance setBlurRadius:0.0f];
-    [appearance setBlurTintColor:[UIColor colorWithWhite:0.0f alpha:0.5f]];
-    [appearance setBlurSaturationDeltaFactor:1.8f];
     [appearance setButtonHeight:50.0f];
     [appearance setSeparatorHeight:5.0f];
     [appearance setCancelButtonHeight:44.0f];
@@ -80,7 +77,6 @@ static const CGFloat maxWidth = 414.0f;
     [appearance setButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f]}];
     [appearance setDisableButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f]}];
     [appearance setDestructiveButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f], NSForegroundColorAttributeName : [UIColor redColor] }];
-    [appearance setTitleTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName : [UIColor grayColor] }];
     [appearance setCancelOnPanGestureEnabled:@(NO)];
     [appearance setCancelOnTapEmptyAreaEnabled:@(YES)];
     [appearance setAnimationDuration:kDefaultAnimationDuration];

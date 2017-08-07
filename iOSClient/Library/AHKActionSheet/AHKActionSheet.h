@@ -33,9 +33,6 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
 /**
  *  See UIImage+AHKAdditions.h/.m to learn how these three properties are used.
  */
-@property (nonatomic) CGFloat blurRadius UI_APPEARANCE_SELECTOR;
-@property (strong, nonatomic) UIColor *blurTintColor UI_APPEARANCE_SELECTOR;
-@property (nonatomic) CGFloat blurSaturationDeltaFactor UI_APPEARANCE_SELECTOR;
 
 /// Height of the button (internally it's a `UITableViewCell`).
 @property (nonatomic) CGFloat buttonHeight UI_APPEARANCE_SELECTOR;
@@ -55,7 +52,6 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
 /// Color of the separator between buttons.
 @property (strong, nonatomic) UIColor *separatorColor UI_APPEARANCE_SELECTOR;
 /// Text attributes of the title (passed in initWithTitle: or set via `title` property)
-@property (copy, nonatomic) NSDictionary *titleTextAttributes UI_APPEARANCE_SELECTOR;
 @property (copy, nonatomic) NSDictionary *buttonTextAttributes UI_APPEARANCE_SELECTOR;
 @property (copy, nonatomic) NSDictionary *disableButtonTextAttributes UI_APPEARANCE_SELECTOR;
 @property (copy, nonatomic) NSDictionary *destructiveButtonTextAttributes UI_APPEARANCE_SELECTOR;

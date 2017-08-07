@@ -52,9 +52,6 @@ class CreateMenuAdd: NSObject {
         actionSheet.animationDuration = 0.2
         actionSheet.automaticallyTintButtonImages = 0
         
-        actionSheet.blurRadius = 0.0
-        actionSheet.blurTintColor = UIColor(white: 0.0, alpha: 0.50)
-        
         actionSheet.buttonHeight = 50.0
         actionSheet.cancelButtonHeight = 50.0
         actionSheet.separatorHeight = 5.0
@@ -102,9 +99,6 @@ class CreateMenuAdd: NSObject {
         
         actionSheet.animationDuration = 0.2
         
-        actionSheet.blurRadius = 0.0
-        actionSheet.blurTintColor = UIColor(white: 0.0, alpha: 0.50)
-
         actionSheet.buttonHeight = 50.0
         actionSheet.cancelButtonHeight = 50.0
         actionSheet.separatorHeight = 5.0
@@ -150,9 +144,6 @@ class CreateMenuAdd: NSObject {
         
         actionSheet.animationDuration = 0.2
         
-        actionSheet.blurRadius = 0.0
-        actionSheet.blurTintColor = UIColor(white: 0.0, alpha: 0.50)
-
         actionSheet.buttonHeight = 50.0
         actionSheet.cancelButtonHeight = 50.0
         actionSheet.separatorHeight = 5.0
