@@ -98,8 +98,10 @@
     if (!metadataFolder || !metadatas || [metadatas count] == 0)
         return;
     
+    // Add metadata and update etag Directory
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
-    
+    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag];
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -114,7 +116,7 @@
         
         // ----- Test : (DELETE) -----
         
-        NSMutableArray *metadatasNotPresents = [[NSMutableArray alloc] init];
+        NSMutableArray *metadatasNotPresents = [NSMutableArray new];
         
         NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
@@ -184,9 +186,7 @@
                 tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
                 
                 if (![tableDirectory.etag isEqualToString:etag]) {
-                    
-                    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:nil etag:etag];
-                    
+                                        
                     [self synchronizedFolder:serverUrl selector:metadataNet.selector];
                 }
                 

@@ -35,6 +35,7 @@
     NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
     
+    NSString *_etagAutoUploadDirectory;
     CCSectionDataSourceMetadata *_sectionDataSource;
     
     CCHud *_hud;
@@ -75,8 +76,6 @@
     // empty Data Source
     self.collectionView.emptyDataSetDelegate = self;
     self.collectionView.emptyDataSetSource = self;
-    
-    [self reloadDatasource];
 }
 
 // Apparirà
@@ -90,13 +89,7 @@
     
     // Plus Button
     [app plusButtonVisibile:true];
-}
 
-// E' arrivato
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    
     [self reloadDatasource];
 }
 
@@ -498,26 +491,18 @@
     
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     
-    if (_sectionDataSource) {
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:autoUploadPath];
-            
-            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" activeAccount:app.activeAccount];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadCollection];
-            });
-        });
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, autoUploadPath]];
 
-    } else {
-        
+    if (![directory.etag isEqualToString:_etagAutoUploadDirectory] || _etagAutoUploadDirectory == nil) {
+
+        NSLog(@"[LOG] Photos rebuild Data Source serverUrl : %@", autoUploadPath);
+
+        _etagAutoUploadDirectory = directory.etag;
         NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:autoUploadPath];
-        
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:app.activeAccount];
+        
         [self reloadCollection];
-    }    
+    }
 }
 
 - (void)reloadCollection
