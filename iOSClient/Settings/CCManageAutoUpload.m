@@ -392,7 +392,7 @@
     if ([CCUtility getDetectModificationDateCameraRollAsset])
         [rowDetectModificationDateCameraRollAsset setValue:@1]; else [rowDetectModificationDateCameraRollAsset setValue:@0];
 
-    // - HIDDEN ---------------------
+    // - HIDDEN --------------------------------------------------------------------------
     
     rowAutoUploadImage.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     rowAutoUploadWWAnPhoto.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
@@ -410,7 +410,7 @@
     
     rowDetectModificationDateCameraRollAsset.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
 
-    // ----------------------
+    // -----------------------------------------------------------------------------------
     
     [self.tableView reloadData];
     
