@@ -35,7 +35,7 @@
     NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
     
-    NSString *_etagAutoUploadDirectory;
+    NSDate *_dateReadDataSource;
     CCSectionDataSourceMetadata *_sectionDataSource;
     
     CCHud *_hud;
@@ -391,12 +391,12 @@
                 
             } else {
                 
-                [self reloadDatasource];
+                [self reloadDatasourceForced];
             }
             
         } else {
             
-            [self reloadDatasource];
+            [self reloadDatasourceForced];
         }
     }
 }
@@ -480,6 +480,7 @@
 - (void)reloadDatasourceForced
 {
     [CCSectionMetadata removeAllObjectsSectionDataSource:_sectionDataSource];
+    _dateReadDataSource = nil;
     [self reloadDatasource];
 }
 
@@ -492,12 +493,13 @@
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, autoUploadPath]];
-
-    if (![directory.etag isEqualToString:_etagAutoUploadDirectory] || _etagAutoUploadDirectory == nil) {
+    NSDate *dateDateRecordDirectory = directory.dateReadDirectory;
+    
+    if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
 
         NSLog(@"[LOG] Photos rebuild Data Source serverUrl : %@", autoUploadPath);
 
-        _etagAutoUploadDirectory = directory.etag;
+        _dateReadDataSource = [NSDate date];
         NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:autoUploadPath];
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:app.activeAccount];
         
