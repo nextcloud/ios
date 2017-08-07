@@ -568,10 +568,11 @@
             
             if (assetsFull == NO) {
             
+                NSPredicate *predicate;
                 NSString *creationDate;
                 NSString *modificationDate;
-                NSString *idAsset;
-                
+                BOOL detectModificationDateCameraRollAsset = [CCUtility getDetectModificationDateCameraRollAsset];
+
                 NSArray *idsAsset = [[NCManageDatabase sharedInstance] getPhotoLibraryIdAssetWithImage:account.autoUploadImage video:account.autoUploadVideo];
                 
                 for (PHAsset *asset in assets) {
@@ -579,9 +580,17 @@
                     (asset.creationDate != nil) ? (creationDate = [NSString stringWithFormat:@"%@", asset.creationDate]) : (creationDate = @"");
                     (asset.modificationDate != nil) ? (modificationDate = [NSString stringWithFormat:@"%@", asset.modificationDate]) : (modificationDate = @"");
                     
-                    idAsset = [NSString stringWithFormat:@"%@%@%@%@", account.account, asset.localIdentifier, creationDate, modificationDate];
+                    if (detectModificationDateCameraRollAsset) {
+                        NSString *idAsset = [NSString stringWithFormat:@"%@%@%@%@", account.account, asset.localIdentifier, creationDate, modificationDate];
+                        predicate = [NSPredicate predicateWithFormat:@"SELF = %@", idAsset];
+                    } else {
+                        NSString *idAsset = [NSString stringWithFormat:@"%@%@%@", account.account, asset.localIdentifier, creationDate];
+                        predicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", idAsset];
+                    }
                     
-                    if (![idsAsset containsObject: idAsset])
+                    NSArray *filteredArray = [idsAsset filteredArrayUsingPredicate: predicate];
+                    
+                    if ([filteredArray count] == 0)
                         [newAssets addObject:asset];
                 }
                 

@@ -178,6 +178,9 @@
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
 "_autoupload_filenamemask_"         = "Change filename mask";
 "_autoupload_filenamemask_footer_"  = "Change the automatic filename mask";
+"_autoupload_detectModificationAsset_" = "Detect modified photo/video";
+"_autoupload_detectModificationAsset_footer_" = "In addition to detecting new photos/videos it also detects modified photos/videos";
+
 
 // Manage Crypto Cloud
 

@@ -227,6 +227,12 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
++ (void)setDetectModificationDateCameraRollAsset:(BOOL)detect
+{
+    NSString *sDetect = (detect) ? @"true" : @"false";
+    [UICKeyChainStore setString:sDetect forKey:@"detectModificationDateCameraRollAsset" service:k_serviceShareKeyChain];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -429,6 +435,11 @@
 + (BOOL)getShowHiddenFiles
 {
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (BOOL)getDetectModificationDateCameraRollAsset
+{
+    return [[UICKeyChainStore stringForKey:@"detectModificationDateCameraRollAsset" service:k_serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------

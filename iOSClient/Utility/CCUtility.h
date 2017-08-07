@@ -93,6 +93,7 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
++ (void)setDetectModificationDateCameraRollAsset:(BOOL)detect;
 
 // GET
 
@@ -139,6 +140,8 @@
 + (BOOL)getActivityVerboseHigh;
 
 + (BOOL)getShowHiddenFiles;
+
++ (BOOL)getDetectModificationDateCameraRollAsset;
 
 // ===== Varius =====
 

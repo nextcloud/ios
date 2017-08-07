@@ -165,6 +165,18 @@
     row.action.viewControllerClass = [NCManageAutoUploadFileName class];
     [section addFormRow:row];
     
+    // Detect Modification Date CameraRoll Asset
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"detectModificationDateCameraRollAsset" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_detectModificationAsset_", nil)];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+    if ([CCUtility getDetectModificationDateCameraRollAsset]) row.value = @1;
+    else row.value = @0;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+
     // end
     
     section = [XLFormSectionDescriptor formSection];
@@ -316,6 +328,11 @@
         
         [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadCreateSubfolder" state:[[rowDescriptor.value valueData] boolValue]];
     }
+    
+    if ([rowDescriptor.tag isEqualToString:@"detectModificationDateCameraRollAsset"]) {
+        
+        [CCUtility setDetectModificationDateCameraRollAsset:[[rowDescriptor.value valueData] boolValue]];
+    }
 }
 
 - (void)done:(XLFormRowDescriptor *)sender
@@ -342,8 +359,9 @@
     XLFormRowDescriptor *rowAutoUploadCreateSubfolder = [self.form formRowWithTag:@"autoUploadCreateSubfolder"];
 
     XLFormRowDescriptor *rowAutoUploadFileName = [self.form formRowWithTag:@"autoUploadFileName"];
-
     
+    XLFormRowDescriptor *rowDetectModificationDateCameraRollAsset = [self.form formRowWithTag:@"detectModificationDateCameraRollAsset"];
+
     // - STATUS ---------------------
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     
@@ -371,6 +389,9 @@
     if (tableAccount.autoUploadCreateSubfolder)
         [rowAutoUploadCreateSubfolder setValue:@1]; else [rowAutoUploadCreateSubfolder setValue:@0];
     
+    if ([CCUtility getDetectModificationDateCameraRollAsset])
+        [rowDetectModificationDateCameraRollAsset setValue:@1]; else [rowDetectModificationDateCameraRollAsset setValue:@0];
+
     // - HIDDEN ---------------------
     
     rowAutoUploadImage.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
@@ -386,6 +407,8 @@
     rowAutoUploadCreateSubfolder.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
     rowAutoUploadFileName.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+    
+    rowDetectModificationDateCameraRollAsset.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
 
     // ----------------------
     
@@ -418,6 +441,10 @@
             break;
         case 6:
             if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_filenamemask_footer_", nil);
+            else sectionName = @"";
+            break;
+        case 7:
+            if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_detectModificationAsset_footer_", nil);
             else sectionName = @"";
             break;
     }
