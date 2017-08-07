@@ -41,6 +41,8 @@
 #import "CCSettings.h"
 #import "CCFavorites.h"
 
+@class CCLoginWeb;
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
 // Timer Process
@@ -118,6 +120,8 @@
 @property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCActivity *activeActivity;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
+@property (nonatomic, retain) CCLogin *activeLogin;
+@property (nonatomic, retain) CCLoginWeb *activeLoginWeb;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
@@ -127,6 +131,9 @@
 
 // Maintenance Mode
 @property BOOL maintenanceMode;
+
+// Login View
+- (void)openLoginView:(id)delegate loginType:(enumLoginType)enumLoginType;
 
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword;

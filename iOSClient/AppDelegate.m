@@ -353,6 +353,39 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Login =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)openLoginView:(id)delegate loginType:(enumLoginType)enumLoginType
+{
+    if ([NCBrandOptions sharedInstance].use_login_web) {
+        
+        if (!_activeLoginWeb.isViewLoaded || !_activeLoginWeb.view.window) {
+        
+            _activeLoginWeb = [CCLoginWeb new];
+            _activeLoginWeb.delegate = delegate;
+            _activeLoginWeb.loginType = enumLoginType;
+        
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                [_activeLoginWeb presentModalWithDefaultTheme:delegate];
+            });
+        }
+        
+    } else {
+        
+        if (!_activeLoginWeb.isViewLoaded || !_activeLoginWeb.view.window) {
+
+            _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+            _activeLogin.delegate = delegate;
+            _activeLogin.loginType = enumLoginType;
+        
+            [self.window makeKeyAndVisible];
+            [self.window.rootViewController presentViewController:_activeLogin animated:YES completion:nil];
+        }
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Process Auto Upload < k_timerProcess seconds > =====
 #pragma --------------------------------------------------------------------------------------------
 
