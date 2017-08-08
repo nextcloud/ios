@@ -340,8 +340,8 @@
 {
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadataNet.account]];
     
-    // Verify account && ID
-    if (account && userProfile.id.length > 0) {
+    // Verify account
+    if (account) {
     
         // Set this account as default
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
