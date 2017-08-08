@@ -33,9 +33,6 @@
 @interface CCManageAccount () <CCLoginDelegate, CCLoginDelegateWeb>
 {
     tableAccount *_tableAccount;
-
-    CCLoginWeb *_loginWeb;
-    CCLogin *_loginVC;
 }
 @end
 
@@ -209,48 +206,12 @@
     [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-    // Brand
-    if ([NCBrandOptions sharedInstance].use_login_web) {
-    
-        _loginWeb = [CCLoginWeb new];
-        _loginWeb.delegate = self;
-        _loginWeb.loginType = loginAdd;
-    
-        [_loginWeb presentModalWithDefaultTheme:self];
-        
-    } else {
-  
-        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-        _loginVC.delegate = self;
-        _loginVC.loginType = loginAdd;
-    
-        [self presentViewController:_loginVC animated:YES completion:nil];
-    }
+    [app openLoginView:self loginType:loginAdd];
 }
 
 - (void)addAccountFoced
 {
-    // Brand
-    if ([NCBrandOptions sharedInstance].use_login_web) {
-    
-        _loginWeb = [CCLoginWeb new];
-        _loginWeb.delegate = self;
-        _loginWeb.loginType = loginAddForced;
-    
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [_loginWeb presentModalWithDefaultTheme:self];
-        });
-        
-    } else {
-        
-        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-        _loginVC.delegate = self;
-        _loginVC.loginType = loginAddForced;
-        
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [self presentViewController:_loginVC animated:YES completion:nil];
-        });
-    }
+    [app openLoginView:self loginType:loginAddForced];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -264,27 +225,7 @@
     [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-    // Brand
-    if ([NCBrandOptions sharedInstance].use_login_web) {
-    
-        _loginWeb = [CCLoginWeb new];
-        _loginWeb.delegate = self;
-        _loginWeb.loginType = loginModifyPasswordUser;
-    
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [_loginWeb presentModalWithDefaultTheme:self];
-        });
-
-    } else {
-        
-        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-        _loginVC.delegate = self;
-        _loginVC.loginType = loginModifyPasswordUser;
-    
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [self presentViewController:_loginVC animated:YES completion:nil];
-        });
-    }
+    [app openLoginView:self loginType:loginModifyPasswordUser];
     
     [self UpdateForm];
 }

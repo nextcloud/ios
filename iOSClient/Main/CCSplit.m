@@ -29,8 +29,6 @@
 
 @interface CCSplit () <CCLoginDelegate, CCLoginDelegateWeb>
 {
-    CCLoginWeb *_loginWeb;
-    CCLogin *_loginVC;
 }
 @end
 
@@ -144,23 +142,7 @@
 {
     if (app.activeAccount.length == 0) {
     
-        // Brand
-        if ([NCBrandOptions sharedInstance].use_login_web) {
-        
-            _loginWeb = [CCLoginWeb new];
-            _loginWeb.delegate = self;
-            _loginWeb.loginType = loginAddForced;
-        
-            [_loginWeb presentModalWithDefaultTheme:self];
-            
-        } else {
-            
-            _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-            _loginVC.delegate = self;
-            _loginVC.loginType = loginAddForced;
-        
-            [self presentViewController:_loginVC animated:YES completion:nil];
-        }
+        [app openLoginView:self loginType:loginAddForced];
     }
 }
 

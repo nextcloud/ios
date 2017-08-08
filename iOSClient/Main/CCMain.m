@@ -1009,6 +1009,7 @@
     [self readFolder:_serverUrl];
 }
 
+/*
 - (void)changePasswordAccount
 {
     // Brand
@@ -1031,6 +1032,7 @@
         [self presentViewController:_loginVC animated:YES completion:nil];
     }
 }
+*/
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
@@ -1083,6 +1085,9 @@
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     NSLog(@"[LOG] No External Sites found");
+    
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1100,6 +1105,9 @@
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     NSLog(@"[LOG] No Activity found");
+    
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1145,7 +1153,10 @@
 }
 
 - (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{    
+{
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
     // Update NavigationBar
     if (!_isSelectedMode)
         [self setUINavigationBarDefault];
@@ -1170,7 +1181,7 @@
 - (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     if (errorCode == 401)
-        [self changePasswordAccount];
+        [app openLoginView:self loginType:loginModifyPasswordUser];
 }
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
@@ -1196,11 +1207,11 @@
 
 - (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
     // Change Theming color
     [app settingThemingColorBrand];
-    
-    if (errorCode == 401)
-        [self changePasswordAccount];
 }
 
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
@@ -1324,6 +1335,9 @@
 
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     // File do not exists on server, remove in local
@@ -1358,7 +1372,7 @@
         
     } else {
         
-        if (errorCode != kCFURLErrorCancelled)
+        if (errorCode != kCFURLErrorCancelled && errorCode != 401)
             [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
 
@@ -1599,6 +1613,9 @@
 
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
     // Auto Download Upload
     if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
                 
@@ -1638,7 +1655,7 @@
         }
     
         // Print error
-        else if (errorCode != kCFURLErrorCancelled) {
+        else if (errorCode != kCFURLErrorCancelled && errorCode != 401) {
         
             [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
@@ -1769,6 +1786,9 @@
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
     // Read Folder
     if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
         //[self readFolderWithForced:NO serverUrl:metadataNet.serverUrl];
@@ -1849,6 +1869,9 @@
 
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
     // verify active user
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     
@@ -1863,9 +1886,6 @@
         [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     [self reloadDatasource:metadataNet.serverUrl];
-    
-    if (errorCode == 401)
-        [self changePasswordAccount];
 }
 
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
@@ -2092,10 +2112,12 @@
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    _searchFileName = @"";
-
-    if (message)
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    else if (message)
         [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    
+    _searchFileName = @"";
 }
 
 - (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
@@ -2130,6 +2152,9 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
     [self deleteFileOrFolderSuccess:metadataNet]; 
 }
 
@@ -2233,6 +2258,9 @@
 
 - (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
     if ([metadataNet.selector isEqualToString:selectorMove]) {
         
         [_hud hideHud];
@@ -2453,6 +2481,11 @@
 
 - (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    else if (message)
+        [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    
     if (metadataNet.cryptated == NO) {
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
@@ -2464,8 +2497,7 @@
             [vc.navigationController popViewControllerAnimated:YES];
     }
     
-    if (message)
-        [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    
 }
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
@@ -3014,16 +3046,16 @@
 - (void)shareFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [_hud hideHud];
-    
-    [app messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    else
+        [app messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 
     if (_shareOC)
         [_shareOC reloadData];
     
     [self tableViewReloadData];
-    
-    if (errorCode == 401)
-        [self changePasswordAccount];
 }
 
 - (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password
@@ -3110,7 +3142,10 @@
 {
     [_hud hideHud];
     
-    [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    else
+        [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)getUserAndGroup:(NSString *)find
@@ -3222,6 +3257,8 @@
 
 - (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 401)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
 }
 
 - (void)addFavorite:(tableMetadata *)metadata

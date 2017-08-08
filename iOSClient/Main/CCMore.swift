@@ -43,7 +43,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     var menuExternalSite: [tableExternalSites]?
     var tabAccount : tableAccount?
     
-    var loginWeb : CCLoginWeb!
+    //var loginWeb : CCLoginWeb!
 
     override func viewDidLoad() {
         
@@ -339,11 +339,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.activeAccount)
                 
-                self.loginWeb = CCLoginWeb()
-                self.loginWeb.delegate = self
-                self.loginWeb.loginType = loginAddForced
-                
-                self.loginWeb.presentModalWithDefaultTheme(self)
+                self.appDelegate.openLoginView(self, loginType: loginAddForced)
             }
             
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in

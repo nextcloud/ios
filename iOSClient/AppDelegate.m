@@ -356,7 +356,7 @@
 #pragma mark ===== Login =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)openLoginView:(id)delegate loginType:(enumLoginType)enumLoginType
+- (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType
 {
     if ([NCBrandOptions sharedInstance].use_login_web) {
         
@@ -364,7 +364,7 @@
         
             _activeLoginWeb = [CCLoginWeb new];
             _activeLoginWeb.delegate = delegate;
-            _activeLoginWeb.loginType = enumLoginType;
+            _activeLoginWeb.loginType = loginType;
         
             dispatch_async(dispatch_get_main_queue(), ^ {
                 [_activeLoginWeb presentModalWithDefaultTheme:delegate];
@@ -373,14 +373,16 @@
         
     } else {
         
-        if (!_activeLoginWeb.isViewLoaded || !_activeLoginWeb.view.window) {
+        if (!_activeLogin.isViewLoaded || !_activeLogin.view.window) {
 
             _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
             _activeLogin.delegate = delegate;
-            _activeLogin.loginType = enumLoginType;
+            _activeLogin.loginType = loginType;
         
-            [self.window makeKeyAndVisible];
-            [self.window.rootViewController presentViewController:_activeLogin animated:YES completion:nil];
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                [self.window makeKeyAndVisible];
+                [self.window.rootViewController presentViewController:_activeLogin animated:YES completion:nil];
+            });
         }
     }
 }

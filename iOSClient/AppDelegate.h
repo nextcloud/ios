@@ -133,7 +133,7 @@
 @property BOOL maintenanceMode;
 
 // Login View
-- (void)openLoginView:(id)delegate loginType:(enumLoginType)enumLoginType;
+- (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType;
 
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword;
