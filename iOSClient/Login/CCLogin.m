@@ -338,20 +338,23 @@
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
-    // Set this account as default
-    tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadataNet.account]];
     
     // Verify account && ID
-    if ([tbAccount.account isEqualToString:metadataNet.account] && userProfile.id.length > 0) {
+    if (account && userProfile.id.length > 0) {
     
+        // Set this account as default
+        tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
+        
         // Setting App active account
-        [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activePassword:tbAccount.password];
+        [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activePassword:account.password];
     
         // Update User
         [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
 
         // Dismiss
         [self.delegate loginSuccess:_loginType];
+        
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [self dismissViewControllerAnimated:YES completion:nil];
         });
