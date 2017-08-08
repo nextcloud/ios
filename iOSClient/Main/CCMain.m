@@ -1084,10 +1084,7 @@
 
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] No External Sites found");
-    
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
+    NSLog(@"[LOG] Get external site failure error %lu, %@", errorCode, message);
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1104,10 +1101,7 @@
 
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] No Activity found");
-    
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
+    NSLog(@"[LOG] Get Activity Server failure error %lu, %@", errorCode, message);
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1154,9 +1148,8 @@
 
 - (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    
+    NSLog(@"[LOG] Get Notification Server failure error %lu, %@", errorCode, message);
+
     // Update NavigationBar
     if (!_isSelectedMode)
         [self setUINavigationBarDefault];
@@ -1180,8 +1173,7 @@
 
 - (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
+    NSLog(@"[LOG] Get user profile failure error %lu, %@", errorCode, message);
 }
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
@@ -1207,8 +1199,7 @@
 
 - (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
+    NSLog(@"[LOG] Get Capabilities failure error %lu, %@", errorCode, message);
     
     // Change Theming color
     [app settingThemingColorBrand];
@@ -1335,9 +1326,6 @@
 
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
     // File do not exists on server, remove in local
@@ -1372,7 +1360,7 @@
         
     } else {
         
-        if (errorCode != kCFURLErrorCancelled && errorCode != 401)
+        if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized)
             [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
 
@@ -1613,9 +1601,6 @@
 
 - (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    
     // Auto Download Upload
     if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
                 
@@ -1655,7 +1640,7 @@
         }
     
         // Print error
-        else if (errorCode != kCFURLErrorCancelled && errorCode != 401) {
+        else if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized) {
         
             [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
@@ -1786,9 +1771,6 @@
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    
     // Read Folder
     if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
         //[self readFolderWithForced:NO serverUrl:metadataNet.serverUrl];
@@ -1869,9 +1851,6 @@
 
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    
     // verify active user
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     
@@ -2112,9 +2091,7 @@
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    else if (message)
+    if (message && errorCode != kOCErrorServerUnauthorized)
         [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     _searchFileName = @"";
@@ -2152,10 +2129,9 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    
-    [self deleteFileOrFolderSuccess:metadataNet]; 
+    NSLog(@"[LOG] Delete File failure error %lu, %@", errorCode, message);
+
+    [self deleteFileOrFolderSuccess:metadataNet];
 }
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
@@ -2258,14 +2234,11 @@
 
 - (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    
     if ([metadataNet.selector isEqualToString:selectorMove]) {
         
         [_hud hideHud];
     
-        if (message)
+        if (message && errorCode != kOCErrorServerUnauthorized)
             [app messageNotification:@"_move_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
                 
         // End Select Table View
@@ -2481,9 +2454,7 @@
 
 - (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    else if (message)
+    if (message && errorCode != kOCErrorServerUnauthorized)
         [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     if (metadataNet.cryptated == NO) {
@@ -3047,9 +3018,7 @@
 {
     [_hud hideHud];
 
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    else
+    if (errorCode != kOCErrorServerUnauthorized)
         [app messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 
     if (_shareOC)
@@ -3142,9 +3111,7 @@
 {
     [_hud hideHud];
     
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    else
+    if (errorCode != kOCErrorServerUnauthorized)
         [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
@@ -3257,8 +3224,7 @@
 
 - (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 401)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
+    NSLog(@"[LOG] Setting Favorite failure error %lu, %@", errorCode, message);
 }
 
 - (void)addFavorite:(tableMetadata *)metadata
