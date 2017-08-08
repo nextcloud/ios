@@ -341,17 +341,21 @@
     // Set this account as default
     tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
     
-    // Setting App active account
-    [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activePassword:tbAccount.password];
+    // Verify account
+    if ([tbAccount.account isEqualToString:metadataNet.account]) {
     
-    // Update User
-    [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+        // Setting App active account
+        [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activePassword:tbAccount.password];
+    
+        // Update User
+        [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
 
-    // Dismiss
-    [self.delegate loginSuccess:_loginType];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [self dismissViewControllerAnimated:YES completion:nil];
-    });
+        // Dismiss
+        [self.delegate loginSuccess:_loginType];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [self dismissViewControllerAnimated:YES completion:nil];
+        });
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
