@@ -341,8 +341,8 @@
     // Set this account as default
     tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
     
-    // Verify account
-    if ([tbAccount.account isEqualToString:metadataNet.account]) {
+    // Verify account && ID
+    if ([tbAccount.account isEqualToString:metadataNet.account] && userProfile.id.length > 0) {
     
         // Setting App active account
         [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activePassword:tbAccount.password];
