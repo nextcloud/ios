@@ -357,6 +357,7 @@
     
     // Verify if account is a valid account
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadataNet.account]];
+    
     if (account) {
     
         // Set this account as default
