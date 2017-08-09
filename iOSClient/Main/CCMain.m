@@ -1084,7 +1084,7 @@
 
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Get external site failure error %lu, %@", errorCode, message);
+    NSLog(@"[LOG] Get external site failure error %lu, %@", (long)errorCode, message);
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1101,7 +1101,7 @@
 
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Get Activity Server failure error %lu, %@", errorCode, message);
+    NSLog(@"[LOG] Get Activity Server failure error %lu, %@", (long)errorCode, message);
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1148,7 +1148,7 @@
 
 - (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Get Notification Server failure error %lu, %@", errorCode, message);
+    NSLog(@"[LOG] Get Notification Server failure error %lu, %@", (long)errorCode, message);
 
     // Update NavigationBar
     if (!_isSelectedMode)
@@ -1173,7 +1173,7 @@
 
 - (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Get user profile failure error %lu, %@", errorCode, message);
+    NSLog(@"[LOG] Get user profile failure error %lu, %@", (long)errorCode, message);
 }
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
@@ -1199,7 +1199,7 @@
 
 - (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Get Capabilities failure error %lu, %@", errorCode, message);
+    NSLog(@"[LOG] Get Capabilities failure error %lu, %@", (long)errorCode, message);
     
     // Change Theming color
     [app settingThemingColorBrand];
@@ -2129,7 +2129,7 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Delete File failure error %lu, %@", errorCode, message);
+    NSLog(@"[LOG] Delete File failure error %lu, %@", (long)errorCode, message);
 
     [self deleteFileOrFolderSuccess:metadataNet];
 }
@@ -3224,7 +3224,7 @@
 
 - (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Setting Favorite failure error %lu, %@", errorCode, message);
+    NSLog(@"[LOG] Setting Favorite failure error %lu, %@", (long)errorCode, message);
 }
 
 - (void)addFavorite:(tableMetadata *)metadata

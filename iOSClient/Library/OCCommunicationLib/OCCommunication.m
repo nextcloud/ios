@@ -1808,7 +1808,6 @@
 - (void) getUserProfileServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_acces_remote_userprofile_api];
-    //serverPath = [serverPath stringByAppendingString:self.user];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
 
     OCWebDAVClient *request = [OCWebDAVClient new];
