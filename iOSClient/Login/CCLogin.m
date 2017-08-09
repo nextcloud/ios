@@ -338,9 +338,25 @@
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadataNet.account]];
+    // Verify if the account already exists
+    if (userProfile.id.length > 0 && self.baseUrl.text.length > 0) {
     
-    // Verify account
+        tableAccount *accountAlreadyExists = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"url = %@ AND user = %@", self.baseUrl.text, userProfile.id]];
+        
+        if (accountAlreadyExists) {
+            
+            [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
+            
+            NSString *message = [NSString stringWithFormat:NSLocalizedString(@"_account_already_exists_", nil), userProfile.id];
+            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+            [alertView show];
+            
+            return;
+        }
+    }
+    
+    // Verify if account is a valid account
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadataNet.account]];
     if (account) {
     
         // Set this account as default
@@ -352,7 +368,7 @@
         // Update User
         [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
 
-        // Dismiss
+        // Ok ! Dismiss
         [self.delegate loginSuccess:_loginType];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
