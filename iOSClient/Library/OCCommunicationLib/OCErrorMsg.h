@@ -40,7 +40,7 @@
 #define kOCNotificationAPINoContent  204
 #define kOCNotificationAPISuccessful 200
 
-#define kOCUserProfileAPISuccessful 100
+#define kOCUserProfileAPISuccessful 200
 
 typedef enum {
     OCServerErrorForbiddenCharacters = 101,
