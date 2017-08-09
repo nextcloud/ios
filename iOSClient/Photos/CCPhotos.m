@@ -492,9 +492,13 @@
         return;
     
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+    NSDate *dateDateRecordDirectory = nil;
     
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, autoUploadPath]];
-    NSDate *dateDateRecordDirectory = directory.dateReadDirectory;
+    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl BEGINSWITH %@", app.activeAccount, autoUploadPath] sorted:@"dateReadDirectory" ascending:false];
+    if ([directories count] > 0) {
+        tableDirectory *directory = [directories objectAtIndex:0];
+        dateDateRecordDirectory = directory.dateReadDirectory;
+    }
     
     if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
 
