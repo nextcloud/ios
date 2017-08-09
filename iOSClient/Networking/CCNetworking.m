@@ -1691,7 +1691,7 @@
     }
 }
 
-- (void)verifyUploadInError
+- (void)verifyUploadInErrorOrWait
 {
     NSMutableSet *directoryIDs = [NSMutableSet new];
     

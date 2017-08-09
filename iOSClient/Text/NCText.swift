@@ -151,6 +151,10 @@ class NCText: UIViewController, UITextViewDelegate {
                     appDelegate.activeMain.clearDateReadDataSource(nil)
                 
                     self.dismiss(animated: true, completion: {
+                        
+                        // Send file
+                        CCNetworking.shared().verifyUploadInErrorOrWait()
+                        
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
                     })
 

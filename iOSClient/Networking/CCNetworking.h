@@ -70,7 +70,7 @@
 - (void)verifyDownloadInProgress;
 - (void)verifyDownloadInError:(id)delegate;
 - (void)verifyUploadInProgress;
-- (void)verifyUploadInError;
+- (void)verifyUploadInErrorOrWait;
 
 @end
 

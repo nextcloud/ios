@@ -332,7 +332,7 @@
         
         // verify Upload
         [[CCNetworking sharedNetworking] verifyUploadInProgress];
-        [[CCNetworking sharedNetworking] verifyUploadInError];
+        [[CCNetworking sharedNetworking] verifyUploadInErrorOrWait];
 
         if (_activeMain) {
             NSLog(@"[LOG] Request Server Capabilities");
@@ -533,7 +533,7 @@
     
     // In background verify Upload in error
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        [[CCNetworking sharedNetworking] verifyUploadInError];
+        [[CCNetworking sharedNetworking] verifyUploadInErrorOrWait];
     }
     
     // Start Timer
