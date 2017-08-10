@@ -23,7 +23,6 @@
 "_rename_"                  = "Rename";
 "_move_"                    = "Move";
 "_move_file_n_"             = "Move file %i of %i";
-"_create_folder_"           = "Create a new folder";
 "_creating_sharing_"        = "Creating share";
 "_updating_sharing_"        = "Updating share";
 "_removing_sharing_"        = "Removing share";
@@ -55,6 +54,7 @@
 "_transfers_in_queue_"      = "Tranfers in progress, please wait…";
 "_too_errors_automatic_all_"= "Too many errors, go to \"Control Center\" to verify the problem";
 "_create_folder_"           = "Create folder";
+"_create_folder_on_"        = "Create folder on";
 "_close_"                   = "Close";
 "_postpone_"                = "Postpone";
 "_remove_"                  = "Remove";

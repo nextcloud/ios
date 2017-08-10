@@ -152,6 +152,7 @@
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 - (void)plusButtonVisibile:(BOOL)visible;
 - (void)selectedTabBarController:(NSInteger)index;
+- (NSString *)getTabBarControllerActiveServerUrl;
 
 - (void)settingThemingColorBrand;
 - (void)changeTheming:(UIViewController *)vc;

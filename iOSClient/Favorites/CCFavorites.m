@@ -99,6 +99,15 @@
     [self reloadDatasource];
 }
 
+// E' arrivato
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // Active Main
+    app.activeFavorites = self;
+}
+
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)

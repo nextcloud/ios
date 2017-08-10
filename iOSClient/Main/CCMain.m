@@ -644,6 +644,8 @@
 {
     if (controller.documentPickerMode == UIDocumentPickerModeImport) {
         
+        NSString *serverUrl = [app getTabBarControllerActiveServerUrl];
+        
         NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
         __block NSError *error;
         
@@ -658,7 +660,7 @@
                 if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
                     
                     // Upload File
-                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl cryptated:_isPickerCriptate onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:serverUrl cryptated:_isPickerCriptate onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
                     
                 } else {
                     
@@ -744,7 +746,9 @@
 {
     [picker dismissViewControllerAnimated:YES completion:^{
         
-        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:_serverUrl assets:assets cryptated:_isPickerCriptate session:k_upload_session delegate:self];
+        NSString *serverUrl = [app getTabBarControllerActiveServerUrl];
+        
+        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:_isPickerCriptate session:k_upload_session delegate:self];
         form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
@@ -832,8 +836,21 @@
         /* PLAIN */
         case k_returnCreateFolderPlain: {
             
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+            NSString *serverUrl = [app getTabBarControllerActiveServerUrl];
+            NSString *message;
+            UIAlertController *alertController;
             
+            if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl]]) {
+                message = @"/";
+            } else {
+                message = [serverUrl lastPathComponent];
+            }
+            
+            if ([CCUtility isCryptoString:message])
+                alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+            else
+                alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_on_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+
             [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                 [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                 
@@ -847,7 +864,7 @@
             UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 
                 UITextField *fileName = alertController.textFields.firstObject;
-                [self createFolder:fileName.text autoUploadDirectory:NO];
+                [self createFolder:fileName.text serverUrl:serverUrl];
             }];
             
             okAction.enabled = NO;
@@ -876,6 +893,8 @@
         /* ENCRYPTED */
         case k_returnCreateFolderEncrypted: {
             
+            NSString *serverUrl = [app getTabBarControllerActiveServerUrl];
+
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
             
             [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
@@ -890,7 +909,7 @@
                 
                 UITextField *fileName = alertController.textFields.firstObject;
                 
-                [self createFolderEncrypted:fileName.text];
+                [self createFolderEncrypted:fileName.text serverUrl:serverUrl];
             }];
             
             okAction.enabled = NO;
@@ -2499,27 +2518,25 @@
     }
 }
 
-- (void)createFolder:(NSString *)fileNameFolder autoUploadDirectory:(BOOL)autoUploadDirectory
+- (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     
-    if (autoUploadDirectory) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-    else  metadataNet.serverUrl = _serverUrl;
+    //if (autoUploadDirectory) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
+    //else  metadataNet.serverUrl = _serverUrl;
     
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return;
     
     metadataNet.action = actionCreateFolder;
     metadataNet.directoryID = directoryID;
-    if (autoUploadDirectory)
-        metadataNet.options = @"folderAutoUpload";
     metadataNet.fileID = [[NSUUID UUID] UUIDString];
     metadataNet.fileName = fileNameFolder;
     metadataNet.selector = selectorCreateFolder;
-    metadataNet.serverUrl = _serverUrl;
+    metadataNet.serverUrl = serverUrl;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
@@ -2531,7 +2548,7 @@
     [self reloadDatasource];
 }
 
-- (void)createFolderEncrypted:(NSString *)fileNameFolder
+- (void)createFolderEncrypted:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     NSString *fileNamePlist;
@@ -2552,11 +2569,11 @@
     metadataNet.fileName = fileNamePlist;
     metadataNet.priority = NSOperationQueuePriorityVeryHigh;
     metadataNet.selector = selectorCreateFolder;
-    metadataNet.serverUrl = _serverUrl;
+    metadataNet.serverUrl = serverUrl;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
-    [[CCNetworking sharedNetworking] uploadFile:[fileNamePlist stringByAppendingString:@".plist"] serverUrl:_serverUrl cryptated:YES onlyPlist:YES session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:selectorReadFolderForced errorCode:0 delegate:self];
+    [[CCNetworking sharedNetworking] uploadFile:[fileNamePlist stringByAppendingString:@".plist"] serverUrl:serverUrl cryptated:YES onlyPlist:YES session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:selectorReadFolderForced errorCode:0 delegate:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------

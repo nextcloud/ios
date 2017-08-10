@@ -1159,6 +1159,27 @@
     }
 }
 
+- (NSString *)getTabBarControllerActiveServerUrl
+{
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+
+    NSString *serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
+    NSInteger index = tabBarController.selectedIndex;
+    
+    // select active serverUrl
+    if (index == k_tabBarApplicationIndexFile) {
+        serverUrl = app.activeMain.serverUrl;
+    } else if (index == k_tabBarApplicationIndexFavorite) {
+        if (app.activeFavorites.serverUrl)
+            serverUrl = app.activeFavorites.serverUrl;
+    } else if (index == k_tabBarApplicationIndexPhotos) {
+        serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+    }
+    
+    return serverUrl;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Theming Color =====
 #pragma --------------------------------------------------------------------------------------------
