@@ -292,6 +292,12 @@
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
     }
     
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileName] == NO) {
+        
+        [self backNavigationController];
+        return;
+    }
+    
     appDelegate.player.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
     appDelegate.player.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
@@ -334,6 +340,12 @@
         
         [[NSFileManager defaultManager] removeItemAtPath:fileName error:nil];
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
+    }
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileName] == NO) {
+        
+        [self backNavigationController];
+        return;
     }
     
     NSURL *url = [NSURL fileURLWithPath:fileName];
