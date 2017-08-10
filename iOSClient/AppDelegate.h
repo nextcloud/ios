@@ -141,26 +141,31 @@
 // initializations 
 - (void)applicationInitialized;
 
-- (void)maintenanceMode:(BOOL)mode;
-
+// Quick Actions - ShotcutItem
 - (void)configDynamicShortcutItems;
+- (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 
+// StatusBar & ApplicationIconBadgeNumber
 - (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode;
 - (void)updateApplicationIconBadgeNumber;
-- (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
+
+// TabBarController
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 - (void)plusButtonVisibile:(BOOL)visible;
 - (void)selectedTabBarController:(NSInteger)index;
 - (NSString *)getTabBarControllerActiveServerUrl;
 
+// Theming Color
 - (void)settingThemingColorBrand;
 - (void)changeTheming:(UIViewController *)vc;
 
-// Operation Networking
+// Task Networking
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
-
 - (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent;
+
+// Maintenance Mode
+- (void)maintenanceMode:(BOOL)mode;
 
 @end
 
