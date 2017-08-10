@@ -339,7 +339,7 @@
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
     // Verify if the account already exists
-    if (userProfile.id.length > 0 && self.baseUrl.text.length > 0 && self.user.text.length >0) {
+    if (userProfile.id.length > 0 && self.baseUrl.text.length > 0 && self.user.text.length > 0) {
     
         tableAccount *accountAlreadyExists = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"url = %@ AND user = %@ AND username != %@", self.baseUrl.text, userProfile.id, self.user.text]];
         
