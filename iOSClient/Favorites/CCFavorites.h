@@ -56,5 +56,6 @@
 
 - (void)readListingFavorites;
 - (void)addFavoriteFolder:(NSString *)serverUrl;
+- (void)reloadDatasource;
 
 @end
