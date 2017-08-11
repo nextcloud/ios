@@ -1585,12 +1585,12 @@
                     
                     if (serverUrl) {
                         serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-                        [[CCSynchronize sharedSynchronize] synchronizedFolder:serverUrl selector:selectorReadFolderWithDownload];
+                        [[CCSynchronize sharedSynchronize] readFolder:serverUrl selector:selectorReadFolderWithDownload];
                     }
                     
                 } else {
                     
-                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata selector:selectorReadFileWithDownload];
+                    [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
                 }
             }
         }
@@ -4451,8 +4451,9 @@
                                         
                                         NSLog(@"[LOG] Update Folder Photo");
                                         NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
-                                        if ([autoUploadPath length] > 0)
-                                            [[CCSynchronize sharedSynchronize] synchronizedFolder:autoUploadPath selector:selectorReadFolder];
+                                        if ([autoUploadPath length] > 0) {
+                                            [[CCSynchronize sharedSynchronize] readFileForFolder:_metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolder];
+                                        }
                                     }];
         }
         

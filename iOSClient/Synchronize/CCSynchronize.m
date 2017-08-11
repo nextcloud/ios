@@ -59,7 +59,7 @@
 // selector     : selectorReadFolder, selectorReadFolderWithDownload
 //
 
-- (void)synchronizedFolder:(NSString *)serverUrl selector:(NSString *)selector
+- (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
@@ -187,7 +187,7 @@
                 
                 if (![tableDirectory.etag isEqualToString:etag] || [metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
                                         
-                        [self synchronizedFolder:serverUrl selector:metadataNet.selector];
+                        [self readFolder:serverUrl selector:metadataNet.selector];
                     }
                     
                 } else {
@@ -230,10 +230,10 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Read File =====
+#pragma mark ===== Read File for Folder & Read File=====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)synchronizedFile:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
+- (void)readFileForFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
@@ -246,7 +246,7 @@
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
-- (void)synchronizedFile:(tableMetadata *)metadata selector:(NSString *)selector
+- (void)readFile:(tableMetadata *)metadata selector:(NSString *)selector
 {
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (!serverUrl) return;
@@ -315,9 +315,9 @@
             if (![tableDirectory.etag isEqualToString:metadata.etag] && tableDirectory) {
                 
                 if ([metadataNet.selector isEqualToString:selectorReadFileFolder])
-                    [self synchronizedFolder:serverUrl selector:selectorReadFolder];
+                    [self readFolder:serverUrl selector:selectorReadFolder];
                 if ([metadataNet.selector isEqualToString:selectorReadFileFolderWithDownload])
-                    [self synchronizedFolder:serverUrl selector:selectorReadFolderWithDownload];
+                    [self readFolder:serverUrl selector:selectorReadFolderWithDownload];
             }
         }
     });

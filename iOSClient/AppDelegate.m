@@ -329,7 +329,7 @@
         NSString *fileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
         
-        [[CCSynchronize sharedSynchronize] synchronizedFile:fileName serverUrl:serverUrl selector:selectorReadFileFolder];        
+        [[CCSynchronize sharedSynchronize] readFileForFolder:fileName serverUrl:serverUrl selector:selectorReadFileFolder];        
     }
     
     // Execute : after 1 sec.

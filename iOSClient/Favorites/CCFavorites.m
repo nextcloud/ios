@@ -257,16 +257,16 @@
             if (metadata.directory) {
                 
                 if ([CCUtility getFavoriteOffline])
-                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
+                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
                 else
-                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolder];
+                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolder];
 
             } else {
                 
                 if ([CCUtility getFavoriteOffline])
-                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata selector:selectorReadFileWithDownload];
+                    [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
                 else
-                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata selector:selectorReadFile];
+                    [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFile];
             }
             
             father = serverUrlSon;
