@@ -324,8 +324,13 @@
     // Execute : now
     NSLog(@"[LOG] Update Folder Photo");
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:_activeUrl];
-    if ([autoUploadPath length] > 0)
-        [[CCSynchronize sharedSynchronize] synchronizedFolder:autoUploadPath selector:selectorReadFolder];
+    if ([autoUploadPath length] > 0) {
+        
+        NSString *fileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+        
+        [[CCSynchronize sharedSynchronize] synchronizedFile:fileName serverUrl:serverUrl selector:selectorReadFileFolder];        
+    }
     
     // Execute : after 1 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
