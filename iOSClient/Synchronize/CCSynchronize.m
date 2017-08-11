@@ -185,7 +185,7 @@
                 // Load if different etag
                 tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
                 
-                if (![tableDirectory.etag isEqualToString:etag]) {
+                if (![tableDirectory.etag isEqualToString:etag] || [metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
                                         
                     [self synchronizedFolder:serverUrl selector:metadataNet.selector];
                 }
