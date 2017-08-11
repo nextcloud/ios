@@ -249,23 +249,18 @@
         // insert for test NOT favorite
         [filesEtag addObject:metadata.fileID];
         
-        // Get ServerUrl
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
+        NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
         
-        if (![serverUrl containsString:father]) {
+        if (![serverUrlSon containsString:father]) {
             
             if (metadata.directory) {
                 
-                NSString *selector;
-                
                 if ([CCUtility getFavoriteOffline])
-                    selector = selectorReadFolderWithDownload;
+                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
                 else
-                    selector = selectorReadFolder;
-                
-                [[CCSynchronize sharedSynchronize] synchronizedFolder:serverUrl selector:selector];
-                
+                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolder];
+
             } else {
                 
                 if ([CCUtility getFavoriteOffline])
@@ -274,7 +269,7 @@
                     [[CCSynchronize sharedSynchronize] synchronizedFile:metadata selector:selectorReadFile];
             }
             
-            father = serverUrl;
+            father = serverUrlSon;
         }
     }
     

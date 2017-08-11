@@ -238,7 +238,6 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     metadataNet.action = actionReadFile;
-    metadataNet.fileID = @"";
     metadataNet.fileName = fileName;
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;
