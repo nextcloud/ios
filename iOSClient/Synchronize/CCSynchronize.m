@@ -67,7 +67,7 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
     
-    metadataNet.depth = @"1";
+        metadataNet.depth = @"1";
     metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;
@@ -173,25 +173,25 @@
             // RECURSIVE DIRECTORY MODE
             if (metadata.directory) {
                 
-                NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
-                NSString *etag = metadata.etag;
+                    NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
+                    NSString *etag = metadata.etag;
                 
-                // Verify if do not exists this Metadata
-                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+                    // Verify if do not exists this Metadata
+                    tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
 
-                if (!result)
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                    if (!result)
+                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
               
-                // Load if different etag
-                tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+                    // Load if different etag
+                    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
                 
                 if (![tableDirectory.etag isEqualToString:etag] || [metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
                                         
-                    [self synchronizedFolder:serverUrl selector:metadataNet.selector];
-                }
+                        [self synchronizedFolder:serverUrl selector:metadataNet.selector];
+                    }
+                    
+                } else {
                 
-            } else {
-            
                 if ([metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
                     
                     // It's in session
@@ -300,7 +300,7 @@
         
             //Add/Update Metadata
             tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        
+            
             if (addMetadata)
                 [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:withDownload];
         }
@@ -308,12 +308,12 @@
         // Selector : selectorReadFileReloadFolder, selectorReadFileFolderWithDownload
         if ([metadataNet.selector isEqualToString:selectorReadFileFolder] || [metadataNet.selector isEqualToString:selectorReadFileFolderWithDownload]) {
             
-            tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", metadataNet.account, metadata.directoryID]];
+            NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
+            
+            tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
             
             // Verify changed etag
             if (![tableDirectory.etag isEqualToString:metadata.etag] && tableDirectory) {
-                
-                NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
                 
                 if ([metadataNet.selector isEqualToString:selectorReadFileFolder])
                     [self synchronizedFolder:serverUrl selector:selectorReadFolder];

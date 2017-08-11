@@ -602,6 +602,39 @@ class NCManageDatabase: NSObject {
         return result.versionMajor
     }
 
+    func compareServerVersion(_ versionCompare: String) -> Int {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return 0
+        }
+        
+        let realm = try! Realm()
+        
+        guard let capabilities = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
+            return -1
+        }
+        
+        let versionServer = capabilities.versionString
+        
+        var v1 = versionServer.characters.split(separator:".").map { Int(String($0)) }
+        var v2 = versionCompare.characters.split(separator:".").map { Int(String($0)) }
+        
+        var result = 0
+        for i in 0..<max(v1.count,v2.count) {
+            let left = i >= v1.count ? 0 : v1[i]
+            let right = i >= v2.count ? 0 : v2[i]
+            
+            if (left == right) {
+                result = 0
+            } else if left! > right! {
+                return 1
+            } else if right! > left! {
+                return -1
+            }
+        }
+        return result
+    }
+    
     //MARK: -
     //MARK: Table Certificates
     
