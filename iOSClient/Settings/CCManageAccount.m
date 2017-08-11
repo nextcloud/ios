@@ -403,16 +403,4 @@
     [self.tableView reloadData];
 }
 
-/*
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    XLFormRowDescriptor *row = [self.form formRowAtIndex:indexPath];
-    
-    if ([row.tag isEqualToString:@"pickerAccount"]) {
-        // set background color in here
-        
-    }
-}
-*/
-
 @end
