@@ -45,7 +45,6 @@
 - (void)downloadFileSuccess:(tableMetadata *)metadata;
 - (void)downloadFileFailure:(NSInteger)errorCode;
 
-- (void)reloadDatasource;
 - (void)reloadDatasourceForced;
 
 @end
