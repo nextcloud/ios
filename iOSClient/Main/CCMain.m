@@ -2306,7 +2306,7 @@
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:@""];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil];
         }
     
         // next
@@ -2499,7 +2499,7 @@
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
 {
     NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];    
-    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:@""];
+    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil];
     
     if (metadataNet.cryptated == NO) {
     
@@ -4732,16 +4732,6 @@
         
         return;
     }
-    
-    /*
-    // Reload Favorite & Photo is active
-    NSInteger indexActiveTabBar = self.tabBarController.selectedIndex;
-    if (indexActiveTabBar == k_tabBarApplicationIndexFavorite) {
-        app.activeFavorites.reloadDatasource;
-    } else if (indexActiveTabBar == k_tabBarApplicationIndexPhotos) {
-        app.activePhotos.reloadDatasource;
-    }
-    */ 
     
     // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
     if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {

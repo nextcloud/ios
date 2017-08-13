@@ -67,7 +67,7 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
     
-        metadataNet.depth = @"1";
+    metadataNet.depth = @"1";
     metadataNet.directoryID = directoryID;
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;
@@ -309,10 +309,12 @@
             
             NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
             
+            // Add Directory
+            (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:metadataNet.account permissions:nil];
             tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
             
             // Verify changed etag
-            if (![tableDirectory.etag isEqualToString:metadata.etag] && tableDirectory) {
+            if (![tableDirectory.etag isEqualToString:metadata.etag]) {
                 
                 if ([metadataNet.selector isEqualToString:selectorReadFileFolder])
                     [self readFolder:serverUrl selector:selectorReadFolder];

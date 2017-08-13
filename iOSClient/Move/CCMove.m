@@ -434,7 +434,7 @@
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:@""];
+    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:nil];
     
     // Load Folder or the Datasource
     [self readFolder];

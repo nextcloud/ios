@@ -668,7 +668,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    func addDirectory(serverUrl: String, permissions: String) -> String {
+    func addDirectory(serverUrl: String, permissions: String?) -> String {
         
         guard let tableAccount = self.getAccountActive() else {
             return ""
@@ -691,13 +691,17 @@ class NCManageDatabase: NSObject {
                     directoryID = NSUUID().uuidString
                     addObject.directoryID = directoryID
                 
-                    addObject.permissions = permissions
+                    if let permissions = permissions {
+                        addObject.permissions = permissions
+                    }
                     addObject.serverUrl = serverUrl
                     realm.add(addObject, update: true)
                 
                 } else {
                 
-                    result?.permissions = permissions
+                    if let permissions = permissions {
+                        result!.permissions = permissions
+                    }
                     directoryID = result!.directoryID
                     realm.add(result!, update: true)
                 }
@@ -843,7 +847,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account,serverUrl).first else {
-            return self.addDirectory(serverUrl: serverUrl, permissions: "")
+            return self.addDirectory(serverUrl: serverUrl, permissions: nil)
         }
         
         return result.directoryID
