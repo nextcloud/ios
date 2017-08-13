@@ -466,7 +466,7 @@
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
         attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), queueDownloadWWan, element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[@" " stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), queueDownloadWWan, element_s]]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
         titleFooterLabel.attributedText = stringFooter;
         
@@ -504,7 +504,7 @@
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
         attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_wwan_", nil), queueUploadWWan,element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[@" " stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_wwan_", nil), queueUploadWWan,element_s]]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
         titleFooterLabel.attributedText = stringFooter;
         
