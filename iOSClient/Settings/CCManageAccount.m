@@ -187,10 +187,6 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    // Align Photo Library
-    if (loginType != loginModifyPasswordUser)
-        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-
     if (loginType == loginAddForced)
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }

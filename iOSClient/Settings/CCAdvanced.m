@@ -335,6 +335,8 @@
         [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:app.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
         
+        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+        
         [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl removeIco:removeIco];
         
         [self emptyLocalDirectory];
@@ -367,7 +369,8 @@
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_delete_thumbnails_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
         
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil)
-                                                             style:UIAlertActionStyleDefault                                                         handler:^(UIAlertAction *action) {
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction *action) {
                                                                [self removeAllFiles:YES];
                                                            }]];
         

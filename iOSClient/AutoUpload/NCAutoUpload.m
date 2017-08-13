@@ -568,29 +568,18 @@
             
             if (assetsFull == NO) {
             
-                NSPredicate *predicate;
                 NSString *creationDate;
-                NSString *modificationDate;
-                BOOL detectModificationDateCameraRollAsset = [CCUtility getDetectModificationDateCameraRollAsset];
+                NSString *idAsset;
 
                 NSArray *idsAsset = [[NCManageDatabase sharedInstance] getPhotoLibraryIdAssetWithImage:account.autoUploadImage video:account.autoUploadVideo];
                 
                 for (PHAsset *asset in assets) {
                     
                     (asset.creationDate != nil) ? (creationDate = [NSString stringWithFormat:@"%@", asset.creationDate]) : (creationDate = @"");
-                    (asset.modificationDate != nil) ? (modificationDate = [NSString stringWithFormat:@"%@", asset.modificationDate]) : (modificationDate = @"");
                     
-                    if (detectModificationDateCameraRollAsset) {
-                        NSString *idAsset = [NSString stringWithFormat:@"%@%@%@%@", account.account, asset.localIdentifier, creationDate, modificationDate];
-                        predicate = [NSPredicate predicateWithFormat:@"SELF = %@", idAsset];
-                    } else {
-                        NSString *idAsset = [NSString stringWithFormat:@"%@%@%@", account.account, asset.localIdentifier, creationDate];
-                        predicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", idAsset];
-                    }
+                    idAsset = [NSString stringWithFormat:@"%@%@%@", account.account, asset.localIdentifier, creationDate];
                     
-                    NSArray *filteredArray = [idsAsset filteredArrayUsingPredicate: predicate];
-                    
-                    if ([filteredArray count] == 0)
+                    if (![idsAsset containsObject: idAsset])
                         [newAssets addObject:asset];
                 }
                 
@@ -612,15 +601,14 @@
 
 - (void)alignPhotoLibrary
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+
+    PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES alignPhotoLibrary:YES];
         
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:app.activeAccount];
+    (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
 
-        PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES alignPhotoLibrary:YES];
-        (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
-
-        NSLog(@"Align Photo Library %lu", (unsigned long)[assets count]);
-    });
+    NSLog(@"Align Photo Library %lu", (unsigned long)[assets count]);
 }
 
 @end

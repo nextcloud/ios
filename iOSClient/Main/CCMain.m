@@ -373,6 +373,12 @@
         // remove all Notification Messages
         [appDelegate.listOfNotifications removeAllObjects];
         
+        // Not Photos Video in library ? then align
+        NSArray *recordsPhotoLibrary = [[NCManageDatabase sharedInstance] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", app.activeAccount]];
+        if ([recordsPhotoLibrary count] == 0) {
+            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+        }
+        
         // Initializations
         [appDelegate applicationInitialized];
                 

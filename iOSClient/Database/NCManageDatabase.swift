@@ -1586,7 +1586,6 @@ class NCManageDatabase: NSObject {
                 try realm.write {
                 
                     var creationDateString = ""
-                    var modificationDateString = ""
 
                     for asset in assets {
                     
@@ -1605,12 +1604,9 @@ class NCManageDatabase: NSObject {
                         
                         if let modificationDate = asset.modificationDate {
                             addObject.modificationDate = modificationDate as NSDate
-                            modificationDateString = String(describing: modificationDate)
-                        } else {
-                            modificationDateString = ""
                         }
                         
-                        addObject.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDateString)\(modificationDateString)"
+                        addObject.idAsset = "\(tableAccount.account)\(asset.localIdentifier)\(creationDateString)"
 
                         realm.add(addObject, update: true)
                     }
@@ -1653,7 +1649,16 @@ class NCManageDatabase: NSObject {
         
         return Array(idsAsset)
     }
-
+    
+    func getPhotoLibrary(predicate: NSPredicate) -> [tablePhotoLibrary] {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tablePhotoLibrary.self).filter(predicate)
+        
+        return Array(results.map { tablePhotoLibrary.init(value:$0) })
+    }
+    
     //MARK: -
     //MARK: Table Queue Download
     

@@ -1679,7 +1679,7 @@
 #endif
     
     NSString *actualVersion = [CCUtility getVersion];
-    //NSString *actualBuild = [CCUtility getBuild];
+    NSString *actualBuild = [CCUtility getBuild];
     
     /* ---------------------- UPGRADE VERSION ----------------------- */
     
@@ -1727,18 +1727,23 @@
         [self maintenanceMode:NO];
     }
     
-    // VERSION == 2.17.4
+    // VERSION < 2.17.6
 
-    if ([actualVersion isEqualToString:@"2.17.4"]) {
+    if (([actualVersion compare:@"2.17.6" options:NSNumericSearch] == NSOrderedAscending)) {
         
-        // Build < 37 (example)
-        /*
-        if (([actualBuild compare:@"37" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+        // Remove All old Photo Library
+        [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
+    }
+    
+    // VERSION == 2.17.6
+    if ([actualVersion isEqualToString:@"2.17.6"]) {
+        
+        // Build < 10
+        if (([actualBuild compare:@"10" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
-            [CCUtility setOrderSettings:@"fileName"];
-            [CCUtility setBuild];
+            // Remove All old Photo Library
+            [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
         }
-        */ 
     }
     
     return YES;

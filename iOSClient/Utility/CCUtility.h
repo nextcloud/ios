@@ -93,8 +93,6 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
-+ (void)setDetectModificationDateCameraRollAsset:(BOOL)detect;
-
 // GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
@@ -140,8 +138,6 @@
 + (BOOL)getActivityVerboseHigh;
 
 + (BOOL)getShowHiddenFiles;
-
-+ (BOOL)getDetectModificationDateCameraRollAsset;
 
 // ===== Varius =====
 
