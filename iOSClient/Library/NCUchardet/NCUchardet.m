@@ -68,6 +68,10 @@
     
     uchardet_reset(_detector);
     
+    // In modern applications UTF-8 or UTF-16 is a preferred encoding. 0.2% of all web pages use Windows-1250 in February 2016. (Wikipedia)
+    if ([encoding isEqualToString:@"WINDOWS-1250"])
+        encoding = @"UTF-8";
+    
     return encoding;
 }
 
