@@ -1,0 +1,16 @@
+# INSTALL uchardet
+
+`uchardet` uses a typical cmake installation.
+
+* Configure with `cmake`. There are various options. For instance to configure
+  with a prefix as a release-ready build:
+
+> cmake -DCMAKE_INSTALL_PREFIX=/home/jehan/.local -DCMAKE_BUILD_TYPE=Release
+
+Alternatively, use `ccmake`, curses interface to `cmake`.
+
+* Build with `make`.
+
+* Install with `make install`.
+
+Read `README` for more details on uchardet.
