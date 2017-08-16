@@ -58,13 +58,23 @@ class NCText: UIViewController, UITextViewDelegate {
         // Modify
         if let metadata = metadata {
             
+            loadText = ""
             let path = "\(appDelegate.directoryUser!)/\(metadata.fileID)"
+            let data = NSData(contentsOfFile: path)
             
-            loadText = try? String(contentsOfFile: path, encoding: String.Encoding.utf8)
-            textView.text = loadText
-            nextButton.title = NSLocalizedString("_save_", comment: "")
-            self.navigationController?.navigationBar.topItem?.title = NSLocalizedString(metadata.fileNamePrint, comment: "")
+            if let data = data {
             
+                let encodingCFName = NCUchardet.sharedNUCharDet().encodingCFStringDetect(with: data as Data)
+                let se = CFStringConvertEncodingToNSStringEncoding(encodingCFName)
+                let encoding = String.Encoding(rawValue: se)
+                
+                loadText = try? String(contentsOfFile: path, encoding: encoding)
+                textView.text = loadText
+                nextButton.title = NSLocalizedString("_save_", comment: "")
+                self.navigationController?.navigationBar.topItem?.title = NSLocalizedString(metadata.fileNamePrint, comment: "")
+            
+            }
+                
         } else {
             
             loadText = ""

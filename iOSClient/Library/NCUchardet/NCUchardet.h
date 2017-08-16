@@ -27,6 +27,8 @@
 
 + (NCUchardet *)sharedNUCharDet;
 
-- (NSString *)encodingDetectWithData:(NSData *)data;
+- (NSString *)encodingStringDetectWithData:(NSData *)data;
+- (CFStringEncoding)encodingCFStringDetectWithData:(NSData *)data;
+
 
 @end

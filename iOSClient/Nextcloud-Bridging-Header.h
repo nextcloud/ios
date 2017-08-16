@@ -9,6 +9,7 @@
 #import "CCManageAccount.h"
 #import "CCGraphics.h"
 #import "NCAutoUpload.h"
+#import "NCUchardet.h"
 
 #import "OCActivity.h"
 #import "OCUserProfile.h"

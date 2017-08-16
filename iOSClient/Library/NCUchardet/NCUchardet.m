@@ -58,7 +58,7 @@
     uchardet_delete(_detector);
 }
 
-- (NSString *)encodingDetectWithData:(NSData *)data
+- (NSString *)encodingStringDetectWithData:(NSData *)data
 {
     uchardet_handle_data(_detector, [data bytes], [data length]);
     uchardet_data_end(_detector);
@@ -68,6 +68,17 @@
     
     uchardet_reset(_detector);
     
+    return encoding;
+}
+
+- (CFStringEncoding)encodingCFStringDetectWithData:(NSData *)data
+{
+    NSString *encodingName = [self encodingStringDetectWithData:data];
+    if ([encodingName isEqualToString:@""]) {
+        return kCFStringEncodingInvalidId;
+    }
+    
+    CFStringEncoding encoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)encodingName);
     return encoding;
 }
 

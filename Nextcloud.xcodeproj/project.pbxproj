@@ -3657,8 +3657,8 @@
 				F78088E51DD3A1DB005C5A7C /* cryptocloud.xcdatamodeld */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
-				F7B0C1701EE8397E0033AC24 /* AutoUpload */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
+				F7B0C1701EE8397E0033AC24 /* AutoUpload */,
 				F720E02A1E48C74C001A4B9E /* Actions */,
 				F7A321621E9E37960069AD1B /* Activity */,
 				F7ECBA6B1E239DCD003E6328 /* Create */,
@@ -5309,14 +5309,16 @@
 					"$(inherited)",
 					NC,
 				);
-				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
+				HEADER_SEARCH_PATHS = (
+					"\"Libraries external\"/**",
+					"$(PROJECT_DIR)/iOSClient/Library/NCUchardet",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					Libraries,
-					"external/**",
 					"$(PROJECT_DIR)/iOSClient/Library/NCUchardet",
+					"\"Libraries external\"/openssl",
 				);
 				OTHER_LDFLAGS = (
 					"-Obj-C",
@@ -5361,14 +5363,16 @@
 					"$(inherited)",
 					NC,
 				);
-				HEADER_SEARCH_PATHS = "\"Libraries external\"/**";
+				HEADER_SEARCH_PATHS = (
+					"\"Libraries external\"/**",
+					"$(PROJECT_DIR)/iOSClient/Library/NCUchardet",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					Libraries,
-					"external/**",
 					"$(PROJECT_DIR)/iOSClient/Library/NCUchardet",
+					"\"Libraries external\"/openssl",
 				);
 				OTHER_LDFLAGS = (
 					"-Obj-C",
