@@ -423,6 +423,8 @@
 		F7B1FBC91E72E3D1001781FE /* SwiftWebVCActivityChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */; };
 		F7B1FBCA1E72E3D1001781FE /* SwiftWebVCActivitySafari.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */; };
 		F7B3A4EE1E97818A000DACE8 /* CCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */; };
+		F7B4F1CA1F44356F00B53B42 /* libuchardet-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F7B4F1C61F44356F00B53B42 /* libuchardet-ios.a */; };
+		F7B4F1CB1F44356F00B53B42 /* NCUchardet.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4F1C81F44356F00B53B42 /* NCUchardet.m */; };
 		F7BAADC51ED5A87C00B7EAD4 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB31ED5A87C00B7EAD4 /* CCCoreData.m */; };
 		F7BAADC61ED5A87C00B7EAD4 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB31ED5A87C00B7EAD4 /* CCCoreData.m */; };
 		F7BAADC71ED5A87C00B7EAD4 /* CCCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB31ED5A87C00B7EAD4 /* CCCoreData.m */; };
@@ -1506,6 +1508,10 @@
 		F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivityChrome.swift; sourceTree = "<group>"; };
 		F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivitySafari.swift; sourceTree = "<group>"; };
 		F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCLoginWeb.swift; sourceTree = "<group>"; };
+		F7B4F1C61F44356F00B53B42 /* libuchardet-ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libuchardet-ios.a"; sourceTree = "<group>"; };
+		F7B4F1C71F44356F00B53B42 /* NCUchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCUchardet.h; sourceTree = "<group>"; };
+		F7B4F1C81F44356F00B53B42 /* NCUchardet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCUchardet.m; sourceTree = "<group>"; };
+		F7B4F1C91F44356F00B53B42 /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
 		F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MagicalRecord.xcodeproj; path = "Libraries external/MagicalRecord/MagicalRecord.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F7BAADB21ED5A87C00B7EAD4 /* CCCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCoreData.h; sourceTree = "<group>"; };
 		F7BAADB31ED5A87C00B7EAD4 /* CCCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCoreData.m; sourceTree = "<group>"; };
@@ -1948,6 +1954,7 @@
 				F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */,
 				F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */,
 				F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */,
+				F7B4F1CA1F44356F00B53B42 /* libuchardet-ios.a in Frameworks */,
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
@@ -3052,6 +3059,17 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		F7B4F1C51F44356F00B53B42 /* NCUchardet */ = {
+			isa = PBXGroup;
+			children = (
+				F7B4F1C61F44356F00B53B42 /* libuchardet-ios.a */,
+				F7B4F1C71F44356F00B53B42 /* NCUchardet.h */,
+				F7B4F1C81F44356F00B53B42 /* NCUchardet.m */,
+				F7B4F1C91F44356F00B53B42 /* uchardet.h */,
+			);
+			path = NCUchardet;
+			sourceTree = "<group>";
+		};
 		F7B61E871DC13C20009E938F /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -3530,6 +3548,7 @@
 				F7D423A31F063B81009C9782 /* CTAssetsPickerController */,
 				F762CB9C1EACB89C00B38484 /* LMMediaPlayer */,
 				F7F54CAD1E5B14C700E19C62 /* MWPhotoBrowser */,
+				F7B4F1C51F44356F00B53B42 /* NCUchardet */,
 				F762CB7B1EACB81000B38484 /* REMenu */,
 				F7B1FBAF1E72E3D1001781FE /* SwiftWebVC */,
 				F762CB8B1EACB84400B38484 /* TWMessageBarManager */,
@@ -4658,6 +4677,7 @@
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F762CB1A1EACB66200B38484 /* XLForm.m in Sources */,
 				F762CB051EACB66200B38484 /* XLFormTextFieldCell.m in Sources */,
+				F7B4F1CB1F44356F00B53B42 /* NCUchardet.m in Sources */,
 				F77B0E5B1D118A16002130FE /* UIImage+Rotating.m in Sources */,
 				F7A321561E9E2A070069AD1B /* CCFavoritesCell.m in Sources */,
 				F7D4237D1F0596C6009C9782 /* ReaderContentView.m in Sources */,
@@ -5293,7 +5313,11 @@
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = (
+					Libraries,
+					"external/**",
+					"$(PROJECT_DIR)/iOSClient/Library/NCUchardet",
+				);
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
@@ -5341,7 +5365,11 @@
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
+				LIBRARY_SEARCH_PATHS = (
+					Libraries,
+					"external/**",
+					"$(PROJECT_DIR)/iOSClient/Library/NCUchardet",
+				);
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",

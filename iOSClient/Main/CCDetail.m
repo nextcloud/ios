@@ -24,8 +24,8 @@
 #import "CCDetail.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
+#import "NCUchardet.h"
 #import "NCBridgeSwift.h"
-
 
 #define TOOLBAR_HEIGHT 49.0f
 
@@ -389,7 +389,8 @@
         [headRequest setHTTPMethod:@"HEAD"];
         
         NSURLSessionDataTask *task = [session dataTaskWithRequest:headRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:@"utf-8" baseURL:url];
+            NSString *encodingName = [[NCUchardet sharedNUCharDet] encodingDetectWithData:data];
+            [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:encodingName baseURL:url];
         }];
         
         [task resume];
