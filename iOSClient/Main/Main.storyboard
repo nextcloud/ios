@@ -151,14 +151,14 @@
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="HgC-Ub-Dtb">
                                         <rect key="frame" x="16" y="35" width="343" height="2"/>
                                     </progressView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C75-NQ-7jy">
-                                        <rect key="frame" x="16" y="62" width="343" height="0.0"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WdB-hd-mrv">
+                                        <rect key="frame" x="16" y="26" width="343" height="0.0"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WdB-hd-mrv">
-                                        <rect key="frame" x="16" y="26" width="343" height="0.0"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C75-NQ-7jy">
+                                        <rect key="frame" x="16" y="62" width="343" height="0.0"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
@@ -167,13 +167,13 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="trailing" secondItem="HgC-Ub-Dtb" secondAttribute="trailing" constant="16" id="5q6-NB-Mmc"/>
+                                    <constraint firstItem="HgC-Ub-Dtb" firstAttribute="top" secondItem="WdB-hd-mrv" secondAttribute="bottom" constant="9" id="E0l-WX-ADz"/>
                                     <constraint firstItem="HgC-Ub-Dtb" firstAttribute="leading" secondItem="NxR-5x-edP" secondAttribute="leading" constant="16" id="PE4-Uk-fCL"/>
                                     <constraint firstItem="C75-NQ-7jy" firstAttribute="leading" secondItem="NxR-5x-edP" secondAttribute="leading" constant="16" id="Tt2-eu-OCo"/>
                                     <constraint firstAttribute="trailing" secondItem="WdB-hd-mrv" secondAttribute="trailing" constant="16" id="VIr-6S-gO3"/>
-                                    <constraint firstAttribute="bottom" secondItem="C75-NQ-7jy" secondAttribute="bottom" constant="54" id="VYp-G2-qYB"/>
                                     <constraint firstAttribute="height" constant="116" id="abE-Pf-XgO"/>
                                     <constraint firstItem="WdB-hd-mrv" firstAttribute="leading" secondItem="NxR-5x-edP" secondAttribute="leading" constant="16" id="iKI-KT-uCZ"/>
-                                    <constraint firstAttribute="bottom" secondItem="WdB-hd-mrv" secondAttribute="bottom" constant="90" id="xLa-Ha-jLI"/>
+                                    <constraint firstItem="C75-NQ-7jy" firstAttribute="top" secondItem="HgC-Ub-Dtb" secondAttribute="bottom" constant="25" id="tDS-ld-99e"/>
                                     <constraint firstAttribute="trailing" secondItem="C75-NQ-7jy" secondAttribute="trailing" constant="16" id="xoB-cD-7YG"/>
                                     <constraint firstAttribute="bottom" secondItem="HgC-Ub-Dtb" secondAttribute="bottom" constant="79" id="yaJ-mY-iTS"/>
                                 </constraints>

@@ -206,23 +206,19 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             labelUsername.text = tabAccount.displayName
         }
         
-        // fix CCMore.swift line 208 Version 2.17.2 (00005)
-        if (tabAccount.quotaRelative != 0 && tabAccount.quotaTotal != 0 && tabAccount.quotaUsed != 0) {
-                
+        if (tabAccount.quotaRelative > 0) {
             progressQuota.progress = Float(tabAccount.quotaRelative) / 100
-            progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
-                
-            let quota : String = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
-            let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
-                
-            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
-            
         } else {
-            
-            // Activity
-            let note = "Quota Relative \(tabAccount.quotaRelative), Quota Total \(tabAccount.quotaTotal), Quota Used \(tabAccount.quotaUsed)"
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Quota Server", note: note, type: k_activityTypeFailure, verbose: false, activeUrl: "")
+            progressQuota.progress = 0
         }
+
+        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
+                
+        let quota : String = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
+        let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
+                
+        labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+            
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
