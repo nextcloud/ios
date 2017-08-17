@@ -218,7 +218,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
                 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
-            
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
