@@ -50,7 +50,6 @@
     self = [super initWithCoder:coder];
     if (self) {
                 
-        [self initializeForm];
     }
     return self;
 }
@@ -152,6 +151,8 @@
     self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    
+    [self initializeForm];
 }
 
 #pragma --------------------------------------------------------------------------------------------
