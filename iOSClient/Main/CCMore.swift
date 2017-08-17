@@ -216,6 +216,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
                 
             labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+            
+        } else {
+            
+            // Activity
+            let note = "Quota Relative \(tabAccount.quotaRelative), Quota Total \(tabAccount.quotaTotal), Quota Used \(tabAccount.quotaUsed)"
+            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Quota Server", note: note, type: k_activityTypeFailure, verbose: false, activeUrl: "")
         }
     }
     
