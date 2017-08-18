@@ -64,9 +64,13 @@ class NCText: UIViewController, UITextViewDelegate {
             
             if let data = data {
             
+                /*
                 let encodingCFName = NCUchardet.sharedNUCharDet().encodingCFStringDetect(with: data as Data)
                 let se = CFStringConvertEncodingToNSStringEncoding(encodingCFName)
                 let encoding = String.Encoding(rawValue: se)
+                */
+                
+                let encoding = String.Encoding.utf8
                 
                 loadText = try? String(contentsOfFile: path, encoding: encoding)
                 textView.text = loadText

@@ -32,16 +32,6 @@
 
 @implementation NCUchardet
 
-+ (NCUchardet *)sharedNUCharDet {
-    static NCUchardet *nuCharDet;
-    @synchronized(self) {
-        if (!nuCharDet) {
-            nuCharDet = [NCUchardet new];
-        }
-        return nuCharDet;
-    }
-}
-
 - (id)init
 {
     self = [super init];

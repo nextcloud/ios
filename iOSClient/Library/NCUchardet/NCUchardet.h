@@ -27,8 +27,6 @@
 
 @interface NCUchardet : NSObject
 
-+ (NCUchardet *)sharedNUCharDet;
-
 - (NSString *)encodingStringDetectWithData:(NSData *)data;
 - (CFStringEncoding)encodingCFStringDetectWithData:(NSData *)data;
 
