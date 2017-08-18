@@ -195,7 +195,6 @@
 		F73B4F131F470D9100BBEE4B /* nsUniversalDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EE51F470D9100BBEE4B /* nsUniversalDetector.cpp */; };
 		F73B4F141F470D9100BBEE4B /* nsUTF8Prober.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EE71F470D9100BBEE4B /* nsUTF8Prober.cpp */; };
 		F73B4F151F470D9100BBEE4B /* symbols.cmake in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EEA1F470D9100BBEE4B /* symbols.cmake */; };
-		F73B4F161F470D9100BBEE4B /* test in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EEB1F470D9100BBEE4B /* test */; };
 		F73B4F171F470D9100BBEE4B /* uchardet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EEC1F470D9100BBEE4B /* uchardet.cpp */; };
 		F73B4F791E8D3BF800A97F07 /* CCMainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73B4F781E8D3BF800A97F07 /* CCMainTabBarController.swift */; };
 		F73C002F1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m in Sources */ = {isa = PBXBuildFile; fileRef = F73C002E1E55D7DF00EEEFA7 /* CCManageCryptoCloudSecurity.m */; };
@@ -1179,7 +1178,6 @@
 		F73B4EE81F470D9100BBEE4B /* nsUTF8Prober.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = nsUTF8Prober.h; sourceTree = "<group>"; };
 		F73B4EE91F470D9100BBEE4B /* prmem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = prmem.h; sourceTree = "<group>"; };
 		F73B4EEA1F470D9100BBEE4B /* symbols.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = symbols.cmake; sourceTree = "<group>"; };
-		F73B4EEB1F470D9100BBEE4B /* test */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = test; sourceTree = "<group>"; };
 		F73B4EEC1F470D9100BBEE4B /* uchardet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uchardet.cpp; sourceTree = "<group>"; };
 		F73B4EED1F470D9100BBEE4B /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
 		F73B4F781E8D3BF800A97F07 /* CCMainTabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMainTabBarController.swift; sourceTree = "<group>"; };
@@ -2519,7 +2517,6 @@
 				F73B4EE81F470D9100BBEE4B /* nsUTF8Prober.h */,
 				F73B4EE91F470D9100BBEE4B /* prmem.h */,
 				F73B4EEA1F470D9100BBEE4B /* symbols.cmake */,
-				F73B4EEB1F470D9100BBEE4B /* test */,
 				F73B4EEC1F470D9100BBEE4B /* uchardet.cpp */,
 				F73B4EED1F470D9100BBEE4B /* uchardet.h */,
 			);
@@ -4357,7 +4354,6 @@
 				F76F23341ED4603700C40023 /* LaunchScreen.xib in Resources */,
 				F7D4247B1F063B82009C9782 /* ZSScenterjustify@2x.png in Resources */,
 				F7D424871F063B82009C9782 /* ZSSh4@2x.png in Resources */,
-				F73B4F161F470D9100BBEE4B /* test in Resources */,
 				F7D4249B1F063B82009C9782 /* ZSSlink@2x.png in Resources */,
 				F77B0F671D118A16002130FE /* InfoPlist.strings in Resources */,
 				F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */,
