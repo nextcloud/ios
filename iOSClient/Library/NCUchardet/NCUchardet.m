@@ -53,11 +53,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    uchardet_delete(_detector);
-}
-
 - (NSString *)encodingStringDetectWithData:(NSData *)data
 {
     uchardet_handle_data(_detector, [data bytes], [data length]);

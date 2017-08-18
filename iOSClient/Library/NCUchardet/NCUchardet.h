@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// wrapper for library C++ https://cgit.freedesktop.org/uchardet/uchardet/ the universal charset detection library by Mozilla v 0.0.6
+// wrapper for library C++ https://cgit.freedesktop.org/uchardet/uchardet/ the universal charset detection library by Mozilla
 
 #import <Foundation/Foundation.h>
 
@@ -31,6 +31,5 @@
 
 - (NSString *)encodingStringDetectWithData:(NSData *)data;
 - (CFStringEncoding)encodingCFStringDetectWithData:(NSData *)data;
-
 
 @end
