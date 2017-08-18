@@ -401,7 +401,6 @@
 		F78964AE1EBB576C00403E13 /* JDStatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */; };
 		F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AC1EBB576C00403E13 /* JDStatusBarView.m */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
-		F798625D1F446530008C9AEC /* libuchardet-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F79862051F446449008C9AEC /* libuchardet-ios.a */; };
 		F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A001E7F3D5D00016680 /* CCProgressView.m */; };
 		F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */; };
 		F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3214F1E9E2A070069AD1B /* CCFavorites.m */; };
@@ -800,20 +799,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = F74344111E1264ED001CC831;
 			remoteInfo = Picker;
-		};
-		F79862021F446449008C9AEC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F79861F51F446448008C9AEC /* uchardet.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BD49959C19F84840000945BC;
-			remoteInfo = uchardet;
-		};
-		F79862041F446449008C9AEC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F79861F51F446448008C9AEC /* uchardet.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BD49963419FC04E8000945BC;
-			remoteInfo = "uchardet-ios";
 		};
 		F7B61E921DC13C20009E938F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1469,7 +1454,6 @@
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
-		F79861F51F446448008C9AEC /* uchardet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = uchardet.xcodeproj; path = "Libraries external/uchardet/build-mac/uchardet.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		F7A139FF1E7F3D5D00016680 /* CCProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCProgressView.h; sourceTree = "<group>"; };
 		F7A13A001E7F3D5D00016680 /* CCProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCProgressView.m; sourceTree = "<group>"; };
 		F7A13A011E7F3D5D00016680 /* UINavigationController+CCProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+CCProgress.h"; sourceTree = "<group>"; };
@@ -1960,7 +1944,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F798625D1F446530008C9AEC /* libuchardet-ios.a in Frameworks */,
 				F7DFE2571EBDC52E00CF5202 /* Realm.framework in Frameworks */,
 				F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */,
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
@@ -2947,15 +2930,6 @@
 			path = JDStatusBarNotification;
 			sourceTree = "<group>";
 		};
-		F79861F61F446448008C9AEC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				F79862031F446449008C9AEC /* libuchardet.a */,
-				F79862051F446449008C9AEC /* libuchardet-ios.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		F7A139FE1E7F3D5D00016680 /* CCProgress */ = {
 			isa = PBXGroup;
 			children = (
@@ -3664,7 +3638,6 @@
 		F7F67BAA1A24D27800EE80DA /* iOSClient */ = {
 			isa = PBXGroup;
 			children = (
-				F79861F51F446448008C9AEC /* uchardet.xcodeproj */,
 				F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */,
 				F70F02A81C889183008DAB36 /* Libraries external */,
 				F75EDFA41E8C106900E6F369 /* Analytics */,
@@ -3957,10 +3930,6 @@
 					ProductGroup = F7B61E871DC13C20009E938F /* Products */;
 					ProjectRef = F7B61E861DC13C20009E938F /* MagicalRecord.xcodeproj */;
 				},
-				{
-					ProductGroup = F79861F61F446448008C9AEC /* Products */;
-					ProjectRef = F79861F51F446448008C9AEC /* uchardet.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -3973,20 +3942,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		F79862031F446449008C9AEC /* libuchardet.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libuchardet.a;
-			remoteRef = F79862021F446449008C9AEC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		F79862051F446449008C9AEC /* libuchardet-ios.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libuchardet-ios.a";
-			remoteRef = F79862041F446449008C9AEC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		F7B61E931DC13C20009E938F /* MagicalRecord.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
