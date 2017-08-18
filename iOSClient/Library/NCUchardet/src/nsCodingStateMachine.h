@@ -39,11 +39,12 @@
 
 #include "nsPkgInt.h"
 
-typedef enum {
-   eStart = 0,
-   eError = 1,
-   eItsMe = 2 
-} nsSMState;
+/* Apart from these 3 generic states, machine states are specific to
+ * each charset prober.
+ */
+#define eStart 0
+#define eError 1
+#define eItsMe 2
 
 #define GETCLASS(c) GETFROMPCK(((unsigned char)(c)), mModel->classTable)
 
@@ -60,7 +61,7 @@ typedef struct
 class nsCodingStateMachine {
 public:
   nsCodingStateMachine(const SMModel* sm) : mModel(sm) { mCurrentState = eStart; }
-  nsSMState NextState(char c){
+  PRUint32 NextState(char c){
     //for each byte we get its class , if it is first byte, we also get byte length
     PRUint32 byteCls = GETCLASS(c);
     if (mCurrentState == eStart)
@@ -69,8 +70,8 @@ public:
       mCurrentCharLen = mModel->charLenTable[byteCls];
     }
     //from byte's class and stateTable, we get its next state
-    mCurrentState=(nsSMState)GETFROMPCK(mCurrentState*(mModel->classFactor)+byteCls,
-                                       mModel->stateTable);
+    mCurrentState = GETFROMPCK(mCurrentState * mModel->classFactor + byteCls,
+                               mModel->stateTable);
     mCurrentBytePos++;
     return mCurrentState;
   }
@@ -79,7 +80,7 @@ public:
   const char * GetCodingStateMachine() {return mModel->name;}
 
 protected:
-  nsSMState mCurrentState;
+  PRUint32 mCurrentState;
   PRUint32 mCurrentCharLen;
   PRUint32 mCurrentBytePos;
 

@@ -47,7 +47,7 @@ void  nsEUCKRProber::Reset(void)
 
 nsProbingState nsEUCKRProber::HandleData(const char* aBuf, PRUint32 aLen)
 {
-  nsSMState codingState;
+  PRUint32 codingState;
 
   for (PRUint32 i = 0; i < aLen; i++)
   {

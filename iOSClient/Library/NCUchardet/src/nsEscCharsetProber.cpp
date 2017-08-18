@@ -75,7 +75,7 @@ void nsEscCharSetProber::Reset(void)
 
 nsProbingState nsEscCharSetProber::HandleData(const char* aBuf, PRUint32 aLen)
 {
-  nsSMState codingState;
+  PRUint32 codingState;
   PRInt32 j;
   PRUint32 i;
 

@@ -9,14 +9,29 @@ set(
 	JpCntx.cpp
 	LangModels/LangArabicModel.cpp
 	LangModels/LangBulgarianModel.cpp
-	LangModels/LangRussianModel.cpp
+    LangModels/LangCroatianModel.cpp
+    LangModels/LangCzechModel.cpp
 	LangModels/LangEsperantoModel.cpp
+	LangModels/LangEstonianModel.cpp
+	LangModels/LangFinnishModel.cpp
 	LangModels/LangFrenchModel.cpp
 	LangModels/LangDanishModel.cpp
 	LangModels/LangGermanModel.cpp
 	LangModels/LangGreekModel.cpp
 	LangModels/LangHungarianModel.cpp
 	LangModels/LangHebrewModel.cpp
+	LangModels/LangIrishModel.cpp
+	LangModels/LangItalianModel.cpp
+    LangModels/LangLithuanianModel.cpp
+    LangModels/LangLatvianModel.cpp
+    LangModels/LangMalteseModel.cpp
+    LangModels/LangPolishModel.cpp
+    LangModels/LangPortugueseModel.cpp
+	LangModels/LangRomanianModel.cpp
+	LangModels/LangRussianModel.cpp
+	LangModels/LangSlovakModel.cpp
+    LangModels/LangSloveneModel.cpp
+    LangModels/LangSwedishModel.cpp
 	LangModels/LangSpanishModel.cpp
 	LangModels/LangThaiModel.cpp
 	LangModels/LangTurkishModel.cpp

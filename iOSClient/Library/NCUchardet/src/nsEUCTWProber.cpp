@@ -47,7 +47,7 @@ void  nsEUCTWProber::Reset(void)
 
 nsProbingState nsEUCTWProber::HandleData(const char* aBuf, PRUint32 aLen)
 {
-  nsSMState codingState;
+  PRUint32 codingState;
 
   for (PRUint32 i = 0; i < aLen; i++)
   {

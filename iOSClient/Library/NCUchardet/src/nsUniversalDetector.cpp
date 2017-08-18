@@ -113,6 +113,7 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
   {
     mStart = PR_FALSE;
     if (aLen > 2)
+    {
       switch (aBuf[0])
         {
         case '\xEF':
@@ -153,12 +154,13 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
           }
           break;
         }
+    }
 
-      if (mDetectedCharset)
-      {
+    if (mDetectedCharset)
+    {
         mDone = PR_TRUE;
         return NS_OK;
-      }
+    }
   }
 
   PRUint32 i;
@@ -240,16 +242,6 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
       mDone = PR_TRUE;
       mDetectedCharset = mEscCharSetProber->GetCharSetName();
     }
-    else if (mNbspFound)
-    {
-      mDetectedCharset = "ISO-8859-1";
-    }
-    else
-    {
-      /* ASCII with the ESC character (or the sequence "~{") is still
-       * ASCII until proven otherwise. */
-      mDetectedCharset = "ASCII";
-    }
     break;
   case eHighbyte:
     for (i = 0; i < NUM_OF_CHARSET_PROBERS; i++)
@@ -268,17 +260,6 @@ nsresult nsUniversalDetector::HandleData(const char* aBuf, PRUint32 aLen)
     break;
 
   default:
-    if (mNbspFound)
-    {
-      /* ISO-8859-1 is a good result candidate for ASCII + NBSP.
-       * (though it could have been any ISO-8859 encoding). */
-      mDetectedCharset = "ISO-8859-1";
-    }
-    else
-    {
-      /* Pure ASCII */
-      mDetectedCharset = "ASCII";
-    }
     break;
   }
   return NS_OK;
@@ -293,6 +274,29 @@ void nsUniversalDetector::DataEnd()
     // we haven't got any data yet, return immediately
     // caller program sometimes call DataEnd before anything has been sent to detector
     return;
+  }
+
+  if (! mDetectedCharset)
+  {
+    switch (mInputState)
+    {
+    case eEscAscii:
+    case ePureAscii:
+      if (mNbspFound)
+      {
+          /* ISO-8859-1 is a good result candidate for ASCII + NBSP.
+           * (though it could have been any ISO-8859 encoding). */
+          mDetectedCharset = "ISO-8859-1";
+      }
+      else
+      {
+          /* ASCII with the ESC character (or the sequence "~{") is still
+           * ASCII until proven otherwise. */
+          mDetectedCharset = "ASCII";
+      }
+    default:
+      break;
+    }
   }
 
   if (mDetectedCharset)

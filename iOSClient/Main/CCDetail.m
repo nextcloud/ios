@@ -389,7 +389,6 @@
         [headRequest setHTTPMethod:@"HEAD"];
         
         NSURLSessionDataTask *task = [session dataTaskWithRequest:headRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            
             NCUchardet *nsuCharDet = [NCUchardet new];
             NSString *encodingName = [nsuCharDet encodingStringDetectWithData:data];
             [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:encodingName baseURL:url];

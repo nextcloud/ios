@@ -63,7 +63,7 @@ nsProbingState nsSingleByteCharSetProber::HandleData(const char* aBuf, PRUint32 
     }
     if (order < mModel->freqCharCount)
     {
-        mFreqChar++;
+      mFreqChar++;
 
       if (mLastOrder < mModel->freqCharCount)
       {

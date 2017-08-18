@@ -46,7 +46,7 @@ void  nsBig5Prober::Reset(void)
 
 nsProbingState nsBig5Prober::HandleData(const char* aBuf, PRUint32 aLen)
 {
-  nsSMState codingState;
+  PRUint32 codingState;
 
   for (PRUint32 i = 0; i < aLen; i++)
   {
