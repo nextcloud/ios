@@ -308,6 +308,7 @@
 		F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CD11EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76F23341ED4603700C40023 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = F76F23331ED4603700C40023 /* LaunchScreen.xib */; };
+		F773717E1F46E0B40024C5F3 /* libuchardet-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F773717D1F46E0B40024C5F3 /* libuchardet-ios.a */; };
 		F77B0DF01D118A16002130FE /* UIImage+Resizing.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04CA1C889184008DAB36 /* UIImage+Resizing.m */; };
 		F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */ = {isa = PBXBuildFile; fileRef = F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */; };
 		F77B0DF41D118A16002130FE /* CCMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211FB1BAC56E9003FC03E /* CCMain.m */; };
@@ -1377,6 +1378,8 @@
 		F772BEB51EE69976006A232B /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F772BEB61EE69976006A232B /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Intro.strings"; sourceTree = "<group>"; };
 		F772BEB71EE69976006A232B /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Error.strings"; sourceTree = "<group>"; };
+		F77371741F46E0AF0024C5F3 /* uchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uchardet.h; sourceTree = "<group>"; };
+		F773717D1F46E0B40024C5F3 /* libuchardet-ios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libuchardet-ios.a"; sourceTree = "<group>"; };
 		F777F0301C29717F00CE81CB /* PHAsset+Utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PHAsset+Utility.h"; sourceTree = "<group>"; };
 		F777F0311C29717F00CE81CB /* PHAsset+Utility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "PHAsset+Utility.m"; sourceTree = "<group>"; };
 		F77D49A71DC238E500CDC568 /* loading@2x.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = "loading@2x.gif"; sourceTree = "<group>"; };
@@ -1951,6 +1954,7 @@
 				F714526D1DC1523B0006A5D4 /* libMagicalRecord.a in Frameworks */,
 				F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */,
 				F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */,
+				F773717E1F46E0B40024C5F3 /* libuchardet-ios.a in Frameworks */,
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
@@ -3058,6 +3062,8 @@
 		F7B4F1C51F44356F00B53B42 /* NCUchardet */ = {
 			isa = PBXGroup;
 			children = (
+				F77371741F46E0AF0024C5F3 /* uchardet.h */,
+				F773717D1F46E0B40024C5F3 /* libuchardet-ios.a */,
 				F7B4F1C71F44356F00B53B42 /* NCUchardet.h */,
 				F7B4F1C81F44356F00B53B42 /* NCUchardet.m */,
 			);
@@ -5307,7 +5313,10 @@
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/openssl";
+				LIBRARY_SEARCH_PATHS = (
+					"\"Libraries external/openssl\"",
+					"$(PROJECT_DIR)/iOSClient/Library/NCUchardet",
+				);
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
@@ -5355,7 +5364,10 @@
 				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/iOSClient.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/openssl";
+				LIBRARY_SEARCH_PATHS = (
+					"\"Libraries external/openssl\"",
+					"$(PROJECT_DIR)/iOSClient/Library/NCUchardet",
+				);
 				OTHER_LDFLAGS = (
 					"-Obj-C",
 					"-all_load",
