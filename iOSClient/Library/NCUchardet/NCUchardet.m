@@ -64,18 +64,23 @@
     uchardet_data_end(_detector);
     
     const char *charset = uchardet_get_charset(_detector);
-    NSString *encoding = [NSString stringWithCString:charset encoding:NSASCIIStringEncoding];
+    NSString *encodingName = [NSString stringWithCString:charset encoding:NSASCIIStringEncoding];
     
     uchardet_reset(_detector);
     
-    return encoding;
+    // Default UTF-8
+    if ([encodingName isEqualToString:@""])
+        encodingName = @"UTF-8";
+    
+    return encodingName;
 }
 
 - (CFStringEncoding)encodingCFStringDetectWithData:(NSData *)data
 {
     NSString *encodingName = [self encodingStringDetectWithData:data];
+    
     if ([encodingName isEqualToString:@""]) {
-        return kCFStringEncodingInvalidId;
+        return kCFStringEncodingUTF8;
     }
     
     CFStringEncoding encoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)encodingName);
