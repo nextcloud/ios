@@ -152,6 +152,10 @@
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    metadataNet.action = actionGetSharePermissions;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+
     [self initializeForm];
 }
 
