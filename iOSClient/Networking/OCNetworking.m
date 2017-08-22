@@ -1327,6 +1327,20 @@
     }];
 }
 
+- (void)getSharePermissions
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication getSharePermissionsOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+    }];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Activity =====
 #pragma --------------------------------------------------------------------------------------------

@@ -1250,6 +1250,14 @@
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
+    
+    [request getSharePermissionsOfServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  responseObject) {
+        
+        NSData *responseData = (NSData*) responseObject;
+
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        failureRequest(response, error, request.redirectedServer);
+    }];
 
 }
 
