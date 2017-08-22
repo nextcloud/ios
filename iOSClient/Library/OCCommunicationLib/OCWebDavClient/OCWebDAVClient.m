@@ -662,6 +662,34 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
+/*
+ <?xml version="1.0"?>
+ <a:propfind xmlns:a="DAV:" xmlns:b="http://open-collaboration-services.org/ns">
+	<a:prop>
+ <b:share-permissions/>
+	</a:prop>
+ </a:propfind>
+*/
+
+- (void)getSharePermissionsOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication
+            success:(void(^)(NSHTTPURLResponse *, id))success
+            failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
+    
+    NSParameterAssert(success);
+    
+    _requestMethod = @"PROPFIND";
+    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:serverPath parameters:nil];
+    
+    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><a:propfind xmlns:a=\"DAV:\" xmlns:b=\"http://open-collaboration-services.org/ns\"><a:prop><b:share-permissions/></a:prop></a:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    
+    [operation resume];
+}
+
 - (void) getCapabilitiesOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                          failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     _requestMethod = @"GET";
@@ -674,8 +702,6 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     [operation resume];
-
-    
 }
 
 
