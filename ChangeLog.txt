@@ -1,45 +1,89 @@
-	* Version 2.17.4 (xx.xx.2017)
-		See x
-	* Version 2.17.3 (23.05.2017)
-		See https://github.com/nextcloud/ios/milestone/7?closed=1
-	* Version 2.17.2 (05.05.2017)
-		See https://github.com/nextcloud/ios/milestone/6?closed=1
-	* Version 2.17.1 (26.04.2017)
-		See https://github.com/nextcloud/ios/milestone/5?closed=1
-	* Version 2.17 (21.04.2017)
-		* Improvement:
-			* Use milestone information
-		* Bug fixes:
-		* Build: xxxxx
-	
-	* Version 2.16 (06.01.2017)
-		* Improvement:
-			* Improvement: Upload all camera photos/videos. (Marino Faggiana)
-		* Build: 00012
+# Changelog
+All notable changes to this project will be documented in this file.
 
-	* Version 2.15 (12.12.2016)
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-		* Improvement:
-			* Improvement system for managed Synchronized. (Marino Faggiana)
-			* Improvement Control Center. (Marino Faggiana)
-			* Improvement system I/O for upload/download file, thumbnails and command to cloud. (Marino Faggiana)
-			* Improvement Automatic upload and full upload photos/videos. (Marino Faggiana)
-			* Remove limit to manual  upload. (Marino Faggiana)
-		* Bug fixes:
-			* Bugfix detect geolocation image. (Marino Faggiana)
-		* Build: 00301
-		
-	* Version 2.14 (01.11.2016)
+## [Unreleased]
 
-		* New features:
-			* Control if file exists in 'manual' upload. (Marino Faggiana)
-			* Add main-menu item : Folders on top.  (Marino Faggiana)
-		* Bug fixes:
-			* Improved (create new class) Synchronization folders. (Marino Faggiana)
-			* Improved 'Upload all camera photos/videos' bugfix if error block all, automatic default overwrite file if exists. (marino Faggiana)
-			* Detect Wi-Fi on automatic upload, problem database context. (Marino Faggiana)
-			* View on Control Center. (Marino Faggiana)
-			* Compatibility for iOS10
-		* Build: 00015
-	
-2016–10-31 Marino Faggiana <m.faggiana@twsweb.it>
+## [2.17.5] - 2017-07-28
+### Added
+- Feature: Set your own name of filename for uploads #297
+
+### Fixed
+- Fixes for automatic upload
+- Fix: "Photos" folder created at Photo upload while should not #303
+
+### Changed
+- See https://github.com/nextcloud/ios/releases/tag/2.17.5
+
+## [2.17.4] - 2017-07-17
+### Added
+- Improvements on Auto Upload
+- Show "Shares" list in "More" tab
+- Use gestures on Files tab to reach options quickly
+- Improved badges for favorites and offline available
+
+### Fixed
+- Fix: Battery bar visible as only icon of system bar during first use
+- Fix: Favorite folders are not being downloaded
+
+### Changed 
+- Improvements on UI (many small things)
+- Improvements on performance and stability
+- See https://github.com/nextcloud/ios/releases/tag/2.17.4
+
+## [2.17.3] - 2017-05-23
+### Changed 
+- See https://github.com/nextcloud/ios/milestone/7?closed=1
+
+## [2.17.2] - 2017-05-05
+### Changed 
+- See https://github.com/nextcloud/ios/milestone/6?closed=1
+
+## [2.17.1] - 2017-04-26
+### Changed 
+- See https://github.com/nextcloud/ios/milestone/5?closed=1
+
+## [2.17] - 2017-04-21
+### Changed 
+- See https://github.com/nextcloud/ios/milestone/6?closed=1
+### Added
+- Improvement: Use milestone information
+
+## [2.16] - 2017-01-06
+### Changed 
+- Build: 00012
+
+### Added
+- Improvement: Upload all camera photos/videos. (Marino Faggiana)
+
+## [2.15] - 2016-12-12
+### Changed 
+- Build: 00301
+
+### Added
+- Improvement system for managed Synchronized. (Marino Faggiana)
+- Improvement Control Center. (Marino Faggiana)
+- Improvement system I/O for upload/download file, thumbnails and command to cloud. (Marino Faggiana)
+- Improvement Automatic upload and full upload photos/videos. (Marino Faggiana)
+- Remove limit to manual  upload. (Marino Faggiana)
+
+### Fixed
+- Bugfix detect geolocation image. (Marino Faggiana)
+
+## [2.14] - 2016-11-01
+### Changed 
+- Build: 00015
+
+### Added
+- Control if file exists in 'manual' upload. (Marino Faggiana)
+- Add main-menu item : Folders on top.  (Marino Faggiana)
+
+### Fixed
+- Bugfix detect geolocation image. (Marino Faggiana)
+- Improved (create new class) Synchronization folders. (Marino Faggiana)
+- Improved 'Upload all camera photos/videos' bugfix if error block all, automatic default overwrite file if exists. (marino Faggiana)
+- Detect Wi-Fi on automatic upload, problem database context. (Marino Faggiana)
+- View on Control Center. (Marino Faggiana)
+- Compatibility for iOS10
