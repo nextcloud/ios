@@ -1244,16 +1244,28 @@
     }];
 }
 
-- (void) getSharePermissionsOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
+- (void) getSharePermissionFile:(NSString *)fileName onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *permission, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
     
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    fileName = [fileName encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request getSharePermissionsOfServer:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull operation, id  responseObject) {
+    [request getSharePermissionFile:fileName onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull response, id  responseObject) {
         
-        NSData *responseData = (NSData*) responseObject;
+        if (successRequest) {
+            
+            NSData *responseData = (NSData*) responseObject;
+            
+            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+            NSLog(@"newStrReadFolder: %@", newStr);
+            
+            OCXMLParser *parser = [[OCXMLParser alloc]init];
+            [parser initParserWithData:responseData];
+            
+            //Return success
+            successRequest(response, nil, request.redirectedServer);
+        }
 
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failureRequest(response, error, request.redirectedServer);

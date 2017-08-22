@@ -1327,14 +1327,16 @@
     }];
 }
 
-- (void)getSharePermissions
+- (void)getSharePermissionFile
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getSharePermissionsOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
+    [communication getSharePermissionFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permission, NSString *redirectedServer) {
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         

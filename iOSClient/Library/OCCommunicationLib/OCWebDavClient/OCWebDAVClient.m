@@ -662,23 +662,14 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-/*
- <?xml version="1.0"?>
- <a:propfind xmlns:a="DAV:" xmlns:b="http://open-collaboration-services.org/ns">
-	<a:prop>
- <b:share-permissions/>
-	</a:prop>
- </a:propfind>
-*/
-
-- (void)getSharePermissionsOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication
+- (void)getSharePermissionFile:(NSString*)fileName onCommunication:(OCCommunication *)sharedOCCommunication
             success:(void(^)(NSHTTPURLResponse *, id))success
             failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
     
     NSParameterAssert(success);
     
     _requestMethod = @"PROPFIND";
-    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:serverPath parameters:nil];
+    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:fileName parameters:nil];
     
     [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><a:propfind xmlns:a=\"DAV:\" xmlns:b=\"http://open-collaboration-services.org/ns\"><a:prop><b:share-permissions/></a:prop></a:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
     
