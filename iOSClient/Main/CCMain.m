@@ -5246,6 +5246,7 @@
     // Aggiungiamo il Tap per le shared
     if (isShare || [shareLink length] > 0 || [shareUserAndGroup length] > 0 || isMounted) {
     
+        // Shared with you
         if (isShare) {
        
             if (metadata.directory) {
@@ -5262,6 +5263,7 @@
             [cell.shared addGestureRecognizer:tap];
         }
         
+        // Mounted with you
         if (isMounted) {
             
             if (metadata.directory) {
@@ -5278,6 +5280,7 @@
             [cell.shared addGestureRecognizer:tap];
         }
         
+        // You share
         if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) {
         
             if (metadata.directory) {
