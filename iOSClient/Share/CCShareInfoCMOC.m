@@ -25,10 +25,13 @@
 #import "XLFormViewController.h"
 #import "XLForm.h"
 #import "AppDelegate.h"
+#import "CCHud.h"
 #import "NCBridgeSwift.h"
 
 @interface CCShareInfoCMOC ()
-
+{
+    CCHud *_hud;
+}
 @end
 
 /*
@@ -119,6 +122,9 @@ const PERMISSION_ALL = 31;
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
+    _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
+    [_hud visibleHudTitle:@"" mode:MBProgressHUDModeIndeterminate color:nil];
+    
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     metadataNet.action = actionGetSharePermissionsFile;
     metadataNet.fileName = _metadata.fileNameData;
@@ -134,6 +140,8 @@ const PERMISSION_ALL = 31;
 
 - (void)getSharePermissionsFileSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions
 {
+    [_hud hideHud];
+
     if (permissions == nil)
         return;
     
@@ -172,6 +180,8 @@ const PERMISSION_ALL = 31;
 
 - (void)getSharePermissionsFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 {
+    [_hud hideHud];
+
     [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     [self dismissViewControllerAnimated:YES completion:nil];
