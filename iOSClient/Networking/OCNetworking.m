@@ -1327,7 +1327,7 @@
     }];
 }
 
-- (void)getSharePermissionFile
+- (void)getSharePermissionsFile
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
@@ -1336,7 +1336,7 @@
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getSharePermissionFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permission, NSString *redirectedServer) {
+    [communication getSharePermissionsFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer) {
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         

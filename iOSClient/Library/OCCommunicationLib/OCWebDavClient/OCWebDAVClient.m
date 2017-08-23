@@ -662,7 +662,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)getSharePermissionFile:(NSString*)fileName onCommunication:(OCCommunication *)sharedOCCommunication
+- (void)getSharePermissionsFile:(NSString*)fileName onCommunication:(OCCommunication *)sharedOCCommunication
             success:(void(^)(NSHTTPURLResponse *, id))success
             failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
     

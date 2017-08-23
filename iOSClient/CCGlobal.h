@@ -203,7 +203,7 @@ extern NSString *const urlBaseUploadDB;
 #define actionGetUserAndGroup                           @"getUserAndGroup"
 #define actionGetUserProfile                            @"getUserProfile"
 #define actionGetNotificationServer                     @"getNotificationServer"
-#define actionGetSharePermissionFile                    @"getSharePermissionFile"
+#define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
 #define actionGetExternalSitesServer                    @"getExternalSitesServer"
 #define actionMiddlewarePing                            @"middlewarePing"
 #define actionListingFavorites                          @"listingFavorites"

@@ -237,6 +237,8 @@ NSString *OCCWebDAVURIKey           = @"uri";
         _xmlBucket = nil;
     } else if ([elementName isEqualToString:@"oc:favorite"]) {
         _currentFile.isFavorite = [_xmlChars boolValue];
+    } else if ([elementName isEqualToString:@"x1:share-permissions"]) {
+        _currentFile.permissions = _xmlChars;
     }
 }
 

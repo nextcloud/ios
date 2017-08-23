@@ -1244,33 +1244,40 @@
     }];
 }
 
-- (void) getSharePermissionFile:(NSString *)fileName onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *permission, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
+- (void)getSharePermissionsFile:(NSString *)fileName onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
     
     fileName = [fileName encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request getSharePermissionFile:fileName onCommunication:sharedOCComunication success:^(NSHTTPURLResponse * _Nonnull response, id  responseObject) {
+    [request getSharePermissionsFile:fileName onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         if (successRequest) {
             
-            NSData *responseData = (NSData*) responseObject;
+            NSString *permissions;
+            NSData *responseData = (NSData *)responseObject;
             
-            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+            NSString *newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
             NSLog(@"newStrReadFolder: %@", newStr);
             
             OCXMLParser *parser = [[OCXMLParser alloc]init];
             [parser initParserWithData:responseData];
+            NSMutableArray *directoryList = [parser.directoryList mutableCopy];
+            
+            if ([directoryList count] == 1) {
+                OCFileDto *file = [directoryList objectAtIndex:0];
+                permissions = file.permissions;
+            }
             
             //Return success
-            successRequest(response, nil, request.redirectedServer);
+            successRequest(response, permissions, request.redirectedServer);
         }
-
+        
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
         failureRequest(response, error, request.redirectedServer);
     }];
-
 }
 
 - (void) getCapabilitiesOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
