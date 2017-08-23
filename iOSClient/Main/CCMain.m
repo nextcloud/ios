@@ -5251,17 +5251,15 @@
             if (metadata.directory) {
                 
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brand];
-                cell.shared.userInteractionEnabled = NO;
-                
-            } else {
-            
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand];
-            
-                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
-                [tap setNumberOfTapsRequired:1];
-                cell.shared.userInteractionEnabled = YES;
-                [cell.shared addGestureRecognizer:tap];
+                cell.accessoryType = UITableViewCellAccessoryNone;
             }
+            
+            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand];
+            
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
+            [tap setNumberOfTapsRequired:1];
+            cell.shared.userInteractionEnabled = YES;
+            [cell.shared addGestureRecognizer:tap];
         }
         
         if (isMounted) {
@@ -5269,17 +5267,15 @@
             if (metadata.directory) {
                 
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_external"] color:[NCBrandColor sharedInstance].brand];
-                cell.shared.userInteractionEnabled = NO;
-                
-            } else {
-                
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareMounted"] color:[NCBrandColor sharedInstance].brand];
-                
-                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
-                [tap setNumberOfTapsRequired:1];
-                cell.shared.userInteractionEnabled = YES;
-                [cell.shared addGestureRecognizer:tap];
+                cell.accessoryType = UITableViewCellAccessoryNone;
             }
+                
+            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareMounted"] color:[NCBrandColor sharedInstance].brand];
+                
+            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
+            [tap setNumberOfTapsRequired:1];
+            cell.shared.userInteractionEnabled = YES;
+            [cell.shared addGestureRecognizer:tap];
         }
         
         if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) {
