@@ -484,6 +484,7 @@
 "_share_permission_share_"          = "Can share";
 "_share_permission_rename_"         = "Can rename";
 "_share_permission_move_"           = "Can move";
+"_share_permission_read_"           = "Can read";
 "_share_permission_info_"           = "Sharing information";
 "_share_permission_path_"           = "File/Folder";
 "_share_permission_type_"           = "Type";

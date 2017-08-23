@@ -32,15 +32,12 @@
 @end
 
 /*
- #define k_permission_shared @"S"
- #define k_permission_can_share @"R"
- #define k_permission_mounted @"M"
- #define k_permission_file_can_write @"W"
- #define k_permission_can_create_file @"C"
- #define k_permission_can_create_folder @"K"
- #define k_permission_can_delete @"D"
- #define k_permission_can_rename @"N"
- #define k_permission_can_move @"V"
+const PERMISSION_CREATE = 4;
+const PERMISSION_READ = 1;
+const PERMISSION_UPDATE = 2;
+const PERMISSION_DELETE = 8;
+const PERMISSION_SHARE = 16;
+const PERMISSION_ALL = 31;
 */
 
 @implementation CCShareInfoCMOC
@@ -66,57 +63,27 @@
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_share_permission_title_", nil)];
     [form addFormSection:section];
     
-    if (self.metadata.directory == NO) {
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"create" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_create_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [section addFormRow:row];
     
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"edit" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_file_can_write_", nil)];
-        if ([self.metadata.permissions rangeOfString:k_permission_file_can_write].location != NSNotFound) row.value = @1;
-        else row.value = @0;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
-        [section addFormRow:row];
-    }
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"read" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_read_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [section addFormRow:row];
     
-    if (self.metadata.directory == YES) {
-        
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"createfile" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_create_file_", nil)];
-        if ([self.metadata.permissions rangeOfString:k_permission_can_create_file].location != NSNotFound) row.value = @1;
-        else row.value = @0;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
-        [section addFormRow:row];
-    
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"createfolder" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_create_folder_", nil)];
-        if ([self.metadata.permissions rangeOfString:k_permission_can_create_folder].location != NSNotFound) row.value = @1;
-        else row.value = @0;
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
-        [section addFormRow:row];
-    }
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"change" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_change_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delete" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_delete_", nil)];
-    if ([self.metadata.permissions rangeOfString:k_permission_can_delete].location != NSNotFound) row.value = @1;
-    else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
-    [section addFormRow:row];
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"rename" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_rename_", nil)];
-    if ([self.metadata.permissions rangeOfString:k_permission_can_rename].location != NSNotFound) row.value = @1;
-    else row.value = @0;
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
-    [section addFormRow:row];
-
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"move" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_move_", nil)];
-    if ([self.metadata.permissions rangeOfString:k_permission_can_move].location != NSNotFound) row.value = @1;
-    else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"share" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_share_", nil)];
-    if ([self.metadata.permissions rangeOfString:k_permission_can_share].location != NSNotFound) row.value = @1;
-    else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
     [section addFormRow:row];
@@ -167,39 +134,36 @@
 
 - (void)getSharePermissionsFileSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions
 {
+    if (permissions == nil)
+        return;
+    
+    NSInteger iPermissions = [permissions integerValue];
+
     // ----------------------
     
-    XLFormRowDescriptor *rowEdit = [self.form formRowWithTag:@"edit"];
-    XLFormRowDescriptor *rowCreateFile = [self.form formRowWithTag:@"createfile"];
-    XLFormRowDescriptor *rowCreateFolder = [self.form formRowWithTag:@"createfolder"];
+    XLFormRowDescriptor *rowCreate = [self.form formRowWithTag:@"create"];
+    XLFormRowDescriptor *rowRead = [self.form formRowWithTag:@"read"];
+    XLFormRowDescriptor *rowChange = [self.form formRowWithTag:@"change"];
     XLFormRowDescriptor *rowDelete = [self.form formRowWithTag:@"delete"];
-    XLFormRowDescriptor *rowRename = [self.form formRowWithTag:@"rename"];
-    XLFormRowDescriptor *rowMove = [self.form formRowWithTag:@"move"];
     XLFormRowDescriptor *rowShare = [self.form formRowWithTag:@"share"];
     
     // ------------------------------------------------------------------
     
-    if (self.metadata.directory == NO) {
+    if ([UtilsFramework isPermissionToCanCreate:iPermissions]) rowCreate.value = @1;
+    else rowCreate.value = @0;
         
-        
-    } else {
-        
-    }
+    if ([UtilsFramework isPermissionToRead:iPermissions]) rowRead.value = @1;
+    else rowRead.value = @0;
+
+    if ([UtilsFramework isPermissionToCanChange:iPermissions]) rowChange.value = @1;
+    else rowChange.value = @0;
+
+    if ([UtilsFramework isPermissionToCanDelete:iPermissions]) rowDelete.value = @1;
+    else rowDelete.value = @0;
+
+    if ([UtilsFramework isPermissionToCanShare:iPermissions]) rowShare.value = @1;
+    else rowShare.value = @0;
     
-    
-    /*
-    if ([[CCUtility getBlockCode] length]) {
-        rowBloccoPasscode.title = NSLocalizedString(@"_lock_active_", nil);
-        [rowBloccoPasscode.cellConfig setObject:[UIImage imageNamed:@"settingsPasscodeYES"] forKey:@"imageView.image"];
-    } else {
-        rowBloccoPasscode.title = NSLocalizedString(@"_lock_not_active_", nil);
-        [rowBloccoPasscode.cellConfig setObject:[UIImage imageNamed:@"settingsPasscodeNO"] forKey:@"imageView.image"];
-    }
-    
-    if ([CCUtility getSimplyBlockCode]) [rowSimplyPasscode setValue:@1]; else [rowSimplyPasscode setValue:@0];
-    if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
-    if ([CCUtility getFavoriteOffline]) [rowFavoriteOffline setValue:@1]; else [rowFavoriteOffline setValue:@0];
-    */
     
     // -----------------------------------------------------------------
     
