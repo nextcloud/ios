@@ -147,7 +147,7 @@ const PERMISSION_ALL = 31;
     
     NSInteger iPermissions = [permissions integerValue];
 
-    // ----------------------
+    // ------------------------------------------------------------------
     
     XLFormRowDescriptor *rowCreate = [self.form formRowWithTag:@"create"];
     XLFormRowDescriptor *rowRead = [self.form formRowWithTag:@"read"];
@@ -171,8 +171,7 @@ const PERMISSION_ALL = 31;
 
     if ([UtilsFramework isPermissionToCanShare:iPermissions]) rowShare.value = @1;
     else rowShare.value = @0;
-    
-    
+
     // -----------------------------------------------------------------
     
     [self.tableView reloadData];
