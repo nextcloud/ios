@@ -162,6 +162,58 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Delegate getSharePermissions =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getSharePermissionsFileSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions
+{
+    // ----------------------
+    
+    XLFormRowDescriptor *rowEdit = [self.form formRowWithTag:@"edit"];
+    XLFormRowDescriptor *rowCreateFile = [self.form formRowWithTag:@"createfile"];
+    XLFormRowDescriptor *rowCreateFolder = [self.form formRowWithTag:@"createfolder"];
+    XLFormRowDescriptor *rowDelete = [self.form formRowWithTag:@"delete"];
+    XLFormRowDescriptor *rowRename = [self.form formRowWithTag:@"rename"];
+    XLFormRowDescriptor *rowMove = [self.form formRowWithTag:@"move"];
+    XLFormRowDescriptor *rowShare = [self.form formRowWithTag:@"share"];
+    
+    // ------------------------------------------------------------------
+    
+    if (self.metadata.directory == NO) {
+        
+        
+    } else {
+        
+    }
+    
+    
+    /*
+    if ([[CCUtility getBlockCode] length]) {
+        rowBloccoPasscode.title = NSLocalizedString(@"_lock_active_", nil);
+        [rowBloccoPasscode.cellConfig setObject:[UIImage imageNamed:@"settingsPasscodeYES"] forKey:@"imageView.image"];
+    } else {
+        rowBloccoPasscode.title = NSLocalizedString(@"_lock_not_active_", nil);
+        [rowBloccoPasscode.cellConfig setObject:[UIImage imageNamed:@"settingsPasscodeNO"] forKey:@"imageView.image"];
+    }
+    
+    if ([CCUtility getSimplyBlockCode]) [rowSimplyPasscode setValue:@1]; else [rowSimplyPasscode setValue:@0];
+    if ([CCUtility getOnlyLockDir]) [rowOnlyLockDir setValue:@1]; else [rowOnlyLockDir setValue:@0];
+    if ([CCUtility getFavoriteOffline]) [rowFavoriteOffline setValue:@1]; else [rowFavoriteOffline setValue:@0];
+    */
+    
+    // -----------------------------------------------------------------
+    
+    [self.tableView reloadData];
+}
+
+- (void)getSharePermissionsFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+{
+    [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Button =====
 #pragma --------------------------------------------------------------------------------------------
 

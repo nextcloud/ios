@@ -1338,8 +1338,37 @@
     
     [communication getSharePermissionsFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer) {
         
+        if([self.delegate respondsToSelector:@selector(getSharePermissionsFileSuccess:permissions:)])
+            [self.delegate getSharePermissionsFileSuccess:_metadataNet permissions:permissions];
+        
+        [self complete];
+        
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        // Error
+        if ([self.delegate respondsToSelector:@selector(getSharePermissionsFileFailure:message:errorCode:)]) {
+            
+            if (errorCode == 503)
+                [self.delegate getSharePermissionsFileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+            else
+                [self.delegate getSharePermissionsFileFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        }
+        
+#ifndef EXTENSION
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized)
+            [app openLoginView:self loginType:loginModifyPasswordUser];
+#endif
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
     }];
 }
 

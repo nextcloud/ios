@@ -84,6 +84,9 @@
 - (void)getUserAndGroupSuccess:(CCMetadataNet *)metadataNet items:(NSArray *)items;
 - (void)getUserAndGroupFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
+- (void)getSharePermissionsFileSuccess:(CCMetadataNet *)metadataNet permissions:(NSString *)permissions;
+- (void)getSharePermissionsFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 // Capabilities
 - (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities;
 - (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
@@ -114,6 +117,7 @@
 // Favorite
 - (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet;
 - (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 - (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas;
 - (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
