@@ -51,8 +51,8 @@
 
 + (void)initialize
 {
-    [iRate sharedInstance].daysUntilPrompt = 10;
-    [iRate sharedInstance].usesUntilPrompt = 10;
+    [iRate sharedInstance].daysUntilPrompt = 5;
+    [iRate sharedInstance].usesUntilPrompt = 5;
     [iRate sharedInstance].promptForNewVersionIfUserRated = true;
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": [CCUtility getUserAgent]}];
