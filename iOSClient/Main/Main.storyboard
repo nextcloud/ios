@@ -81,14 +81,14 @@
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="Xym-IM-aqh">
-                                <rect key="frame" x="0.0" y="164" width="375" height="503"/>
+                                <rect key="frame" x="0.0" y="164" width="375" height="387"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="zQQ-52-W9I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="50"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="375" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="zQQ-52-W9I" id="Zho-os-HYj">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="49.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RZt-EQ-32U">
@@ -180,11 +180,11 @@
                             </view>
                         </subviews>
                         <constraints>
-                            <constraint firstAttribute="bottom" secondItem="Xym-IM-aqh" secondAttribute="bottom" id="0E5-2f-72F"/>
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="top" secondItem="XtC-Je-LUc" secondAttribute="topMargin" id="2z9-1h-2dU"/>
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="top" secondItem="myb-PI-7vm" secondAttribute="bottom" constant="100" id="3Bb-ws-1xn"/>
                             <constraint firstAttribute="bottom" secondItem="NxR-5x-edP" secondAttribute="bottom" id="9bH-mG-bse"/>
                             <constraint firstAttribute="trailing" secondItem="cxb-Vw-8zb" secondAttribute="trailing" id="AjJ-cB-0xu"/>
+                            <constraint firstItem="NxR-5x-edP" firstAttribute="top" secondItem="Xym-IM-aqh" secondAttribute="bottom" id="CdB-hI-Ydw"/>
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="left" secondItem="DWx-1W-vs0" secondAttribute="left" constant="-15" id="CzV-Na-OWE"/>
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="leading" secondItem="cxb-Vw-8zb" secondAttribute="leading" id="DKF-Y7-cmv"/>
                             <constraint firstAttribute="trailing" secondItem="NxR-5x-edP" secondAttribute="trailing" id="LJB-St-B4Y"/>
