@@ -50,7 +50,7 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9fz-sr-8Gv" userLabel="message">
-                                            <rect key="frame" x="46" y="31" width="320" height="9.5"/>
+                                            <rect key="frame" x="46" y="31" width="311" height="10"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="5" id="w3S-Mr-J41"/>
                                             </constraints>
@@ -62,7 +62,7 @@
                                     <constraints>
                                         <constraint firstItem="pg1-7p-7Rz" firstAttribute="top" secondItem="9Bv-1W-yVV" secondAttribute="topMargin" constant="-5" id="1w3-ai-rMk"/>
                                         <constraint firstAttribute="bottomMargin" secondItem="9fz-sr-8Gv" secondAttribute="bottom" constant="1" id="FnM-0E-rXs"/>
-                                        <constraint firstAttribute="trailingMargin" secondItem="9fz-sr-8Gv" secondAttribute="trailing" constant="1" id="NcX-bX-zFO"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="9fz-sr-8Gv" secondAttribute="trailing" constant="10" id="NcX-bX-zFO"/>
                                         <constraint firstItem="9fz-sr-8Gv" firstAttribute="leading" secondItem="9Bv-1W-yVV" secondAttribute="leadingMargin" constant="38" id="OV5-dL-Q2H"/>
                                         <constraint firstItem="YPu-No-c8x" firstAttribute="top" secondItem="9Bv-1W-yVV" secondAttribute="topMargin" constant="-5" id="Z41-Sh-h01"/>
                                         <constraint firstAttribute="trailingMargin" secondItem="YPu-No-c8x" secondAttribute="trailing" constant="1" id="ato-Mb-ehY"/>
