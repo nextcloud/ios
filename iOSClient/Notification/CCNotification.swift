@@ -132,22 +132,6 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         }
     }
     
-    /*
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
-        
-        if notification.message.characters.count > 0 {
-            
-            return 160
-            
-        } else {
-            
-            return 120
-        }
-    }
-    */
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
         if self.resultSearchController.isActive {
