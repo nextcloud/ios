@@ -1742,7 +1742,7 @@
         if (([actualBuild compare:@"10" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
             // Remove All old Photo Library
-            [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
+            //[[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
         }
     }
     
