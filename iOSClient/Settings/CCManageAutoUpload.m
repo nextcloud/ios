@@ -228,7 +228,9 @@
                 [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadVideo" state:YES];
             }
             
-            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+            });
             
         } else {
             
@@ -280,9 +282,6 @@
             
             [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
             
-            [app.netQueueUpload cancelAllOperations];
-            [app.netQueueUploadWWan cancelAllOperations];
-            
             [[CCNetworking sharedNetworking] settingSessionsDownload:NO upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
             
             [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadFull" state:NO];
@@ -293,8 +292,11 @@
         
         [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadImage" state:[[rowDescriptor.value valueData] boolValue]];
 
-        if ([[rowDescriptor.value valueData] boolValue] == YES)
-            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+        if ([[rowDescriptor.value valueData] boolValue] == YES) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+            });
+        }
     }
     
     if ([rowDescriptor.tag isEqualToString:@"autoUploadWWAnPhoto"]) {
@@ -306,8 +308,11 @@
     
         [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadVideo" state:[[rowDescriptor.value valueData] boolValue]];
 
-        if ([[rowDescriptor.value valueData] boolValue] == YES)
-            [[NCAutoUpload sharedInstance] alignPhotoLibrary];            
+        if ([[rowDescriptor.value valueData] boolValue] == YES){
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+            });
+        }
     }
     
     if ([rowDescriptor.tag isEqualToString:@"autoUploadWWAnVideo"]) {
@@ -345,7 +350,6 @@
     XLFormRowDescriptor *rowAutoUploadCreateSubfolder = [self.form formRowWithTag:@"autoUploadCreateSubfolder"];
 
     XLFormRowDescriptor *rowAutoUploadFileName = [self.form formRowWithTag:@"autoUploadFileName"];
-
     
     // - STATUS ---------------------
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -374,7 +378,8 @@
     if (tableAccount.autoUploadCreateSubfolder)
         [rowAutoUploadCreateSubfolder setValue:@1]; else [rowAutoUploadCreateSubfolder setValue:@0];
     
-    // - HIDDEN ---------------------
+
+    // - HIDDEN --------------------------------------------------------------------------
     
     rowAutoUploadImage.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     rowAutoUploadWWAnPhoto.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
@@ -389,8 +394,8 @@
     rowAutoUploadCreateSubfolder.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
     rowAutoUploadFileName.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
-
-    // ----------------------
+    
+    // -----------------------------------------------------------------------------------
     
     [self.tableView reloadData];
     

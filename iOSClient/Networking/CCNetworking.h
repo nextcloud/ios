@@ -46,7 +46,6 @@
 
 + (CCNetworking *)sharedNetworking;
 
-- (void)settingDelegate:(id <CCNetworkingDelegate>)delegate;
 - (void)settingAccount;
 
 // Sessions - Task
@@ -67,9 +66,11 @@
 - (void)uploadTemplate:(NSString *)fileNamePrint fileNameCrypto:(NSString *)fileNameCrypto serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
-// Verify
+// Verify Download/Upload
 - (void)verifyDownloadInProgress;
+- (void)verifyDownloadInError:(id)delegate;
 - (void)verifyUploadInProgress;
+- (void)verifyUploadInErrorOrWait;
 
 @end
 
@@ -97,6 +98,7 @@
 @property BOOL cryptated;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, weak) id delegate;
+@property (nonatomic, strong) NSString *depth;
 @property BOOL directory;
 @property (nonatomic, strong) NSString *directoryID;
 @property (nonatomic, strong) NSString *directoryIDTo;
@@ -116,7 +118,6 @@
 @property (nonatomic, strong) NSString *password;
 @property (nonatomic, strong) NSString *pathFolder;
 @property NSInteger priority;
-@property (nonatomic, strong) NSOperationQueue *queue;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *serverUrlTo;
 @property (nonatomic, strong) NSString *selector;

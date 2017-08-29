@@ -404,7 +404,6 @@
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-        metadataNet.action = actionUploadAsset;
         metadataNet.assetLocalIdentifier = asset.localIdentifier;
         if (assetsFull) {
             metadataNet.selector = selectorUploadAutoUploadAll;
@@ -478,100 +477,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Load Auto Upload ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)loadAutoUpload:(NSNumber *)maxConcurrent
-{
-    CCMetadataNet *metadataNet;
-    
-    // Stop Timer
-    [app.timerProcessAutoUpload invalidate];
-    
-    NSInteger maxConcurrentUpload = [maxConcurrent integerValue];
-    NSInteger counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
-    NSInteger counterNewUpload = 0;
- 
-    // ------------------------- <selector Auto Upload> -------------------------
-    
-    while (counterUploadInQueueAndInLock < maxConcurrentUpload) {
-        
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUpload];
-        if (metadataNet) {
-            
-            // Priority Error only in Foreground
-            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
-                continue;
-            
-            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:app.activeMain];
-            
-            counterNewUpload++;
-            
-        } else
-            break;
-        
-        counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
-    }
-    
-    // ------------------------- <selector Auto Upload All> ----------------------
-    
-    // Verify num error MAX 10 after STOP
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", app.activeAccount, selectorUploadAutoUploadAll, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
-    
-    NSInteger errorCount = [metadatas count];
-    
-    if (errorCount >= 10) {
-        
-        [app messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-    
-    } else {
-    
-        while (counterUploadInQueueAndInLock < maxConcurrentUpload) {
-        
-            metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUploadAll];
-            if (metadataNet) {
-                
-                // Priority Error only in Foreground
-                if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
-                    continue;
-
-                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:app.activeMain];
-                
-                counterNewUpload++;
-        
-            } else
-                break;
-            
-            counterUploadInQueueAndInLock = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
-        }
-    }
-    
-    // Verify Lock
-    NSInteger counterUploadInQueue = [app getNumberUploadInQueues] + [app getNumberUploadInQueuesWWan];
-    NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getLockQueueUpload];
-
-    if (counterNewUpload == 0 && counterUploadInQueue == 0 && [tableMetadatasInLock count] > 0) {
-        
-        // Unlock
-        for (tableMetadata *metadata in tableMetadatasInLock) {
-            
-            if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
-                [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
-        }
-    }
-    
-    // verify Download/Upload 
-    if (counterNewUpload == 0) {
-        
-        [[CCNetworking sharedNetworking] verifyDownloadInProgress];
-        [[CCNetworking sharedNetworking] verifyUploadInProgress];
-    }
-
-    // Start Timer
-    app.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoUpload target:app selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Create Folder SubFolder Auto Upload Folder Photos ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -581,14 +486,15 @@
     
     if ([ocNetworking automaticCreateFolderSync:folderPhotos]) {
         
-        (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:folderPhotos permissions:@""];
+        (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:folderPhotos permissions:nil];
         
     } else {
         
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:folderPhotos fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
         
-        [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+        if ([selector isEqualToString:selectorUploadAutoUploadAll])
+            [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 
         return false;
     }
@@ -600,14 +506,15 @@
             
             if ([ocNetworking automaticCreateFolderSync:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
                 
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] permissions:@""];
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] permissions:nil];
                 
             } else {
                 
                 // Activity
                 [[NCManageDatabase sharedInstance] addActivityClient:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
                 
-                [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                if ([selector isEqualToString:selectorUploadAutoUploadAll])
+                    [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 
                 return false;
             }
@@ -662,17 +569,15 @@
             if (assetsFull == NO) {
             
                 NSString *creationDate;
-                NSString *modificationDate;
                 NSString *idAsset;
-                
+
                 NSArray *idsAsset = [[NCManageDatabase sharedInstance] getPhotoLibraryIdAssetWithImage:account.autoUploadImage video:account.autoUploadVideo];
                 
                 for (PHAsset *asset in assets) {
                     
                     (asset.creationDate != nil) ? (creationDate = [NSString stringWithFormat:@"%@", asset.creationDate]) : (creationDate = @"");
-                    (asset.modificationDate != nil) ? (modificationDate = [NSString stringWithFormat:@"%@", asset.modificationDate]) : (modificationDate = @"");
                     
-                    idAsset = [NSString stringWithFormat:@"%@%@%@%@", account.account, asset.localIdentifier, creationDate, modificationDate];
+                    idAsset = [NSString stringWithFormat:@"%@%@%@", account.account, asset.localIdentifier, creationDate];
                     
                     if (![idsAsset containsObject: idAsset])
                         [newAssets addObject:asset];
@@ -696,15 +601,14 @@
 
 - (void)alignPhotoLibrary
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+
+    PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES alignPhotoLibrary:YES];
         
-        tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:app.activeAccount];
+    (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
 
-        PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES alignPhotoLibrary:YES];
-        (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
-
-        NSLog(@"Align Photo Library %lu", (unsigned long)[assets count]);
-    });
+    NSLog(@"Align Photo Library %lu", (unsigned long)[assets count]);
 }
 
 @end

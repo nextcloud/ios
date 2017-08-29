@@ -15,8 +15,6 @@
 #import <QuartzCore/QuartzCore.h>
 #import "AHKActionSheet.h"
 #import "AHKActionSheetViewController.h"
-#import "UIImage+AHKAdditions.h"
-#import "UIWindow+AHKAdditions.h"
 
 
 static const NSTimeInterval kDefaultAnimationDuration = 0.2f;
@@ -55,10 +53,9 @@ static const CGFloat maxWidth = 414.0f;
 @property (strong, nonatomic) NSMutableArray *items;
 @property (weak, nonatomic, readwrite) UIWindow *previousKeyWindow;
 @property (strong, nonatomic) UIWindow *window;
-@property (weak, nonatomic) UIImageView *blurredBackgroundView;
+@property (weak, nonatomic) UIView *blurredBackgroundView;
 @property (weak, nonatomic) UITableView *tableView;
 @property (weak, nonatomic) UIButton *cancelButton;
-@property (weak, nonatomic) UIView *cancelButtonShadowView;
 @end
 
 @implementation AHKActionSheet
@@ -72,9 +69,6 @@ static const CGFloat maxWidth = 414.0f;
     }
 
     AHKActionSheet *appearance = [self appearance];
-    [appearance setBlurRadius:0.0f];
-    [appearance setBlurTintColor:[UIColor colorWithWhite:0.0f alpha:0.5f]];
-    [appearance setBlurSaturationDeltaFactor:1.8f];
     [appearance setButtonHeight:50.0f];
     [appearance setSeparatorHeight:5.0f];
     [appearance setCancelButtonHeight:44.0f];
@@ -83,22 +77,9 @@ static const CGFloat maxWidth = 414.0f;
     [appearance setButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f]}];
     [appearance setDisableButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f]}];
     [appearance setDestructiveButtonTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:17.0f], NSForegroundColorAttributeName : [UIColor redColor] }];
-    [appearance setTitleTextAttributes:@{ NSFontAttributeName : [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName : [UIColor grayColor] }];
     [appearance setCancelOnPanGestureEnabled:@(NO)];
     [appearance setCancelOnTapEmptyAreaEnabled:@(YES)];
     [appearance setAnimationDuration:kDefaultAnimationDuration];
-}
-
-- (instancetype)initWithTitle:(NSString *)title
-{
-    self = [super init];
-
-    if (self) {
-        _title = [title copy];
-        _cancelButtonTitle = @"Cancel";
-    }
-
-    return self;
 }
 
 - (instancetype)initWithView:(UIView *)view title:(NSString *)title
@@ -112,11 +93,6 @@ static const CGFloat maxWidth = 414.0f;
     }
     
     return self;
-}
-
-- (instancetype)init
-{
-    return [self initWithTitle:nil];
 }
 
 - (void)dealloc
@@ -170,13 +146,13 @@ static const CGFloat maxWidth = 414.0f;
     
     if (item.type == AHKActionSheetButtonTypeDisabled) {
         
-        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(15, _buttonHeight/2 - (30/2), 30, 30)];
+        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, _buttonHeight/2 - (30/2), 30, 30)];
         imageView.backgroundColor = [UIColor clearColor];
         [imageView setImage:item.image];
         
     } else {
         
-        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(15, _buttonHeight/2 - (25/2), 25, 25)];
+        imageView = [[UIImageView alloc]initWithFrame:CGRectMake(20, _buttonHeight/2 - (25/2), 25, 25)];
         
         BOOL useTemplateMode = [UIImage instancesRespondToSelector:@selector(imageWithRenderingMode:)] && [self.automaticallyTintButtonImages boolValue];
 
@@ -346,15 +322,15 @@ static const CGFloat maxWidth = 414.0f;
     }
 
     self.previousKeyWindow = [UIApplication sharedApplication].keyWindow;
-    UIImage *previousKeyWindowSnapshot = [self.previousKeyWindow ahk_snapshot];
 
     [self setUpNewWindow];
-    [self setUpBlurredBackgroundWithSnapshot:previousKeyWindowSnapshot];
+    [self setUpBlurredBackground];
     [self setUpCancelButton];
     [self setUpTableView];
     
     if (self.cancelOnTapEmptyAreaEnabled.boolValue) {
         [self setUpCancelTapGestureForView:self.tableView];
+        [self setUpCancelTapGestureForView:self.blurredBackgroundView];
     }
     
     CGFloat slideDownMinOffset = (CGFloat)fmin(CGRectGetHeight(self.frame) + self.tableView.contentOffset.y, CGRectGetHeight(self.frame));
@@ -366,10 +342,10 @@ static const CGFloat maxWidth = 414.0f;
 
     void(^delayedAnimations)(void) = ^(void) {
         
-        CGFloat width = CGRectGetWidth(self.bounds);
+        CGFloat width = CGRectGetWidth(self.view.bounds);
         if (width > maxWidth) width = maxWidth;
         
-        self.cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.bounds)/2 - width/2), CGRectGetMaxY(self.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
+        self.cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.view.bounds)/2 - width/2), CGRectGetMaxY(self.view.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
     
         // Corner Radius
         self.cancelButton.layer.cornerRadius = 10;
@@ -466,7 +442,6 @@ static const CGFloat maxWidth = 414.0f;
         [UIView animateWithDuration:duration animations:^{
             self.blurredBackgroundView.alpha = 0.0f;
             self.cancelButton.transform = CGAffineTransformTranslate(self.cancelButton.transform, 0, self.cancelButtonHeight - kSpaceDivide);
-            self.cancelButtonShadowView.alpha = 0.0f;
 
             // Shortest shift of position sufficient to hide all tableView contents below the bottom margin.
             // contentInset isn't used here (unlike in -show) because it caused weird problems with animations in some cases.
@@ -492,16 +467,11 @@ static const CGFloat maxWidth = 414.0f;
     [self.window makeKeyAndVisible];
 }
 
-- (void)setUpBlurredBackgroundWithSnapshot:(UIImage *)previousKeyWindowSnapshot
+- (void)setUpBlurredBackground
 {
-    UIImage *blurredViewSnapshot = [previousKeyWindowSnapshot
-                                    ahk_applyBlurWithRadius:self.blurRadius
-                                    tintColor:self.blurTintColor
-                                    saturationDeltaFactor:self.blurSaturationDeltaFactor
-                                    maskImage:nil];
-    UIImageView *backgroundView = [[UIImageView alloc] initWithImage:blurredViewSnapshot];
-    backgroundView.frame = self.bounds;
-    backgroundView.alpha = 0.0f;
+    UIView *backgroundView = [UIView new];
+    backgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    backgroundView.frame = [UIScreen mainScreen].bounds;
     [self addSubview:backgroundView];
     self.blurredBackgroundView = backgroundView;
 }
@@ -516,10 +486,9 @@ static const CGFloat maxWidth = 414.0f;
 {
     UIButton *cancelButton;
     
-    CGFloat width = CGRectGetWidth(self.bounds);
+    CGFloat width = CGRectGetWidth(self.view.bounds);
     if (width > maxWidth) width = maxWidth;
 
-    
     // It's hard to check if UIButtonTypeSystem enumeration exists, so we're checking existence of another method that was introduced in iOS 7.
     if ([UIView instancesRespondToSelector:@selector(tintAdjustmentMode)]) {
         cancelButton= [UIButton buttonWithType:UIButtonTypeSystem];
@@ -532,7 +501,7 @@ static const CGFloat maxWidth = 414.0f;
     [cancelButton setAttributedTitle:attrTitle forState:UIControlStateNormal];
     [cancelButton addTarget:self action:@selector(cancelButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
     
-    cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.bounds)/2 - width/2), CGRectGetMaxY(self.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
+    cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.view.bounds)/2 - width/2), CGRectGetMaxY(self.view.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
     
     // move the button below the screen (ready to be animated -show)
     cancelButton.transform = CGAffineTransformMakeTranslation(0, self.cancelButtonHeight - kSpaceDivide);
@@ -544,13 +513,13 @@ static const CGFloat maxWidth = 414.0f;
 
 - (void)setUpTableView
 {
-    CGFloat width = CGRectGetWidth(self.bounds);
+    CGFloat width = CGRectGetWidth(self.view.bounds);
     if (width > maxWidth) width = maxWidth;
     
     CGRect statusBarViewRect = [self convertRect:[UIApplication sharedApplication].statusBarFrame fromView:nil];
     CGFloat statusBarHeight = CGRectGetHeight(statusBarViewRect);
     
-    CGRect frame = CGRectMake((CGRectGetWidth(self.bounds)/2 - width/2), statusBarHeight, width, CGRectGetHeight(self.bounds) - statusBarHeight - self.cancelButtonHeight - self.separatorHeight);
+    CGRect frame = CGRectMake((CGRectGetWidth(self.view.bounds)/2 - width/2), statusBarHeight, width, CGRectGetHeight(self.view.bounds) - statusBarHeight - self.cancelButtonHeight - self.separatorHeight);
 
     UITableView *tableView = [[UITableView alloc] initWithFrame:frame];
     
@@ -567,7 +536,7 @@ static const CGFloat maxWidth = 414.0f;
     [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kCellIdentifier];
     [self insertSubview:tableView aboveSubview:self.blurredBackgroundView];
     // move the content below the screen, ready to be animated in -show
-    tableView.contentInset = UIEdgeInsetsMake(CGRectGetHeight(self.bounds), 0, 0, 0);
+    tableView.contentInset = UIEdgeInsetsMake(CGRectGetHeight(self.view.bounds), 0, 0, 0);
     // removes separators below the footer (between empty cells)
     tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 
@@ -581,7 +550,6 @@ static const CGFloat maxWidth = 414.0f;
         // limit alpha to the interval [0, 1]
         CGFloat alpha = (CGFloat)fmax(fmin(alphaWithoutBounds, 1.0f), 0.0f);
         self.blurredBackgroundView.alpha = alpha;
-        self.cancelButtonShadowView.alpha = alpha;
     }
 }
 

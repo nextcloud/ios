@@ -52,6 +52,7 @@ class tableAccount: Object {
     dynamic var twitter = ""
     dynamic var url = ""
     dynamic var user = ""
+    dynamic var username = ""
     dynamic var webpage = ""
 }
 
@@ -204,6 +205,22 @@ class tablePhotoLibrary: Object {
 
     override static func primaryKey() -> String {
         return "idAsset"
+    }
+}
+
+class tableQueueDownload: Object {
+    
+    dynamic var account = ""
+    dynamic var fileID = ""
+    dynamic var downloadData: Bool = false
+    dynamic var downloadPlist: Bool = false
+    dynamic var selector = ""
+    dynamic var selectorPost = ""
+    dynamic var serverUrl = ""
+    dynamic var session = ""
+
+    override static func primaryKey() -> String {
+        return "fileID"
     }
 }
 

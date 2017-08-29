@@ -235,12 +235,10 @@ NSString *OCCWebDAVURIKey           = @"uri";
         _currentFile = [[OCFileDto alloc] init];
 
         _xmlBucket = nil;
-    } else if ([elementName isEqualToString:@"d:quota-used-bytes"]) {
-        _currentFile.quotaUsed = (double)[_xmlChars doubleValue];
-    } else if ([elementName isEqualToString:@"d:quota-available-bytes"]) {
-        _currentFile.quotaAvailable = (double)[_xmlChars doubleValue];
     } else if ([elementName isEqualToString:@"oc:favorite"]) {
         _currentFile.isFavorite = [_xmlChars boolValue];
+    } else if ([elementName isEqualToString:@"x1:share-permissions"]) {
+        _currentFile.permissions = _xmlChars;
     }
 }
 

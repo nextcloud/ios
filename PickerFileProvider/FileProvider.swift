@@ -23,7 +23,16 @@
 
 import UIKit
 
-class FileProvider: NSFileProviderExtension {
+class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
+
+    lazy var networkingOperationQueue: OperationQueue = {
+        
+        var queue = OperationQueue()
+        queue.name = k_queue
+        queue.maxConcurrentOperationCount = 10
+        
+        return queue
+    }()
 
     var fileCoordinator: NSFileCoordinator {
         let fileCoordinator = NSFileCoordinator()
@@ -81,10 +90,88 @@ class FileProvider: NSFileProviderExtension {
     }
     
     override func itemChanged(at url: URL) {
-        // Called at some point after the file has changed; the provider may then trigger an upload
         
-        // TODO: mark file at <url> as needing an update in the model; kick off update process
-        NSLog("Item changed at URL %@", url as NSURL)
+        // Called at some point after the file has changed; the provider may then trigger an upload
+                
+        let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
+        NSLog("Item changed at URL %@ %lu", url as NSURL, fileSize)
+
+        guard let account = NCManageDatabase.sharedInstance.getAccountActive() else {
+            self.stopProvidingItem(at: url)
+            return
+        }
+        guard let fileName = CCUtility.getFileNameExt() else {
+            self.stopProvidingItem(at: url)
+            return
+        }
+        // -------> Fix : Clear FileName for twice Office 365
+        CCUtility.setFileNameExt("")
+        // --------------------------------------------------
+        if (fileName != url.lastPathComponent) {
+            self.stopProvidingItem(at: url)
+            return
+        }
+        guard let serverUrl = CCUtility.getServerUrlExt() else {
+            self.stopProvidingItem(at: url)
+            return
+        }
+        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) else {
+            self.stopProvidingItem(at: url)
+            return
+        }
+        
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileName == %@ AND directoryID == %@", fileName, directoryID))
+        if metadata != nil {
+            
+            // Update
+            let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
+            let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
+            let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(uploadID)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+
+            // copy sourceURL on directoryUser
+            do {
+                try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
+            }
+            
+            do {
+                try FileManager.default.copyItem(at: url, to: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
+                self.stopProvidingItem(at: url)
+                return
+            }
+
+            // Prepare for send Metadata
+            metadata!.sessionID = uploadID
+            metadata!.session = k_upload_session
+            metadata!.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
+            _ = NCManageDatabase.sharedInstance.updateMetadata(metadata!)
+            
+        } else {
+            
+            // New
+            let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
+            let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+            
+            do {
+                try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
+            }
+            do {
+                try FileManager.default.copyItem(at: url, to: destinationURLDirectoryUser)
+            } catch _ {
+                print("file do not exists")
+                self.stopProvidingItem(at: url)
+                return
+            }
+            
+            CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+        }
+
+        self.stopProvidingItem(at: url)
     }
     
     override func stopProvidingItem(at url: URL) {
@@ -100,5 +187,30 @@ class FileProvider: NSFileProviderExtension {
             // TODO: handle any error, do any necessary cleanup
         })
     }
+    
+    // UTILITY //
+    
+    func appGroupContainerURL() -> URL? {
+        
+        guard let groupURL = FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups) else {
+                return nil
+        }
+        
+        let storagePathUrl = groupURL.appendingPathComponent("File Provider Storage")
+        let storagePath = storagePathUrl.path
+        
+        if !FileManager.default.fileExists(atPath: storagePath) {
+            do {
+                try FileManager.default.createDirectory(atPath: storagePath, withIntermediateDirectories: false, attributes: nil)
+            } catch let error {
+                print("error creating filepath: \(error)")
+                return nil
+            }
+        }
+        
+        return storagePathUrl
+    }
+
 
 }

@@ -103,7 +103,11 @@
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
         
-        _user.text = app.activeUser;
+        // https://github.com/nextcloud/ios/issues/331
+        tableAccount *tbAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        _user.text = tbAccount.username;
+        //_user.text = app.activeUser;
+        
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }
@@ -283,40 +287,27 @@
         
         if (_loginType == loginModifyPasswordUser) {
             
-            [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
+            // Change Password
+            tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
+            
+            // Setting App active account
+            [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activePassword:tbAccount.password];
+
+            // Dismiss
+            [self.delegate loginSuccess:_loginType];
+            [self dismissViewControllerAnimated:YES completion:nil];
             
         } else {
 
             [[NCManageDatabase sharedInstance] deleteAccount:account];
-        
-            // Add account
             [[NCManageDatabase sharedInstance] addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
+            
+            // Read User Profile
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
+            metadataNet.action = actionGetUserProfile;
+            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text isCryptoCloudMode:NO]];
         }
         
-        // Set this account as default
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-        
-        // verifica
-        if ([tableAccount.account isEqualToString:account]) {
-            
-            [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activePassword:tableAccount.password];
-            
-            [self.delegate loginSuccess:_loginType];
-            
-            // close
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [self dismissViewControllerAnimated:YES completion:nil];
-            });
-            
-        } else {
-            
-            if (_loginType != loginModifyPasswordUser)
-                [[NCManageDatabase sharedInstance] deleteAccount:account];
-            
-            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:@"Fatal error writing database" delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-            [alertView show];
-        }
-
     } else {
         
         if ([error code] != NSURLErrorServerCertificateUntrusted) {
@@ -331,6 +322,60 @@
         
     self.login.enabled = YES;
     self.loadingBaseUrl.hidden = YES;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== User Profile  ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
+    
+    alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+    [alertView show];
+}
+
+- (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
+{
+    // Verify if the account already exists
+    if (userProfile.id.length > 0 && self.baseUrl.text.length > 0 && self.user.text.length > 0) {
+    
+        tableAccount *accountAlreadyExists = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"url = %@ AND user = %@ AND username != %@", self.baseUrl.text, userProfile.id, self.user.text]];
+        
+        if (accountAlreadyExists) {
+            
+            [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
+            
+            NSString *message = [NSString stringWithFormat:NSLocalizedString(@"_account_already_exists_", nil), userProfile.id];
+            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
+            [alertView show];
+            
+            return;
+        }
+    }
+    
+    // Verify if account is a valid account
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadataNet.account]];
+    
+    if (account) {
+    
+        // Set this account as default
+        tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
+        
+        // Setting App active account
+        [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activePassword:account.password];
+    
+        // Update User
+        [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+
+        // Ok ! Dismiss
+        [self.delegate loginSuccess:_loginType];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [self dismissViewControllerAnimated:YES completion:nil];
+        });
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

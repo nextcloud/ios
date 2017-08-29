@@ -177,7 +177,7 @@
 
 - (void)uploadEncrypted
 {
-    [[CCNetworking sharedNetworking] uploadFile:app.fileNameUpload serverUrl:serverUrlLocal cryptated:YES onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+    [[CCNetworking sharedNetworking] uploadFile:app.fileNameUpload serverUrl:serverUrlLocal cryptated:YES onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -185,7 +185,7 @@
 
 -(void)uploadPlain
 {
-    [[CCNetworking sharedNetworking] uploadFile:app.fileNameUpload serverUrl:serverUrlLocal cryptated:NO onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:nil selectorPost:nil errorCode:0 delegate:nil];
+    [[CCNetworking sharedNetworking] uploadFile:app.fileNameUpload serverUrl:serverUrlLocal cryptated:NO onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

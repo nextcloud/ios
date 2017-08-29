@@ -60,20 +60,21 @@ extern NSString *const urlBaseUploadDB;
 #define k_returnCreateFolderEncrypted                   3
 #define k_returnCreateFotoVideoEncrypted                4
 #define k_returnCreateFileEncrypted                     5
-#define k_returnCartaDiCredito                          6
-#define k_returnBancomat                                7
-#define k_returnContoCorrente                           8
-#define k_returnAccountWeb                              9
-#define k_returnNote                                    10
-#define k_returnPatenteGuida                            11
-#define k_returnCartaIdentita                           12
-#define k_returnPassaporto                              13
+#define k_returnCreateFileText                          6
+#define k_returnCartaDiCredito                          7
+#define k_returnBancomat                                8
+#define k_returnContoCorrente                           9
+#define k_returnAccountWeb                              10
+#define k_returnNote                                    11
+#define k_returnPatenteGuida                            12
+#define k_returnCartaIdentita                           13
+#define k_returnPassaporto                              14
 
 // Name Default DB
 #define k_databaseDefault                               @"nextcloud.realm"
 
 // Picker select image
-#define k_pickerControllerMax                           100.0
+#define k_pickerControllerMax                           1000.0
 
 // define Nextcloud IOS
 #define k_share_link_middle_part_url_after_version_8    @"index.php/s/"
@@ -115,6 +116,7 @@ extern NSString *const urlBaseUploadDB;
 // TaskIdentifier
 #define k_taskIdentifierDone                            -1
 #define k_taskIdentifierStop                            -2
+#define k_taskIdentifierWaitStart                       -3
 #define k_taskIdentifierError                           -99999
 #define k_taskIdentifierNULL                            99999
 
@@ -125,7 +127,7 @@ extern NSString *const urlBaseUploadDB;
 #define k_taskStatusSuspend                             -3
 
 #define k_timerVerifySession                            10
-#define k_timerProcessAutoUpload                        5
+#define k_timerProcessAutoDownloadUpload                5
 #define k_timerUpdateApplicationIconBadgeNumber         3
 
 #define k_maxConcurrentOperation                         10
@@ -173,6 +175,8 @@ extern NSString *const urlBaseUploadDB;
 #define selectorReadFileVerifyUpload                    @"readFileVerifyUpload"
 #define selectorReadFileWithDownload                    @"readFileWithDownload"
 #define selectorReadFileReloadFolder                    @"readFileReloadFolder"
+#define selectorReadFileFolder                          @"readFileFolder"
+#define selectorReadFileFolderWithDownload              @"readFileFolderWithDownload"
 #define selectorReadFolder                              @"readFolder"
 #define selectorReadFolderForced                        @"readFolderForced"
 #define selectorReadFolderWithDownload                  @"readFolderWithDownload"
@@ -193,14 +197,13 @@ extern NSString *const urlBaseUploadDB;
 // Metadata.Net ACTION
 #define actionCreateFolder                              @"createFolder"
 #define actionDeleteFileDirectory                       @"deleteFileOrFolder"
-#define actionDownloadFile                              @"downloadFile"
 #define actionDownloadThumbnail                         @"downloadThumbnail"
 #define actionGetActivityServer                         @"getActivityServer"
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"
 #define actionGetUserAndGroup                           @"getUserAndGroup"
 #define actionGetUserProfile                            @"getUserProfile"
 #define actionGetNotificationServer                     @"getNotificationServer"
-#define actionSetNotificationServer                     @"setNotificationServer"
+#define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
 #define actionGetExternalSitesServer                    @"getExternalSitesServer"
 #define actionMiddlewarePing                            @"middlewarePing"
 #define actionListingFavorites                          @"listingFavorites"
@@ -209,16 +212,13 @@ extern NSString *const urlBaseUploadDB;
 #define actionReadFolder                                @"readFolder"
 #define actionReadShareServer                           @"readShareServer"
 #define actionSearch                                    @"search"
+#define actionSetNotificationServer                     @"setNotificationServer"
 #define actionSettingFavorite                           @"settingFavorite"
 #define actionShare                                     @"share"
 #define actionShareWith                                 @"shareWith"
 #define actionSubscribingNextcloudServer                @"subscribingNextcloudServer"
 #define actionUnShare                                   @"unShare"
 #define actionUpdateShare                               @"updateShare"
-#define actionUploadFile                                @"uploadFile"
-#define actionUploadAsset                               @"uploadAsset"
-#define actionUploadTemplate                            @"uploadTemplate"
-#define actionUploadOnlyPlist                           @"uploadOnlyPlist"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"

@@ -24,8 +24,8 @@
 #import "CCDetail.h"
 #import "AppDelegate.h"
 #import "CCMain.h"
+#import "NCUchardet.h"
 #import "NCBridgeSwift.h"
-
 
 #define TOOLBAR_HEIGHT 49.0f
 
@@ -37,6 +37,7 @@
     
     UIToolbar *_toolbar;
     
+    UIBarButtonItem *_buttonModifyTxt;
     UIBarButtonItem *_buttonAction;
     UIBarButtonItem *_buttonShare;
     UIBarButtonItem *_buttonDelete;
@@ -47,6 +48,7 @@
     BOOL _reload;
     
     NSMutableOrderedSet *_dataSourceDirectoryID;
+    NSString *_fileNameExtension;
 }
 @end
 
@@ -62,6 +64,8 @@
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backNavigationController) name:@"detailBack" object:nil];
+
 
         self.metadataDetail = [[tableMetadata alloc] init];
         self.photos = [[NSMutableArray alloc] init];
@@ -140,14 +144,12 @@
         
     // Document
     if (_webView) {
-            
         [_webView removeFromSuperview];
         _webView = nil;
     }
         
     // PDF
     if (_readerPDFViewController) {
-            
         [_readerPDFViewController.view removeFromSuperview];
         _readerPDFViewController.delegate = nil;
         _readerPDFViewController = nil;
@@ -155,15 +157,26 @@
         
     // Photo-Video
     if (_photoBrowser) {
-            
         [_photos removeAllObjects];
         [_thumbs removeAllObjects];
         _photoBrowser.delegate = nil;
         _photoBrowser = nil;
     }
     
-    [self.navigationController popToRootViewControllerAnimated:NO];
-    self.navigationController.navigationBarHidden = YES;
+    // ToolBar
+    if (_toolbar) {
+        [_toolbar removeFromSuperview];
+        _toolbar = nil;
+    }
+    
+    // Title
+    self.title = nil;
+}
+
+- (void)backNavigationController
+{
+    [self removeAllView];
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 - (void)changeToDisplayMode
@@ -180,22 +193,32 @@
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
     fixedSpaceMini.width = 25;
     
+    _buttonModifyTxt = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyTxtButtonPressed:)];
     _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetOpenIn"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetShare"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
-    [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
+    if ([_fileNameExtension isEqualToString:@"TXT"])
+        [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
+    else
+        [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
+    
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
     _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
+    _toolbar.tintColor = [NCBrandColor sharedInstance].brand;
 
     [self.view addSubview:_toolbar];
 }
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+    [app changeTheming:self];
+    
+    if (_toolbar) {
+        _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
+        _toolbar.tintColor = [NCBrandColor sharedInstance].brand;
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -230,9 +253,9 @@
     
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
-        NSString *ext = [[self.metadataDetail.fileNamePrint pathExtension] lowercaseString];
+        _fileNameExtension = [[self.metadataDetail.fileNamePrint pathExtension] uppercaseString];
         
-        if ([ext isEqualToString:@"pdf"]) {
+        if ([_fileNameExtension isEqualToString:@"PDF"]) {
             
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewPDF:@""];
@@ -267,6 +290,12 @@
         
         [[NSFileManager defaultManager] removeItemAtPath:fileName error:nil];
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
+    }
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileName] == NO) {
+        
+        [self backNavigationController];
+        return;
     }
     
     appDelegate.player.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
@@ -313,9 +342,14 @@
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
     }
     
-    NSString *ext=@"";
-    ext = [CCUtility getExtension:self.metadataDetail.fileNamePrint];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileName] == NO) {
+        
+        [self backNavigationController];
+        return;
+    }
     
+    NSURL *url = [NSURL fileURLWithPath:fileName];
+
     WKPreferences *wkPreferences = [[WKPreferences alloc] init];
     wkPreferences.javaScriptEnabled = false;
     WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
@@ -327,7 +361,7 @@
     [self.webView setBackgroundColor:[UIColor whiteColor]];
     [self.webView setOpaque:NO];
     
-    if ( [ext isEqualToString:@"CSS"] || [ext isEqualToString:@"PY"] || [ext isEqualToString:@"XML"] || [ext isEqualToString:@"JS"] ) {
+    if ( [_fileNameExtension isEqualToString:@"CSS"] || [_fileNameExtension isEqualToString:@"PY"] || [_fileNameExtension isEqualToString:@"XML"] || [_fileNameExtension isEqualToString:@"JS"] ) {
         
         NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]];
         [headRequest setHTTPMethod:@"HEAD"];
@@ -338,7 +372,7 @@
             NSLog(@"[LOG] loadURLWithString %@",[error localizedDescription]);
         }
         
-        NSString *dataFile = [[NSString alloc] initWithData:[NSData dataWithContentsOfURL:[NSURL fileURLWithPath:fileName]] encoding:NSASCIIStringEncoding];
+        NSString *dataFile = [[NSString alloc] initWithData:[NSData dataWithContentsOfURL:url] encoding:NSASCIIStringEncoding];
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
             [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"40",@"Sans-Serif",dataFile] baseURL:nil];
@@ -346,21 +380,24 @@
             [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"20",@"Sans-Serif",dataFile] baseURL:nil];
         }
         
-    } else if ([ext isEqualToString:@"TXT"] ) {
+    } else if ([_fileNameExtension isEqualToString:@"TXT"]) {
         
-        NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
+        
+        NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:url];
         [headRequest setHTTPMethod:@"HEAD"];
-        NSHTTPURLResponse *headResponse;
-        NSError *error = nil;
-        [NSURLConnection sendSynchronousRequest:headRequest returningResponse:&headResponse error:&error];
-        if (error != nil) {
-            NSLog(@"[LOG] loadURLWithString %@",[error localizedDescription]);
-        }
         
-        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]]];
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:headRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            NSString *encodingName = [[NCUchardet sharedNUCharDet] encodingStringDetectWithData:data];
+            [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:encodingName baseURL:url];
+        }];
+        
+        [task resume];
+        
     } else {
         
-        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]]];
+        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:url]];
     }
     
     [self.view addSubview:self.webView];
@@ -771,7 +808,7 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
     if (serverUrl)
-        [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadViewImage selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
+        [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadViewImage selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:app.activeMain];
 }
 
 - (void)insertGeocoderLocation:(NSNotification *)notification
@@ -969,7 +1006,7 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] delete failure");
+    NSLog(@"[LOG] DeleteFileOrFolder failure error %lu, %@", (long)errorCode, message);
 }
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
@@ -1035,8 +1072,43 @@
 #pragma mark ===== ButtonPressed =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)modifyTxtButtonPressed:(UIBarButtonItem *)sender
+{
+    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
+    
+    NCText *viewController = (NCText *)navigationController.topViewController;
+    
+    viewController.metadata = self.metadataDetail;
+    
+    /*
+     typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {
+     UIModalTransitionStyleCoverVertical = 0,
+     UIModalTransitionStyleFlipHorizontal __TVOS_PROHIBITED,
+     UIModalTransitionStyleCrossDissolve,
+     UIModalTransitionStylePartialCurl NS_ENUM_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED,
+     };
+     
+     typedef NS_ENUM(NSInteger, UIModalPresentationStyle) {
+     UIModalPresentationFullScreen = 0,
+     UIModalPresentationPageSheet NS_ENUM_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED,
+     UIModalPresentationFormSheet NS_ENUM_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED,
+     UIModalPresentationCurrentContext NS_ENUM_AVAILABLE_IOS(3_2),
+     UIModalPresentationCustom NS_ENUM_AVAILABLE_IOS(7_0),
+     UIModalPresentationOverFullScreen NS_ENUM_AVAILABLE_IOS(8_0),
+     UIModalPresentationOverCurrentContext NS_ENUM_AVAILABLE_IOS(8_0),
+     UIModalPresentationPopover NS_ENUM_AVAILABLE_IOS(8_0) __TVOS_PROHIBITED,
+     UIModalPresentationNone NS_ENUM_AVAILABLE_IOS(7_0) = -1,
+     };
+     */
+    
+    navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
 - (void)actionButtonPressed:(UIBarButtonItem *)sender
-{    
+{
     NSString *filePath;
     
     if ([self.metadataDetail.fileNamePrint length] == 0) return;

@@ -72,7 +72,7 @@
     
     // Section OTTIMIZATIONS -------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_optimized_photos_", nil)];
+    section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_optimized_photos_how_", nil);
     
@@ -82,7 +82,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_upload_del_photos_", nil)];
+    section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_upload_del_photos_how_", nil);
     
@@ -92,6 +92,17 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
+    // Section HIDDEN FILES -------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"showHiddenFiles" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_show_hidden_files_", nil)];
+    if ([CCUtility getShowHiddenFiles]) row.value = @"1";
+    else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+    
     // Section CLEAR CACHE -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -156,11 +167,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"activityVerboseHigh"]) {
         
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setActivityVerboseHigh:true];
-        } else {
-            [CCUtility setActivityVerboseHigh:false];
-        }
+        [CCUtility setActivityVerboseHigh:[[rowDescriptor.value valueData] boolValue]];
         
         // Clear Date read Activity for force reload datasource
         app.activeActivity.storeDateFirstActivity = nil;
@@ -168,20 +175,20 @@
     
     if ([rowDescriptor.tag isEqualToString:@"optimizedphoto"]) {
         
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setOptimizedPhoto:YES];
-        } else {
-            [CCUtility setOptimizedPhoto:NO];
-        }
+        [CCUtility setOptimizedPhoto:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"uploadremovephoto"]) {
         
-        if ([[rowDescriptor.value valueData] boolValue] == YES) {
-            [CCUtility setUploadAndRemovePhoto:YES];
-        } else {
-            [CCUtility setUploadAndRemovePhoto:NO];
-        }
+        [CCUtility setUploadAndRemovePhoto:[[rowDescriptor.value valueData] boolValue]];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"showHiddenFiles"]) {
+        
+        [CCUtility setShowHiddenFiles:[[rowDescriptor.value valueData] boolValue]];
+        
+        // force reload
+        [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
     }
 }
 
@@ -308,12 +315,13 @@
     [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
     
     [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:app.activeAccount];
     
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         [[NSURLCache sharedURLCache] setMemoryCapacity:0];
         [[NSURLCache sharedURLCache] setDiskCapacity:0];
@@ -326,6 +334,8 @@
         [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:app.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:app.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
+        
+        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         
         [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl removeIco:removeIco];
         
@@ -359,7 +369,8 @@
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_delete_thumbnails_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
         
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil)
-                                                             style:UIAlertActionStyleDefault                                                         handler:^(UIAlertAction *action) {
+                                                             style:UIAlertActionStyleDefault
+                                                           handler:^(UIAlertAction *action) {
                                                                [self removeAllFiles:YES];
                                                            }]];
         
@@ -431,7 +442,7 @@
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             
-            [app cancelAllOperations];
+            [app.netQueue cancelAllOperations];
             [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
             
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];

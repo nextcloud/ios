@@ -283,7 +283,7 @@
         
         metadata = [CCUtility insertInformationPlist:metadata directoryUser:directoryUser];
         metadata = [CCUtility insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
-        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata activeUrl:activeUrl];
+        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
         
         // se è un template aggiorniamo anche nel FileSystem
         if ([metadata.type isEqualToString: k_metadataType_template]) {
@@ -394,18 +394,7 @@
         
             if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileName]] == NO) {
                 
-                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
-                    
-                metadataNet.action = actionDownloadFile;
-                metadataNet.downloadData = NO;
-                metadataNet.downloadPlist = YES;
-                metadataNet.fileID = metadata.fileID;
-                metadataNet.selector = selectorLoadPlist;
-                metadataNet.serverUrl = _serverUrl;
-                metadataNet.session = k_download_session_foreground;
-                metadataNet.taskStatus = k_taskStatusResume;
-                    
-                [self addNetworkingQueue:metadataNet];
+                [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:_serverUrl downloadData:NO downloadPlist:YES selector:selectorLoadPlist selectorPost:nil session:k_download_session_foreground taskStatus:k_taskStatusResume delegate:self];
             }
         }
     });    
@@ -419,9 +408,10 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
     
     metadataNet.action = actionReadFolder;
-    metadataNet.serverUrl = _serverUrl;
-    metadataNet.selector = selectorReadFolder;
     metadataNet.date = nil;
+    metadataNet.depth = @"1";
+    metadataNet.selector = selectorReadFolder;
+    metadataNet.serverUrl = _serverUrl;
     
     [self addNetworkingQueue:metadataNet];
     
@@ -444,7 +434,7 @@
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:@""];
+    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:nil];
     
     // Load Folder or the Datasource
     [self readFolder];

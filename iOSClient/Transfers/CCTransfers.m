@@ -317,7 +317,7 @@
     
     NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] sorted:@"sessionTaskIdentifier" ascending:YES];
     
-    _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" replaceDateToExifDate:NO activeAccount:app.activeAccount];
+    _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" activeAccount:app.activeAccount];
         
     [_tableView reloadData];    
 }
@@ -353,10 +353,11 @@
     NSString *titleSection, *numberTitle;
     NSInteger typeOfSession = 0;
     
-    NSInteger queueDownload = [app getNumberDownloadInQueues] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session];
-    NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session_wwan];
-    NSInteger queueUpload = [app getNumberUploadInQueues] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
-    NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
+    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session];
+    NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
+    
+    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
+    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
     
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [_sectionDataSource.sections objectAtIndex:section];
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:section]];
@@ -438,7 +439,7 @@
     // Footer Download
     if ([titleSection containsString:@"download"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownload = [app getNumberDownloadInQueues] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session];
+        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session];
         
         // element or elements ?
         if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -455,7 +456,7 @@
     // Footer Download WWAN
     if ([titleSection containsString:@"download"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownloadWWan = [app getNumberDownloadInQueuesWWan] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_download_session_wwan];
+        NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
         
         // element or elements ?
         if (queueDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -465,7 +466,7 @@
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
         attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), queueDownloadWWan, element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[@" " stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_download_wwan_", nil), queueDownloadWWan, element_s]]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
         titleFooterLabel.attributedText = stringFooter;
         
@@ -476,7 +477,7 @@
     // Footer Upload
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUpload = [app getNumberUploadInQueues] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
+        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
         
         // element or elements ?
         if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -493,7 +494,7 @@
     // Footer Upload WWAN
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUploadWWan = [app getNumberUploadInQueuesWWan] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
+        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
         
         // element or elements ?
         if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -503,7 +504,7 @@
         NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
         attachment.image = [UIImage imageNamed:@"WiFiSmall"];
         NSAttributedString *attachmentString = [NSAttributedString attributedStringWithAttachment:attachment];
-        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_wwan_", nil), queueUploadWWan,element_s]];
+        NSMutableAttributedString *stringFooter= [[NSMutableAttributedString alloc] initWithString:[@" " stringByAppendingString:[NSString stringWithFormat:NSLocalizedString(@"_tite_footer_upload_wwan_", nil), queueUploadWWan,element_s]]];
         [stringFooter insertAttributedString:attachmentString atIndex:0];
         titleFooterLabel.attributedText = stringFooter;
         

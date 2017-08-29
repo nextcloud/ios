@@ -99,6 +99,15 @@
     [self reloadDatasource];
 }
 
+// E' arrivato
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    
+    // Active Main
+    app.activeFavorites = self;
+}
+
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
@@ -161,7 +170,7 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Delete error %@", message);
+    NSLog(@"[LOG] DeleteFileOrFolder failure error %lu, %@", (long)errorCode, message);
 }
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
@@ -175,7 +184,7 @@
 
 - (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Remove Favorite error %@", message);
+    NSLog(@"[LOG] Setting Favorite failure error %lu, %@", (long)errorCode, message);
 }
 
 - (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
@@ -190,11 +199,7 @@
     // test
     if (app.activeAccount.length == 0)
         return;
-    
-    // verify if is already in progress selectorDownloadSynchronize
-    if ([[app verifyExistsInQueuesDownloadSelector:selectorDownloadSynchronize] count] > 0)
-        return;
-    
+
     [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
 }
 
@@ -207,6 +212,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     metadataNet.action = actionReadFolder;
+    metadataNet.depth = @"1";
     metadataNet.directoryID = directoryID;
     
     if ([CCUtility getFavoriteOffline])
@@ -243,32 +249,27 @@
         // insert for test NOT favorite
         [filesEtag addObject:metadata.fileID];
         
-        // Get ServerUrl
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
+        NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
         
-        if (![serverUrl containsString:father]) {
+        if (![serverUrlSon containsString:father]) {
             
             if (metadata.directory) {
                 
-                NSString *selector;
-                
                 if ([CCUtility getFavoriteOffline])
-                    selector = selectorReadFolderWithDownload;
+                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
                 else
-                    selector = selectorReadFolder;
-                
-                [[CCSynchronize sharedSynchronize] synchronizedFolder:serverUrl selector:selector];
-                
+                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolder];
+
             } else {
                 
                 if ([CCUtility getFavoriteOffline])
-                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata selector:selectorReadFileWithDownload];
+                    [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
                 else
-                    [[CCSynchronize sharedSynchronize] synchronizedFile:metadata selector:selectorReadFile];
+                    [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFile];
             }
             
-            father = serverUrl;
+            father = serverUrlSon;
         }
     }
     
@@ -284,7 +285,7 @@
 
 - (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"Read Favorites Failure");
+    NSLog(@"[LOG] Listing Favorites failure error %lu, %@", (long)errorCode, message);
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -301,8 +302,9 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
-{    
-    [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+{
+    if (errorCode != k_CCErrorFileAlreadyInDownload)
+        [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
@@ -423,13 +425,10 @@
     
     metadata = [_dataSource objectAtIndex:indexPath.row];
     
-    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.view title:nil];
+    AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.tabBarController.view title:nil];
     
     actionSheet.animationDuration = 0.2;
-    
-    actionSheet.blurRadius = 0.0f;
-    actionSheet.blurTintColor = [UIColor colorWithWhite:0.0f alpha:0.50f];
-    
+        
     actionSheet.buttonHeight = 50.0;
     actionSheet.cancelButtonHeight = 50.0f;
     actionSheet.separatorHeight = 5.0f;
@@ -438,8 +437,8 @@
     
     actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].cryptocloud };
     actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
-    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].brand };
-    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
+    actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont boldSystemFontOfSize:17], NSForegroundColorAttributeName:[UIColor blackColor] };
+    actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor darkGrayColor] };
     
     actionSheet.separatorColor = [NCBrandColor sharedInstance].seperator;
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
@@ -565,7 +564,7 @@
             recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", app.activeAccount, directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
     }
         
-    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil replaceDateToExifDate:NO activeAccount:app.activeAccount];
+    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil activeAccount:app.activeAccount];
         
     NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
     for (NSString *fileID in fileIDs)

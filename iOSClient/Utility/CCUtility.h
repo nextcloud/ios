@@ -70,10 +70,11 @@
 
 + (void)setIntro:(NSString *)version;
 
-+ (void)setActiveAccountShareExt:(NSString *)activeAccount;
-+ (void)setCryptatedShareExt:(BOOL)cryptated;
-+ (void)setServerUrlShareExt:(NSString *)serverUrl;
-+ (void)setTitleServerUrlShareExt:(NSString *)titleServerUrl;
++ (void)setActiveAccountExt:(NSString *)activeAccount;
++ (void)setCryptatedExt:(BOOL)cryptated;
++ (void)setServerUrlExt:(NSString *)serverUrl;
++ (void)setTitleServerUrlExt:(NSString *)titleServerUrl;
++ (void)setFileNameExt:(NSString *)fileName;
 
 + (void)setEmail:(NSString *)email;
 
@@ -89,6 +90,8 @@
 + (void)setFavoriteOffline:(BOOL)offline;
 
 + (void)setActivityVerboseHigh:(BOOL)debug;
+
++ (void)setShowHiddenFiles:(BOOL)show;
 
 // GET
 
@@ -113,10 +116,11 @@
 + (BOOL)getIntro:(NSString *)version;
 + (NSString *)getIncrementalNumber;
 
-+ (NSString *)getActiveAccountShareExt;
-+ (BOOL)getCryptatedShareExt;
-+ (NSString *)getServerUrlShareExt;
-+ (NSString *)getTitleServerUrlShareExt;
++ (NSString *)getActiveAccountExt;
++ (BOOL)getCryptatedExt;
++ (NSString *)getServerUrlExt;
++ (NSString *)getTitleServerUrlExt;
++ (NSString *)getFileNameExt;
 
 + (NSString *)getEmail;
 
@@ -132,6 +136,8 @@
 + (BOOL)getFavoriteOffline;
 
 + (BOOL)getActivityVerboseHigh;
+
++ (BOOL)getShowHiddenFiles;
 
 // ===== Varius =====
 

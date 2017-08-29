@@ -23,7 +23,6 @@
 "_rename_"                  = "Rename";
 "_move_"                    = "Move";
 "_move_file_n_"             = "Move file %i of %i";
-"_create_folder_"           = "Create a new folder";
 "_creating_sharing_"        = "Creating share";
 "_updating_sharing_"        = "Updating share";
 "_removing_sharing_"        = "Removing share";
@@ -55,6 +54,7 @@
 "_transfers_in_queue_"      = "Tranfers in progress, please wait…";
 "_too_errors_automatic_all_"= "Too many errors, go to \"Control Center\" to verify the problem";
 "_create_folder_"           = "Create folder";
+"_create_folder_on_"        = "Create folder on";
 "_close_"                   = "Close";
 "_postpone_"                = "Postpone";
 "_remove_"                  = "Remove";
@@ -65,6 +65,7 @@
 "_photo_"                   = "Photo";
 "_audio_"                   = "Audio";
 "_unknown_"                 = "Unknown";
+"_next_"                    = "Next";
 
 // App
 
@@ -200,12 +201,13 @@
 "_help_activity_clear_"         = "Clear activity";
 
 
-// Manage Optimizations
+// Manage Advanced
 
 "_optimized_photos_"            = "Optimized photos resolution";
 "_upload_del_photos_"           = "Remove files after upload";
 "_optimized_photos_how_"        = "If your iPhone is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Cloud.";
 "_upload_del_photos_how_"       = "Files will be removed from device memory after they’ve been uploaded to the Cloud. They will remain in the camera roll. Just download the files to see them.";
+"_show_hidden_files_"           = "Show hidden files";
 
 // Login
 
@@ -222,6 +224,7 @@
 "_title_form_security_init_"    = "Security options";
 "_login_bottom_label_"          = "Don't have a server yet?\nChoose one of the providers.";
 "_error_multidomain_"           = "Address not allowed, only the following domains are valid:";
+"_account_already_exists_"      = "The account %@ already exists";
 
 // Favorite
 
@@ -485,6 +488,7 @@
 "_share_permission_share_"          = "Can share";
 "_share_permission_rename_"         = "Can rename";
 "_share_permission_move_"           = "Can move";
+"_share_permission_read_"           = "Can read";
 "_share_permission_info_"           = "Sharing information";
 "_share_permission_path_"           = "File/Folder";
 "_share_permission_type_"           = "Type";
@@ -527,11 +531,12 @@
 
 // Create Cloud
 
-"_upload_photos_videos_"            = "Upload photos and videos";
-"_upload_file_"                     = "Upload a file";
-"_upload_encrypted_mode"            = "Upload in encrypted mode";
-"_upload_template_"                 = "Upload a template";
-"_upload_plain_mode"                = "Upload in plain mode";
+"_upload_photos_videos_"            = "Upload photos or videos";
+"_upload_file_"                     = "Upload file";
+"_upload_encrypted_mode"            = "Switch to encrypted mode";
+"_upload_template_"                 = "Upload template";
+"_upload_plain_mode"                = "Switch to plain mode";
+"_upload_file_text_"                = "Create text file";
 
 // Document Picker
 
@@ -565,3 +570,6 @@
 
 "_autoupload_filename_title_"       = "Auto upload filename";
 
+// Text File
+
+"_untitled_txt_"                    = "Untitled.txt";

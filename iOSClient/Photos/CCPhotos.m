@@ -35,6 +35,7 @@
     NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
     
+    NSDate *_dateReadDataSource;
     CCSectionDataSourceMetadata *_sectionDataSource;
     
     CCHud *_hud;
@@ -75,8 +76,6 @@
     // empty Data Source
     self.collectionView.emptyDataSetDelegate = self;
     self.collectionView.emptyDataSetSource = self;
-    
-    [self reloadDatasource];
 }
 
 // Apparirà
@@ -90,12 +89,7 @@
     
     // Plus Button
     [app plusButtonVisibile:true];
-}
 
-// E' arrivato
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
     
     [self reloadDatasource];
 }
@@ -265,7 +259,7 @@
             
     if (!account.autoUpload) {
     
-        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button500x100"] color:[NCBrandColor sharedInstance].brand];
+        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button1000x200"] color:[NCBrandColor sharedInstance].brand];
         
         return [CCGraphics drawText:NSLocalizedString(@"_activate_autoupload_", nil) inImage:buttonImage colorText:[UIColor whiteColor] sizeOfFont:26];
         
@@ -398,12 +392,12 @@
                 
             } else {
                 
-                [self reloadDatasource];
+                [self reloadDatasourceForced];
             }
             
         } else {
             
-            [self reloadDatasource];
+            [self reloadDatasourceForced];
         }
     }
 }
@@ -487,37 +481,35 @@
 - (void)reloadDatasourceForced
 {
     [CCSectionMetadata removeAllObjectsSectionDataSource:_sectionDataSource];
+    _dateReadDataSource = nil;
     [self reloadDatasource];
 }
 
 - (void)reloadDatasource
-{
+{    
     // test
     if (app.activeAccount.length == 0)
         return;
     
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+    NSDate *dateDateRecordDirectory = nil;
     
-    if (_sectionDataSource) {
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:autoUploadPath];
-            
-            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadCollection];
-            });
-        });
+    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl BEGINSWITH %@", app.activeAccount, autoUploadPath] sorted:@"dateReadDirectory" ascending:false];
+    if ([directories count] > 0) {
+        tableDirectory *directory = [directories objectAtIndex:0];
+        dateDateRecordDirectory = directory.dateReadDirectory;
+    }
+    
+    if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
 
-    } else {
-        
+        NSLog(@"[LOG] Photos rebuild Data Source serverUrl : %@", autoUploadPath);
+
+        _dateReadDataSource = [NSDate date];
         NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:autoUploadPath];
+        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:app.activeAccount];
         
-        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" replaceDateToExifDate:YES activeAccount:app.activeAccount];
         [self reloadCollection];
-    }    
+    }
 }
 
 - (void)reloadCollection
@@ -543,9 +535,9 @@
     UIInterfaceOrientation orientationOnLunch = [[UIApplication sharedApplication] statusBarOrientation];
     
     if (orientationOnLunch == UIInterfaceOrientationPortrait)
-        return CGSizeMake(collectionView.frame.size.width / 5.3f, collectionView.frame.size.width / 5.3f);
+        return CGSizeMake(collectionView.frame.size.width / 5.1f, collectionView.frame.size.width / 5.1f);
     else
-        return CGSizeMake(collectionView.frame.size.width / 7.3f, collectionView.frame.size.width / 7.3f);
+        return CGSizeMake(collectionView.frame.size.width / 7.1f, collectionView.frame.size.width / 7.1f);
 }
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
@@ -679,11 +671,13 @@
     
     NSInteger lastSectionIndex = [self numberOfSectionsInCollectionView:self.collectionView] - 1;
     
-    //Make sure the specified section exists
-    if (section > lastSectionIndex)
+    if (section > lastSectionIndex || lastSectionIndex < 0)
         return NO;
     
     NSInteger rowCount = [self.collectionView numberOfItemsInSection:indexPath.section] - 1;
+    
+    if (rowCount < 0)
+        return NO;
     
     return row <= rowCount;
 }

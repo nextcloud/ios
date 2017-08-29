@@ -41,10 +41,12 @@
 #import "CCSettings.h"
 #import "CCFavorites.h"
 
+@class CCLoginWeb;
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
 // Timer Process
-@property (nonatomic, strong) NSTimer *timerProcessAutoUpload;
+@property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
 @property (nonatomic, strong) NSTimer *timerUpdateApplicationIconBadgeNumber;
 
 // For LMMediaPlayerView
@@ -67,11 +69,6 @@
 
 // Network Operation
 @property (nonatomic, strong) NSOperationQueue *netQueue;
-
-@property (nonatomic, strong) NSOperationQueue *netQueueDownload;
-@property (nonatomic, strong) NSOperationQueue *netQueueDownloadWWan;
-@property (nonatomic, strong) NSOperationQueue *netQueueUpload;
-@property (nonatomic, strong) NSOperationQueue *netQueueUploadWWan;
 
 // Networking 
 @property (nonatomic, copy) void (^backgroundSessionCompletionHandler)(void);
@@ -123,6 +120,8 @@
 @property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCActivity *activeActivity;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
+@property (nonatomic, retain) CCLogin *activeLogin;
+@property (nonatomic, retain) CCLoginWeb *activeLoginWeb;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
@@ -133,37 +132,40 @@
 // Maintenance Mode
 @property BOOL maintenanceMode;
 
+// Login View
+- (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType;
+
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword;
 
 // initializations 
 - (void)applicationInitialized;
 
-- (void)maintenanceMode:(BOOL)mode;
-
+// Quick Actions - ShotcutItem
 - (void)configDynamicShortcutItems;
+- (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
 
+// StatusBar & ApplicationIconBadgeNumber
 - (void)messageNotification:(NSString *)title description:(NSString *)description visible:(BOOL)visible delay:(NSTimeInterval)delay type:(TWMessageBarMessageType)type errorCode:(NSInteger)errorcode;
 - (void)updateApplicationIconBadgeNumber;
-- (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;
+
+// TabBarController
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 - (void)plusButtonVisibile:(BOOL)visible;
 - (void)selectedTabBarController:(NSInteger)index;
+- (NSString *)getTabBarControllerActiveServerUrl;
 
+// Theming Color
 - (void)settingThemingColorBrand;
 - (void)changeTheming:(UIViewController *)vc;
 
-// Operation Networking
-- (void)cancelAllOperations;
+// Task Networking
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
+- (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent;
 
-- (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector;
-
-- (NSInteger)getNumberDownloadInQueues;
-- (NSInteger)getNumberDownloadInQueuesWWan;
-- (NSInteger)getNumberUploadInQueues;
-- (NSInteger)getNumberUploadInQueuesWWan;
+// Maintenance Mode
+- (void)maintenanceMode:(BOOL)mode;
 
 @end
 

@@ -77,31 +77,31 @@
         }
 
         
-        if ([_activeAccount isEqualToString:[CCUtility getActiveAccountShareExt]]) {
+        if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
             
             // load
             
-            _serverUrl = [CCUtility getServerUrlShareExt];
+            _serverUrl = [CCUtility getServerUrlExt];
             
-            _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), [CCUtility getTitleServerUrlShareExt]];
+            _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), [CCUtility getTitleServerUrlExt]];
             
             if (_isCryptoCloudMode)
-                _localCryptated = [CCUtility getCryptatedShareExt];
+                _localCryptated = [CCUtility getCryptatedExt];
             
         } else {
             
             // Default settings
             
-            [CCUtility setActiveAccountShareExt:self.activeAccount];
+            [CCUtility setActiveAccountExt:self.activeAccount];
 
             _serverUrl  = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl];
-            [CCUtility setServerUrlShareExt:_serverUrl];
+            [CCUtility setServerUrlExt:_serverUrl];
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
-            [CCUtility setTitleServerUrlShareExt:NSLocalizedString(@"_home_", nil)];
+            [CCUtility setTitleServerUrlExt:NSLocalizedString(@"_home_", nil)];
 
             _localCryptated = NO;
-            [CCUtility setCryptatedShareExt:NO];
+            [CCUtility setCryptatedExt:NO];
         }
     }
 
@@ -115,7 +115,7 @@
     _networkingOperationQueue.name = k_queue;
     _networkingOperationQueue.maxConcurrentOperationCount = 1;
     
-    [[CCNetworking sharedNetworking] settingDelegate:self];
+    [CCNetworking sharedNetworking].delegate = self;
         
     [self.shareTable registerNib:[UINib nibWithNibName:@"CCCellShareExt" bundle:nil] forCellReuseIdentifier:@"ShareExtCell"];
     
@@ -213,14 +213,14 @@
     
     if (title) {
         self.destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), title];
-        [CCUtility setTitleServerUrlShareExt:title];
+        [CCUtility setTitleServerUrlExt:title];
     } else {
         self.destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
-        [CCUtility setTitleServerUrlShareExt:NSLocalizedString(@"_home_", nil)];
+        [CCUtility setTitleServerUrlExt:NSLocalizedString(@"_home_", nil)];
     }
     
-    [CCUtility setActiveAccountShareExt:self.activeAccount];
-    [CCUtility setServerUrlShareExt:_serverUrl];
+    [CCUtility setActiveAccountExt:self.activeAccount];
+    [CCUtility setServerUrlExt:_serverUrl];
 }
 
 - (IBAction)destinyFolderButtonTapped:(UIBarButtonItem *)sender
@@ -246,17 +246,7 @@
     
         NSString *fileName = [self.filesName objectAtIndex:0];
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:_activeAccount];
-            
-        metadataNet.action = actionUploadFile;
-        metadataNet.cryptated = _localCryptated;
-        metadataNet.fileName = fileName;
-        metadataNet.fileNamePrint = fileName;
-        metadataNet.serverUrl = _serverUrl;
-        metadataNet.session = k_upload_session_foreground;
-        metadataNet.taskStatus = k_taskStatusResume;
-        
-        [self addNetworkingQueue:metadataNet];
+        [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl cryptated:_localCryptated onlyPlist:NO session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
         
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brand];
     }
@@ -281,7 +271,7 @@
     if (self.localCryptated) self.localCryptated = NO;
     else self.localCryptated = YES;
     
-    [CCUtility setCryptatedShareExt:self.localCryptated];
+    [CCUtility setCryptatedExt:self.localCryptated];
 
     [self navigationBarToolBar];
 }

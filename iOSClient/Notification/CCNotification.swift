@@ -41,6 +41,8 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         
         self.tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         self.tableView.tableFooterView = UIView()
+        self.tableView.rowHeight = UITableViewAutomaticDimension
+        self.tableView.estimatedRowHeight = 50.0
 
         // Register to receive notification reload data
         NotificationCenter.default.addObserver(self, selector: #selector(self.tableView.reloadData), name: Notification.Name("notificationReloadData"), object: nil)
@@ -127,20 +129,6 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             }
             
             return buttons
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        
-        let notification = appDelegate.listOfNotifications.object(at: indexPath.row) as! OCNotifications
-        
-        if notification.message.characters.count > 0 {
-            
-            return 160
-            
-        } else {
-            
-            return 120
         }
     }
     

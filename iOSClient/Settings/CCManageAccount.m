@@ -23,6 +23,7 @@
 
 #import "CCManageAccount.h"
 #import "AppDelegate.h"
+#import "JDStatusBarNotification.h"
 #import "CCLogin.h"
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
@@ -32,9 +33,6 @@
 @interface CCManageAccount () <CCLoginDelegate, CCLoginDelegateWeb>
 {
     tableAccount *_tableAccount;
-
-    CCLoginWeb *_loginWeb;
-    CCLogin *_loginVC;
 }
 @end
 
@@ -176,7 +174,7 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    if ([rowDescriptor.tag isEqualToString:@"pickerAccount"]){
+    if ([rowDescriptor.tag isEqualToString:@"pickerAccount"] && oldValue && newValue){
         
         // cambiamo default account se oldvalue != newValue
         if (![newValue isEqualToString:oldValue]) [self ChangeDefaultAccount:newValue];
@@ -189,10 +187,6 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    // Align Photo Library
-    if (loginType != loginModifyPasswordUser)
-        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-
     if (loginType == loginAddForced)
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
@@ -205,51 +199,15 @@
 {
     [self deselectFormRow:sender];
     
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-    // Brand
-    if ([NCBrandOptions sharedInstance].use_login_web) {
-    
-        _loginWeb = [CCLoginWeb new];
-        _loginWeb.delegate = self;
-        _loginWeb.loginType = loginAdd;
-    
-        [_loginWeb presentModalWithDefaultTheme:self];
-        
-    } else {
-  
-        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-        _loginVC.delegate = self;
-        _loginVC.loginType = loginAdd;
-    
-        [self presentViewController:_loginVC animated:YES completion:nil];
-    }
+    [app openLoginView:self loginType:loginAdd];
 }
 
 - (void)addAccountFoced
 {
-    // Brand
-    if ([NCBrandOptions sharedInstance].use_login_web) {
-    
-        _loginWeb = [CCLoginWeb new];
-        _loginWeb.delegate = self;
-        _loginWeb.loginType = loginAddForced;
-    
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [_loginWeb presentModalWithDefaultTheme:self];
-        });
-        
-    } else {
-        
-        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-        _loginVC.delegate = self;
-        _loginVC.loginType = loginAddForced;
-        
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [self presentViewController:_loginVC animated:YES completion:nil];
-        });
-    }
+    [app openLoginView:self loginType:loginAddForced];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -260,30 +218,10 @@
 {    
     [self deselectFormRow:sender];
     
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
-    // Brand
-    if ([NCBrandOptions sharedInstance].use_login_web) {
-    
-        _loginWeb = [CCLoginWeb new];
-        _loginWeb.delegate = self;
-        _loginWeb.loginType = loginModifyPasswordUser;
-    
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [_loginWeb presentModalWithDefaultTheme:self];
-        });
-
-    } else {
-        
-        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-        _loginVC.delegate = self;
-        _loginVC.loginType = loginModifyPasswordUser;
-    
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [self presentViewController:_loginVC animated:YES completion:nil];
-        });
-    }
+    [app openLoginView:self loginType:loginModifyPasswordUser];
     
     [self UpdateForm];
 }
@@ -314,11 +252,12 @@
 
 - (void)deleteAccount:(NSString *)account
 {
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
     
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:app.activeAccount];
     [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];
@@ -351,17 +290,18 @@
 
 - (void)ChangeDefaultAccount:(NSString *)account
 {
-    if ([app.netQueue operationCount] > 0 || [app.netQueueDownload operationCount] > 0 || [app.netQueueDownloadWWan operationCount] > 0 || [app.netQueueUpload operationCount] > 0 || [app.netQueueUploadWWan operationCount] > 0 || [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil] > 0) {
+    NSUInteger numInSession = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", app.activeAccount] sorted:nil ascending:NO] count];
+    NSUInteger numInQueue = [app.netQueue operationCount];
+    
+    if (numInSession+numInQueue > 0) {
         
-        [app messageNotification:@"_transfers_in_queue_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];        
         [self UpdateForm];
         return;
     }
 
-    // removed  this -> ?????
-    [app cancelAllOperations];
+    [app.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
-    // removed  this -> ?????
     
     // change account
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
@@ -458,17 +398,5 @@
 {
     [self.tableView reloadData];
 }
-
-/*
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    XLFormRowDescriptor *row = [self.form formRowAtIndex:indexPath];
-    
-    if ([row.tag isEqualToString:@"pickerAccount"]) {
-        // set background color in here
-        
-    }
-}
-*/
 
 @end

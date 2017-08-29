@@ -43,7 +43,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     var menuExternalSite: [tableExternalSites]?
     var tabAccount : tableAccount?
     
-    var loginWeb : CCLoginWeb!
+    //var loginWeb : CCLoginWeb!
 
     override func viewDidLoad() {
         
@@ -206,17 +206,18 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             labelUsername.text = tabAccount.displayName
         }
         
-        // fix CCMore.swift line 208 Version 2.17.2 (00005)
-        if (tabAccount.quotaRelative != 0 && tabAccount.quotaTotal != 0 && tabAccount.quotaUsed != 0) {
-                
+        if (tabAccount.quotaRelative > 0) {
             progressQuota.progress = Float(tabAccount.quotaRelative) / 100
-            progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
-                
-            let quota : String = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
-            let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
-                
-            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+        } else {
+            progressQuota.progress = 0
         }
+
+        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
+                
+        let quota : String = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
+        let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
+                
+        labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -339,11 +340,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.activeAccount)
                 
-                self.loginWeb = CCLoginWeb()
-                self.loginWeb.delegate = self
-                self.loginWeb.loginType = loginAddForced
-                
-                self.loginWeb.presentModalWithDefaultTheme(self)
+                self.appDelegate.openLoginView(self, loginType: loginAddForced)
             }
             
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
@@ -386,10 +383,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     }
 
     func loginSuccess(_ loginType: NSInteger) {
-        
-        if (UInt32(loginType) != loginModifyPasswordUser.rawValue) {
-            NCAutoUpload.sharedInstance().alignPhotoLibrary()
-        }
         
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil)
         

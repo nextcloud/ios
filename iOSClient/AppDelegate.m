@@ -51,8 +51,8 @@
 
 + (void)initialize
 {
-    [iRate sharedInstance].daysUntilPrompt = 10;
-    [iRate sharedInstance].usesUntilPrompt = 10;
+    [iRate sharedInstance].daysUntilPrompt = 5;
+    [iRate sharedInstance].usesUntilPrompt = 5;
     [iRate sharedInstance].promptForNewVersionIfUserRated = true;
     
     [[NSUserDefaults standardUserDefaults] registerDefaults:@{@"UserAgent": [CCUtility getUserAgent]}];
@@ -164,22 +164,6 @@
     _netQueue.name = k_queue;
     _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
    
-    _netQueueDownload = [[NSOperationQueue alloc] init];
-    _netQueueDownload.name = k_download_queue;
-    _netQueueDownload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
-
-    _netQueueDownloadWWan = [[NSOperationQueue alloc] init];
-    _netQueueDownloadWWan.name = k_download_queuewwan;
-    _netQueueDownloadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
-    
-    _netQueueUpload = [[NSOperationQueue alloc] init];
-    _netQueueUpload.name = k_upload_queue;
-    _netQueueUpload.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
-    
-    _netQueueUploadWWan = [[NSOperationQueue alloc] init];
-    _netQueueUploadWWan.name = k_upload_queuewwan;
-    _netQueueUploadWWan.maxConcurrentOperationCount = k_maxConcurrentOperationDownloadUpload;
-    
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
         
@@ -248,7 +232,7 @@
     }
     
     // Start Timer
-    self.timerProcessAutoUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoUpload) userInfo:nil repeats:YES];
+    self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
     
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
@@ -283,6 +267,11 @@
     if (_activeMain) {
         [_activeMain reloadDatasource];
         [_activeMain readFileReloadFolder];
+    }
+    
+    // refresh Photos tab
+    if (_activePhotos) {
+        [_activePhotos reloadDatasourceForced];
     }
     
     // Initializations
@@ -320,7 +309,7 @@
 {    
     [MagicalRecord cleanUp];
 
-    NSLog(@"[LOG] bye bye, Crypto Cloud !");
+    NSLog(@"[LOG] bye bye, Nextcloud !");
 }
 
 //
@@ -335,13 +324,26 @@
     // Execute : now
     NSLog(@"[LOG] Update Folder Photo");
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:_activeUrl];
-    if ([autoUploadPath length] > 0)
-        [[CCSynchronize sharedSynchronize] synchronizedFolder:autoUploadPath selector:selectorReadFolder];
-
-    // Execute : after 1 sec.
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    if ([autoUploadPath length] > 0) {
         
+        NSString *fileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+        
+        [[CCSynchronize sharedSynchronize] readFileForFolder:fileName serverUrl:serverUrl selector:selectorReadFileFolder];        
+    }
+    
+    // Execute : after 1 sec.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    
+        // verify Download
+        [[CCNetworking sharedNetworking] verifyDownloadInProgress];
+        if (_activeMain)
+            [[CCNetworking sharedNetworking] verifyDownloadInError:self.activeMain];
+        
+        // verify Upload
+        [[CCNetworking sharedNetworking] verifyUploadInProgress];
+        [[CCNetworking sharedNetworking] verifyUploadInErrorOrWait];
+
         if (_activeMain) {
             NSLog(@"[LOG] Request Server Capabilities");
             [_activeMain requestServerCapabilities];
@@ -361,33 +363,43 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Process Auto Upload k_timerProcess seconds =====
+#pragma mark ===== Login =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)processAutoUpload
+- (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType
 {
-    // Test Maintenance
-    if (self.maintenanceMode)
-        return;
-    
-    // BACKGROND & FOREGROUND
-
-    NSLog(@"-PROCESS-AUTO-UPLOAD-");
-    
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-
-        // ONLY BACKGROUND
-        [[NCAutoUpload sharedInstance] performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+    if ([NCBrandOptions sharedInstance].use_login_web) {
+        
+        if (!_activeLoginWeb.isViewLoaded || !_activeLoginWeb.view.window) {
+        
+            _activeLoginWeb = [CCLoginWeb new];
+            _activeLoginWeb.delegate = delegate;
+            _activeLoginWeb.loginType = loginType;
+        
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                [_activeLoginWeb presentModalWithDefaultTheme:delegate];
+            });
+        }
         
     } else {
+        
+        if (!_activeLogin.isViewLoaded || !_activeLogin.view.window) {
 
-        // ONLY FOREFROUND
-        [[NCAutoUpload sharedInstance] performSelectorOnMainThread:@selector(loadAutoUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+            _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+            _activeLogin.delegate = delegate;
+            _activeLogin.loginType = loginType;
+        
+            dispatch_async(dispatch_get_main_queue(), ^ {
+                [self.window makeKeyAndVisible];
+                [self.window.rootViewController presentViewController:_activeLogin animated:YES completion:nil];
+            });
+        }
     }
 }
 
+
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Setting Active Account =====
+#pragma mark ===== Setting Active Account for all APP =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword
@@ -397,7 +409,10 @@
     self.activeUser = activeUser;
     self.activePassword = activePassword;
     
-    self.directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];    
+    self.directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];
+    
+    // Setting Account to CCNetworking
+    [[CCNetworking sharedNetworking] settingAccount];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -565,20 +580,20 @@
     UIApplicationShortcutIcon *shortcutUploadEncryptedIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionUploadEncrypted"];
     
     UIApplicationShortcutItem *shortcutPhotos = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.photos", bundleId] localizedTitle:NSLocalizedString(@"_photo_camera_", nil) localizedSubtitle:nil icon:shortcutPhotosIcon userInfo:nil];
-
     UIApplicationShortcutItem *shortcutUpload = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.upload", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadIcon userInfo:nil];
-    
     UIApplicationShortcutItem *shortcutUploadEncrypted = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadEncrypted", bundleId] localizedTitle:NSLocalizedString(@"_upload_encrypted_file_", nil) localizedSubtitle:nil icon:shortcutUploadEncryptedIcon userInfo:nil];
     
     if (app.isCryptoCloudMode) {
         
         // add the array to our app
-        [UIApplication sharedApplication].shortcutItems = @[shortcutUploadEncrypted, shortcutUpload, shortcutPhotos];
+        if (shortcutUploadEncrypted && shortcutUpload && shortcutPhotos)
+            [UIApplication sharedApplication].shortcutItems = @[shortcutUploadEncrypted, shortcutUpload, shortcutPhotos];
 
     } else {
 
         // add the array to our app
-        [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
+        if (shortcutUpload && shortcutPhotos)
+            [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
     }
 }
 
@@ -805,6 +820,39 @@
     return iconImage;
 }
 
+- (void)updateApplicationIconBadgeNumber
+{
+    // Test Maintenance
+    if (self.maintenanceMode)
+        return;
+    
+    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
+    
+    // Total
+    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:nil] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil];
+    
+    [UIApplication sharedApplication].applicationIconBadgeNumber = total;
+    
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    
+    if ([[splitViewController.viewControllers firstObject] isKindOfClass:[UITabBarController class]]) {
+        
+        UITabBarController *tbc = [splitViewController.viewControllers firstObject];
+        
+        UITabBarItem *tbItem = [tbc.tabBar.items objectAtIndex:0];
+        
+        if (total > 0) {
+            [tbItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
+        } else {
+            [tbItem setBadgeValue:nil];
+            
+            NSDictionary* userInfo = @{@"fileID": @"", @"serverUrl": @"", @"cryptated": [NSNumber numberWithFloat:0], @"progress": [NSNumber numberWithFloat:0]};
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+        }
+    }
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== TabBarController =====
 #pragma --------------------------------------------------------------------------------------------
@@ -929,45 +977,14 @@
     if (self.maintenanceMode)
         return;
     
+    UIView *view = [(UIButton *)sender superview];
+    
     CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brand];
     
     if ([CCUtility getCreateMenuEncrypted])
-        [menuAdd createMenuEncryptedWithView:self.window.rootViewController.view];
+        [menuAdd createMenuEncryptedWithView:view];
     else
-        [menuAdd createMenuPlainWithView:self.window.rootViewController.view];
-}
-
-- (void)updateApplicationIconBadgeNumber
-{
-    // Test Maintenance
-    if (self.maintenanceMode)
-        return;
-
-    NSInteger queueDownload = [self getNumberDownloadInQueues] + [self getNumberDownloadInQueuesWWan];
-    NSInteger queueUpload = [self getNumberUploadInQueues] + [self getNumberUploadInQueuesWWan];
-    
-    // Total
-    NSInteger total = queueDownload + queueUpload + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil];
-    
-    [UIApplication sharedApplication].applicationIconBadgeNumber = total;
-    
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    
-    if ([[splitViewController.viewControllers firstObject] isKindOfClass:[UITabBarController class]]) {
-        
-        UITabBarController *tbc = [splitViewController.viewControllers firstObject];
-        
-        UITabBarItem *tbItem = [tbc.tabBar.items objectAtIndex:0];
-        
-        if (total > 0) {
-            [tbItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
-        } else {
-            [tbItem setBadgeValue:nil];
-            
-            NSDictionary* userInfo = @{@"fileID": @"", @"serverUrl": @"", @"cryptated": [NSNumber numberWithFloat:0], @"progress": [NSNumber numberWithFloat:0]};
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
-        }
-    }
+        [menuAdd createMenuPlainWithView:view];
 }
 
 - (void)selectedTabBarController:(NSInteger)index
@@ -995,6 +1012,27 @@
     }
 }
 
+- (NSString *)getTabBarControllerActiveServerUrl
+{
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+
+    NSString *serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
+    NSInteger index = tabBarController.selectedIndex;
+    
+    // select active serverUrl
+    if (index == k_tabBarApplicationIndexFile) {
+        serverUrl = app.activeMain.serverUrl;
+    } else if (index == k_tabBarApplicationIndexFavorite) {
+        if (app.activeFavorites.serverUrl)
+            serverUrl = app.activeFavorites.serverUrl;
+    } else if (index == k_tabBarApplicationIndexPhotos) {
+        serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+    }
+    
+    return serverUrl;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Theming Color =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1016,7 +1054,7 @@
                 // Activity
                 [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Server Theming" note:NSLocalizedString(@"_theming_is_light_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                 
-                [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
+                newColor = [NCBrandColor sharedInstance].customer;
                 
             } else {
                 
@@ -1306,16 +1344,6 @@
     });
 }
 
-- (void)cancelAllOperations
-{
-    [_netQueue cancelAllOperations];
-    
-    [_netQueueDownload cancelAllOperations];
-    [_netQueueDownloadWWan cancelAllOperations];
-    [_netQueueUpload cancelAllOperations];
-    [_netQueueUploadWWan cancelAllOperations];
-}
-
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet
 {
     id operation;
@@ -1325,73 +1353,6 @@
     [operation setQueuePriority:metadataNet.priority];
     
     [netQueue addOperation:operation];
-}
-
-- (NSMutableArray *)verifyExistsInQueuesDownloadSelector:(NSString *)selector
-{
-    NSMutableArray *metadatasNet = [[NSMutableArray alloc] init];
-    
-    for (OCnetworking *operation in [self.netQueueDownload operations])
-        if ([operation.metadataNet.selector isEqualToString:selector])
-            [metadatasNet addObject:[operation.metadataNet copy]];
-        
-    for (OCnetworking *operation in [self.netQueueDownloadWWan operations])
-        if ([operation.metadataNet.selector isEqualToString:selector])
-            [metadatasNet addObject:[operation.metadataNet copy]];
-    
-    return metadatasNet;
-}
-
-- (NSInteger)getNumberDownloadInQueues
-{
-    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataDownload];
-    
-    NSInteger queueNunDownload = [results count];
-    
-    // netQueueDownload
-    for (NSOperation *operation in [self.netQueueDownload operations])
-        if (((OCnetworking *)operation).isExecuting == NO) queueNunDownload++;
-    
-    return queueNunDownload;
-}
-
-- (NSInteger)getNumberDownloadInQueuesWWan
-{
-    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan];
-    
-    NSInteger queueNumDownloadWWan = [results count];
-    
-    // netQueueDownloadWWan
-    for (NSOperation *operation in [self.netQueueDownloadWWan operations])
-        if (((OCnetworking *)operation).isExecuting == NO) queueNumDownloadWWan++;
-    
-    return queueNumDownloadWWan;
-}
-
-- (NSInteger)getNumberUploadInQueues
-{
-    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataUpload];
-    
-    NSInteger queueNumUpload = [results count];
-    
-    // netQueueUpload
-    for (NSOperation *operation in [self.netQueueUpload operations])
-        if (((OCnetworking *)operation).isExecuting == NO) queueNumUpload++;
-    
-    return queueNumUpload;
-}
-
-- (NSInteger)getNumberUploadInQueuesWWan
-{
-    NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan];
-    
-    NSInteger queueNumUploadWWan = [results count];
-    
-    // netQueueUploadWWan
-    for (NSOperation *operation in [self.netQueueUploadWWan operations])
-        if (((OCnetworking *)operation).isExecuting == NO) queueNumUploadWWan++;
-    
-    return queueNumUploadWWan;
 }
 
 // Notification change session
@@ -1464,7 +1425,7 @@
         if (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone) downloadPlist = YES;
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] downloadFile:fileID serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:nil];
+            [[CCNetworking sharedNetworking] downloadFile:fileID serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
         });
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
@@ -1496,6 +1457,158 @@
     if (_activeMain && [_listChangeTask count] == 0) {
         [_activeMain reloadDatasource:serverUrl];
     }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Process Auto Upload < k_timerProcess seconds > =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)processAutoDownloadUpload
+{
+    // Test Maintenance
+    if (self.maintenanceMode)
+        return;
+    
+    // BACKGROND & FOREGROUND
+    NSLog(@"-PROCESS-AUTO-UPLOAD-");
+    
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        
+        // ONLY BACKGROUND
+        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+        
+    } else {
+        
+        // ONLY FOREFROUND
+        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+    }
+}
+
+- (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent
+{
+    CCMetadataNet *metadataNet;
+    
+    // Stop Timer
+    [_timerProcessAutoDownloadUpload invalidate];
+    
+    NSInteger maxConcurrentDownloadUpload = [maxConcurrent integerValue];
+    
+    NSInteger counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+    NSInteger counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
+    
+    NSInteger counterNewUpload = 0;
+    
+    // ------------------------- <selector Auto Download> -------------------------
+    
+    while (counterDownloadInSession < maxConcurrentDownloadUpload) {
+        
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueDownload];
+        if (metadataNet) {
+            
+            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileID serverUrl:metadataNet.serverUrl downloadData:metadataNet.downloadData downloadPlist:metadataNet.downloadPlist selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:app.activeMain];
+            
+        } else
+            break;
+        
+        counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+    }
+    
+    // ------------------------- <selector Auto Upload> -------------------------
+    
+    while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
+        
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUpload];
+        if (metadataNet) {
+            
+            // Priority Error only in Foreground
+            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
+                continue;
+            
+            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+            
+            counterNewUpload++;
+            
+        } else
+            break;
+        
+        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
+    }
+    
+    // ------------------------- <selector Auto Upload All> ----------------------
+    
+    // Verify num error MAX 10 after STOP
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", _activeAccount, selectorUploadAutoUploadAll, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
+    
+    NSInteger errorCount = [metadatas count];
+    
+    if (errorCount >= 10) {
+        
+        [self messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+        
+    } else {
+        
+        while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
+            
+            metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUploadAll];
+            if (metadataNet) {
+                
+                // Priority Error only in Foreground
+                if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
+                    continue;
+                
+                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+                
+                counterNewUpload++;
+                
+            } else
+                break;
+            
+            counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
+        }
+    }
+    
+    // ------------------------- <selector Upload File> -------------------------
+    
+    while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
+        
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadFile];
+        if (metadataNet) {
+            
+            // Priority Error only in Foreground
+            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
+                continue;
+            
+            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+            
+            counterNewUpload++;
+            
+        } else
+            break;
+        
+        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
+    }
+    
+    // Verify Lock
+    NSInteger counterUploadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
+    NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getLockQueueUpload];
+    
+    if (counterNewUpload == 0 && counterUploadInSession == 0 && [tableMetadatasInLock count] > 0) {
+        
+        // Unlock
+        for (tableMetadata *metadata in tableMetadatasInLock) {
+            
+            if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
+                [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
+        }
+    }
+    
+    // In background verify Upload in error
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        [[CCNetworking sharedNetworking] verifyUploadInErrorOrWait];
+    }
+    
+    // Start Timer
+    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:app selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1547,7 +1660,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== maintenance Mode =====
+#pragma mark ===== Maintenance Mode =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)maintenanceMode:(BOOL)mode
@@ -1566,7 +1679,7 @@
 #endif
     
     NSString *actualVersion = [CCUtility getVersion];
-    //NSString *actualBuild = [CCUtility getBuild];
+    NSString *actualBuild = [CCUtility getBuild];
     
     /* ---------------------- UPGRADE VERSION ----------------------- */
     
@@ -1614,18 +1727,23 @@
         [self maintenanceMode:NO];
     }
     
-    // VERSION == 2.17.4
+    // VERSION < 2.17.6
 
-    if ([actualVersion isEqualToString:@"2.17.4"]) {
+    if (([actualVersion compare:@"2.17.6" options:NSNumericSearch] == NSOrderedAscending)) {
         
-        // Build < 37 (example)
-        /*
-        if (([actualBuild compare:@"37" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
+        // Remove All old Photo Library
+        [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
+    }
+    
+    // VERSION == 2.17.6
+    if ([actualVersion isEqualToString:@"2.17.6"]) {
+        
+        // Build < 10
+        if (([actualBuild compare:@"10" options:NSNumericSearch] == NSOrderedAscending) || actualBuild == nil) {
             
-            [CCUtility setOrderSettings:@"fileName"];
-            [CCUtility setBuild];
+            // Remove All old Photo Library
+            //[[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
         }
-        */ 
     }
     
     return YES;

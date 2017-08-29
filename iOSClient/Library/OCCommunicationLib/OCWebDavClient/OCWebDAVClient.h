@@ -158,7 +158,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  @see propertiesOfPath:success:failure:
  @see recursiveListPath:success:failure:
  */
-- (void)listPath:(NSString * _Nonnull)path
+- (void)listPath:(NSString * _Nonnull)path depth:(NSString * _Nonnull)depth
  onCommunication: (OCCommunication * _Nonnull)sharedOCCommunication
          success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nullable responseObject))success
          failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
@@ -178,7 +178,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  @see propertiesOfPath:success:failure:
  @see recursiveListPath:success:failure:
  */
-- (void)listPath:(NSString * _Nonnull)path
+- (void)listPath:(NSString * _Nonnull)path depth:(NSString * _Nonnull)depth
  onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication withUserSessionToken:(NSString * _Nonnull)token
          success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nonnull, NSString * _Nonnull token))success
          failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull, NSString * _Nonnull token))failure;
@@ -454,6 +454,9 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 - (void) searchUsersAndGroupsWith:(NSString * _Nonnull)searchString forPage:(NSInteger)page with:(NSInteger)resultsPerPage ofServer:(NSString * _Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCComunication
                           success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
                           failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
+
+- (void) getSharePermissionsFile:(NSString * _Nonnull)fileName onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
+                         failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
 ///-----------------------------------
 /// @name Get the server capabilities

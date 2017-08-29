@@ -8,10 +8,12 @@
 
 #import "AHKActionSheetViewController.h"
 #import "AHKActionSheet.h"
-#import "UIWindow+AHKAdditions.h"
 
 @interface AHKActionSheetViewController ()
+
 @property (nonatomic) BOOL viewAlreadyAppear;
+@property (nonatomic) UIInterfaceOrientation storeOrientation;
+
 @end
 
 @implementation AHKActionSheetViewController
@@ -21,6 +23,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didRotateDeviceChangeNotification:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+    _storeOrientation = [[UIApplication sharedApplication] statusBarOrientation];
 
     [self.view addSubview:self.actionSheet];
     self.actionSheet.frame = self.view.bounds;
@@ -32,6 +37,14 @@
 
     self.viewAlreadyAppear = YES;
 }
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 
 - (void)viewWillLayoutSubviews
 {
@@ -55,22 +68,15 @@
     return UIInterfaceOrientationMaskAll;
 }
 
-- (UIStatusBarStyle)preferredStatusBarStyle
+-(void)didRotateDeviceChangeNotification:(NSNotification *)notification
 {
-    UIWindow *window = self.actionSheet.previousKeyWindow;
-    if (!window) {
-        window = [[UIApplication sharedApplication].windows firstObject];
+    UIInterfaceOrientation currentOrientation = [[UIApplication sharedApplication] statusBarOrientation];
+    
+    if (currentOrientation != _storeOrientation) {
+        [self.actionSheet dismissAnimated:NO];
     }
-    return [[window ahk_viewControllerForStatusBarStyle] preferredStatusBarStyle];
-}
-
-- (BOOL)prefersStatusBarHidden
-{
-    UIWindow *window = self.actionSheet.previousKeyWindow;
-    if (!window) {
-        window = [[UIApplication sharedApplication].windows firstObject];
-    }
-    return [[window ahk_viewControllerForStatusBarHidden] prefersStatusBarHidden];
+    
+    _storeOrientation = currentOrientation;
 }
 
 @end
