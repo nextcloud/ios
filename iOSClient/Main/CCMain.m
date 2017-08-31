@@ -5811,8 +5811,17 @@
         
         } else {
            
-            if (viewController.isViewLoaded)
-                [self.navigationController pushViewController:viewController animated:YES];
+            if (viewController.isViewLoaded) {
+                
+                // Fix : Application tried to present modally an active controller
+                if ([self.navigationController isBeingPresented]) {
+                    // being presented
+                } else if ([self.navigationController isMovingToParentViewController]) {
+                    // being pushed
+                } else {
+                    [self.navigationController pushViewController:viewController animated:YES];
+                }
+            }
         }
     }
 }
