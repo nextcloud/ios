@@ -187,7 +187,6 @@
     if ([detail isKindOfClass:[CCDetail class]]) {
         
         [ncMaster popViewControllerAnimated:NO];
-        
     }
     
     return nil;
@@ -205,8 +204,15 @@
             
             UINavigationController *ncMaster = [self.viewControllers[0] selectedViewController];
             
-            [ncMaster pushViewController:ncDetail.topViewController animated:YES];
-            
+            // Fix : Application tried to present modally an active controller
+            if ([ncMaster isBeingPresented]) {
+                // being presented
+            } else if ([ncMaster isMovingToParentViewController]) {
+                // being pushed
+            } else {
+                [ncMaster pushViewController:ncDetail.topViewController animated:YES];
+            }
+
             return;
         }
     }
