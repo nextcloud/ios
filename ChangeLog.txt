@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### [2.17.7] - 2017-xx-xx
+
+## [2.17.6] - 2017-08-31
+### Added
+- Hide Hidden Files #102
+
+### Fixed
+- App crashes instantly after start up #314
+- 401 responses are ignored #334
+- Fix used/stored user ID #331
+- Office 365 and NextCloud IOS app not saving modification to document #311
+- Upload menu is at wrong position on iPad at landscape mode #155
 
 ## [2.17.5] - 2017-07-28
 ### Added
