@@ -1619,6 +1619,20 @@
 		F7C742E61E7BD71A00D9C973 /* PickerFileProvider.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = PickerFileProvider.entitlements; sourceTree = "<group>"; };
 		F7C8C1901B482CEA0048180E /* CCGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGlobal.h; sourceTree = "<group>"; };
 		F7C8C1911B482CEA0048180E /* CCGlobal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGlobal.m; sourceTree = "<group>"; };
+		F7CC04E31F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F7CC04E41F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7CC04E51F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F7CC04E61F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7CC04E71F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7CC04E81F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Intro.strings; sourceTree = "<group>"; };
+		F7CC04E91F5AD50E00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/Error.strings; sourceTree = "<group>"; };
+		F7CC04EA1F5AD5D000378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F7CC04EB1F5AD5D000378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7CC04EC1F5AD5D000378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F7CC04ED1F5AD5D000378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F7CC04EE1F5AD5D000378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F7CC04EF1F5AD5D100378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F7CC04F01F5AD5D100378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Error.strings"; sourceTree = "<group>"; };
 		F7CD0FF91C8DDA7D006520C5 /* CCSharePermissionOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSharePermissionOC.h; sourceTree = "<group>"; };
 		F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSharePermissionOC.m; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -4048,6 +4062,8 @@
 				"nb-NO",
 				pl,
 				sv,
+				es,
+				"sk-SK",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -5038,6 +5054,8 @@
 				F78D6F4C1F0B7CE4002F9619 /* nb-NO */,
 				F78D6F531F0B7D47002F9619 /* pl */,
 				F7DE9AAF1F482FA5008DFE10 /* sv */,
+				F7CC04E51F5AD50D00378CEF /* es */,
+				F7CC04EC1F5AD5D000378CEF /* sk-SK */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -5057,6 +5075,8 @@
 				F78D6F4B1F0B7CE4002F9619 /* nb-NO */,
 				F78D6F521F0B7D47002F9619 /* pl */,
 				F7DE9AAE1F482FA5008DFE10 /* sv */,
+				F7CC04E41F5AD50D00378CEF /* es */,
+				F7CC04EB1F5AD5D000378CEF /* sk-SK */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -5076,6 +5096,8 @@
 				F78D6F4F1F0B7CE4002F9619 /* nb-NO */,
 				F78D6F561F0B7D47002F9619 /* pl */,
 				F7DE9AB21F482FA5008DFE10 /* sv */,
+				F7CC04E81F5AD50D00378CEF /* es */,
+				F7CC04EF1F5AD5D100378CEF /* sk-SK */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -5095,6 +5117,8 @@
 				F78D6F4A1F0B7CE4002F9619 /* nb-NO */,
 				F78D6F511F0B7D47002F9619 /* pl */,
 				F7DE9AAD1F482FA5008DFE10 /* sv */,
+				F7CC04E31F5AD50D00378CEF /* es */,
+				F7CC04EA1F5AD5D000378CEF /* sk-SK */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -5114,6 +5138,8 @@
 				F78D6F501F0B7CE5002F9619 /* nb-NO */,
 				F78D6F571F0B7D48002F9619 /* pl */,
 				F7DE9AB31F482FA5008DFE10 /* sv */,
+				F7CC04E91F5AD50E00378CEF /* es */,
+				F7CC04F01F5AD5D100378CEF /* sk-SK */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -5133,6 +5159,8 @@
 				F78D6F4E1F0B7CE4002F9619 /* nb-NO */,
 				F78D6F551F0B7D47002F9619 /* pl */,
 				F7DE9AB11F482FA5008DFE10 /* sv */,
+				F7CC04E71F5AD50D00378CEF /* es */,
+				F7CC04EE1F5AD5D000378CEF /* sk-SK */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -5152,6 +5180,8 @@
 				F78D6F4D1F0B7CE4002F9619 /* nb-NO */,
 				F78D6F541F0B7D47002F9619 /* pl */,
 				F7DE9AB01F482FA5008DFE10 /* sv */,
+				F7CC04E61F5AD50D00378CEF /* es */,
+				F7CC04ED1F5AD5D000378CEF /* sk-SK */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
