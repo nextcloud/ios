@@ -1633,6 +1633,13 @@
 		F7CC04EE1F5AD5D000378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F7CC04EF1F5AD5D100378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Intro.strings"; sourceTree = "<group>"; };
 		F7CC04F01F5AD5D100378CEF /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Error.strings"; sourceTree = "<group>"; };
+		F7CC04FB1F5AE93D00378CEF /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
+		F7CC04FC1F5AE93D00378CEF /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
+		F7CC04FD1F5AE93D00378CEF /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
+		F7CC04FE1F5AE93D00378CEF /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
+		F7CC04FF1F5AE93E00378CEF /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		F7CC05001F5AE93E00378CEF /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Intro.strings; sourceTree = "<group>"; };
+		F7CC05011F5AE93E00378CEF /* nl */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Error.strings; sourceTree = "<group>"; };
 		F7CD0FF91C8DDA7D006520C5 /* CCSharePermissionOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCSharePermissionOC.h; sourceTree = "<group>"; };
 		F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSharePermissionOC.m; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -4064,6 +4071,7 @@
 				sv,
 				es,
 				"sk-SK",
+				nl,
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -5056,6 +5064,7 @@
 				F7DE9AAF1F482FA5008DFE10 /* sv */,
 				F7CC04E51F5AD50D00378CEF /* es */,
 				F7CC04EC1F5AD5D000378CEF /* sk-SK */,
+				F7CC04FD1F5AE93D00378CEF /* nl */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -5077,6 +5086,7 @@
 				F7DE9AAE1F482FA5008DFE10 /* sv */,
 				F7CC04E41F5AD50D00378CEF /* es */,
 				F7CC04EB1F5AD5D000378CEF /* sk-SK */,
+				F7CC04FC1F5AE93D00378CEF /* nl */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -5098,6 +5108,7 @@
 				F7DE9AB21F482FA5008DFE10 /* sv */,
 				F7CC04E81F5AD50D00378CEF /* es */,
 				F7CC04EF1F5AD5D100378CEF /* sk-SK */,
+				F7CC05001F5AE93E00378CEF /* nl */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -5119,6 +5130,7 @@
 				F7DE9AAD1F482FA5008DFE10 /* sv */,
 				F7CC04E31F5AD50D00378CEF /* es */,
 				F7CC04EA1F5AD5D000378CEF /* sk-SK */,
+				F7CC04FB1F5AE93D00378CEF /* nl */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -5140,6 +5152,7 @@
 				F7DE9AB31F482FA5008DFE10 /* sv */,
 				F7CC04E91F5AD50E00378CEF /* es */,
 				F7CC04F01F5AD5D100378CEF /* sk-SK */,
+				F7CC05011F5AE93E00378CEF /* nl */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -5161,6 +5174,7 @@
 				F7DE9AB11F482FA5008DFE10 /* sv */,
 				F7CC04E71F5AD50D00378CEF /* es */,
 				F7CC04EE1F5AD5D000378CEF /* sk-SK */,
+				F7CC04FF1F5AE93E00378CEF /* nl */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -5182,6 +5196,7 @@
 				F7DE9AB01F482FA5008DFE10 /* sv */,
 				F7CC04E61F5AD50D00378CEF /* es */,
 				F7CC04ED1F5AD5D000378CEF /* sk-SK */,
+				F7CC04FE1F5AE93D00378CEF /* nl */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
