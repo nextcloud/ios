@@ -1427,6 +1427,19 @@
                     if ([theming valueForKey:@"url"] && ![[theming valueForKey:@"url"] isEqual:[NSNull null]])
                         capabilities.themingUrl = [theming valueForKey:@"url"];
                 }
+                
+                //CLIENT SIDE ENCRYPTION
+                
+                NSDictionary *clientSideEncryption = [capabilitiesDict valueForKey:@"client-side-encryption"];
+                
+                if ([clientSideEncryption count] > 0) {
+                    
+                    NSNumber *clientSideEncryptionEnabled = (NSNumber*)[clientSideEncryption valueForKey:@"enabled"];
+                    capabilities.isClientSideEncryptionEnabled = clientSideEncryptionEnabled.boolValue;
+                    
+                    if ([clientSideEncryption valueForKey:@"api-version"] && ![[clientSideEncryption valueForKey:@"api-version"] isEqual:[NSNull null]])
+                        capabilities.clientSideEncryptionVersion = [clientSideEncryption valueForKey:@"api-version"];
+                }
             }
         
             successRequest(response, capabilities, request.redirectedServer);
