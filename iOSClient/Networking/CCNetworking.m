@@ -397,10 +397,6 @@
             errorCode = httpResponse.statusCode;
         else
             errorCode = error.code;
-        
-        // Request trusted certificated
-        if (errorCode == NSURLErrorServerCertificateUntrusted)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
     }
 
     // ----------------------- DOWNLOAD -----------------------
