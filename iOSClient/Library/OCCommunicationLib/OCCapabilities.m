@@ -27,6 +27,8 @@
         self.themingName = @"";
         self.themingSlogan = @"";
         self.themingUrl = @"";
+        
+        self.clientSideEncryptionVersion = @"";
     }
     return self;
 }

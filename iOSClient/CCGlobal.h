@@ -274,7 +274,6 @@ extern NSString *const urlBaseUploadDB;
 #define k_activityDebugActionGetNotification            @"Get Notification Server"
 #define k_activityDebugActionPushProxy                  @"Subscribing Push Proxy"
 #define k_activityDebugActionServerPush                 @"Subscribing Server Push"
-#define k_activityDebugActionFeatures                   @"Features Supported By Server"
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 
 // Priority Auto Upload
