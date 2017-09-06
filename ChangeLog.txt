@@ -5,7 +5,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### [2.17.7] - 2017-xx-xx
+### [2.17.8] - 2017-xx-xx
+
+## [2.17.7] - 2017-09-04
+### Added
+- Added slovakian language (SK)
+- Added new Activity Client for verbose high : https://github.com/nextcloud/ios/commit/abaeae6d44ef0945cd1d013339daf4bb0e01ecd0
+
+### Fixed
+- Bug fix https://github.com/nextcloud/ios/commit/24d56394cc0655f5d3ae89791f7be54a43997a95 
+
+### Changed
+- Added 2 pt. dimension font on Notification view : https://github.com/nextcloud/ios/commit/909ab9e3637d70bc594154325a346adde455f5be
 
 ## [2.17.6] - 2017-08-31
 ### Added
