@@ -1215,7 +1215,14 @@
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
+    // Update User (+ userProfile.id)
     [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+    
+    // Get Account Active
+    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    
+    // Setting App active account
+    [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activePassword:account.password];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         

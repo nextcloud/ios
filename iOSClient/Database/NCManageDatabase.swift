@@ -415,9 +415,12 @@ class NCManageDatabase: NSObject {
                 }
                 
                 // Update user with ID
+                // RollBack 07.09
+                /*
                 if userProfile.id.characters.count > 0 {
                     result.user = userProfile.id
                 }
+                */
                 
                 result.enabled = userProfile.enabled
                 result.address = userProfile.address

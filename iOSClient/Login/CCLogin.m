@@ -360,15 +360,15 @@
     
     if (account) {
     
+        // Update User (+ userProfile.id)
+        [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+        
         // Set this account as default
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
         
         // Setting App active account
         [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activePassword:account.password];
     
-        // Update User
-        [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
-
         // Ok ! Dismiss
         [self.delegate loginSuccess:_loginType];
         
