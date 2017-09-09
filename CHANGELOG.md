@@ -5,7 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### [2.17.8] - 2017-xx-xx
+### [2.18.0] - 2017-xx-xx
+
+### [2.17.9] - 2017-xx-xx
+
+## [2.17.8] - 2017-09-xx
+### Fixed
+- Login with LDAP is now working again / App show the login page all the time #365
+- Dowload File Connection Failed #364
 
 ## [2.17.7] - 2017-09-04
 ### Added
