@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### [2.17.9] - 2017-xx-xx
 
-## [2.17.8] - 2017-09-xx
+## [2.17.8] - 2017-09-08
 ### Fixed
 - Login with LDAP is now working again / App show the login page all the time #365
 - Dowload File Connection Failed #364
