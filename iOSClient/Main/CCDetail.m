@@ -497,7 +497,7 @@
                 }
             }
             
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                 
                 if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]]) {
                     
@@ -525,6 +525,44 @@
                     }
                 }
             }
+            
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) {
+                
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]]) {
+                    
+                    MWPhoto *audio;
+                    UIImage *audioImage;
+                    
+                    // remove and make the simbolic link in temp
+                    NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
+                    
+                    [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
+                    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID] toPath:toPath error:nil];
+                    NSURL *url = [NSURL fileURLWithPath:toPath];
+                    
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", directory, metadata.fileID]]) {
+                        audioImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", directory, metadata.fileID]];
+                    } else {
+                        audioImage = [UIImage imageNamed:@"notaMusic"]; //[CCGraphics scaleImage:[UIImage imageNamed:@"notaMusic"] toSize:CGSizeMake(200, 200) isAspectRation:YES];
+                    }
+                    
+                    audio = [MWPhoto photoWithImage:audioImage];
+                    audio.videoURL = url;
+                    [self.photos replaceObjectAtIndex:index withObject:audio];
+                    
+                } else {
+                    
+                    if ([metadata.sessionError length] > 0 ) {
+                        
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
+                        
+                    } else {
+                        
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCGraphics drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor darkGrayColor] sizeOfFont:50]]];
+                    }
+                }
+            }
+            
         }
         
         // energy saving memory
