@@ -201,7 +201,7 @@ static NSString *const BKTouchIDManagerTouchIDEnabledAccountName = @"enabled";
                                   (__bridge id)kSecAttrService: serviceName,
                                   (__bridge id)kSecAttrAccount: accountName,
                                   (__bridge id)kSecValueData: data,
-                                  (__bridge id)kSecUseNoAuthenticationUI: @YES,
+                                  (__bridge id)kSecUseAuthenticationUI: @YES,
                                   (__bridge id)kSecAttrAccessControl: (__bridge_transfer id)sacObject };
     
     OSStatus status = SecItemAdd((__bridge CFDictionaryRef)attributes, nil);

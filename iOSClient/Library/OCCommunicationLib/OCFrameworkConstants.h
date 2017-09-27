@@ -68,6 +68,9 @@
 //Url to access to User Profile API
 #define k_url_acces_remote_userprofile_api @"ocs/v2.php/cloud/user"
 
+//Url to access to Client Side Encription API
+#define k_url_client_side_encryption @"ocs/v2.php/apps/client_side_encryption/api/v1"
+
 //Version of the server that have share API
 #define k_version_support_shared [NSArray arrayWithObjects:  @"5", @"0", @"27", nil]
 

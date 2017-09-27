@@ -63,7 +63,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         let fileSize = 0
         let metadata = [AnyHashable(URLResourceKey.fileSizeKey): fileSize]
         do {
-            try NSFileProviderExtension.writePlaceholder(at: placeholderURL, withMetadata: metadata)
+            try NSFileProviderExtension.writePlaceholder(at: placeholderURL, withMetadata: metadata as! [URLResourceKey : Any])
         } catch {
             // Handle error
         }
@@ -168,7 +168,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+            CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
         }
 
         self.stopProvidingItem(at: url)

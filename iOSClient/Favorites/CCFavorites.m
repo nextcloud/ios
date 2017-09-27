@@ -1,6 +1,6 @@
 //
 //  CCFavorites.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 16/01/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -90,7 +90,7 @@
     [super viewWillAppear:animated];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
@@ -239,27 +239,20 @@
     
     for (tableMetadata *metadata in metadatas) {
         
-        // type of file
-        NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
-        
-        // do not insert cryptated favorite file
-        if (typeFilename == k_metadataTypeFilenameCrypto || typeFilename == k_metadataTypeFilenamePlist)
-            continue;
-        
         // insert for test NOT favorite
         [filesEtag addObject:metadata.fileID];
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
+        NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
         
         if (![serverUrlSon containsString:father]) {
             
             if (metadata.directory) {
                 
                 if ([CCUtility getFavoriteOffline])
-                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
+                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
                 else
-                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileNameData serverUrl:serverUrl selector:selectorReadFileFolder];
+                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolder];
 
             } else {
                 
@@ -327,67 +320,16 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== menu =====
-#pragma--------------------------------------------------------------------------------------------
-
-- (void)openModel:(tableMetadata *)metadata
-{
-    UIViewController *viewController;
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-    
-    if (serverUrl) {
-        
-        if ([metadata.model isEqualToString:@"cartadicredito"])
-            viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([metadata.model isEqualToString:@"bancomat"])
-            viewController = [[CCBancomat alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([metadata.model isEqualToString:@"contocorrente"])
-            viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([metadata.model isEqualToString:@"accountweb"])
-            viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([metadata.model isEqualToString:@"patenteguida"])
-            viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([metadata.model isEqualToString:@"cartaidentita"])
-            viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([metadata.model isEqualToString:@"passaporto"])
-            viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([metadata.model isEqualToString:@"note"]) {
-        
-            viewController = [[CCNote alloc] initWithDelegate:self fileName:metadata.fileName uuid:metadata.uuid fileID:metadata.fileID isLocal:NO serverUrl:serverUrl];
-        
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        
-            [self presentViewController:navigationController animated:YES completion:nil];
-        
-        } else {
-        
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        
-            [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-        
-            [self presentViewController:navigationController animated:YES completion:nil];
-        }
-    }
-}
-
 - (void)openWith:(tableMetadata *)metadata
 {
     NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:fileNamePath toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:fileNamePath toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
         
-        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint]];
+        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName]];
         
         _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
         _docController.delegate = self;
@@ -456,20 +398,17 @@
             iconHeader = [UIImage imageNamed:metadata.iconName];
     }
     
-    [actionSheet addButtonWithTitle: metadata.fileNamePrint image: iconHeader backgroundColor: [NCBrandColor sharedInstance].tabBar height: 50.0 type: AHKActionSheetButtonTypeDisabled handler: nil
+    [actionSheet addButtonWithTitle: metadata.fileName image: iconHeader backgroundColor: [NCBrandColor sharedInstance].tabBar height: 50.0 type: AHKActionSheetButtonTypeDisabled handler: nil
     ];
 
     // Share
-    if (_metadata.cryptated == NO) {
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+    [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                                     
-                [app.activeMain openWindowShare:metadata];
-            }];
-    }
+            [app.activeMain openWindowShare:metadata];
+    }];
 
-    // NO Directory - NO Template
-    if (metadata.directory == NO && [metadata.type isEqualToString:k_metadataType_template] == NO) {
+    // NO Directory
+    if (metadata.directory == NO) {
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOpenIn"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                 [self.tableView setEditing:NO animated:YES];
@@ -550,7 +489,7 @@
     
     NSString *sorted = [CCUtility getOrderSettings];
     if ([sorted isEqualToString:@"fileName"])
-        sorted = @"fileNamePrint";
+        sorted = @"fileName";
         
     if (!_serverUrl) {
         
@@ -619,15 +558,10 @@
     if (_serverUrl == nil)
         cell.favorite.image = [UIImage imageNamed:@"favorite"];
     
-    // encrypted color
-    if (metadata.cryptated) {
-        cell.labelTitle.textColor = [NCBrandColor sharedInstance].cryptocloud;
-    } else {
-        cell.labelTitle.textColor = [UIColor blackColor];
-    }
+    cell.labelTitle.textColor = [UIColor blackColor];
     
     // filename
-    cell.labelTitle.text = metadata.fileNamePrint;
+    cell.labelTitle.text = metadata.fileName;
     cell.labelInfoFile.text = @"";
     
     // Shared
@@ -674,10 +608,6 @@
         }
     }
     
-    // it's encrypted ???
-    if (metadata.cryptated && [metadata.type isEqualToString: k_metadataType_template] == NO)
-        cell.status.image = [UIImage imageNamed:@"lock"];
-    
     // text and length
     if (metadata.directory) {
         
@@ -689,22 +619,14 @@
         
         NSString *date = [CCUtility dateDiff:metadata.date];
         NSString *length = [CCUtility transformedSize:metadata.size];
-        
-        if ([metadata.type isEqualToString: k_metadataType_template])
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", date];
-        
-        if ([metadata.type isEqualToString: k_metadataType_file]) {
+        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
             
-            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
+        if (fileExists)
+            cell.local.image = [UIImage imageNamed:@"local"];
+        else
+            cell.local.image = nil;
             
-            if (fileExists)
-                cell.local.image = [UIImage imageNamed:@"local"];
-            else
-                cell.local.image = nil;
-            
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", date, length];
-        }
-        
+        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", date, length];
         cell.accessoryType = UITableViewCellAccessoryNone;
         
     }
@@ -748,7 +670,7 @@
         return;
     
     // File
-    if (([_metadata.type isEqualToString: k_metadataType_file]) && _metadata.directory == NO) {
+    if (_metadata.directory == NO) {
         
         // File do not exists
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
@@ -760,14 +682,10 @@
             
             } else {
             
-                [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+                [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
             }
         }
     }
-    
-    // Model
-    if ([self.metadata.type isEqualToString: k_metadataType_template])
-        [self openModel:self.metadata];
     
     // Directory
     if (_metadata.directory)
@@ -782,8 +700,8 @@
     
     if (serverUrl) {
         
-        vc.serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
-        vc.titleViewControl = _metadata.fileNamePrint;
+        vc.serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileName];
+        vc.titleViewControl = _metadata.fileName;
     
         [self.navigationController pushViewController:vc animated:YES];
     }
@@ -805,9 +723,6 @@
     // Collapsed but i am in detail -> exit
     if (self.splitViewController.isCollapsed)
         if (self.detailViewController.isViewLoaded && self.detailViewController.view.window) return NO;
-    
-    // Video in run -> exit
-    if (self.detailViewController.photoBrowser.currentVideoPlayerViewController.isViewLoaded && self.detailViewController.photoBrowser.currentVideoPlayerViewController.view.window) return NO;
     
     return YES;
 }
@@ -834,7 +749,7 @@
     _detailViewController.dateFilterQuery = nil;
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     
-    [_detailViewController setTitle:_metadata.fileNamePrint];
+    [_detailViewController setTitle:_metadata.fileName];
 }
 
 @end

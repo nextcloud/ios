@@ -1,6 +1,6 @@
 //
 //  CCloadItemData.swift
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 19/02/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -26,7 +26,7 @@ import MobileCoreServices
 
 class CCloadItemData: NSObject {
     
-    func loadFiles(_ directoryUser: String, extensionContext: NSExtensionContext, vc: ShareViewController) {
+    @objc func loadFiles(_ directoryUser: String, extensionContext: NSExtensionContext, vc: ShareViewController) {
         
         var filesName: [String] = []
         var conuter = 0

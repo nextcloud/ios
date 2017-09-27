@@ -15,7 +15,7 @@ class SwiftWebVCActivity: UIActivity {
     var schemePrefix: String?
     
     override var activityType : UIActivityType? {
-        let typeArray = "\(type(of: self))".components(separatedBy: ".")
+        let typeArray = "\(Swift.type(of: self))".components(separatedBy: ".")
         let type: String = typeArray[typeArray.count-1]
         return UIActivityType(rawValue: type)
     }

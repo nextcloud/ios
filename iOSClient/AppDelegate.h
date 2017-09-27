@@ -1,6 +1,6 @@
 //
 //  AppDelegate.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 04/09/14.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -22,12 +22,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <CoreData/CoreData.h>
 #import <UserNotifications/UserNotifications.h>
 
 #import "BKPasscodeLockScreenManager.h"
 #import "REMenu.h"
-#import "LMMediaPlayerView.h"
 #import "Reachability.h"
 #import "TWMessageBarManager.h"
 #import "CCBKPasscode.h"
@@ -43,7 +41,7 @@
 
 @class CCLoginWeb;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, LMMediaPlayerViewDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
 // Timer Process
 @property (nonatomic, strong) NSTimer *timerProcessAutoDownloadUpload;
@@ -105,9 +103,6 @@
 // List Change Task
 @property (nonatomic, retain) NSMutableDictionary *listChangeTask;
 
-// Player Audio
-@property (nonatomic, strong) LMMediaPlayerView *player;
-
 // Reachability
 @property (nonatomic, strong) Reachability *reachability;
 @property BOOL lastReachability;
@@ -125,9 +120,6 @@
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
-
-// Is in Crypto Mode
-@property BOOL isCryptoCloudMode;
 
 // Maintenance Mode
 @property BOOL maintenanceMode;
@@ -150,7 +142,7 @@
 - (void)updateApplicationIconBadgeNumber;
 
 // TabBarController
-- (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden;
+- (void)aspectNavigationControllerBar:(UINavigationBar *)nav online:(BOOL)online hidden:(BOOL)hidden;
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 - (void)plusButtonVisibile:(BOOL)visible;
 - (void)selectedTabBarController:(NSInteger)index;

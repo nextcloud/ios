@@ -1,6 +1,6 @@
 //
 //  CCUtility.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 02/02/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -30,7 +30,6 @@
 #import <UICKeyChainStore/UICKeyChainStore.h>
 
 #import "OCFileDto.h"
-#import "CCCrypto.h"
 #import "CCGlobal.h"
 #import "CCNetworking.h"
 
@@ -71,7 +70,6 @@
 + (void)setIntro:(NSString *)version;
 
 + (void)setActiveAccountExt:(NSString *)activeAccount;
-+ (void)setCryptatedExt:(BOOL)cryptated;
 + (void)setServerUrlExt:(NSString *)serverUrl;
 + (void)setTitleServerUrlExt:(NSString *)titleServerUrl;
 + (void)setFileNameExt:(NSString *)fileName;
@@ -97,7 +95,6 @@
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
 + (NSString *)getUUID;
-+ (NSString *)getNameCurrentDevice;
 
 + (NSString *)getVersion;
 + (NSString *)getBuild;
@@ -117,7 +114,6 @@
 + (NSString *)getIncrementalNumber;
 
 + (NSString *)getActiveAccountExt;
-+ (BOOL)getCryptatedExt;
 + (NSString *)getServerUrlExt;
 + (NSString *)getTitleServerUrlExt;
 + (NSString *)getFileNameExt;
@@ -178,22 +174,12 @@
 
 + (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status;
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
 
-+ (tableMetadata *)insertInformationPlist:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser;
 
 + (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
 
 + (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
-
-+ (NSString *)trasformedFileNamePlistInCrypto:(NSString *)fileName;
-+ (NSString *)trasformedFileNameCryptoInPlist:(NSString *)fileName;
-
-+ (BOOL)isCryptoString:(NSString *)fileName;
-+ (BOOL)isCryptoPlistString:(NSString *)fileName;
-+ (BOOL)isFileNotCryptated:(NSString *)filename;
-+ (BOOL)isFileCryptated:(NSString *)filename;
-+ (NSInteger)getTypeFileName:(NSString *)fileName;
 
 // ===== Third parts =====
 
@@ -201,10 +187,8 @@
 + (NSString *)currentDevice;
 + (NSString *)getExtension:(NSString*)fileName;
 + (NSDate*)parseDateString:(NSString*)dateString;
-+ (ALAssetsLibrary *)defaultAssetsLibrary;
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate;
 + (NSDate *)datetimeWithOutDate:(NSDate *)datDate;
 + (BOOL)isValidEmail:(NSString *)checkString;
-+ (NSString *)URLEncodeStringFromString:(NSString *)string;
 
 @end

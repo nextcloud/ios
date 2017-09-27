@@ -78,7 +78,8 @@ typedef void(^AHKActionSheetHandler)(AHKActionSheet *actionSheet);
 @property (weak, nonatomic, readonly) UIWindow *previousKeyWindow;
 /// View actionSheet was presented.
 @property (nonatomic, weak) UIView *view;
-
+/// Extra Bottom Padding for iPhone X
+@property CGFloat bottomPadding;
 
 - (instancetype)initWithView:(UIView *)view title:(NSString *)title;
 

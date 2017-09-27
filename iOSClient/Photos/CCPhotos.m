@@ -1,6 +1,6 @@
 //
 //  CCPhotos.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 29/07/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -84,7 +84,7 @@
     [super viewWillAppear:animated];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
@@ -108,7 +108,7 @@
 
 - (void)setUINavigationBarDefault
 {
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     
     // select
     UIImage *icon = [UIImage imageNamed:@"seleziona"];
@@ -285,7 +285,7 @@
     
     for (tableMetadata *metadata in _selectedMetadatas) {
     
-        NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint];
+        NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
         
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:fileNamePath error:nil];
         
@@ -404,13 +404,7 @@
 
 - (void)deleteFileOrFolder:(tableMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
-    
-    if (metadata.cryptated) {
-        [_queueMetadatas addObject:selectorDeleteCrypto];
-        [_queueMetadatas addObject:selectorDeletePlist];
-    } else {
-        [_queueMetadatas addObject:selectorDelete];
-    }
+    [_queueMetadatas addObject:selectorDelete];
     
     [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
 
@@ -703,10 +697,6 @@
         if (self.detailViewController.isViewLoaded && self.detailViewController.view.window)
             return NO;
     
-    // Video running exit
-    if (self.detailViewController.photoBrowser.currentVideoPlayerViewController.isViewLoaded && self.detailViewController.photoBrowser.currentVideoPlayerViewController.view.window)
-        return NO;
-    
     // ok perform segue
     return YES;
 }
@@ -733,7 +723,7 @@
     self.detailViewController.metadataDetail = _metadata;
     self.detailViewController.dateFilterQuery = _metadata.date;
     
-    [self.detailViewController setTitle:_metadata.fileNamePrint];
+    [self.detailViewController setTitle:_metadata.fileName];
 }
 
 @end

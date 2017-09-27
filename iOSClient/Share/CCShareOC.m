@@ -1,6 +1,6 @@
 //
 //  CCShareOC.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 13/11/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -133,7 +133,7 @@
 
     }
     
-    self.labelTitle.text = self.metadata.fileNamePrint;
+    self.labelTitle.text = self.metadata.fileName;
     self.labelTitle.textColor = [UIColor blackColor];
     
     self.tableView.tableHeaderView = ({UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0.1 / UIScreen.mainScreen.scale)];

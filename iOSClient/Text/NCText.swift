@@ -1,6 +1,6 @@
 //
 //  NCText.swift
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 24/07/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -34,7 +34,7 @@ class NCText: UIViewController, UITextViewDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    var metadata: tableMetadata?
+    @objc var metadata: tableMetadata?
     var loadText: String?
     
     override func viewDidLoad() {
@@ -47,7 +47,7 @@ class NCText: UIViewController, UITextViewDelegate {
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_untitled_txt_", comment: "")
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
         
         self.navigationController?.toolbar.barTintColor = NCBrandColor.sharedInstance.navigationBarText
         self.navigationController?.toolbar.tintColor = NCBrandColor.sharedInstance.brand
@@ -71,7 +71,7 @@ class NCText: UIViewController, UITextViewDelegate {
                 loadText = try? String(contentsOfFile: path, encoding: encoding)
                 textView.text = loadText
                 nextButton.title = NSLocalizedString("_save_", comment: "")
-                self.navigationController?.navigationBar.topItem?.title = NSLocalizedString(metadata.fileNamePrint, comment: "")
+                self.navigationController?.navigationBar.topItem?.title = NSLocalizedString(metadata.fileName, comment: "")
             
             }
                 
@@ -88,7 +88,7 @@ class NCText: UIViewController, UITextViewDelegate {
         textViewDidChange(textView)
     }
 
-    func keyboardWillShowHandle(info:NSNotification) {
+    @objc func keyboardWillShowHandle(info:NSNotification) {
         
         let frameView = self.view.convert(self.view.bounds, to: self.view.window)
         let endView = frameView.origin.y + frameView.size.height
@@ -103,7 +103,7 @@ class NCText: UIViewController, UITextViewDelegate {
         }
     }
     
-    func keyboardWillHideHandle() {
+    @objc func keyboardWillHideHandle() {
         bottomConstraint.constant = 0
     }
     

@@ -29,22 +29,22 @@ class CreateMenuAdd: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    let fontButton = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor.black]
-    let fontEncrypted = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: NCBrandColor.sharedInstance.cryptocloud] as [String : Any]
-    let fontCancel = [NSFontAttributeName:UIFont(name: "HelveticaNeue-Bold", size: 17)!, NSForegroundColorAttributeName: UIColor.black] as [String : Any]
-    let fontDisable = [NSFontAttributeName:UIFont(name: "HelveticaNeue", size: 16)!, NSForegroundColorAttributeName: UIColor.darkGray]
+    let fontButton = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: UIColor.black]
+    let fontEncrypted = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.cryptocloud as UIColor]
+    let fontCancel = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue-Bold", size: 17)!, NSAttributedStringKey.foregroundColor: UIColor.black]
+    let fontDisable = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: UIColor.darkGray]
 
-    let colorLightGray = UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1)
-    let colorGray = UIColor(colorLiteralRed: 150.0/255.0, green: 150.0/255.0, blue: 150.0/255.0, alpha: 1)
+    let colorLightGray = UIColor(red: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1)
+    let colorGray = UIColor(red: 150.0/255.0, green: 150.0/255.0, blue: 150.0/255.0, alpha: 1)
     var colorIcon = NCBrandColor.sharedInstance.brand
     
-    init (themingColor : UIColor) {
+    @objc init (themingColor : UIColor) {
         
         super.init()
         colorIcon = themingColor
     }
     
-    func createMenuPlain(view : UIView) {
+    @objc func createMenuPlain(view : UIView) {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let actionSheet = AHKActionSheet.init(view: view, title: nil)!
@@ -81,18 +81,21 @@ class CreateMenuAdd: NSObject {
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFolderPlain))
         })
         
+        /*
         if appDelegate.isCryptoCloudMode {
         
             actionSheet.addButton(withTitle: NSLocalizedString("_upload_encrypted_mode", comment: ""), image: UIImage(named: "actionSheetLock"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
                 self.createMenuEncrypted(view: view)
             })
         }
+        */
+        
         actionSheet.show()
         
         CCUtility.setCreateMenuEncrypted(false)
     }
     
-    func createMenuEncrypted(view : UIView) {
+    @objc func createMenuEncrypted(view : UIView) {
         
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let actionSheet = AHKActionSheet.init(view: view, title: nil)!
@@ -124,10 +127,6 @@ class CreateMenuAdd: NSObject {
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFolderEncrypted))
         })
 
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_template_", comment: ""), image: UIImage(named: "menuTemplate"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            self.createMenuTemplate(view: view)
-        })
-
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_plain_mode", comment: ""), image: UIImage(named: "menuUploadPlainMode"), backgroundColor: colorLightGray, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             self.createMenuPlain(view: view)
         })
@@ -136,70 +135,6 @@ class CreateMenuAdd: NSObject {
         
         CCUtility.setCreateMenuEncrypted(true)
     }
-
-    func createMenuTemplate(view : UIView) {
-        
-        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        let actionSheet = AHKActionSheet.init(view: view, title: nil)!
-        
-        actionSheet.animationDuration = 0.2
-        
-        actionSheet.buttonHeight = 50.0
-        actionSheet.cancelButtonHeight = 50.0
-        actionSheet.separatorHeight = 5.0
-        
-        actionSheet.separatorColor = NCBrandColor.sharedInstance.seperator
-
-        actionSheet.buttonTextAttributes = fontButton
-        actionSheet.encryptedButtonTextAttributes = fontEncrypted
-        actionSheet.cancelButtonTextAttributes = fontCancel
-        actionSheet.disableButtonTextAttributes = fontDisable
-        
-        actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_add_notes_", comment: ""), image: UIImage(named: "note"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnNote))
-        })
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_add_web_account_", comment: ""), image: UIImage(named: "templateWebAccount"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnAccountWeb))
-        })
-        
-        actionSheet.addButton(withTitle: "", image: nil, backgroundColor: UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1), height: 10.0, type: AHKActionSheetButtonType.disabled, handler: {(AHKActionSheet) -> Void in
-            print("disable")
-        })
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_add_credit_card_", comment: ""), image: UIImage(named: "cartadicredito"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnCartaDiCredito))
-        })
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_add_atm_", comment: ""), image: UIImage(named: "bancomat"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnBancomat))
-        })
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_add_bank_account_", comment: ""), image: UIImage(named: "contocorrente"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnContoCorrente))
-        })
-        
-        actionSheet.addButton(withTitle: "", image: nil, backgroundColor: UIColor(colorLiteralRed: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1), height: 10.0, type: AHKActionSheetButtonType.disabled, handler: {(AHKActionSheet) -> Void in
-            print("disable")
-        })
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_add_driving_license_", comment: ""), image: UIImage(named: "patenteguida"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnPatenteGuida))
-        })
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_add_id_card_", comment: ""), image: UIImage(named: "cartaidentita"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnCartaIdentita))
-        })
-        
-        actionSheet.addButton(withTitle: NSLocalizedString("_add_passport_", comment: ""), image: UIImage(named: "passaporto"), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.encrypted, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnPassaporto))
-        })
-        
-        actionSheet.show()
-    }
-
 }
 
 // MARK: - CreateFormUploadAssets
@@ -220,7 +155,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    convenience init(serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
+    @objc convenience init(serverUrl : String, assets : NSMutableArray, cryptated : Bool, session : String, delegate: createFormUploadAssetsDelegate) {
         
         self.init()
         
@@ -393,7 +328,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         
@@ -485,7 +420,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.reloadForm()
     }
     
-    func save() {
+    @objc func save() {
         
         self.dismiss(animated: true, completion: {
             
@@ -499,11 +434,11 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
                 useSubFolder = (useSubFolderRow.value! as AnyObject).boolValue
             }
             
-            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, cryptated: self.cryptated, useSubFolder: useSubFolder, session: self.session)
+            self.appDelegate.activeMain.uploadFileAsset(self.assets, serverUrl: self.serverUrl, useSubFolder: useSubFolder, session: self.session)
         })
     }
 
-    func cancel() {
+    @objc func cancel() {
         
         self.dismiss(animated: true, completion: nil)
     }
@@ -541,7 +476,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         return NSLocalizedString("_preview_filename_", comment: "") + ":" + "\n\n" + returnString
     }
     
-    func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
+    @objc func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
         
         self.deselectFormRow(sender)
         
@@ -652,7 +587,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         self.tableView.backgroundColor = NCBrandColor.sharedInstance.tableBackground
@@ -692,7 +627,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         self.reloadForm()
     }
     
-    func save() {
+    @objc func save() {
         
         let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
         guard let name = rowFileName.value else {
@@ -719,7 +654,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
             let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(fileNameSave)", contents: data, attributes: nil)
             
             if success {
-                CCNetworking.shared().uploadFile(fileNameSave, serverUrl: self.serverUrl, cryptated: false, onlyPlist: false, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
+                CCNetworking.shared().uploadFile(fileNameSave, serverUrl: self.serverUrl, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
             } else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             }
@@ -731,7 +666,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         self.dismiss(animated: true, completion: nil)
     }
     
-    func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
+    @objc func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
         
         self.deselectFormRow(sender)
         

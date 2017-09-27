@@ -1,6 +1,6 @@
 //
 //  ShareViewController.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 26/01/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -21,8 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import <MagicalRecord/MagicalRecord.h>
-
 #import "OCCommunication.h"
 #import "AFURLSessionManager.h"
 #import "MBProgressHUD.h"
@@ -32,12 +30,9 @@
 #import "CCGlobal.h"
 #import "CCGraphics.h"
 #import "CCCellShareExt.h"
-#import "CCCoreData.h"
 #import "CCMove.h"
 #import "CCError.h"
 #import "CCHud.h"
-
-#import "TableAccount+CoreDataClass.h"
 
 @interface ShareViewController : UIViewController <UITableViewDelegate, OCNetworkingDelegate, MBProgressHUDDelegate, BKPasscodeViewControllerDelegate, CCNetworkingDelegate, CCMoveDelegate>
 
@@ -50,8 +45,6 @@
 @property (nonatomic, strong) NSString *activeAccessToken;
 @property (nonatomic, strong) NSString *directoryUser;
 @property (nonatomic, strong) NSString *serverUrl;
-
-@property BOOL localCryptated;
 
 @property (nonatomic, retain) NSMutableArray *filesName;
 

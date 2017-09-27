@@ -1,6 +1,6 @@
 //
 //  CCCertificate.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 10/08/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -240,7 +240,7 @@ static NSString * CertificateGetIssuerName(X509 *certificateX509)
                 ASN1_STRING *issuerNameASN1 = X509_NAME_ENTRY_get_data(issuerNameEntry);
                 
                 if (issuerNameASN1 != NULL) {
-                    unsigned char *issuerName = ASN1_STRING_data(issuerNameASN1);
+                    const unsigned char *issuerName = ASN1_STRING_get0_data(issuerNameASN1);
                     issuer = [NSString stringWithUTF8String:(char *)issuerName];
                 }
             }
@@ -255,11 +255,11 @@ static NSDate *CertificateGetExpiryDate(X509 *certificateX509)
     NSDate *expiryDate = nil;
     
     if (certificateX509 != NULL) {
-        ASN1_TIME *certificateExpiryASN1 = X509_get_notAfter(certificateX509);
+        ASN1_TIME *certificateExpiryASN1 = X509_getm_notAfter(certificateX509);
         if (certificateExpiryASN1 != NULL) {
             ASN1_GENERALIZEDTIME *certificateExpiryASN1Generalized = ASN1_TIME_to_generalizedtime(certificateExpiryASN1, NULL);
             if (certificateExpiryASN1Generalized != NULL) {
-                unsigned char *certificateExpiryData = ASN1_STRING_data(certificateExpiryASN1Generalized);
+                const unsigned char *certificateExpiryData = ASN1_STRING_get0_data(certificateExpiryASN1Generalized);
                 
                 // ASN1 generalized times look like this: "20131114230046Z"
                 //                                format:  YYYYMMDDHHMMSS

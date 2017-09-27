@@ -1,6 +1,6 @@
 //
 //  CCManageCryptoCloudSecurity.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 31/03/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -102,7 +102,7 @@
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 

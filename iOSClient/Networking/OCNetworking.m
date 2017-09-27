@@ -1,6 +1,6 @@
 //
 //  OCnetworking.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 10/05/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -23,7 +23,7 @@
 
 #import "OCNetworking.h"
 
-#import "AppDelegate.h"
+#import "CCUtility.h"
 #import "CCGraphics.h"
 #import "CCCertificate.h"
 #import "NSString+Encode.h"
@@ -39,14 +39,12 @@
     
     NSURLSessionDownloadTask *_downloadTask;
     NSURLSessionUploadTask *_uploadTask;
-    
-    BOOL _isCryptoCloudMode;
 }
 @end
 
 @implementation OCnetworking
 
-- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl isCryptoCloudMode:(BOOL)isCryptoCloudMode
+- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl
 {
     self = [super init];
     
@@ -59,9 +57,7 @@
         
         _activeUser = withUser;
         _activePassword = withPassword;
-        _activeUrl = withUrl;
-        
-        _isCryptoCloudMode = isCryptoCloudMode;
+        _activeUrl = withUrl;        
     }
     
     return self;
@@ -158,7 +154,7 @@
     else if ([dimOfThumbnail.lowercaseString isEqualToString:@"l"])  { width = 640;  height = 640; ext = @"pvw"; }
     else if ([dimOfThumbnail.lowercaseString isEqualToString:@"xl"]) { width = 1024; height = 1024; ext = @"pvw"; }
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileNameLocal, ext]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileID, ext]]) {
         
         [self.delegate downloadThumbnailSuccess:_metadataNet];
         
@@ -179,7 +175,7 @@
             UIImage *thumbnailImage = [UIImage imageWithData:thumbnail];
             NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
             
-            [CCGraphics saveIcoWithEtag:_metadataNet.fileNameLocal image:thumbnailImage writeToFile:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileNameLocal, ext] copy:NO move:NO fromPath:nil toPath:nil];
+            [CCGraphics saveIcoWithEtag:_metadataNet.fileID image:thumbnailImage writeToFile:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileID, ext] copy:NO move:NO fromPath:nil toPath:nil];
 
             if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccess:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
                 [self.delegate downloadThumbnailSuccess:_metadataNet];
@@ -276,7 +272,7 @@
                 serverUrlFolder = @"..";
                 directoryIDFolder = @"00000000-0000-0000-0000-000000000000";
             
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." fileNamePrint:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
                 
             } else {
             
@@ -289,7 +285,7 @@
                             [self.delegate readFolderSuccess:_metadataNet metadataFolder:metadataFolder metadatas:metadatas];
                     });
                 }
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] fileNamePrint:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
             }
         
             NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
@@ -302,12 +298,9 @@
             for (NSUInteger i=1; i < [itemsSortedArray count]; i++) {
                 
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
-                itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-                NSString *fileName = itemDto.fileName;
                 
-                // Skip if not CryptoMode
-                if (_isCryptoCloudMode == NO && [CCUtility isFileCryptated:fileName])
-                    continue;
+                itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
+                NSString *fileName = itemDto.fileName;
                 
                 // Skip hidden files
                 if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
@@ -330,7 +323,7 @@
                 }
                 // ------------------------
                 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName fileNamePrint:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -413,15 +406,11 @@
             
                 NSString *serverUrl;
 
-                itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
             
-                // Not in Crypto Cloud file
                 NSString *fileName = itemDto.fileName;
                 if (itemDto.isDirectory)
                     fileName = [fileName substringToIndex:[fileName length] - 1];
-                
-                if ([CCUtility isFileCryptated:fileName])
-                    continue;
                 
                 // Skip hidden files
                 if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
@@ -453,11 +442,11 @@
                 /* ---- */
             
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-                serverUrl = [serverUrl stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+                serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
                 NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
             }
     
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -587,16 +576,12 @@
             
             NSString *serverUrl;
             
-            itemDto.fileName = [itemDto.fileName stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            itemDto.filePath = [itemDto.filePath stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
+            itemDto.filePath = [itemDto.filePath stringByRemovingPercentEncoding];
 
-            // Not in Crypto Cloud file
             NSString *fileName = itemDto.fileName;
             if (itemDto.isDirectory)
                 fileName = [fileName substringToIndex:[fileName length] - 1];
-            
-            if ([CCUtility isFileCryptated:fileName])
-                continue;
             
             // Skip hidden files
             if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
@@ -629,11 +614,11 @@
             /*      */
             
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-            serverUrl = [serverUrl stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
             NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
             
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName fileNamePrint:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
         }
         
         if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccess:metadatas:)])
@@ -950,7 +935,7 @@
 
                 NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
-                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName fileNamePrint:_metadataNet.fileNamePrint serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
                         
                 if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
                     [self.delegate readFileSuccess:_metadataNet metadata:metadata];
@@ -1042,16 +1027,9 @@
 #pragma mark ===== Shared =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (NSMutableDictionary *)getShareID
-{
-#ifndef EXTENSION
-    return app.sharesID;
-#endif
-    return [NSMutableDictionary new];
-}
-
 - (void)readShareServer
 {
+#ifndef EXTENSION
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andPassword:_activePassword];
@@ -1061,14 +1039,14 @@
         
         BOOL openWindow = NO;
         
-        [[self getShareID] removeAllObjects];
+        [app.sharesID removeAllObjects];
         
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account]) {
         
             for (OCSharedDto *item in items)
-                [[self getShareID] setObject:item forKey:[@(item.idRemoteShared) stringValue]];
+                [app.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
             
             if ([_metadataNet.selector isEqual:selectorOpenWindowShare]) openWindow = YES;
             
@@ -1078,7 +1056,7 @@
         }
         
         if([self.delegate respondsToSelector:@selector(readSharedSuccess:items:openWindow:)])
-            [self.delegate readSharedSuccess:_metadataNet items:[self getShareID] openWindow:openWindow];
+            [self.delegate readSharedSuccess:_metadataNet items:app.sharesID openWindow:openWindow];
         
         [self complete];
         
@@ -1097,11 +1075,9 @@
                 [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
         
-#ifndef EXTENSION
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized)
             [app openLoginView:self loginType:loginModifyPasswordUser];
-#endif
 
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1109,6 +1085,7 @@
         
         [self complete];
     }];
+#endif
 }
 
 - (void)share
@@ -1616,15 +1593,16 @@
     NSString *devicePublicKey = [parameter objectForKey:@"devicePublicKey"];
     
     // encode URL
-    devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
+    devicePublicKey = [devicePublicKey stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     
     [communication subscribingNextcloudServerPush:_activeUrl pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: [NCBrandOptions sharedInstance].pushNotificationServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
         // encode URL
-        deviceIdentifier = [CCUtility URLEncodeStringFromString:deviceIdentifier];
-        signature = [CCUtility URLEncodeStringFromString:signature];
-    
-        [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:[CCUtility URLEncodeStringFromString:publicKey] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        deviceIdentifier = [deviceIdentifier stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+        signature = [signature stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+        publicKey = [publicKey stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+        
+        [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             // Activity
             [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:_activeUrl];

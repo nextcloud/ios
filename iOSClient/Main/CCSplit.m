@@ -1,6 +1,6 @@
  //
 //  CCSplit.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 09/10/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -165,7 +165,7 @@
     UINavigationController *secondaryNC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCDetailNC"];
     
     // Color
-    [app aspectNavigationControllerBar:secondaryNC.navigationBar encrypted:NO online:YES hidden:NO];
+    [app aspectNavigationControllerBar:secondaryNC.navigationBar online:YES hidden:NO];
     
     // Ensure back button is enabled
     UIViewController *detailViewController = [secondaryNC visibleViewController];

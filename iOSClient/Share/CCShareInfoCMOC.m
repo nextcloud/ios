@@ -1,6 +1,6 @@
 //
 //  CCShareInfoCMOC.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 07/03/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -127,7 +127,7 @@ const PERMISSION_ALL = 31;
     
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     metadataNet.action = actionGetSharePermissionsFile;
-    metadataNet.fileName = _metadata.fileNameData;
+    metadataNet.fileName = _metadata.fileName;
     metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 

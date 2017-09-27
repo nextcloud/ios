@@ -1,6 +1,6 @@
 //
 //  CCSection.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 04/02/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -113,7 +113,7 @@
         }
         else if ([groupByField isEqualToString:@"none"]) dataSection = @"_none_";
         else if ([groupByField isEqualToString:@"date"]) dataSection = [CCUtility datetimeWithOutTime:metadata.date];
-        else if ([groupByField isEqualToString:@"alphabetic"]) dataSection = [[metadata.fileNamePrint substringToIndex:1] uppercaseString];
+        else if ([groupByField isEqualToString:@"alphabetic"]) dataSection = [[metadata.fileName substringToIndex:1] uppercaseString];
         else if ([groupByField isEqualToString:@"typefile"]) dataSection = metadata.typeFile;
         if (!dataSection) dataSection = @"_none_";
         

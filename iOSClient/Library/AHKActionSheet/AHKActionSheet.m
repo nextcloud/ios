@@ -90,6 +90,10 @@ static const CGFloat maxWidth = 414.0f;
         _title = [title copy];
         _cancelButtonTitle = @"Cancel";
         _view = view;
+        if (@available(iOS 11, *)) {
+            _bottomPadding = view.safeAreaInsets.bottom;
+        }
+        [_view setFrame:CGRectMake(_view.frame.origin.x, _view.frame.origin.y+_bottomPadding, _view.frame.size.width, _view.frame.size.height-_bottomPadding)];
     }
     
     return self;

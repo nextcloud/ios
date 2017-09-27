@@ -1,6 +1,6 @@
 //
 //  ShareViewController.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 26/01/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -32,13 +32,9 @@
     NSUInteger totalSize;
     
     NSExtensionItem *inputItem;
-    tableMetadata *saveMetadataPlist;
     
     UIColor *barTintColor;
     UIColor *tintColor;
-    
-    NSMutableArray *_filesSendCryptated;
-    BOOL _isCryptoCloudMode;
 }
 @end
 
@@ -67,16 +63,6 @@
         _activeUser = recordAccount.user;
         _directoryUser = [CCUtility getDirectoryActiveUser:self.activeUser activeUrl:self.activeUrl];
         
-        if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
-            
-            _isCryptoCloudMode = NO;
-            
-        } else {
-            
-            _isCryptoCloudMode = YES;
-        }
-
-        
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
             
             // load
@@ -84,9 +70,6 @@
             _serverUrl = [CCUtility getServerUrlExt];
             
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), [CCUtility getTitleServerUrlExt]];
-            
-            if (_isCryptoCloudMode)
-                _localCryptated = [CCUtility getCryptatedExt];
             
         } else {
             
@@ -99,16 +82,12 @@
 
             _destinyFolderButton.title = [NSString stringWithFormat:NSLocalizedString(@"_destiny_folder_", nil), NSLocalizedString(@"_home_", nil)];
             [CCUtility setTitleServerUrlExt:NSLocalizedString(@"_home_", nil)];
-
-            _localCryptated = NO;
-            [CCUtility setCryptatedExt:NO];
         }
     }
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
     
     _filesName = [[NSMutableArray alloc] init];
-    _filesSendCryptated = [[NSMutableArray alloc] init];
     _hud = [[CCHud alloc] initWithView:self.navigationController.view];
     
     _networkingOperationQueue = [NSOperationQueue new];
@@ -152,7 +131,7 @@
 //
 - (void)applicationWillTerminate:(UIApplication *)application
 {    
-    NSLog(@"[LOG] bye bye, Crypto Cloud Share Extension!");
+    NSLog(@"[LOG] bye bye, Nextcloud Share Extension!");
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -161,7 +140,7 @@
 
 - (void)navigationBarToolBar
 {    
-    UIBarButtonItem *rightButtonUpload, *rightButtonEncrypt, *leftButtonCancel;
+    UIBarButtonItem *rightButtonUpload, *leftButtonCancel;
 
     // Theming
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
@@ -177,22 +156,7 @@
     self.toolBar.tintColor = [NCBrandColor sharedInstance].brand;
     
     // Upload
-    if (self.localCryptated && _isCryptoCloudMode) {
-        
-        rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_encrypted_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
-        [rightButtonUpload setTintColor:[NCBrandColor sharedInstance].cryptocloud];
-        
-    } else {
-        
-        rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
-    }
-    
-    // Encrypt ICON
-    if (_isCryptoCloudMode) {
-        UIImage *icon = [[UIImage imageNamed:@"shareExtEncrypt"] imageWithRenderingMode:UIImageRenderingModeAutomatic];
-        rightButtonEncrypt = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(changeEncrypt)];
-        if (self.localCryptated) [rightButtonEncrypt setTintColor:[NCBrandColor sharedInstance].cryptocloud];
-    }
+    rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
     
     // Cancel
     leftButtonCancel = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelPost)];
@@ -202,7 +166,7 @@
     
     self.navigationItem.title = [NCBrandOptions sharedInstance].brand;
     self.navigationItem.leftBarButtonItem = leftButtonCancel;
-    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:rightButtonUpload, rightButtonEncrypt, nil];
+    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:rightButtonUpload, nil];
     self.navigationItem.hidesBackButton = YES;
 }
 
@@ -246,7 +210,7 @@
     
         NSString *fileName = [self.filesName objectAtIndex:0];
         
-        [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl cryptated:_localCryptated onlyPlist:NO session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
+        [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
         
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brand];
     }
@@ -264,16 +228,6 @@
     }
     
     [self closeShareViewController];
-}
-
-- (void)changeEncrypt
-{
-    if (self.localCryptated) self.localCryptated = NO;
-    else self.localCryptated = YES;
-    
-    [CCUtility setCryptatedExt:self.localCryptated];
-
-    [self navigationBarToolBar];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -320,7 +274,7 @@
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     
-    [self.filesName removeObject:metadata.fileNamePrint];
+    [self.filesName removeObject:metadata.fileName];
     [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
     
     [self performSelector:@selector(selectPost) withObject:nil afterDelay:0.1];
@@ -330,7 +284,7 @@
 {
     id operation;
    
-    operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:_isCryptoCloudMode];
+    operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl];
     
     [operation setQueuePriority:metadataNet.priority];
     
@@ -364,7 +318,7 @@
     viewController.touchIDManager = touchIDManager;
     viewController.title = [NCBrandOptions sharedInstance].brand;
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
+    //viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navController animated:YES completion:nil];
@@ -451,7 +405,7 @@
             if (UTTypeConformsTo(fileUTI, kUTTypeImage)) typeFile = k_metadataTypeFile_image;
             if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) typeFile = k_metadataTypeFile_video;
             
-            [CCGraphics createNewImageFrom:file directoryUser:self.directoryUser fileNameTo:file fileNamePrint:nil size:@"m" imageForUpload:NO typeFile:typeFile writePreview:YES optimizedFileName:NO];
+            [CCGraphics createNewImageFrom:file directoryUser:self.directoryUser fileNameTo:file extension:nil size:@"m" imageForUpload:NO typeFile:typeFile writePreview:YES optimizedFileName:NO];
         }
     }
     

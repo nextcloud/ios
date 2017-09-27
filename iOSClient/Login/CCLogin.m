@@ -1,6 +1,6 @@
 //
 //  CCLogin.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 09/04/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -102,12 +102,7 @@
         _baseUrl.text = app.activeUrl;
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
-        
-        // https://github.com/nextcloud/ios/issues/331
-        tableAccount *tbAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        _user.text = tbAccount.username;
-        //_user.text = app.activeUser;
-        
+        _user.text = app.activeUser;
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }
@@ -277,7 +272,7 @@
     if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withPassword:self.password.text withUrl:nil isCryptoCloudMode:NO];
+    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withPassword:self.password.text withUrl:nil];
     NSError *error = [ocNet checkServerSync:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV]];
     
     if (!error) {
@@ -305,7 +300,7 @@
             // Read User Profile
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
             metadataNet.action = actionGetUserProfile;
-            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text isCryptoCloudMode:NO]];
+            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text]];
         }
         
     } else {
@@ -341,7 +336,7 @@
     // Verify if the account already exists
     if (userProfile.id.length > 0 && self.baseUrl.text.length > 0 && self.user.text.length > 0) {
     
-        tableAccount *accountAlreadyExists = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"url = %@ AND user = %@ AND username != %@", self.baseUrl.text, userProfile.id, self.user.text]];
+        tableAccount *accountAlreadyExists = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"url = %@ AND user = %@ AND userID != %@", self.baseUrl.text, userProfile.id, self.user.text]];
         
         if (accountAlreadyExists) {
             

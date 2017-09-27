@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MBProgressHUD.h"
+#import <AVKit/AVKit.h>
 #import <MediaPlayer/MediaPlayer.h>
-#import "MWGridViewController.h"
 #import "MWZoomingScrollView.h"
+#import "MBProgressHUD.h"
 
 // Declare private methods of browser
 @interface MWPhotoBrowser () {
@@ -35,11 +35,6 @@
 	NSTimer *_controlVisibilityTimer;
     MBProgressHUD *_progressHUD;
     
-    // Grid
-    MWGridViewController *_gridController;
-    UIBarButtonItem *_gridPreviousLeftNavItem;
-    UIBarButtonItem *_gridPreviousRightNavItem;
-    
     // Appearance
     BOOL _previousNavBarHidden;
     BOOL _previousNavBarTranslucent;
@@ -49,6 +44,12 @@
     UIBarButtonItem *_previousViewControllerBackButton;
     UIImage *_previousNavigationBarBackgroundImageDefault;
     UIImage *_previousNavigationBarBackgroundImageLandscapePhone;
+    
+    // Video
+    AVPlayerViewController *_currentVideoPlayerViewController;
+    AVPlayerItem *_currentVideoPlayerItem;
+    NSUInteger _currentVideoIndex;
+    UIActivityIndicatorView *_currentVideoLoadingIndicator;
     
     // Misc
     BOOL _hasBelongedToViewController;
@@ -62,8 +63,6 @@
     BOOL _didSavePreviousStateOfNavBar;
     BOOL _skipNextPagingScrollViewPositioning;
     BOOL _viewHasAppearedInitially;
-    CGPoint _currentGridContentOffset;
-    
 }
 
 // Properties
@@ -97,10 +96,6 @@
 - (void)jumpToPageAtIndex:(NSUInteger)index animated:(BOOL)animated;
 - (void)gotoPreviousPage;
 - (void)gotoNextPage;
-
-// Grid
-- (void)showGrid:(BOOL)animated;
-- (void)hideGrid;
 
 // Controls
 - (void)cancelControlHiding;

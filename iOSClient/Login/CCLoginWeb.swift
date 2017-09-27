@@ -14,20 +14,22 @@ import UIKit
 
 public class CCLoginWeb: UIViewController {
 
-    enum enumLoginType : NSInteger {
+    /*
+    @objc enum enumLoginTypeWeb : NSInteger {
         case loginAdd = 0
         case loginAddForced = 1
         case loginModifyPasswordUser = 2
     }
+    */
     
-    weak var delegate: CCLoginDelegateWeb?
+    @objc weak var delegate: CCLoginDelegateWeb?
+    @objc var loginType = loginAdd
     
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var loginType = loginAdd
     var doneButtonVisible: Bool = false
     
-    func presentModalWithDefaultTheme(_ vc: UIViewController) {
+    @objc func presentModalWithDefaultTheme(_ vc: UIViewController) {
         
         self.viewController = vc
         

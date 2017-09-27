@@ -1,6 +1,6 @@
 //
 //  CCManageCryptoCloud.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 13/02/17.
 //  Copyright (c) 2017 TWS. All rights reserved.

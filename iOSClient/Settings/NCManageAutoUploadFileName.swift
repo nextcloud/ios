@@ -1,6 +1,6 @@
 //
 //  NCManageAutoUploadFileName.swift
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 19/07/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -128,7 +128,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         

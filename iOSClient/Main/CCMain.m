@@ -1,6 +1,6 @@
 //
 //  CCMain.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 04/09/14.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -34,6 +34,7 @@
 #import "CTAssetCheckmark.h"
 #import "JDStatusBarNotification.h"
 #import "NCAutoUpload.h"
+#import "NCClientEncryption.h"
 #import "NCBridgeSwift.h"
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
@@ -43,7 +44,6 @@
     BOOL _isRoot;
     BOOL _isViewDidLoad;
     
-    BOOL _isPickerCriptate;              // if is cryptated image or video back from picker
     BOOL _isSelectedMode;
         
     NSMutableDictionary *_selectedFileIDsMetadatas;
@@ -196,9 +196,23 @@
     [self.searchController.searchBar sizeToFit];
     self.searchController.searchBar.delegate = self;
     
-    // Hide Search Filed on Load
-    self.tableView.tableHeaderView = self.searchController.searchBar;
-    [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
+    if (@available(iOS 11, *)) {
+        self.navigationItem.searchController = self.searchController;
+        self.navigationItem.hidesSearchBarWhenScrolling = false;
+        self.navigationItem.searchController.searchBar.tintColor = [UIColor whiteColor];
+        
+        UITextField *textField = [self.searchController.searchBar valueForKey:@"searchField"];
+        textField.textColor = [UIColor blackColor];
+        textField.tintColor = [UIColor blackColor];
+        
+        UIView *backgroundView = textField.subviews.firstObject;
+        backgroundView.backgroundColor = UIColor.whiteColor;
+        backgroundView.layer.cornerRadius = 10;
+        backgroundView.clipsToBounds = YES;
+    } else {
+        self.tableView.tableHeaderView = self.searchController.searchBar;
+        [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
+    }
 }
 
 // Apparirà
@@ -216,7 +230,7 @@
     [CCNetworking sharedNetworking].delegate = self;
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     if (_isSelectedMode)
@@ -274,6 +288,27 @@
     // Dispose of any resources that can be recreated.    
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    [self closeAllMenu];
+
+    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
+            
+            // Portrait
+            
+        } else {
+            
+            // Landscape
+        }
+        
+        [self.tableView reloadData];
+    }];
+}
+
 - (BOOL)prefersStatusBarHidden
 {
     return NO;
@@ -328,17 +363,6 @@
         // go Home
         [self.navigationController popToRootViewControllerAnimated:NO];
         
-        // Crypto Mode
-        if ([[CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]] length] == 0) {
-           
-            appDelegate.isCryptoCloudMode = NO;
-            
-        } else {
-         
-            appDelegate.isCryptoCloudMode = YES;
-        }
-        _isFolderEncrypted = NO;
-        
         // setting Networking
         [CCNetworking sharedNetworking].delegate = self;
         [[CCNetworking sharedNetworking] settingAccount];
@@ -392,6 +416,22 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
+
+- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView
+{
+    CGFloat safeAreaTop = 0;
+    CGFloat safeAreaBottom = 0;
+
+    if (@available(iOS 11, *)) {
+        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    }
+    
+    //CGFloat searchBar = self.searchController.searchBar.frame.size.height;
+    CGFloat tabBar = self.tabBarController.tabBar.frame.size.height;
+    
+    return - (tabBar + safeAreaBottom);
+}
 
 - (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
 {
@@ -496,10 +536,16 @@
 - (void)createRefreshControl
 {
     _refreshControl = [UIRefreshControl new];
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
-    _refreshControl.backgroundColor = [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0];
     [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
-    [self setRefreshControl:_refreshControl];
+    if (@available(iOS 11.0, *)) {
+        [self.tableView setRefreshControl:_refreshControl];
+        _refreshControl.tintColor = [UIColor whiteColor];
+
+    } else {
+        _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
+        _refreshControl.backgroundColor = [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0];
+        [self setRefreshControl:_refreshControl];
+    }
 }
 
 - (void)deleteRefreshControl
@@ -521,7 +567,7 @@
 - (void)setTitle
 {
     // Color text self.navigationItem.title
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
 
     if (_isSelectedMode) {
         
@@ -559,7 +605,7 @@
 
 - (void)setUINavigationBarDefault
 {
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     
     UIBarButtonItem *buttonMore, *buttonNotification;
     
@@ -588,7 +634,7 @@
 
 - (void)setUINavigationBarSelected
 {
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:_isFolderEncrypted online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     
     UIImage *icon = [UIImage imageNamed:@"navigationControllerMenu"];
     UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(toggleReSelectMenu)];
@@ -597,17 +643,6 @@
     
     self.navigationItem.leftBarButtonItem = leftButton;
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-    [self closeAllMenu];
-    
-    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        
-    }];
-    
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 - (void)cancelSelect
@@ -666,7 +701,7 @@
                 if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
                     
                     // Upload File
-                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:serverUrl cryptated:_isPickerCriptate onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:serverUrl session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
                     
                 } else {
                     
@@ -708,8 +743,10 @@
     checkmark.tintColor = [NCBrandColor sharedInstance].brand;
     [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
     
-    UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];
-    [app aspectNavigationControllerBar:navBar encrypted:NO online:YES hidden:NO];
+    //UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil]; // DEPRECATED iOS9
+    UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedInInstancesOfClasses:@[[CTAssetsPickerController class]]];
+    
+    [app aspectNavigationControllerBar:navBar online:YES hidden:NO];
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status){
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -754,7 +791,7 @@
         
         NSString *serverUrl = [app getTabBarControllerActiveServerUrl];
         
-        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:_isPickerCriptate session:k_upload_session delegate:self];
+        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:NO session:k_upload_session delegate:self];
         form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
@@ -765,81 +802,11 @@
     }];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Create New (OpenModel) =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)openModel:(NSString *)tipo isNew:(BOOL)isnew
-{
-    UIViewController *viewController;
-    NSString *fileName, *uuid, *fileID, *serverUrl;
-    
-    NSIndexPath *index = [self.tableView indexPathForSelectedRow];
-    [self.tableView deselectRowAtIndexPath:index animated:NO];
-    
-    if (isnew) {
-        
-        fileName = nil;
-        uuid = [CCUtility getUUID];
-        fileID = nil;
-        serverUrl = _serverUrl;
-        
-    } else {
-        
-        fileName = _metadata.fileName;
-        uuid = _metadata.uuid;
-        fileID = _metadata.fileID;
-        serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-    }
-    
-    if (serverUrl) {
-        
-        if ([tipo isEqualToString:@"cartadicredito"])
-            viewController = [[CCCartaDiCredito alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([tipo isEqualToString:@"bancomat"])
-            viewController = [[CCBancomat alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID  isLocal:NO serverUrl:serverUrl];
-    
-        if ([tipo isEqualToString:@"contocorrente"])
-            viewController = [[CCContoCorrente alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([tipo isEqualToString:@"accountweb"])
-            viewController = [[CCAccountWeb alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([tipo isEqualToString:@"patenteguida"])
-            viewController = [[CCPatenteGuida alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([tipo isEqualToString:@"cartaidentita"])
-            viewController = [[CCCartaIdentita alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([tipo isEqualToString:@"passaporto"])
-            viewController = [[CCPassaporto alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
-    
-        if ([tipo isEqualToString:@"note"]) {
-        
-            viewController = [[CCNote alloc] initWithDelegate:self fileName:fileName uuid:uuid fileID:fileID isLocal:NO serverUrl:serverUrl];
-        
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        
-            [self presentViewController:navigationController animated:YES completion:nil];
-        
-        } else {
-    
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        
-            [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-        
-            [self presentViewController:navigationController animated:YES completion:nil];
-        }
-    }
-}
-
 // New folder or new photo or video
 - (void)returnCreate:(NSInteger)type
 {
     switch (type) {
             
-        /* PLAIN */
         case k_returnCreateFolderPlain: {
             
             NSString *serverUrl = [app getTabBarControllerActiveServerUrl];
@@ -852,10 +819,7 @@
                 message = [serverUrl lastPathComponent];
             }
             
-            if ([CCUtility isCryptoString:message])
-                alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
-            else
-                alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_on_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+            alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_on_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
 
             [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                 [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
@@ -883,59 +847,21 @@
             break;
         case k_returnCreateFotoVideoPlain: {
             
-            _isPickerCriptate = false;
-            
             [self openAssetsPickerController];
         }
             break;
         case k_returnCreateFilePlain: {
             
-            _isPickerCriptate = false;
-            
             [self openImportDocumentPicker];
         }
             break;
             
-        /* ENCRYPTED */
-        case k_returnCreateFolderEncrypted: {
-            
-            NSString *serverUrl = [app getTabBarControllerActiveServerUrl];
-
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
-            
-            [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-            }];
-            
-            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                NSLog(@"Cancel action");
-            }];
-            
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                
-                UITextField *fileName = alertController.textFields.firstObject;
-                
-                [self createFolderEncrypted:fileName.text serverUrl:serverUrl];
-            }];
-            
-            okAction.enabled = NO;
-            
-            [alertController addAction:cancelAction];
-            [alertController addAction:okAction];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
-        }
-            break;
         case k_returnCreateFotoVideoEncrypted: {
-            
-            _isPickerCriptate = true;
             
             [self openAssetsPickerController];
         }
             break;
         case k_returnCreateFileEncrypted: {
-            
-            _isPickerCriptate = true;
             
             [self openImportDocumentPicker];
         }
@@ -949,36 +875,6 @@
 
             [self presentViewController:navigationController animated:YES completion:nil];
         }
-            break;
-            
-        /* UTILITY */
-        case k_returnNote:
-            [self openModel:@"note" isNew:true];
-            break;
-        case k_returnAccountWeb:
-            [self openModel:@"accountweb" isNew:true];
-            break;
-            
-         /* BANK */
-        case k_returnCartaDiCredito:
-            [self openModel:@"cartadicredito" isNew:true];
-            break;
-        case k_returnBancomat:
-            [self openModel:@"bancomat" isNew:true];
-            break;
-        case k_returnContoCorrente:
-            [self openModel:@"contocorrente" isNew:true];
-            break;
-       
-        /* DOCUMENT */
-        case k_returnPatenteGuida:
-            [self openModel:@"patenteguida" isNew:true];
-            break;
-        case k_returnCartaIdentita:
-            [self openModel:@"cartaidentita" isNew:true];
-            break;
-        case k_returnPassaporto:
-            [self openModel:@"passaporto" isNew:true];
             break;
     }
 }
@@ -1010,12 +906,12 @@
         
         for (tableMetadata *metadata in metadatas) {
             
-            if (metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_file] && ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
+            if (metadata.directory == NO && ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
                 
                 NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
                 
                 if (serverUrl)
-                    [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorSave selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
+                    [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl selector:selectorSave selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
             }
         }
         
@@ -1069,7 +965,7 @@
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    if (metadata.thumbnailExists && !metadata.cryptated) {
+    if (metadata.thumbnailExists) {
         CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
         
         if (cell) {
@@ -1223,11 +1119,12 @@
     
     // Setting App active account
     [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activePassword:account.password];
-
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/128", app.activeUrl, app.activeUser];
-        UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
+        //UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]]; DEPRECATED iOS9
+        UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]]]];
         if (avatar)
             [UIImagePNGRepresentation(avatar) writeToFile:[NSString stringWithFormat:@"%@/avatar.png", app.directoryUser] atomically:YES];
         else
@@ -1236,6 +1133,7 @@
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeUserProfile" object:nil];
     });
 }
+
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Capabilities  ====
@@ -1264,7 +1162,8 @@
         
         if ([NCBrandOptions sharedInstance].use_themingBackground == YES) {
         
-            UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]];
+            //UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]]; DEPRECATED iOS9
+            UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]]]];
             if (themingBackground)
                 [UIImagePNGRepresentation(themingBackground) writeToFile:[NSString stringWithFormat:@"%@/themingBackground.png", app.directoryUser] atomically:YES];
             else
@@ -1383,7 +1282,7 @@
 
         if (metadata.directory && serverUrl) {
             
-            NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
+            NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
             
             [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete];
         }
@@ -1436,16 +1335,6 @@
         [[CCActions sharedInstance] settingFavorite:metadata favorite:YES delegate:self];
     }
     
-    // encrypted file
-    if ([selector isEqualToString:selectorEncryptFile]) {
-        [self encryptedFile:metadata];
-    }
-    
-    // decrypted file
-    if ([selector isEqualToString:selectorDecryptFile]) {
-        [self decryptedFile:metadata];
-    }
-    
     // open View File
     if ([selector isEqualToString:selectorLoadFileView] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
         
@@ -1474,9 +1363,9 @@
         
         [self reloadDatasource:serverUrl];
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
-        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint]];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
+        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName]];
         
         _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
         _docController.delegate = self;
@@ -1501,11 +1390,11 @@
         
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                         
-            [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint] error:nil];
+            [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
             
-            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint])) {
+            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileName])) {
                 
-                UISaveVideoAtPathToSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint], self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
+                UISaveVideoAtPathToSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileName], self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
             } else {
                 [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             }
@@ -1520,19 +1409,6 @@
         [self reloadDatasource:serverUrl];
         
         [self copyFileToPasteboard:metadata];
-    }
-    
-    // download and view a template
-    if ([selector isEqualToString:selectorLoadModelView]) {
-        
-        // se è un template aggiorniamo anche nel FileSystem
-        if ([metadata.type isEqualToString: k_metadataType_template]) {
-            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:metadata.date exifDate:nil exifLatitude:nil exifLongitude:nil fileName:nil fileNamePrint:metadata.fileNamePrint];
-        }
-        
-        [self openModel:metadata.model isNew:false];
-    
-        [self reloadDatasource:serverUrl];
     }
     
     //download file plist
@@ -1605,21 +1481,18 @@
         
         for (tableMetadata *metadata in selectedMetadatas) {
             
-            if ([metadata.type isEqualToString: k_metadataType_file]) {
+            if (metadata.directory) {
                 
-                if (metadata.directory) {
+                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
                     
-                    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-                    
-                    if (serverUrl) {
-                        serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-                        [[CCSynchronize sharedSynchronize] readFolder:serverUrl selector:selectorReadFolderWithDownload];
-                    }
-                    
-                } else {
-                    
-                    [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
+                if (serverUrl) {
+                    serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
+                    [[CCSynchronize sharedSynchronize] readFolder:serverUrl selector:selectorReadFolderWithDownload];
                 }
+                    
+            } else {
+                    
+                [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
             }
         }
         
@@ -1631,15 +1504,6 @@
 
 - (void)downloadPlist:(NSString *)directoryID serverUrl:(NSString *)serverUrl
 {
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", app.activeAccount, directoryID] sorted:nil ascending:NO];
-    
-    for (tableMetadata *metadata in metadatas) {
-            
-        if ([CCUtility isCryptoPlistString:metadata.fileName] && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName]] == NO && [metadata.session length] == 0) {
-        
-            [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:selectorLoadPlist selectorPost:nil session:k_download_session_foreground taskStatus:k_taskStatusResume delegate:self];
-        }
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1725,10 +1589,10 @@
 //
 // This procedure with performSelectorOnMainThread it's necessary after (Bridge) for use the function "Sync" in OCNetworking
 //
-- (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl cryptated:(BOOL)cryptated useSubFolder:(BOOL)useSubFolder session:(NSString *)session
+- (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-        [self performSelectorOnMainThread:@selector(uploadFileAssetBridge:) withObject:@[assets, serverUrl, [NSNumber numberWithBool:cryptated], [NSNumber numberWithBool:useSubFolder], session] waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(uploadFileAssetBridge:) withObject:@[assets, serverUrl, [NSNumber numberWithBool:useSubFolder], session] waitUntilDone:NO];
     });
 }
 
@@ -1736,9 +1600,8 @@
 {
     NSArray *assets = [arguments objectAtIndex:0];
     NSString *serverUrl = [arguments objectAtIndex:1];
-    BOOL cryptated = [[arguments objectAtIndex:2] boolValue];
-    BOOL useSubFolder = [[arguments objectAtIndex:3] boolValue];
-    NSString *session = [arguments objectAtIndex:4];
+    BOOL useSubFolder = [[arguments objectAtIndex:2] boolValue];
+    NSString *session = [arguments objectAtIndex:3];
     
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
@@ -1783,31 +1646,14 @@
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
-            if (cryptated) {
+            metadataNet.action = actionReadFile;
+            metadataNet.assetLocalIdentifier = asset.localIdentifier;
+            metadataNet.fileName = fileName;
+            metadataNet.session = session;
+            metadataNet.selector = selectorReadFileUploadFile;
+            metadataNet.serverUrl = serverUrl;
                 
-                metadataNet.assetLocalIdentifier = asset.localIdentifier;
-                metadataNet.cryptated = cryptated;
-                metadataNet.fileName = fileName;
-                metadataNet.session = session;
-                metadataNet.selector = selectorUploadFile;
-                metadataNet.selectorPost = nil;
-                metadataNet.serverUrl = serverUrl;
-                metadataNet.taskStatus = k_taskStatusResume;
-                
-                (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
-
-            } else {
-            
-                metadataNet.action = actionReadFile;
-                metadataNet.assetLocalIdentifier = asset.localIdentifier;
-                metadataNet.cryptated = cryptated;
-                metadataNet.fileName = fileName;
-                metadataNet.session = session;
-                metadataNet.selector = selectorReadFileUploadFile;
-                metadataNet.serverUrl = serverUrl;
-                
-                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-            }
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         }
     }
 }
@@ -1946,29 +1792,6 @@
     
     for (tableMetadata *metadata in metadatas) {
         
-        // type of file
-        NSInteger typeFilename = [CCUtility getTypeFileName:metadata.fileName];
-        
-        // if crypto do not insert
-        if (typeFilename == k_metadataTypeFilenameCrypto) continue;
-        
-        // verify if the record encrypted has plist + crypto
-        if (typeFilename == k_metadataTypeFilenamePlist && metadata.directory == NO) {
-            
-            BOOL isCryptoComplete = NO;
-            NSString *fileNameCrypto = [CCUtility trasformedFileNamePlistInCrypto:metadata.fileName];
-            
-            for (tableMetadata *completeMetadata in metadatas) {
-                    
-                if (completeMetadata.cryptated == NO) continue;
-                else  if ([completeMetadata.fileName isEqualToString:fileNameCrypto]) {
-                    isCryptoComplete = YES;
-                    break;
-                }
-            }
-            if (isCryptoComplete == NO) continue;
-        }
-        
         // verify if the record is in download/upload progress
         if (metadata.directory == NO && [recordsInSessions count] > 0) {
             
@@ -2083,6 +1906,9 @@
 
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
+    //UIView *statusBar=[[UIApplication sharedApplication] valueForKey:@"statusBar"];
+    //statusBar.backgroundColor = [UIColor whiteColor];
+    
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 
     _isSearchMode = YES;
@@ -2099,7 +1925,7 @@
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
         if (!directoryID) return;
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID = %@ AND account = %@ AND fileNamePrint CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID = %@ AND account = %@ AND fileName CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
         NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
             
         [_searchResultMetadatas removeAllObjects];
@@ -2213,12 +2039,7 @@
 
 - (void)deleteFileOrFolder:(tableMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
-    if (metadata.cryptated) {
-        [_queueSelector addObject:selectorDeleteCrypto];
-        [_queueSelector addObject:selectorDeletePlist];
-    } else {
-        [_queueSelector addObject:selectorDelete];
-    }
+    [_queueSelector addObject:selectorDelete];
     
     [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
         
@@ -2262,23 +2083,6 @@
     [[CCActions sharedInstance] renameFileOrFolder:metadata fileName:fileName delegate:self];
 }
 
-- (void)renameNote:(NSArray *)arguments
-{
-    tableMetadata* metadata = [arguments objectAtIndex:0];
-    NSString *fileName = [arguments objectAtIndex:1];
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl) return;
-    CCTemplates *templates = [[CCTemplates alloc] init];
-    
-    NSMutableDictionary *field = [[CCCrypto sharedManager] getDictionaryEncrypted:metadata.fileName uuid:metadata.uuid isLocal:NO directoryUser:app.directoryUser];
-    NSString *fileNameModel = [templates salvaNote:[field objectForKey:@"note"] titolo:fileName fileName:metadata.fileName uuid:metadata.uuid];
-    
-    if (fileNameModel) {
-        
-        [[CCNetworking sharedNetworking] uploadTemplate:fileName fileNameCrypto:[CCUtility trasformedFileNamePlistInCrypto:fileNameModel] serverUrl:serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
-    }
-}
-
 - (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     if ([metadataNet.selector isEqualToString:selectorMove]) {
@@ -2307,7 +2111,7 @@
     
         [_hud hideHud];
         
-        NSString *fileName = [CCUtility trasformedFileNameCryptoInPlist:metadataNet.fileName];
+        NSString *fileName = metadataNet.fileName;
         NSString *directoryID = metadataNet.directoryID;
         NSString *directoryIDTo = metadataNet.directoryIDTo;
         NSString *serverUrlTo = [[NCManageDatabase sharedInstance] getServerUrl:directoryIDTo];
@@ -2367,85 +2171,48 @@
     NSString *directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
     if (!directoryIDTo) return;
     
-    // Plain
-    if (metadata.cryptated == NO) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl];
             
-        OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl isCryptoCloudMode:NO];
+    NSError *error = [ocNetworking readFileSync:[NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName]];
             
-        NSError *error = [ocNetworking readFileSync:[NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName]];
-            
-        if(!error) {
+    if(!error) {
                 
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                     
-                UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-                }];
-                [alert addAction:ok];
-                [self presentViewController:alert animated:YES completion:nil];
-            });
+            UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            }];
+            [alert addAction:ok];
+            [self presentViewController:alert animated:YES completion:nil];
+        });
             
-            // End Select Table View
-            [self tableViewSelect:NO];
+        // End Select Table View
+        [self tableViewSelect:NO];
             
-            // reload Datasource
-            [self readFileReloadFolder];
+        // reload Datasource
+        [self readFileReloadFolder];
             
-            return;
-        }
-            
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        metadataNet.action = actionMoveFileOrFolder;
-        metadataNet.directory = metadata.directory;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.directoryID = metadata.directoryID;
-        metadataNet.directoryIDTo = directoryIDTo;
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.fileNamePrint = metadataNet.fileNamePrint;
-        metadataNet.fileNameTo = metadata.fileName;
-        metadataNet.etag = metadata.etag;
-        metadataNet.selector = selectorMove;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.serverUrlTo = serverUrlTo;
-            
-        [_queueSelector addObject:metadataNet.selector];
-            
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        return;
     }
+            
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-    // cyptated
-    if (metadata.cryptated == YES) {
+    metadataNet.action = actionMoveFileOrFolder;
+    metadataNet.directory = metadata.directory;
+    metadataNet.fileID = metadata.fileID;
+    metadataNet.directoryID = metadata.directoryID;
+    metadataNet.directoryIDTo = directoryIDTo;
+    metadataNet.fileName = metadata.fileName;
+    metadataNet.fileNameTo = metadata.fileName;
+    metadataNet.etag = metadata.etag;
+    metadataNet.selector = selectorMove;
+    metadataNet.serverUrl = serverUrl;
+    metadataNet.serverUrlTo = serverUrlTo;
             
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    [_queueSelector addObject:metadataNet.selector];
             
-        metadataNet.action = actionMoveFileOrFolder;
-        metadataNet.directory = metadata.directory;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.directoryID = metadata.directoryID;
-        metadataNet.directoryIDTo = directoryIDTo;
-        metadataNet.fileNamePrint = metadata.fileNamePrint;
-        metadataNet.etag = metadata.etag;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.serverUrlTo = serverUrlTo;
-            
-        // data
-        metadataNet.fileName = metadata.fileNameData;
-        metadataNet.fileNameTo = metadata.fileNameData;
-        metadataNet.selector = selectorMoveCrypto;
-            
-        [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-            
-        // plist
-        metadataNet.fileName = metadata.fileName;
-        metadataNet.fileNameTo = metadata.fileName;
-        metadataNet.selector = selectorMovePlist;
-            
-        [_queueSelector addObject:metadataNet.selector];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }
-        
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
     [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
 }
 
@@ -2504,18 +2271,13 @@
     if (message && errorCode != kOCErrorServerUnauthorized)
         [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
-    if (metadataNet.cryptated == NO) {
+    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
+    [self reloadDatasource];
         
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
-        [self reloadDatasource];
-        
-        // We are in directory fail ?
-        CCMain *vc = [app.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName]];
-        if (vc)
-            [vc.navigationController popViewControllerAnimated:YES];
-    }
-    
-    
+    // We are in directory fail ?
+    CCMain *vc = [app.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName]];
+    if (vc)
+        [vc.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
@@ -2523,26 +2285,23 @@
     NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];    
     (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil];
     
-    if (metadataNet.cryptated == NO) {
-    
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID]];
         
-        if (metadata) {
+    if (metadata) {
         
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID] clearDateReadDirectoryID:nil];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID] clearDateReadDirectoryID:nil];
 
-            metadata.fileID = metadataNet.fileID;
-            metadata.date = metadataNet.date;
-            metadata.permissions = @"RDNVCK";
+        metadata.fileID = metadataNet.fileID;
+        metadata.date = metadataNet.date;
+        metadata.permissions = @"RDNVCK";
 
-            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         
-            [self reloadDatasource];
+        [self reloadDatasource];
             
-        } else {
+    } else {
             
-            [self readFileReloadFolder];
-        }
+        [self readFileReloadFolder];
     }
 }
 
@@ -2576,102 +2335,12 @@
     [self reloadDatasource];
 }
 
-- (void)createFolderEncrypted:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    NSString *fileNamePlist;
-    
-    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
-    if (![fileNameFolder length]) return;
-    
-    NSString *title = [AESCrypt encrypt:fileNameFolder password:[[CCCrypto sharedManager] getKeyPasscode:[CCUtility getUUID]]];
-
-    fileNamePlist =  [[CCCrypto sharedManager] createFilenameEncryptor:fileNameFolder uuid:[CCUtility getUUID]];
-    
-    [[CCCrypto sharedManager] createFilePlist:[NSTemporaryDirectory() stringByAppendingString:fileNamePlist] title:title len:0 directory:true uuid:[CCUtility getUUID] nameCurrentDevice:[CCUtility getNameCurrentDevice] icon:@""];
-    
-    // Create folder
-    metadataNet.action = actionCreateFolder;
-    metadataNet.cryptated = YES;
-    metadataNet.fileID = [[NSUUID UUID] UUIDString];
-    metadataNet.fileName = fileNamePlist;
-    metadataNet.priority = NSOperationQueuePriorityVeryHigh;
-    metadataNet.selector = selectorCreateFolder;
-    metadataNet.serverUrl = serverUrl;
-    
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    
-    [[CCNetworking sharedNetworking] uploadFile:[fileNamePlist stringByAppendingString:@".plist"] serverUrl:serverUrl cryptated:YES onlyPlist:YES session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:selectorReadFolderForced errorCode:0 delegate:self];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  Encrypted / Decrypted Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)encyptedDecryptedFolder
 {
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-    if (!serverUrl) return;
-    
-    if (_metadata.cryptated) {
-        
-        // DECRYPTED
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        //-------------------------- RENAME -------------------------------------------//
-        
-        metadataNet.action = actionMoveFileOrFolder;
-        metadataNet.fileID = _metadata.fileID;
-        metadataNet.fileName = _metadata.fileNameData;
-        metadataNet.fileNameTo = _metadata.fileNamePrint;
-        metadataNet.fileNamePrint = _metadata.fileNamePrint;
-        metadataNet.priority = NSOperationQueuePriorityVeryHigh;
-        metadataNet.selector = selectorRename;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.serverUrlTo = serverUrl;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-        //-------------------------- DELETE -------------------------------------------//
-        
-        metadataNet.action = actionDeleteFileDirectory;
-        metadataNet.fileID = _metadata.fileID;
-        metadataNet.fileName = _metadata.fileName;
-        metadataNet.fileNamePrint = _metadata.fileNamePrint;
-        metadataNet.priority = NSOperationQueuePriorityVeryLow;
-        metadataNet.selector = selectorDeletePlist;
-        metadataNet.selectorPost = selectorReadFolderForced;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-    } else {
-                
-        // ENCRYPTED
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        // Create File Plist
-        NSString *fileNameCrypto = [[CCCrypto sharedManager] createFileDirectoryPlist:_metadata];
-        
-        //-------------------------- RENAME -------------------------------------------//
-        
-        metadataNet.action = actionMoveFileOrFolder;
-        metadataNet.fileID = _metadata.fileID;
-        metadataNet.fileName = _metadata.fileName;
-        metadataNet.fileNamePrint = _metadata.fileNamePrint;
-        metadataNet.fileNameTo = fileNameCrypto;
-        metadataNet.priority = NSOperationQueuePriorityVeryHigh;
-        metadataNet.selector = selectorRename;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.serverUrlTo = serverUrl;
-        
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-        //-------------------------- UPLOAD -------------------------------------------//
-        
-        [[CCNetworking sharedNetworking] uploadFile:[fileNameCrypto stringByAppendingString:@".plist"] serverUrl:serverUrl cryptated:YES onlyPlist:YES session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:selectorReadFolderForced errorCode:0 delegate:self];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2680,110 +2349,22 @@
 
 - (void)encryptedSelectedFiles
 {
-    NSMutableArray *metadatas = [[NSMutableArray alloc] init];
-    
-    NSArray *selectedMetadatas = [self getMetadatasFromSelectedRows:[self.tableView indexPathsForSelectedRows]];
-    
-    for (tableMetadata *metadata in selectedMetadatas) {
-        if (metadata.cryptated == NO && metadata.directory == NO)
-            [metadatas addObject:metadata];
-    }
-    
-    if ([metadatas count] > 0) {
-        
-        NSLog(@"[LOG] Start encrypted selected files ...");
-    
-        for (tableMetadata* metadata in metadatas) {
-            
-            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-            
-            if(serverUrl)
-                [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorEncryptFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
-        }
-    }
-    
-    [self tableViewSelect:NO];
 }
 
 - (void)decryptedSelectedFiles
 {
-    NSMutableArray *metadatas = [[NSMutableArray alloc] init];
-    
-    NSArray *selectedMetadatas = [self getMetadatasFromSelectedRows:[self.tableView indexPathsForSelectedRows]];
-    
-    for (tableMetadata *metadata in selectedMetadatas) {
-        if (metadata.cryptated == YES && metadata.directory == NO && [metadata.model length] == 0)
-            [metadatas addObject:metadata];
-    }
-    
-    if ([metadatas count] > 0) {
-        
-        NSLog(@"[LOG] Start decrypted selected files ...");
-        
-        for (tableMetadata* metadata in metadatas) {
-            
-            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-            
-            if (serverUrl)
-                [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorDecryptFile selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
-        }
-    }
-    
-    [self tableViewSelect:NO];
 }
 
 - (void)cmdEncryptedDecryptedFile
 {
-    NSString *selector;
-    
-    if (_metadata.cryptated == YES) selector = selectorDecryptFile;
-    if (_metadata.cryptated == NO) selector = selectorEncryptFile;
-    
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-    
-    if (serverUrl)
-        [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selector selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
 }
 
 - (void)encryptedFile:(tableMetadata *)metadata
 {
-    NSString *fileNameFrom = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
-    NSString *fileNameTo = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint];
-    [[NSFileManager defaultManager] copyItemAtPath:fileNameFrom toPath:fileNameTo error:nil];
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameTo] && serverUrl) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:serverUrl cryptated:YES onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
-            [self performSelector:@selector(reloadDatasource) withObject:nil];
-        });
-        
-    } else {
-            
-        [app messageNotification:@"_encrypted_selected_files_" description:@"_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-    }
 }
 
 - (void)decryptedFile:(tableMetadata *)metadata
 {
-    NSString *fileNameFrom = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
-    NSString *fileNameTo = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint];
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    
-    [[NSFileManager defaultManager] copyItemAtPath:fileNameFrom toPath:fileNameTo error:nil];
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameTo] && serverUrl) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:serverUrl cryptated:NO onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
-            [self performSelector:@selector(reloadDatasource) withObject:nil];
-        });
-        
-    } else {
-            
-        [app messageNotification:@"_decrypted_selected_files_" description:@"_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2795,7 +2376,6 @@
     NSDictionary *dict = notification.userInfo;
     NSString *fileID = [dict valueForKey:@"fileID"];
     NSString *serverUrl = [dict valueForKey:@"serverUrl"];
-    BOOL cryptated = [[dict valueForKey:@"cryptated"] boolValue];
     float progress = [[dict valueForKey:@"progress"] floatValue];
     
     // CCProgress
@@ -2818,9 +2398,7 @@
     if ([self indexPathIsValid:indexPath]) {
         
         CCTransfersCell *cell = (CCTransfersCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-        
-        if (cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
-        else cell.progressView.progressTintColor = [UIColor blackColor];
+        cell.progressView.progressTintColor = [UIColor blackColor];
         
         cell.progressView.hidden = NO;
         [cell.progressView setProgress:progress];
@@ -2848,7 +2426,6 @@
     __block NSURLSessionTask *findTask;
     
     NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
-    NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;
     NSString *fileID = metadata.fileID;
     
     // DOWNLOAD
@@ -2857,7 +2434,7 @@
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionUploadTask *task in downloadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier || task.taskIdentifier == sessionTaskIdentifierPlist) {
+                if (task.taskIdentifier == sessionTaskIdentifier) {
                     findTask = task;
                     [app.listChangeTask setObject:@"reloadDownload" forKey:fileID];
                     [task cancel];
@@ -2878,7 +2455,7 @@
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionUploadTask *task in uploadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier || task.taskIdentifier == sessionTaskIdentifierPlist) {
+                if (task.taskIdentifier == sessionTaskIdentifier) {
                     findTask = task;
                     [app.listChangeTask setObject:@"reloadUpload" forKey:fileID];
                     [task cancel];
@@ -2915,7 +2492,6 @@
     __block NSURLSessionTask *findTask;
     
     NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
-    NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;
     NSString *fileID = metadata.fileID;
     
     // DOWNLOAD
@@ -2924,7 +2500,7 @@
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionTask *task in downloadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier || task.taskIdentifier == sessionTaskIdentifierPlist) {
+                if (task.taskIdentifier == sessionTaskIdentifier) {
                     findTask = task;
                     [app.listChangeTask setObject:@"cancelDownload" forKey:fileID];
                     [task cancel];
@@ -2945,7 +2521,7 @@
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionUploadTask *task in uploadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier ||  task.taskIdentifier == sessionTaskIdentifierPlist) {
+                if (task.taskIdentifier == sessionTaskIdentifier) {
                     findTask = task;
                     [app.listChangeTask setObject:@"cancelUpload" forKey:fileID];
                     [task cancel];
@@ -2982,7 +2558,6 @@
     __block NSURLSessionTask *findTask;
 
     NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
-    NSInteger sessionTaskIdentifierPlist = metadata.sessionTaskIdentifierPlist;
     NSString *fileID = metadata.fileID;
     
     // UPLOAD
@@ -2991,7 +2566,7 @@
         [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             
             for (NSURLSessionUploadTask *task in uploadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier || task.taskIdentifier == sessionTaskIdentifierPlist) {
+                if (task.taskIdentifier == sessionTaskIdentifier) {
                     [app.listChangeTask setObject:@"stopUpload" forKey:fileID];
                     findTask = task;
                     [task cancel];
@@ -3079,7 +2654,6 @@
     metadataNet.action = actionShare;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl];
-    metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.password = password;
     metadataNet.selector = selectorShare;
     metadataNet.serverUrl = serverUrl;
@@ -3116,7 +2690,6 @@
     metadataNet.action = actionUnShare;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
-    metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.selector = selectorUnshare;
     metadataNet.serverUrl = serverUrl;
     metadataNet.share = share;
@@ -3181,7 +2754,6 @@
     metadataNet.fileID = metadata.fileID;
     metadataNet.directoryID = directoryID;
     metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl];
-    metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.serverUrl = serverUrl;
     metadataNet.selector = selectorShare;
     metadataNet.share = user;
@@ -3203,7 +2775,6 @@
     metadataNet.action = actionReadShareServer;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
-    metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.selector = selectorOpenWindowShare;
     metadataNet.serverUrl = serverUrl;
     
@@ -3261,7 +2832,7 @@
     
     if (metadata.directory && metadata.favorite) {
         
-        NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
+        NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
         
         [app.activeFavorites addFavoriteFolder:dir];
     }
@@ -3283,7 +2854,7 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         
         if (serverUrl)
-            [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     }
 }
 
@@ -3301,7 +2872,7 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (!serverUrl) return;
 
-    [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+    [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if ([self indexPathIsValid:indexPath])
@@ -3670,6 +3241,7 @@
             [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
     }];
     
+    /*
     if (app.isCryptoCloudMode) {
     
         // ITEM ENCRYPTED ------------------------------------------------------------------------------------------------------
@@ -3684,6 +3256,7 @@
                 [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
         }];
     }
+    */
     
     // ITEM DOWNLOAD ----------------------------------------------------------------------------------------------------
     
@@ -3699,12 +3272,16 @@
 
     // REMENU --------------------------------------------------------------------------------------------------------------
     
+    /*
     if (app.isCryptoCloudMode) {
         app.reSelectMenu = [[REMenu alloc] initWithItems:@[app.deleteItem,app.moveItem, app.encryptItem, app.decryptItem, app.downloadItem, app.saveItem]];
     } else {
         app.reSelectMenu = [[REMenu alloc] initWithItems:@[app.deleteItem,app.moveItem, app.downloadItem, app.saveItem]];
     }
+    */
     
+    app.reSelectMenu = [[REMenu alloc] initWithItems:@[app.deleteItem,app.moveItem, app.downloadItem, app.saveItem]];
+
     app.reSelectMenu.imageOffset = CGSizeMake(5, -1);
     
     app.reSelectMenu.separatorOffset = CGSizeMake(50.0, 0.0);
@@ -3799,16 +3376,11 @@
         UIMenuItem *openinFileItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_open_in_", nil) action:@selector(openinFile:)];
         
         UIMenuItem *pasteFileItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_", nil) action:@selector(pasteFile:)];
-        UIMenuItem *pasteFileEncryptedItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_file_encrypted_", nil) action:@selector(pasteFileEncrypted:)];
         
         UIMenuItem *pasteFilesItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteFiles:)];
-        UIMenuItem *pasteFilesEncryptedItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_encrypted_", nil) action:@selector(pasteFilesEncrypted:)];
         
-        if (app.isCryptoCloudMode)
-            [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, pasteFileEncryptedItem, pasteFilesEncryptedItem, nil]];
-        else
-            [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, nil]];
-
+        [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, nil]];
+        
         [menuController setTargetRect:CGRectMake(touchPoint.x, touchPoint.y, 0.0f, 0.0f) inView:tableView];
         [menuController setMenuVisible:YES animated:YES];
     }
@@ -3830,13 +3402,8 @@
     
     if (@selector(copyFile:) == action || @selector(openinFile:) == action) {
         
-        if (_isSelectedMode == NO && _metadata && !_metadata.directory && !_metadata.errorPasscode && [_metadata.session length] == 0 && ![_metadata.typeFile isEqualToString: k_metadataTypeFile_template])  {
-            
-            // NO Cryptated with Title lenght = 0
-            if (!_metadata.cryptated || (_metadata.cryptated && _metadata.title.length > 0))
-                return YES;
-        }
-        return NO;
+        if (_isSelectedMode == NO && _metadata && !_metadata.directory && [_metadata.session length] == 0) return YES;
+        else return NO;
     }
     
     if (@selector(copyFiles:) == action) {
@@ -3847,12 +3414,8 @@
             
             for (tableMetadata *metadata in selectedMetadatas) {
                 
-                if (!metadata.directory && !metadata.errorPasscode && metadata.session.length == 0 && ![metadata.typeFile isEqualToString: k_metadataTypeFile_template])  {
-                    
-                    // NO Cryptated with Title lenght = 0
-                    if (!metadata.cryptated || (metadata.cryptated && metadata.title.length > 0))
-                        return YES;
-                }
+                if (!metadata.directory && metadata.session.length == 0)
+                    return YES;
             }
         }
         return NO;
@@ -3971,7 +3534,7 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         
         if (serverUrl)
-            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     }
 }
 
@@ -3994,7 +3557,7 @@
             NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
 
             if (serverUrl)
-                [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+                [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
         }
     }
     
@@ -4072,10 +3635,10 @@
                     
                     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
                         
-                        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint]];
+                        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName]];
                         
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNamePrint serverUrl:_serverUrl cryptated:cryptated onlyPlist:NO session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:_serverUrl session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
                         });
                         
                         timer += 0.1;
@@ -4124,23 +3687,6 @@
             
         case BKPasscodeViewControllerCheckPasscodeType: {
             
-            if (aViewController.fromType == CCBKPasscodeFromPasscode) {
-                
-                // verifichiamo se il passcode è corretto per il seguente file -> UUID
-                if ([[CCCrypto sharedManager] verifyPasscode:aPasscode uuid:_metadata.uuid text:_metadata.title]) {
-                    
-                    // scriviamo il passcode
-                    [CCUtility setKeyChainPasscodeForUUID:_metadata.uuid conPasscode:aPasscode];
-                    
-                    [self readFolder:_serverUrl];
-                    
-                } else {
-                    
-                    UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_error_passcode_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                    [alertView show];
-                }
-            }
-            
             if (aViewController.fromType == CCBKPasscodeFromLockDirectory) {
                 
                 // possiamo procedere alla prossima directory
@@ -4154,7 +3700,7 @@
             if (aViewController.fromType == CCBKPasscodeFromDisactivateDirectory) {
                 
                 NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-                NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
+                NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileName];
                 
                 if (![[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:NO]) {
                 
@@ -4174,7 +3720,7 @@
 {
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     if (!serverUrl) return;
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileName];
 
     // se non è abilitato il Lock Passcode esci
     if ([[CCUtility getBlockCode] length] == 0) {
@@ -4247,7 +3793,7 @@
     if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
         return NO;
     
-    if (metadata == nil || metadata.errorPasscode || (metadata.cryptated && [metadata.title length] == 0) || metadata.sessionTaskIdentifier  != k_taskIdentifierDone || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
+    if (metadata == nil || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
         return NO;
     else
         return YES;
@@ -4286,7 +3832,7 @@
 - (void)swipeDelete:(NSIndexPath *)indexPath
 {
     // Directory locked ?
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID] addFileName:_metadata.fileNameData];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID] addFileName:_metadata.fileName];
     if (!lockServerUrl) return;
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, lockServerUrl]];
@@ -4323,8 +3869,7 @@
     
     NSString *titoloCriptaDecripta, *titoloLock, *titleFavorite;
     
-    if (_metadata.cryptated) titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_decrypt_", nil)];
-    else titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
+    titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
     
     if (_metadata.favorite) {
         
@@ -4336,7 +3881,7 @@
     
     if (_metadata.directory) {
         // calcolo lockServerUrl
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileName];
         
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, lockServerUrl]];
         
@@ -4373,7 +3918,7 @@
     if (_metadata.directory) {
         
         BOOL lockDirectory = NO;
-        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
+        NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileName];
         
         // Directory bloccata ?
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, dirServerUrl]];
@@ -4383,7 +3928,7 @@
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
         
-        [actionSheet addButtonWithTitle: _metadata.fileNamePrint
+        [actionSheet addButtonWithTitle: _metadata.fileName
                                   image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
                         backgroundColor: [NCBrandColor sharedInstance].tabBar
                                  height: 50.0
@@ -4391,7 +3936,7 @@
                                 handler: nil
         ];
         
-        if (_metadata.cryptated == NO && !lockDirectory) {
+        if (!lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
@@ -4416,7 +3961,7 @@
                                         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                         
                                         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                            textField.text = _metadata.fileNamePrint;
+                                            textField.text = _metadata.fileName;
                                             //textField.selectedTextRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:textField.endOfDocument];
                                             //textField.delegate = self;
                                             [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
@@ -4455,7 +4000,7 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && _metadata.cryptated == NO) {
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand]
@@ -4498,6 +4043,7 @@
                                     }];
         }
         
+        /*
         if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && app.isCryptoCloudMode) {
             
             [actionSheet addButtonWithTitle:titoloCriptaDecripta
@@ -4510,13 +4056,14 @@
                                         [self performSelector:@selector(encyptedDecryptedFolder) withObject:nil];
                                     }];
         }
+        */
         
         [actionSheet show];
     }
     
     // ******************************************* FILE *******************************************
     
-    if ([_metadata.type isEqualToString: k_metadataType_file] && !_metadata.directory) {
+    if (!_metadata.directory) {
         
         UIImage *iconHeader;
         
@@ -4526,7 +4073,7 @@
         else
             iconHeader = [UIImage imageNamed:_metadata.iconName];
         
-        [actionSheet addButtonWithTitle: _metadata.fileNamePrint
+        [actionSheet addButtonWithTitle: _metadata.fileName
                                   image: iconHeader
                         backgroundColor: [NCBrandColor sharedInstance].tabBar
                                  height: 50.0
@@ -4534,10 +4081,9 @@
                                 handler: nil
         ];
         
-        if (_metadata.cryptated == NO) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"]color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4545,7 +4091,7 @@
                                         
                                         [self openWindowShare:_metadata];
                                     }];
-        }
+        
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOpenIn"] color:[NCBrandColor sharedInstance].brand]
@@ -4567,8 +4113,7 @@
                                     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                     
                                     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                        //textField.placeholder = _metadata.fileNamePrint;
-                                        textField.text = _metadata.fileNamePrint;
+                                        textField.text = _metadata.fileName;
                                         [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                     }];
                                     
@@ -4614,6 +4159,7 @@
                                     }];
         }
         
+        /*
         if (app.isCryptoCloudMode) {
             
             [actionSheet addButtonWithTitle:titoloCriptaDecripta
@@ -4626,6 +4172,7 @@
                                         [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
                                     }];
         }
+        */
         
 #ifdef DEBUG
         
@@ -4645,67 +4192,6 @@
         
 #endif
 
-        [actionSheet show];
-    }
-    
-    // ******************************************* TEMPLATE *******************************************
-    
-    if ([_metadata.type isEqualToString: k_metadataType_template]) {
-        
-        [actionSheet addButtonWithTitle: _metadata.fileNamePrint
-                                  image: [UIImage imageNamed:_metadata.iconName]
-                        backgroundColor: [NCBrandColor sharedInstance].tabBar
-                                 height: 50.0
-                                   type: AHKActionSheetButtonTypeDisabled
-                                handler: nil
-         ];
-        
-        if ([_metadata.model isEqualToString:@"note"]) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                      image:[UIImage imageNamed:@"actionSheetRename"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
-                                        
-                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                            textField.placeholder = _metadata.fileNamePrint;
-                                            [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                        }];
-                                        
-                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                            NSLog(@"Cancel action");
-                                        }];
-                                        
-                                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                                            
-                                            UITextField *fileName = alertController.textFields.firstObject;
-                                            
-                                            [self performSelectorOnMainThread:@selector(renameNote:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
-                                        }];
-                                        
-                                        okAction.enabled = NO;
-                                        
-                                        [alertController addAction:cancelAction];
-                                        [alertController addAction:okAction];
-                                        
-                                        [self presentViewController:alertController animated:YES completion:nil];
-                                    }];
-        }
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                  image:[UIImage imageNamed:@"actionSheetMove"]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                                                        
-                                    [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
-                                }];
-        
         [actionSheet show];
     }
 }
@@ -4790,7 +4276,7 @@
         
         NSString *sorted = _directoryOrder;
         if ([sorted isEqualToString:@"fileName"])
-            sorted = @"fileNamePrint";
+            sorted = @"fileName";
     
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
         
@@ -4943,7 +4429,7 @@
         if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
             return NO;
         
-        if (metadata == nil || metadata.errorPasscode || (metadata.cryptated && [metadata.title length] == 0) || metadata.sessionTaskIdentifier  != k_taskIdentifierDone || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
+        if (metadata == nil || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
             return NO;
         else
             return YES;
@@ -5138,19 +4624,14 @@
     cell.reloadTaskButton.hidden = YES;
     cell.stopTaskButton.hidden = YES;
     
-    // Encrypted color
-    if (metadata.cryptated) {
-        cell.labelTitle.textColor = [NCBrandColor sharedInstance].cryptocloud;
-    } else {
-        cell.labelTitle.textColor = [UIColor blackColor];
-    }
+    cell.labelTitle.textColor = [UIColor blackColor];
     
     // ----------------------------------------------------------------------------------------------------------
     // File Name & Folder
     // ----------------------------------------------------------------------------------------------------------
     
     // nome del file
-    cell.labelTitle.text = metadata.fileNamePrint;
+    cell.labelTitle.text = metadata.fileName;
     
     // è una directory
     if (metadata.directory) {
@@ -5175,37 +4656,18 @@
         dataFile = [CCUtility dateDiff:metadata.date];
         lunghezzaFile = [CCUtility transformedSize:metadata.size];
         
-        // Plist ancora da scaricare
-        if (metadata.cryptated && [metadata.title length] == 0) {
-            
-            dataFile = @" ";
-            lunghezzaFile = @" ";
-        }
-        
         tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
         
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateStyle:NSDateFormatterShortStyle];
         [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
         
-        if ([metadata.type isEqualToString: k_metadataType_template] && [dataFile isEqualToString:@" "] == NO && [lunghezzaFile isEqualToString:@" "] == NO)
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", dataFile];
-        
-        if ([metadata.type isEqualToString: k_metadataType_file] && [dataFile isEqualToString:@" "] == NO && [lunghezzaFile isEqualToString:@" "] == NO) {
-            if (localFile && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]])
-                cell.local.image = [UIImage imageNamed:@"local"];
-            else
-                cell.local.image = nil;
+        if (localFile && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]])
+            cell.local.image = [UIImage imageNamed:@"local"];
+        else
+            cell.local.image = nil;
             
-            //cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ • %@", dataFile, lunghezzaFile];
-            //cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ ◦ %@", dataFile, lunghezzaFile];
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", dataFile, lunghezzaFile];
-        }
-
-        // Plist ancora da scaricare
-        if ([dataFile isEqualToString:@" "] && [lunghezzaFile isEqualToString:@" "])
-            cell.labelInfoFile.text = NSLocalizedString(@"_no_plist_pull_down_",nil);
-    
+        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", dataFile, lunghezzaFile];
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
     
@@ -5233,14 +4695,8 @@
     // Image Status cyptated & Lock Passcode
     // ----------------------------------------------------------------------------------------------------------
     
-    // File Cyptated
-    if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_template] == NO) {
-     
-        cell.status.image = [UIImage imageNamed:@"lock"];
-    }
-    
     // Directory con passcode lock attivato
-    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNameData];
+    NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, lockServerUrl]];
     
@@ -5339,40 +4795,27 @@
     
     if ([metadata.session length] > 0 && [metadata.session containsString:@"download"]) {
         
-        if (metadata.cryptated) cell.status.image = [UIImage imageNamed:@"statusdownloadcrypto"];
-        else cell.status.image = [UIImage imageNamed:@"statusdownload"];
+        cell.status.image = [UIImage imageNamed:@"statusdownload"];
 
         // sessionTaskIdentifier : RELOAD + STOP
         if (metadata.sessionTaskIdentifier != k_taskIdentifierDone) {
             
-            if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptaskcrypto"] forState:UIControlStateNormal];
-            else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
+            [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
             cell.cancelTaskButton.hidden = NO;
 
-            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
-            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
+            [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
             cell.reloadTaskButton.hidden = NO;
             
         }
         
-        // sessionTaskIdentifierPlist : RELOAD
-        if (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone) {
-            
-            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
-            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
-            
-            cell.reloadTaskButton.hidden = NO;
-        }
-
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
         
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
-            else cell.progressView.progressTintColor = [UIColor blackColor];
+            cell.progressView.progressTintColor = [UIColor blackColor];
             
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
@@ -5382,7 +4825,7 @@
         // downloadFile Error
         // ----------------------------------------------------------------------------------------------------------
         
-        if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
+        if (metadata.sessionTaskIdentifier == k_taskIdentifierError) {
             
             cell.status.image = [UIImage imageNamed:@"statuserror"];
             
@@ -5399,28 +4842,23 @@
     
     if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"upload"].location != NSNotFound) {
         
-        if (metadata.cryptated) cell.status.image = [UIImage imageNamed:@"statusuploadcrypto"];
-        else cell.status.image = [UIImage imageNamed:@"statusupload"];
+        cell.status.image = [UIImage imageNamed:@"statusupload"];
         
-        if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetaskcrypto"] forState:UIControlStateNormal];
-        else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetask"] forState:UIControlStateNormal];
+        [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetask"] forState:UIControlStateNormal];
         cell.cancelTaskButton.hidden = NO;
         
         if (metadata.sessionTaskIdentifier == k_taskIdentifierStop) {
             
-            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
-            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
+            [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
-            if (metadata.cryptated) cell.status.image = [UIImage imageNamed:@"statusstopcrypto"];
-            else cell.status.image = [UIImage imageNamed:@"statusstop"];
+            cell.status.image = [UIImage imageNamed:@"statusstop"];
             
             cell.reloadTaskButton.hidden = NO;
             cell.stopTaskButton.hidden = YES;
             
         } else {
             
-            if (metadata.cryptated)[cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptaskcrypto"] forState:UIControlStateNormal];
-            else [cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
+            [cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
             cell.stopTaskButton.hidden = NO;
             cell.reloadTaskButton.hidden = YES;
@@ -5436,8 +4874,7 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
-            else cell.progressView.progressTintColor = [UIColor blackColor];
+            cell.progressView.progressTintColor = [UIColor blackColor];
             
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
@@ -5447,7 +4884,7 @@
         // uploadFileError
         // ----------------------------------------------------------------------------------------------------------
     
-        if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
+        if (metadata.sessionTaskIdentifier == k_taskIdentifierError) {
         
             cell.labelTitle.enabled = NO;
             cell.status.image = [UIImage imageNamed:@"statuserror"];
@@ -5464,26 +4901,18 @@
     [cell.stopTaskButton addTarget:self action:@selector(stopTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
 
     // ======== MGSwipe ========
-
-    //Left only plain
-    if (metadata.cryptated == NO) {
-        
-        if (metadata.favorite)
-            cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_unfavorite_", nil)] icon:[UIImage imageNamed:@"swipeUnfavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
-        else
-            cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_favorite_", nil)] icon:[UIImage imageNamed:@"swipeFavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
-        
-        cell.leftExpansion.buttonIndex = 0;
-        cell.leftExpansion.fillOnTrigger = NO;
     
-        //centerIconOverText
-        MGSwipeButton *favoriteButton = (MGSwipeButton *)[cell.leftButtons objectAtIndex:0];
-        [favoriteButton centerIconOverText];
+    if (metadata.favorite)
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_unfavorite_", nil)] icon:[UIImage imageNamed:@"swipeUnfavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
+    else
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_favorite_", nil)] icon:[UIImage imageNamed:@"swipeFavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
         
-    } else {
-        
-        cell.leftButtons = [NSArray new];
-    }
+    cell.leftExpansion.buttonIndex = 0;
+    cell.leftExpansion.fillOnTrigger = NO;
+    
+    //centerIconOverText
+    MGSwipeButton *favoriteButton = (MGSwipeButton *)[cell.leftButtons objectAtIndex:0];
+    [favoriteButton centerIconOverText];
     
     //Right
     cell.rightButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_delete_", nil)] icon:[UIImage imageNamed:@"swipeDelete"] backgroundColor:[UIColor redColor]], [MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_more_", nil)] icon:[UIImage imageNamed:@"swipeMore"] backgroundColor:[UIColor lightGrayColor]]];
@@ -5558,9 +4987,7 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    NSString *textMessage;
-    
+{    
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     
     // settiamo il record file.
@@ -5587,81 +5014,24 @@
     // se è in corso una sessione
     if ([_metadata.session length] > 0) return;
     
-    if (_metadata.errorPasscode) {
-            
-        // se UUID è nil lo sta ancora caricando quindi esci
-        if (!_metadata.uuid) return;
-        
-        // esiste un hint ??
-        NSString *hint = [[CCCrypto sharedManager] getHintFromFile:_metadata.fileName isLocal:NO directoryUser:app.directoryUser];
-        
-        // qui !! la richiesta della nuova passcode
-        if ([_metadata.uuid isEqualToString:[CCUtility getUUID]]) {
-            
-            // stesso UUID ... la password è stata modificata !!!!!!
-            
-            if (hint) textMessage = [NSString stringWithFormat:NSLocalizedString(@"_same_device_different_passcode_hint_",nil), hint];
-            else textMessage = NSLocalizedString(@"_same_device_different_passcode_", nil);
-            
-            UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:textMessage delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-            [alertView show];
-                
-        } else {
-                
-            // UUID diverso.
-            
-            if (hint) textMessage = [NSString stringWithFormat:NSLocalizedString(@"_file_encrypted_another_device_hint_",nil), _metadata.nameCurrentDevice, hint];
-            else textMessage = [NSString stringWithFormat:NSLocalizedString(@"_file_encrypted_another_device_",nil), _metadata.nameCurrentDevice];
-            
-            UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:textMessage delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-            [alertView show];
-        }
-            
-        // chiediamo la passcode e ricarichiamo tutto.
-        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-        viewController.delegate = self;
-        viewController.fromType = CCBKPasscodeFromPasscode;
-        viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-        viewController.passcodeInputView.maximumLength = 64;
-        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-        viewController.inputViewTitlePassword = NO;
-        
-        viewController.title = [NCBrandOptions sharedInstance].brand;
-        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
-
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-            
-        [self presentViewController:navigationController animated:YES completion:nil];
-    }
-    
-    // modello o plist con il title a 0 allora è andato storto qualcosa ... ricaricalo
-    if (_metadata.cryptated && [_metadata.title length] == 0) {
-    
-        NSString* selector;
-        
-        if ([_metadata.type isEqualToString: k_metadataType_template]) selector = selectorLoadModelView;
-        else selector = selectorLoadPlist;
-        
-        [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:NO downloadPlist:YES selector:selector selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
-        
-        return;
-    }
-        
-    // se il plist è caricato ed è un modello aprilo
-    if ([_metadata.type isEqualToString:k_metadataType_template]) [self openModel:_metadata.model isNew:false];
-    
     // file
-    if (_metadata.directory == NO && _metadata.errorPasscode == NO && [_metadata.type isEqualToString: k_metadataType_file]) {
+    if (_metadata.directory == NO) {
         
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
-                            
+            
+#ifdef DEBUG
+            // TEST ENCRYPTED
+            if ([_metadata.fileName containsString:@".dms"]) {
+                [[NCClientEncryption sharedManager] decryptMetadata:_metadata activeUrl:app.directoryUser];
+            }
+#endif
+
             [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
             
         } else {
                 
-            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
             
             NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
             if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -5717,9 +5087,6 @@
     if (self.splitViewController.isCollapsed)
         if (_detailViewController.isViewLoaded && _detailViewController.view.window) return NO;
     
-    // Video in esecuzione esci
-    if (_detailViewController.photoBrowser.currentVideoPlayerViewController.isViewLoaded && _detailViewController.photoBrowser.currentVideoPlayerViewController.view.window) return NO;
-    
     return YES;
 }
 
@@ -5750,7 +5117,7 @@
         
         for (NSString *fileID in _sectionDataSource.allEtag) {
             tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [metadata.typeFile isEqualToString: k_metadataTypeFile_audio])
                 [allRecordsDataSourceImagesVideos addObject:metadata];
         }
     }
@@ -5759,7 +5126,7 @@
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     _detailViewController.dateFilterQuery = nil;
     
-    [_detailViewController setTitle:metadata.fileNamePrint];
+    [_detailViewController setTitle:metadata.fileName];
 }
 
 // can i go to next viewcontroller
@@ -5767,12 +5134,12 @@
 {
     NSString *nomeDir;
 
-    if(self.tableView.editing == NO && _metadata.errorPasscode == NO){
+    if(self.tableView.editing == NO) {
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         if (!serverUrl) return;
         
-        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileNameData];
+        NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileName];
         
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, lockServerUrl]];
         
@@ -5802,7 +5169,7 @@
             
             viewController.title = NSLocalizedString(@"_folder_blocked_", nil);
             viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-            viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
+            //viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
             
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
             [self presentViewController:navController animated:YES completion:nil];
@@ -5810,8 +5177,7 @@
             return;
         }
         
-        if (_metadata.cryptated) nomeDir = [_metadata.fileName substringToIndex:[_metadata.fileName length]-6];
-        else nomeDir = _metadata.fileName;
+        nomeDir = _metadata.fileName;
         
         NSString *serverUrlPush = [CCUtility stringAppendServerUrl:serverUrl addFileName:nomeDir];
     
@@ -5821,9 +5187,8 @@
             
             viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMainVC"];
             
-            viewController.isFolderEncrypted = _metadata.cryptated;
             viewController.serverUrl = serverUrlPush;
-            viewController.titleMain = _metadata.fileNamePrint;
+            viewController.titleMain = _metadata.fileName;
             viewController.textBackButton = _titleMain;
             
             // save self

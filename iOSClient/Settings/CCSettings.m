@@ -1,6 +1,6 @@
 //
 //  CCSettings.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 24/11/14.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -107,22 +107,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Section CRYPTO CLOUD SYSTEM ------------------------------------------
-    
-    // Brand
-    if ([NCBrandOptions sharedInstance].disable_cryptocloudsystem == NO) {
-    
-        section = [XLFormSectionDescriptor formSection];
-        [form addFormSection:section];
-    
-        // Crypto Cloud
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_crypto_cloud_system_", nil)];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:@"settingsCryptoCloud"] forKey:@"imageView.image"];
-        row.action.viewControllerClass = [CCManageCryptoCloud class];
-        [section addFormRow:row];
-    }
-    
     // Section Advanced -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -172,7 +156,7 @@
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadForm];
@@ -403,7 +387,7 @@
             NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             if (!serverUrl) continue;
             
-            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNamePrint];
+            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
 
             NSString *serverUrlBeginWith = serverUrl;
             
@@ -434,7 +418,7 @@
             sectionName = NSLocalizedString(@"_favorite_offline_footer_", nil);
         }
         break;
-        case 5: {
+        case 4: {
             
             tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
             

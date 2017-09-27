@@ -1,6 +1,6 @@
 //
 //  CCIntro.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 05/11/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -64,9 +64,18 @@
     //NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
     CGFloat height = self.rootView.bounds.size.height;
     
-    if (height <= 480) { titleIconPositionY = 20; titlePositionY = 260; descPositionY = 230; }
-    if (height >= 500 && height <= 800) { titleIconPositionY = 50; titlePositionY = height / 2; descPositionY = height / 2 - 40 ; }
-    if (height >= 1024) { titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250; }
+    if (height <= 480) {
+        titleIconPositionY = 20; titlePositionY = 260; descPositionY = 230;
+    }
+    
+    // 812 = iPhoneX
+    if (height > 480 && height <= 812) {
+        titleIconPositionY = 50; titlePositionY = height / 2; descPositionY = height / 2 - 40 ;
+    }
+    
+    if (height > 812) {
+        titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250;
+    }
     
     EAIntroPage *page1 = [EAIntroPage page];
 

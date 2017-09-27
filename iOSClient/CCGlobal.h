@@ -1,6 +1,6 @@
 //
 //  CCGlobal.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 13/10/14.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -24,17 +24,11 @@
 #import <UIKit/UIKit.h>
 
 extern NSString *const appApplicationSupport;
-extern NSString *const appDatabase;
 extern NSString *const appDatabaseNextcloud;
 extern NSString *const appCertificates;
 
 extern NSString *const webDAV;
 extern NSString *const dav;
-
-extern NSString *const appKeyCryptoCloud;
-extern NSString *const appSecretCryptoCloud;
-extern NSString *const urlBaseDownloadDB;
-extern NSString *const urlBaseUploadDB;
 
 #ifndef EXTENSION
 
@@ -43,9 +37,6 @@ extern NSString *const urlBaseUploadDB;
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
 
 #endif
-
-// Version Protocol plist
-#define k_versionProtocolPlist                          @"1.3"
 
 // UUID
 #define k_UUID_SIM                                      @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
@@ -61,14 +52,6 @@ extern NSString *const urlBaseUploadDB;
 #define k_returnCreateFotoVideoEncrypted                4
 #define k_returnCreateFileEncrypted                     5
 #define k_returnCreateFileText                          6
-#define k_returnCartaDiCredito                          7
-#define k_returnBancomat                                8
-#define k_returnContoCorrente                           9
-#define k_returnAccountWeb                              10
-#define k_returnNote                                    11
-#define k_returnPatenteGuida                            12
-#define k_returnCartaIdentita                           13
-#define k_returnPassaporto                              14
 
 // Name Default DB
 #define k_databaseDefault                               @"nextcloud.realm"
@@ -151,14 +134,10 @@ extern NSString *const urlBaseUploadDB;
 // Metadata.Net SELECTOR
 #define selectorAddFavorite                             @"addFavorite"
 #define selectorCreateFolder                            @"createFolder"
-#define selectorDecryptFile                             @"decryptFile"
 #define selectorDelete                                  @"delete"
-#define selectorDeleteCrypto                            @"deleteCrypto"
-#define selectorDeletePlist                             @"deletePlist"
 #define selectorDownloadFile                            @"downloadFile"
 #define selectorDownloadThumbnail                       @"downloadThumbnail"
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
-#define selectorEncryptFile                             @"encryptFile"
 #define selectorGetUserAndGroup                         @"getUserAndGroup"
 #define selectorLoadFileView                            @"loadFileView"
 #define selectorLoadModelView                           @"loadModelView"
@@ -166,8 +145,6 @@ extern NSString *const urlBaseUploadDB;
 #define selectorLoadViewImage                           @"loadViewImage"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorMove                                    @"move"
-#define selectorMoveCrypto                              @"moveCrypto"
-#define selectorMovePlist                               @"movePlist"
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenWindowShare                         @"openWindowShare"
 #define selectorReadFile                                @"readFile"
@@ -190,8 +167,6 @@ extern NSString *const urlBaseUploadDB;
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
-#define selectorUploadFileCrypto                        @"uploadFileCrypto"
-#define selectorUploadFilePlist                         @"uploadFilePlist"
 #define selectorUploadRemovePhoto                       @"uploadRemovePhoto"
 
 // Metadata.Net ACTION
@@ -226,18 +201,8 @@ extern NSString *const urlBaseUploadDB;
 #define k_metadataTypeFile_directory                    @"directory"
 #define k_metadataTypeFile_document                     @"document"
 #define k_metadataTypeFile_image                        @"image"
-#define k_metadataTypeFile_template                     @"template"
 #define k_metadataTypeFile_unknown                      @"unknow"
 #define k_metadataTypeFile_video                        @"video"
-
-// Metadata : Type
-#define k_metadataType_file                             @"file"
-#define k_metadataType_template                         @"model"
-
-// Metadata : Filename Type
-#define k_metadataTypeFilenamePlain                     0
-#define k_metadataTypeFilenamePlist                     1
-#define k_metadataTypeFilenameCrypto                    2
 
 // Metadata : Status
 #define k_metadataStatusNormal                          0

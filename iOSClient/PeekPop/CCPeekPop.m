@@ -1,6 +1,6 @@
 //
 //  CCPeekPop.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 26/08/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -77,7 +77,7 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         
         if (serverUrl)
-            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self.delegate];
+            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self.delegate];
     }];
     
     return @[previewAction1];
@@ -114,8 +114,6 @@
     metadataNet.action = actionDownloadThumbnail;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
-    metadataNet.fileNameLocal = metadata.fileID;
-    metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.options = @"l";
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selectorDownloadThumbnail;

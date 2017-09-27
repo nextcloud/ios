@@ -1,6 +1,6 @@
 //
 //  NCAutoUpload.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 07/06/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -78,7 +78,7 @@
 
 - (void)setupAutoUpload
 {
-    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
+    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
         
         [self performSelectorOnMainThread:@selector(uploadNewAssets) withObject:nil waitUntilDone:NO];
         
@@ -98,7 +98,7 @@
 
 - (void)setupAutoUploadFull
 {
-    if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
+    if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
         
         [self performSelectorOnMainThread:@selector(uploadFullAssets) withObject:nil waitUntilDone:NO];
         
@@ -139,7 +139,7 @@
                 
             } else {
                 
-                if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
+                if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                     
                     if (account.autoUploadBackground == YES)
                         [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:NO];
@@ -156,7 +156,7 @@
             
         } else {
             
-            if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
+            if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                 
                 if (account.autoUploadBackground == NO)
                     [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
@@ -182,7 +182,7 @@
         
         [[CCManageLocation sharedInstance] stopSignificantChangeUpdates];
         
-        if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
+        if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_location_not_enabled_", nil) message:NSLocalizedString(@"_location_not_enabled_msg_", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"_ok_", nil) otherButtonTitles:nil];
             [alert show];
             
@@ -197,28 +197,15 @@
     return tableAccount.autoUploadBackground;
 }
 
-
 - (void)statusAuthorizationLocationChanged
 {
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     
     if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusNotDetermined){
         
-        if (![CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
-            
-            ALAssetsLibrary *assetLibrary = [CCUtility defaultAssetsLibrary];
-            
-            [assetLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
-                                        usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                                            
-                                        } failureBlock:^(NSError *error) {
-                                            
-                                        }];
-        }
-        
         if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways) {
             
-            if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
+            if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
                 
                 if ([CCManageLocation sharedInstance].firstChangeAuthorizationDone) {
                     
@@ -267,7 +254,7 @@
     
     if (account.autoUpload && account.autoUploadBackground && [[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         
-        if ([ALAssetsLibrary authorizationStatus] == ALAuthorizationStatusAuthorized) {
+        if ([PHPhotoLibrary authorizationStatus] == PHAuthorizationStatusAuthorized) {
             
             //check location
             if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusAuthorizedAlways) {
@@ -482,7 +469,7 @@
 
 - (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl isCryptoCloudMode:NO];
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:app.activeUser withPassword:app.activePassword withUrl:app.activeUrl];
     
     if ([ocNetworking automaticCreateFolderSync:folderPhotos]) {
         

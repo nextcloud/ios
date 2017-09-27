@@ -14,6 +14,7 @@
 
     BOOL _loadingInProgress;
     PHImageRequestID _assetRequestID;
+    PHImageRequestID _assetVideoRequestID;
         
 }
 
@@ -53,6 +54,7 @@
 - (id)init {
     if ((self = [super init])) {
         self.emptyImage = YES;
+        [self setup];
     }
     return self;
 }
@@ -60,6 +62,7 @@
 - (id)initWithImage:(UIImage *)image {
     if ((self = [super init])) {
         self.image = image;
+        [self setup];
     }
     return self;
 }
@@ -67,6 +70,7 @@
 - (id)initWithURL:(NSURL *)url {
     if ((self = [super init])) {
         self.photoURL = url;
+        [self setup];
     }
     return self;
 }
@@ -76,6 +80,7 @@
         self.asset = asset;
         self.assetTargetSize = targetSize;
         self.isVideo = asset.mediaType == PHAssetMediaTypeVideo;
+        [self setup];
     }
     return self;
 }
@@ -85,8 +90,18 @@
         self.videoURL = url;
         self.isVideo = YES;
         self.emptyImage = YES;
+        [self setup];
     }
     return self;
+}
+
+- (void)setup {
+    _assetRequestID = PHInvalidImageRequestID;
+    _assetVideoRequestID = PHInvalidImageRequestID;
+}
+
+- (void)dealloc {
+    [self cancelAnyLoading];
 }
 
 #pragma mark - Video
@@ -100,17 +115,24 @@
     if (_videoURL) {
         completion(_videoURL);
     } else if (_asset && _asset.mediaType == PHAssetMediaTypeVideo) {
+        [self cancelVideoRequest]; // Cancel any existing
         PHVideoRequestOptions *options = [PHVideoRequestOptions new];
         options.networkAccessAllowed = YES;
-        [[PHImageManager defaultManager] requestAVAssetForVideo:_asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+        __weak __typeof(self) weakSelf = self;
+        _assetVideoRequestID = [[PHImageManager defaultManager] requestAVAssetForVideo:_asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+            
+            // dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{ // Testing
+            __typeof(self) strongSelf = weakSelf;
+            if (!strongSelf) return;
+            strongSelf->_assetVideoRequestID = PHInvalidImageRequestID;
             if ([asset isKindOfClass:[AVURLAsset class]]) {
                 completion(((AVURLAsset *)asset).URL);
             } else {
                 completion(nil);
             }
+            
         }];
     }
-    return completion(nil);
 }
 
 #pragma mark - MWPhoto Protocol Methods
@@ -162,11 +184,6 @@
             // Load from local file async
             [self _performLoadUnderlyingImageAndNotifyWithLocalFileURL: _photoURL];
             
-        } else {
-            
-            // Load async from web (using SDWebImage)
-            [self _performLoadUnderlyingImageAndNotifyWithWebURL: _photoURL];
-            
         }
         
     } else if (_asset) {
@@ -182,39 +199,6 @@
     }
 }
 
-// Load from local file
-- (void)_performLoadUnderlyingImageAndNotifyWithWebURL:(NSURL *)url {
-    /*
-    @try {
-        SDWebImageManager *manager = [SDWebImageManager sharedManager];
-        _webImageOperation = [manager downloadImageWithURL:url
-                                                   options:0
-                                                  progress:^(NSInteger receivedSize, NSInteger expectedSize) {
-                                                      if (expectedSize > 0) {
-                                                          float progress = receivedSize / (float)expectedSize;
-                                                          NSDictionary* dict = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                                [NSNumber numberWithFloat:progress], @"progress",
-                                                                                self, @"photo", nil];
-                                                          [[NSNotificationCenter defaultCenter] postNotificationName:MWPHOTO_PROGRESS_NOTIFICATION object:dict];
-                                                      }
-                                                  }
-                                                 completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
-                                                     if (error) {
-                                                         MWLog(@"SDWebImage failed to download image: %@", error);
-                                                     }
-                                                     _webImageOperation = nil;
-                                                     self.underlyingImage = image;
-                                                     dispatch_async(dispatch_get_main_queue(), ^{
-                                                         [self imageLoadingComplete];
-                                                     });
-                                                 }];
-    } @catch (NSException *e) {
-        MWLog(@"Photo from web: %@", e);
-        _webImageOperation = nil;
-        [self imageLoadingComplete];
-    }
-    */
-}
 
 // Load from local file
 - (void)_performLoadUnderlyingImageAndNotifyWithLocalFileURL:(NSURL *)url {
@@ -234,30 +218,41 @@
 
 // Load from asset library async
 - (void)_performLoadUnderlyingImageAndNotifyWithAssetsLibraryURL:(NSURL *)url {
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @autoreleasepool {
             @try {
-                ALAssetsLibrary *assetslibrary = [[ALAssetsLibrary alloc] init];
-                [assetslibrary assetForURL:url
-                               resultBlock:^(ALAsset *asset){
-                                   ALAssetRepresentation *rep = [asset defaultRepresentation];
-                                   CGImageRef iref = [rep fullScreenImage];
-                                   if (iref) {
-                                       self.underlyingImage = [UIImage imageWithCGImage:iref];
-                                   }
-                                   [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
-                               }
-                              failureBlock:^(NSError *error) {
-                                  self.underlyingImage = nil;
-                                  MWLog(@"Photo from asset library error: %@",error);
-                                  [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
-                              }];
+                PHAsset * asset = [[PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil] firstObject];
+                if (! asset) {
+                    MWLog(@"Photo from asset library error");
+                    [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
+                }
+                PHImageRequestOptions *options = [[PHImageRequestOptions alloc] init];
+                options.synchronous = NO;
+                options.networkAccessAllowed = NO;
+                options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+                [[PHImageManager defaultManager] requestImageDataForAsset:asset
+                                                                  options:options
+                                                            resultHandler:^(NSData * imageData,
+                                                                            NSString * dataUTI,
+                                                                            UIImageOrientation orientation,
+                                                                            NSDictionary * info)
+                 {
+                     if (imageData) {
+                         self.underlyingImage = [UIImage imageWithData:imageData];
+                         [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
+                     } else {
+                         MWLog(@"Photo from asset library error");
+                         [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
+                     }
+                 }];
             } @catch (NSException *e) {
                 MWLog(@"Photo from asset library error: %@", e);
                 [self performSelectorOnMainThread:@selector(imageLoadingComplete) withObject:nil waitUntilDone:NO];
             }
         }
     });
+
 }
 
 // Load from photos library
@@ -306,15 +301,22 @@
 }
 
 - (void)cancelAnyLoading {
-    /*
-    if (_webImageOperation != nil) {
-        [_webImageOperation cancel];
-        _loadingInProgress = NO;
-    } else if (_assetRequestID != PHInvalidImageRequestID) {
+    [self cancelImageRequest];
+    [self cancelVideoRequest];
+}
+
+- (void)cancelImageRequest {
+    if (_assetRequestID != PHInvalidImageRequestID) {
         [[PHImageManager defaultManager] cancelImageRequest:_assetRequestID];
         _assetRequestID = PHInvalidImageRequestID;
     }
-    */ 
+}
+
+- (void)cancelVideoRequest {
+    if (_assetVideoRequestID != PHInvalidImageRequestID) {
+        [[PHImageManager defaultManager] cancelImageRequest:_assetVideoRequestID];
+        _assetVideoRequestID = PHInvalidImageRequestID;
+    }
 }
 
 @end

@@ -1,6 +1,6 @@
 //
 //  OCnetworking.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 10/05/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -34,7 +34,7 @@
 
 @interface OCnetworking : NSOperation <CCNetworkingDelegate>
 
-- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl isCryptoCloudMode:(BOOL)isCryptoCloudMode;
+- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl;
 
 @property (nonatomic, weak) id <OCNetworkingDelegate> delegate;
 

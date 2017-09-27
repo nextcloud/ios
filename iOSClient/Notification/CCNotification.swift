@@ -1,6 +1,6 @@
 //
 //  CCNotification.swift
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 27/01/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -35,7 +35,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_notification_", comment: "")
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
 
         self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(viewClose)), animated: true)
         
@@ -54,7 +54,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         super.didReceiveMemoryWarning()
     }
 
-    func viewClose() {
+    @objc func viewClose() {
         
         // Stop listening notification reload data
         NotificationCenter.default.removeObserver(self, name: Notification.Name("notificationReloadData"), object: nil);

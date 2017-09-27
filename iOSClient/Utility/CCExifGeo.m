@@ -1,6 +1,6 @@
 //
 //  CCExifGeo.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 03/02/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -112,7 +112,7 @@
 
     // Wite data EXIF in TableLocalFile
     if (tiff || gps)
-        [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil fileNamePrint:nil];
+        [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadata.fileID date:nil exifDate:date exifLatitude:stringLatitude exifLongitude:stringLongitude fileName:nil];
     
     CFRelease(originalSource);
     CFRelease(imageProperties);

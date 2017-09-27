@@ -1,6 +1,6 @@
 //
 //  CCSharePermissionOC.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 07/03/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -105,7 +105,7 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sharepath" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_share_permission_path_", nil)];
-    row.value = self.metadata.fileNamePrint;
+    row.value = self.metadata.fileName;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];

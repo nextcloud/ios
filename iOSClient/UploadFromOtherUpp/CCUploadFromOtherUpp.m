@@ -1,6 +1,6 @@
 //
 //  CCUploadFromOtherUpp.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 01/12/14.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -45,7 +45,7 @@
     destinationTitle = NSLocalizedString(@"_home_", nil);
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
@@ -101,9 +101,7 @@
                 nameLabel = (UILabel *)[cell viewWithTag:101]; nameLabel.text = destinationTitle;
                 cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                 UIImageView *img = (UIImageView *)[cell viewWithTag:201];
-                                
-                if ([CCUtility isCryptoString:[serverUrlLocal lastPathComponent]]) img.image = [UIImage imageNamed:@"foldercrypto"];
-                else img.image = [UIImage imageNamed:@"folder"];
+                img.image = [UIImage imageNamed:@"folder"];
             }
             break;
         case 4:
@@ -112,11 +110,6 @@
                 nameLabel = (UILabel *)[cell viewWithTag:102]; nameLabel.text = NSLocalizedString(@"_upload_file_", nil);
             }
             
-            if (row == 1) {
-                nameLabel = (UILabel *)[cell viewWithTag:103]; nameLabel.text = NSLocalizedString(@"_upload_encrypted_file_", nil);
-                if (app.isCryptoCloudMode == NO)
-                    cell.hidden = YES;
-            }
             break;
     }
     
@@ -138,10 +131,7 @@
             break;
         case 4:
             if (row == 0) {
-                [self uploadPlain];
-            }
-            if (row == 1) {
-                [self uploadEncrypted];
+                [self upload];
             }
             break;
     }
@@ -175,17 +165,9 @@
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
-- (void)uploadEncrypted
+-(void)upload
 {
-    [[CCNetworking sharedNetworking] uploadFile:app.fileNameUpload serverUrl:serverUrlLocal cryptated:YES onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
-    
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-
--(void)uploadPlain
-{
-    [[CCNetworking sharedNetworking] uploadFile:app.fileNameUpload serverUrl:serverUrlLocal cryptated:NO onlyPlist:NO session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+    [[CCNetworking sharedNetworking] uploadFile:app.fileNameUpload serverUrl:serverUrlLocal session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

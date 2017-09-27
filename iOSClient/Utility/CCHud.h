@@ -1,6 +1,6 @@
 //
 //  CCHud.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 22/02/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
