@@ -590,7 +590,7 @@
                 _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navigationLogo"]];
             
             [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
-            UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuLogo)];
+            UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuLogo:)];
             [singleTap setNumberOfTapsRequired:1];
             [_ImageTitleHomeCryptoCloud addGestureRecognizer:singleTap];
             
@@ -2935,7 +2935,7 @@
 #pragma mark ==== Menu LOGO ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)menuLogo
+- (void)menuLogo:(UIGestureRecognizer *)theGestureRecognizer
 {
     if (app.reSelectMenu.isOpen || app.reMainMenu.isOpen)
         return;
@@ -2999,12 +2999,14 @@
     options.menuBackgroundColor = backgroundColor;
     
     CGRect rect = self.view.frame;
+    CGFloat locationY = [theGestureRecognizer locationInView: self.navigationController.navigationBar].y;
     CGFloat safeAreaTop = 0;
+    CGFloat offsetY = 40;
     if (@available(iOS 11, *)) {
         safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top / 2;
     }
-    rect.origin.y = rect.origin.y + 50 + safeAreaTop;
-    rect.size.height = rect.size.height + 50 + safeAreaTop;
+    rect.origin.y = locationY + safeAreaTop + offsetY;
+    rect.size.height = rect.size.height - locationY - safeAreaTop - offsetY;
     
     [CCMenuAccount setTitleFont:[UIFont systemFontOfSize:12.0]];
     [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];    
