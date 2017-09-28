@@ -1066,54 +1066,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Media Player Control =====
-#pragma --------------------------------------------------------------------------------------------
-/*
-- (void)remoteControlReceivedWithEvent:(UIEvent *)event
-{
-    switch (event.subtype) {
-            
-        case UIEventSubtypeRemoteControlPlay:
-            
-            if (self.player.mediaPlayer) {
-                
-                NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-                
-                if (self.player.mediaPlayer.nowPlayingItem.title)
-                    [songInfo setObject:self.player.mediaPlayer.nowPlayingItem.title forKey:MPMediaItemPropertyTitle];
-                
-                if (self.player.mediaPlayer.nowPlayingItem.artist)
-                    [songInfo setObject:self.player.mediaPlayer.nowPlayingItem.artist forKey:MPMediaItemPropertyArtist];
-                
-                [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
-                
-                [self.player.mediaPlayer play];
-            }
-            break;
-        
-        case UIEventSubtypeRemoteControlPause:
-            
-            if (self.player.mediaPlayer) {
-                [self.player.mediaPlayer pause];
-            }
-            break;
-            
-        case UIEventSubtypeRemoteControlNextTrack:
-            // handle it break;
-        case UIEventSubtypeRemoteControlPreviousTrack:
-            // handle it break;
-        default:
-            break;
-    }
-}
-
-- (BOOL)mediaPlayerViewWillStartPlaying:(LMMediaPlayerView *)playerView media:(LMMediaItem *)media
-{
-    return YES;
-}
-*/
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Manager Passcode =====
 #pragma --------------------------------------------------------------------------------------------
 
