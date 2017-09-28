@@ -223,6 +223,8 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
+    self.navigationController.navigationBar.translucent = false;
+    [self setExtendedLayoutIncludesOpaqueBars:YES];
     
     // Toolbar items
     BOOL hasItems = NO;
@@ -569,16 +571,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [self performLayout];
         [self.view setNeedsLayout];
     }
-
-    //_toolbar.hidden = (_gridController ? true : false);
-    //_toolbar.alpha = (_gridController ? 0 : 1);
-
-    //TWS
-    //self.navigationController.navigationBar.hidden = (_gridController ? true : false);
-    //   self.navigationController.navigationBar.alpha = (_gridController ? 0 : 1);
-    
 }
-
 
 - (NSUInteger)numberOfPhotos {
     if (_photoCount == NSNotFound) {

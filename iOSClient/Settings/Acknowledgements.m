@@ -40,6 +40,7 @@
     [super viewDidLoad];
     
     [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
+    self.navigationController.navigationBar.translucent = false;
     
     NSURL *rtfPath;
     

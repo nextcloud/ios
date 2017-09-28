@@ -36,6 +36,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.isTranslucent = false
 
         self.navigationItem.setRightBarButton(UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(viewClose)), animated: true)
         
