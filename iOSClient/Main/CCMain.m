@@ -4361,11 +4361,6 @@
     NSInteger totSections =[_sectionDataSource.sections count] ;
     
     if ((totSections < (section + 1)) || ((section + 1) > totSections)) {
-        
-#if DEBUG
-        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:[NSString stringWithFormat:@"DEBUG [3] : error section, totSections = %lu - section = %lu", (long)totSections, (long)section] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-        [alertView show];
-#endif
         return nil;
     }
     
