@@ -3724,13 +3724,16 @@
 
     // se non è abilitato il Lock Passcode esci
     if ([[CCUtility getBlockCode] length] == 0) {
-        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_warning_", nil) message:NSLocalizedString(@"_only_lock_passcode_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-        [alertView show];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_warning_", nil) message:NSLocalizedString(@"_only_lock_passcode_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
         return;
     }
     
     // se è richiesta la disattivazione si chiede la password
-    
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, lockServerUrl]];
     
     if (directory.lock) {
