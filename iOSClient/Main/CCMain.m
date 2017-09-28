@@ -3001,7 +3001,7 @@
     CGRect rect = self.view.frame;
     CGFloat locationY = [theGestureRecognizer locationInView: self.navigationController.navigationBar].y;
     CGFloat safeAreaTop = 0;
-    CGFloat offsetY = 40;
+    CGFloat offsetY = 35;
     if (@available(iOS 11, *)) {
         safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top / 2;
     }
