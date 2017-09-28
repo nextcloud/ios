@@ -2986,8 +2986,6 @@
     backgroundColor.G = 1;
     backgroundColor.B = 1;
     
-    NSInteger originY = 60;
-
     options.arrowSize = 9;
     options.marginXSpacing = 7;
     options.marginYSpacing = 10;
@@ -3001,8 +2999,12 @@
     options.menuBackgroundColor = backgroundColor;
     
     CGRect rect = self.view.frame;
-    rect.origin.y = rect.origin.y + originY;
-    rect.size.height = rect.size.height - originY;
+    CGFloat safeAreaTop = 0;
+    if (@available(iOS 11, *)) {
+        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top / 2;
+    }
+    rect.origin.y = rect.origin.y + 50 + safeAreaTop;
+    rect.size.height = rect.size.height + 50 + safeAreaTop;
     
     [CCMenuAccount setTitleFont:[UIFont systemFontOfSize:12.0]];
     [CCMenuAccount showMenuInView:self.navigationController.view fromRect:rect menuItems:menuArray withOptions:options];    
