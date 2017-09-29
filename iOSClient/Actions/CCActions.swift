@@ -164,7 +164,7 @@ class CCActions: NSObject {
             return
         }
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl);
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl);
 
         // Verify if exists the fileName TO
         guard (ocNetworking?.readFileSync("\(String(describing: serverUrl))/\(fileName)")) != nil else {

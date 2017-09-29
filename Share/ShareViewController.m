@@ -61,6 +61,7 @@
         _activePassword = recordAccount.password;
         _activeUrl = recordAccount.url;
         _activeUser = recordAccount.user;
+        _activeUserID = recordAccount.userID;
         _directoryUser = [CCUtility getDirectoryActiveUser:self.activeUser activeUrl:self.activeUrl];
         
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
@@ -284,7 +285,7 @@
 {
     id operation;
    
-    operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl];
+    operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:_activeUser withUserID:_activeUserID withPassword:_activePassword withUrl:_activeUrl];
     
     [operation setQueuePriority:metadataNet.priority];
     

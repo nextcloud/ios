@@ -48,6 +48,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var activeAccount: String = ""
     var activeUrl: String = ""
     var activeUser: String = ""
+    var activeUserID: String = ""
     var activePassword: String = ""
     var directoryUser: String = ""
     
@@ -90,6 +91,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             activePassword = record.password
             activeUrl = record.url
             activeUser = record.user
+            activeUserID = record.userID
             directoryUser = CCUtility.getDirectoryActiveUser(activeUser, activeUrl: activeUrl)
             
             if serverUrl == nil {
@@ -224,7 +226,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         metadataNet.serverUrl = self.serverUrl
         metadataNet.selector = selectorReadFolder
         
-        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl)
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withUserID: activeUserID, withPassword: activePassword, withUrl: activeUrl)
         networkingOperationQueue.addOperation(ocNetworking)
         
         hud.visibleIndeterminateHud()
@@ -299,7 +301,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         metadataNet.selector = selectorDownloadThumbnail;
         metadataNet.serverUrl = self.serverUrl
         
-        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withPassword: activePassword, withUrl: activeUrl)
+        let ocNetworking : OCnetworking = OCnetworking.init(delegate: self, metadataNet: metadataNet, withUser: activeUser, withUserID: activeUserID, withPassword: activePassword, withUrl: activeUrl)
         networkingOperationQueue.addOperation(ocNetworking)
     }
 

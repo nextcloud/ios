@@ -30,6 +30,7 @@
     NSString *activePassword;
     NSString *activeUrl;
     NSString *activeUser;
+    NSString *activeUserID;
     NSString *directoryUser;
     
     BOOL _loadingFolder;
@@ -52,6 +53,7 @@
         activePassword = recordAccount.password;
         activeUrl = recordAccount.url;
         activeUser = recordAccount.user;
+        activeUserID = recordAccount.userID;
         directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];
         
     } else {
@@ -251,7 +253,7 @@
 
 - (void)addNetworkingQueue:(CCMetadataNet *)metadataNet
 {
-    OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withPassword:activePassword withUrl:activeUrl];
+    OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
         
     _networkingOperationQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
     [_networkingOperationQueue addOperation:operation];

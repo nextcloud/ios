@@ -34,6 +34,7 @@
 @interface OCnetworking ()
 {
     NSString *_activeUser;
+    NSString *_activeUserID;
     NSString *_activePassword;
     NSString *_activeUrl;
     
@@ -44,7 +45,7 @@
 
 @implementation OCnetworking
 
-- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl
+- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withUserID:(NSString *)withUserID withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl
 {
     self = [super init];
     
@@ -56,6 +57,7 @@
         _metadataNet = [metadataNet copy];
         
         _activeUser = withUser;
+        _activeUserID = withUserID;
         _activePassword = withPassword;
         _activeUrl = withUrl;        
     }

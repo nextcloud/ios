@@ -28,7 +28,6 @@
 
 @interface CCLogin ()
 {
-    UIAlertView *alertView;
     UIView *rootView;
 }
 @end
@@ -226,8 +225,11 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_connection_error_",nil) message:[error localizedDescription] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                    [alertView show];
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                    
+                    [alertController addAction:okAction];
+                    [self presentViewController:alertController animated:YES completion:nil];
                 });
             }
             
@@ -272,7 +274,7 @@
     if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withPassword:self.password.text withUrl:nil];
+    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:nil];
     NSError *error = [ocNet checkServerSync:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV]];
     
     if (!error) {
@@ -286,7 +288,7 @@
             tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
             
             // Setting App active account
-            [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activePassword:tbAccount.password];
+            [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
 
             // Dismiss
             [self.delegate loginSuccess:_loginType];
@@ -300,7 +302,7 @@
             // Read User Profile
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
             metadataNet.action = actionGetUserProfile;
-            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text]];
+            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text]];
         }
         
     } else {
@@ -310,8 +312,11 @@
             NSString *description = [error.userInfo objectForKey:@"NSLocalizedDescription"];
             NSString *message = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil), description];
             
-            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-            [alertView show];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            
+            [alertController addAction:okAction];
+            [self presentViewController:alertController animated:YES completion:nil];
         }
     }
         
@@ -327,8 +332,11 @@
 {
     [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
     
-    alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-    [alertView show];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+    
+    [alertController addAction:okAction];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
@@ -342,9 +350,11 @@
             
             [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
             
-            NSString *message = [NSString stringWithFormat:NSLocalizedString(@"_account_already_exists_", nil), userProfile.id];
-            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-            [alertView show];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:[NSString stringWithFormat:NSLocalizedString(@"_account_already_exists_", nil), userProfile.id] preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            
+            [alertController addAction:okAction];
+            [self presentViewController:alertController animated:YES completion:nil];
             
             return;
         }
@@ -362,7 +372,7 @@
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
         
         // Setting App active account
-        [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activePassword:account.password];
+        [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
     
         // Ok ! Dismiss
         [self.delegate loginSuccess:_loginType];

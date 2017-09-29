@@ -36,6 +36,7 @@
     NSString *_activeAccount;
     NSString *_activePassword;
     NSString *_activeUser;
+    NSString *_activeUserID;
     NSString *_activeUrl;
     NSString *_directoryUser;
 }
@@ -84,6 +85,7 @@
     _activeAccount = tableAccount.account;
     _activePassword = tableAccount.password;
     _activeUser = tableAccount.user;
+    _activeUserID = tableAccount.userID;
     _activeUrl = tableAccount.url;
     _directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
 }

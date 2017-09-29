@@ -54,6 +54,7 @@
 @property (nonatomic, strong) NSString *activeAccount;
 @property (nonatomic, strong) NSString *activeUrl;
 @property (nonatomic, strong) NSString *activeUser;
+@property (nonatomic, strong) NSString *activeUserID;
 @property (nonatomic, strong) NSString *activePassword;
 @property (nonatomic, strong) NSString *directoryUser;
 @property (nonatomic, strong) NSString *activeEmail;
@@ -128,7 +129,7 @@
 - (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType;
 
 // Setting Active Account
-- (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword;
+- (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
 
 // initializations 
 - (void)applicationInitialized;

@@ -79,7 +79,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     if (tableAccount.account == account) {
                     
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activePassword: password)
+                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
                 
                         self.viewController?.dismiss(animated: true, completion: nil)
