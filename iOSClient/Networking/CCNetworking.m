@@ -773,8 +773,8 @@
                 
                 if ([dataUTI isEqualToString:@"public.heic"] && [CCUtility getHeicToJpeg]) {
                     
-                    UIImage *img = [UIImage imageWithData:imageData];
-                    NSData *imageDataJPEG = UIImageJPEGRepresentation(img, 1.0);
+                    UIImage *image = [UIImage imageWithData:imageData];
+                    NSData *imageDataJPEG = UIImageJPEGRepresentation(image, 1.0);
                     NSString *fileNameJPEG = [[metadataNet.fileName lastPathComponent] stringByDeletingPathExtension];
                     metadataNet.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     
