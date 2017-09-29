@@ -771,7 +771,19 @@
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
-                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                if ([dataUTI isEqualToString:@"public.heic"]) {
+                    
+                    UIImage *img = [UIImage imageWithData:imageData];
+                    NSData *imageDataJPEG = UIImageJPEGRepresentation(img, 1.0);
+                    NSString *fileNameJPEG = [[metadataNet.fileName lastPathComponent] stringByDeletingPathExtension];
+                    metadataNet.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
+                    
+                    [imageDataJPEG writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                    
+                } else {
+                    
+                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                }
                 
                 if (error) {
                 
