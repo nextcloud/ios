@@ -176,7 +176,7 @@
 
 #pragma mark - Setting Credentials
 
-- (void) setCredentialsWithUser:(NSString*) user andPassword:(NSString*) password  {
+- (void) setCredentialsWithUser:(NSString*) user andUserID:(NSString *) userID andPassword:(NSString*) password  {
     self.kindOfCredential = credentialNormal;
     self.user = user;
     self.password = password;

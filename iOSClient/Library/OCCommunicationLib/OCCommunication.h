@@ -63,6 +63,7 @@ typedef enum {
 //Private properties
 @property NSInteger kindOfCredential;
 @property (nonatomic, strong) NSString *user;
+@property (nonatomic, strong) NSString *userID;
 @property (nonatomic, strong) NSString *password;
 @property (nonatomic, strong) NSString *userAgent;
 
@@ -121,9 +122,10 @@ typedef enum {
  * Method to set credentials with user and password
  *
  * @param user -> NSString username
+ * @param userID -> NSString userID
  * @param password -> NSString password
  */
-- (void) setCredentialsWithUser:(NSString*) user andPassword:(NSString*) password;
+- (void) setCredentialsWithUser:(NSString*) user andUserID:(NSString *) userID andPassword:(NSString*) password;
 
 
 ///-----------------------------------
