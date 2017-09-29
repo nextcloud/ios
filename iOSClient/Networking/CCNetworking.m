@@ -771,7 +771,7 @@
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
-                if ([dataUTI isEqualToString:@"public.heic"]) {
+                if ([dataUTI isEqualToString:@"public.heic"] && [CCUtility getHeicToJpeg]) {
                     
                     UIImage *img = [UIImage imageWithData:imageData];
                     NSData *imageDataJPEG = UIImageJPEGRepresentation(img, 1.0);

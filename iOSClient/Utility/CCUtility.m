@@ -221,6 +221,12 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
++ (void)setHeicToJpeg:(BOOL)show
+{
+    NSString *sSet = (show) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"heicToJpeg" service:k_serviceShareKeyChain];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -413,6 +419,11 @@
 + (BOOL)getShowHiddenFiles
 {
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (BOOL)getHeicToJpeg
+{
+    return [[UICKeyChainStore stringForKey:@"heicToJpeg" service:k_serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------

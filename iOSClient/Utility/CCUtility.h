@@ -91,6 +91,8 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
++ (void)setHeicToJpeg:(BOOL)show;
+
 // GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
@@ -134,6 +136,8 @@
 + (BOOL)getActivityVerboseHigh;
 
 + (BOOL)getShowHiddenFiles;
+
++ (BOOL)getHeicToJpeg;
 
 // ===== Varius =====
 
