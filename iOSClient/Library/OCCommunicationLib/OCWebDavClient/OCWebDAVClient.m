@@ -284,11 +284,11 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     if (dateLastModified.length > 0) {
         
-         body = [NSString stringWithFormat:@"%@</d:prop></d:select><d:from><d:scope><d:href>/files/%@%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", body, user, folder, fileName];
+         body = [NSString stringWithFormat:@"%@</d:prop></d:select><d:from><d:scope><d:href>/files/%@%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", body, userID, folder, fileName];
         
     } else {
         
-         body = [NSString stringWithFormat:@"%@</d:prop></d:select><d:from><d:scope><d:href>/files/%@%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", body, user, folder, fileName];
+         body = [NSString stringWithFormat:@"%@</d:prop></d:select><d:from><d:scope><d:href>/files/%@%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", body, userID, folder, fileName];
     }
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
@@ -328,7 +328,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     //REPORT remote.php/dav/files/user/path/to/folder
 
-    path = [NSString stringWithFormat:@"%@/files/%@%@", path, user, folder];
+    path = [NSString stringWithFormat:@"%@/files/%@%@", path, userID, folder];
     
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     

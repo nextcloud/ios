@@ -179,6 +179,7 @@
 - (void) setCredentialsWithUser:(NSString*) user andUserID:(NSString *) userID andPassword:(NSString*) password  {
     self.kindOfCredential = credentialNormal;
     self.user = user;
+    self.userID = userID;
     self.password = password;
 }
 
@@ -663,7 +664,7 @@
         token = @"no token";
     }
     
-    path = [NSString stringWithFormat:@"%@/files/%@/%@", path, _user, filePath];
+    path = [NSString stringWithFormat:@"%@/files/%@/%@", path, _userID, filePath];
     path = [path encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
