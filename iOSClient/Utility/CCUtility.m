@@ -221,10 +221,10 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
-+ (void)setHeicToJpeg:(BOOL)show
++ (void)setFormatSaveAutoUploadCompatibility:(BOOL)show
 {
     NSString *sSet = (show) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"heicToJpeg" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sSet forKey:@"formatSaveAutoUploadCompatibility" service:k_serviceShareKeyChain];
 }
 
 #pragma ------------------------------ GET
@@ -421,9 +421,9 @@
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (BOOL)getHeicToJpeg
++ (BOOL)getFormatSaveAutoUploadCompatibility
 {
-    return [[UICKeyChainStore stringForKey:@"heicToJpeg" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:@"formatSaveAutoUploadCompatibility" service:k_serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------

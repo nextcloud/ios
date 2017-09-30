@@ -771,7 +771,7 @@
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
-                if ([dataUTI isEqualToString:@"public.heic"] && [CCUtility getHeicToJpeg]) {
+                if ([dataUTI isEqualToString:@"public.heic"] && [CCUtility getFormatSaveAutoUploadCompatibility]) {
                     
                     UIImage *image = [UIImage imageWithData:imageData];
                     NSData *imageDataJPEG = UIImageJPEGRepresentation(image, 1.0);
@@ -820,7 +820,7 @@
                 if (exportSession) {
                     
                     exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]];
-                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    //exportSession.outputFileType = AVFileTypeQuickTimeMovie;
                     
                     [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         

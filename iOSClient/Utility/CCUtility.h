@@ -91,7 +91,7 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
-+ (void)setHeicToJpeg:(BOOL)show;
++ (void)setFormatSaveAutoUploadCompatibility:(BOOL)show;
 
 // GET
 
@@ -137,7 +137,7 @@
 
 + (BOOL)getShowHiddenFiles;
 
-+ (BOOL)getHeicToJpeg;
++ (BOOL)getFormatSaveAutoUploadCompatibility;
 
 // ===== Varius =====
 
