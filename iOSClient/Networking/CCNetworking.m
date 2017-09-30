@@ -771,7 +771,9 @@
             
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
-                if ([dataUTI isEqualToString:@"public.heic"] && [CCUtility getFormatSaveAutoUploadCompatibility]) {
+                tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+
+                if ([dataUTI isEqualToString:@"public.heic"] && tableAccount.autoUploadFormatCompatibility) {
                     
                     UIImage *image = [UIImage imageWithData:imageData];
                     NSData *imageDataJPEG = UIImageJPEGRepresentation(image, 1.0);

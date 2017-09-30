@@ -91,8 +91,6 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
-+ (void)setFormatSaveAutoUploadCompatibility:(BOOL)show;
-
 // GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
@@ -136,8 +134,6 @@
 + (BOOL)getActivityVerboseHigh;
 
 + (BOOL)getShowHiddenFiles;
-
-+ (BOOL)getFormatSaveAutoUploadCompatibility;
 
 // ===== Varius =====
 

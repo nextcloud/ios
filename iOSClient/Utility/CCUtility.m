@@ -221,12 +221,6 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
-+ (void)setFormatSaveAutoUploadCompatibility:(BOOL)show
-{
-    NSString *sSet = (show) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"formatSaveAutoUploadCompatibility" service:k_serviceShareKeyChain];
-}
-
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -419,11 +413,6 @@
 + (BOOL)getShowHiddenFiles
 {
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
-}
-
-+ (BOOL)getFormatSaveAutoUploadCompatibility
-{
-    return [[UICKeyChainStore stringForKey:@"formatSaveAutoUploadCompatibility" service:k_serviceShareKeyChain] boolValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------
