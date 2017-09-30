@@ -179,7 +179,7 @@
 "_autoupload_filenamemask_"         = "Change filename mask";
 "_autoupload_filenamemask_footer_"  = "Change the automatic filename mask";
 "_autoupload_format_compatibility_" = "Most Compatible";
-"_autoupload_format_compatibility_footer_" = "Most compatible will always use JPEG to save images";
+"_autoupload_format_compatibility_footer_" = "Most compatible will always use JPEG to save photos";
 
 // Manage Crypto Cloud
 
