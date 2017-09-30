@@ -198,7 +198,7 @@
     
     if (@available(iOS 11, *)) {
         self.navigationItem.searchController = self.searchController;
-        self.navigationItem.hidesSearchBarWhenScrolling = false;
+        self.navigationItem.hidesSearchBarWhenScrolling = true;
         self.navigationItem.searchController.searchBar.tintColor = [UIColor whiteColor];
         
         UITextField *textField = [self.searchController.searchBar valueForKey:@"searchField"];
