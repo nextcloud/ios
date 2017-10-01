@@ -275,8 +275,6 @@ cleanup:
 
 NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVectorData, CCOperation operation)
 {
-    size_t operationSize = contentData.length + kCCBlockSizeAES128;
-    //void *operationBytes = malloc(operationSize);
     NSMutableData *dataOut = [NSMutableData dataWithLength:contentData.length];
 
     // setup key
@@ -310,7 +308,6 @@ NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVector
         return [NSData dataWithBytesNoCopy:dataOut.bytes length:dataOut.length];
     }
     
-    //free(operationBytes);
     return nil;
 }
 
