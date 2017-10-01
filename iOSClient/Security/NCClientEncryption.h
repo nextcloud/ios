@@ -32,6 +32,5 @@
 - (void)generateCertificateX509WithDirectoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished;
 - (NSString *)createSHA512:(NSString *)string;
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
-- (void)decryptMetadata;
 
 @end

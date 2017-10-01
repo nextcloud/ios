@@ -288,34 +288,6 @@ cleanup:
     // [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
 }
 
-- (void)decryptMetadata
-{
-    //NSData *data = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
-    
-    NSData *data = [@"I love Nextcloud Android and iOS" dataUsingEncoding:NSUTF8StringEncoding];
-    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
-    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
-    
-    // Encrypt
-    NSData *encryptedData = cipherOperation(data, keyData, initVectorData, kCCEncrypt);
-    NSString *base64Encoded = [encryptedData base64EncodedStringWithOptions:0];
-    
-    NSLog(@"%@", base64Encoded);
-    
-    // Decrypt
-    NSData *decryptedData = cipherOperation(data, keyData, initVectorData, kCCDecrypt);
-    
-    if (decryptedData != nil) {
-        NSString *base64String = [decryptedData base64EncodedStringWithOptions:0];
-        if ([base64String isEqualToString:base64Encoded]) {
-            NSLog(@"YAY IT WORKED");
-        }
-    }
-    //if (decryptedData != nil)
-    // [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
-}
-
-
 NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVectorData, CCOperation operation)
 {
     size_t operationSize = contentData.length + kCCBlockSizeAES128;
