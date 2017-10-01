@@ -251,9 +251,9 @@ cleanup:
 
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
 {
-    //NSData *data = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
+    NSData *data = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
     
-    NSData *data = [@"I love Nextcloud Android and iOS" dataUsingEncoding:NSUTF8StringEncoding];
+    //NSData *data = [@"I love Nextcloud Android and iOS" dataUsingEncoding:NSUTF8StringEncoding];
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
     
