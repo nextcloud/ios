@@ -957,32 +957,32 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 
 - (CGRect)frameForToolbarAtOrientation:(UIInterfaceOrientation)orientation {
     
-    CGFloat _safeAreaBottom = 0;
+    CGFloat safeAreaBottom = 0;
     CGFloat height = 49;
     
     // iOS 11 safeArea
     if (@available(iOS 11, *)) {
-        _safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     } 
 
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && UIInterfaceOrientationIsLandscape(orientation))
         height = 39;
     
-    return CGRectIntegral(CGRectMake(0, self.view.bounds.size.height - height - _safeAreaBottom, self.view.bounds.size.width, height ));
+    return CGRectIntegral(CGRectMake(0, self.view.bounds.size.height - height - safeAreaBottom, self.view.bounds.size.width, height ));
 }
 
 - (CGRect)frameForCaptionView:(MWCaptionView *)captionView atIndex:(NSUInteger)index {
     
     // iOS 11 safeArea
-    CGFloat _safeAreaBottom = 0;
+    CGFloat safeAreaBottom = 0;
     if (@available(iOS 11, *)) {
-        _safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
 
     CGRect pageFrame = [self frameForPageAtIndex:index];
     CGSize captionSize = [captionView sizeThatFits:CGSizeMake(pageFrame.size.width, 0)];
     CGRect captionFrame = CGRectMake(pageFrame.origin.x,
-                                     pageFrame.size.height - captionSize.height - (_toolbar.superview?_toolbar.frame.size.height:0) - _safeAreaBottom,
+                                     pageFrame.size.height - captionSize.height - (_toolbar.superview?_toolbar.frame.size.height:0) - safeAreaBottom,
                                      pageFrame.size.width,
                                      captionSize.height);
     return CGRectIntegral(captionFrame);

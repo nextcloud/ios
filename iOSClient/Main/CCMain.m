@@ -3040,7 +3040,8 @@
     _reMenuBackgroundView.frame = CGRectMake(0, navigationBarH, self.view.frame.size.width, self.view.frame.size.height);
         
     [UIView animateWithDuration:0.2 animations:^{
-                
+        
+        CGFloat safeAreaBottom = 0;
         float height = (self.view.frame.size.height + navigationBarH) - (menu.menuView.frame.size.height - self.navigationController.navigationBar.frame.size.height + 3);
         
         if (height < self.tabBarController.tabBar.frame.size.height)
@@ -3048,7 +3049,14 @@
         
         _reMenuBackgroundView.frame = CGRectMake(0, self.view.frame.size.height + navigationBarH, self.view.frame.size.width, - height);
         
-        [self.tabBarController.view addSubview:_reMenuBackgroundView];
+        if (@available(iOS 11, *)) {
+            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        }
+        
+        CGFloat validStartY = self.view.frame.size.height - (self.tabBarController.tabBar.frame.size.height + safeAreaBottom) ;
+        
+        if (_reMenuBackgroundView.frame.origin.y < validStartY)
+            [self.tabBarController.view addSubview:_reMenuBackgroundView];
     }];
 }
 

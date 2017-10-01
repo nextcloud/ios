@@ -182,13 +182,13 @@
 
 - (void)createToolbar
 {
-    CGFloat _safeAreaBottom = 0;
+    CGFloat safeAreaBottom = 0;
     
     if (@available(iOS 11, *)) {
-        _safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
 
-    _toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT - _safeAreaBottom, self.view.bounds.size.width, TOOLBAR_HEIGHT)];
+    _toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom, self.view.bounds.size.width, TOOLBAR_HEIGHT)];
     
     UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
@@ -271,10 +271,10 @@
 - (void)viewDocument
 {
     NSString *fileName;
-    CGFloat _safeAreaBottom = 0;
+    CGFloat safeAreaBottom = 0;
     
     if (@available(iOS 11, *)) {
-        _safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
     if (_sourceDirectoryLocal) {
@@ -302,7 +302,7 @@
     WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
     wkConfig.preferences = wkPreferences;
     
-    self.webView = [[WKWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - _safeAreaBottom)) configuration:wkConfig];
+    self.webView = [[WKWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom)) configuration:wkConfig];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [self.webView setBackgroundColor:[UIColor whiteColor]];
@@ -913,17 +913,17 @@
 - (void)readerPDF:(NSString *)fileName password:(NSString *)password
 {
     ReaderDocument *documentPDF = [ReaderDocument withDocumentFilePath:fileName password:password];
-    CGFloat _safeAreaBottom = 0;
+    CGFloat safeAreaBottom = 0;
     
     if (@available(iOS 11, *)) {
-        _safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
     if (documentPDF != nil) {
         
         self.readerPDFViewController = [[ReaderViewController alloc] initWithReaderDocument:documentPDF];
         self.readerPDFViewController.delegate = self;
-        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - _safeAreaBottom);
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
         [self.readerPDFViewController updateContentViews];
 
         [self addChildViewController:self.readerPDFViewController];
@@ -942,23 +942,23 @@
 
 - (void)handleSingleTapReader
 {
-    UILayoutGuide *_layoutGuide;
-    CGFloat _safeAreaTop = 0;
-    CGFloat _safeAreaBottom = 0;
+    UILayoutGuide *layoutGuide;
+    CGFloat safeAreaTop = 0;
+    CGFloat safeAreaBottom = 0;
     
     if (@available(iOS 11, *)) {
-        _layoutGuide = [UIApplication sharedApplication].delegate.window.safeAreaLayoutGuide;
-        _safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
-        _safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+        layoutGuide = [UIApplication sharedApplication].delegate.window.safeAreaLayoutGuide;
+        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
     self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
     _toolbar.hidden = !_toolbar.isHidden;
     
     if (_toolbar.isHidden) {
-        self.readerPDFViewController.view.frame = CGRectMake(0, _safeAreaTop, self.view.bounds.size.width, self.view.bounds.size.height - _safeAreaTop - _safeAreaBottom);
+        self.readerPDFViewController.view.frame = CGRectMake(0, safeAreaTop, self.view.bounds.size.width, self.view.bounds.size.height - safeAreaTop - safeAreaBottom);
     } else {
-        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - _safeAreaBottom);
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
     }
     [self.readerPDFViewController updateContentViews];
 }
