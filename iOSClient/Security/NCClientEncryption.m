@@ -267,7 +267,7 @@ cleanup:
     NSData *decryptedData = cipherOperation(data, keyData, initVectorData, kCCDecrypt);
     
     if (decryptedData != nil) {
-        [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileName] atomically:YES];
+        [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID] atomically:YES];
     }
 }
 
