@@ -603,6 +603,18 @@
     }
 }
 
+/*
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    UIBarStyle barStyle = self.navigationController.navigationBar.barStyle;
+    
+    if (barStyle == UIStatusBarStyleLightContent)
+        return UIStatusBarStyleDefault;
+    else
+        return UIStatusBarStyleLightContent;
+}
+*/
+
 - (void)setUINavigationBarDefault
 {
     [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
@@ -1906,10 +1918,7 @@
 
 -(void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
-    //UIView *statusBar=[[UIApplication sharedApplication] valueForKey:@"statusBar"];
-    //statusBar.backgroundColor = [UIColor whiteColor];
-    
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    //[self setNeedsStatusBarAppearanceUpdate];
 
     _isSearchMode = YES;
     [self deleteRefreshControl];
@@ -1992,7 +2001,7 @@
         [self reloadDatasource];
     }
     
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    //[self setNeedsStatusBarAppearanceUpdate];
 }
 
 #pragma mark -

@@ -45,10 +45,13 @@
     return self;
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    
     if (self.delegate && [self.delegate respondsToSelector:@selector(introWillFinish:wasSkipped:)])
         [self.delegate introWillFinish:introView wasSkipped:wasSkipped];
 }
@@ -167,8 +170,6 @@
     [intro setDelegate:self];
     [intro setPages:@[page1,page11,page2,page3]];
     [intro showInView:self.rootView animateDuration:duration];
-    
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
 }
 
 @end
