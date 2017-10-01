@@ -822,7 +822,7 @@
                 if (exportSession) {
                     
                     exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]];
-                    //exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
                     
                     [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         
