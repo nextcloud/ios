@@ -267,10 +267,8 @@ cleanup:
     NSData *decryptedData = cipherOperation(data, keyData, initVectorData, kCCDecrypt);
     
     if (decryptedData != nil) {
-        NSLog(@"MARIO YAY");
+        [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
     }
-    //if (decryptedData != nil)
-    // [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
 }
 
 NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVectorData, CCOperation operation)
