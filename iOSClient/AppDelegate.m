@@ -61,6 +61,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    
+    [[NCClientEncryption sharedManager] decryptMetadata];
+
     // Brand
     if ([NCBrandOptions sharedInstance].use_firebase) {
     

@@ -660,6 +660,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		085FEBC51F8150F7002CF1E1 /* CommonCryptorSPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonCryptorSPI.h; sourceTree = "<group>"; };
 		08DC3BD41E64727E00F036D3 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
@@ -3003,6 +3004,7 @@
 				F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */,
 				F7F801001D98205A007537BC /* CCCertificate.h */,
 				F7F801011D98205A007537BC /* CCCertificate.m */,
+				085FEBC51F8150F7002CF1E1 /* CommonCryptorSPI.h */,
 			);
 			path = Security;
 			sourceTree = "<group>";

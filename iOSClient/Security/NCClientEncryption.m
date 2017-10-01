@@ -26,8 +26,8 @@
 
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
+#import "CommonCryptorSPI.h"
 #import <Security/Security.h>
-
 
 #import <openssl/x509.h>
 #import <openssl/bio.h>
@@ -38,6 +38,21 @@
 #import <openssl/ssl.h>
 #import <openssl/err.h>
 #import <openssl/bn.h>
+
+CCCryptorStatus CCCryptorGCM(
+                             CCOperation     op,             /* kCCEncrypt, kCCDecrypt */
+                             CCAlgorithm     alg,
+                             const void      *key,           /* raw key material */
+                             size_t          keyLength,
+                             const void      *iv,
+                             size_t          ivLen,
+                             const void      *aData,
+                             size_t          aDataLen,
+                             const void      *dataIn,
+                             size_t          dataInLength,
+                             void            *dataOut,
+                             const void      *tag,
+                             size_t          *tagLength);
 
 #define NSMakeError(description) [NSError errorWithDomain:@"com.nextcloud.nextcloudiOS" code:-1 userInfo:@{NSLocalizedDescriptionKey: description}];
 @implementation NCClientEncryption
@@ -264,18 +279,49 @@ cleanup:
     NSLog(@"%@", base64Encoded);
     
     // Decrypt
-    //NSData *decryptedData = cipherOperation(data, keyData, initVectorData, kCCDecrypt);
-
+    NSData *decryptedData = cipherOperation(data, keyData, initVectorData, kCCDecrypt);
+    
+    if (decryptedData != nil) {
+        NSLog(@"MARIO YAY");
+    }
     //if (decryptedData != nil)
     // [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
 }
 
+- (void)decryptMetadata
+{
+    //NSData *data = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
+    
+    NSData *data = [@"I love Nextcloud Android and iOS" dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
+    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
+    
+    // Encrypt
+    NSData *encryptedData = cipherOperation(data, keyData, initVectorData, kCCEncrypt);
+    NSString *base64Encoded = [encryptedData base64EncodedStringWithOptions:0];
+    
+    NSLog(@"%@", base64Encoded);
+    
+    // Decrypt
+    NSData *decryptedData = cipherOperation(data, keyData, initVectorData, kCCDecrypt);
+    
+    if (decryptedData != nil) {
+        NSString *base64String = [decryptedData base64EncodedStringWithOptions:0];
+        if ([base64String isEqualToString:base64Encoded]) {
+            NSLog(@"YAY IT WORKED");
+        }
+    }
+    //if (decryptedData != nil)
+    // [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
+}
+
+
 NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVectorData, CCOperation operation)
 {
     size_t operationSize = contentData.length + kCCBlockSizeAES128;
-    void *operationBytes = malloc(operationSize);
-    size_t actualOutSize = 0;
-    
+    //void *operationBytes = malloc(operationSize);
+    NSMutableData *dataOut = [NSMutableData dataWithLength:contentData.length];
+
     // setup key
     unsigned char cKey[kCCKeySizeAES128];
     bzero(cKey, sizeof(cKey));
@@ -286,23 +332,28 @@ NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVector
     bzero(cIv, kCCBlockSizeAES128);
     [initVectorData getBytes:cIv length:kCCBlockSizeAES128];
     
-    CCCryptorStatus cryptStatus = CCCrypt(operation,
+    NSMutableData *tag = [NSMutableData dataWithLength:kCCBlockSizeAES128];
+    size_t  tagLength = kCCBlockSizeAES128;
+
+    CCCryptorStatus cryptStatus = CCCryptorGCM(operation,
                                           kCCAlgorithmAES128,
-                                          kCCOptionPKCS7Padding,
                                           cKey,
                                           kCCKeySizeAES128,
                                           cIv,
+                                          kCCBlockSizeAES128,
+                                          nil,
+                                          0,
                                           contentData.bytes,
                                           contentData.length,
-                                          operationBytes,
-                                          operationSize,
-                                          &actualOutSize);
+                                          dataOut.mutableBytes,
+                                          tag.bytes,
+                                          &tagLength);
     
     if (cryptStatus == kCCSuccess) {
-        return [NSData dataWithBytesNoCopy:operationBytes length:actualOutSize];
+        return [NSData dataWithBytesNoCopy:dataOut.bytes length:dataOut.length];
     }
     
-    free(operationBytes);
+    //free(operationBytes);
     return nil;
 }
 
