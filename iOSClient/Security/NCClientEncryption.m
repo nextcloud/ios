@@ -251,22 +251,22 @@ cleanup:
 
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
 {
-    NSData *data = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
-    
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
     
     // Encrypt
-    //NSData *encryptedData = cipherOperation(data, keyData, initVectorData, kCCEncrypt);
-    //NSString *base64Encoded = [encryptedData base64EncodedStringWithOptions:0];
-    
-    //NSLog(@"%@", base64Encoded);
+    NSData *dataEncrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/iosencrypted.jpg", activeUrl]];
+    NSData *encryptedData = cipherOperation(dataEncrypt, keyData, initVectorData, kCCEncrypt);
+    if (encryptedData != nil)
+        [encryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"crypted.dms"] atomically:YES];
     
     // Decrypt
-    NSData *decryptedData = cipherOperation(data, keyData, initVectorData, kCCDecrypt);
+    //NSData *dataDecrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/crypted.dms", activeUrl]];
+    //NSData *dataDecrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
+    //NSData *decryptedData = cipherOperation(dataDecrypt, keyData, initVectorData, kCCDecrypt);
 
-    if (decryptedData != nil)
-        [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
+    //if (decryptedData != nil)
+    //    [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
 }
 
 NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVectorData, CCOperation operation)
