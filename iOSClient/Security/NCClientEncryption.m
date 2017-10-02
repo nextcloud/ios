@@ -267,7 +267,6 @@ cleanup:
 
     if (decryptedData != nil)
         [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
-    
 }
 
 NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVectorData, CCOperation operation)
@@ -284,8 +283,9 @@ NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVector
     bzero(cIv, kCCBlockSizeAES128);
     [initVectorData getBytes:cIv length:kCCBlockSizeAES128];
     
+    // tag
     NSMutableData *tag = [NSMutableData dataWithLength:kCCBlockSizeAES128];
-    size_t  tagLength = kCCBlockSizeAES128;
+    size_t tagLength = kCCBlockSizeAES128;
     
     CCCryptorStatus cryptStatus = CCCryptorGCM(operation,
                                                kCCAlgorithmAES128,
