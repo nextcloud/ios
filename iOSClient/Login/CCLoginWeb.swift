@@ -10,6 +10,7 @@ import UIKit
 
 @objc protocol CCLoginDelegateWeb: class {
     func loginSuccess(_: NSInteger)
+    func loginDisappear()
 }
 
 public class CCLoginWeb: UIViewController {
@@ -91,6 +92,12 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
 
     public func didFinishLoading(success: Bool, url: URL) {
         print("Finished loading. Success: \(success).")
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        self.delegate?.loginDisappear()
     }
 }
 
