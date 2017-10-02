@@ -4557,7 +4557,7 @@
     titleLabel.text = titleSection;
     titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
-    [visualEffectView addSubview:titleLabel];
+    [visualEffectView.contentView addSubview:titleLabel];
     
     // Elements
     UILabel *elementLabel= [[UILabel alloc]initWithFrame:CGRectMake(shift, -12, 0, 44)];
@@ -4574,7 +4574,7 @@
     if (rowsCount == 1) elementLabel.text = [NSString stringWithFormat:@"%lu %@", (unsigned long)rowsCount,  NSLocalizedString(@"_element_",nil)];
     if (rowsCount > 1) elementLabel.text = [NSString stringWithFormat:@"%lu %@", (unsigned long)rowsCount,  NSLocalizedString(@"_elements_",nil)];
     
-    [visualEffectView addSubview:elementLabel];
+    [visualEffectView.contentView addSubview:elementLabel];
     
     return visualEffectView;
 }
