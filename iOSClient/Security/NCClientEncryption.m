@@ -27,7 +27,7 @@
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <Security/Security.h>
-
+#import "CommonCryptorSPI.h"
 
 #import <openssl/x509.h>
 #import <openssl/bio.h>
@@ -251,30 +251,27 @@ cleanup:
 
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
 {
-    //NSData *data = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
+    NSData *data = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
     
-    NSData *data = [@"I love Nextcloud Android and iOS" dataUsingEncoding:NSUTF8StringEncoding];
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
     
     // Encrypt
-    NSData *encryptedData = cipherOperation(data, keyData, initVectorData, kCCEncrypt);
-    NSString *base64Encoded = [encryptedData base64EncodedStringWithOptions:0];
+    //NSData *encryptedData = cipherOperation(data, keyData, initVectorData, kCCEncrypt);
+    //NSString *base64Encoded = [encryptedData base64EncodedStringWithOptions:0];
     
-    NSLog(@"%@", base64Encoded);
+    //NSLog(@"%@", base64Encoded);
     
     // Decrypt
-    //NSData *decryptedData = cipherOperation(data, keyData, initVectorData, kCCDecrypt);
+    NSData *decryptedData = cipherOperation(data, keyData, initVectorData, kCCDecrypt);
 
-    //if (decryptedData != nil)
-    // [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
+    if (decryptedData != nil)
+        [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
 }
 
 NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVectorData, CCOperation operation)
 {
-    size_t operationSize = contentData.length + kCCBlockSizeAES128;
-    void *operationBytes = malloc(operationSize);
-    size_t actualOutSize = 0;
+    NSMutableData *dataOut = [NSMutableData dataWithLength:contentData.length];
     
     // setup key
     unsigned char cKey[kCCKeySizeAES128];
@@ -286,23 +283,27 @@ NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVector
     bzero(cIv, kCCBlockSizeAES128);
     [initVectorData getBytes:cIv length:kCCBlockSizeAES128];
     
-    CCCryptorStatus cryptStatus = CCCrypt(operation,
-                                          kCCAlgorithmAES128,
-                                          kCCOptionPKCS7Padding,
-                                          cKey,
-                                          kCCKeySizeAES128,
-                                          cIv,
-                                          contentData.bytes,
-                                          contentData.length,
-                                          operationBytes,
-                                          operationSize,
-                                          &actualOutSize);
+    NSMutableData *tag = [NSMutableData dataWithLength:kCCBlockSizeAES128];
+    size_t  tagLength = kCCBlockSizeAES128;
+    
+    CCCryptorStatus cryptStatus = CCCryptorGCM(operation,
+                                               kCCAlgorithmAES128,
+                                               cKey,
+                                               kCCKeySizeAES128,
+                                               cIv,
+                                               kCCBlockSizeAES128,
+                                               nil,
+                                               0,
+                                               contentData.bytes,
+                                               contentData.length,
+                                               dataOut.mutableBytes,
+                                               tag.bytes,
+                                               &tagLength);
     
     if (cryptStatus == kCCSuccess) {
-        return [NSData dataWithBytesNoCopy:operationBytes length:actualOutSize];
+        return [NSData dataWithBytesNoCopy:(void *)dataOut.bytes length:dataOut.length];
     }
     
-    free(operationBytes);
     return nil;
 }
 
