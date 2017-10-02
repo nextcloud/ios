@@ -937,35 +937,10 @@
 #pragma mark ===== Change Password =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void) loginSuccess:(NSInteger)loginType
+- (void)loginSuccess:(NSInteger)loginType
 {
     [self readFolder:_serverUrl];
 }
-
-/*
-- (void)changePasswordAccount
-{
-    // Brand
-    if ([NCBrandOptions sharedInstance].use_login_web) {
-    
-        _loginWeb = [CCLoginWeb new];
-        _loginWeb.delegate = self;
-        _loginWeb.loginType = loginModifyPasswordUser;
-    
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            [_loginWeb presentModalWithDefaultTheme:self];
-        });
-        
-    } else {
-        
-        _loginVC = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-        _loginVC.delegate = self;
-        _loginVC.loginType = loginModifyPasswordUser;
-    
-        [self presentViewController:_loginVC animated:YES completion:nil];
-    }
-}
-*/
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
@@ -1153,6 +1128,10 @@
 
 - (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+
     NSString *error = [NSString stringWithFormat:@"Get Capabilities failure error %lu, %@", (long)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
@@ -1266,6 +1245,11 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Download Thumbnail Delegate ====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)downloadThumbnailFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    NSLog(@"[LOG] Download Thumbnail Failure error %lu, %@", (long)errorCode, message);
+}
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
@@ -1676,10 +1660,9 @@
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // Read Folder
-    if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
-        //[self readFolderWithForced:NO serverUrl:metadataNet.serverUrl];
-    }
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
     
     // UploadFile
     if ([metadataNet.selector isEqualToString:selectorReadFileUploadFile]) {
@@ -1756,8 +1739,9 @@
 
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // verify active user
-    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
     
     _loadingFolder = NO;
     [self tableViewReloadData];
@@ -1766,6 +1750,8 @@
         
     [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     
+    // verify active user
+    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     if (message && [record.account isEqualToString:metadataNet.account])
         [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
@@ -1973,6 +1959,10 @@
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
     if (message && errorCode != kOCErrorServerUnauthorized)
         [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
@@ -2011,6 +2001,10 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+
     NSLog(@"[LOG] Delete File failure error %lu, %@", (long)errorCode, message);
 
     [self deleteFileOrFolderSuccess:metadataNet];
@@ -2277,6 +2271,10 @@
 
 - (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+
     if (message && errorCode != kOCErrorServerUnauthorized)
         [app messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
@@ -2647,6 +2645,10 @@
 {
     [_hud hideHud];
 
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+
     if (errorCode != kOCErrorServerUnauthorized)
         [app messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 
@@ -2738,6 +2740,10 @@
 {
     [_hud hideHud];
     
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+
     if (errorCode != kOCErrorServerUnauthorized)
         [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
@@ -2849,6 +2855,10 @@
 
 - (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+
     NSLog(@"[LOG] Setting Favorite failure error %lu, %@", (long)errorCode, message);
 }
 

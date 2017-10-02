@@ -291,7 +291,9 @@
             [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
 
             // Dismiss
-            [self.delegate loginSuccess:_loginType];
+            if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
+                [self.delegate loginSuccess:_loginType];
+            
             [self dismissViewControllerAnimated:YES completion:nil];
             
         } else {
@@ -375,7 +377,8 @@
         [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
     
         // Ok ! Dismiss
-        [self.delegate loginSuccess:_loginType];
+        if ([self.delegate respondsToSelector:@selector(loginSuccess:)])        
+            [self.delegate loginSuccess:_loginType];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [self dismissViewControllerAnimated:YES completion:nil];

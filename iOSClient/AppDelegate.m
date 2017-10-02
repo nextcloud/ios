@@ -347,35 +347,36 @@
 
 - (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType
 {
-    if ([NCBrandOptions sharedInstance].use_login_web) {
-        
-        if (!_activeLoginWeb.isViewLoaded || !_activeLoginWeb.view.window) {
-        
-            _activeLoginWeb = [CCLoginWeb new];
-            _activeLoginWeb.delegate = delegate;
-            _activeLoginWeb.loginType = loginType;
-        
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [_activeLoginWeb presentModalWithDefaultTheme:delegate];
-            });
-        }
-        
-    } else {
-        
-        if (!_activeLogin.isViewLoaded || !_activeLogin.view.window) {
+    @synchronized (self) {
 
-            _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-            _activeLogin.delegate = delegate;
-            _activeLogin.loginType = loginType;
+        if ([NCBrandOptions sharedInstance].use_login_web) {
         
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [self.window makeKeyAndVisible];
-                [self.window.rootViewController presentViewController:_activeLogin animated:YES completion:nil];
-            });
+            if (!_activeLoginWeb.view.window) {
+        
+                _activeLoginWeb = [CCLoginWeb new];
+                _activeLoginWeb.delegate = delegate;
+                _activeLoginWeb.loginType = loginType;
+        
+                dispatch_async(dispatch_get_main_queue(), ^ {
+                    [_activeLoginWeb presentModalWithDefaultTheme:delegate];
+                });
+            }
+        
+        } else {
+        
+            if (!_activeLogin.view.window) {
+
+                _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+                _activeLogin.delegate = delegate;
+                _activeLogin.loginType = loginType;
+        
+                dispatch_async(dispatch_get_main_queue(), ^ {
+                    [delegate presentViewController:_activeLogin animated:YES completion:nil];
+                });
+            }
         }
     }
 }
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Setting Active Account for all APP =====
