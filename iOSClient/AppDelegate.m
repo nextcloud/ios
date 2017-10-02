@@ -364,7 +364,7 @@
         
         } else {
         
-            if (!_activeLogin.view.window) {
+            if (_activeLogin == nil) {
 
                 _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
                 _activeLogin.delegate = delegate;

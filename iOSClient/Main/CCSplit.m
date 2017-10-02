@@ -126,13 +126,23 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== newAccount =====
+#pragma mark === Delegate Login ===
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)loginSuccess:(NSInteger)loginType
 {
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
+
+- (void)loginDisappear
+{
+    app.activeLogin = nil;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== newAccount =====
+#pragma --------------------------------------------------------------------------------------------
+
 
 - (void)newAccount
 {

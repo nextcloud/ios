@@ -30,6 +30,7 @@
 @protocol CCLoginDelegate <NSObject>
 
 - (void) loginSuccess:(NSInteger)loginType;
+- (void) loginDisappear;
 
 @end
 

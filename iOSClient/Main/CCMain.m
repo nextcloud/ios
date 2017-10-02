@@ -934,12 +934,17 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Change Password =====
+#pragma mark === Delegate Login ===
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)loginSuccess:(NSInteger)loginType
 {
     [self readFolder:_serverUrl];
+}
+
+- (void)loginDisappear
+{
+    app.activeLogin = nil;
 }
 
 #pragma mark -

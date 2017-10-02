@@ -129,6 +129,15 @@
     [super viewDidAppear:animated];
 }
 
+//
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    if ([self.delegate respondsToSelector:@selector(loginDisappear)])
+        [self.delegate loginDisappear];
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];

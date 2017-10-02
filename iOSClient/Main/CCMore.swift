@@ -381,12 +381,16 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         self.navigationController?.pushViewController(controller, animated: true)
     }
-
+    
     func loginSuccess(_ loginType: NSInteger) {
         
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil)
         
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))
+    }
+    
+    func loginDisappear() {
+        
     }
 }
 

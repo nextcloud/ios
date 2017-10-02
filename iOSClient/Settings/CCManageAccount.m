@@ -191,6 +191,11 @@
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 
+- (void)loginDisappear
+{
+    app.activeLogin = nil;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Add Account ===
 #pragma --------------------------------------------------------------------------------------------
