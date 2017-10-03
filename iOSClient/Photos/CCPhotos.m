@@ -102,6 +102,26 @@
     [self.collectionView reloadData];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    // Before rotation
+    
+    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
+            
+            // Portrait
+            
+        } else {
+            
+            // Landscape
+        }
+        
+    }];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Gestione Grafica Window =====
 #pragma --------------------------------------------------------------------------------------------
