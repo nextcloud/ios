@@ -55,7 +55,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
         if #available(iOS 11.0, *) {
-            tableView.contentInsetAdjustmentBehavior = .never
+            //tableView.contentInsetAdjustmentBehavior = .never
         }
         
         themingBackground.image = UIImage.init(named: "themingBackground")
