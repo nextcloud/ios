@@ -116,4 +116,6 @@ typedef NS_ENUM(NSInteger, REMenuLiveBackgroundStyle) {
 - (void)closeWithCompletion:(void (^)(void))completion;
 - (void)close;
 
+- (CGFloat)computeNavigationBarOffset;
+
 @end

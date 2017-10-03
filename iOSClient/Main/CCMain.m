@@ -3062,8 +3062,14 @@
 
 - (void)createReMenuBackgroundView:(REMenu *)menu
 {
+    UILayoutGuide *layoutGuide;
+    if (@available(iOS 11, *)) {
+        layoutGuide = [UIApplication sharedApplication].delegate.window.safeAreaLayoutGuide;
+    }
+    
+    CGFloat computeNavigationBarOffset = [menu computeNavigationBarOffset];
     UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
-    //_reMenuBackgroundView.frame = CGRectMake(0, 0, rootController.view.frame.size.width,  rootController.view.frame.size.height);
+    _reMenuBackgroundView.frame = CGRectMake(0, computeNavigationBarOffset, rootController.view.frame.size.width,  rootController.view.frame.size.height);
 
     [UIView animateWithDuration:0.2 animations:^{
         
