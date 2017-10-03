@@ -152,6 +152,7 @@
     [super viewWillAppear:animated];
  
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.tableView.showsVerticalScrollIndicator = NO;
 
     // Color
     [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
