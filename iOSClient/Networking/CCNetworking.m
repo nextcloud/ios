@@ -1262,6 +1262,7 @@
     NSString *fileNameForUpload;
     
     if ([CCUtility isFileNotCryptated:fileName]) fileNameForUpload = sessionID;
+    
     else fileNameForUpload = fileName;
     
     if (!onlyPlist) {
@@ -1292,6 +1293,17 @@
         });
         
         return;
+    } else {
+        NSFileManager* fm = [NSFileManager defaultManager];
+        
+        NSString *path = [NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameForUpload];
+        NSDictionary *attrs = [fm attributesOfItemAtPath:path error:nil];
+        
+        if (attrs != nil) {
+            NSDate *modificationDate = (NSDate*)[attrs objectForKey: NSFileModificationDate];
+            long since = [modificationDate timeIntervalSince1970] * 1000;
+            [request setValue:[NSString stringWithFormat:@"%ld", since] forHTTPHeaderField:@"X-OC-Mtime"]
+        }
     }
     
     if ([session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
