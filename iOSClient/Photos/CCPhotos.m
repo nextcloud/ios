@@ -94,6 +94,13 @@
     [self reloadDatasource];
 }
 
+- (void)viewSafeAreaInsetsDidChange
+{
+    [super viewSafeAreaInsetsDidChange];
+    
+    self.collectionView.contentInset = self.view.safeAreaInsets;
+}
+
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
