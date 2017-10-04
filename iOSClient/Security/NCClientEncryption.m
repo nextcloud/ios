@@ -287,7 +287,7 @@ NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVector
     NSMutableData *tag = [NSMutableData dataWithLength:kCCBlockSizeAES128];
     size_t tagLength = kCCBlockSizeAES128;
     
-    CCCryptorStatus cryptStatus = CCCryptorGCM(operation,
+    /*CCCryptorStatus cryptStatus = CCCryptorGCM(operation,
                                                kCCAlgorithmAES128,
                                                cKey,
                                                kCCKeySizeAES128,
@@ -304,6 +304,7 @@ NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVector
     if (cryptStatus == kCCSuccess) {
         return [NSData dataWithBytesNoCopy:operationBytes length:contentData.length];
     }
+    */
     
     free(operationBytes);
     

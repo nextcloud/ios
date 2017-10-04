@@ -1131,7 +1131,6 @@
 		F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarStyle.m; sourceTree = "<group>"; };
 		F78964AB1EBB576C00403E13 /* JDStatusBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarView.h; sourceTree = "<group>"; };
 		F78964AC1EBB576C00403E13 /* JDStatusBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarView.m; sourceTree = "<group>"; };
-		F78AF5E21F82837C00B2E7CE /* CommonCryptorSPI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonCryptorSPI.h; sourceTree = "<group>"; };
 		F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F78D6F431F0B7CB9002F9619 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
 		F78D6F441F0B7CB9002F9619 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
@@ -3002,7 +3001,6 @@
 			children = (
 				F72756701F7153FC0011E2FC /* NCClientEncryption.h */,
 				F72756711F7153FC0011E2FC /* NCClientEncryption.m */,
-				F78AF5E21F82837C00B2E7CE /* CommonCryptorSPI.h */,
 				F7FE125C1BAC03FB0041924B /* CCBKPasscode.h */,
 				F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */,
 				F7F801001D98205A007537BC /* CCCertificate.h */,
