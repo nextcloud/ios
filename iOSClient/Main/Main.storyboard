@@ -75,7 +75,7 @@
                                 </constraints>
                             </imageView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" rowHeight="50" sectionHeaderHeight="1" sectionFooterHeight="1" translatesAutoresizingMaskIntoConstraints="NO" id="Xym-IM-aqh">
-                                <rect key="frame" x="0.0" y="188" width="375" height="572"/>
+                                <rect key="frame" x="0.0" y="188" width="375" height="489"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" rowHeight="50" id="zQQ-52-W9I" customClass="CCCellMore" customModule="Nextcloud" customModuleProvider="target">
@@ -140,7 +140,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NxR-5x-edP" userLabel="View Quota">
-                                <rect key="frame" x="0.0" y="760" width="375" height="52"/>
+                                <rect key="frame" x="0.0" y="677" width="375" height="52"/>
                                 <subviews>
                                     <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="HgC-Ub-Dtb">
                                         <rect key="frame" x="35" y="25" width="305" height="2"/>
@@ -187,7 +187,7 @@
                             <constraint firstItem="cxb-Vw-8zb" firstAttribute="top" secondItem="XtC-Je-LUc" secondAttribute="topMargin" id="2z9-1h-2dU"/>
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="top" secondItem="2RM-aj-e6Z" secondAttribute="top" constant="100" id="3Bb-ws-1xn"/>
                             <constraint firstItem="NxR-5x-edP" firstAttribute="top" secondItem="Xym-IM-aqh" secondAttribute="bottom" id="5lg-wN-BLu"/>
-                            <constraint firstAttribute="bottom" secondItem="NxR-5x-edP" secondAttribute="bottom" id="9bH-mG-bse"/>
+                            <constraint firstItem="2RM-aj-e6Z" firstAttribute="bottom" secondItem="NxR-5x-edP" secondAttribute="bottom" id="9bH-mG-bse"/>
                             <constraint firstItem="NxR-5x-edP" firstAttribute="trailing" secondItem="XtC-Je-LUc" secondAttribute="trailing" id="Imn-or-OnW"/>
                             <constraint firstItem="Xym-IM-aqh" firstAttribute="leading" secondItem="XtC-Je-LUc" secondAttribute="leading" id="N74-yq-YMK"/>
                             <constraint firstItem="BiW-NW-hVZ" firstAttribute="centerY" secondItem="DWx-1W-vs0" secondAttribute="centerY" id="NA6-sD-Ouq"/>
