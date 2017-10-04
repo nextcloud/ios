@@ -1001,7 +1001,8 @@
     NSURLSession *sessionUpload;
     NSURL *url;
     NSMutableURLRequest *request;
-        
+    PHAsset *asset;
+    
     NSString *fileNamePath = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] encodeString:NSUTF8StringEncoding];
         
     url = [NSURL URLWithString:fileNamePath];
@@ -1011,6 +1012,14 @@
     NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
     [request setHTTPMethod:@"PUT"];
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
+    
+    // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier)
+    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
+    if (result.count) {
+        asset = result[0];
+        long dateFileCreation = [asset.creationDate timeIntervalSince1970] * 1000;
+        [request setValue:[NSString stringWithFormat:@"%ld", dateFileCreation] forHTTPHeaderField:@"X-OC-Mtime"];
+    }
     
     // Rename with the SessionID
     NSString *fileNameForUpload = sessionID;
