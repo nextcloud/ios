@@ -1014,11 +1014,13 @@
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     
     // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier)
-    PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
-    if (result.count) {
-        asset = result[0];
-        long dateFileCreation = [asset.creationDate timeIntervalSince1970] * 1000;
-        [request setValue:[NSString stringWithFormat:@"%ld", dateFileCreation] forHTTPHeaderField:@"X-OC-Mtime"];
+    if (assetLocalIdentifier) {
+        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
+        if (result.count) {
+            asset = result[0];
+            long dateFileCreation = [asset.creationDate timeIntervalSince1970];
+            [request setValue:[NSString stringWithFormat:@"%ld", dateFileCreation] forHTTPHeaderField:@"X-OC-Mtime"];
+        }
     }
     
     // Rename with the SessionID

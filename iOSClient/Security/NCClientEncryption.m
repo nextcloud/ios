@@ -27,7 +27,6 @@
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <Security/Security.h>
-#import "CommonCryptorSPI.h"
 
 #import <openssl/x509.h>
 #import <openssl/bio.h>
