@@ -426,7 +426,7 @@ extension DocumentPickerViewController {
         case .moveToService, .exportToService:
             
             let fileName = sourceURL.lastPathComponent
-            let destinationURLDirectoryUser = URL(string: "file://\(directoryUser)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+            let destinationFileNamePath = "\(directoryUser)/\(fileName)"
             
             destinationURL = appGroupContainerURL()?.appendingPathComponent(fileName)
             
@@ -434,13 +434,13 @@ extension DocumentPickerViewController {
                 
                 // copy sourceURL on directoryUser
                 do {
-                    try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+                    try FileManager.default.removeItem(atPath: destinationFileNamePath)
                 } catch _ {
                     print("file do not exists")
                 }
                 
                 do {
-                    try FileManager.default.copyItem(at: sourceURL, to: destinationURLDirectoryUser)
+                    try FileManager.default.copyItem(atPath: sourceURL.path, toPath: destinationFileNamePath)
                 } catch _ {
                     print("file do not exists")
                     self?.dismissGrantingAccess(to: self?.destinationURL)
