@@ -361,8 +361,6 @@
 		F78964AE1EBB576C00403E13 /* JDStatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */; };
 		F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AC1EBB576C00403E13 /* JDStatusBarView.m */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
-		F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A001E7F3D5D00016680 /* CCProgressView.m */; };
-		F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */; };
 		F7A321551E9E2A070069AD1B /* CCFavorites.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A3214F1E9E2A070069AD1B /* CCFavorites.m */; };
 		F7A321561E9E2A070069AD1B /* CCFavoritesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321511E9E2A070069AD1B /* CCFavoritesCell.m */; };
 		F7A321571E9E2A070069AD1B /* CCFavoritesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7A321521E9E2A070069AD1B /* CCFavoritesCell.xib */; };
@@ -1161,10 +1159,6 @@
 		F7956FC91B4886E60085DEA3 /* CCUploadFromOtherUpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUploadFromOtherUpp.h; sourceTree = "<group>"; };
 		F7956FCA1B4886E60085DEA3 /* CCUploadFromOtherUpp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUploadFromOtherUpp.m; sourceTree = "<group>"; };
 		F7956FCB1B4886E60085DEA3 /* CCUploadFromOtherUpp.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCUploadFromOtherUpp.storyboard; sourceTree = "<group>"; };
-		F7A139FF1E7F3D5D00016680 /* CCProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCProgressView.h; sourceTree = "<group>"; };
-		F7A13A001E7F3D5D00016680 /* CCProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCProgressView.m; sourceTree = "<group>"; };
-		F7A13A011E7F3D5D00016680 /* UINavigationController+CCProgress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationController+CCProgress.h"; sourceTree = "<group>"; };
-		F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationController+CCProgress.m"; sourceTree = "<group>"; };
 		F7A3214E1E9E2A070069AD1B /* CCFavorites.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavorites.h; sourceTree = "<group>"; };
 		F7A3214F1E9E2A070069AD1B /* CCFavorites.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = CCFavorites.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		F7A321501E9E2A070069AD1B /* CCFavoritesCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFavoritesCell.h; sourceTree = "<group>"; };
@@ -2357,17 +2351,6 @@
 			path = JDStatusBarNotification;
 			sourceTree = "<group>";
 		};
-		F7A139FE1E7F3D5D00016680 /* CCProgress */ = {
-			isa = PBXGroup;
-			children = (
-				F7A139FF1E7F3D5D00016680 /* CCProgressView.h */,
-				F7A13A001E7F3D5D00016680 /* CCProgressView.m */,
-				F7A13A011E7F3D5D00016680 /* UINavigationController+CCProgress.h */,
-				F7A13A021E7F3D5D00016680 /* UINavigationController+CCProgress.m */,
-			);
-			path = CCProgress;
-			sourceTree = "<group>";
-		};
 		F7A3214D1E9E2A070069AD1B /* Favorites */ = {
 			isa = PBXGroup;
 			children = (
@@ -2797,7 +2780,6 @@
 			children = (
 				F72AAEC11E5C60C700BB17E1 /* AHKActionSheet */,
 				F73CC0571E813DFF006E3047 /* BKPasscodeView */,
-				F7A139FE1E7F3D5D00016680 /* CCProgress */,
 				F7D423A31F063B81009C9782 /* CTAssetsPickerController */,
 				F7F54CAD1E5B14C700E19C62 /* MWPhotoBrowser */,
 				F7B4F1C51F44356F00B53B42 /* NCUchardet */,
@@ -3641,7 +3623,6 @@
 				F77B0E131D118A16002130FE /* AppDelegate.m in Sources */,
 				F762CB861EACB81000B38484 /* RECommonFunctions.m in Sources */,
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
-				F7A13A031E7F3D5D00016680 /* CCProgressView.m in Sources */,
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
 				F73B4F131F470D9100BBEE4B /* nsUniversalDetector.cpp in Sources */,
 				F72756721F7153FC0011E2FC /* NCClientEncryption.m in Sources */,
@@ -3781,7 +3762,6 @@
 				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
 				F70022BF1EC4C9100080073F /* OCFileDto.m in Sources */,
 				F73B4F011F470D9100BBEE4B /* LangThaiModel.cpp in Sources */,
-				F7A13A041E7F3D5D00016680 /* UINavigationController+CCProgress.m in Sources */,
 				F70022DD1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F73B4F001F470D9100BBEE4B /* LangSpanishModel.cpp in Sources */,
 				F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */,

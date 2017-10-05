@@ -103,11 +103,6 @@
 {
     NSDictionary *dict = notification.userInfo;
     float progress = [[dict valueForKey:@"progress"] floatValue];
-    
-    if (progress == 0)
-        [self.navigationController cancelCCProgress];
-    else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCBrandColor sharedInstance].navigationBarProgress];
 }
 
 #pragma --------------------------------------------------------------------------------------------

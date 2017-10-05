@@ -28,7 +28,6 @@
 #import "UIScrollView+EmptyDataSet.h"
 #import "OCErrorMsg.h"
 #import "TWMessageBarManager.h"
-#import "UINavigationController+CCProgress.h"
 #import "CCManageLocation.h"
 #import "CCDetail.h"
 #import "CCUtility.h"

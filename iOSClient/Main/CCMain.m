@@ -2375,12 +2375,6 @@
     NSString *serverUrl = [dict valueForKey:@"serverUrl"];
     float progress = [[dict valueForKey:@"progress"] floatValue];
     
-    // CCProgress
-    if (progress == 0)
-        [self.navigationController cancelCCProgress];
-    else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor: [NCBrandColor sharedInstance].navigationBarProgress];
-    
     // Check
     if (!fileID || [fileID isEqualToString: @""])
         return;

@@ -32,7 +32,6 @@
 #import "CTAssetSelectionLabel.h"
 #import "BKPasscodeViewController.h"
 #import "NSString+TruncateToWidth.h"
-#import "UINavigationController+CCProgress.h"
 #import "UIScrollView+EmptyDataSet.h"
 #import "CCLogin.h"
 #import "CCCellMain.h"

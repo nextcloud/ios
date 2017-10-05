@@ -29,7 +29,6 @@
 #import "TWMessageBarManager.h"
 #import "MWPhotoBrowser.h"
 #import "ReaderViewController.h"
-#import "UINavigationController+CCProgress.h"
 #import "CCGraphics.h"
 
 @class tableMetadata;
