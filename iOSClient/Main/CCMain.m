@@ -417,22 +417,6 @@
 #pragma mark ==== DZNEmptyDataSetSource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (CGFloat)verticalOffsetForEmptyDataSet:(UIScrollView *)scrollView
-{
-    CGFloat safeAreaTop = 0;
-    CGFloat safeAreaBottom = 0;
-
-    if (@available(iOS 11, *)) {
-        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
-    
-    //CGFloat searchBar = self.searchController.searchBar.frame.size.height;
-    CGFloat tabBar = self.tabBarController.tabBar.frame.size.height;
-    
-    return - (tabBar + safeAreaBottom);
-}
-
 - (BOOL)emptyDataSetShouldAllowScroll:(UIScrollView *)scrollView
 {
     if (_loadingFolder)
