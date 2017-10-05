@@ -1744,14 +1744,15 @@
 
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // stoprefresh
+    [_refreshControl endRefreshing];
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [app openLoginView:self loginType:loginModifyPasswordUser];
     
     _loadingFolder = NO;
     [self tableViewReloadData];
-
-    [_refreshControl endRefreshing];
         
     [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     
@@ -1765,6 +1766,9 @@
 
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
 {
+    // stoprefresh
+    [_refreshControl endRefreshing];
+    
     // verify active user
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
 
@@ -1839,9 +1843,6 @@
         
         // reload
         [self reloadDatasource:metadataNet.serverUrl];
-    
-        // stoprefresh
-        [_refreshControl endRefreshing];
     
         // Enable change user
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
