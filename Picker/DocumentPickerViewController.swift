@@ -352,26 +352,27 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
             
         case selectorLoadFileView :
             
-            let sourceUrl = URL(string: "file://\(directoryUser)/\(fileID!)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
-            let destinationUrl : URL! = appGroupContainerURL()?.appendingPathComponent(recordMetadata.fileName)
+            let sourceFileNamePath = "\(directoryUser)/\(fileID!)"
+            let destinationFileNameUrl : URL! = appGroupContainerURL()?.appendingPathComponent(recordMetadata.fileName)
+            let destinationFileNamePath = destinationFileNameUrl.path
             
             // Destination Provider
 
             do {
-                try FileManager.default.removeItem(at: destinationUrl)
+                try FileManager.default.removeItem(at: destinationFileNameUrl)
             } catch _ {
                 print("file do not exists")
             }
 
             do {
-                try FileManager.default.copyItem(at: sourceUrl, to: destinationUrl)
+                try FileManager.default.copyItem(atPath: sourceFileNamePath, toPath: destinationFileNamePath)
             } catch let error as NSError {
                 print(error)
             }
             
             // Dismiss
             
-            self.dismissGrantingAccess(to: destinationUrl)
+            self.dismissGrantingAccess(to: destinationFileNameUrl)
             
         default :
             
