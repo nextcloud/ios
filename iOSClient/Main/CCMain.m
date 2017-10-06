@@ -587,18 +587,6 @@
     }
 }
 
-/*
-- (UIStatusBarStyle)preferredStatusBarStyle
-{
-    UIBarStyle barStyle = self.navigationController.navigationBar.barStyle;
-    
-    if (barStyle == UIStatusBarStyleLightContent)
-        return UIStatusBarStyleDefault;
-    else
-        return UIStatusBarStyleLightContent;
-}
-*/
-
 - (void)setUINavigationBarDefault
 {
     [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
@@ -3047,7 +3035,7 @@
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     if ([UIApplication sharedApplication].isStatusBarHidden) {
-        statusBar = 20;
+        statusBar = 13;
     }
     
     CGFloat computeNavigationBarOffset = [menu computeNavigationBarOffset];
