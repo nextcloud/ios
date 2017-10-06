@@ -1274,7 +1274,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         if (!_isVCBasedStatusBarAppearance) {
             
             //TWS Non-view controller based
-            //[[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation:animated ? UIStatusBarAnimationSlide : UIStatusBarAnimationNone];
+            [[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation:animated ? UIStatusBarAnimationSlide : UIStatusBarAnimationNone];
             
         } else {
             
