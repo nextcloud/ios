@@ -3038,22 +3038,34 @@
 
 - (void)createReMenuBackgroundView:(REMenu *)menu
 {
-    UILayoutGuide *layoutGuide;
+    CGFloat safeAreaBottom = 0;
+    CGFloat safeAreaTop = 0;
+    CGFloat statusBar = 0;
+    
     if (@available(iOS 11, *)) {
-        layoutGuide = [UIApplication sharedApplication].delegate.window.safeAreaLayoutGuide;
+        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    }
+    if ([UIApplication sharedApplication].isStatusBarHidden) {
+        statusBar = 20;
     }
     
     CGFloat computeNavigationBarOffset = [menu computeNavigationBarOffset];
     UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
-    _reMenuBackgroundView.frame = CGRectMake(0, computeNavigationBarOffset, rootController.view.frame.size.width,  rootController.view.frame.size.height);
+    CGRect globalPositionMenu = [menu.menuView convertRect:menu.menuView.bounds toView:rootController.view];
+
+    _reMenuBackgroundView.frame = CGRectMake(0, computeNavigationBarOffset, globalPositionMenu.size.width,  rootController.view.frame.size.height);
 
     [UIView animateWithDuration:0.2 animations:^{
+
+        CGFloat minimum = safeAreaBottom + self.tabBarController.tabBar.frame.size.height;
+        CGFloat y =  rootController.view.frame.size.height - menu.menuView.frame.size.height - globalPositionMenu.origin.y + statusBar;
         
-        CGFloat y =  rootController.view.frame.size.height - menu.menuView.frame.size.height + 40;
-        
-        _reMenuBackgroundView.frame = CGRectMake(0, rootController.view.frame.size.height, self.view.frame.size.width,  - y);
-        
-        [self.tabBarController.view addSubview:_reMenuBackgroundView];
+        if (y>minimum) {
+            
+            _reMenuBackgroundView.frame = CGRectMake(0, rootController.view.frame.size.height, globalPositionMenu.size.width, - y);
+            [self.tabBarController.view addSubview:_reMenuBackgroundView];
+        }
     }];
 }
 
@@ -3230,9 +3242,7 @@
         [app.reMainMenu showFromNavigationController:self.navigationController];
         
         // Backgroun reMenu & (Gesture)
-        
-        if (UIDeviceOrientationIsPortrait([UIDevice currentDevice].orientation))
-            [self createReMenuBackgroundView:app.reMainMenu];
+        [self createReMenuBackgroundView:app.reMainMenu];
         
         _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleReMainMenu)];
         [_reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
@@ -3355,8 +3365,7 @@
         [app.reSelectMenu showFromNavigationController:self.navigationController];
         
         // Backgroun reMenu & (Gesture)
-        if (UIDeviceOrientationIsPortrait([UIDevice currentDevice].orientation))
-            [self createReMenuBackgroundView:app.reSelectMenu];
+        [self createReMenuBackgroundView:app.reSelectMenu];
         
         _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleReSelectMenu)];
         [_reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
