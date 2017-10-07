@@ -546,7 +546,7 @@
 "_use_folder_photos_"               = "Use the folder Photos as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "File name";
-"_preview_filename_"                = "Example preview of filename, you can use the mask MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm for the date/time";
+"_preview_filename_"                = "Example preview of filename. You can use the mask MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm for date/time";
 "_forbidden_characters_"            = "Invalid character in the filename";
 "_add_filenametype_"                = "Add type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
