@@ -473,7 +473,7 @@
 + (NSString *)transformedSize:(double)value
 {
     int multiplicationFactor = 0;
-        NSArray *tokens = [NSArray arrayWithObjects:@"bytes",@"KB",@"MB",@"GB",@"TB",nil];
+    NSArray *tokens = [NSArray arrayWithObjects:@"bytes",@"KB",@"MB",@"GB",@"TB",nil];
     while (value > 1024 && multiplicationFactor < tokens.count - 1) {
         value /= 1024;
         multiplicationFactor++;
