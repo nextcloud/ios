@@ -357,7 +357,7 @@
 "_open_in_"                     = "Open in…";
 "_remove_local_file_"           = "Remove from cache";
 "_add_local_"                   = "Add to local storage";
-"_comm_erro_pull_down_"         = "Attention communication error with the server, pull down to refresh.";
+"_comm_erro_pull_down_"         = "Attention: Communication error with the server. Pull down to refresh.";
 "_file_not_downloaded_"         = "file not downloaded";
 "_file_not_uploaded_"           = "file not uploaded";
 "_folders_"                     = "folders";
