@@ -392,7 +392,7 @@
 "_tite_footer_download_wwan_"   = "  Wi-Fi network required, %lu %@ to download";
 "_tite_footer_download_"        = "%lu %@ to download";
 "_limited_dimension_"           = "Maximum size reached";
-"_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different passcode key encryption. Attention if the old passcode is entered, files encrypted with the new Passcode will not be readable. \n\n Hint: %@";
+"_same_device_different_passcode_hint_" = "The file was encrypted by the same device but with different passcode key encryption. Attention: If the old passcode is entered, files encrypted with the new passcode will not be readable. \n\n Hint: %@";
 "_file_encrypted_another_device_hint_" = "The file was encrypted by another device [%@], enter the passcode key encryption to read its contents. \n\n Hint: %@";
 "_save_selected_files_"         = "Save images and videos to Photo Album";
 "_file_not_saved_cameraroll_"   = "Error: File not saved in Photo Album";
