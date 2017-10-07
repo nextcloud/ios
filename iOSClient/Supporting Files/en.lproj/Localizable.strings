@@ -173,7 +173,7 @@
 "_autoupload_not_select_home_"      = "Select a folder";
 "_autoupload_save_album_"           = "Copy photo or video into the photo album";
 "_autoupload_fullphotos_"           = "Upload the whole camera roll";
-"_autoupload_fullphotos_footer_"    = "Select the options above before uploading";
+"_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
 "_autoupload_filenamemask_"         = "Change filename mask";
