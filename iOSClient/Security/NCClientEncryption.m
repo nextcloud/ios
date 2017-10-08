@@ -24,6 +24,8 @@
 #import "NCClientEncryption.h"
 #import "NCBridgeSwift.h"
 
+#import "IAGAesGcm.h"
+
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <Security/Security.h>
@@ -270,44 +272,45 @@ cleanup:
 
 NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVectorData, CCOperation operation)
 {
-    void *operationBytes = malloc(contentData.length);
-        
+    NSError *error;
+    
     // setup key
     unsigned char cKey[kCCKeySizeAES128];
     bzero(cKey, sizeof(cKey));
     [keyData getBytes:cKey length:kCCKeySizeAES128];
-    
+    NSData *key = [NSData dataWithBytes:cKey length:kCCKeySizeAES128];
+    NSData *key2 = [NSData dataWithBytesNoCopy:@"bGzWfQBj2lE4ZnysDWwsIg==" length:kCCKeySizeAES128];
+
     // setup iv
     char cIv[kCCBlockSizeAES128];
     bzero(cIv, kCCBlockSizeAES128);
     [initVectorData getBytes:cIv length:kCCBlockSizeAES128];
-    
+    NSData *iv = [NSData dataWithBytes:cIv length:kCCKeySizeAES128];
+    NSData *iv2 = [NSData dataWithBytesNoCopy:@"rTBECYNekKF+a1HR7z32/Q==" length:kCCKeySizeAES128];
+
     // tag
     NSMutableData *tag = [NSMutableData dataWithLength:kCCBlockSizeAES128];
     size_t tagLength = kCCBlockSizeAES128;
     
-    /*CCCryptorStatus cryptStatus = CCCryptorGCM(operation,
-                                               kCCAlgorithmAES128,
-                                               cKey,
-                                               kCCKeySizeAES128,
-                                               cIv,
-                                               kCCBlockSizeAES128,
-                                               nil,
-                                               0,
-                                               contentData.bytes,
-                                               contentData.length,
-                                               operationBytes,
-                                               tag.bytes,
-                                               &tagLength);
+    IAGCipheredData *cipheredData = [IAGCipheredData init];
+    IAGCipheredData *cipheredData2 = [IAGCipheredData initWithCipheredBuffer:nil cipheredBufferLength:contentData.lenght authenticationTag:tag authenticationTagLength:tagLength];
     
-    if (cryptStatus == kCCSuccess) {
-        return [NSData dataWithBytesNoCopy:operationBytes length:contentData.length];
-    }
-    */
+                                     
+                                      /*
+                                       - (instancetype)initWithCipheredBuffer:(const void *)cipheredBuffer
+                                       cipheredBufferLength:(NSUInteger)cipheredBufferLength
+                                       authenticationTag:(const void *)authenticationTag
+                                       authenticationTagLength:(IAGAuthenticationTagLength)authenticationTagLength
+                                       */
+                                      
+                                      
+    NSData *plainData = [IAGAesGcm plainDataByAuthenticatedDecryptingCipheredData:cipheredData
+                                                  withAdditionalAuthenticatedData:[@"" dataUsingEncoding:NSUTF8StringEncoding]
+                                                             initializationVector:iv
+                                                                              key:key
+                                                                            error:&error];
     
-    free(operationBytes);
-    
-    return nil;
+    return plainData;
 }
 
 @end
