@@ -38,7 +38,7 @@
 
 #define NSMakeError(description) [NSError errorWithDomain:@"com.nextcloud.nextcloudiOS" code:-1 userInfo:@{NSLocalizedDescriptionKey: description}];
 
-#define addName(field, value) X509_NAME_add_entry_by_txt(name, field,  MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
+#define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
 #define AES_KEY_LENGTH      16
 #define AES_IVEC_LENGTH     16
@@ -58,7 +58,9 @@
     return NCClientEncryption;
 }
 
+#
 #pragma mark - Generate Certificate X509 & Private Key
+#
 
 - (void)generateCertificateX509WithDirectoryUser:(NSString *)directoryUser userID:(NSString *)userID finished:(void (^)(NSError *))finished
 {
@@ -385,4 +387,5 @@ cleanup:
         [output appendFormat:@"%02x", digest[i]];
     return output;
 }
+
 @end
