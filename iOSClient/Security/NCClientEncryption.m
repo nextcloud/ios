@@ -39,9 +39,10 @@
 #define NSMakeError(description) [NSError errorWithDomain:@"com.nextcloud.nextcloudiOS" code:-1 userInfo:@{NSLocalizedDescriptionKey: description}];
 
 #define AES_KEY_LENGTH      16
-#define AES_KEY_LENGTH_BITS 128
 #define AES_IVEC_LENGTH     16
-#define AES_GCM_TAG_LENGTH  16
+
+//#define AES_KEY_LENGTH_BITS 128
+//#define AES_GCM_TAG_LENGTH  16
 
 @implementation NCClientEncryption
 
@@ -257,10 +258,12 @@ cleanup:
     NSMutableData *plainData;
 
     // Decrypt
-    //NSData *dataDecrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/crypted.dms", activeUrl]];
+    //NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/crypted.dms", activeUrl]];
     NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
+    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
     
-    [self aes256gcmDecrypt:cipherData plainData:&plainData keyString:@"bGzWfQBj2lE4ZnysDWwsIg==" initVectorString:@"rTBECYNekKF+a1HR7z32/Q=="];
+    [self aes256gcmDecrypt:cipherData plainData:&plainData keyData:keyData initVectorData:initVectorData];
     
     if (plainData != nil)
         [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
@@ -286,22 +289,23 @@ cleanup:
     EVP_EncryptInit_ex (ctx, NULL, NULL, key, ivec);
     
     // add optional AAD (Additional Auth Data)
-    if (aad)
-        status = EVP_EncryptUpdate( ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
+    //if (aad)
+    //    status = EVP_EncryptUpdate( ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
     
     unsigned char * ctBytes = [*ciphertext mutableBytes];
     EVP_EncryptUpdate (ctx, ctBytes, &numberOfBytes, [plaintext bytes], (int)[plaintext length]);
     status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
     
-    if (status && tag) {
-        status = EVP_CIPHER_CTX_ctrl (ctx, EVP_CTRL_GCM_GET_TAG, AES_GCM_TAG_LENGTH, tag);
-    }
+    //if (status && tag) {
+    //    status = EVP_CIPHER_CTX_ctrl (ctx, EVP_CTRL_GCM_GET_TAG, AES_GCM_TAG_LENGTH, tag);
+    //}
+    
     EVP_CIPHER_CTX_free(ctx);
     return (status != 0); // OpenSSL uses 1 for success
 }
 
-// decrypt ciphertext.
-- (BOOL)aes256gcmDecrypt:(NSData*)cipherData plainData:(NSMutableData**)plainData keyString:(NSString *)keyString initVectorString:(NSString *)initVectorString
+// decrypt cipher data
+- (BOOL)aes256gcmDecrypt:(NSData*)cipherData plainData:(NSMutableData**)plainData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData
 {    
     int status = 0;
     
@@ -317,12 +321,12 @@ cleanup:
     // set up key
     unsigned char cKey[AES_KEY_LENGTH];
     bzero(cKey, sizeof(cKey));
-    [[[NSData alloc] initWithBase64EncodedString:keyString options:0] getBytes:cKey length:AES_KEY_LENGTH];
+    [keyData getBytes:cKey length:AES_KEY_LENGTH];
     
     // set up ivec
-    unsigned char cIv[AES_KEY_LENGTH];
-    bzero(cIv, AES_KEY_LENGTH);
-    [[[NSData alloc] initWithBase64EncodedString:initVectorString options:0] getBytes:cIv length:AES_KEY_LENGTH];
+    unsigned char cIv[AES_IVEC_LENGTH];
+    bzero(cIv, AES_IVEC_LENGTH);
+    [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
     
     // set the key and ivec
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
