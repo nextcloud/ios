@@ -1181,6 +1181,8 @@
     // Read Activity
     metadataNet.action = actionGetActivityServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    // End To End Encryption
 }
 
 #pragma mark -

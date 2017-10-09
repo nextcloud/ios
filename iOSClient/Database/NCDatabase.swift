@@ -85,8 +85,8 @@ class tableCapabilities: Object {
     @objc dynamic var versionMicro: Int = 0
     @objc dynamic var versionMinor: Int = 0
     @objc dynamic var versionString = ""
-    @objc dynamic var clientSideEncryption: Bool = false
-    @objc dynamic var clientSideEncryptionVersion = ""
+    @objc dynamic var endToEndEncryption: Bool = false
+    @objc dynamic var endToEndEncryptionVersion = ""
 }
 
 class tableCertificates: Object {

@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 8,
+            schemaVersion: 9,
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -562,8 +562,8 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.versionMinor = capabilities.versionMinor
                 resultCapabilities.versionMicro = capabilities.versionMicro
                 resultCapabilities.versionString = capabilities.versionString
-                resultCapabilities.clientSideEncryption = capabilities.isClientSideEncryptionEnabled
-                resultCapabilities.clientSideEncryptionVersion = capabilities.clientSideEncryptionVersion
+                resultCapabilities.endToEndEncryption = capabilities.isEndToEndEncryptionEnabled
+                resultCapabilities.endToEndEncryptionVersion = capabilities.endToEndEncryptionVersion
             
                 if result == nil {
                     realm.add(resultCapabilities)

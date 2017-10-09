@@ -1429,17 +1429,17 @@
                         capabilities.themingUrl = [theming valueForKey:@"url"];
                 }
                 
-                //CLIENT SIDE ENCRYPTION
+                //END TO END Encryption
                 
-                NSDictionary *clientSideEncryption = [capabilitiesDict valueForKey:@"client-side-encryption"];
+                NSDictionary *endToEndEncryption = [capabilitiesDict valueForKey:@"end-to-end-encryption"];
                 
-                if ([clientSideEncryption count] > 0) {
+                if ([endToEndEncryption count] > 0) {
                     
-                    NSNumber *clientSideEncryptionEnabled = (NSNumber*)[clientSideEncryption valueForKey:@"enabled"];
-                    capabilities.isClientSideEncryptionEnabled = clientSideEncryptionEnabled.boolValue;
+                    NSNumber *endToEndEncryptionEnabled = (NSNumber*)[endToEndEncryption valueForKey:@"enabled"];
+                    capabilities.isEndToEndEncryptionEnabled = endToEndEncryptionEnabled.boolValue;
                     
-                    if ([clientSideEncryption valueForKey:@"api-version"] && ![[clientSideEncryption valueForKey:@"api-version"] isEqual:[NSNull null]])
-                        capabilities.clientSideEncryptionVersion = [clientSideEncryption valueForKey:@"api-version"];
+                    if ([endToEndEncryption valueForKey:@"api-version"] && ![[endToEndEncryption valueForKey:@"api-version"] isEqual:[NSNull null]])
+                        capabilities.endToEndEncryptionVersion = [endToEndEncryption valueForKey:@"api-version"];
                 }
             }
         
@@ -1952,6 +1952,28 @@
     }];
 }
 
+#pragma mark - End-to-End Encryption
+
+- (void) getE2EPrivateKey:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
+    serverPath = [serverPath stringByAppendingString:@"/private-key"];
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getE2EPrivateKey:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        //Return success
+        successRequest(response, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+    
 #pragma mark - Clear Cache
 
 - (void)eraseURLCache
