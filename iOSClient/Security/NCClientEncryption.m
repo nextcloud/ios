@@ -24,9 +24,7 @@
 #import "NCClientEncryption.h"
 #import "NCBridgeSwift.h"
 
-#import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
-#import <Security/Security.h>
 
 #import <openssl/x509.h>
 #import <openssl/bio.h>
@@ -256,36 +254,20 @@ cleanup:
 
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
 {
-    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
-    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
+    BOOL result;
     
     // Decrypt
     //NSData *dataDecrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/crypted.dms", activeUrl]];
     NSData *dataDecrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
-    //NSData *decryptedData = [self decryptDataAESGCM:dataDecrypt keyData:keyData initVectorData:initVectorData];
-
-    // setup key
-    unsigned char cKey[AES_KEY_LENGTH];
-    bzero(cKey, sizeof(cKey));
-    [keyData getBytes:cKey length:AES_KEY_LENGTH];
-    
-    // setup iv
-    unsigned char cIv[AES_KEY_LENGTH];
-    bzero(cIv, AES_KEY_LENGTH);
-    [initVectorData getBytes:cIv length:AES_KEY_LENGTH];
-    
     NSMutableData *plainText = [[NSMutableData alloc] initWithCapacity:dataDecrypt.length];
     
-    [self aes256gcmDecrypt:dataDecrypt plaintext:&plainText aad:nil key:cKey ivec:cIv tag:nil];
+    result = [self aes256gcmDecrypt:dataDecrypt plaintext:&plainText keyString:@"bGzWfQBj2lE4ZnysDWwsIg==" initVectorString:@"rTBECYNekKF+a1HR7z32/Q=="];
     
-    if (plainText != nil)
+    if (result == YES && plainText != nil)
         [plainText writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
-    
 }
 
 // encrypt plaintext.
-// key, ivec and tag buffers are required, aad is optional
-// depending on your use, you may want to convert key, ivec, and tag to NSData/NSMutableData
 - (BOOL) aes256gcmEncrypt:(NSData*)plaintext ciphertext:(NSMutableData**)ciphertext aad:(NSData*)aad key:(const unsigned char*)key ivec:(const unsigned char*)ivec tag:(unsigned char*)tag {
     
     int status = 0;
@@ -318,18 +300,9 @@ cleanup:
 }
 
 // decrypt ciphertext.
-// key, ivec and tag buffers are required, aad is optional
-// depending on your use, you may want to convert key, ivec, and tag to NSData/NSMutableData
-- (BOOL)aes256gcmDecrypt:(NSData*)ciphertext plaintext:(NSMutableData**)plaintext aad:(NSData*)aad key:(const unsigned char *)key ivec:(const unsigned char *)ivec tag:(unsigned char *)tag
+- (BOOL)aes256gcmDecrypt:(NSData*)ciphertext plaintext:(NSMutableData**)plaintext keyString:(NSString *)keyString initVectorString:(NSString *)initVectorString
 {    
     int status = 0;
-    
-    if (! ciphertext || !plaintext || !key || !ivec)
-        return NO;
-    
-    *plaintext = [NSMutableData dataWithLength:[ciphertext length]];
-    if (! *plaintext)
-        return NO;
     
     // set up to Decrypt AES 128 GCM
     int numberOfBytes = 0;
@@ -337,20 +310,28 @@ cleanup:
     EVP_DecryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
     
     // set the key and ivec
+    unsigned char cKey[AES_KEY_LENGTH];
+    bzero(cKey, sizeof(cKey));
+    [[[NSData alloc] initWithBase64EncodedString:keyString options:0] getBytes:cKey length:AES_KEY_LENGTH];
+    
+    unsigned char cIv[AES_KEY_LENGTH];
+    bzero(cIv, AES_KEY_LENGTH);
+    [[[NSData alloc] initWithBase64EncodedString:initVectorString options:0] getBytes:cIv length:AES_KEY_LENGTH];
+    
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
-    status = EVP_DecryptInit_ex (ctx, NULL, NULL, key, ivec);
+    status = EVP_DecryptInit_ex (ctx, NULL, NULL, cKey, cIv);
     
     // Set expected tag value. A restriction in OpenSSL 1.0.1c and earlier requires the tag before any AAD or ciphertext
-    if (status && tag)
-        EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_GCM_TAG_LENGTH, tag);
+    //if (status && tag)
+    //    EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_GCM_TAG_LENGTH, tag);
     
     // add optional AAD (Additional Auth Data)
-    if (aad)
-        EVP_DecryptUpdate(ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
+    //if (aad)
+    //    EVP_DecryptUpdate(ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
     
     status = EVP_DecryptUpdate (ctx, [*plaintext mutableBytes], &numberOfBytes, [ciphertext bytes], (int)[ciphertext length]);
     if (! status) {
-        //DDLogError(@"aes256gcmDecrypt: EVP_DecryptUpdate failed");
+        NSLog(@"aes256gcmDecrypt: EVP_DecryptUpdate failed");
         return NO;
     }
     EVP_DecryptFinal_ex (ctx, NULL, &numberOfBytes);
