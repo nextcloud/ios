@@ -285,6 +285,7 @@ cleanup:
 - (BOOL)aes256gcmEncrypt:(NSData*)plainData cipherData:(NSMutableData**)cipherData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData
 {
     int status = 0;
+    
     *cipherData = [NSMutableData dataWithLength:[plainData length]];
     if (! *cipherData)
         return NO;
@@ -365,6 +366,7 @@ cleanup:
         NSLog(@"aes256gcmDecrypt: EVP_DecryptUpdate failed");
         return NO;
     }
+    
     EVP_DecryptFinal_ex (ctx, NULL, &numberOfBytes);
     EVP_CIPHER_CTX_free(ctx);
     return (status != 0); // OpenSSL uses 1 for success
