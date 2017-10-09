@@ -254,20 +254,21 @@ cleanup:
 
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
 {
-    BOOL result;
-    
+    NSMutableData *plainData;
+
     // Decrypt
     //NSData *dataDecrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/crypted.dms", activeUrl]];
-    NSData *dataDecrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
-    NSMutableData *plainText = [[NSMutableData alloc] initWithCapacity:dataDecrypt.length];
+    NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
     
-    result = [self aes256gcmDecrypt:dataDecrypt plaintext:&plainText keyString:@"bGzWfQBj2lE4ZnysDWwsIg==" initVectorString:@"rTBECYNekKF+a1HR7z32/Q=="];
+    [self aes256gcmDecrypt:cipherData plainData:&plainData keyString:@"bGzWfQBj2lE4ZnysDWwsIg==" initVectorString:@"rTBECYNekKF+a1HR7z32/Q=="];
     
-    if (result == YES && plainText != nil)
-        [plainText writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
+    if (plainData != nil)
+        [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
 }
 
 // encrypt plaintext.
+// key, ivec and tag buffers are required, aad is optional
+// depending on your use, you may want to convert key, ivec, and tag to NSData/NSMutableData
 - (BOOL) aes256gcmEncrypt:(NSData*)plaintext ciphertext:(NSMutableData**)ciphertext aad:(NSData*)aad key:(const unsigned char*)key ivec:(const unsigned char*)ivec tag:(unsigned char*)tag {
     
     int status = 0;
@@ -300,24 +301,30 @@ cleanup:
 }
 
 // decrypt ciphertext.
-- (BOOL)aes256gcmDecrypt:(NSData*)ciphertext plaintext:(NSMutableData**)plaintext keyString:(NSString *)keyString initVectorString:(NSString *)initVectorString
+- (BOOL)aes256gcmDecrypt:(NSData*)cipherData plainData:(NSMutableData**)plainData keyString:(NSString *)keyString initVectorString:(NSString *)initVectorString
 {    
     int status = 0;
+    
+    *plainData = [NSMutableData dataWithLength:[cipherData length]];
+    if (! *plainData)
+        return NO;
     
     // set up to Decrypt AES 128 GCM
     int numberOfBytes = 0;
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_DecryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
     
-    // set the key and ivec
+    // set up key
     unsigned char cKey[AES_KEY_LENGTH];
     bzero(cKey, sizeof(cKey));
     [[[NSData alloc] initWithBase64EncodedString:keyString options:0] getBytes:cKey length:AES_KEY_LENGTH];
     
+    // set up ivec
     unsigned char cIv[AES_KEY_LENGTH];
     bzero(cIv, AES_KEY_LENGTH);
     [[[NSData alloc] initWithBase64EncodedString:initVectorString options:0] getBytes:cIv length:AES_KEY_LENGTH];
     
+    // set the key and ivec
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
     status = EVP_DecryptInit_ex (ctx, NULL, NULL, cKey, cIv);
     
@@ -329,7 +336,7 @@ cleanup:
     //if (aad)
     //    EVP_DecryptUpdate(ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
     
-    status = EVP_DecryptUpdate (ctx, [*plaintext mutableBytes], &numberOfBytes, [ciphertext bytes], (int)[ciphertext length]);
+    status = EVP_DecryptUpdate (ctx, [*plainData mutableBytes], &numberOfBytes, [cipherData bytes], (int)[cipherData length]);
     if (! status) {
         NSLog(@"aes256gcmDecrypt: EVP_DecryptUpdate failed");
         return NO;
