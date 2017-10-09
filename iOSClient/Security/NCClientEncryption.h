@@ -29,7 +29,7 @@
 
 + (id)sharedManager;
 
-- (void)generateCertificateX509WithDirectoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished;
+- (void)generateCertificateX509WithDirectoryUser:(NSString *)directoryUser userID:(NSString *)userID finished:(void (^)(NSError *))finished;
 - (NSString *)createSHA512:(NSString *)string;
 
 - (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;

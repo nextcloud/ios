@@ -56,7 +56,7 @@
     return NCClientEncryption;
 }
 
-- (void)generateCertificateX509WithDirectoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished
+- (void)generateCertificateX509WithDirectoryUser:(NSString *)directoryUser userID:(NSString *)userID finished:(void (^)(NSError *))finished
 {
     OPENSSL_init_ssl(0, NULL);
     OPENSSL_init_crypto(0, NULL);
@@ -94,8 +94,10 @@
     // I use a macro here to make it cleaner.
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field,  MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
     
-    // The domain name or IP address that the certificate is issued for.
-    addName("CN", "nextcloud.com");
+    const unsigned char *cUserID = (const unsigned char *) [userID cStringUsingEncoding:NSUTF8StringEncoding];
+
+    // CN = UserID.
+    addName("CN", cUserID);
     
     // The organizational unit for the cert. Usually this is a department.
     addName("OU", "Certificate Authority");
