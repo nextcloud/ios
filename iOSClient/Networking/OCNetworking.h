@@ -124,6 +124,10 @@
 // Subscribing Nextcloud Server
 - (void)subscribingNextcloudServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
+// End-to-End Encryption
+- (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet;
+- (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 @end
 
 @interface OCURLSessionManager : AFURLSessionManager

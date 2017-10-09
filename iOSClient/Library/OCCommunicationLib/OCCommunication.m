@@ -1970,6 +1970,7 @@
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         
+        //Return error
         failureRequest(response, error, request.redirectedServer);
     }];
 }

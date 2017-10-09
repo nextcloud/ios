@@ -1224,6 +1224,21 @@
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== End-to-End Encryption  ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
+{
+    NSLog(@"OK");
+}
+
+- (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    NSLog(@"error");
+}
+
+#pragma mark -
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Download Thumbnail Delegate ====
 #pragma --------------------------------------------------------------------------------------------
 
