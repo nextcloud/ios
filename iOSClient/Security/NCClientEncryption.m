@@ -269,31 +269,53 @@ cleanup:
         [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
 }
 
-// encrypt plaintext.
-// key, ivec and tag buffers are required, aad is optional
-// depending on your use, you may want to convert key, ivec, and tag to NSData/NSMutableData
-- (BOOL) aes256gcmEncrypt:(NSData*)plaintext ciphertext:(NSMutableData**)ciphertext aad:(NSData*)aad key:(const unsigned char*)key ivec:(const unsigned char*)ivec tag:(unsigned char*)tag {
+- (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
+{
+    NSMutableData *cipherData;
     
+    NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
+    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
+    
+    [self aes256gcmEncrypt:plainData cipherData:&cipherData keyData:keyData initVectorData:initVectorData];
+    
+    if (cipherData != nil)
+        [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"encrypted.dms"] atomically:YES];
+}
+
+// encrypt plain data
+- (BOOL)aes256gcmEncrypt:(NSData*)plainData cipherData:(NSMutableData**)cipherData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData
+{
     int status = 0;
-    *ciphertext = [NSMutableData dataWithLength:[plaintext length]];
-    if (! *ciphertext)
+    *cipherData = [NSMutableData dataWithLength:[plainData length]];
+    if (! *cipherData)
         return NO;
     
-    // set up to Encrypt AES 256 GCM
+    // set up to Encrypt AES 128 GCM
     int numberOfBytes = 0;
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_EncryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
     
+    // set up key
+    unsigned char cKey[AES_KEY_LENGTH];
+    bzero(cKey, sizeof(cKey));
+    [keyData getBytes:cKey length:AES_KEY_LENGTH];
+    
+    // set up ivec
+    unsigned char cIv[AES_IVEC_LENGTH];
+    bzero(cIv, AES_IVEC_LENGTH);
+    [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
+    
     // set the key and ivec
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
-    EVP_EncryptInit_ex (ctx, NULL, NULL, key, ivec);
+    EVP_EncryptInit_ex (ctx, NULL, NULL, cKey, cIv);
     
     // add optional AAD (Additional Auth Data)
     //if (aad)
     //    status = EVP_EncryptUpdate( ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
     
-    unsigned char * ctBytes = [*ciphertext mutableBytes];
-    EVP_EncryptUpdate (ctx, ctBytes, &numberOfBytes, [plaintext bytes], (int)[plaintext length]);
+    unsigned char * ctBytes = [*cipherData mutableBytes];
+    EVP_EncryptUpdate (ctx, ctBytes, &numberOfBytes, [plainData bytes], (int)[plainData length]);
     status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
     
     //if (status && tag) {

@@ -5030,10 +5030,15 @@
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
             
 #ifdef DEBUG
-            // TEST ENCRYPTED
+            // TEST ENCRYPTED/DECRYPTED
             if ([_metadata.fileName containsString:@".dms"]) {
                 [[NCClientEncryption sharedManager] decryptMetadata:_metadata activeUrl:app.directoryUser];
             }
+            
+            if ([_metadata.fileName containsString:@"test_encry_marino.jpg"]) {
+                [[NCClientEncryption sharedManager] encryptMetadata:_metadata activeUrl:app.directoryUser];
+            }
+            
 #endif
 
             [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
