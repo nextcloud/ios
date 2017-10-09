@@ -188,8 +188,8 @@ cleanup:
 
 - (void)savePEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished
 {
-    NSString *keyPath = [NSString stringWithFormat:@"%@/privatekey.pem", directoryUser];
-    NSString *certPath = [NSString stringWithFormat:@"%@/certificate.crt", directoryUser];
+    NSString *keyPath = [NSString stringWithFormat:@"%@/e2e_privatekey.pem", directoryUser];
+    NSString *certPath = [NSString stringWithFormat:@"%@/e2e_certificate.pem", directoryUser];
     
     FILE *f = fopen([keyPath fileSystemRepresentation], "wb");
     
