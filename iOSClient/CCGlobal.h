@@ -195,6 +195,8 @@ extern NSString *const dav;
 #define actionUnShare                                   @"unShare"
 #define actionUpdateShare                               @"updateShare"
 
+#define actionGetEndToEndPrivateKey                     @"getEndToEndPrivateKey"
+
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"
 #define k_metadataTypeFile_compress                     @"compress"
