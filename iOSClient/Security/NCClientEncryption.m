@@ -24,8 +24,6 @@
 #import "NCClientEncryption.h"
 #import "NCBridgeSwift.h"
 
-#import "IAGAesGcm.h"
-
 #import <CommonCrypto/CommonCryptor.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <Security/Security.h>
@@ -41,6 +39,12 @@
 #import <openssl/bn.h>
 
 #define NSMakeError(description) [NSError errorWithDomain:@"com.nextcloud.nextcloudiOS" code:-1 userInfo:@{NSLocalizedDescriptionKey: description}];
+
+#define AES_KEY_LENGTH      16
+#define AES_KEY_LENGTH_BITS 128
+#define AES_IVEC_LENGTH     16
+#define AES_GCM_TAG_LENGTH  16
+
 @implementation NCClientEncryption
 
 //Singleton
@@ -261,18 +265,14 @@ cleanup:
     //NSData *decryptedData = [self decryptDataAESGCM:dataDecrypt keyData:keyData initVectorData:initVectorData];
 
     // setup key
-    unsigned char cKey[kCCKeySizeAES128];
+    unsigned char cKey[AES_KEY_LENGTH];
     bzero(cKey, sizeof(cKey));
-    [keyData getBytes:cKey length:kCCKeySizeAES128];
+    [keyData getBytes:cKey length:AES_KEY_LENGTH];
     
     // setup iv
-    char cIv[kCCBlockSizeAES128];
-    bzero(cIv, kCCBlockSizeAES128);
-    [initVectorData getBytes:cIv length:kCCBlockSizeAES128];
-    
-    // tag
-    NSMutableData *tag = [NSMutableData dataWithLength:kCCBlockSizeAES128];
-    size_t tagLength = kCCBlockSizeAES128;
+    unsigned char cIv[AES_KEY_LENGTH];
+    bzero(cIv, AES_KEY_LENGTH);
+    [initVectorData getBytes:cIv length:AES_KEY_LENGTH];
     
     NSMutableData *plainText = [[NSMutableData alloc] initWithCapacity:dataDecrypt.length];
     
@@ -283,42 +283,10 @@ cleanup:
     
 }
 
-- (NSData *)decryptDataAESGCM:(NSData *)contentData keyData:(NSData*)keyData initVectorData:(NSData *)initVectorData
-{
-    NSError *error;
-
-    // authData
-    NSData *authData = [@"" dataUsingEncoding:NSUTF8StringEncoding];
-    
-    // tag
-    NSMutableData *tag = [NSMutableData dataWithLength:kCCBlockSizeAES128];
-    size_t tagLength = kCCBlockSizeAES128;
-    
-    IAGCipheredData *cipheredData = [[IAGCipheredData alloc] initWithCipheredBuffer:contentData.bytes cipheredBufferLength:contentData.length authenticationTag:tag.bytes authenticationTagLength:tagLength];
-    
-    NSData *plainData = [IAGAesGcm plainDataByAuthenticatedDecryptingCipheredData:cipheredData
-                                                  withAdditionalAuthenticatedData:authData
-                                                             initializationVector:initVectorData
-                                                                              key:keyData
-                                                                            error:&error];
-    
-    return plainData;
-}
-
-#define AES_KEY_LENGTH      16
-#define AES_KEY_LENGTH_BITS 128
-#define AES_IVEC_LENGTH     16
-#define AES_GCM_TAG_LENGTH  16
-
 // encrypt plaintext.
 // key, ivec and tag buffers are required, aad is optional
 // depending on your use, you may want to convert key, ivec, and tag to NSData/NSMutableData
-- (BOOL) aes256gcmEncrypt:(NSData*)plaintext
-               ciphertext:(NSMutableData**)ciphertext
-                      aad:(NSData*)aad
-                      key:(const unsigned char*)key
-                     ivec:(const unsigned char*)ivec
-                      tag:(unsigned char*)tag {
+- (BOOL) aes256gcmEncrypt:(NSData*)plaintext ciphertext:(NSMutableData**)ciphertext aad:(NSData*)aad key:(const unsigned char*)key ivec:(const unsigned char*)ivec tag:(unsigned char*)tag {
     
     int status = 0;
     *ciphertext = [NSMutableData dataWithLength:[plaintext length]];
@@ -336,7 +304,7 @@ cleanup:
     
     // add optional AAD (Additional Auth Data)
     if (aad)
-        status = EVP_EncryptUpdate( ctx, NULL, &numberOfBytes, [aad bytes], [aad length]);
+        status = EVP_EncryptUpdate( ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
     
     unsigned char * ctBytes = [*ciphertext mutableBytes];
     EVP_EncryptUpdate (ctx, ctBytes, &numberOfBytes, [plaintext bytes], (int)[plaintext length]);
@@ -352,13 +320,8 @@ cleanup:
 // decrypt ciphertext.
 // key, ivec and tag buffers are required, aad is optional
 // depending on your use, you may want to convert key, ivec, and tag to NSData/NSMutableData
-- (BOOL) aes256gcmDecrypt:(NSData*)ciphertext
-                plaintext:(NSMutableData**)plaintext
-                      aad:(NSData*)aad
-                      key:(const unsigned char *)key
-                     ivec:(const unsigned char *)ivec
-                      tag:(unsigned char *)tag {
-    
+- (BOOL)aes256gcmDecrypt:(NSData*)ciphertext plaintext:(NSMutableData**)plaintext aad:(NSData*)aad key:(const unsigned char *)key ivec:(const unsigned char *)ivec tag:(unsigned char *)tag
+{    
     int status = 0;
     
     if (! ciphertext || !plaintext || !key || !ivec)
@@ -368,7 +331,7 @@ cleanup:
     if (! *plaintext)
         return NO;
     
-    // set up to Decrypt AES 256 GCM
+    // set up to Decrypt AES 128 GCM
     int numberOfBytes = 0;
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     EVP_DecryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
@@ -383,7 +346,7 @@ cleanup:
     
     // add optional AAD (Additional Auth Data)
     if (aad)
-        EVP_DecryptUpdate(ctx, NULL, &numberOfBytes, [aad bytes], [aad length]);
+        EVP_DecryptUpdate(ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
     
     status = EVP_DecryptUpdate (ctx, [*plaintext mutableBytes], &numberOfBytes, [ciphertext bytes], (int)[ciphertext length]);
     if (! status) {

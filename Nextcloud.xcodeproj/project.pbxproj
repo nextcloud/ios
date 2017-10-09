@@ -544,34 +544,6 @@
 		F7D424741F063B82009C9782 /* CTAssetThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D423EA1F063B82009C9782 /* CTAssetThumbnailView.m */; };
 		F7DC5FEC1F011EB700A903C7 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */; };
 		F7DC5FED1F011EB700A903C7 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */; };
-		F7DC6B961F8AC20F002FDA6A /* IAGAesComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B841F8AC20E002FDA6A /* IAGAesComponents.m */; };
-		F7DC6B971F8AC20F002FDA6A /* IAGAesComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B841F8AC20E002FDA6A /* IAGAesComponents.m */; };
-		F7DC6B981F8AC20F002FDA6A /* IAGAesComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B841F8AC20E002FDA6A /* IAGAesComponents.m */; };
-		F7DC6B991F8AC20F002FDA6A /* IAGAesComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B841F8AC20E002FDA6A /* IAGAesComponents.m */; };
-		F7DC6B9A1F8AC20F002FDA6A /* IAGBitwiseComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B861F8AC20E002FDA6A /* IAGBitwiseComponents.m */; };
-		F7DC6B9B1F8AC20F002FDA6A /* IAGBitwiseComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B861F8AC20E002FDA6A /* IAGBitwiseComponents.m */; };
-		F7DC6B9C1F8AC20F002FDA6A /* IAGBitwiseComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B861F8AC20E002FDA6A /* IAGBitwiseComponents.m */; };
-		F7DC6B9D1F8AC20F002FDA6A /* IAGBitwiseComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B861F8AC20E002FDA6A /* IAGBitwiseComponents.m */; };
-		F7DC6B9E1F8AC20F002FDA6A /* IAGGcmEndianness.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B881F8AC20E002FDA6A /* IAGGcmEndianness.m */; };
-		F7DC6B9F1F8AC20F002FDA6A /* IAGGcmEndianness.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B881F8AC20E002FDA6A /* IAGGcmEndianness.m */; };
-		F7DC6BA01F8AC20F002FDA6A /* IAGGcmEndianness.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B881F8AC20E002FDA6A /* IAGGcmEndianness.m */; };
-		F7DC6BA11F8AC20F002FDA6A /* IAGGcmEndianness.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B881F8AC20E002FDA6A /* IAGGcmEndianness.m */; };
-		F7DC6BA21F8AC20F002FDA6A /* IAGGcmMathComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8A1F8AC20E002FDA6A /* IAGGcmMathComponents.m */; };
-		F7DC6BA31F8AC20F002FDA6A /* IAGGcmMathComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8A1F8AC20E002FDA6A /* IAGGcmMathComponents.m */; };
-		F7DC6BA41F8AC20F002FDA6A /* IAGGcmMathComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8A1F8AC20E002FDA6A /* IAGGcmMathComponents.m */; };
-		F7DC6BA51F8AC20F002FDA6A /* IAGGcmMathComponents.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8A1F8AC20E002FDA6A /* IAGGcmMathComponents.m */; };
-		F7DC6BA61F8AC20F002FDA6A /* IAGAesGcm.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8D1F8AC20E002FDA6A /* IAGAesGcm.m */; };
-		F7DC6BA71F8AC20F002FDA6A /* IAGAesGcm.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8D1F8AC20E002FDA6A /* IAGAesGcm.m */; };
-		F7DC6BA81F8AC20F002FDA6A /* IAGAesGcm.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8D1F8AC20E002FDA6A /* IAGAesGcm.m */; };
-		F7DC6BA91F8AC20F002FDA6A /* IAGAesGcm.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8D1F8AC20E002FDA6A /* IAGAesGcm.m */; };
-		F7DC6BAA1F8AC20F002FDA6A /* IAGCipheredData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8F1F8AC20E002FDA6A /* IAGCipheredData.m */; };
-		F7DC6BAB1F8AC20F002FDA6A /* IAGCipheredData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8F1F8AC20E002FDA6A /* IAGCipheredData.m */; };
-		F7DC6BAC1F8AC20F002FDA6A /* IAGCipheredData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8F1F8AC20E002FDA6A /* IAGCipheredData.m */; };
-		F7DC6BAD1F8AC20F002FDA6A /* IAGCipheredData.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B8F1F8AC20E002FDA6A /* IAGCipheredData.m */; };
-		F7DC6BAE1F8AC20F002FDA6A /* IAGError.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B911F8AC20E002FDA6A /* IAGError.m */; };
-		F7DC6BAF1F8AC20F002FDA6A /* IAGError.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B911F8AC20E002FDA6A /* IAGError.m */; };
-		F7DC6BB01F8AC20F002FDA6A /* IAGError.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B911F8AC20E002FDA6A /* IAGError.m */; };
-		F7DC6BB11F8AC20F002FDA6A /* IAGError.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC6B911F8AC20E002FDA6A /* IAGError.m */; };
 		F7DFE2521EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
 		F7DFE2531EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
 		F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE2501EBDC3A400CF5202 /* RealmSwift.framework */; };
@@ -1452,21 +1424,6 @@
 		F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
 		F7DC5FEA1F011EB700A903C7 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
 		F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeTableCell.m; sourceTree = "<group>"; };
-		F7DC6B831F8AC20E002FDA6A /* IAGAesComponents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGAesComponents.h; sourceTree = "<group>"; };
-		F7DC6B841F8AC20E002FDA6A /* IAGAesComponents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGAesComponents.m; sourceTree = "<group>"; };
-		F7DC6B851F8AC20E002FDA6A /* IAGBitwiseComponents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGBitwiseComponents.h; sourceTree = "<group>"; };
-		F7DC6B861F8AC20E002FDA6A /* IAGBitwiseComponents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGBitwiseComponents.m; sourceTree = "<group>"; };
-		F7DC6B871F8AC20E002FDA6A /* IAGGcmEndianness.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGGcmEndianness.h; sourceTree = "<group>"; };
-		F7DC6B881F8AC20E002FDA6A /* IAGGcmEndianness.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGGcmEndianness.m; sourceTree = "<group>"; };
-		F7DC6B891F8AC20E002FDA6A /* IAGGcmMathComponents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGGcmMathComponents.h; sourceTree = "<group>"; };
-		F7DC6B8A1F8AC20E002FDA6A /* IAGGcmMathComponents.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGGcmMathComponents.m; sourceTree = "<group>"; };
-		F7DC6B8B1F8AC20E002FDA6A /* IAGTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGTypes.h; sourceTree = "<group>"; };
-		F7DC6B8C1F8AC20E002FDA6A /* IAGAesGcm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGAesGcm.h; sourceTree = "<group>"; };
-		F7DC6B8D1F8AC20E002FDA6A /* IAGAesGcm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGAesGcm.m; sourceTree = "<group>"; };
-		F7DC6B8E1F8AC20E002FDA6A /* IAGCipheredData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGCipheredData.h; sourceTree = "<group>"; };
-		F7DC6B8F1F8AC20E002FDA6A /* IAGCipheredData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGCipheredData.m; sourceTree = "<group>"; };
-		F7DC6B901F8AC20E002FDA6A /* IAGError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IAGError.h; sourceTree = "<group>"; };
-		F7DC6B911F8AC20E002FDA6A /* IAGError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IAGError.m; sourceTree = "<group>"; };
 		F7DE9AAD1F482FA5008DFE10 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7DE9AAE1F482FA5008DFE10 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F7DE9AAF1F482FA5008DFE10 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
@@ -1750,7 +1707,6 @@
 		F70F02A81C889183008DAB36 /* Libraries external */ = {
 			isa = PBXGroup;
 			children = (
-				F7DC6B801F8AC20E002FDA6A /* AesGcm */,
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
 				F73CCE221DC13788007E38D8 /* DZNEmptyDataSet */,
 				F7659A211DC0B726004860C4 /* EAIntroView */,
@@ -2802,36 +2758,6 @@
 			path = MGSwipeTableCell;
 			sourceTree = "<group>";
 		};
-		F7DC6B801F8AC20E002FDA6A /* AesGcm */ = {
-			isa = PBXGroup;
-			children = (
-				F7DC6B821F8AC20E002FDA6A /* Components */,
-				F7DC6B8C1F8AC20E002FDA6A /* IAGAesGcm.h */,
-				F7DC6B8D1F8AC20E002FDA6A /* IAGAesGcm.m */,
-				F7DC6B8E1F8AC20E002FDA6A /* IAGCipheredData.h */,
-				F7DC6B8F1F8AC20E002FDA6A /* IAGCipheredData.m */,
-				F7DC6B901F8AC20E002FDA6A /* IAGError.h */,
-				F7DC6B911F8AC20E002FDA6A /* IAGError.m */,
-			);
-			path = AesGcm;
-			sourceTree = "<group>";
-		};
-		F7DC6B821F8AC20E002FDA6A /* Components */ = {
-			isa = PBXGroup;
-			children = (
-				F7DC6B831F8AC20E002FDA6A /* IAGAesComponents.h */,
-				F7DC6B841F8AC20E002FDA6A /* IAGAesComponents.m */,
-				F7DC6B851F8AC20E002FDA6A /* IAGBitwiseComponents.h */,
-				F7DC6B861F8AC20E002FDA6A /* IAGBitwiseComponents.m */,
-				F7DC6B871F8AC20E002FDA6A /* IAGGcmEndianness.h */,
-				F7DC6B881F8AC20E002FDA6A /* IAGGcmEndianness.m */,
-				F7DC6B891F8AC20E002FDA6A /* IAGGcmMathComponents.h */,
-				F7DC6B8A1F8AC20E002FDA6A /* IAGGcmMathComponents.m */,
-				F7DC6B8B1F8AC20E002FDA6A /* IAGTypes.h */,
-			);
-			path = Components;
-			sourceTree = "<group>";
-		};
 		F7DFE24E1EBDC3A400CF5202 /* Realm */ = {
 			isa = PBXGroup;
 			children = (
@@ -3460,15 +3386,12 @@
 				F70022A51EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */,
 				F73CC0731E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F73CC06A1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
-				F7DC6B9F1F8AC20F002FDA6A /* IAGGcmEndianness.m in Sources */,
 				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */,
-				F7DC6BA31F8AC20F002FDA6A /* IAGGcmMathComponents.m in Sources */,
 				F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F70022BA1EC4C9100080073F /* OCCommunication.m in Sources */,
 				F70022ED1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
-				F7DC6B971F8AC20F002FDA6A /* IAGAesComponents.m in Sources */,
 				F70022D51EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F70022FC1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F70022E41EC4C9100080073F /* OCXMLParser.m in Sources */,
@@ -3477,7 +3400,6 @@
 				F70022E11EC4C9100080073F /* OCXMLListParser.m in Sources */,
 				F73CC0791E813DFF006E3047 /* BKShiftingView.m in Sources */,
 				F71459D21D12E3B700CAFEEC /* CCUtility.m in Sources */,
-				F7DC6BA71F8AC20F002FDA6A /* IAGAesGcm.m in Sources */,
 				F71459D31D12E3B700CAFEEC /* CCBKPasscode.m in Sources */,
 				F7F8D71C1ED6183000E711F3 /* CCCellShareExt.m in Sources */,
 				F71459D51D12E3B700CAFEEC /* MBProgressHUD.m in Sources */,
@@ -3498,8 +3420,6 @@
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F70022BD1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
-				F7DC6BAF1F8AC20F002FDA6A /* IAGError.m in Sources */,
-				F7DC6BAB1F8AC20F002FDA6A /* IAGCipheredData.m in Sources */,
 				F70022A81EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
 				F70022AB1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
@@ -3515,7 +3435,6 @@
 				F72756731F7153FC0011E2FC /* NCClientEncryption.m in Sources */,
 				F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
-				F7DC6B9B1F8AC20F002FDA6A /* IAGBitwiseComponents.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3524,12 +3443,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				F70022AF1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */,
-				F7DC6BAC1F8AC20F002FDA6A /* IAGCipheredData.m in Sources */,
-				F7DC6BA01F8AC20F002FDA6A /* IAGGcmEndianness.m in Sources */,
 				F7BAADCA1ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F7BAADCD1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */,
-				F7DC6B9C1F8AC20F002FDA6A /* IAGBitwiseComponents.m in Sources */,
 				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
 				F74344641E127DE6001CC831 /* OCNetworking.m in Sources */,
 				F72756741F7153FC0011E2FC /* NCClientEncryption.m in Sources */,
@@ -3553,7 +3469,6 @@
 				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
 				F70022D61EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
-				F7DC6BB01F8AC20F002FDA6A /* IAGError.m in Sources */,
 				F70022E81EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F70022D31EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F74344791E127EA1001CC831 /* CCError.m in Sources */,
@@ -3563,8 +3478,6 @@
 				F70022A91EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
 				F70022BE1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F77EB6291EC08037003F814F /* CCExifGeo.m in Sources */,
-				F7DC6BA41F8AC20F002FDA6A /* IAGGcmMathComponents.m in Sources */,
-				F7DC6BA81F8AC20F002FDA6A /* IAGAesGcm.m in Sources */,
 				F70022CD1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F70022AC1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
 				F780710B1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
@@ -3578,7 +3491,6 @@
 				F70022D91EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
 				F73CC06E1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
-				F7DC6B981F8AC20F002FDA6A /* IAGAesComponents.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022DF1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
@@ -3597,9 +3509,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7BB50D91F2238A300C47094 /* OCXMLParser.m in Sources */,
-				F7DC6B991F8AC20F002FDA6A /* IAGAesComponents.m in Sources */,
 				F7BB50D11F22388900C47094 /* OCSharedDto.m in Sources */,
-				F7DC6B9D1F8AC20F002FDA6A /* IAGBitwiseComponents.m in Sources */,
 				F7BB50CB1F22386900C47094 /* OCCommunication.m in Sources */,
 				F7BB50D31F22388E00C47094 /* OCUserProfile.m in Sources */,
 				F7BB50BF1F22378800C47094 /* CCExifGeo.m in Sources */,
@@ -3611,7 +3521,6 @@
 				F7BB50F71F2239BF00C47094 /* BKPasscodeLockScreenManager.m in Sources */,
 				F7BB50DB1F2238A900C47094 /* OCXMLShareByLinkParser.m in Sources */,
 				F7BB50E21F2238D000C47094 /* AFURLRequestSerialization.m in Sources */,
-				F7DC6BA51F8AC20F002FDA6A /* IAGGcmMathComponents.m in Sources */,
 				F7BB50BC1F22375D00C47094 /* CCBKPasscode.m in Sources */,
 				F7BB50D81F2238A000C47094 /* OCXMLListParser.m in Sources */,
 				F7BB50E41F2238D500C47094 /* AFURLSessionManager.m in Sources */,
@@ -3623,7 +3532,6 @@
 				F7BB50FA1F2239CB00C47094 /* BKTouchIDManager.m in Sources */,
 				F7BB50BB1F22374E00C47094 /* OCNetworking.m in Sources */,
 				F7BB50C11F22378E00C47094 /* CCHud.m in Sources */,
-				F7DC6BAD1F8AC20F002FDA6A /* IAGCipheredData.m in Sources */,
 				F7BB50DE1F2238B700C47094 /* UtilsFramework.m in Sources */,
 				F7BB50D61F22389900C47094 /* OCHTTPRequestOperation.m in Sources */,
 				F7BB50BD1F22376000C47094 /* CCCertificate.m in Sources */,
@@ -3632,14 +3540,12 @@
 				F72756751F7153FC0011E2FC /* NCClientEncryption.m in Sources */,
 				F7BB50D71F22389C00C47094 /* OCWebDAVClient.m in Sources */,
 				F7BB50C01F22378B00C47094 /* CCError.m in Sources */,
-				F7DC6BB11F8AC20F002FDA6A /* IAGError.m in Sources */,
 				F7BB50E01F2238CA00C47094 /* AFNetworkReachabilityManager.m in Sources */,
 				F7BB50F81F2239C400C47094 /* BKPasscodeViewController.m in Sources */,
 				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
 				F7BB50BA1F22374A00C47094 /* CCNetworking.m in Sources */,
 				F7BB50DD1F2238B100C47094 /* NSString+Encode.m in Sources */,
 				F7BB50D51F22389600C47094 /* NSDate+RFC1123.m in Sources */,
-				F7DC6BA11F8AC20F002FDA6A /* IAGGcmEndianness.m in Sources */,
 				F7BB50A31F2236C500C47094 /* CCGlobal.m in Sources */,
 				F76B3CD11EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F7BB50CF1F22388300C47094 /* OCNotificationsAction.m in Sources */,
@@ -3652,7 +3558,6 @@
 				F7BB50F41F2239B600C47094 /* BKPasscodeDummyViewController.m in Sources */,
 				F7BB50C41F22379800C47094 /* NSString+TruncateToWidth.m in Sources */,
 				F7BB50E31F2238D200C47094 /* AFURLResponseSerialization.m in Sources */,
-				F7DC6BA91F8AC20F002FDA6A /* IAGAesGcm.m in Sources */,
 				F7BB50EB1F22391000C47094 /* MBProgressHUD.m in Sources */,
 				F7BB50D21F22388B00C47094 /* OCShareUser.m in Sources */,
 				F7BB50F31F22396300C47094 /* UIImage+animatedGIF.m in Sources */,
@@ -3693,7 +3598,6 @@
 				F77B0E031D118A16002130FE /* CCShareInfoCMOC.m in Sources */,
 				F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */,
 				F7D423881F0596C6009C9782 /* ReaderThumbView.m in Sources */,
-				F7DC6BA21F8AC20F002FDA6A /* IAGGcmMathComponents.m in Sources */,
 				F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */,
 				F73B4EFE1F470D9100BBEE4B /* LangHungarianModel.cpp in Sources */,
 				F7D4238A1F0596C6009C9782 /* ThumbsMainToolbar.m in Sources */,
@@ -3722,7 +3626,6 @@
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
 				F73B4F131F470D9100BBEE4B /* nsUniversalDetector.cpp in Sources */,
 				F72756721F7153FC0011E2FC /* NCClientEncryption.m in Sources */,
-				F7DC6BAE1F8AC20F002FDA6A /* IAGError.m in Sources */,
 				F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */,
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
 				F73B4F111F470D9100BBEE4B /* nsSBCSGroupProber.cpp in Sources */,
@@ -3790,7 +3693,6 @@
 				F762CB171EACB66200B38484 /* XLFormRegexValidator.m in Sources */,
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F762CB1A1EACB66200B38484 /* XLForm.m in Sources */,
-				F7DC6BAA1F8AC20F002FDA6A /* IAGCipheredData.m in Sources */,
 				F73B4EFC1F470D9100BBEE4B /* LangGreekModel.cpp in Sources */,
 				F762CB051EACB66200B38484 /* XLFormTextFieldCell.m in Sources */,
 				F7B4F1CB1F44356F00B53B42 /* NCUchardet.m in Sources */,
@@ -3800,12 +3702,9 @@
 				F7D4237D1F0596C6009C9782 /* ReaderContentView.m in Sources */,
 				F73B4EFA1F470D9100BBEE4B /* LangFrenchModel.cpp in Sources */,
 				F7D4245D1F063B82009C9782 /* CTAssetCollectionViewCell.m in Sources */,
-				F7DC6B9A1F8AC20F002FDA6A /* IAGBitwiseComponents.m in Sources */,
-				F7DC6B961F8AC20F002FDA6A /* IAGAesComponents.m in Sources */,
 				F7D4245E1F063B82009C9782 /* CTAssetCollectionViewController.m in Sources */,
 				F762CAF91EACB66200B38484 /* XLFormCheckCell.m in Sources */,
 				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
-				F7DC6BA61F8AC20F002FDA6A /* IAGAesGcm.m in Sources */,
 				F762CB101EACB66200B38484 /* NSPredicate+XLFormAdditions.m in Sources */,
 				F7D424691F063B82009C9782 /* CTAssetsGridViewLayout.m in Sources */,
 				F7D4237E1F0596C6009C9782 /* ReaderDocument.m in Sources */,
@@ -3919,7 +3818,6 @@
 				F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F7D424561F063B82009C9782 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */,
 				F70022AA1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
-				F7DC6B9E1F8AC20F002FDA6A /* IAGGcmEndianness.m in Sources */,
 				F7D423851F0596C6009C9782 /* ReaderThumbRender.m in Sources */,
 				F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */,
 				F73B4F141F470D9100BBEE4B /* nsUTF8Prober.cpp in Sources */,
