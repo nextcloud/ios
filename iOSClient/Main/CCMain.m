@@ -1234,6 +1234,10 @@
 
 - (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if (errorCode == 404) {
+        NSLog(@"Chiave non trovata");
+    }
+    
     NSLog(@"error");
 }
 
