@@ -38,6 +38,8 @@
 
 #define NSMakeError(description) [NSError errorWithDomain:@"com.nextcloud.nextcloudiOS" code:-1 userInfo:@{NSLocalizedDescriptionKey: description}];
 
+#define addName(field, value) X509_NAME_add_entry_by_txt(name, field,  MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
+
 #define AES_KEY_LENGTH      16
 #define AES_IVEC_LENGTH     16
 
@@ -55,6 +57,8 @@
     });
     return NCClientEncryption;
 }
+
+#pragma mark - Generate Certificate X509 & Private Key
 
 - (void)generateCertificateX509WithDirectoryUser:(NSString *)directoryUser userID:(NSString *)userID finished:(void (^)(NSError *))finished
 {
@@ -92,7 +96,7 @@
     
     // Now to add the subject name fields to the certificate
     // I use a macro here to make it cleaner.
-#define addName(field, value) X509_NAME_add_entry_by_txt(name, field,  MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
+    
     
     const unsigned char *cUserID = (const unsigned char *) [userID cStringUsingEncoding:NSUTF8StringEncoding];
 
@@ -242,18 +246,9 @@ cleanup:
     return NSMakeError(errorBody);
 }
 
-- (NSString *)createSHA512:(NSString *)string
-{
-    const char *cstr = [string cStringUsingEncoding:NSUTF8StringEncoding];
-    NSData *data = [NSData dataWithBytes:cstr length:string.length];
-    uint8_t digest[CC_SHA512_DIGEST_LENGTH];
-    CC_SHA512(data.bytes, (unsigned int)data.length, digest);
-    NSMutableString* output = [NSMutableString  stringWithCapacity:CC_SHA512_DIGEST_LENGTH * 2];
-    
-    for(int i = 0; i < CC_SHA512_DIGEST_LENGTH; i++)
-        [output appendFormat:@"%02x", digest[i]];
-    return output;
-}
+#
+#pragma mark - Encrypt/Decrypt AES/GCM/NoPadding as cipher (128 bit key size)
+#
 
 - (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
 {
@@ -374,4 +369,20 @@ cleanup:
     return (status != 0); // OpenSSL uses 1 for success
 }
 
+#
+#pragma mark - Utility
+#
+
+- (NSString *)createSHA512:(NSString *)string
+{
+    const char *cstr = [string cStringUsingEncoding:NSUTF8StringEncoding];
+    NSData *data = [NSData dataWithBytes:cstr length:string.length];
+    uint8_t digest[CC_SHA512_DIGEST_LENGTH];
+    CC_SHA512(data.bytes, (unsigned int)data.length, digest);
+    NSMutableString* output = [NSMutableString  stringWithCapacity:CC_SHA512_DIGEST_LENGTH * 2];
+    
+    for(int i = 0; i < CC_SHA512_DIGEST_LENGTH; i++)
+        [output appendFormat:@"%02x", digest[i]];
+    return output;
+}
 @end
