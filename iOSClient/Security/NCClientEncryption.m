@@ -255,59 +255,33 @@ cleanup:
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
     
-    // Encrypt
-    //NSData *dataEncrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/iosencrypted.jpg", activeUrl]];
-    //NSData *encryptedData = cipherOperation(dataEncrypt, keyData, initVectorData, kCCEncrypt);
-    //if (encryptedData != nil)
-    //    [encryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"crypted.dms"] atomically:YES];
-    
     // Decrypt
     //NSData *dataDecrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/crypted.dms", activeUrl]];
     NSData *dataDecrypt = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
-    NSData *decryptedData = cipherOperation(dataDecrypt, keyData, initVectorData, kCCDecrypt);
+    NSData *decryptedData = [self decryptDataAESGSM:dataDecrypt keyData:keyData initVectorData:initVectorData];
 
     if (decryptedData != nil)
         [decryptedData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
 }
 
-NSData *cipherOperation(NSData *contentData, NSData *keyData, NSData *initVectorData, CCOperation operation)
+- (NSData *)decryptDataAESGSM:(NSData *)contentData keyData:(NSData*)keyData initVectorData:(NSData *)initVectorData
 {
     NSError *error;
+
+    //
+    NSData *authData = [@"" dataUsingEncoding:NSUTF8StringEncoding];
     
-    // setup key
-    unsigned char cKey[kCCKeySizeAES128];
-    bzero(cKey, sizeof(cKey));
-    [keyData getBytes:cKey length:kCCKeySizeAES128];
-    NSData *key = [NSData dataWithBytes:cKey length:kCCKeySizeAES128];
-    NSData *key2 = [NSData dataWithBytesNoCopy:@"bGzWfQBj2lE4ZnysDWwsIg==" length:kCCKeySizeAES128];
-
-    // setup iv
-    char cIv[kCCBlockSizeAES128];
-    bzero(cIv, kCCBlockSizeAES128);
-    [initVectorData getBytes:cIv length:kCCBlockSizeAES128];
-    NSData *iv = [NSData dataWithBytes:cIv length:kCCKeySizeAES128];
-    NSData *iv2 = [NSData dataWithBytesNoCopy:@"rTBECYNekKF+a1HR7z32/Q==" length:kCCKeySizeAES128];
-
     // tag
     NSMutableData *tag = [NSMutableData dataWithLength:kCCBlockSizeAES128];
     size_t tagLength = kCCBlockSizeAES128;
     
-    IAGCipheredData *cipheredData = [IAGCipheredData init];
-    IAGCipheredData *cipheredData2 = [IAGCipheredData initWithCipheredBuffer:nil cipheredBufferLength:contentData.lenght authenticationTag:tag authenticationTagLength:tagLength];
     
-                                     
-                                      /*
-                                       - (instancetype)initWithCipheredBuffer:(const void *)cipheredBuffer
-                                       cipheredBufferLength:(NSUInteger)cipheredBufferLength
-                                       authenticationTag:(const void *)authenticationTag
-                                       authenticationTagLength:(IAGAuthenticationTagLength)authenticationTagLength
-                                       */
-                                      
-                                      
+    IAGCipheredData *cipheredData = [[IAGCipheredData alloc] initWithCipheredBuffer:contentData.bytes cipheredBufferLength:contentData.length authenticationTag:tag.bytes authenticationTagLength:tagLength];
+    
     NSData *plainData = [IAGAesGcm plainDataByAuthenticatedDecryptingCipheredData:cipheredData
-                                                  withAdditionalAuthenticatedData:[@"" dataUsingEncoding:NSUTF8StringEncoding]
-                                                             initializationVector:iv
-                                                                              key:key
+                                                  withAdditionalAuthenticatedData:authData
+                                                             initializationVector:initVectorData
+                                                                              key:keyData
                                                                             error:&error];
     
     return plainData;
