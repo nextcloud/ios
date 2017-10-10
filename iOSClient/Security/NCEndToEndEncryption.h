@@ -23,6 +23,9 @@
 
 #import <Foundation/Foundation.h>
 
+#define fileNameCertificate @""
+#define fileNamePrivateKey  @""
+
 @class tableMetadata;
 
 @interface NCEndToEndEncryption : NSObject
