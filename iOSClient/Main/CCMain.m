@@ -1299,13 +1299,26 @@
         if (!error) {
             
             NSError *error;
-            
+            NSString *publicKey;
+
             NSString *fileNamePath = [NSString stringWithFormat:@"%@/e2e_certificate.pem", app.directoryUser];
             NSString *certificate = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
-            NSString *certificateEncoded = [certificate stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+            
+            NSString *startPublicKey = @"-----BEGIN PUBLIC KEY-----";
+            NSString *endPublicKey = @"-----END PUBLIC KEY-----";
+
+            NSScanner *scanner = [NSScanner scannerWithString:certificate];
+            [scanner scanUpToString:startPublicKey intoString:nil];
+            [scanner scanString:endPublicKey intoString:nil];
+            
+            [scanner scanUpToString:startPublicKey intoString:nil];
+            [scanner scanString:startPublicKey intoString:nil];
+            [scanner scanUpToString:endPublicKey intoString:&publicKey];
+            
+            NSString *publicKeyEncoded = [publicKey stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
             
             metadataNet.action = actionSignEndToEndPublicKey;
-            metadataNet.options = certificateEncoded;
+            metadataNet.options = publicKeyEncoded;
             
             [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
             
