@@ -257,7 +257,7 @@ class NCManageDatabase: NSObject {
             return ""
         }
         
-        if result.autoUploadFileName.characters.count > 0 {
+        if result.autoUploadFileName.count > 0 {
             return result.autoUploadFileName
         } else {
             return NCBrandOptions.sharedInstance.folderDefaultAutoUpload
@@ -272,7 +272,7 @@ class NCManageDatabase: NSObject {
             return ""
         }
         
-        if result.autoUploadDirectory.characters.count > 0 {
+        if result.autoUploadDirectory.count > 0 {
             return result.autoUploadDirectory
         } else {
             return CCUtility.getHomeServerUrlActiveUrl(activeUrl)
@@ -409,7 +409,7 @@ class NCManageDatabase: NSObject {
                 }
                 
                 // Update userID
-                if userProfile.id.characters.count == 0 { // for old config.
+                if userProfile.id.count == 0 { // for old config.
                     result.userID = result.user
                 } else {
                     result.userID = userProfile.id
@@ -2158,19 +2158,19 @@ class NCManageDatabase: NSObject {
                 result.shareUserAndGroup = shares.joined(separator: ",")
             }
             
-            if (result.shareLink.characters.count > 0) {
+            if (result.shareLink.count > 0) {
                 sharesLink.updateValue(result.shareLink, forKey:"\(serverUrl)\(fileName)")
             } else {
                 sharesLink.removeValue(forKey: "\(serverUrl)\(fileName)")
             }
             
-            if (result.shareUserAndGroup.characters.count > 0) {
+            if (result.shareUserAndGroup.count > 0) {
                 sharesUserAndGroup.updateValue(result.shareUserAndGroup, forKey:"\(serverUrl)\(fileName)")
             } else {
                 sharesUserAndGroup.removeValue(forKey: "\(serverUrl)\(fileName)")
             }
             
-            if (result.shareLink.characters.count == 0 && result.shareUserAndGroup.characters.count == 0) {
+            if (result.shareLink.count == 0 && result.shareUserAndGroup.count == 0) {
                 realm.delete(result)
             }
         }
@@ -2224,7 +2224,7 @@ class NCManageDatabase: NSObject {
                 itemsLink.append(itemOCSharedDto)
             }
             
-            if (itemOCSharedDto.shareWith.characters.count > 0 && (itemOCSharedDto.shareType == Int(shareTypeUser.rawValue) || itemOCSharedDto.shareType == Int(shareTypeGroup.rawValue) || itemOCSharedDto.shareType == Int(shareTypeRemote.rawValue)  )) {
+            if (itemOCSharedDto.shareWith.count > 0 && (itemOCSharedDto.shareType == Int(shareTypeUser.rawValue) || itemOCSharedDto.shareType == Int(shareTypeGroup.rawValue) || itemOCSharedDto.shareType == Int(shareTypeRemote.rawValue)  )) {
                 itemsUsersAndGroups.append(itemOCSharedDto)
             }
         }
@@ -2235,10 +2235,10 @@ class NCManageDatabase: NSObject {
             
             let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(itemOCSharedDto.path!)"
             let fileName = NSString(string: fullPath).lastPathComponent
-            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - fileName.characters.count - 1))
+            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
             
             if serverUrl.hasSuffix("/") {
-                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.characters.count - 1))
+                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
             }
             
             if itemOCSharedDto.idRemoteShared > 0 {
@@ -2277,10 +2277,10 @@ class NCManageDatabase: NSObject {
             
             let fullPath = CCUtility.getHomeServerUrlActiveUrl(activeUrl) + "\(path)"
             let fileName = NSString(string: fullPath).lastPathComponent
-            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.characters.count - fileName.characters.count - 1))
+            var serverUrl = NSString(string: fullPath).substring(to: (fullPath.count - fileName.count - 1))
             
             if serverUrl.hasSuffix("/") {
-                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.characters.count - 1))
+                serverUrl = NSString(string: serverUrl).substring(to: (serverUrl.count - 1))
             }
             
             let sharesUserAndGroupReturn = self.addShareUserAndGroup(idsRemoteShared, fileName: fileName, serverUrl: serverUrl)
@@ -2309,11 +2309,11 @@ class NCManageDatabase: NSObject {
         
         for resultShare in results {
             
-            if (resultShare.shareLink.characters.count > 0) {
+            if (resultShare.shareLink.count > 0) {
                 sharesLink = [resultShare.shareLink: "\(resultShare.serverUrl)\(resultShare.fileName)"]
             }
             
-            if (resultShare.shareUserAndGroup.characters.count > 0) {
+            if (resultShare.shareUserAndGroup.count > 0) {
                 sharesUserAndGroup = [resultShare.shareUserAndGroup: "\(resultShare.serverUrl)\(resultShare.fileName)"]
             }
         }

@@ -110,7 +110,7 @@ class NCText: UIViewController, UITextViewDelegate {
     
     func textViewDidChange(_ textView: UITextView) {
         
-        if textView.text.characters.count == 0 {
+        if textView.text.count == 0 {
             nextButton.isEnabled = false
         } else {
             nextButton.isEnabled = true

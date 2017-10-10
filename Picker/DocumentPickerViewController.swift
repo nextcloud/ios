@@ -125,7 +125,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         // Theming
         let tableCapabilities = NCManageDatabase.sharedInstance.getCapabilites()
         if (tableCapabilities != nil && NCBrandOptions.sharedInstance.use_themingColor == true) {
-            if ((tableCapabilities?.themingColor.characters.count)! > 0) {
+            if ((tableCapabilities?.themingColor.count)! > 0) {
                 NCBrandColor.sharedInstance.brand = CCGraphics.color(fromHexString: tableCapabilities?.themingColor)
             }
         }
@@ -705,7 +705,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
 
             if tableDirectory != nil {
                 
-                if (tableDirectory?.lock)! && (passcode?.characters.count)! > 0 {
+                if (tableDirectory?.lock)! && (passcode?.count)! > 0 {
                     
                     self.passcodeIsPush = true
                     openBKPasscode(recordMetadata.fileName)

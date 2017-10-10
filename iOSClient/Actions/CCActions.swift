@@ -156,7 +156,7 @@ class CCActions: NSObject {
             return
         }
         
-        if fileName.characters.count == 0 {
+        if fileName.count == 0 {
             return
         }
         
