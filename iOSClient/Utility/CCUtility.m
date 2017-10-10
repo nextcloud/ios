@@ -478,8 +478,9 @@
         value /= 1024;
         multiplicationFactor++;
     }
+    double fractionalPart = value - (int)value;
     NSString *formatString;
-    if (multiplicationFactor == 0) {
+    if (fractionalPart < 0.005 || 0.995 <= fractionalPart) {
         formatString = @"%.0f %@";
     } else {
         formatString = @"%.2f %@";
