@@ -1,5 +1,5 @@
 //
-//  NCClientEncryption.m
+//  NCEndToEndEncryption.m
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 19/09/17.
@@ -21,7 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "NCClientEncryption.h"
+#import "NCEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
 
 #import <CommonCrypto/CommonDigest.h>
@@ -46,16 +46,16 @@
 
 //#define AES_KEY_LENGTH_BITS 128
 
-@implementation NCClientEncryption
+@implementation NCEndToEndEncryption
 
 //Singleton
 + (id)sharedManager {
-    static NCClientEncryption *NCClientEncryption = nil;
+    static NCEndToEndEncryption *NCEndToEndEncryption = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NCClientEncryption = [self new];
+        NCEndToEndEncryption = [self new];
     });
-    return NCClientEncryption;
+    return NCEndToEndEncryption;
 }
 
 #

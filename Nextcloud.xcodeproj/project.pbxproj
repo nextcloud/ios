@@ -97,6 +97,10 @@
 		F70944BD1F86364000AE4541 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70944BC1F86364000AE4541 /* MainInterface.storyboard */; };
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
+		F70CAE3B1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
+		F70CAE3C1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
+		F70CAE3D1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F710E8101EF95C9C00DC2427 /* CCIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = F710E80E1EF95C9C00DC2427 /* CCIntro.m */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
@@ -125,10 +129,6 @@
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
-		F72756721F7153FC0011E2FC /* NCClientEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72756711F7153FC0011E2FC /* NCClientEncryption.m */; };
-		F72756731F7153FC0011E2FC /* NCClientEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72756711F7153FC0011E2FC /* NCClientEncryption.m */; };
-		F72756741F7153FC0011E2FC /* NCClientEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72756711F7153FC0011E2FC /* NCClientEncryption.m */; };
-		F72756751F7153FC0011E2FC /* NCClientEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72756711F7153FC0011E2FC /* NCClientEncryption.m */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
 		F732B3371E8045A1002B7D75 /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F732B3351E8045A1002B7D75 /* SwiftWebVC.strings */; };
@@ -736,6 +736,8 @@
 		F70944BC1F86364000AE4541 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F70A63061D5B3467004E2AA5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
 		F70A63071D5B3467004E2AA5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
+		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
+		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
 		F70F02B31C889183008DAB36 /* AFViewShaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFViewShaker.h; sourceTree = "<group>"; };
 		F70F02B41C889183008DAB36 /* AFViewShaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFViewShaker.m; sourceTree = "<group>"; };
 		F70F04831C889183008DAB36 /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
@@ -774,8 +776,6 @@
 		F720E01E1E48C73E001A4B9E /* CCActions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = CCActions.swift; path = Actions/CCActions.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		F7226EDB1EE4089300EBECB1 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
-		F72756701F7153FC0011E2FC /* NCClientEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCClientEncryption.h; sourceTree = "<group>"; };
-		F72756711F7153FC0011E2FC /* NCClientEncryption.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCClientEncryption.m; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
 		F72AAEC21E5C60C700BB17E1 /* AHKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheet.h; sourceTree = "<group>"; };
 		F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHKActionSheet.m; sourceTree = "<group>"; };
@@ -2981,8 +2981,8 @@
 		F7FE125B1BAC03FB0041924B /* Security */ = {
 			isa = PBXGroup;
 			children = (
-				F72756701F7153FC0011E2FC /* NCClientEncryption.h */,
-				F72756711F7153FC0011E2FC /* NCClientEncryption.m */,
+				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
+				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 				F7FE125C1BAC03FB0041924B /* CCBKPasscode.h */,
 				F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */,
 				F7F801001D98205A007537BC /* CCCertificate.h */,
@@ -3431,8 +3431,8 @@
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */,
+				F70CAE3B1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */,
-				F72756731F7153FC0011E2FC /* NCClientEncryption.m in Sources */,
 				F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 			);
@@ -3448,7 +3448,6 @@
 				F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */,
 				F74344651E127DE9001CC831 /* CCNetworking.m in Sources */,
 				F74344641E127DE6001CC831 /* OCNetworking.m in Sources */,
-				F72756741F7153FC0011E2FC /* NCClientEncryption.m in Sources */,
 				F70022CA1EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
 				F70023001EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F73CC07A1E813DFF006E3047 /* BKShiftingView.m in Sources */,
@@ -3493,6 +3492,7 @@
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022DF1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
+				F70CAE3C1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
 				F734E5921F019D870060CB77 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
@@ -3510,6 +3510,7 @@
 			files = (
 				F7BB50D91F2238A300C47094 /* OCXMLParser.m in Sources */,
 				F7BB50D11F22388900C47094 /* OCSharedDto.m in Sources */,
+				F70CAE3D1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F7BB50CB1F22386900C47094 /* OCCommunication.m in Sources */,
 				F7BB50D31F22388E00C47094 /* OCUserProfile.m in Sources */,
 				F7BB50BF1F22378800C47094 /* CCExifGeo.m in Sources */,
@@ -3537,7 +3538,6 @@
 				F7BB50BD1F22376000C47094 /* CCCertificate.m in Sources */,
 				F7BB50DA1F2238A600C47094 /* OCXMLServerErrorsParser.m in Sources */,
 				F7BB50C51F22379B00C47094 /* NSNotificationCenter+MainThread.m in Sources */,
-				F72756751F7153FC0011E2FC /* NCClientEncryption.m in Sources */,
 				F7BB50D71F22389C00C47094 /* OCWebDAVClient.m in Sources */,
 				F7BB50C01F22378B00C47094 /* CCError.m in Sources */,
 				F7BB50E01F2238CA00C47094 /* AFNetworkReachabilityManager.m in Sources */,
@@ -3625,7 +3625,6 @@
 				F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */,
 				F77B0E141D118A16002130FE /* CCError.m in Sources */,
 				F73B4F131F470D9100BBEE4B /* nsUniversalDetector.cpp in Sources */,
-				F72756721F7153FC0011E2FC /* NCClientEncryption.m in Sources */,
 				F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */,
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
 				F73B4F111F470D9100BBEE4B /* nsSBCSGroupProber.cpp in Sources */,
@@ -3780,6 +3779,7 @@
 				F762CB0A1EACB66200B38484 /* XLFormDescriptor.m in Sources */,
 				F7D4238C1F0596C6009C9782 /* UIXToolbarView.m in Sources */,
 				F7A321791E9E3EAF0069AD1B /* CCTransfers.m in Sources */,
+				F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F73B4F0C1F470D9100BBEE4B /* nsHebrewProber.cpp in Sources */,
 				F762CAFB1EACB66200B38484 /* XLFormDatePickerCell.m in Sources */,
 				F762CB0F1EACB66200B38484 /* NSObject+XLFormAdditions.m in Sources */,

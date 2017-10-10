@@ -1,5 +1,5 @@
 //
-//  NCClientEncryption.h
+//  NCEndToEndEncryption.h
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 19/09/17.
@@ -25,7 +25,7 @@
 
 @class tableMetadata;
 
-@interface NCClientEncryption : NSObject
+@interface NCEndToEndEncryption : NSObject
 
 + (id)sharedManager;
 

@@ -31,7 +31,7 @@
 #import "CCSynchronize.h"
 #import "CCMain.h"
 #import "CCDetail.h"
-#import "NCClientEncryption.h"
+#import "NCEndToEndEncryption.h"
 #import "Firebase.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
@@ -422,7 +422,7 @@
     NSString *pushToken = [[FIRInstanceID instanceID] token];
     // NSString *pushToken = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
     
-    NSString *pushTokenHash = [[NCClientEncryption sharedManager] createSHA512:pushToken];
+    NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:pushToken];
     NSDictionary *devicePushKey = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"DevicePushKey-Info" ofType:@"plist"]];
     
 #ifdef DEBUG
@@ -477,7 +477,7 @@
 
 }
 
-- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     UIApplicationState state = [application applicationState];
     

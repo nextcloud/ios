@@ -34,7 +34,7 @@
 #import "CTAssetCheckmark.h"
 #import "JDStatusBarNotification.h"
 #import "NCAutoUpload.h"
-#import "NCClientEncryption.h"
+#import "NCEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
@@ -5058,13 +5058,12 @@
 #ifdef DEBUG
             // TEST ENCRYPTED/DECRYPTED
             if ([_metadata.fileName containsString:@".dms"]) {
-                [[NCClientEncryption sharedManager] decryptMetadata:_metadata activeUrl:app.directoryUser];
+                [[NCEndToEndEncryption sharedManager] decryptMetadata:_metadata activeUrl:app.directoryUser];
             }
             
             if ([_metadata.fileName containsString:@"test_encry_marino.jpg"]) {
-                [[NCClientEncryption sharedManager] encryptMetadata:_metadata activeUrl:app.directoryUser];
+                [[NCEndToEndEncryption sharedManager] encryptMetadata:_metadata activeUrl:app.directoryUser];
             }
-            
 #endif
 
             [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
