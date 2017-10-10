@@ -23,19 +23,17 @@
 
 #import <Foundation/Foundation.h>
 
-#define fileNameCertificate @""
-#define fileNamePrivateKey  @""
-
 @class tableMetadata;
 
 @interface NCEndToEndEncryption : NSObject
 
 + (id)sharedManager;
 
-- (void)generateCertificateX509WithDirectoryUser:(NSString *)directoryUser userID:(NSString *)userID finished:(void (^)(NSError *))finished;
 - (NSString *)createSHA512:(NSString *)string;
 
 - (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
+
+- (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser;
 
 @end

@@ -36,13 +36,14 @@
 #import <openssl/err.h>
 #import <openssl/bn.h>
 
-#define NSMakeError(description) [NSError errorWithDomain:@"com.nextcloud.nextcloudiOS" code:-1 userInfo:@{NSLocalizedDescriptionKey: description}];
-
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
 #define AES_KEY_LENGTH      16
 #define AES_IVEC_LENGTH     16
 #define AES_GCM_TAG_LENGTH  16
+
+#define fileNameCertificate @"e2e_certificate.pem"
+#define fileNamePrivateKey  @"e2e_certificate.pem"
 
 //#define AES_KEY_LENGTH_BITS 128
 
@@ -62,7 +63,7 @@
 #pragma mark - Generate Certificate X509 & Private Key
 #
 
-- (void)generateCertificateX509WithDirectoryUser:(NSString *)directoryUser userID:(NSString *)userID finished:(void (^)(NSError *))finished
+- (BOOL)generateCertificateX509WithUserID:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
     OPENSSL_init_ssl(0, NULL);
     OPENSSL_init_crypto(0, NULL);
@@ -74,8 +75,7 @@
     NSError *keyError;
     pkey = [self generateRSAKey:&keyError];
     if (keyError) {
-        finished(keyError);
-        return;
+        return NO;
     }
     
     //
@@ -143,20 +143,20 @@
     // Specify the encryption algorithm of the signature.
     // SHA256 should suit your needs.
     if (X509_sign(x509, pkey, EVP_sha256()) < 0) {
-        finished([self opensslError:@"Error signing the certificate with the key"]);
-        return;
+        return NO;
     }
     
     X509_print_fp(stdout, x509);
     
-    [self savePEMWithCert:x509 key:pkey directoryUser:directoryUser finished:finished];
+    [self savePEMWithCert:x509 key:pkey directoryUser:directoryUser];
+    
+    return YES;
 }
 
 - (EVP_PKEY *)generateRSAKey:(NSError **)error
 {
     EVP_PKEY *pkey = EVP_PKEY_new();
     if (!pkey) {
-        *error = [self opensslError:@"Error creating modulus."];
         return NULL;
     }
     
@@ -165,17 +165,14 @@
     RSA *rsa = RSA_new();
     
     if (BN_set_word(bigNumber, exponent) < 0) {
-        *error = [self opensslError:@"Error creating modulus."];
         goto cleanup;
     }
     
     if (RSA_generate_key_ex(rsa, 2048, bigNumber, NULL) < 0) {
-        *error = [self opensslError:@"Error generating private key."];
         goto cleanup;
     }
     
     if (!EVP_PKEY_set1_RSA(pkey, rsa)) {
-        *error = [self opensslError:@"Unable to generate RSA key"];
         goto cleanup;
     }
     
@@ -186,10 +183,10 @@ cleanup:
     return pkey;
 }
 
-- (void)savePEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished
+- (BOOL)savePEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser
 {
-    NSString *keyPath = [NSString stringWithFormat:@"%@/e2e_privatekey.pem", directoryUser];
-    NSString *certPath = [NSString stringWithFormat:@"%@/e2e_certificate.pem", directoryUser];
+    NSString *keyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
+    NSString *certPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey];
     
     FILE *f = fopen([keyPath fileSystemRepresentation], "wb");
     
@@ -199,8 +196,8 @@ cleanup:
     
     if (PEM_write_PrivateKey(f, pkey, NULL, NULL, 0, NULL, NULL) < 0) {
         // Error encrypting or writing to disk.
-        finished([self opensslError:@"Error saving private key."]);
         fclose(f);
+        return NO;
     }
     NSLog(@"Saved key to %@", keyPath);
     fclose(f);
@@ -211,15 +208,16 @@ cleanup:
     // since this is public facing information
     if (PEM_write_X509(f, x509) < 0) {
         // Error writing to disk.
-        finished([self opensslError:@"Error saving cert."]);
         fclose(f);
+        return NO;
     }
     NSLog(@"Saved cert to %@", certPath);
     fclose(f);
-    finished(nil);
+    
+    return YES;
 }
 
-- (void)saveP12WithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished
+- (BOOL)saveP12WithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished
 {
     //PKCS12 * p12 = PKCS12_create([password UTF8String], NULL, pkey, x509, NULL, 0, 0, PKCS12_DEFAULT_ITER, 1, NID_key_usage);
     PKCS12 *p12 = PKCS12_create(NULL, NULL, pkey, x509, NULL, 0, 0, PKCS12_DEFAULT_ITER, 1, NID_key_usage);
@@ -229,23 +227,46 @@ cleanup:
     FILE *f = fopen([path fileSystemRepresentation], "wb");
     
     if (i2d_PKCS12_fp(f, p12) != 1) {
-        finished([self opensslError:@"Error writing p12 to disk."]);
         fclose(f);
-        return;
+        return NO;
     }
     NSLog(@"Saved p12 to %@", path);
     fclose(f);
-    finished(nil);
+    
+    return YES;
 }
 
-- (NSError *)opensslError:(NSString *)description
+- (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
-    const char *file;
-    int line;
-    ERR_peek_last_error_line(&file, &line);
-    NSString *errorBody = [NSString stringWithFormat:@"%@ - OpenSSL Error %s:%i", description, file, line];
-    NSLog(@"%@", errorBody);
-    return NSMakeError(errorBody);
+    NSString *publicKeyEncoded;
+    BOOL result = [self generateCertificateX509WithUserID:userID directoryUser:directoryUser];
+    
+    if (result) {
+        
+        NSError *error;
+        NSString *publicKey;
+        
+        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
+        NSString *certificate = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
+        
+        NSString *startPublicKey = @"-----BEGIN PUBLIC KEY-----";
+        NSString *endPublicKey = @"-----END PUBLIC KEY-----";
+        
+        NSScanner *scanner = [NSScanner scannerWithString:certificate];
+        [scanner scanUpToString:startPublicKey intoString:nil];
+        [scanner scanString:endPublicKey intoString:nil];
+        
+        [scanner scanUpToString:startPublicKey intoString:nil];
+        [scanner scanString:startPublicKey intoString:nil];
+        [scanner scanUpToString:endPublicKey intoString:&publicKey];
+        
+        publicKeyEncoded = [publicKey stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        
+    } else {
+        return nil;
+    }
+    
+    return publicKeyEncoded;
 }
 
 #

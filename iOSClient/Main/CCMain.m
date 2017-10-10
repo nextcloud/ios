@@ -1268,14 +1268,28 @@
 
 - (void)getEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+
     switch (errorCode) {
         case 400:
             message = @"bad request: unpredictable internal error";
             [app messageNotification:@"E2E public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             break;
-        case 404:
-            [self signEndToEndPublicKey];
-            message = @"one or more public keys couldn't be found";
+        case 404: {
+            
+                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+                NSString *publicKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPublicKey:app.activeUserID directoryUser:app.directoryUser];
+            
+                if (publicKeyEncoded) {
+                    metadataNet.action = actionSignEndToEndPublicKey;
+                    metadataNet.options = publicKeyEncoded;
+            
+                    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+                    
+                } else {
+                    
+                }
+                message = @"one or more public keys couldn't be found";
+            }
             break;
         case 409:
             message = @"forbidden: the user can't access the public key";
@@ -1288,44 +1302,6 @@
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
-}
-
-- (void)signEndToEndPublicKey
-{
-    [[NCEndToEndEncryption sharedManager] generateCertificateX509WithDirectoryUser:app.directoryUser userID:app.activeUserID finished:^(NSError *error) {
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-        
-        if (!error) {
-            
-            NSError *error;
-            NSString *publicKey;
-
-            NSString *fileNamePath = [NSString stringWithFormat:@"%@/e2e_certificate.pem", app.directoryUser];
-            NSString *certificate = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
-            
-            NSString *startPublicKey = @"-----BEGIN PUBLIC KEY-----";
-            NSString *endPublicKey = @"-----END PUBLIC KEY-----";
-
-            NSScanner *scanner = [NSScanner scannerWithString:certificate];
-            [scanner scanUpToString:startPublicKey intoString:nil];
-            [scanner scanString:endPublicKey intoString:nil];
-            
-            [scanner scanUpToString:startPublicKey intoString:nil];
-            [scanner scanString:startPublicKey intoString:nil];
-            [scanner scanUpToString:endPublicKey intoString:&publicKey];
-            
-            NSString *publicKeyEncoded = [publicKey stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
-            
-            metadataNet.action = actionSignEndToEndPublicKey;
-            metadataNet.options = publicKeyEncoded;
-            
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-            
-        } else {
-            
-        }
-    }];
 }
 
 #pragma mark -
