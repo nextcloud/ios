@@ -197,6 +197,7 @@ extern NSString *const dav;
 
 #define actionGetEndToEndPrivateKey                     @"getEndToEndPrivateKey"
 #define actionGetEndToEndPublicKey                      @"getEndToEndPublicKey"
+#define actionSignEndToEndPublicKey                     @"signEndToEndPublicKey"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"
