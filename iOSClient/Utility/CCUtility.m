@@ -478,14 +478,9 @@
         value /= 1024;
         multiplicationFactor++;
     }
-    double fractionalPart = value - (int)value;
-    NSString *formatString;
-    if (fractionalPart < 0.005 || 0.995 <= fractionalPart) {
-        formatString = @"%.0f %@";
-    } else {
-        formatString = @"%.2f %@";
-    }
-    return [NSString stringWithFormat:formatString, value, [tokens objectAtIndex:multiplicationFactor]];
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    [formatter setMaximumFractionDigits:2];
+    return [NSString stringWithFormat:@"%@ %@", [formatter stringFromNumber:[NSNumber numberWithDouble:value]], [tokens objectAtIndex:multiplicationFactor]];
 }
 
 // Remove do not forbidden characters for Nextcloud Server
