@@ -196,6 +196,7 @@ extern NSString *const dav;
 #define actionUpdateShare                               @"updateShare"
 
 #define actionGetEndToEndPrivateKey                     @"getEndToEndPrivateKey"
+#define actionGetEndToEndPublicKey                      @"getEndToEndPublicKey"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"
@@ -242,6 +243,7 @@ extern NSString *const dav;
 #define k_activityDebugActionPushProxy                  @"Subscribing Push Proxy"
 #define k_activityDebugActionServerPush                 @"Subscribing Server Push"
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
+#define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
 
 // Priority Auto Upload
 #define k_priorityAutoUploadImage                       0

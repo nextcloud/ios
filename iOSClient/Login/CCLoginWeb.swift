@@ -64,8 +64,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     var serverUrl : String = keyValue[0].replacingOccurrences(of: "/server:", with: "")
                     
-                    if (serverUrl.characters.last == "/") {
-                        serverUrl = String(serverUrl.characters.dropLast())
+                    if (serverUrl.last == "/") {
+                        serverUrl = String(serverUrl.dropLast())
                     }
                 
                     let username : String = keyValue[1].replacingOccurrences(of: "user:", with: "")

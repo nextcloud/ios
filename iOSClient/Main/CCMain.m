@@ -1187,6 +1187,9 @@
         
         metadataNet.action = actionGetEndToEndPrivateKey;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        
+        metadataNet.action = actionGetEndToEndPublicKey;
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -1237,11 +1240,53 @@
 
 - (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 404) {
-        NSLog(@"Chiave non trovata");
+    switch (errorCode) {
+        case 400:
+            message = @"bad request: unpredictable internal error";
+            [app messageNotification:@"E2E private key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            break;
+        case 404:
+            message = @"private key doesn't exists";
+            break;
+        case 409:
+            message = @"forbidden: the user can't access the private key";
+            [app messageNotification:@"E2E private key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            break;
+        default:
+            [app messageNotification:@"E2E private key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            break;
     }
     
-    NSLog(@"error");
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+}
+
+- (void)getEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
+{
+    NSLog(@"OK");
+}
+
+- (void)getEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    switch (errorCode) {
+        case 400:
+            message = @"bad request: unpredictable internal error";
+            [app messageNotification:@"E2E public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            break;
+        case 404:
+            message = @"one or more public keys couldn't be found";
+            break;
+        case 409:
+            message = @"forbidden: the user can't access the public key";
+            [app messageNotification:@"E2E public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            break;
+        default:
+            [app messageNotification:@"E2E public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            break;
+    }
+    
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
 #pragma mark -
