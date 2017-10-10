@@ -681,7 +681,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
             let fileNamePath = "\(directoryUser)/\(metadata!.fileID)"
             
-            if FileManager.default.fileExists(atPath: fileNamePath) {
+            if FileManager.default.fileExists(atPath: fileNamePath) && metadata!.typeFile != k_metadataTypeFile_document {
                 
                 downloadFileSuccess(recordMetadata.fileID, serverUrl: self.serverUrl!, selector: selectorLoadFileView, selectorPost: nil)
                 

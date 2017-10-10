@@ -1182,9 +1182,12 @@
     metadataNet.action = actionGetActivityServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
-    // Get End-To-End PrivateKey
-    metadataNet.action = actionGetEndToEndPrivateKey;
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    // Get End-To-End PrivateKey (if enabled)
+    if (capabilities.isEndToEndEncryptionEnabled) {
+        
+        metadataNet.action = actionGetEndToEndPrivateKey;
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    }
 }
 
 #pragma mark -
