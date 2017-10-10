@@ -614,8 +614,8 @@ class NCManageDatabase: NSObject {
         
         let versionServer = capabilities.versionString
         
-        var v1 = versionServer.characters.split(separator:".").map { Int(String($0)) }
-        var v2 = versionCompare.characters.split(separator:".").map { Int(String($0)) }
+        var v1 = versionServer.split(separator:".").map { Int(String($0)) }
+        var v2 = versionCompare.split(separator:".").map { Int(String($0)) }
         
         var result = 0
         for i in 0..<max(v1.count,v2.count) {
