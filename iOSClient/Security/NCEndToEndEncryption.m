@@ -249,8 +249,8 @@ cleanup:
         NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
         NSString *certificate = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
         
-        NSString *startPublicKey = @"-----BEGIN PUBLIC KEY-----";
-        NSString *endPublicKey = @"-----END PUBLIC KEY-----";
+        NSString *startPublicKey = @"-----BEGIN CERTIFICATE-----";
+        NSString *endPublicKey = @"-----END CERTIFICATE-----";
         
         NSScanner *scanner = [NSScanner scannerWithString:certificate];
         [scanner scanUpToString:startPublicKey intoString:nil];
