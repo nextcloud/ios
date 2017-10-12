@@ -236,6 +236,7 @@ cleanup:
     return YES;
 }
 
+// generateCsrPemEncodedString
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
     NSString *publicKeyEncoded;
@@ -249,18 +250,11 @@ cleanup:
         NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
         NSString *certificate = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
         
-        NSString *startPublicKey = @"-----BEGIN CERTIFICATE-----";
-        NSString *endPublicKey = @"-----END CERTIFICATE-----";
+        certificate = [certificate stringByReplacingOccurrencesOfString:@"-----BEGIN CERTIFICATE-----" withString:@"-----BEGIN CERTIFICATE REQUEST-----"];
+        certificate = [certificate stringByReplacingOccurrencesOfString:@"-----END CERTIFICATE-----" withString:@"-----END CERTIFICATE REQUEST-----"];
         
-        NSScanner *scanner = [NSScanner scannerWithString:certificate];
-        [scanner scanUpToString:startPublicKey intoString:nil];
-        [scanner scanString:endPublicKey intoString:nil];
-        
-        [scanner scanUpToString:startPublicKey intoString:nil];
-        [scanner scanString:startPublicKey intoString:nil];
-        [scanner scanUpToString:endPublicKey intoString:&publicKey];
-        
-        publicKeyEncoded = [publicKey stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]];
+        NSData *publicKeyData = [certificate dataUsingEncoding:NSUTF8StringEncoding];
+        publicKeyEncoded = [publicKeyData base64EncodedStringWithOptions:0];
         
     } else {
         return nil;
