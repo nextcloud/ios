@@ -1248,15 +1248,17 @@
             [app messageNotification:@"E2E private key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             break;
         case 404: {
+            // remove keychain
+            [CCUtility setEndToEndPrivateKey:app.activeUser privateKey:nil];
             
-                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
-                NSString *mnemonic = [NYMnemonic generateMnemonicString:@128 language:@"english"];
+            NSString *mnemonic = [NYMnemonic generateMnemonicString:@128 language:@"english"];
 
-                NSString *privateKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
+            NSString *privateKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
             
-                message = @"private key doesn't exists";
-            }
+            message = @"private key doesn't exists";
+        }
             break;
         case 409:
             message = @"forbidden: the user can't access the private key";
@@ -1288,21 +1290,24 @@
             [app messageNotification:@"E2E public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             break;
         case 404: {
+            // remove keychain
+            [CCUtility setEndToEndPublicKey:app.activeUser publicKey:metadataNet.options];
             
-                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-                NSString *publicKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPublicKey:app.activeUserID directoryUser:app.directoryUser];
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+            NSString *publicKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPublicKey:app.activeUserID directoryUser:app.directoryUser];
             
-                if (publicKeyEncoded) {
-                    metadataNet.action = actionSignEndToEndPublicKey;
-                    metadataNet.options = publicKeyEncoded;
+            if (publicKeyEncoded) {
+                
+                metadataNet.action = actionSignEndToEndPublicKey;
+                metadataNet.options = publicKeyEncoded;
             
-                    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
                     
-                } else {
+            } else {
                     
-                }
-                message = @"one or more public keys couldn't be found";
             }
+            message = @"one or more public keys couldn't be found";
+        }
             break;
         case 409:
             message = @"forbidden: the user can't access the public key";
