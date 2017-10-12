@@ -245,7 +245,6 @@ cleanup:
     if (result) {
         
         NSError *error;
-        NSString *publicKey;
         
         NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
         NSString *certificate = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
