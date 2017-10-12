@@ -23,6 +23,7 @@
 
 #import "NCEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
+#import "CCUtility.h"
 
 #import <CommonCrypto/CommonDigest.h>
 
@@ -42,8 +43,9 @@
 #define AES_IVEC_LENGTH     16
 #define AES_GCM_TAG_LENGTH  16
 
-#define fileNameCertificate @"e2e_certificate.pem"
-#define fileNamePrivateKey  @"e2e_certificate.pem"
+#define fileNameCertificate @"e2e_cert.pem"
+#define fileNameCSR         @"e2e_csr.pem"
+#define fileNamePrivateKey  @"e2e_privateKey.pem"
 
 //#define AES_KEY_LENGTH_BITS 128
 
@@ -77,11 +79,7 @@
     if (keyError) {
         return NO;
     }
-    
-    //
-    //NSData *data = [NSData dataWithBytes:pkey length:2048];
-    //NSString *s = [[NSString alloc] initWithData:[NSData dataWithBytes:pkey length:2048] encoding:NSASCIIStringEncoding];
-    
+
     X509_set_pubkey(x509, pkey);
     EVP_PKEY_free(pkey);
     
@@ -98,7 +96,6 @@
     
     // Now to add the subject name fields to the certificate
     // I use a macro here to make it cleaner.
-    
     
     const unsigned char *cUserID = (const unsigned char *) [userID cStringUsingEncoding:NSUTF8StringEncoding];
 
@@ -185,15 +182,16 @@ cleanup:
 
 - (BOOL)savePEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser
 {
-    NSString *keyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
     NSString *certPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey];
+    NSString *keyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
+    NSString *csrPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR];
     
-    FILE *f = fopen([keyPath fileSystemRepresentation], "wb");
     
     // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
     // file using the password and cipher you provide.
     //if (PEM_write_PrivateKey(f, pkey, EVP_des_ede3_cbc(), (unsigned char *)[password UTF8String], (int)password.length, NULL, NULL) < 0) {
     
+    FILE *f = fopen([keyPath fileSystemRepresentation], "wb");
     if (PEM_write_PrivateKey(f, pkey, NULL, NULL, 0, NULL, NULL) < 0) {
         // Error encrypting or writing to disk.
         fclose(f);
@@ -202,16 +200,26 @@ cleanup:
     NSLog(@"Saved key to %@", keyPath);
     fclose(f);
     
-    f = fopen([certPath fileSystemRepresentation], "wb");
-    
     // Here you write the certificate to the disk. No encryption is needed here
     // since this is public facing information
+    f = fopen([certPath fileSystemRepresentation], "wb");
     if (PEM_write_X509(f, x509) < 0) {
         // Error writing to disk.
         fclose(f);
         return NO;
     }
     NSLog(@"Saved cert to %@", certPath);
+    fclose(f);
+    
+    // CSR Request sha256
+    f = fopen([csrPath fileSystemRepresentation], "wb");
+    X509_REQ *certreq = X509_to_X509_REQ(x509, pkey, EVP_sha256());
+    if (PEM_write_X509_REQ(f, certreq) < 0) {
+        // Error writing to disk.
+        fclose(f);
+        return NO;
+    }
+    NSLog(@"Saved csr to %@", csrPath);
     fclose(f);
     
     return YES;
@@ -239,7 +247,7 @@ cleanup:
 // generateCsrPemEncodedString
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
-    NSString *publicKey;
+    NSString *publicKeyEncodeURL;
     BOOL result = [self generateCertificateX509WithUserID:userID directoryUser:directoryUser];
     
     if (result) {
@@ -252,13 +260,15 @@ cleanup:
         certificate = [certificate stringByReplacingOccurrencesOfString:@"-----BEGIN CERTIFICATE-----" withString:@"-----BEGIN CERTIFICATE REQUEST-----"];
         certificate = [certificate stringByReplacingOccurrencesOfString:@"-----END CERTIFICATE-----" withString:@"-----END CERTIFICATE REQUEST-----"];
         
-        publicKey = [certificate stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+        // encode URL
+        publicKeyEncodeURL = [CCUtility URLEncodeStringFromString:certificate];
+        //publicKeyEncodeURL = [certificate stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
         
     } else {
         return nil;
     }
     
-    return publicKey;
+    return publicKeyEncodeURL;
 }
 
 #
