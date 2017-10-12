@@ -1236,7 +1236,8 @@
 
 - (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
 {
-    NSLog(@"OK");
+    // Store signed key locally keychain
+    [CCUtility setEndToEndPrivateKey:app.activeUser privateKey:metadataNet.options];    
 }
 
 - (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1275,6 +1276,7 @@
     NSLog(@"OK");
     
     // Store signed key locally keychain
+    [CCUtility setEndToEndPublicKey:app.activeUser publicKey:metadataNet.options];
 }
 
 - (void)getEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
