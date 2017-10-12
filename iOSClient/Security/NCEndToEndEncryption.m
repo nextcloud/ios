@@ -186,7 +186,6 @@ cleanup:
     NSString *keyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
     NSString *csrPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR];
     
-    
     // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
     // file using the password and cipher you provide.
     //if (PEM_write_PrivateKey(f, pkey, EVP_des_ede3_cbc(), (unsigned char *)[password UTF8String], (int)password.length, NULL, NULL) < 0) {
@@ -200,8 +199,7 @@ cleanup:
     NSLog(@"Saved key to %@", keyPath);
     fclose(f);
     
-    // Here you write the certificate to the disk. No encryption is needed here
-    // since this is public facing information
+    // Here you write the certificate to the disk. No encryption is needed here since this is public facing information
     f = fopen([certPath fileSystemRepresentation], "wb");
     if (PEM_write_X509(f, x509) < 0) {
         // Error writing to disk.
@@ -247,28 +245,25 @@ cleanup:
 // generateCsrPemEncodedString
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
-    NSString *publicKeyEncodeURL;
+    NSString *csrEncodeURL;
     BOOL result = [self generateCertificateX509WithUserID:userID directoryUser:directoryUser];
     
     if (result) {
         
         NSError *error;
         
-        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
-        NSString *certificate = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
-        
-        certificate = [certificate stringByReplacingOccurrencesOfString:@"-----BEGIN CERTIFICATE-----" withString:@"-----BEGIN CERTIFICATE REQUEST-----"];
-        certificate = [certificate stringByReplacingOccurrencesOfString:@"-----END CERTIFICATE-----" withString:@"-----END CERTIFICATE REQUEST-----"];
-        
+        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR];
+        NSString *csr = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
+    
         // encode URL
-        publicKeyEncodeURL = [CCUtility URLEncodeStringFromString:certificate];
-        //publicKeyEncodeURL = [certificate stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+        csrEncodeURL = [CCUtility URLEncodeStringFromString:csr];
+        csrEncodeURL = [csr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
         
     } else {
         return nil;
     }
     
-    return publicKeyEncodeURL;
+    return csrEncodeURL;
 }
 
 #
