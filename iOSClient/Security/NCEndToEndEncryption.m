@@ -239,7 +239,7 @@ cleanup:
 // generateCsrPemEncodedString
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
-    NSString *publicKeyEncoded;
+    NSString *publicKey;
     BOOL result = [self generateCertificateX509WithUserID:userID directoryUser:directoryUser];
     
     if (result) {
@@ -252,14 +252,13 @@ cleanup:
         certificate = [certificate stringByReplacingOccurrencesOfString:@"-----BEGIN CERTIFICATE-----" withString:@"-----BEGIN CERTIFICATE REQUEST-----"];
         certificate = [certificate stringByReplacingOccurrencesOfString:@"-----END CERTIFICATE-----" withString:@"-----END CERTIFICATE REQUEST-----"];
         
-        NSData *publicKeyData = [certificate dataUsingEncoding:NSUTF8StringEncoding];
-        publicKeyEncoded = [publicKeyData base64EncodedStringWithOptions:0];
+        publicKey = [certificate stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
         
     } else {
         return nil;
     }
     
-    return publicKeyEncoded;
+    return publicKey;
 }
 
 #
