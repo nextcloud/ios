@@ -35,5 +35,6 @@
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
 
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser;
+- (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser:(NSString *)directoryUser mnemonic:(NSString *)mnemonic;
 
 @end

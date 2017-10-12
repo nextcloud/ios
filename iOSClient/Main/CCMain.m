@@ -36,6 +36,7 @@
 #import "NCAutoUpload.h"
 #import "NCEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
+#import "NYMnemonic.h"
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
@@ -1245,8 +1246,16 @@
             message = @"bad request: unpredictable internal error";
             [app messageNotification:@"E2E private key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             break;
-        case 404:
-            message = @"private key doesn't exists";
+        case 404: {
+            
+                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+            
+                NSString *mnemonic = [NYMnemonic generateMnemonicString:@128 language:@"english"];
+
+                NSString *privateKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
+            
+                message = @"private key doesn't exists";
+            }
             break;
         case 409:
             message = @"forbidden: the user can't access the private key";
@@ -1264,6 +1273,8 @@
 - (void)getEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
     NSLog(@"OK");
+    
+    // Store signed key locally keychain
 }
 
 - (void)getEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode

@@ -242,7 +242,6 @@ cleanup:
     return YES;
 }
 
-// generateCsrPemEncodedString
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
     NSString *csrEncodeURL;
@@ -264,6 +263,11 @@ cleanup:
     }
     
     return csrEncodeURL;
+}
+
+- (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
+{
+    return nil;
 }
 
 #
