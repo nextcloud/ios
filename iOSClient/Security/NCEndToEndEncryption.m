@@ -276,15 +276,19 @@ cleanup:
 - (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
 {
     NSMutableData *cipherData;
-    
+    NSData *tagData;
+    NSString* authenticationTag;
+
     NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
-    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
-    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
+    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
     
-    [self aes256gcmEncrypt:plainData cipherData:&cipherData keyData:keyData initVectorData:initVectorData tagData:nil];
+    BOOL result = [self aes256gcmEncrypt:plainData cipherData:&cipherData keyData:keyData initVectorData:initVectorData tagData:&tagData];
     
-    if (cipherData != nil)
+    if (cipherData != nil && result) {
         [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"encrypted.dms"] atomically:YES];
+        authenticationTag = [tagData base64EncodedStringWithOptions:0];
+    }
 }
 
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
@@ -292,28 +296,22 @@ cleanup:
     NSMutableData *plainData;
     
     NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
-    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"bGzWfQBj2lE4ZnysDWwsIg==" options:0];
-    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"rTBECYNekKF+a1HR7z32/Q==" options:0];
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
+    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
+    //NSData *tagData = [[NSData alloc] initWithBase64EncodedString:@"PboI9tqHHX3QeAA22PIu4w==" options:0];
     
-    [self aes256gcmDecrypt:cipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tagData:nil];
+    BOOL result = [self aes256gcmDecrypt:cipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tagData:nil];
     
-    if (plainData != nil)
-        [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted.jpg"] atomically:YES];
+    if (plainData != nil && result) {
+        [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted"] atomically:YES];
+    }
 }
 
 // encrypt plain data
-- (BOOL)aes256gcmEncrypt:(NSData*)plainData cipherData:(NSMutableData**)cipherData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tagData:(NSData *)tagData
+- (BOOL)aes256gcmEncrypt:(NSData*)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tagData:(NSData **)tagData
 {
     int status = 0;
-    
     *cipherData = [NSMutableData dataWithLength:[plainData length]];
-    if (! *cipherData)
-        return NO;
-    
-    // set up to Encrypt AES 128 GCM
-    int numberOfBytes = 0;
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    EVP_EncryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
     
     // set up key
     unsigned char cKey[AES_KEY_LENGTH];
@@ -325,13 +323,14 @@ cleanup:
     bzero(cIv, AES_IVEC_LENGTH);
     [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
     
+    // set up to Encrypt AES 128 GCM
+    int numberOfBytes = 0;
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    EVP_EncryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
+    
     // set the key and ivec
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
     EVP_EncryptInit_ex (ctx, NULL, NULL, cKey, cIv);
-    
-    // add optional AAD (Additional Auth Data)
-    //if (aad)
-    //    status = EVP_EncryptUpdate( ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
     
     unsigned char * ctBytes = [*cipherData mutableBytes];
     EVP_EncryptUpdate (ctx, ctBytes, &numberOfBytes, [plainData bytes], (int)[plainData length]);
@@ -341,9 +340,9 @@ cleanup:
         
         unsigned char cTag[AES_GCM_TAG_LENGTH];
         bzero(cTag, AES_GCM_TAG_LENGTH);
-        [tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
         
         status = EVP_CIPHER_CTX_ctrl (ctx, EVP_CTRL_GCM_GET_TAG, AES_GCM_TAG_LENGTH, cTag);
+        *tagData = [NSData dataWithBytes:cTag length:AES_GCM_TAG_LENGTH];
     }
     
     EVP_CIPHER_CTX_free(ctx);
@@ -354,15 +353,8 @@ cleanup:
 - (BOOL)aes256gcmDecrypt:(NSData*)cipherData plainData:(NSMutableData**)plainData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tagData:(NSData *)tagData
 {    
     int status = 0;
-    
-    *plainData = [NSMutableData dataWithLength:[cipherData length]];
-    if (! *plainData)
-        return NO;
-    
-    // set up to Decrypt AES 128 GCM
     int numberOfBytes = 0;
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    EVP_DecryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
+    *plainData = [NSMutableData dataWithLength:[cipherData length]];
     
     // set up key
     unsigned char cKey[AES_KEY_LENGTH];
@@ -374,33 +366,48 @@ cleanup:
     bzero(cIv, AES_IVEC_LENGTH);
     [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
     
-    // set the key and ivec
-    EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
-    status = EVP_DecryptInit_ex (ctx, NULL, NULL, cKey, cIv);
+    // set up tag
+    unsigned char cTag[AES_GCM_TAG_LENGTH];
+    bzero(cTag, AES_GCM_TAG_LENGTH);
+    [tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
     
-    // Set expected tag value. A restriction in OpenSSL 1.0.1c and earlier requires the tag before any AAD or ciphertext
-    if (status && tagData) {
-        
-        unsigned char cTag[AES_GCM_TAG_LENGTH];
-        bzero(cTag, AES_GCM_TAG_LENGTH);
-        [tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
-        
-        EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_GCM_TAG_LENGTH, cTag);
-    }
+    /* Create and initialise the context */
+    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     
-    // add optional AAD (Additional Auth Data)
-    //if (aad)
-    //    EVP_DecryptUpdate(ctx, NULL, &numberOfBytes, [aad bytes], (int)[aad length]);
-    
-    status = EVP_DecryptUpdate (ctx, [*plainData mutableBytes], &numberOfBytes, [cipherData bytes], (int)[cipherData length]);
-    if (! status) {
-        NSLog(@"aes256gcmDecrypt: EVP_DecryptUpdate failed");
+    /* Initialise the decryption operation. */
+    status = EVP_DecryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
+    if (! status)
         return NO;
-    }
     
-    EVP_DecryptFinal_ex (ctx, NULL, &numberOfBytes);
+    /* Set IV length. Not necessary if this is 12 bytes (96 bits) */
+    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
+    if (! status)
+        return NO;
+    
+    /* Initialise key and IV */
+    status = EVP_DecryptInit_ex (ctx, NULL, NULL, cKey, cIv);
+    if (! status)
+        return NO;
+    
+    /* Provide the message to be decrypted, and obtain the plaintext output. */
+    unsigned char * ctBytes = [*plainData mutableBytes];
+    status = EVP_DecryptUpdate (ctx, ctBytes, &numberOfBytes, [cipherData bytes], (int)[cipherData length]);
+    if (! status)
+        return NO;
+    
+    /* Set expected tag value. Works in OpenSSL 1.0.1d and later */
+    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_GCM_TAG_LENGTH, cTag);
+    if (!status)
+        return NO;
+    
+    /* Finalise the decryption. A positive return value indicates success, anything else is a failure - the plaintext is n trustworthy. */
+    status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
+    if (!status)
+        return NO;
+    
     EVP_CIPHER_CTX_free(ctx);
-    return (status != 0); // OpenSSL uses 1 for success
+    
+    return YES; // OpenSSL uses 1 for success
 }
 
 #
