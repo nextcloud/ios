@@ -221,6 +221,18 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
++ (void)setEndToEndPublicKey:(NSString *)user publicKey:(NSString *)publicKey
+{
+    NSString *key = [@"EndToEndPublicKey_" stringByAppendingString:user];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setEndToEndPrivateKey:(NSString *)user privateKey:(NSString *)privateKey
+{
+    NSString *key = [@"EndToEndPrivateKey_" stringByAppendingString:user];
+    [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -413,6 +425,18 @@
 + (BOOL)getShowHiddenFiles
 {
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (NSString *)getEndToEndPublicKey:(NSString *)user
+{
+    NSString *key = [@"EndToEndPublicKey_" stringByAppendingString:user];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getEndToEndPrivateKey:(NSString *)user
+{
+    NSString *key = [@"EndToEndPrivateKey_" stringByAppendingString:user];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
 #pragma --------------------------------------------------------------------------------------------

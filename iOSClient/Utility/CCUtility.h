@@ -91,6 +91,9 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
++ (void)setEndToEndPublicKey:(NSString *)user publicKey:(NSString *)publicKey;
++ (void)setEndToEndPrivateKey:(NSString *)user privateKey:(NSString *)privateKey;
+
 // GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
@@ -134,6 +137,9 @@
 + (BOOL)getActivityVerboseHigh;
 
 + (BOOL)getShowHiddenFiles;
+
++ (NSString *)getEndToEndPublicKey:(NSString *)user;
++ (NSString *)getEndToEndPrivateKey:(NSString *)user;
 
 // ===== Varius =====
 
