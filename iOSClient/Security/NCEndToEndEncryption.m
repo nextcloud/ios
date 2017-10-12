@@ -371,8 +371,8 @@ cleanup:
     //bzero(cTag, AES_GCM_TAG_LENGTH);
     //[tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
     
-    /* verify tag ??? */
-    NSData *authenticationTagData = [cipherData subdataWithRange:NSMakeRange([cipherData length] - 16, 16)];
+    /* verify tag */
+    NSData *authenticationTagData = [cipherData subdataWithRange:NSMakeRange([cipherData length] - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
     NSString *authenticationTag = [authenticationTagData base64EncodedStringWithOptions:0];
     
     if (![authenticationTag isEqualToString:tag])
@@ -402,7 +402,6 @@ cleanup:
     if (! status)
         return NO;
     
-    // NO OpenSSL Tag
     /* Set expected tag value. Works in OpenSSL 1.0.1d and later */
     //status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_GCM_TAG_LENGTH, cTag);
     //if (!status)
@@ -417,15 +416,6 @@ cleanup:
     EVP_DecryptFinal_ex (ctx, NULL, &numberOfBytes);
     EVP_CIPHER_CTX_free(ctx);
     
-    // Verify Tag
-    //
-    // check authentication tag
-    //byte[] extractedAuthenticationTag = Arrays.copyOfRange(fileBytes,
-    //                                                       fileBytes.length - (128 / 8), fileBytes.length);
-    //if (!Arrays.equals(extractedAuthenticationTag, authenticationTag)) {
-    //    throw new SecurityException("Tag not correct");
-    //}
-
     return status; // OpenSSL uses 1 for success
 }
 
