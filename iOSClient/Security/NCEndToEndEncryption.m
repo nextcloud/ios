@@ -298,9 +298,9 @@ cleanup:
     NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
-    //NSData *tagData = [[NSData alloc] initWithBase64EncodedString:@"PboI9tqHHX3QeAA22PIu4w==" options:0];
+    NSString *tag = @"PboI9tqHHX3QeAA22PIu4w==";
     
-    BOOL result = [self aes256gcmDecrypt:cipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tagData:nil];
+    BOOL result = [self aes256gcmDecrypt:cipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tag:tag];
     
     if (plainData != nil && result) {
         [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted"] atomically:YES];
@@ -350,7 +350,7 @@ cleanup:
 }
 
 // decrypt cipher data
-- (BOOL)aes256gcmDecrypt:(NSData*)cipherData plainData:(NSMutableData**)plainData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tagData:(NSData *)tagData
+- (BOOL)aes256gcmDecrypt:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tag:(NSString *)tag
 {    
     int status = 0;
     int numberOfBytes = 0;
@@ -367,9 +367,16 @@ cleanup:
     [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
     
     // set up tag
-    unsigned char cTag[AES_GCM_TAG_LENGTH];
-    bzero(cTag, AES_GCM_TAG_LENGTH);
-    [tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
+    //unsigned char cTag[AES_GCM_TAG_LENGTH];
+    //bzero(cTag, AES_GCM_TAG_LENGTH);
+    //[tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
+    
+    /* verify tag ??? */
+    NSData *authenticationTagData = [cipherData subdataWithRange:NSMakeRange([cipherData length] - 16, 16)];
+    NSString *authenticationTag = [authenticationTagData base64EncodedStringWithOptions:0];
+    
+    if (![authenticationTag isEqualToString:tag])
+        return NO;
     
     /* Create and initialise the context */
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
@@ -395,19 +402,31 @@ cleanup:
     if (! status)
         return NO;
     
+    // NO OpenSSL Tag
     /* Set expected tag value. Works in OpenSSL 1.0.1d and later */
-    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_GCM_TAG_LENGTH, cTag);
-    if (!status)
-        return NO;
+    //status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_GCM_TAG_LENGTH, cTag);
+    //if (!status)
+    //    return NO;
     
     /* Finalise the decryption. A positive return value indicates success, anything else is a failure - the plaintext is n trustworthy. */
-    status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
-    if (!status)
-        return NO;
+    //status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
+    //if (!status)
+    //    return NO;
     
+    // Without test Final
+    EVP_DecryptFinal_ex (ctx, NULL, &numberOfBytes);
     EVP_CIPHER_CTX_free(ctx);
     
-    return YES; // OpenSSL uses 1 for success
+    // Verify Tag
+    //
+    // check authentication tag
+    //byte[] extractedAuthenticationTag = Arrays.copyOfRange(fileBytes,
+    //                                                       fileBytes.length - (128 / 8), fileBytes.length);
+    //if (!Arrays.equals(extractedAuthenticationTag, authenticationTag)) {
+    //    throw new SecurityException("Tag not correct");
+    //}
+
+    return status; // OpenSSL uses 1 for success
 }
 
 #
