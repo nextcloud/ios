@@ -132,6 +132,8 @@
 
 - (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet;
 - (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)storeEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet;
+- (void)storeEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 @end
 

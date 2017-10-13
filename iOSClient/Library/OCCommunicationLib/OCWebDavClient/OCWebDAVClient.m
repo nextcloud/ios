@@ -878,15 +878,36 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 }
 
 //curl -X POST http://<user>:<password>@nextcloud/ocs/v2.php/apps/end_to_end_encryption/api/v1/public-key -H "OCS-APIRequest:true" -d csr="<urlencoded-csr>"
-- (void)storeEndToEndPublicKey:(NSString*)serverPath publickey:(NSString *)publickey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)storeEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
     
     _requestMethod = @"POST";
     
-    publickey = [NSString stringWithFormat:@"?csr=%@",publickey];
-    serverPath = [serverPath stringByAppendingString:publickey];
+    publicKey = [NSString stringWithFormat:@"?csr=%@",publicKey];
+    serverPath = [serverPath stringByAppendingString:publicKey];
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
+    
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    
+    [operation resume];
+}
+
+- (void)storeEndToEndPrivateKey:(NSString*)serverPath privateKey:(NSString *)privateKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+                       failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+    
+    NSParameterAssert(success);
+    
+    _requestMethod = @"POST";
+    
+    privateKey = [NSString stringWithFormat:@"?privateKey=%@",privateKey];
+    serverPath = [serverPath stringByAppendingString:privateKey];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
