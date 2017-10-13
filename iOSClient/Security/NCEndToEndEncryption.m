@@ -259,12 +259,10 @@ cleanup:
         NSError *error;
         
         NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR];
-        NSString *csr = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
-    
-        // encode URL
-        csrEncodeURL = [CCUtility URLEncodeStringFromString:csr];
-        csrEncodeURL = [csr stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
         
+        NSString *csr = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
+        csrEncodeURL = [CCUtility URLEncodeStringFromString:csr];
+
     } else {
         return nil;
     }

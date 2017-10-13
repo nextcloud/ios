@@ -108,6 +108,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
+#ifdef DEBUG
     // Section : E2EEncryption --------------------------------------------------------------
 
     section = [XLFormSectionDescriptor formSection];
@@ -119,6 +120,7 @@
     [row.cellConfig setObject:[UIImage imageNamed:@"settingsE2EEncryption"] forKey:@"imageView.image"];
     row.action.viewControllerClass = [NCManageEndToEndEncryption class];
     [section addFormRow:row];
+#endif
     
     // Section Advanced -------------------------------------------------
     

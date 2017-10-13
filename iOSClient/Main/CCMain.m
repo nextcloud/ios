@@ -1302,6 +1302,16 @@
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
+- (void)deleteEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
+{
+    [app messageNotification:@"E2E delete public key" description:@"Public key was deleted" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+}
+
+- (void)deleteEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [app messageNotification:@"E2E delete public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+}
+
 // ++++++++++++++++++++++ PRIVATE KEY ++++++++++++++++++++++
 
 - (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
@@ -1371,16 +1381,6 @@
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
-}
-
-- (void)deleteEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
-{
-    [app messageNotification:@"E2E delete public key" description:@"Public key was deleted" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
-}
-
-- (void)deleteEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [app messageNotification:@"E2E delete public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 - (void)deleteEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
