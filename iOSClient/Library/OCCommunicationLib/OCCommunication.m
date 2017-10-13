@@ -1954,28 +1954,7 @@
 
 #pragma mark - End-to-End Encryption
 
-- (void)getEndToEndPrivateKey:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
-    
-    serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [serverPath stringByAppendingString:@"/private-key"];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
-    OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
-    [request getEndToEndPrivateKey:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
-        
-        //Return success
-        successRequest(response, request.redirectedServer);
-        
-    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
-        
-        //Return error
-        failureRequest(response, error, request.redirectedServer);
-    }];
-}
-
-- (void)getEndToEndPublicKey:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)getEndToEndPublicKey:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
@@ -1986,8 +1965,100 @@
     
     [request getEndToEndPublicKey:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
+        NSData *responseData = (NSData*) responseObject;
+        NSString *publicKey;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] Get E2E PublicKey : %@",jsongParsed);
+        
+        if (jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"public-keys"] && ![[data valueForKey:@"public-keys"] isKindOfClass:[NSNull class]]) {
+                    
+                    NSDictionary *publickeys = [data valueForKey:@"public-keys"];
+                    publicKey = [publickeys valueForKey:@"nc"];
+                }
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+            }
+        }
+        
         //Return success
-        successRequest(response, request.redirectedServer);
+        successRequest(response, publicKey, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        //Return error
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+- (void)getEndToEndPrivateKey:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
+    serverPath = [serverPath stringByAppendingString:@"/private-key"];
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request getEndToEndPrivateKey:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        NSData *responseData = (NSData*) responseObject;
+        NSString *privateKey;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] Get E2E PrivateKey : %@",jsongParsed);
+        
+        if (jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"private-key"] && ![[data valueForKey:@"private-key"] isKindOfClass:[NSNull class]])
+                    privateKey = [data valueForKey:@"private-key"];
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+            }
+        }
+        
+        //Return success
+        successRequest(response, privateKey, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         

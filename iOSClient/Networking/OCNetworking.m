@@ -1677,10 +1677,11 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication getEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
         
         // 200 ok: body contain the public key
-        
+        _metadataNet.options = publicKey;
+
         if ([self.delegate respondsToSelector:@selector(getEndToEndPublicKeySuccess:)])
             [self.delegate getEndToEndPublicKeySuccess:_metadataNet];
         
@@ -1711,9 +1712,10 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getEndToEndPrivateKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication getEndToEndPrivateKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer) {
         
         // 200 ok: body contain the private key
+        _metadataNet.options = privateKey;
         
         if ([self.delegate respondsToSelector:@selector(getEndToEndPrivateKeySuccess:)])
             [self.delegate getEndToEndPrivateKeySuccess:_metadataNet];
