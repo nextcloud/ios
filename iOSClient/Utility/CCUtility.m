@@ -233,6 +233,12 @@
     [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)setEndToEndMnemonic:(NSString *)user mnemonic:(NSString *)mnemonic
+{
+    NSString *key = [@"EndToEndMnemonic_" stringByAppendingString:user];
+    [UICKeyChainStore setString:mnemonic forKey:key service:k_serviceShareKeyChain];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -436,6 +442,12 @@
 + (NSString *)getEndToEndPrivateKey:(NSString *)user
 {
     NSString *key = [@"EndToEndPrivateKey_" stringByAppendingString:user];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getEndToEndMnemonic:(NSString *)user
+{
+    NSString *key = [@"EndToEndMnemonic_" stringByAppendingString:user];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 

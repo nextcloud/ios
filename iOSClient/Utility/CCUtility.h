@@ -93,6 +93,7 @@
 
 + (void)setEndToEndPublicKey:(NSString *)user publicKey:(NSString *)publicKey;
 + (void)setEndToEndPrivateKey:(NSString *)user privateKey:(NSString *)privateKey;
++ (void)setEndToEndMnemonic:(NSString *)user mnemonic:(NSString *)mnemonic;
 
 // GET
 
@@ -140,6 +141,7 @@
 
 + (NSString *)getEndToEndPublicKey:(NSString *)user;
 + (NSString *)getEndToEndPrivateKey:(NSString *)user;
++ (NSString *)getEndToEndMnemonic:(NSString *)user;
 
 // ===== Varius =====
 
