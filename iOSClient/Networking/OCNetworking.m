@@ -1812,6 +1812,74 @@
     }];
 }
 
+- (void)deleteEndToEndPublicKey
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication deleteEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        // 200 ok:  public key was deleted
+        
+        if ([self.delegate respondsToSelector:@selector(deleteEndToEndPublicKeySuccess:)])
+            [self.delegate deleteEndToEndPublicKeySuccess:_metadataNet];
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        // Error
+        if ([self.delegate respondsToSelector:@selector(deleteEndToEndPublicKeyFailure:message:errorCode:)])
+            [self.delegate deleteEndToEndPublicKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+}
+
+- (void)deleteEndToEndPrivateKey
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication deleteEndToEndPrivateKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        // 200 ok: private key was deleted
+        
+        if ([self.delegate respondsToSelector:@selector(deleteEndToEndPrivateKeySuccess:)])
+            [self.delegate deleteEndToEndPrivateKeySuccess:_metadataNet];
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        // Error
+        if ([self.delegate respondsToSelector:@selector(deleteEndToEndPrivateKeyFailure:message:errorCode:)])
+            [self.delegate deleteEndToEndPrivateKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+}
+
 @end
 
 #pragma --------------------------------------------------------------------------------------------

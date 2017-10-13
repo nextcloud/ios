@@ -195,10 +195,12 @@ extern NSString *const dav;
 #define actionUnShare                                   @"unShare"
 #define actionUpdateShare                               @"updateShare"
 
-#define actionGetEndToEndPrivateKey                     @"getEndToEndPrivateKey"
 #define actionGetEndToEndPublicKey                      @"getEndToEndPublicKey"
+#define actionGetEndToEndPrivateKey                     @"getEndToEndPrivateKey"
 #define actionStoreEndToEndPublicKey                    @"storeEndToEndPublicKey"
 #define actionStoreEndToEndPrivateKey                   @"storeEndToEndPrivateKey"
+#define actionDeleteEndToEndPublicKey                   @"deleteEndToEndPublicKey"
+#define actionDeleteEndToEndPrivateKey                  @"deleteEndToEndPrivateKey"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"
