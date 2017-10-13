@@ -29,6 +29,7 @@
 #import "CCAdvanced.h"
 #import "CCManageCryptoCloud.h"
 #import "CCManageAccount.h"
+#import "NCManageEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
 
 #define alertViewEsci 1
@@ -105,6 +106,18 @@
     // Passcode only directory
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"onlylockdir" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_folder_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+    
+    // Section : E2EEncryption --------------------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    // EndToEnd Encryption
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_encryption_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsE2EEncryption"] forKey:@"imageView.image"];
+    row.action.viewControllerClass = [NCManageEndToEndEncryption class];
     [section addFormRow:row];
     
     // Section Advanced -------------------------------------------------

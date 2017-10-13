@@ -136,6 +136,7 @@
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F734E5921F019D870060CB77 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
+		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
 		F73B4EEE1F470D9100BBEE4B /* Big5Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EAD1F470D9100BBEE4B /* Big5Freq.tab */; };
 		F73B4EEF1F470D9100BBEE4B /* CharDistribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EAE1F470D9100BBEE4B /* CharDistribution.cpp */; };
 		F73B4EF01F470D9100BBEE4B /* CMakeLists.txt in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EB01F470D9100BBEE4B /* CMakeLists.txt */; };
@@ -794,6 +795,8 @@
 		F732B3361E8045A1002B7D75 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
+		F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCManageEndToEndEncryption.h; sourceTree = "<group>"; };
+		F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCManageEndToEndEncryption.m; sourceTree = "<group>"; };
 		F73B4EAD1F470D9100BBEE4B /* Big5Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Big5Freq.tab; sourceTree = "<group>"; };
 		F73B4EAE1F470D9100BBEE4B /* CharDistribution.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CharDistribution.cpp; sourceTree = "<group>"; };
 		F73B4EAF1F470D9100BBEE4B /* CharDistribution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharDistribution.h; sourceTree = "<group>"; };
@@ -2422,7 +2425,6 @@
 				F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */,
 				F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */,
 				F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */,
-				F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */,
 				F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */,
 				F7ACE42C1BAC0268006C0017 /* CCManageAccount.h */,
 				F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */,
@@ -2430,6 +2432,9 @@
 				F7ACE42F1BAC0268006C0017 /* CCManageAutoUpload.m */,
 				F7ACE4301BAC0268006C0017 /* CCSettings.h */,
 				F7ACE4311BAC0268006C0017 /* CCSettings.m */,
+				F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */,
+				F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */,
+				F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -3011,12 +3016,12 @@
 		F7FE125B1BAC03FB0041924B /* Security */ = {
 			isa = PBXGroup;
 			children = (
-				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
-				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 				F7FE125C1BAC03FB0041924B /* CCBKPasscode.h */,
 				F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */,
 				F7F801001D98205A007537BC /* CCCertificate.h */,
 				F7F801011D98205A007537BC /* CCCertificate.m */,
+				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
+				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 			);
 			path = Security;
 			sourceTree = "<group>";
@@ -3666,6 +3671,7 @@
 				F77B0E161D118A16002130FE /* AFViewShaker.m in Sources */,
 				F73B4F111F470D9100BBEE4B /* nsSBCSGroupProber.cpp in Sources */,
 				F7D424641F063B82009C9782 /* CTAssetsGridSelectedView.m in Sources */,
+				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
 				F73B4F091F470D9100BBEE4B /* nsEUCKRProber.cpp in Sources */,
 				F7D424711F063B82009C9782 /* CTAssetsViewControllerTransition.m in Sources */,
 				F762CB021EACB66200B38484 /* XLFormSliderCell.m in Sources */,
