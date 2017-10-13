@@ -527,6 +527,8 @@ class NCManageDatabase: NSObject {
                 print("[LOG] Could not write to database: ", error)
             }
         }
+        
+        print("[LOG] " + note)
     }
     
     //MARK: -

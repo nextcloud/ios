@@ -1751,8 +1751,8 @@
         
         // 200 ok: body contain the public key
         
-        if ([self.delegate respondsToSelector:@selector(getEndToEndPublicKeySuccess:)])
-            [self.delegate getEndToEndPublicKeySuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(signEndToEndPublicKeySuccess:)])
+            [self.delegate signEndToEndPublicKeySuccess:_metadataNet];
         
         [self complete];
         
@@ -1763,8 +1763,8 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(getEndToEndPublicKeyFailure:message:errorCode:)])
-            [self.delegate getEndToEndPublicKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(signEndToEndPublicKeyFailure:message:errorCode:)])
+            [self.delegate signEndToEndPublicKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)

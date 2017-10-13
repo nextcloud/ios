@@ -1236,8 +1236,8 @@
 
 - (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
 {
-    // Store signed key locally keychain
-    [CCUtility setEndToEndPrivateKey:app.activeUser privateKey:metadataNet.options];    
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
 - (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1277,10 +1277,8 @@
 
 - (void)getEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
-    NSLog(@"OK");
-    
-    // Store signed key locally keychain
-    [CCUtility setEndToEndPublicKey:app.activeUser publicKey:metadataNet.options];
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
 - (void)getEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1319,6 +1317,23 @@
             [app messageNotification:@"E2E public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             break;
     }
+    
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+}
+
+- (void)signEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
+{
+    // Store signed key locally keychain
+    [CCUtility setEndToEndPublicKey:app.activeUser publicKey:metadataNet.options];
+    
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey present on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+}
+
+- (void)signEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [app messageNotification:@"E2E sign public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];

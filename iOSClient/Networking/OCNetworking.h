@@ -125,10 +125,13 @@
 - (void)subscribingNextcloudServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // End-to-End Encryption
-- (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet;
-- (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 - (void)getEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet;
 - (void)getEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)signEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet;
+- (void)signEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet;
+- (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 @end
 
