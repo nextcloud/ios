@@ -1251,11 +1251,13 @@
             // remove keychain
             [CCUtility setEndToEndPrivateKey:app.activeUser privateKey:nil];
             
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+            //CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
-            NSString *mnemonic = [NYMnemonic generateMnemonicString:@128 language:@"english"];
+            NSString *mnemonic = [[NYMnemonic generateMnemonicString:@128 language:@"english"] stringByReplacingOccurrencesOfString:@" " withString:@""];
 
-            NSString *privateKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
+            mnemonic = @"moreovertelevisionfactorytendencyindependenceinternationalintellectualimpressinterestvolunteer";
+            
+            //NSString *privateKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
             
             message = @"private key doesn't exists";
         }

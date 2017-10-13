@@ -26,6 +26,8 @@
 #import "CCUtility.h"
 
 #import <CommonCrypto/CommonDigest.h>
+#import <CommonCrypto/CommonKeyDerivation.h>
+
 
 #import <openssl/x509.h>
 #import <openssl/bio.h>
@@ -267,6 +269,15 @@ cleanup:
 
 - (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
 {
+    NSMutableData *secretKey = [NSMutableData dataWithLength:256];
+    NSData *salt = [@"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, salt.bytes,salt.length, kCCPRFHmacAlgSHA1, 1024, secretKey.mutableBytes, secretKey.length);
+    
+    NSString* skey = [secretKey base64EncodedStringWithOptions:0];
+    NSLog(@"key %@",secretKey);
+    
+    
     return nil;
 }
 
