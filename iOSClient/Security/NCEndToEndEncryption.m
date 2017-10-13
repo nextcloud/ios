@@ -45,15 +45,14 @@
 #define AES_IVEC_LENGTH             16
 #define AES_GCM_TAG_LENGTH          16
 
-#define IV_DELIMITER                "fA=="; // "|" base64 encoded
+#define IV_DELIMITER_ENCODED        @"fA==" // "|" base64 encoded
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
 
-#define fileNameCertificate @"e2e_cert.pem"
-#define fileNameCSR         @"e2e_csr.pem"
-#define fileNamePrivateKey  @"e2e_privateKey.pem"
+#define fileNameCertificate         @"e2e_cert.pem"
+#define fileNameCSR                 @"e2e_csr.pem"
+#define fileNamePrivateKey          @"e2e_privateKey.pem"
 
-//#define AES_KEY_LENGTH_BITS 128
 
 @implementation NCEndToEndEncryption
 
@@ -275,17 +274,30 @@ cleanup:
 
 - (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
 {
-    NSMutableData *secretKey = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
+    NSError *error;
+    NSMutableData *cipherData;
+    NSString *privateKeyEncryptedEncoded;
+
+    NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
     NSData *salt = [@"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$" dataUsingEncoding:NSUTF8StringEncoding];
     
-    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, salt.bytes,salt.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, secretKey.mutableBytes, secretKey.length);
+    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, salt.bytes,salt.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
+    //NSString* keyEncoded = [keyData base64EncodedStringWithOptions:0];
     
-    NSString* keyEncoded = [secretKey base64EncodedStringWithOptions:0];
+    NSData *initVectorData = [self generateIV:AES_IVEC_LENGTH];
     
-    NSData *iv = [self generateIV:AES_IVEC_LENGTH];
-    NSString* ivEncoded = [iv base64EncodedStringWithOptions:0];
+    NSData *privateKeyData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]];
+
+    BOOL result = [self aes256gcmEncrypt:privateKeyData cipherData:&cipherData keyData:keyData initVectorData:initVectorData tagData:nil];
+
+    if (result && cipherData) {
+        
+        privateKeyEncryptedEncoded = [cipherData base64EncodedStringWithOptions:0];
+        NSString *initVectorEncoded = [initVectorData base64EncodedStringWithOptions:0];
+        privateKeyEncryptedEncoded = [NSString stringWithFormat:@"%@%@%@", privateKeyEncryptedEncoded, IV_DELIMITER_ENCODED, initVectorEncoded];
+    }
     
-    return nil;
+    return privateKeyEncryptedEncoded;
 }
 
 #
