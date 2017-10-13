@@ -41,9 +41,13 @@
 
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
-#define AES_KEY_LENGTH      16
-#define AES_IVEC_LENGTH     16
-#define AES_GCM_TAG_LENGTH  16
+#define AES_KEY_LENGTH              16
+#define AES_IVEC_LENGTH             16
+#define AES_GCM_TAG_LENGTH          16
+
+#define IV_DELIMITER                "fA=="; // "|" base64 encoded
+#define PBKDF2_INTERACTION_COUNT    1024
+#define PBKDF2_KEY_LENGTH           256
 
 #define fileNameCertificate @"e2e_cert.pem"
 #define fileNameCSR         @"e2e_csr.pem"
@@ -271,14 +275,15 @@ cleanup:
 
 - (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
 {
-    NSMutableData *secretKey = [NSMutableData dataWithLength:256];
+    NSMutableData *secretKey = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
     NSData *salt = [@"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$" dataUsingEncoding:NSUTF8StringEncoding];
     
-    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, salt.bytes,salt.length, kCCPRFHmacAlgSHA1, 1024, secretKey.mutableBytes, secretKey.length);
+    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, salt.bytes,salt.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, secretKey.mutableBytes, secretKey.length);
     
-    NSString* skey = [secretKey base64EncodedStringWithOptions:0];
-    NSLog(@"key %@",secretKey);
+    NSString* keyEncoded = [secretKey base64EncodedStringWithOptions:0];
     
+    NSData *iv = [self generateIV:AES_IVEC_LENGTH];
+    NSString* ivEncoded = [iv base64EncodedStringWithOptions:0];
     
     return nil;
 }
@@ -448,6 +453,14 @@ cleanup:
     for(int i = 0; i < CC_SHA512_DIGEST_LENGTH; i++)
         [output appendFormat:@"%02x", digest[i]];
     return output;
+}
+
+- (NSData *)generateIV:(int)ivLength
+{
+    NSMutableData  *ivData = [NSMutableData dataWithLength:ivLength];
+    (void)SecRandomCopyBytes(kSecRandomDefault, ivLength, ivData.mutableBytes);
+    
+    return ivData;
 }
 
 @end
