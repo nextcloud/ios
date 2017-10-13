@@ -878,7 +878,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 }
 
 //curl -X POST http://<user>:<password>@nextcloud/ocs/v2.php/apps/end_to_end_encryption/api/v1/public-key -H "OCS-APIRequest:true" -d csr="<urlencoded-csr>"
-- (void)signEndToEndPublicKey:(NSString*)serverPath publickey:(NSString *)publickey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)storeEndToEndPublicKey:(NSString*)serverPath publickey:(NSString *)publickey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);

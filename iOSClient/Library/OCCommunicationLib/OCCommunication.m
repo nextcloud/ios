@@ -1996,7 +1996,7 @@
     }];
 }
 
-- (void)signEndToEndPublicKey:(NSString*)serverPath publickey:(NSString *)publickey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)storeEndToEndPublicKey:(NSString*)serverPath publickey:(NSString *)publickey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
@@ -2005,7 +2005,7 @@
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request signEndToEndPublicKey:serverPath publickey:publickey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request storeEndToEndPublicKey:serverPath publickey:publickey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         //Return success
         successRequest(response, request.redirectedServer);

@@ -1298,7 +1298,7 @@
             
             if (publicKeyEncoded) {
                 
-                metadataNet.action = actionSignEndToEndPublicKey;
+                metadataNet.action = actionStoreEndToEndPublicKey;
                 metadataNet.options = publicKeyEncoded;
             
                 [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -1324,7 +1324,7 @@
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
-- (void)signEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
+- (void)storeEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
     // Store signed key locally keychain
     [CCUtility setEndToEndPublicKey:app.activeUser publicKey:metadataNet.options];
@@ -1333,7 +1333,7 @@
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey present on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
-- (void)signEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)storeEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [app messageNotification:@"E2E sign public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     

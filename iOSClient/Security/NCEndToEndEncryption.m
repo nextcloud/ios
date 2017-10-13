@@ -274,7 +274,6 @@ cleanup:
 
 - (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
 {
-    NSError *error;
     NSMutableData *cipherData;
     NSString *privateKeyEncryptedEncoded;
 
