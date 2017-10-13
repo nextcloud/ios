@@ -1304,8 +1304,10 @@
                 [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
                     
             } else {
-                    
+                // Activity
+                [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"Error to create PublicKeyEncoded" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
             }
+            
             message = @"one or more public keys couldn't be found";
         }
             break;

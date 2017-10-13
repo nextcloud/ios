@@ -64,7 +64,7 @@
 }
 
 #
-#pragma mark - Generate Certificate X509 & Private Key
+#pragma mark - Generate Certificate X509 - CSR - Private Key
 #
 
 - (BOOL)generateCertificateX509WithUserID:(NSString *)userID directoryUser:(NSString *)directoryUser
@@ -101,7 +101,7 @@
     
     const unsigned char *cUserID = (const unsigned char *) [userID cStringUsingEncoding:NSUTF8StringEncoding];
 
-    // CN = UserID.
+    // Common Name = UserID.
     addName("CN", cUserID);
     
     // The organizational unit for the cert. Usually this is a department.
@@ -225,6 +225,7 @@ cleanup:
     return YES;
 }
 
+/*
 - (BOOL)saveP12WithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished
 {
     //PKCS12 * p12 = PKCS12_create([password UTF8String], NULL, pkey, x509, NULL, 0, 0, PKCS12_DEFAULT_ITER, 1, NID_key_usage);
@@ -243,6 +244,7 @@ cleanup:
     
     return YES;
 }
+*/
 
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
