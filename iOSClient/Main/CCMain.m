@@ -1186,10 +1186,10 @@
     // Get End-To-End PrivateKey (if enabled)
     if (capabilities.isEndToEndEncryptionEnabled) {
         
-        metadataNet.action = actionGetEndToEndPrivateKey;
+        metadataNet.action = actionGetEndToEndPublicKey;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-        metadataNet.action = actionGetEndToEndPublicKey;
+        metadataNet.action = actionGetEndToEndPrivateKey;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
