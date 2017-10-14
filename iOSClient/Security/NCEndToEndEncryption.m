@@ -268,8 +268,7 @@ cleanup:
         return nil;
     }
     
-    // return URLEncode
-    return [CCUtility URLEncodeStringFromString:csr];
+    return csr;
 }
 
 - (NSString *)createEndToEndPrivateKey:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
@@ -298,8 +297,7 @@ cleanup:
         return nil;
     }
     
-    // return URLEncode
-    return [CCUtility URLEncodeStringFromString:privateKeyCipher];
+    return privateKeyCipher;
 }
 
 #

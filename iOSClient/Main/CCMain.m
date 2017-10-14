@@ -1242,7 +1242,7 @@
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     
 #ifdef DEBUG
-    [app messageNotification:@"Get E2E PublicKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+    [app messageNotification:@"Get E2E PublicKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
 #endif
 }
 
@@ -1298,7 +1298,7 @@
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey stored on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     
 #ifdef DEBUG
-    [app messageNotification:@"Store E2E PublicKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+    [app messageNotification:@"Store E2E PublicKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
 #endif
 }
 
@@ -1328,7 +1328,7 @@
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     
 #ifdef DEBUG
-    [app messageNotification:@"Get E2E PrivateKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+    [app messageNotification:@"Get E2E PrivateKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
 #endif
 }
 
@@ -1387,7 +1387,7 @@
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey stored on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     
 #ifdef DEBUG
-    [app messageNotification:@"Store E2E PrivateKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+    [app messageNotification:@"Store E2E PrivateKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
 #endif
 }
 
@@ -1401,12 +1401,12 @@
 
 - (void)deleteEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
 {
-    [app messageNotification:@"E2E delete private key" description:@"Private key was deleted" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+    [app messageNotification:@"E2E delete private key" description:@"Private key was deleted" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
 }
 
 - (void)deleteEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [app messageNotification:@"E2E delete private key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    [app messageNotification:@"E2E delete private key" description:message visible:YES delay:1 type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 #pragma mark -

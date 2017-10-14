@@ -1744,7 +1744,8 @@
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    NSString *publicKey = _metadataNet.options;
+    // URL Encode
+    NSString *publicKey = [CCUtility URLEncodeStringFromString:_metadataNet.options];
 
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1780,7 +1781,8 @@
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    NSString *privateKey = _metadataNet.options;
+    // URL Encode
+    NSString *privateKey = [CCUtility URLEncodeStringFromString:_metadataNet.options];
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
