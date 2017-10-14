@@ -1348,7 +1348,7 @@
             NSString *mnemonic = [[NYMnemonic generateMnemonicString:@128 language:@"english"] stringByReplacingOccurrencesOfString:@" " withString:@""];
             mnemonic = @"moreovertelevisionfactorytendencyindependenceinternationalintellectualimpressinterestvolunteer";
             
-            NSString *privateKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
+            NSString *privateKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.directoryUser mnemonic:mnemonic];
             
             if (privateKeyEncoded) {
                 

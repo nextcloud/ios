@@ -272,7 +272,7 @@ cleanup:
     return [CCUtility URLEncodeStringFromString:csr];
 }
 
-- (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
+- (NSString *)createEndToEndPrivateKey:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
 {
     NSMutableData *privateKeyCipherData;
     NSString *privateKeyCipher;
