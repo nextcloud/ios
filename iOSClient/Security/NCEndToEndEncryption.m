@@ -28,7 +28,6 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <CommonCrypto/CommonKeyDerivation.h>
 
-
 #import <openssl/x509.h>
 #import <openssl/bio.h>
 #import <openssl/err.h>
@@ -53,7 +52,6 @@
 #define fileNameCertificate         @"e2e_cert.pem"
 #define fileNameCSR                 @"e2e_csr.pem"
 #define fileNamePrivateKey          @"e2e_privateKey.pem"
-
 
 @implementation NCEndToEndEncryption
 
