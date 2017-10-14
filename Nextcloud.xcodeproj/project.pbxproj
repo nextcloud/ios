@@ -893,6 +893,13 @@
 		F74344911E128E96001CC831 /* PickerFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
+		F74C5D901F923E4700B7CC01 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F74C5D911F923E4700B7CC01 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F74C5D921F923E4700B7CC01 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F74C5D931F923E4700B7CC01 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F74C5D941F923E4800B7CC01 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F74C5D951F923E4800B7CC01 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F74C5D961F923E4800B7CC01 /* fi-FI */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "fi-FI"; path = "fi-FI.lproj/Error.strings"; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
 		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
 		F75037431DBFA91A008FB480 /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
@@ -3190,6 +3197,7 @@
 				"sk-SK",
 				"en-GB",
 				"zh-Hans",
+				"fi-FI",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -3920,6 +3928,7 @@
 				F7D532531F5D4155006568B1 /* sk-SK */,
 				F7D5328E1F5D443B006568B1 /* en-GB */,
 				F7D532A31F5D4461006568B1 /* zh-Hans */,
+				F74C5D921F923E4700B7CC01 /* fi-FI */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -3945,6 +3954,7 @@
 				F7D532521F5D4155006568B1 /* sk-SK */,
 				F7D5328D1F5D443B006568B1 /* en-GB */,
 				F7D532A21F5D4461006568B1 /* zh-Hans */,
+				F74C5D911F923E4700B7CC01 /* fi-FI */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -3970,6 +3980,7 @@
 				F7D532561F5D4155006568B1 /* sk-SK */,
 				F7D532911F5D443B006568B1 /* en-GB */,
 				F7D532A61F5D4462006568B1 /* zh-Hans */,
+				F74C5D951F923E4800B7CC01 /* fi-FI */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -3995,6 +4006,7 @@
 				F7D532511F5D4155006568B1 /* sk-SK */,
 				F7D5328C1F5D443B006568B1 /* en-GB */,
 				F7D532A11F5D4461006568B1 /* zh-Hans */,
+				F74C5D901F923E4700B7CC01 /* fi-FI */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -4020,6 +4032,7 @@
 				F7D532571F5D4156006568B1 /* sk-SK */,
 				F7D532921F5D443B006568B1 /* en-GB */,
 				F7D532A71F5D4462006568B1 /* zh-Hans */,
+				F74C5D961F923E4800B7CC01 /* fi-FI */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -4045,6 +4058,7 @@
 				F7D532551F5D4155006568B1 /* sk-SK */,
 				F7D532901F5D443B006568B1 /* en-GB */,
 				F7D532A51F5D4461006568B1 /* zh-Hans */,
+				F74C5D941F923E4800B7CC01 /* fi-FI */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -4070,6 +4084,7 @@
 				F7D532541F5D4155006568B1 /* sk-SK */,
 				F7D5328F1F5D443B006568B1 /* en-GB */,
 				F7D532A41F5D4461006568B1 /* zh-Hans */,
+				F74C5D931F923E4700B7CC01 /* fi-FI */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
