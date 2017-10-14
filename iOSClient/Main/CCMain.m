@@ -1366,6 +1366,7 @@
                 
                 metadataNet.action = actionStoreEndToEndPrivateKey;
                 metadataNet.options = privateKeyEncoded;
+                metadataNet.password = mnemonic;
                 
                 [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
                 
