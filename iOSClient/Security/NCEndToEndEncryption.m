@@ -188,24 +188,11 @@ cleanup:
 
 - (BOOL)savePEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser
 {
+    FILE *f;
+    
+    // Certificate
+    /*
     NSString *certificatePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
-    NSString *privatekeyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey];
-    NSString *csrPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR];
-    
-    // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
-    // file using the password and cipher you provide.
-    //if (PEM_write_PrivateKey(f, pkey, EVP_des_ede3_cbc(), (unsigned char *)[password UTF8String], (int)password.length, NULL, NULL) < 0) {
-    
-    FILE *f = fopen([privatekeyPath fileSystemRepresentation], "wb");
-    if (PEM_write_PrivateKey(f, pkey, NULL, NULL, 0, NULL, NULL) < 0) {
-        // Error encrypting or writing to disk.
-        fclose(f);
-        return NO;
-    }
-    NSLog(@"Saved key to %@", privatekeyPath);
-    fclose(f);
-    
-    // Here you write the certificate to the disk. No encryption is needed here since this is public facing information
     f = fopen([certificatePath fileSystemRepresentation], "wb");
     if (PEM_write_X509(f, x509) < 0) {
         // Error writing to disk.
@@ -214,8 +201,25 @@ cleanup:
     }
     NSLog(@"Saved cert to %@", certificatePath);
     fclose(f);
+    */
+    
+    // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
+    // file using the password and cipher you provide.
+    //if (PEM_write_PrivateKey(f, pkey, EVP_des_ede3_cbc(), (unsigned char *)[password UTF8String], (int)password.length, NULL, NULL) < 0) {
+    
+    // PrivateKey
+    NSString *privatekeyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey];
+    f = fopen([privatekeyPath fileSystemRepresentation], "wb");
+    if (PEM_write_PrivateKey(f, pkey, NULL, NULL, 0, NULL, NULL) < 0) {
+        // Error encrypting or writing to disk.
+        fclose(f);
+        return NO;
+    }
+    NSLog(@"Saved key to %@", privatekeyPath);
+    fclose(f);
     
     // CSR Request sha256
+    NSString *csrPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR];
     f = fopen([csrPath fileSystemRepresentation], "wb");
     X509_REQ *certreq = X509_to_X509_REQ(x509, pkey, EVP_sha256());
     if (PEM_write_X509_REQ(f, certreq) < 0) {
