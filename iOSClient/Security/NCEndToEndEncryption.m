@@ -149,6 +149,7 @@
     
     X509_print_fp(stdout, x509);
     
+    // Save to disk
     [self savePEMWithCert:x509 key:pkey directoryUser:directoryUser];
     
     return YES;
@@ -209,11 +210,11 @@ cleanup:
     NSString *privatekeyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey];
     f = fopen([privatekeyPath fileSystemRepresentation], "wb");
     if (PEM_write_PrivateKey(f, pkey, NULL, NULL, 0, NULL, NULL) < 0) {
-        // Error encrypting or writing to disk.
+        // Error
         fclose(f);
         return NO;
     }
-    NSLog(@"Saved key to %@", privatekeyPath);
+    NSLog(@"Saved privatekey to %@", privatekeyPath);
     fclose(f);
     
     // CSR Request sha256
@@ -221,7 +222,7 @@ cleanup:
     f = fopen([csrPath fileSystemRepresentation], "wb");
     X509_REQ *certreq = X509_to_X509_REQ(x509, pkey, EVP_sha256());
     if (PEM_write_X509_REQ(f, certreq) < 0) {
-        // Error writing to disk.
+        // Error
         fclose(f);
         return NO;
     }
@@ -257,27 +258,33 @@ cleanup:
     NSString *csr;
     NSError *error;
 
-    BOOL result = [self generateCertificateX509WithUserID:userID directoryUser:directoryUser];
-    
-    if (result) {
+    // Create Certificate, if do not exists
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR]]) {
         
-        csr = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
-
-        if (error)
+        if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
             return nil;
-        
-    } else {
-        return nil;
     }
+    
+    csr = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
+
+    if (error)
+        return nil;
     
     return csr;
 }
 
-- (NSString *)createEndToEndPrivateKey:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
+- (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser mnemonic:(NSString *)mnemonic
 {
     NSMutableData *privateKeyCipherData;
     NSString *privateKeyCipher;
 
+    // Create Certificate, if do not exists
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]]) {
+        
+        if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
+            return nil;
+    }
+    
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
     NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
     
