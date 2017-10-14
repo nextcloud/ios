@@ -48,6 +48,7 @@
 #define IV_DELIMITER_ENCODED        @"fA==" // "|" base64 encoded
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
+#define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
 
 #define fileNameCertificate         @"e2e_cert.pem"
 #define fileNameCSR                 @"e2e_csr.pem"
@@ -251,50 +252,54 @@ cleanup:
 
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
-    NSString *csrEncodeURL;
+    NSString *csr;
+    NSError *error;
+
     BOOL result = [self generateCertificateX509WithUserID:userID directoryUser:directoryUser];
     
     if (result) {
         
-        NSError *error;
-        
-        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR];
-        
-        NSString *csr = [NSString stringWithContentsOfFile:fileNamePath encoding:NSUTF8StringEncoding error:&error];
-        csrEncodeURL = [CCUtility URLEncodeStringFromString:csr];
+        csr = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
 
+        if (error)
+            return nil;
+        
     } else {
         return nil;
     }
     
-    return csrEncodeURL;
+    // return URLEncode
+    return [CCUtility URLEncodeStringFromString:csr];
 }
 
 - (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser:(NSString *)directoryUser mnemonic:(NSString *)mnemonic
 {
-    NSMutableData *cipherData;
-    NSString *privateKeyEncryptedEncoded;
+    NSMutableData *privateKeyCipherData;
+    NSString *privateKeyCipher;
 
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
-    NSData *salt = [@"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$" dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
     
-    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, salt.bytes,salt.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
-    //NSString* keyEncoded = [keyData base64EncodedStringWithOptions:0];
+    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
     
     NSData *initVectorData = [self generateIV:AES_IVEC_LENGTH];
-    
     NSData *privateKeyData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]];
 
-    BOOL result = [self aes256gcmEncrypt:privateKeyData cipherData:&cipherData keyData:keyData initVectorData:initVectorData tagData:nil];
+    BOOL result = [self aes256gcmEncrypt:privateKeyData cipherData:&privateKeyCipherData keyData:keyData initVectorData:initVectorData tagData:nil];
 
-    if (result && cipherData) {
+    if (result && privateKeyCipherData) {
         
-        privateKeyEncryptedEncoded = [cipherData base64EncodedStringWithOptions:0];
-        NSString *initVectorEncoded = [initVectorData base64EncodedStringWithOptions:0];
-        privateKeyEncryptedEncoded = [NSString stringWithFormat:@"%@%@%@", privateKeyEncryptedEncoded, IV_DELIMITER_ENCODED, initVectorEncoded];
+        privateKeyCipher = [privateKeyCipherData base64EncodedStringWithOptions:0];
+        NSString *initVector= [initVectorData base64EncodedStringWithOptions:0];
+        privateKeyCipher = [NSString stringWithFormat:@"%@%@%@", privateKeyCipher, IV_DELIMITER_ENCODED, initVector];
+        
+    } else {
+        
+        return nil;
     }
     
-    return privateKeyEncryptedEncoded;
+    // return URLEncode
+    return [CCUtility URLEncodeStringFromString:privateKeyCipher];
 }
 
 #
