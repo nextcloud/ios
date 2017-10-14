@@ -309,6 +309,16 @@ cleanup:
     return privateKeyCipher;
 }
 
+- (void)removeCSRToDisk:(NSString *)directoryUser
+{
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] error:nil];
+}
+
+- (void)removePrivateKeyToDisk:(NSString *)directoryUser
+{
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] error:nil];
+}
+
 #
 #pragma mark - Encrypt/Decrypt AES/GCM/NoPadding as cipher (128 bit key size)
 #

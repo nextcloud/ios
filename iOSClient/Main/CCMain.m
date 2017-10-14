@@ -1238,6 +1238,9 @@
 
 - (void)getEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
+    // Remove CSR
+    [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
+    
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     
@@ -1291,6 +1294,9 @@
 
 - (void)storeEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
+    // Remove CSR
+    [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
+    
     // Store signed key locally keychain
     [CCUtility setEndToEndPublicKey:app.activeUser publicKey:metadataNet.options];
     
@@ -1312,6 +1318,9 @@
 
 - (void)deleteEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
+    // Remove CSR
+    [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
+    
     [app messageNotification:@"E2E delete public key" description:@"Public key was deleted" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
 }
 
@@ -1324,6 +1333,9 @@
 
 - (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
 {
+    // Remove PrivateKey
+    [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
+    
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     
@@ -1380,6 +1392,9 @@
 
 - (void)storeEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
 {
+    // Remove PrivateKey
+    [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
+    
     // Store key locally keychain
     [CCUtility setEndToEndPrivateKey:app.activeUser privateKey:metadataNet.options];
     
@@ -1401,6 +1416,9 @@
 
 - (void)deleteEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
 {
+    // Remove PrivateKey
+    [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
+    
     [app messageNotification:@"E2E delete private key" description:@"Private key was deleted" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
 }
 
