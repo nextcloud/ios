@@ -139,6 +139,9 @@
 - (void)deleteEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet;
 - (void)deleteEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
+- (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet;
+- (void)getEndToEndServerPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 @end
 
 @interface OCURLSessionManager : AFURLSessionManager
