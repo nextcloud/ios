@@ -2429,8 +2429,8 @@
 			isa = PBXGroup;
 			children = (
 				F7ACE4291BAC0268006C0017 /* Acknowledgements.h */,
-				F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */,
 				F7ACE42B1BAC0268006C0017 /* Acknowledgements.rtf */,
+				F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */,
 				F7A321AB1E9E6AD50069AD1B /* CCAdvanced.h */,
 				F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */,
 				F7ACE42C1BAC0268006C0017 /* CCManageAccount.h */,
