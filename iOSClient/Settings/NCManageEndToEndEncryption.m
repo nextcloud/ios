@@ -37,7 +37,7 @@
     
     // Section DELETE KEYS -------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_encryption_delete_keys_", nil)];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"Delete", nil)];
     [form addFormSection:section];
     
     // Delete publicKey
@@ -55,6 +55,9 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     row.action.formSelector = @selector(deletePrivateKey:);
     [section addFormRow:row];
+    
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"Init", nil)];
+    [form addFormSection:section];
     
     // Inizializze e2e
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"initE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_encryption_initialize_", nil)];
