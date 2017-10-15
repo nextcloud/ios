@@ -879,6 +879,21 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
+- (void)getEndToEndServerPublicKey:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+                     failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+    
+    _requestMethod = @"GET";
+    
+    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
+    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    [operation resume];
+}
+
 //curl -X POST http://<user>:<password>@nextcloud/ocs/v2.php/apps/end_to_end_encryption/api/v1/public-key -H "OCS-APIRequest:true" -d csr="<urlencoded-csr>"
 - (void)storeEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
