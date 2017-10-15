@@ -1186,10 +1186,13 @@
     // Get End-To-End PrivateKey (if enabled)
     if (capabilities.isEndToEndEncryptionEnabled) {
         
-        metadataNet.action = actionGetEndToEndPublicKey;
+        metadataNet.action = actionGetEndToEndPublicKeys;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
         metadataNet.action = actionGetEndToEndPrivateKey;
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        
+        metadataNet.action = actionGetEndToEndServerPublicKey;
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }
 }
@@ -1234,27 +1237,24 @@
 #pragma mark ==== End-to-End Encryption  ====
 #pragma --------------------------------------------------------------------------------------------
 
-// ++++++++++++++++++++++ PUBLIC KEY ++++++++++++++++++++++
+// ++++++++++++++++++++++ PUBLIC KEYS (SIGN) ++++++++++++++++++++++
 
-- (void)getEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
+- (void)getEndToEndPublicKeysSuccess:(CCMetadataNet *)metadataNet
 {
-    // Remove CSR
-    [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
-    
     // Activity
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKeys present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     
 #ifdef DEBUG
-    [app messageNotification:@"Get E2E PublicKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
+    [app messageNotification:@"Get E2E PublicKeys" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
 #endif
 }
 
-- (void)getEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)getEndToEndPublicKeysFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     switch (errorCode) {
         case 400:
             message = @"bad request: unpredictable internal error";
-            [app messageNotification:@"E2E public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [app messageNotification:@"E2E public keys" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             break;
         case 404: {
             // remove keychain
@@ -1266,7 +1266,7 @@
             
             if (publicKeyEncoded) {
                 
-                metadataNet.action = actionStoreEndToEndPublicKey;
+                metadataNet.action = actionSignEndToEndPublicKey;
                 metadataNet.options = publicKeyEncoded;
                 
                 [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -1280,11 +1280,11 @@
         }
             break;
         case 409:
-            message = @"forbidden: the user can't access the public key";
-            [app messageNotification:@"E2E public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            message = @"forbidden: the user can't access the public keys";
+            [app messageNotification:@"E2E public keys" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             break;
         default:
-            [app messageNotification:@"E2E public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [app messageNotification:@"E2E public keys" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             break;
     }
     
@@ -1292,7 +1292,7 @@
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
-- (void)storeEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
+- (void)signEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
     // Remove CSR
     [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
@@ -1301,14 +1301,14 @@
     [CCUtility setEndToEndPublicKey:app.activeUser publicKey:metadataNet.options];
     
     // Activity
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey stored on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey sign on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     
 #ifdef DEBUG
-    [app messageNotification:@"Store E2E PublicKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
+    [app messageNotification:@"Sign E2E PublicKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
 #endif
 }
 
-- (void)storeEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)signEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [app messageNotification:@"E2E sign public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
@@ -1426,6 +1426,43 @@
 - (void)deleteEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [app messageNotification:@"E2E delete private key" description:message visible:YES delay:1 type:TWMessageBarMessageTypeError errorCode:errorCode];
+}
+
+// ++++++++++++++++++++++ SERVER PUBLIC KEY ++++++++++++++++++++++
+
+- (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet
+{
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndServerPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+    
+#ifdef DEBUG
+    [app messageNotification:@"Get E2E Server PublicKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
+#endif
+}
+
+- (void)getEndToEndServerPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    switch (errorCode) {
+        case 400:
+            message = @"bad request: unpredictable internal error";
+            [app messageNotification:@"E2E Server public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            break;
+        case 404: {
+            
+            message = @"private key doesn't exists";
+        }
+            break;
+        case 409:
+            message = @"forbidden: the user can't access the private key";
+            [app messageNotification:@"E2E private key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            break;
+        default:
+            [app messageNotification:@"E2E private key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            break;
+    }
+    
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
 #pragma mark -

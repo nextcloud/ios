@@ -1670,20 +1670,20 @@
 #pragma mark ===== End-to-End Encryption =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getEndToEndPublicKey
+- (void)getEndToEndPublicKeys
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
+    [communication getEndToEndPublicKeys:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
         
         // 200 ok: body contain the public key
         _metadataNet.options = publicKey;
 
-        if ([self.delegate respondsToSelector:@selector(getEndToEndPublicKeySuccess:)])
-            [self.delegate getEndToEndPublicKeySuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(getEndToEndPublicKeysSuccess:)])
+            [self.delegate getEndToEndPublicKeysSuccess:_metadataNet];
         
         [self complete];
         
@@ -1694,8 +1694,8 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(getEndToEndPublicKeyFailure:message:errorCode:)])
-            [self.delegate getEndToEndPublicKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(getEndToEndPublicKeysFailure:message:errorCode:)])
+            [self.delegate getEndToEndPublicKeysFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1740,7 +1740,7 @@
     }];
 }
 
-- (void)storeEndToEndPublicKey
+- (void)signEndToEndPublicKey
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -1750,12 +1750,12 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication storeEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication signEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         // 200 ok: body contain the public key
         
-        if ([self.delegate respondsToSelector:@selector(storeEndToEndPublicKeySuccess:)])
-            [self.delegate storeEndToEndPublicKeySuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(signEndToEndPublicKeySuccess:)])
+            [self.delegate signEndToEndPublicKeySuccess:_metadataNet];
         
         [self complete];
         
@@ -1766,8 +1766,8 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(storeEndToEndPublicKeyFailure:message:errorCode:)])
-            [self.delegate storeEndToEndPublicKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(signEndToEndPublicKeyFailure:message:errorCode:)])
+            [self.delegate signEndToEndPublicKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)

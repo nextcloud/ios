@@ -1954,7 +1954,7 @@
 
 #pragma mark - End-to-End Encryption
 
-- (void)getEndToEndPublicKey:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)getEndToEndPublicKeys:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
@@ -1963,7 +1963,7 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request getEndToEndPublicKey:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request getEndToEndPublicKeys:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSString *publicKey;
@@ -2096,10 +2096,9 @@
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                if ([data valueForKey:@"public-keys"] && ![[data valueForKey:@"public-keys"] isKindOfClass:[NSNull class]]) {
+                if ([data valueForKey:@"public-key"] && ![[data valueForKey:@"public-key"] isKindOfClass:[NSNull class]]) {
                     
-                    NSDictionary *publickeys = [data valueForKey:@"public-keys"];
-                    publicKey = [publickeys valueForKey:@"nc"];
+                    publicKey = [data valueForKey:@"public-key"];
                 }
                 
             } else {
@@ -2125,7 +2124,7 @@
     }];
 }
 
-- (void)storeEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)signEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
@@ -2134,7 +2133,7 @@
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request storeEndToEndPublicKey:serverPath publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request signEndToEndPublicKey:serverPath publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         //Return success
         successRequest(response, request.redirectedServer);
