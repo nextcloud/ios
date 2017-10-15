@@ -86,5 +86,7 @@
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;
 
+- (void)initEndToEnd;
+
 @end
 

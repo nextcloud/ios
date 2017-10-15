@@ -90,6 +90,8 @@
 - (void)initE2E:(XLFormRowDescriptor *)sender
 {
     [CCUtility initEndToEnd:app.activeAccount];
+    
+    [app.activeMain initEndToEnd];
 }
 
 @end

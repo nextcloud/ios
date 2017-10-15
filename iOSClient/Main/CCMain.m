@@ -1188,14 +1188,7 @@
         
         if (![CCUtility isEndToEndEnabled:app.activeAccount]) {
             
-            metadataNet.action = actionGetEndToEndPublicKeys;
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-            metadataNet.action = actionGetEndToEndPrivateKey;
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-        
-            metadataNet.action = actionGetEndToEndServerPublicKey;
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+            [self initEndToEnd];
         }
     }
 }
@@ -1239,6 +1232,22 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== End-to-End Encryption  ====
 #pragma --------------------------------------------------------------------------------------------
+
+// ++++++++++++++++++++++ INITIALIZE ++++++++++++++++++++++
+
+- (void)initEndToEnd
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+
+    metadataNet.action = actionGetEndToEndPublicKeys;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    metadataNet.action = actionGetEndToEndPrivateKey;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+    metadataNet.action = actionGetEndToEndServerPublicKey;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+}
 
 // ++++++++++++++++++++++ PUBLIC KEYS (SIGN) ++++++++++++++++++++++
 
