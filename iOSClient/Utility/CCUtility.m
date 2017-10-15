@@ -245,6 +245,14 @@
     [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)initEndToEnd:(NSString *)account
+{
+    [self setEndToEndPublicKey:account publicKey:nil];
+    [self setEndToEndPrivateKey:account privateKey:nil];
+    [self setEndToEndMnemonic:account mnemonic:nil];
+    [self setEndToEndServerPublicKey:account publicKey:nil];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid

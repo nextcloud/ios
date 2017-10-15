@@ -56,6 +56,14 @@
     row.action.formSelector = @selector(deletePrivateKey:);
     [section addFormRow:row];
     
+    // Inizializze e2e
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"initE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_encryption_initialize_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    row.action.formSelector = @selector(initE2E:);
+    [section addFormRow:row];
+    
     return [super initWithForm:form];
 }
 
@@ -77,6 +85,11 @@
 
     metadataNet.action = actionDeleteEndToEndPrivateKey;
     [app addNetworkingOperationQueue:app.netQueue delegate:app.activeMain metadataNet:metadataNet];
+}
+
+- (void)initE2E:(XLFormRowDescriptor *)sender
+{
+    [CCUtility initEndToEnd:app.activeAccount];
 }
 
 @end

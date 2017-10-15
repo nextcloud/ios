@@ -95,6 +95,7 @@
 + (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
 + (void)setEndToEndMnemonic:(NSString *)account mnemonic:(NSString *)mnemonic;
 + (void)setEndToEndServerPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
++ (void)initEndToEnd:(NSString *)account;
 
 // GET
 
