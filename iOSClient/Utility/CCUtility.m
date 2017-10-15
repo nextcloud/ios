@@ -221,22 +221,28 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPublicKey:(NSString *)user publicKey:(NSString *)publicKey
++ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
 {
-    NSString *key = [@"EndToEndPublicKey_" stringByAppendingString:user];
+    NSString *key = [@"EndToEndPublicKey_" stringByAppendingString:account];
     [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPrivateKey:(NSString *)user privateKey:(NSString *)privateKey
++ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
 {
-    NSString *key = [@"EndToEndPrivateKey_" stringByAppendingString:user];
+    NSString *key = [@"EndToEndPrivateKey_" stringByAppendingString:account];
     [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndMnemonic:(NSString *)user mnemonic:(NSString *)mnemonic
++ (void)setEndToEndMnemonic:(NSString *)account mnemonic:(NSString *)mnemonic
 {
-    NSString *key = [@"EndToEndMnemonic_" stringByAppendingString:user];
+    NSString *key = [@"EndToEndMnemonic_" stringByAppendingString:account];
     [UICKeyChainStore setString:mnemonic forKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setEndToEndServerPublicKey:(NSString *)account publicKey:(NSString *)publicKey
+{
+    NSString *key = [@"EndToEndServerPublicKey_" stringByAppendingString:account];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
 #pragma ------------------------------ GET
@@ -433,22 +439,36 @@
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (NSString *)getEndToEndPublicKey:(NSString *)user
++ (NSString *)getEndToEndPublicKey:(NSString *)account
 {
-    NSString *key = [@"EndToEndPublicKey_" stringByAppendingString:user];
+    NSString *key = [@"EndToEndPublicKey_" stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getEndToEndPrivateKey:(NSString *)user
++ (NSString *)getEndToEndPrivateKey:(NSString *)account
 {
-    NSString *key = [@"EndToEndPrivateKey_" stringByAppendingString:user];
+    NSString *key = [@"EndToEndPrivateKey_" stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getEndToEndMnemonic:(NSString *)user
++ (NSString *)getEndToEndMnemonic:(NSString *)account
 {
-    NSString *key = [@"EndToEndMnemonic_" stringByAppendingString:user];
+    NSString *key = [@"EndToEndMnemonic_" stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getEndToEndServerPublicKey:(NSString *)account
+{
+    NSString *key = [@"EndToEndServerPublicKey_" stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (BOOL)isEndToEndEnabled:(NSString *)account
+{
+    if ([self getEndToEndMnemonic:account].length > 0 && [self getEndToEndPrivateKey:account].length > 0)
+        return YES;
+    else
+        return NO;
 }
 
 #pragma --------------------------------------------------------------------------------------------

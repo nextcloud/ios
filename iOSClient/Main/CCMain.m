@@ -1186,14 +1186,17 @@
     // Get End-To-End PrivateKey (if enabled)
     if (capabilities.isEndToEndEncryptionEnabled) {
         
-        metadataNet.action = actionGetEndToEndPublicKeys;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        if (![CCUtility isEndToEndEnabled:app.activeAccount]) {
+            
+            metadataNet.action = actionGetEndToEndPublicKeys;
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-        metadataNet.action = actionGetEndToEndPrivateKey;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+            metadataNet.action = actionGetEndToEndPrivateKey;
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
         
-        metadataNet.action = actionGetEndToEndServerPublicKey;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+            metadataNet.action = actionGetEndToEndServerPublicKey;
+            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        }
     }
 }
 
@@ -1298,7 +1301,7 @@
     [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
     
     // Store signed key locally keychain
-    [CCUtility setEndToEndPublicKey:app.activeUser publicKey:metadataNet.options];
+    [CCUtility setEndToEndPublicKey:app.activeAccount publicKey:metadataNet.options];
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey sign on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
@@ -1397,7 +1400,7 @@
     [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
     
     // Store key locally keychain
-    [CCUtility setEndToEndPrivateKey:app.activeUser privateKey:metadataNet.options];
+    [CCUtility setEndToEndPrivateKey:app.activeAccount privateKey:metadataNet.options];
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey stored on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];

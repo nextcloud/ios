@@ -91,9 +91,10 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
-+ (void)setEndToEndPublicKey:(NSString *)user publicKey:(NSString *)publicKey;
-+ (void)setEndToEndPrivateKey:(NSString *)user privateKey:(NSString *)privateKey;
-+ (void)setEndToEndMnemonic:(NSString *)user mnemonic:(NSString *)mnemonic;
++ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
++ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
++ (void)setEndToEndMnemonic:(NSString *)account mnemonic:(NSString *)mnemonic;
++ (void)setEndToEndServerPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
 
 // GET
 
@@ -139,9 +140,11 @@
 
 + (BOOL)getShowHiddenFiles;
 
-+ (NSString *)getEndToEndPublicKey:(NSString *)user;
-+ (NSString *)getEndToEndPrivateKey:(NSString *)user;
-+ (NSString *)getEndToEndMnemonic:(NSString *)user;
++ (NSString *)getEndToEndPublicKey:(NSString *)account;
++ (NSString *)getEndToEndPrivateKey:(NSString *)account;
++ (NSString *)getEndToEndMnemonic:(NSString *)account;
++ (NSString *)getEndToEndServerPublicKey:(NSString *)account;
++ (BOOL)isEndToEndEnabled:(NSString *)account;
 
 // ===== Varius =====
 
