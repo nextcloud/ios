@@ -1183,8 +1183,8 @@
     metadataNet.action = actionGetActivityServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
+#ifdef DEBUG
     // Get End-To-End PrivateKey (if enabled)
-    /*
     if (capabilities.isEndToEndEncryptionEnabled) {
         
         if (![CCUtility isEndToEndEnabled:app.activeAccount]) {
@@ -1192,7 +1192,8 @@
             [self initEndToEnd];
         }
     }
-    */
+#endif
+    
 }
 
 #pragma mark -
@@ -1244,8 +1245,8 @@
     metadataNet.action = actionGetEndToEndPublicKeys;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
-    metadataNet.action = actionGetEndToEndPrivateKey;
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    //metadataNet.action = actionGetEndToEndPrivateKey;
+    //[app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     metadataNet.action = actionGetEndToEndServerPublicKey;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -1272,7 +1273,7 @@
             break;
         case 404: {
             // remove keychain
-            [CCUtility setEndToEndPublicKey:app.activeUser publicKey:metadataNet.options];
+            [CCUtility setEndToEndPublicKey:app.activeAccount publicKey:nil];
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
@@ -1367,7 +1368,7 @@
             break;
         case 404: {
             // remove keychain
-            [CCUtility setEndToEndPrivateKey:app.activeUser privateKey:nil];
+            [CCUtility setEndToEndPrivateKey:app.activeAccount privateKey:nil];
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
@@ -1410,8 +1411,10 @@
     // Remove PrivateKey
     [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
     
-    // Store key locally keychain
+    // Store privatekey locally keychain
     [CCUtility setEndToEndPrivateKey:app.activeAccount privateKey:metadataNet.options];
+    // Strore mnemonic locally keychain
+    [CCUtility setEndToEndMnemonic:app.activeAccount mnemonic:metadataNet.password];
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey stored on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];

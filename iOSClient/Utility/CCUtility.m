@@ -478,7 +478,10 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
-    if ([self getEndToEndMnemonic:account].length > 0 && [self getEndToEndPrivateKey:account].length > 0)
+    NSString *mnemonic = [self getEndToEndMnemonic:account];
+    NSString *privateKey = [self getEndToEndPrivateKey:account];
+    
+    if (mnemonic.length > 0 && privateKey.length > 0)
         return YES;
     else
         return NO;
