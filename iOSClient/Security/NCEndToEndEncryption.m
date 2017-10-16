@@ -338,11 +338,14 @@ cleanup:
     NSString *initVector = [privateKeyCipher substringFromIndex:idx];
 
     // Get privateKeyCipher
-    //privateKeyCipher = [privateKeyCipher substringToIndex:range.location];
+    privateKeyCipher = [privateKeyCipher substringToIndex:range.location];
     NSData *privateKeyCipherData = [privateKeyCipher dataUsingEncoding:NSUTF8StringEncoding];
     NSMutableData *privateKeyData;
-    NSData *keyData = [mnemonic dataUsingEncoding:NSUTF8StringEncoding];
     NSData *initVectorData = [initVector dataUsingEncoding:NSUTF8StringEncoding];
+    NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
+    NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
+    
+    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
     
     BOOL result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&privateKeyData keyData:keyData initVectorData:initVectorData tag:nil];
     
