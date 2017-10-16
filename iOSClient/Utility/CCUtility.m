@@ -485,9 +485,7 @@
         return YES;
         
     } else {
-        
-        [self initEndToEnd:account];
-        
+                
         return NO;
     }
 }
