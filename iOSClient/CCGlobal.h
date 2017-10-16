@@ -41,6 +41,9 @@ extern NSString *const dav;
 // UUID
 #define k_UUID_SIM                                      @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
 
+// Mnemonic test EndToEnd Encryption
+#define k_Mnemonic_test                                 @"moreovertelevisionfactorytendencyindependenceinternationalintellectualimpressinterestvolunteer"
+
 #define k_dismissAfterSecond                            4
 
 #define k_daysOfActivity                                7

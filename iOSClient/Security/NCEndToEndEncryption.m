@@ -319,19 +319,25 @@ cleanup:
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] error:nil];
 }
 
-- (void)verifyKeyPairOnServerWithMnemonic:(NSString *)mnemonic publicKey:(NSString *)publicKey privateKeyCipher:(NSString *)privateKeyCipher publicKeyServer:(NSString *)publicKeyServer
+#
+#pragma mark - Register client for Server with exists Key pair
+#
+
+- (void)verifyKeyPairOnServerWithPublicKey:(NSString *)publicKey privateKeyCipher:(NSString *)privateKeyCipher publicKeyServer:(NSString *)publicKeyServer viewController:(UIViewController *)viewController
 {
     // verify is all the keys and mnemonic are available
-    if (mnemonic.length == 0 || publicKey.length == 0 || privateKeyCipher.length == 0 || publicKeyServer.length == 0)
+    if (publicKey.length == 0 || privateKeyCipher.length == 0 || publicKeyServer.length == 0)
         return;
     
+    // mnemonic
+    NSString *mnemonic = k_Mnemonic_test;
+
+
+    
+    // Get IV
+    NSString *initVector;
     
 }
-
-#
-#pragma mark - XXXXXXX
-#
-
 
 #
 #pragma mark - Encrypt/Decrypt AES/GCM/NoPadding as cipher (128 bit key size)

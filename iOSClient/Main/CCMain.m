@@ -1270,7 +1270,7 @@
     
     // Verify KeyPair on server
     publicKey = metadataNet.options;
-    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithMnemonic:mnemonic publicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer];
+    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithPublicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer viewController:self];
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKeys present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
@@ -1365,8 +1365,8 @@
     
     // Verify KeyPair on server
     privateKeyChiper = metadataNet.options;
-    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithMnemonic:mnemonic publicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer];
-    
+    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithPublicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer viewController:self];
+
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
@@ -1384,7 +1384,7 @@
             [CCUtility setEndToEndMnemonic:app.activeAccount mnemonic:nil];
             
             NSString *mnemonic = [[NYMnemonic generateMnemonicString:@128 language:@"english"] stringByReplacingOccurrencesOfString:@" " withString:@""];
-            mnemonic = @"moreovertelevisionfactorytendencyindependenceinternationalintellectualimpressinterestvolunteer";
+            mnemonic = k_Mnemonic_test;
             
             NSString *privateKeyCipher = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
             
@@ -1464,8 +1464,8 @@
 {
     // Verify KeyPair on server
     publicKeyServer = metadataNet.options;
-    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithMnemonic:mnemonic publicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer];
-    
+    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithPublicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer viewController:self];
+
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndServerPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
