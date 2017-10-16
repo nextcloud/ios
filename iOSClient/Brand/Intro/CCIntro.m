@@ -202,19 +202,21 @@
     
     EAIntroPage *page1 = [EAIntroPage page];
     
-    page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1"]];
-    page1.title = NSLocalizedStringFromTable(@"_intro_1_title_", @"Intro", nil);
-    page1.desc = NSLocalizedStringFromTable(@"_intro_1_text_",  @"Intro", nil);
-    
+    page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"IntroNoCryptoCloud"]];
+    page1.bgImage = [UIImage imageNamed:@"bgbianco"];
+    page1.showTitleView = NO;
+
     page1.titlePositionY = titlePositionY;
     page1.titleColor = [UIColor blackColor];
     page1.titleFont = [UIFont systemFontOfSize:20];
+    page1.title = NSLocalizedStringFromTable(@"_introNoCryptoCloud_1_title_", @"Intro", nil);
+
     page1.descPositionY = descPositionY;
     page1.descColor = [UIColor blackColor];
     page1.descFont = [UIFont systemFontOfSize:14];
-    page1.bgImage = [UIImage imageNamed:@"bgbianco"];
+    page1.desc = NSLocalizedStringFromTable(@"_introNoCryptoCloud_1_text_",  @"Intro", nil);
+
     page1.titleIconPositionY = titleIconPositionY;
-    page1.showTitleView = NO;
     
     EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds];
     
@@ -228,7 +230,7 @@
     
     [intro setDelegate:self];
     [intro setPages:@[page1]];
-    [intro showInView:self.rootView animateDuration:0];
+    [intro showInView:self.rootView animateDuration:0.3];
 }
 
 @end

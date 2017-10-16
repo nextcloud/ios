@@ -104,7 +104,7 @@
         [CCUtility setIntroMessage:k_Intro view:YES];
         [CCUtility setIntroMessage:k_Intro_no_cryptocloud view:YES];
     
-        [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
+        [self introWillFinish:nil type:nil wasSkipped:NO];
 
     } else {
     
@@ -126,7 +126,7 @@
         // NO INTRO
         else {
             
-            [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
+            [self introWillFinish:nil type:nil wasSkipped:NO];
         }
     }
 }
@@ -135,17 +135,23 @@
 {
     // -1-
     if ([type isEqualToString:k_Intro]) {
+        
         [CCUtility setIntroMessage:k_Intro view:YES];
         // next
         _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
         [_intro show];
+        //
+        return;
     }
     
     // -2-
-    else if ([type isEqualToString:k_Intro_no_cryptocloud]) {
+    if ([type isEqualToString:k_Intro_no_cryptocloud]) {
+        
         [CCUtility setIntroMessage:k_Intro_no_cryptocloud view:YES];
-        [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
     }
+    
+    // check account
+    [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 }
 
 #pragma --------------------------------------------------------------------------------------------

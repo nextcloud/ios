@@ -19,3 +19,6 @@
 
 "_intro_3_title_"   = "Start";
 "_intro_3_text_"    = "Good, your Nextcloud is ready for use. Further information, news and contact-information to be found on https://nextcloud.com";
+
+"_introNoCryptoCloud_1_title_" = "Crypto Cloud";
+"_introNoCryptoCloud_1_text_"  = "Crypto Cloud encryption protocol is no longer available, you can still decrypt your files by downloading the free app from AppStore\n\n'CryptoCloud for Nextcloud'\n\nSoon there will be a new EndToEnd protocol available on all Nextcloud clients\n\n\nTap to Start";
