@@ -331,12 +331,22 @@ cleanup:
     
     // mnemonic
     NSString *mnemonic = k_Mnemonic_test;
-
-
     
-    // Get IV
-    NSString *initVector;
+    // Get Init Vector
+    NSRange range = [privateKeyCipher rangeOfString:IV_DELIMITER_ENCODED];
+    NSInteger idx = range.location + range.length;
+    NSString *initVector = [privateKeyCipher substringFromIndex:idx];
+
+    // Get privateKeyCipher
+    //privateKeyCipher = [privateKeyCipher substringToIndex:range.location];
+    NSData *privateKeyCipherData = [privateKeyCipher dataUsingEncoding:NSUTF8StringEncoding];
+    NSMutableData *privateKeyData;
+    NSData *keyData = [mnemonic dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *initVectorData = [initVector dataUsingEncoding:NSUTF8StringEncoding];
     
+    BOOL result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&privateKeyData keyData:keyData initVectorData:initVectorData tag:nil];
+    
+    NSLog(@"x");
 }
 
 #
@@ -441,13 +451,15 @@ cleanup:
     //bzero(cTag, AES_GCM_TAG_LENGTH);
     //[tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
     
-    /* verify tag */
-    NSData *authenticationTagData = [cipherData subdataWithRange:NSMakeRange([cipherData length] - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
-    NSString *authenticationTag = [authenticationTagData base64EncodedStringWithOptions:0];
+    /* verify tag if exists*/
+    if (tag) {
+        
+        NSData *authenticationTagData = [cipherData subdataWithRange:NSMakeRange([cipherData length] - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
+        NSString *authenticationTag = [authenticationTagData base64EncodedStringWithOptions:0];
     
-    if (![authenticationTag isEqualToString:tag])
-        return NO;
-    
+        if (![authenticationTag isEqualToString:tag])
+            return NO;
+    }
     /* Create and initialise the context */
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     
