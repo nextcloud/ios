@@ -67,7 +67,7 @@
 + (void)setAscendingSettings:(BOOL)ascendente;
 + (void)setGroupBySettings:(NSString *)groupby;
 
-+ (void)setIntroMessage:(NSString *)type view:(BOOL)view;
++ (void)setIntroMessage:(NSString *)type set:(BOOL)set;
 
 + (void)setActiveAccountExt:(NSString *)activeAccount;
 + (void)setServerUrlExt:(NSString *)serverUrl;
@@ -91,10 +91,9 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
-+ (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher;
++ (void)setEndToEndPublicKeySign:(NSString *)account set:(BOOL)set;
++ (void)setEndToEndPrivateKeyCipher:(NSString *)account set:(BOOL)set;
 + (void)setEndToEndMnemonic:(NSString *)account mnemonic:(NSString *)mnemonic;
-+ (void)setEndToEndServerPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
 + (void)initEndToEnd:(NSString *)account;
 
 // GET
@@ -142,10 +141,9 @@
 
 + (BOOL)getShowHiddenFiles;
 
-+ (NSString *)getEndToEndPublicKey:(NSString *)account;
-+ (NSString *)getEndToEndPrivateKeyCipher:(NSString *)account;
++ (BOOL)getEndToEndPublicKeySign:(NSString *)account;
++ (BOOL)getEndToEndPrivateKeyCipher:(NSString *)account;
 + (NSString *)getEndToEndMnemonic:(NSString *)account;
-+ (NSString *)getEndToEndServerPublicKey:(NSString *)account;
 + (BOOL)isEndToEndEnabled:(NSString *)account;
 
 // ===== Varius =====

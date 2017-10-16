@@ -101,8 +101,8 @@
     // Brand
     if ([NCBrandOptions sharedInstance].disable_intro) {
         
-        [CCUtility setIntroMessage:k_Intro view:YES];
-        [CCUtility setIntroMessage:k_Intro_no_cryptocloud view:YES];
+        [CCUtility setIntroMessage:k_Intro set:YES];
+        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
     
         [self introWillFinish:nil type:nil wasSkipped:NO];
 
@@ -136,7 +136,7 @@
     // -1-
     if ([type isEqualToString:k_Intro]) {
         
-        [CCUtility setIntroMessage:k_Intro view:YES];
+        [CCUtility setIntroMessage:k_Intro set:YES];
         // next
         _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
         [_intro show];
@@ -147,7 +147,7 @@
     // -2-
     if ([type isEqualToString:k_Intro_no_cryptocloud]) {
         
-        [CCUtility setIntroMessage:k_Intro_no_cryptocloud view:YES];
+        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
     }
     
     // check account

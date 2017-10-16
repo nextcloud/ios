@@ -1269,7 +1269,7 @@
             break;
         case 404: {
             // remove keychain
-            [CCUtility setEndToEndPublicKey:app.activeAccount publicKey:nil];
+            [CCUtility setEndToEndPublicKeySign:app.activeAccount set:NO];
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
@@ -1308,8 +1308,8 @@
     // Remove CSR
     [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
     
-    // Store signed key locally keychain
-    [CCUtility setEndToEndPublicKey:app.activeAccount publicKey:metadataNet.options];
+    // OK signed key locally keychain
+    [CCUtility setEndToEndPublicKeySign:app.activeAccount set:YES];
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey sign on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
@@ -1360,9 +1360,8 @@
             break;
         case 404: {
             // remove keychain
-            [CCUtility setEndToEndPrivateKeyCipher:app.activeAccount privateKeyCipher:nil];
-            
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+            [CCUtility setEndToEndPrivateKeyCipher:app.activeAccount set:NO];
+            [CCUtility setEndToEndMnemonic:app.activeAccount mnemonic:nil];
             
             NSString *mnemonic = [[NYMnemonic generateMnemonicString:@128 language:@"english"] stringByReplacingOccurrencesOfString:@" " withString:@""];
             mnemonic = @"moreovertelevisionfactorytendencyindependenceinternationalintellectualimpressinterestvolunteer";
@@ -1371,6 +1370,8 @@
             
             if (privateKeyCipher) {
                 
+                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+
                 metadataNet.action = actionStoreEndToEndPrivateKeyCipher;
                 metadataNet.options = privateKeyCipher;
                 metadataNet.password = mnemonic;
@@ -1403,8 +1404,8 @@
     // Remove PrivateKey
     [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
     
-    // Store privatekey locally keychain
-    [CCUtility setEndToEndPrivateKeyCipher:app.activeAccount privateKeyCipher:metadataNet.options];
+    // OK privatekey locally keychain
+    [CCUtility setEndToEndPrivateKeyCipher:app.activeAccount set:YES];
     // Strore mnemonic locally keychain
     [CCUtility setEndToEndMnemonic:app.activeAccount mnemonic:metadataNet.password];
     

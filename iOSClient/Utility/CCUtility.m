@@ -31,6 +31,13 @@
 #import <openssl/err.h>
 #import <openssl/pem.h>
 
+#define INTRO_MessageType       @"MessageType_"
+
+#define E2E_PublicKeySign       @"EndToEndPublicKeySign_"
+#define E2E_PrivateKeyCipher    @"EndToEndPrivateKeyCipher_"
+#define E2E_Mnemonic            @"EndToEndMnemonic_"
+
+
 @implementation CCUtility
 
 #pragma --------------------------------------------------------------------------------------------
@@ -145,12 +152,12 @@
     [UICKeyChainStore setString:groupby forKey:@"groupby" service:k_serviceShareKeyChain];
 }
 
-+ (void)setIntroMessage:(NSString *)type view:(BOOL)view
++ (void)setIntroMessage:(NSString *)type set:(BOOL)set
 {
-    NSString *key = [@"messageType_" stringByAppendingString:type];
-    NSString *sView = (view) ? @"true" : @"false";
+    NSString *key = [INTRO_MessageType stringByAppendingString:type];
+    NSString *sSet = (set) ? @"true" : @"false";
 
-    [UICKeyChainStore setString:sView forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setActiveAccountExt:(NSString *)activeAccount
@@ -224,36 +231,33 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
++ (void)setEndToEndPublicKeySign:(NSString *)account set:(BOOL)set
 {
-    NSString *key = [@"EndToEndPublicKey_" stringByAppendingString:account];
-    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+    NSString *key = [E2E_PublicKeySign stringByAppendingString:account];
+    NSString *sSet = (set) ? @"true" : @"false";
+
+    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher
++ (void)setEndToEndPrivateKeyCipher:(NSString *)account set:(BOOL)set
 {
-    NSString *key = [@"EndToEndPrivateKeyCipher_" stringByAppendingString:account];
-    [UICKeyChainStore setString:privateKeyCipher forKey:key service:k_serviceShareKeyChain];
+    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
+    NSString *sSet = (set) ? @"true" : @"false";
+    
+    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setEndToEndMnemonic:(NSString *)account mnemonic:(NSString *)mnemonic
 {
-    NSString *key = [@"EndToEndMnemonic_" stringByAppendingString:account];
+    NSString *key = [E2E_Mnemonic stringByAppendingString:account];
     [UICKeyChainStore setString:mnemonic forKey:key service:k_serviceShareKeyChain];
-}
-
-+ (void)setEndToEndServerPublicKey:(NSString *)account publicKey:(NSString *)publicKey
-{
-    NSString *key = [@"EndToEndServerPublicKey_" stringByAppendingString:account];
-    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)initEndToEnd:(NSString *)account
 {
-    [self setEndToEndPublicKey:account publicKey:nil];
-    [self setEndToEndPrivateKeyCipher:account privateKeyCipher:nil];
+    [self setEndToEndPublicKeySign:account set:NO];
+    [self setEndToEndPrivateKeyCipher:account set:NO];
     [self setEndToEndMnemonic:account mnemonic:nil];
-    [self setEndToEndServerPublicKey:account publicKey:nil];
 }
 
 #pragma ------------------------------ GET
@@ -365,7 +369,7 @@
 
 + (BOOL)getIntroMessage:(NSString *)type
 {
-    NSString *key = [@"messageType_" stringByAppendingString:type];
+    NSString *key = [INTRO_MessageType stringByAppendingString:type];
     
     return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
 }
@@ -452,39 +456,40 @@
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (NSString *)getEndToEndPublicKey:(NSString *)account
++ (BOOL)getEndToEndPublicKeySign:(NSString *)account
 {
-    NSString *key = [@"EndToEndPublicKey_" stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    NSString *key = [E2E_PublicKeySign stringByAppendingString:account];
+    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (NSString *)getEndToEndPrivateKeyCipher:(NSString *)account
++ (BOOL)getEndToEndPrivateKeyCipher:(NSString *)account
 {
-    NSString *key = [@"EndToEndPrivateKeyCipher_" stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
+    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
 }
 
 + (NSString *)getEndToEndMnemonic:(NSString *)account
 {
-    NSString *key = [@"EndToEndMnemonic_" stringByAppendingString:account];
-    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
-}
-
-+ (NSString *)getEndToEndServerPublicKey:(NSString *)account
-{
-    NSString *key = [@"EndToEndServerPublicKey_" stringByAppendingString:account];
+    NSString *key = [E2E_Mnemonic stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
+    BOOL publicKeySign = [self getEndToEndPublicKeySign:account];
     NSString *mnemonic = [self getEndToEndMnemonic:account];
-    NSString *privateKey = [self getEndToEndPrivateKeyCipher:account];
+    BOOL privateKeyChiper = [self getEndToEndPrivateKeyCipher:account];
     
-    if (mnemonic.length > 0 && privateKey.length > 0)
+    if (mnemonic.length > 0 && privateKeyChiper && publicKeySign) {
+        
         return YES;
-    else
+        
+    } else {
+        
+        [self initEndToEnd:account];
+        
         return NO;
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
