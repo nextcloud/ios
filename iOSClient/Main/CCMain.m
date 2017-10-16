@@ -88,6 +88,9 @@
     CCLogin *_loginVC;
     
     BOOL _loadingFolder;
+    
+    //E2E
+    NSString *publicKey, *privateKeyChiper, *publicKeyServer, *mnemonic;
 }
 @end
 
@@ -1240,6 +1243,12 @@
 
 - (void)initEndToEnd
 {
+    // clear keys
+    publicKey = nil;
+    privateKeyChiper = nil;
+    publicKeyServer = nil;
+    
+    // request keys to server
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
 
     metadataNet.action = actionGetEndToEndPublicKeys;
@@ -1256,6 +1265,13 @@
 
 - (void)getEndToEndPublicKeysSuccess:(CCMetadataNet *)metadataNet
 {
+    // Remove CSR to Disk
+    [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
+    
+    // Verify KeyPair on server
+    publicKey = metadataNet.options;
+    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithMnemonic:mnemonic publicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer];
+    
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKeys present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
@@ -1346,6 +1362,10 @@
 {
     // Remove PrivateKey to Disk
     [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
+    
+    // Verify KeyPair on server
+    privateKeyChiper = metadataNet.options;
+    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithMnemonic:mnemonic publicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer];
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
@@ -1442,6 +1462,10 @@
 
 - (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
+    // Verify KeyPair on server
+    publicKeyServer = metadataNet.options;
+    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithMnemonic:mnemonic publicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer];
+    
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndServerPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }

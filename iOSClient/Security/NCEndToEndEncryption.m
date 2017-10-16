@@ -319,6 +319,15 @@ cleanup:
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] error:nil];
 }
 
+- (void)verifyKeyPairOnServerWithMnemonic:(NSString *)mnemonic publicKey:(NSString *)publicKey privateKeyCipher:(NSString *)privateKeyCipher publicKeyServer:(NSString *)publicKeyServer
+{
+    // verify is all the keys and mnemonic are available
+    if (mnemonic.length == 0 || publicKey.length == 0 || privateKeyCipher.length == 0 || publicKeyServer.length == 0)
+        return;
+    
+    
+}
+
 #
 #pragma mark - XXXXXXX
 #
