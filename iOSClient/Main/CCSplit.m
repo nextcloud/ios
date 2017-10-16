@@ -100,29 +100,52 @@
 {
     // Brand
     if ([NCBrandOptions sharedInstance].disable_intro) {
-
-        [CCUtility setIntro:@"1.0"];
+        
+        [CCUtility setIntroMessage:k_Intro view:YES];
+        [CCUtility setIntroMessage:k_Intro_no_cryptocloud view:YES];
     
         [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 
     } else {
     
-        if ([CCUtility getIntro:@"1.0"] == NO) {
+        // -1-
+        if ([CCUtility getIntroMessage:k_Intro] == NO) {
         
-            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
-            [_intro showIntroCryptoCloud:0.0];
+            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro];
+            [_intro show];
         
-        } else {
+        }
         
+        // -2-
+        else if ([CCUtility getIntroMessage:k_Intro_no_cryptocloud] == NO) {
+            
+            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
+            [_intro show];
+        }
+        
+        // NO INTRO
+        else {
+            
             [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
         }
     }
 }
 
-- (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
+- (void)introWillFinish:(EAIntroView *)introView type:(NSString *)type wasSkipped:(BOOL)wasSkipped
 {
-    [CCUtility setIntro:@"1.0"];
-    [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
+    // -1-
+    if ([type isEqualToString:k_Intro]) {
+        [CCUtility setIntroMessage:k_Intro view:YES];
+        // next
+        _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
+        [_intro show];
+    }
+    
+    // -2-
+    else if ([type isEqualToString:k_Intro_no_cryptocloud]) {
+        [CCUtility setIntroMessage:k_Intro_no_cryptocloud view:YES];
+        [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -1184,6 +1184,7 @@
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     // Get End-To-End PrivateKey (if enabled)
+    /*
     if (capabilities.isEndToEndEncryptionEnabled) {
         
         if (![CCUtility isEndToEndEnabled:app.activeAccount]) {
@@ -1191,6 +1192,7 @@
             [self initEndToEnd];
         }
     }
+    */
 }
 
 #pragma mark -

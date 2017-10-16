@@ -67,7 +67,7 @@
 + (void)setAscendingSettings:(BOOL)ascendente;
 + (void)setGroupBySettings:(NSString *)groupby;
 
-+ (void)setIntro:(NSString *)version;
++ (void)setIntroMessage:(NSString *)type view:(BOOL)view;
 
 + (void)setActiveAccountExt:(NSString *)activeAccount;
 + (void)setServerUrlExt:(NSString *)serverUrl;
@@ -116,7 +116,8 @@
 + (BOOL)getAscendingSettings;
 + (NSString *)getGroupBySettings;
 
-+ (BOOL)getIntro:(NSString *)version;
++ (BOOL)getIntroMessage:(NSString *)type;
+
 + (NSString *)getIncrementalNumber;
 
 + (NSString *)getActiveAccountExt;

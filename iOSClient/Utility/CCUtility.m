@@ -145,9 +145,12 @@
     [UICKeyChainStore setString:groupby forKey:@"groupby" service:k_serviceShareKeyChain];
 }
 
-+ (void)setIntro:(NSString *)version
++ (void)setIntroMessage:(NSString *)type view:(BOOL)view
 {
-    [UICKeyChainStore setString:@"true" forKey:version service:k_serviceShareKeyChain];
+    NSString *key = [@"messageType_" stringByAppendingString:type];
+    NSString *sView = (view) ? @"true" : @"false";
+
+    [UICKeyChainStore setString:sView forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setActiveAccountExt:(NSString *)activeAccount
@@ -360,9 +363,11 @@
     return groupby;
 }
 
-+ (BOOL)getIntro:(NSString *)version
++ (BOOL)getIntroMessage:(NSString *)type
 {
-    return [[UICKeyChainStore stringForKey:version service:k_serviceShareKeyChain] boolValue];
+    NSString *key = [@"messageType_" stringByAppendingString:type];
+    
+    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
 }
 
 + (NSString *)getIncrementalNumber

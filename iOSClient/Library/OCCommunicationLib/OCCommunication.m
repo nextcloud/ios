@@ -1954,7 +1954,7 @@
 
 #pragma mark - End-to-End Encryption
 
-- (void)getEndToEndPublicKeys:(NSString*)serverPath userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)getEndToEndPublicKeys:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
@@ -1986,7 +1986,7 @@
                 if ([data valueForKey:@"public-keys"] && ![[data valueForKey:@"public-keys"] isKindOfClass:[NSNull class]]) {
                     
                     NSDictionary *publickeys = [data valueForKey:@"public-keys"];
-                    publicKey = [publickeys valueForKey:userID];
+                    publicKey = [publickeys valueForKey:self.userID];
                 }
                 
             } else {

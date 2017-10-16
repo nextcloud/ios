@@ -56,6 +56,10 @@ extern NSString *const dav;
 // Name Default DB
 #define k_databaseDefault                               @"nextcloud.realm"
 
+// Intro
+#define k_Intro                                         @"Intro"
+#define k_Intro_no_cryptocloud                          @"IntroNoCryptoCloud"
+
 // Picker select image
 #define k_pickerControllerMax                           1000.0
 
