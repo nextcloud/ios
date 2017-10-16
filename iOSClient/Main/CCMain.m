@@ -1245,8 +1245,8 @@
     metadataNet.action = actionGetEndToEndPublicKeys;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
-    //metadataNet.action = actionGetEndToEndPrivateKey;
-    //[app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    metadataNet.action = actionGetEndToEndPrivateKeyCipher;
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
     metadataNet.action = actionGetEndToEndServerPublicKey;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -1258,10 +1258,6 @@
 {
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKeys present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
-    
-#ifdef DEBUG
-    [app messageNotification:@"Get E2E PublicKeys" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
-#endif
 }
 
 - (void)getEndToEndPublicKeysFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1346,20 +1342,16 @@
 
 // ++++++++++++++++++++++ PRIVATE KEY ++++++++++++++++++++++
 
-- (void)getEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
+- (void)getEndToEndPrivateKeyCipherSuccess:(CCMetadataNet *)metadataNet
 {
-    // Remove PrivateKey
+    // Remove PrivateKey to Disk
     [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
-    
-#ifdef DEBUG
-    [app messageNotification:@"Get E2E PrivateKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
-#endif
 }
 
-- (void)getEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)getEndToEndPrivateKeyCipherFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     switch (errorCode) {
         case 400:
@@ -1368,19 +1360,19 @@
             break;
         case 404: {
             // remove keychain
-            [CCUtility setEndToEndPrivateKey:app.activeAccount privateKey:nil];
+            [CCUtility setEndToEndPrivateKeyCipher:app.activeAccount privateKeyCipher:nil];
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
             NSString *mnemonic = [[NYMnemonic generateMnemonicString:@128 language:@"english"] stringByReplacingOccurrencesOfString:@" " withString:@""];
             mnemonic = @"moreovertelevisionfactorytendencyindependenceinternationalintellectualimpressinterestvolunteer";
             
-            NSString *privateKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
+            NSString *privateKeyCipher = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
             
-            if (privateKeyEncoded) {
+            if (privateKeyCipher) {
                 
-                metadataNet.action = actionStoreEndToEndPrivateKey;
-                metadataNet.options = privateKeyEncoded;
+                metadataNet.action = actionStoreEndToEndPrivateKeyCipher;
+                metadataNet.options = privateKeyCipher;
                 metadataNet.password = mnemonic;
                 
                 [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -1406,13 +1398,13 @@
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
-- (void)storeEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
+- (void)storeEndToEndPrivateKeyCipherSuccess:(CCMetadataNet *)metadataNet
 {
     // Remove PrivateKey
     [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
     
     // Store privatekey locally keychain
-    [CCUtility setEndToEndPrivateKey:app.activeAccount privateKey:metadataNet.options];
+    [CCUtility setEndToEndPrivateKeyCipher:app.activeAccount privateKeyCipher:metadataNet.options];
     // Strore mnemonic locally keychain
     [CCUtility setEndToEndMnemonic:app.activeAccount mnemonic:metadataNet.password];
     
@@ -1424,7 +1416,7 @@
 #endif
 }
 
-- (void)storeEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)storeEndToEndPrivateKeyCipherFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [app messageNotification:@"E2E sign private key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
@@ -1451,10 +1443,6 @@
 {
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndServerPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
-    
-#ifdef DEBUG
-    [app messageNotification:@"Get E2E Server PublicKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
-#endif
 }
 
 - (void)getEndToEndServerPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode

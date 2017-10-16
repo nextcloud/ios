@@ -864,7 +864,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 }
 
 // curl -X GET http://<user>:<password>@nextcloud/ocs/v2.php/apps/end_to_end_encryption/api/v1/private-key -H "OCS-APIRequest:true"
-- (void)getEndToEndPrivateKey:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)getEndToEndPrivateKeyCipher:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                       failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
@@ -918,15 +918,15 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 }
 
 // curl -X POST http://<user>:<password>@nextcloud/ocs/v2.php/apps/end_to_end_encryption/api/v1/private-key -d privateKey="<urlencoded-private-key>" -H "OCS-APIRequest:true"
-- (void)storeEndToEndPrivateKey:(NSString*)serverPath privateKey:(NSString *)privateKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)storeEndToEndPrivateKeyCipher:(NSString*)serverPath privateKeyChiper:(NSString *)privateKeyChiper onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                        failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
     
     _requestMethod = @"POST";
     
-    privateKey = [NSString stringWithFormat:@"?privateKey=%@",privateKey];
-    serverPath = [serverPath stringByAppendingString:privateKey];
+    privateKeyChiper = [NSString stringWithFormat:@"?privateKey=%@",privateKeyChiper];
+    serverPath = [serverPath stringByAppendingString:privateKeyChiper];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     

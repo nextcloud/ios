@@ -1705,20 +1705,20 @@
     }];
 }
 
-- (void)getEndToEndPrivateKey
+- (void)getEndToEndPrivateKeyCipher
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getEndToEndPrivateKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer) {
+    [communication getEndToEndPrivateKeyCipher:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer) {
         
         // 200 ok: body contain the private key
         _metadataNet.options = privateKey;
         
-        if ([self.delegate respondsToSelector:@selector(getEndToEndPrivateKeySuccess:)])
-            [self.delegate getEndToEndPrivateKeySuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(getEndToEndPrivateKeyCipherSuccess:)])
+            [self.delegate getEndToEndPrivateKeyCipherSuccess:_metadataNet];
         
         [self complete];
         
@@ -1729,8 +1729,8 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(getEndToEndPrivateKeyFailure:message:errorCode:)])
-            [self.delegate getEndToEndPrivateKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(getEndToEndPrivateKeyCipherFailure:message:errorCode:)])
+            [self.delegate getEndToEndPrivateKeyCipherFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -1777,22 +1777,22 @@
     }];
 }
 
-- (void)storeEndToEndPrivateKey
+- (void)storeEndToEndPrivateKeyCipher
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     // URL Encode
-    NSString *privateKey = [CCUtility URLEncodeStringFromString:_metadataNet.options];
+    NSString *privateKeyChiper = [CCUtility URLEncodeStringFromString:_metadataNet.options];
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication storeEndToEndPrivateKey:[_activeUrl stringByAppendingString:@"/"] privateKey:privateKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication storeEndToEndPrivateKeyCipher:[_activeUrl stringByAppendingString:@"/"] privateKeyChiper:privateKeyChiper onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         // 200 ok: body contain the public key
         
-        if ([self.delegate respondsToSelector:@selector(storeEndToEndPrivateKeySuccess:)])
-            [self.delegate storeEndToEndPrivateKeySuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(storeEndToEndPrivateKeyCipherSuccess:)])
+            [self.delegate storeEndToEndPrivateKeyCipherSuccess:_metadataNet];
         
         [self complete];
         
@@ -1803,8 +1803,8 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(storeEndToEndPrivateKeyFailure:message:errorCode:)])
-            [self.delegate storeEndToEndPrivateKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(storeEndToEndPrivateKeyCipherFailure:message:errorCode:)])
+            [self.delegate storeEndToEndPrivateKeyCipherFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)

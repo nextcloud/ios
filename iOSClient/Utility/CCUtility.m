@@ -230,10 +230,10 @@
     [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
++ (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher
 {
-    NSString *key = [@"EndToEndPrivateKey_" stringByAppendingString:account];
-    [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
+    NSString *key = [@"EndToEndPrivateKeyCipher_" stringByAppendingString:account];
+    [UICKeyChainStore setString:privateKeyCipher forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setEndToEndMnemonic:(NSString *)account mnemonic:(NSString *)mnemonic
@@ -251,7 +251,7 @@
 + (void)initEndToEnd:(NSString *)account
 {
     [self setEndToEndPublicKey:account publicKey:nil];
-    [self setEndToEndPrivateKey:account privateKey:nil];
+    [self setEndToEndPrivateKeyCipher:account privateKeyCipher:nil];
     [self setEndToEndMnemonic:account mnemonic:nil];
     [self setEndToEndServerPublicKey:account publicKey:nil];
 }
@@ -458,9 +458,9 @@
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getEndToEndPrivateKey:(NSString *)account
++ (NSString *)getEndToEndPrivateKeyCipher:(NSString *)account
 {
-    NSString *key = [@"EndToEndPrivateKey_" stringByAppendingString:account];
+    NSString *key = [@"EndToEndPrivateKeyCipher_" stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
@@ -479,7 +479,7 @@
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
     NSString *mnemonic = [self getEndToEndMnemonic:account];
-    NSString *privateKey = [self getEndToEndPrivateKey:account];
+    NSString *privateKey = [self getEndToEndPrivateKeyCipher:account];
     
     if (mnemonic.length > 0 && privateKey.length > 0)
         return YES;

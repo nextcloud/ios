@@ -200,9 +200,9 @@ extern NSString *const dav;
 #define actionUpdateShare                               @"updateShare"
 
 #define actionGetEndToEndPublicKeys                     @"getEndToEndPublicKeys"
-#define actionGetEndToEndPrivateKey                     @"getEndToEndPrivateKey"
+#define actionGetEndToEndPrivateKeyCipher               @"getEndToEndPrivateKeyCipher"
 #define actionSignEndToEndPublicKey                     @"signEndToEndPublicKey"
-#define actionStoreEndToEndPrivateKey                   @"storeEndToEndPrivateKey"
+#define actionStoreEndToEndPrivateKeyCipher             @"storeEndToEndPrivateKeyCipher"
 #define actionDeleteEndToEndPublicKey                   @"deleteEndToEndPublicKey"
 #define actionDeleteEndToEndPrivateKey                  @"deleteEndToEndPrivateKey"
 #define actionGetEndToEndServerPublicKey                @"getEndToEndServerPublicKey"
