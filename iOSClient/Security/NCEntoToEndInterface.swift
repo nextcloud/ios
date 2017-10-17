@@ -23,10 +23,10 @@
 
 import Foundation
 
-class NCEntoToEndInterface : NSObject {
+class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-
+    
     override init() {
     }
     
@@ -91,6 +91,35 @@ class NCEntoToEndInterface : NSObject {
         }
     }
 
+    
+    @objc func signEndToEndPublicKeySuccess(_ metadataNet: CCMetadataNet) {
+
+        // Insert CSR To Cheychain end delete
+        let publicKey = NCEndToEndEncryption.sharedManager().getCSRFromDisk(appDelegate.directoryUser, delete: true)
+        // OK signed key locally keychain
+        CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: publicKey)
+        
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: "E2E PublicKey sign on Server and stored locally", type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
+    }
+
+    func signEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
+        <#code#>
+    }
+    
+    @objc func signEndToEndPublicKeySuccess(_ metadataNet: CCMetadataNet, message: NSString) {
+
+    
+    
+    - (void)signEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+    {
+    [app messageNotification:@"E2E sign public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+    }
+
+    
+    
     // --------------------------------------------------------------------------------------------
     // MARK: Mark/Delete Encrypted Folder
     // --------------------------------------------------------------------------------------------
