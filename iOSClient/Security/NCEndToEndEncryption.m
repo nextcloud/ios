@@ -340,12 +340,9 @@ cleanup:
 #pragma mark - Register client for Server with exists Key pair
 #
 
-- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher viewController:(UIViewController *)viewController
+- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher mnemonic:(NSString *)mnemonic
 {
     NSMutableData *privateKeyData = [NSMutableData new];
-    
-    // mnemonic
-    NSString *mnemonic = k_Mnemonic_test;
     
     // Key (data)
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
