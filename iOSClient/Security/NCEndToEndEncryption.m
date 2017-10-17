@@ -381,8 +381,10 @@ cleanup:
     if (result && privateKeyData) {
         
         NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
-        return privateKey;
-        
+        if ([privateKey containsString:@"-----BEGIN PRIVATE KEY-----"] && [privateKey containsString:@"-----END PRIVATE KEY-----"])
+            return privateKey;
+        else
+            return nil;
     } else {
         
         return nil;
