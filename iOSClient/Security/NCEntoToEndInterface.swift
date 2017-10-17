@@ -25,4 +25,66 @@ import Foundation
 
 class NCEntoToEndInterface : NSObject {
 
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+    override init() {
+    }
+    
+    // --------------------------------------------------------------------------------------------
+    // MARK: Mark/Delete Encrypted Folder
+    // --------------------------------------------------------------------------------------------
+    
+    @objc func markEndToEndFolderEncryptedSuccess(_ metadataNet: CCMetadataNet) {
+        
+    }
+    
+    @objc func markEndToEndFolderEncryptedFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+    {
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
+        }
+        
+        if (errorCode != kOCErrorServerUnauthorized) {
+            
+            appDelegate.messageNotification("_error_", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        }
+    }
+    
+    @objc func markEndToEndFolderEncrypted(_ metadata: tableMetadata) {
+        
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+
+        metadataNet.action = actionMarkEndToEndFolderEncrypted;
+        metadataNet.fileID = metadata.fileID;
+        
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)        
+    }
+    
+    @objc func deleteEndToEndFolderEncryptedSuccess(_ metadataNet: CCMetadataNet) {
+        
+    }
+    
+    @objc func deleteEndToEndFolderEncryptedFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+    {
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
+        }
+        
+        if (errorCode != kOCErrorServerUnauthorized) {
+            
+            appDelegate.messageNotification("_error_", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        }
+    }
+    
+    @objc func deleteEndToEndFolderEncrypted(_ metadata: tableMetadata) {
+        
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+        
+        metadataNet.action = actionDeleteEndToEndFolderEncrypted;
+        metadataNet.fileID = metadata.fileID;
+        
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
 }

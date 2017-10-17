@@ -124,9 +124,6 @@
 		F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7169A1A1EE590930086BD69 /* NCSharesCell.m */; };
 		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
 		F717F0001F96661400A324A5 /* NCEntoToEndInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717EFFF1F96661400A324A5 /* NCEntoToEndInterface.swift */; };
-		F717F0011F96661400A324A5 /* NCEntoToEndInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717EFFF1F96661400A324A5 /* NCEntoToEndInterface.swift */; };
-		F717F0021F96661400A324A5 /* NCEntoToEndInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717EFFF1F96661400A324A5 /* NCEntoToEndInterface.swift */; };
-		F717F0031F96661400A324A5 /* NCEntoToEndInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = F717EFFF1F96661400A324A5 /* NCEntoToEndInterface.swift */; };
 		F720E01F1E48C73E001A4B9E /* CCActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F720E01E1E48C73E001A4B9E /* CCActions.swift */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F725437C1E12A44A009BF4C2 /* CCSection.m in Sources */ = {isa = PBXBuildFile; fileRef = F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */; };
@@ -3433,7 +3430,6 @@
 				F71459BD1D12E3B700CAFEEC /* UIImage+animatedGIF.m in Sources */,
 				F73CC06D1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F70022C01EC4C9100080073F /* OCFileDto.m in Sources */,
-				F717F0011F96661400A324A5 /* NCEntoToEndInterface.swift in Sources */,
 				F71459C21D12E3B700CAFEEC /* ShareViewController.m in Sources */,
 				F77EB6281EC08036003F814F /* CCExifGeo.m in Sources */,
 				F70022A21EC4C9100080073F /* AFHTTPSessionManager.m in Sources */,
@@ -3542,7 +3538,6 @@
 				F70022B81EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F74344871E127F95001CC831 /* UICKeyChainStore.m in Sources */,
 				F73CC0711E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
-				F717F0021F96661400A324A5 /* NCEntoToEndInterface.swift in Sources */,
 				F73CC07D1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F74344891E127FC3001CC831 /* CCGlobal.m in Sources */,
 				F70022D91EC4C9100080073F /* NSDate+RFC1123.m in Sources */,
@@ -3580,7 +3575,6 @@
 				F7BB50E21F2238D000C47094 /* AFURLRequestSerialization.m in Sources */,
 				F7BB50BC1F22375D00C47094 /* CCBKPasscode.m in Sources */,
 				F7BB50D81F2238A000C47094 /* OCXMLListParser.m in Sources */,
-				F717F0031F96661400A324A5 /* NCEntoToEndInterface.swift in Sources */,
 				F7BB50E41F2238D500C47094 /* AFURLSessionManager.m in Sources */,
 				F7BB50F91F2239C800C47094 /* BKShiftingView.m in Sources */,
 				F7BB50F21F22395D00C47094 /* UICKeyChainStore.m in Sources */,

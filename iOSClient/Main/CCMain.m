@@ -2583,60 +2583,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Mark/Delete Encrypted Folder =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)markEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
-{
-    
-}
-
-- (void)markEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    
-    if (errorCode != kOCErrorServerUnauthorized)
-        [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-}
-
-- (void)markEndToEndFolderEncrypted
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-
-    metadataNet.action = actionMarkEndToEndFolderEncrypted;
-    metadataNet.fileID = _metadata.fileID;
-    
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];    
-}
-
-- (void)deleteEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
-{
-    
-}
-
-- (void)deleteEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [app openLoginView:self loginType:loginModifyPasswordUser];
-    
-    if (errorCode != kOCErrorServerUnauthorized)
-        [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-}
-
-- (void)deleteEndToEndFolderEncrypted
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    metadataNet.action = actionDeleteEndToEndFolderEncrypted;
-    metadataNet.fileID = _metadata.fileID;
-    
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Encrypted/Decrypted File =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -4361,7 +4307,7 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        [self performSelector:@selector(deleteEndToEndFolderEncrypted) withObject:nil];
+                                        [app.endToEndInterface markEndToEndFolderEncrypted:_metadata];                                        
                                     }];
         }
         
