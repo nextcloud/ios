@@ -2593,18 +2593,47 @@
 
 - (void)markEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
     
+    if (errorCode != kOCErrorServerUnauthorized)
+        [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
-- (void)markFolderAsEndToEndEncryption:(NSString *)fileID serverUrl:(NSString *)serverUrl
+- (void)markEndToEndFolderEncrypted
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
 
     metadataNet.action = actionMarkEndToEndFolderEncrypted;
-    metadataNet.fileID = fileID;
-    metadataNet.serverUrl = serverUrl;
+    metadataNet.fileID = _metadata.fileID;
     
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];    
+}
+
+- (void)deleteEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
+{
+    
+}
+
+- (void)deleteEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    // Unauthorized
+    if (errorCode == kOCErrorServerUnauthorized)
+        [app openLoginView:self loginType:loginModifyPasswordUser];
+    
+    if (errorCode != kOCErrorServerUnauthorized)
+        [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+}
+
+- (void)deleteEndToEndFolderEncrypted
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionDeleteEndToEndFolderEncrypted;
+    metadataNet.fileID = _metadata.fileID;
+    
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4323,6 +4352,19 @@
                                     }];
         }
         
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && [CCUtility isEndToEndEnabled:app.activeAccount]) {
+            
+            [actionSheet addButtonWithTitle:titoloCriptaDecripta
+                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        [self performSelector:@selector(deleteEndToEndFolderEncrypted) withObject:nil];
+                                    }];
+        }
+        
         if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock
@@ -4335,21 +4377,6 @@
                                         [self performSelector:@selector(comandoLockPassword) withObject:nil];
                                     }];
         }
-        
-        /*
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && app.isCryptoCloudMode) {
-            
-            [actionSheet addButtonWithTitle:titoloCriptaDecripta
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [self performSelector:@selector(encyptedDecryptedFolder) withObject:nil];
-                                    }];
-        }
-        */
         
         [actionSheet show];
     }
