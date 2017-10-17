@@ -88,9 +88,6 @@
     CCLogin *_loginVC;
     
     BOOL _loadingFolder;
-    
-    //E2E
-    NSString *publicKey, *privateKeyChiper, *publicKeyServer, *mnemonic;
 }
 @end
 
@@ -1243,11 +1240,6 @@
 
 - (void)initEndToEnd
 {
-    // clear keys
-    publicKey = nil;
-    privateKeyChiper = nil;
-    publicKeyServer = nil;
-    
     // request keys to server
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
 
@@ -1265,13 +1257,6 @@
 
 - (void)getEndToEndPublicKeysSuccess:(CCMetadataNet *)metadataNet
 {
-    // Remove CSR to Disk
-    [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
-    
-    // Verify KeyPair on server
-    publicKey = metadataNet.options;
-    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithPublicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer viewController:self];
-    
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKeys present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
@@ -1285,16 +1270,16 @@
             break;
         case 404: {
             // remove keychain
-            [CCUtility setEndToEndPublicKeySign:app.activeAccount set:NO];
+            [CCUtility setEndToEndPublicKeySign:app.activeAccount publicKey:nil];
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
-            NSString *publicKeyEncoded = [[NCEndToEndEncryption sharedManager] createEndToEndPublicKey:app.activeUserID directoryUser:app.directoryUser];
+            NSString *publicKey = [[NCEndToEndEncryption sharedManager] createEndToEndPublicKey:app.activeUserID directoryUser:app.directoryUser];
             
-            if (publicKeyEncoded) {
+            if (publicKey) {
                 
                 metadataNet.action = actionSignEndToEndPublicKey;
-                metadataNet.options = publicKeyEncoded;
+                metadataNet.key = publicKey;
                 
                 [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
                 
@@ -1321,11 +1306,11 @@
 
 - (void)signEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
-    // Remove CSR
-    [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
+    // Insert CSR To Cheychain end delete
+    NSString *publicKey = [[NCEndToEndEncryption sharedManager] getCSRFromDisk:app.directoryUser delete:YES];
     
     // OK signed key locally keychain
-    [CCUtility setEndToEndPublicKeySign:app.activeAccount set:YES];
+    [CCUtility setEndToEndPublicKeySign:app.activeAccount publicKey:publicKey];
     
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPublicKey sign on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
@@ -1345,9 +1330,6 @@
 
 - (void)deleteEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
-    // Remove CSR
-    [[NCEndToEndEncryption sharedManager] removeCSRToDisk:app.directoryUser];
-    
     [app messageNotification:@"E2E delete public key" description:@"Public key was deleted" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
 }
 
@@ -1360,12 +1342,8 @@
 
 - (void)getEndToEndPrivateKeyCipherSuccess:(CCMetadataNet *)metadataNet
 {
-    // Remove PrivateKey to Disk
-    [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
-    
     // Verify KeyPair on server
-    privateKeyChiper = metadataNet.options;
-    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithPublicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer viewController:self];
+    NSString *privateKey = [[NCEndToEndEncryption sharedManager] decryptPrivateKeyCipher:metadataNet.key viewController:self];
 
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
@@ -1380,20 +1358,20 @@
             break;
         case 404: {
             // remove keychain
-            [CCUtility setEndToEndPrivateKeyCipher:app.activeAccount set:NO];
+            [CCUtility setEndToEndPrivateKey:app.activeAccount privateKey:nil];
             [CCUtility setEndToEndMnemonic:app.activeAccount mnemonic:nil];
             
             NSString *mnemonic = [[NYMnemonic generateMnemonicString:@128 language:@"english"] stringByReplacingOccurrencesOfString:@" " withString:@""];
             mnemonic = k_Mnemonic_test;
             
-            NSString *privateKeyCipher = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
+            NSString *privateKeyChiper = [[NCEndToEndEncryption sharedManager] createEndToEndPrivateKey:app.activeUserID directoryUser:app.directoryUser mnemonic:mnemonic];
             
-            if (privateKeyCipher) {
+            if (privateKeyChiper) {
                 
                 CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
 
                 metadataNet.action = actionStoreEndToEndPrivateKeyCipher;
-                metadataNet.options = privateKeyCipher;
+                metadataNet.key = privateKeyChiper;
                 metadataNet.password = mnemonic;
                 
                 [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
@@ -1421,11 +1399,12 @@
 
 - (void)storeEndToEndPrivateKeyCipherSuccess:(CCMetadataNet *)metadataNet
 {
-    // Remove PrivateKey
-    [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
+    // Insert PrivateKey To Cheychain end delete
+    NSString *privateKey = [[NCEndToEndEncryption sharedManager] getPrivateKeyFromDisk:app.directoryUser delete:YES];
     
     // OK privatekey locally keychain
-    [CCUtility setEndToEndPrivateKeyCipher:app.activeAccount set:YES];
+    [CCUtility setEndToEndPrivateKey:app.activeAccount privateKey:privateKey];
+    
     // Strore mnemonic locally keychain
     [CCUtility setEndToEndMnemonic:app.activeAccount mnemonic:metadataNet.password];
     
@@ -1447,9 +1426,6 @@
 
 - (void)deleteEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
 {
-    // Remove PrivateKey
-    [[NCEndToEndEncryption sharedManager] removePrivateKeyToDisk:app.directoryUser];
-    
     [app messageNotification:@"E2E delete private key" description:@"Private key was deleted" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
 }
 
@@ -1462,10 +1438,6 @@
 
 - (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
-    // Verify KeyPair on server
-    publicKeyServer = metadataNet.options;
-    [[NCEndToEndEncryption sharedManager] verifyKeyPairOnServerWithPublicKey:publicKey privateKeyCipher:privateKeyChiper publicKeyServer:publicKeyServer viewController:self];
-
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndServerPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }

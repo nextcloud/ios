@@ -36,9 +36,10 @@
 
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser;
 - (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser mnemonic:(NSString *)mnemonic;
-- (void)verifyKeyPairOnServerWithPublicKey:(NSString *)publicKey privateKeyCipher:(NSString *)privateKeyCipher publicKeyServer:(NSString *)publicKeyServer viewController:(UIViewController *)viewController;
 
-- (void)removeCSRToDisk:(NSString *)directoryUser;
-- (void)removePrivateKeyToDisk:(NSString *)directoryUser;
+- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher viewController:(UIViewController *)viewController;
+
+- (NSString *)getCSRFromDisk:(NSString *)directoryUser delete:(BOOL)delete;
+- (NSString *)getPrivateKeyFromDisk:(NSString *)directoryUser delete:(BOOL)delete;
 
 @end

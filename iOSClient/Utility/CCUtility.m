@@ -231,20 +231,16 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPublicKeySign:(NSString *)account set:(BOOL)set
++ (void)setEndToEndPublicKeySign:(NSString *)account publicKey:(NSString *)publicKey
 {
     NSString *key = [E2E_PublicKeySign stringByAppendingString:account];
-    NSString *sSet = (set) ? @"true" : @"false";
-
-    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPrivateKeyCipher:(NSString *)account set:(BOOL)set
++ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
 {
     NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
-    NSString *sSet = (set) ? @"true" : @"false";
-    
-    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setEndToEndMnemonic:(NSString *)account mnemonic:(NSString *)mnemonic
@@ -255,8 +251,8 @@
 
 + (void)initEndToEnd:(NSString *)account
 {
-    [self setEndToEndPublicKeySign:account set:NO];
-    [self setEndToEndPrivateKeyCipher:account set:NO];
+    [self setEndToEndPublicKeySign:account publicKey:nil];
+    [self setEndToEndPrivateKey:account privateKey:nil];
     [self setEndToEndMnemonic:account mnemonic:nil];
 }
 
@@ -456,16 +452,16 @@
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (BOOL)getEndToEndPublicKeySign:(NSString *)account
++ (NSString *)getEndToEndPublicKeySign:(NSString *)account
 {
     NSString *key = [E2E_PublicKeySign stringByAppendingString:account];
-    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getEndToEndPrivateKeyCipher:(NSString *)account
++ (NSString *)getEndToEndPrivateKey:(NSString *)account
 {
     NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
-    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getEndToEndMnemonic:(NSString *)account
@@ -476,11 +472,11 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
-    BOOL publicKeySign = [self getEndToEndPublicKeySign:account];
+    NSString *publicKeySign = [self getEndToEndPublicKeySign:account];
+    NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *mnemonic = [self getEndToEndMnemonic:account];
-    BOOL privateKeyChiper = [self getEndToEndPrivateKeyCipher:account];
     
-    if (mnemonic.length > 0 && privateKeyChiper && publicKeySign) {
+    if (mnemonic.length > 0 && privateKey.length > 0 && publicKeySign.length > 0) {
         
         return YES;
         

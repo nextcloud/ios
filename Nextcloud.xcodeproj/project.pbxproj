@@ -98,9 +98,6 @@
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
-		F70CAE3B1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
-		F70CAE3C1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
-		F70CAE3D1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F710E8101EF95C9C00DC2427 /* CCIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = F710E80E1EF95C9C00DC2427 /* CCIntro.m */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
 		F71459B81D12E3B700CAFEEC /* CCError.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B881C638A4C00DC4301 /* CCError.m */; };
@@ -358,6 +355,9 @@
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F780710B1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F78071211EDB135100EAFFF6 /* CCPhotos.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071201EDB135100EAFFF6 /* CCPhotos.m */; };
+		F782952F1F962EF900A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
+		F78295301F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
+		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */; };
 		F78964AE1EBB576C00403E13 /* JDStatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */; };
 		F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AC1EBB576C00403E13 /* JDStatusBarView.m */; };
@@ -3437,6 +3437,7 @@
 				F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */,
+				F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
 				F70022BA1EC4C9100080073F /* OCCommunication.m in Sources */,
 				F70022ED1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
 				F70022D51EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
@@ -3479,7 +3480,6 @@
 				F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */,
 				F73CC0761E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022D21EC4C9100080073F /* OCUserProfile.m in Sources */,
-				F70CAE3B1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */,
 				F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
@@ -3528,6 +3528,7 @@
 				F77EB6291EC08037003F814F /* CCExifGeo.m in Sources */,
 				F70022CD1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F70022AC1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
+				F78295301F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
 				F780710B1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F70022FD1EC4C9100080073F /* NSString+Encode.m in Sources */,
 				F70022B51EC4C9100080073F /* OCActivity.m in Sources */,
@@ -3541,7 +3542,6 @@
 				F74344881E127F9C001CC831 /* UIImage+animatedGIF.m in Sources */,
 				F73CC0771E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F70022DF1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
-				F70CAE3C1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F743448A1E127FF2001CC831 /* CCHud.m in Sources */,
 				F734E5921F019D870060CB77 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F73CC06B1E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
@@ -3559,7 +3559,6 @@
 			files = (
 				F7BB50D91F2238A300C47094 /* OCXMLParser.m in Sources */,
 				F7BB50D11F22388900C47094 /* OCSharedDto.m in Sources */,
-				F70CAE3D1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */,
 				F7BB50CB1F22386900C47094 /* OCCommunication.m in Sources */,
 				F7BB50D31F22388E00C47094 /* OCUserProfile.m in Sources */,
 				F7BB50BF1F22378800C47094 /* CCExifGeo.m in Sources */,
@@ -3608,6 +3607,7 @@
 				F7BB50F41F2239B600C47094 /* BKPasscodeDummyViewController.m in Sources */,
 				F7BB50C41F22379800C47094 /* NSString+TruncateToWidth.m in Sources */,
 				F7BB50E31F2238D200C47094 /* AFURLResponseSerialization.m in Sources */,
+				F782952F1F962EF900A572F5 /* NCEndToEndEncryption.m in Sources */,
 				F7BB50EB1F22391000C47094 /* MBProgressHUD.m in Sources */,
 				F7BB50D21F22388B00C47094 /* OCShareUser.m in Sources */,
 				F7BB50F31F22396300C47094 /* UIImage+animatedGIF.m in Sources */,

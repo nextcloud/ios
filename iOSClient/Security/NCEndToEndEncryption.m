@@ -255,9 +255,6 @@ cleanup:
 
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
-    NSString *csr;
-    NSError *error;
-
     // Create Certificate, if do not exists
     if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR]]) {
         
@@ -265,19 +262,14 @@ cleanup:
             return nil;
     }
     
-    csr = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
-
-    if (error)
-        return nil;
+    NSString *publicKey = [self getCSRFromDisk:directoryUser delete:NO];
     
-    return csr;
+    return publicKey;
 }
 
 - (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser mnemonic:(NSString *)mnemonic
 {
-    NSMutableData *privateKeyCipherData;
-    NSString *privateKeyCipherBase64;
-    NSString *privateKeyCipherWithInitVector;
+    NSMutableData *privateKeyCipherData = [NSMutableData new];
 
     // Create Certificate, if do not exists
     if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]]) {
@@ -296,62 +288,66 @@ cleanup:
 
     BOOL result = [self aes256gcmEncrypt:privateKeyData cipherData:&privateKeyCipherData keyData:keyData initVectorData:initVectorData tagData:nil];
     
-    // TEST
-    NSMutableData *plainData;
-    result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tag:nil];
-    NSString *privateKeyPlainData = [[NSString alloc] initWithData:plainData encoding:NSUTF8StringEncoding];
-    NSLog(@"%@", privateKeyPlainData);
-    // TEST
-    
     if (result && privateKeyCipherData) {
         
+        NSString *privateKeyCipherBase64;
+        NSString *initVectorBase64;
+        NSString *privateKeyCipherWithInitVectorBase64;
+
         privateKeyCipherBase64 = [privateKeyCipherData base64EncodedStringWithOptions:0];
-        NSString *initVectorBase64 = [initVectorData base64EncodedStringWithOptions:0];
-        privateKeyCipherWithInitVector = [NSString stringWithFormat:@"%@%@%@", privateKeyCipherBase64, IV_DELIMITER_ENCODED, initVectorBase64];
+        initVectorBase64 = [initVectorData base64EncodedStringWithOptions:0];
+        privateKeyCipherWithInitVectorBase64 = [NSString stringWithFormat:@"%@%@%@", privateKeyCipherBase64, IV_DELIMITER_ENCODED, initVectorBase64];
         
-        // TEST
-        NSMutableData *plainData;
-        NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
-        NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:initVectorBase64 options:0];
-        result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tag:nil];
-        NSLog(@"%@", privateKeyPlainData);
-        // TEST
+        return privateKeyCipherWithInitVectorBase64;
         
     } else {
         
         return nil;
     }
+}
+
+- (NSString *)getCSRFromDisk:(NSString *)directoryUser delete:(BOOL)delete
+{
+    NSError *error;
+
+    NSString *publicKey = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
+
+    if (delete)
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] error:nil];
     
-    return privateKeyCipherWithInitVector;
+    if (error)
+        return nil;
+    else
+        return publicKey;
 }
 
-- (void)removeCSRToDisk:(NSString *)directoryUser
+- (NSString *)getPrivateKeyFromDisk:(NSString *)directoryUser delete:(BOOL)delete
 {
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] error:nil];
-}
-
-- (void)removePrivateKeyToDisk:(NSString *)directoryUser
-{
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] error:nil];
+    NSError *error;
+    
+    NSString *privateKey = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] encoding:NSUTF8StringEncoding error:&error];
+    
+    if (delete)
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] error:nil];
+    
+    if (error)
+        return nil;
+    else
+        return privateKey;
 }
 
 #
 #pragma mark - Register client for Server with exists Key pair
 #
 
-- (void)verifyKeyPairOnServerWithPublicKey:(NSString *)publicKey privateKeyCipher:(NSString *)privateKeyCipher publicKeyServer:(NSString *)publicKeyServer viewController:(UIViewController *)viewController
+- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher viewController:(UIViewController *)viewController
 {
-    // verify is all the keys and mnemonic are available
-    if (publicKey.length == 0 || privateKeyCipher.length == 0 || publicKeyServer.length == 0)
-        return;
-    
     NSMutableData *privateKeyData = [NSMutableData new];
-    NSString *privateKeyCipherBase64;
     
     // mnemonic
     NSString *mnemonic = k_Mnemonic_test;
     
-    // Key
+    // Key (data)
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
     NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
     CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
@@ -361,7 +357,7 @@ cleanup:
     NSInteger idx = range.location + range.length;
     
     // PrivateKey
-    privateKeyCipherBase64 = [privateKeyCipher substringToIndex:range.location];
+    NSString *privateKeyCipherBase64 = [privateKeyCipher substringToIndex:range.location];
     NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
 
     // Init Vector
@@ -371,8 +367,13 @@ cleanup:
     BOOL result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&privateKeyData keyData:keyData initVectorData:initVectorData tag:nil];
     
     if (result && privateKeyData) {
-        NSString *convertedString = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
-        NSLog(@"%@", convertedString);
+        
+        NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
+        return privateKey;
+        
+    } else {
+        
+        return nil;
     }
 }
 

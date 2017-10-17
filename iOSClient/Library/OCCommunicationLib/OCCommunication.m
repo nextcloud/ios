@@ -2012,7 +2012,7 @@
     }];
 }
 
-- (void)getEndToEndPrivateKeyCipher:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)getEndToEndPrivateKeyCipher:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *privateKeyChiper, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/private-key"];
@@ -2024,7 +2024,7 @@
     [request getEndToEndPrivateKeyCipher:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
-        NSString *privateKey;
+        NSString *privateKeyChiper;
         
         //Parse
         NSError *error;
@@ -2042,7 +2042,7 @@
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
                 if ([data valueForKey:@"private-key"] && ![[data valueForKey:@"private-key"] isKindOfClass:[NSNull class]])
-                    privateKey = [data valueForKey:@"private-key"];
+                    privateKeyChiper = [data valueForKey:@"private-key"];
                 
             } else {
                 
@@ -2058,7 +2058,7 @@
         }
         
         //Return success
-        successRequest(response, privateKey, request.redirectedServer);
+        successRequest(response, privateKeyChiper, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         

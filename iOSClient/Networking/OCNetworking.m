@@ -1680,7 +1680,7 @@
     [communication getEndToEndPublicKeys:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
         
         // 200 ok: body contain the public key
-        _metadataNet.options = publicKey;
+        _metadataNet.key = publicKey;
 
         if ([self.delegate respondsToSelector:@selector(getEndToEndPublicKeysSuccess:)])
             [self.delegate getEndToEndPublicKeysSuccess:_metadataNet];
@@ -1712,10 +1712,10 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getEndToEndPrivateKeyCipher:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer) {
+    [communication getEndToEndPrivateKeyCipher:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKeyChiper, NSString *redirectedServer) {
         
         // 200 ok: body contain the private key
-        _metadataNet.options = privateKey;
+        _metadataNet.key = privateKeyChiper;
         
         if ([self.delegate respondsToSelector:@selector(getEndToEndPrivateKeyCipherSuccess:)])
             [self.delegate getEndToEndPrivateKeyCipherSuccess:_metadataNet];
@@ -1745,7 +1745,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     // URL Encode
-    NSString *publicKey = [CCUtility URLEncodeStringFromString:_metadataNet.options];
+    NSString *publicKey = [CCUtility URLEncodeStringFromString:_metadataNet.key];
 
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1782,7 +1782,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     // URL Encode
-    NSString *privateKeyChiper = [CCUtility URLEncodeStringFromString:_metadataNet.options];
+    NSString *privateKeyChiper = [CCUtility URLEncodeStringFromString:_metadataNet.key];
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -1892,7 +1892,7 @@
     [communication getEndToEndServerPublicKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
         
         // 200 ok: body contain the public key
-        _metadataNet.options = publicKey;
+        _metadataNet.key = publicKey;
         
         if ([self.delegate respondsToSelector:@selector(getEndToEndServerPublicKeySuccess:)])
             [self.delegate getEndToEndServerPublicKeySuccess:_metadataNet];
