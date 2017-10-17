@@ -142,6 +142,9 @@
 - (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet;
 - (void)getEndToEndServerPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
+- (void)markEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
+- (void)markEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 @end
 
 @interface OCURLSessionManager : AFURLSessionManager

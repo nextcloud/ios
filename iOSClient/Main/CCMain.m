@@ -2586,8 +2586,25 @@
 #pragma mark =====  Encrypted / Decrypted Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)encyptedDecryptedFolder
+- (void)markEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
 {
+    
+}
+
+- (void)markEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    
+}
+
+- (void)markFolderAsEndToEndEncryption:(NSString *)fileID serverUrl:(NSString *)serverUrl
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+
+    metadataNet.action = actionMarkEndToEndFolderEncrypted;
+    metadataNet.fileID = fileID;
+    metadataNet.serverUrl = serverUrl;
+    
+    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];    
 }
 
 #pragma --------------------------------------------------------------------------------------------
