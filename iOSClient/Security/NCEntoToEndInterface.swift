@@ -31,11 +31,29 @@ class NCEntoToEndInterface : NSObject {
     }
     
     // --------------------------------------------------------------------------------------------
+    // MARK: End To End Encryption
+    // --------------------------------------------------------------------------------------------
+    
+    @objc func initEndToEndEncryption() {
+
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+        
+        metadataNet.action = actionGetEndToEndPublicKeys;
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+
+        metadataNet.action = actionGetEndToEndPrivateKeyCipher;
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        
+        metadataNet.action = actionGetEndToEndServerPublicKey;
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+    
+    // --------------------------------------------------------------------------------------------
     // MARK: Mark/Delete Encrypted Folder
     // --------------------------------------------------------------------------------------------
     
     @objc func markEndToEndFolderEncryptedSuccess(_ metadataNet: CCMetadataNet) {
-        
+        print("E2E mark folder success")
     }
     
     @objc func markEndToEndFolderEncryptedFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
@@ -62,7 +80,7 @@ class NCEntoToEndInterface : NSObject {
     }
     
     @objc func deleteEndToEndFolderEncryptedSuccess(_ metadataNet: CCMetadataNet) {
-        
+        print("E2E delete folder success")
     }
     
     @objc func deleteEndToEndFolderEncryptedFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
