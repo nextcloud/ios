@@ -2583,7 +2583,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Encrypted / Decrypted Folder =====
+#pragma mark =====  Mark/Delete Encrypted Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)markEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
