@@ -48,14 +48,15 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func getEndToEndPublicKeysSuccess(_ metadataNet: CCMetadataNet) {
-
+    
+    func getEndToEndServerPublicKeySuccess(_ metadataNet: CCMetadataNet!) {
+    
         CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: metadataNet.key)
         
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: "E2E PublicKeys present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: true, activeUrl: appDelegate.activeUrl)
     }
     
-    @objc func getEndToEndPublicKeysFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
+    func getEndToEndPublicKeysFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
     
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: message as String!, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
         
@@ -91,8 +92,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         }
     }
 
-    
-    @objc func signEndToEndPublicKeySuccess(_ metadataNet: CCMetadataNet) {
+    func signEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
 
         // Insert CSR To Cheychain end delete
         let publicKey = NCEndToEndEncryption.sharedManager().getCSRFromDisk(appDelegate.directoryUser, delete: true)
@@ -102,14 +102,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: "E2E PublicKey sign on Server and stored locally", type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
     }
 
-    func signEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
-        <#code#>
+    func signEnd(toEndPublicKeyFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+        
     }
     
-    @objc func signEndToEndPublicKeySuccess(_ metadataNet: CCMetadataNet, message: NSString) {
-
-    
-    
+    /*
     - (void)signEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
     {
     [app messageNotification:@"E2E sign public key" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
@@ -117,19 +114,19 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // Activity
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     }
-
+    */
     
     
     // --------------------------------------------------------------------------------------------
     // MARK: Mark/Delete Encrypted Folder
     // --------------------------------------------------------------------------------------------
     
-    @objc func markEndToEndFolderEncryptedSuccess(_ metadataNet: CCMetadataNet) {
+    func markEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
         print("E2E mark folder success")
     }
     
-    @objc func markEndToEndFolderEncryptedFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
-    {
+    func markEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+    
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
@@ -151,12 +148,12 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)        
     }
     
-    @objc func deleteEndToEndFolderEncryptedSuccess(_ metadataNet: CCMetadataNet) {
+    func deleteEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
         print("E2E delete folder success")
     }
     
-    @objc func deleteEndToEndFolderEncryptedFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
-    {
+    func deleteEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+       
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
             appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
