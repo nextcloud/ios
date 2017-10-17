@@ -370,7 +370,10 @@ cleanup:
     
     BOOL result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&privateKeyData keyData:keyData initVectorData:initVectorData tag:nil];
     
-    NSLog(@"x");
+    if (result && privateKeyData) {
+        NSString *convertedString = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
+        NSLog(@"%@", convertedString);
+    }
 }
 
 #
