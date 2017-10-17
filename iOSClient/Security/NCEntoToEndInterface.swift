@@ -31,7 +31,7 @@ class NCEntoToEndInterface : NSObject {
     }
     
     // --------------------------------------------------------------------------------------------
-    // MARK: End To End Encryption
+    // MARK: End To End Encryption - PublicKey
     // --------------------------------------------------------------------------------------------
     
     @objc func initEndToEndEncryption() {
@@ -48,6 +48,49 @@ class NCEntoToEndInterface : NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
+    @objc func getEndToEndPublicKeysSuccess(_ metadataNet: CCMetadataNet) {
+
+        CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: metadataNet.key)
+        
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: "E2E PublicKeys present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: true, activeUrl: appDelegate.activeUrl)
+    }
+    
+    @objc func getEndToEndPublicKeysFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
+    
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: message as String!, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
+        
+        switch errorCode {
+            
+        case 400:
+            appDelegate.messageNotification("E2E public keys", description: "bad request: unpredictable internal error" as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        case 404:
+            // public keys couldn't be found
+            // remove keychain
+            CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: nil)
+            
+            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+            let publicKey = NCEndToEndEncryption.sharedManager().createEnd(toEndPublicKey: appDelegate.activeUserID, directoryUser: appDelegate.directoryUser)
+            
+            if (publicKey != nil) {
+                
+                metadataNet.action = actionSignEndToEndPublicKey;
+                metadataNet.key = publicKey;
+                
+                appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                
+            } else {
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E Error to create PublicKeyEncoded", type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
+            }
+            
+        case 409:
+            appDelegate.messageNotification("E2E public keys", description: "forbidden: the user can't access the public keys", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            
+        default:
+            appDelegate.messageNotification("E2E public keys", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        }
+    }
+
     // --------------------------------------------------------------------------------------------
     // MARK: Mark/Delete Encrypted Folder
     // --------------------------------------------------------------------------------------------

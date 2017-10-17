@@ -10,6 +10,7 @@
 #import "CCGraphics.h"
 #import "NCAutoUpload.h"
 #import "NCUchardet.h"
+#import "NCEndToEndEncryption.h"
 
 #import "OCActivity.h"
 #import "OCUserProfile.h"

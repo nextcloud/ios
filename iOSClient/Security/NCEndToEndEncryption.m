@@ -58,7 +58,7 @@
 @implementation NCEndToEndEncryption
 
 //Singleton
-+ (id)sharedManager {
++ (instancetype)sharedManager {
     static NCEndToEndEncryption *NCEndToEndEncryption = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

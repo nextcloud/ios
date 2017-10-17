@@ -27,7 +27,7 @@
 
 @interface NCEndToEndEncryption : NSObject
 
-+ (id)sharedManager;
++ (instancetype)sharedManager;
 
 - (NSString *)createSHA512:(NSString *)string;
 
