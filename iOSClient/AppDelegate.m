@@ -222,6 +222,9 @@
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
     [application registerUserNotificationSettings:notificationSettings];
     
+    // NCEntoToEndInterface
+    self.endToEndInterface = [NCEntoToEndInterface new];
+    
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
     [self logUser];
