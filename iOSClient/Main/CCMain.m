@@ -1187,8 +1187,14 @@
     // Get End-To-End PrivateKey (if enabled)
     if (capabilities.isEndToEndEncryptionEnabled) {
         
-        if (![CCUtility isEndToEndEnabled:app.activeAccount]) {
+        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
             
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"Encryption E2E available" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+            
+        } else {
+            
+            // Initialize
             [self initEndToEnd];
         }
     }
@@ -1261,7 +1267,7 @@
     [CCUtility setEndToEndPublicKeySign:app.activeAccount publicKey:metadataNet.key];
     
     // Activity
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"PublicKeys present on Server and stored to keychain" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"E2E PublicKeys present on Server and stored to keychain" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
 - (void)getEndToEndPublicKeysFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1288,7 +1294,7 @@
                 
             } else {
                 // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"Error to create PublicKeyEncoded" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+                [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"E2E Error to create PublicKeyEncoded" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
             }
             
             message = @"public keys couldn't be found";
@@ -1316,11 +1322,7 @@
     [CCUtility setEndToEndPublicKeySign:app.activeAccount publicKey:publicKey];
     
     // Activity
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"PublicKey sign on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
-    
-#ifdef DEBUG
-    [app messageNotification:@"Sign E2E PublicKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
-#endif
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"E2E PublicKey sign on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
 - (void)signEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1357,12 +1359,12 @@
         [CCUtility setEndToEndMnemonic:app.activeAccount mnemonic:k_Mnemonic_test];
 
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"PrivateKey present on Server and stored to keychain" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"E2E PrivateKey present on Server and stored to keychain" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
         
     } else {
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"PrivateKey error to decrypt" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"E2E PrivateKey error to decrypt" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
     }
 }
 
@@ -1426,11 +1428,7 @@
     [CCUtility setEndToEndMnemonic:app.activeAccount mnemonic:metadataNet.password];
     
     // Activity
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndPrivateKey stored on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
-    
-#ifdef DEBUG
-    [app messageNotification:@"Store E2E PrivateKey" description:@"Success" visible:YES delay:1 type:TWMessageBarMessageTypeSuccess errorCode:0];
-#endif
+    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"E2E PrivateKey stored on Server and stored locally" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
 - (void)storeEndToEndPrivateKeyCipherFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -1455,8 +1453,6 @@
 
 - (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet
 {
-    // Activity
-    //[[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"EndToEndServerPublicKey present on Server" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
 }
 
 - (void)getEndToEndServerPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
