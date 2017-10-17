@@ -52,6 +52,8 @@
 #define fileNameCertificate         @"e2e_cert.pem"
 #define fileNameCSR                 @"e2e_csr.pem"
 #define fileNamePrivateKey          @"e2e_privateKey.pem"
+#define fileNamePubliceKey          @"e2e_publicKey.pem"
+
 
 @implementation NCEndToEndEncryption
 
@@ -201,6 +203,19 @@ cleanup:
     NSLog(@"Saved cert to %@", certificatePath);
     fclose(f);
     */
+    
+    // PublicKey
+    /*
+     NSString *publicKeyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePubliceKey];
+     f = fopen([publicKeyPath fileSystemRepresentation], "wb");
+     if (PEM_write_PUBKEY(f, pkey) < 0) {
+     // Error
+     fclose(f);
+     return NO;
+     }
+     NSLog(@"Saved publicKey to %@", publicKeyPath);
+     fclose(f);
+     */
     
     // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
     // file using the password and cipher you provide.
