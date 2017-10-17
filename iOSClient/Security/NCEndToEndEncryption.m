@@ -276,7 +276,8 @@ cleanup:
 - (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser mnemonic:(NSString *)mnemonic
 {
     NSMutableData *privateKeyCipherData;
-    NSString *privateKeyCipher;
+    NSString *privateKeyCipherBase64;
+    NSString *privateKeyCipherWithInitVector;
 
     // Create Certificate, if do not exists
     if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]]) {
@@ -294,19 +295,34 @@ cleanup:
     NSData *privateKeyData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]];
 
     BOOL result = [self aes256gcmEncrypt:privateKeyData cipherData:&privateKeyCipherData keyData:keyData initVectorData:initVectorData tagData:nil];
-
+    
+    // TEST
+    NSMutableData *plainData;
+    result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tag:nil];
+    NSString *privateKeyPlainData = [[NSString alloc] initWithData:plainData encoding:NSUTF8StringEncoding];
+    NSLog(@"%@", privateKeyPlainData);
+    // TEST
+    
     if (result && privateKeyCipherData) {
         
-        privateKeyCipher = [privateKeyCipherData base64EncodedStringWithOptions:0];
-        NSString *initVector= [initVectorData base64EncodedStringWithOptions:0];
-        privateKeyCipher = [NSString stringWithFormat:@"%@%@%@", privateKeyCipher, IV_DELIMITER_ENCODED, initVector];
+        privateKeyCipherBase64 = [privateKeyCipherData base64EncodedStringWithOptions:0];
+        NSString *initVectorBase64 = [initVectorData base64EncodedStringWithOptions:0];
+        privateKeyCipherWithInitVector = [NSString stringWithFormat:@"%@%@%@", privateKeyCipherBase64, IV_DELIMITER_ENCODED, initVectorBase64];
+        
+        // TEST
+        NSMutableData *plainData;
+        NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
+        NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:initVectorBase64 options:0];
+        result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tag:nil];
+        NSLog(@"%@", privateKeyPlainData);
+        // TEST
         
     } else {
         
         return nil;
     }
     
-    return privateKeyCipher;
+    return privateKeyCipherWithInitVector;
 }
 
 - (void)removeCSRToDisk:(NSString *)directoryUser
@@ -329,23 +345,28 @@ cleanup:
     if (publicKey.length == 0 || privateKeyCipher.length == 0 || publicKeyServer.length == 0)
         return;
     
+    NSMutableData *privateKeyData = [NSMutableData new];
+    NSString *privateKeyCipherBase64;
+    
     // mnemonic
     NSString *mnemonic = k_Mnemonic_test;
     
-    // Get Init Vector
-    NSRange range = [privateKeyCipher rangeOfString:IV_DELIMITER_ENCODED];
-    NSInteger idx = range.location + range.length;
-    NSString *initVector = [privateKeyCipher substringFromIndex:idx];
-
-    // Get privateKeyCipher
-    privateKeyCipher = [privateKeyCipher substringToIndex:range.location];
-    NSData *privateKeyCipherData = [privateKeyCipher dataUsingEncoding:NSUTF8StringEncoding];
-    NSMutableData *privateKeyData;
-    NSData *initVectorData = [initVector dataUsingEncoding:NSUTF8StringEncoding];
+    // Key
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
     NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
-    
     CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
+    
+    // Split
+    NSRange range = [privateKeyCipher rangeOfString:IV_DELIMITER_ENCODED];
+    NSInteger idx = range.location + range.length;
+    
+    // PrivateKey
+    privateKeyCipherBase64 = [privateKeyCipher substringToIndex:range.location];
+    NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
+
+    // Init Vector
+    NSString *initVectorBase64 = [privateKeyCipher substringFromIndex:idx];
+    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:initVectorBase64 options:0];
     
     BOOL result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&privateKeyData keyData:keyData initVectorData:initVectorData tag:nil];
     
