@@ -68,6 +68,7 @@
 "_next_"                    = "Next";
 "_success_"                 = "Success";
 "_initialization_"          = "Initialization";
+"_experimental_"            = "Experimental";
 
 // App
 
@@ -92,6 +93,7 @@
 "_acknowledgements_"        = "Acknowledgements";
 "_settings_"                = "Settings";
 "_passcode_"                = "Password";
+"_lock_"                    = "Lock";
 "_lock_active_"             = "Lock: Active";
 "_lock_not_active_"         = "Lock: Not Active";
 "_lock_protection_no_screen_"        = "Do not ask at startup";
