@@ -1219,6 +1219,11 @@
 		F7B1FBC11E72E3D1001781FE /* SwiftWebVCActivity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivity.swift; sourceTree = "<group>"; };
 		F7B1FBC21E72E3D1001781FE /* SwiftWebVCActivityChrome.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivityChrome.swift; sourceTree = "<group>"; };
 		F7B1FBC31E72E3D1001781FE /* SwiftWebVCActivitySafari.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftWebVCActivitySafari.swift; sourceTree = "<group>"; };
+		F7B2DEDE1F97464E007CF4D2 /* CKMnemonic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CKMnemonic.swift; sourceTree = "<group>"; };
+		F7B2DEDF1F97464E007CF4D2 /* Data+CKBitArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+CKBitArray.swift"; sourceTree = "<group>"; };
+		F7B2DEE11F97464E007CF4D2 /* Chinese.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Chinese.swift; sourceTree = "<group>"; };
+		F7B2DEE21F97464E007CF4D2 /* English.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = English.swift; sourceTree = "<group>"; };
+		F7B2DEE31F97464E007CF4D2 /* String+MnemonicData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+MnemonicData.swift"; sourceTree = "<group>"; };
 		F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCLoginWeb.swift; sourceTree = "<group>"; };
 		F7B4F1C71F44356F00B53B42 /* NCUchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCUchardet.h; sourceTree = "<group>"; };
 		F7B4F1C81F44356F00B53B42 /* NCUchardet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCUchardet.m; sourceTree = "<group>"; };
@@ -1720,6 +1725,7 @@
 			isa = PBXGroup;
 			children = (
 				F70F02B21C889183008DAB36 /* AFViewShaker */,
+				F7B2DEDD1F97464E007CF4D2 /* CKMnemonic */,
 				F73CCE221DC13788007E38D8 /* DZNEmptyDataSet */,
 				F7659A211DC0B726004860C4 /* EAIntroView */,
 				F7659A2A1DC0B72F004860C4 /* EARestrictedScrollView */,
@@ -2473,6 +2479,26 @@
 				F7B1FBB11E72E3D1001781FE /* Media.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		F7B2DEDD1F97464E007CF4D2 /* CKMnemonic */ = {
+			isa = PBXGroup;
+			children = (
+				F7B2DEDE1F97464E007CF4D2 /* CKMnemonic.swift */,
+				F7B2DEDF1F97464E007CF4D2 /* Data+CKBitArray.swift */,
+				F7B2DEE01F97464E007CF4D2 /* Language */,
+				F7B2DEE31F97464E007CF4D2 /* String+MnemonicData.swift */,
+			);
+			path = CKMnemonic;
+			sourceTree = "<group>";
+		};
+		F7B2DEE01F97464E007CF4D2 /* Language */ = {
+			isa = PBXGroup;
+			children = (
+				F7B2DEE11F97464E007CF4D2 /* Chinese.swift */,
+				F7B2DEE21F97464E007CF4D2 /* English.swift */,
+			);
+			path = Language;
 			sourceTree = "<group>";
 		};
 		F7B4F1C51F44356F00B53B42 /* NCUchardet */ = {
