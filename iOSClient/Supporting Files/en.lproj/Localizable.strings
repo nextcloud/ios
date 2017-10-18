@@ -94,7 +94,8 @@
 "_passcode_"                = "Password";
 "_lock_active_"             = "Lock: Active";
 "_lock_not_active_"         = "Lock: Not Active";
-"_lock_protection_folder_"  = "Lock only for protected folders";
+"_lock_protection_no_screen_"        = "Do not ask at startup";
+"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for protected folders only or Encryption passphrase";
 "_url_"                     = "URL";
 "_username_"                = "Username";
 "_change_credentials_"      = "Change your credentials";
@@ -584,6 +585,7 @@
 "_e2e_settings_initialize_request_" = "Do you want to start the End To End Encryption ?";
 "_e2e_settings_activated_"          = "End To End Encryption activated";
 "_e2e_settings_view_passphrase_"    = "This 12 word phrase is like a very strong password: it provides full access to view and use your encrypted files. Please write it down and keep it somewhere safe.";
-
-
+"_e2e_settings_read_passphrase_"    = "Read passphrase";
+"_e2e_settings_lock_not_active_"    = "Lock not active, go back in Settings and activates the Lock";
+"_e2e_settings_the_passphrase_is_"  = "The passphrase is: \n\n";
 

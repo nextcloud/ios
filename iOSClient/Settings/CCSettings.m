@@ -103,8 +103,8 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Passcode only directory
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"onlylockdir" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_folder_", nil)];
+    // Passcode no screen
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"onlylockdir" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_no_screen_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
@@ -430,6 +430,10 @@
     {
         case 1: {
             sectionName = NSLocalizedString(@"_favorite_offline_footer_", nil);
+        }
+        break;
+        case 2: {
+            sectionName = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
         }
         break;
         case 4: {

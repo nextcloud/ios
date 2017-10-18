@@ -25,7 +25,15 @@
 #import "AppDelegate.h"
 #import "CCNetworking.h"
 #import "NYMnemonic.h"
+
 #import "NCBridgeSwift.h"
+
+@interface NCManageEndToEndEncryption ()
+{
+    NSUInteger _failedAttempts;
+    NSDate *_lockUntilDate;
+}
+@end
 
 @implementation NCManageEndToEndEncryption
 
@@ -61,18 +69,21 @@
     row.action.formSelector = @selector(initE2E:);
     [section addFormRow:row];
    
-    // Section INITIALIZE -------------------------------------------------
+    if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
+        
+        // Section PASSPHRASE -------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_initialize_", nil)];
-    [form addFormSection:section];
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
+        [form addFormSection:section];
     
-    // Inizializze e2e
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"initE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_initialize_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(initE2E:);
-    [section addFormRow:row];
+        // Read Passphrase
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"readPassphrase" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        row.action.formSelector = @selector(readPassphrase:);
+        [section addFormRow:row];
+    }
     
 #ifdef DEBUG
     // Section DELETE KEYS -------------------------------------------------
@@ -95,6 +106,15 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     row.action.formSelector = @selector(deletePrivateKey:);
     [section addFormRow:row];
+    
+    // Delete locally Encryption
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteLocallyEncryption" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete locally encryption", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    row.action.formSelector = @selector(deleteLocallyEncryption:);
+    [section addFormRow:row];
+    
 #endif
     
     return [super initWithForm:form];
@@ -118,6 +138,13 @@
 
     metadataNet.action = actionDeleteEndToEndPrivateKey;
     [app addNetworkingOperationQueue:app.netQueue delegate:app.endToEndInterface metadataNet:metadataNet];
+}
+
+- (void)deleteLocallyEncryption:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    [CCUtility initEndToEnd:app.activeAccount];
 }
 
 - (void)initE2E:(XLFormRowDescriptor *)sender
@@ -154,6 +181,87 @@
     }];
     
     [alertController addAction:cancelAction];
+    [alertController addAction:okAction];
+    [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)readPassphrase:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    if ([[CCUtility getBlockCode] length]) {
+        
+        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
+        viewController.delegate = self;
+        viewController.fromType = CCBKPasscodeFromCheckPassphrase;
+        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
+            
+        if ([CCUtility getSimplyBlockCode]) {
+            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
+            viewController.passcodeInputView.maximumLength = 6;
+        } else {
+            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
+            viewController.passcodeInputView.maximumLength = 64;
+        }
+        
+        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
+        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
+        viewController.touchIDManager = touchIDManager;
+        
+        viewController.title = NSLocalizedString(@"_e2e_settings_read_passphrase_", nil);
+        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
+            
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        [self presentViewController:navigationController animated:YES completion:nil];
+        
+    } else {
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:NSLocalizedString(@"_e2e_settings_lock_not_active_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        }];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === BKPasscodeViewController ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (NSUInteger)passcodeViewControllerNumberOfFailedAttempts:(CCBKPasscode *)aViewController
+{
+    return _failedAttempts;
+}
+
+- (NSDate *)passcodeViewControllerLockUntilDate:(CCBKPasscode *)aViewController
+{
+    return _lockUntilDate;
+}
+
+- (void)passcodeViewCloseButtonPressed:(id)sender
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
+{
+    if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {
+        _lockUntilDate = nil;
+        _failedAttempts = 0;
+        aResultHandler(YES);
+    } else
+        aResultHandler(NO);
+}
+
+- (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
+{
+    [aViewController dismissViewControllerAnimated:YES completion:nil];
+    
+    NSString *message = [NSString stringWithFormat:@"%@\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), [CCUtility getEndToEndPassphrase:app.activeAccount]];
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+    }];
     [alertController addAction:okAction];
     [self presentViewController:alertController animated:YES completion:nil];
 }

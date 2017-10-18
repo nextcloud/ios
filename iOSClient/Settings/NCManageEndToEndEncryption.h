@@ -23,7 +23,8 @@
 
 #import "XLFormViewController.h"
 #import "XLForm.h"
+#import "BKPasscodeViewController.h"
 
-@interface NCManageEndToEndEncryption : XLFormViewController
+@interface NCManageEndToEndEncryption : XLFormViewController <BKPasscodeViewControllerDelegate>
 
 @end
