@@ -122,7 +122,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         if (storePrivateKey) {
             signPublicKey = false
             storePrivateKey = false
-            alertController("_success_", message: "_e2e_settings_encryption_activated_")
+            alertController("_success_", message: "_e2e_settings_activated_")
         }
     }
 
@@ -239,7 +239,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         if (signPublicKey) {
             signPublicKey = false
             storePrivateKey = false
-            alertController("_success_", message: "_e2e_settings_encryption_activated_")
+            alertController("_success_", message: "_e2e_settings_activated_")
         }
     }
     

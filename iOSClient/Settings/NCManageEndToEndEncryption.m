@@ -35,13 +35,13 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
-    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_e2e_settings_encryption_", nil)];
+    form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_e2e_settings_", nil)];
     
     tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
 
     if (capabilities.endToEndEncryption == NO) {
         
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_encryption_not_available_", nil)];
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_not_available_", nil)];
         [form addFormSection:section];
         
         return [super initWithForm:form];
@@ -50,11 +50,24 @@
     
     // Section INITIALIZE -------------------------------------------------
 
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_encryption_initialize_", nil)];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_initialize_", nil)];
     [form addFormSection:section];
     
     // Inizializze e2e
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"initE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_encryption_initialize_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"initE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_initialize_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    row.action.formSelector = @selector(initE2E:);
+    [section addFormRow:row];
+   
+    // Section INITIALIZE -------------------------------------------------
+    
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_initialize_", nil)];
+    [form addFormSection:section];
+    
+    // Inizializze e2e
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"initE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_initialize_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -119,11 +132,11 @@
     
     if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
         
-        message = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", NSLocalizedString(@"_e2e_settings_encryption_initialize_already_request_", nil), NSLocalizedString(@"_e2e_settings_encryption_view_passphrase_", nil), app.e2ePassphrase];
+        message = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", NSLocalizedString(@"_e2e_settings_initialize_already_request_", nil), NSLocalizedString(@"_e2e_settings_view_passphrase_", nil), app.e2ePassphrase];
 
     } else {
 
-        message = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", NSLocalizedString(@"_e2e_settings_encryption_initialize_request_", nil), NSLocalizedString(@"_e2e_settings_encryption_view_passphrase_", nil), app.e2ePassphrase];
+        message = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", NSLocalizedString(@"_e2e_settings_initialize_request_", nil), NSLocalizedString(@"_e2e_settings_view_passphrase_", nil), app.e2ePassphrase];
     }
         
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_initialization_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
