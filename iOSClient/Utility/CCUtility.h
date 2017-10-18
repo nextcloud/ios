@@ -177,8 +177,6 @@
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl;
 
-+ (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form nameImage:(NSString *)nameImage;
-
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
 // ===== CCMetadata =====

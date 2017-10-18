@@ -271,25 +271,6 @@
     }
 }
 
-- (void)checkEncryptPass:(XLFormRowDescriptor *)sender
-{
-    CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-    viewController.delegate = self;
-    viewController.fromType = CCBKPasscodeFromCheckCryptoKey;
-    viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-    
-    viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-    viewController.passcodeInputView.maximumLength = 64;
-    
-    viewController.title = NSLocalizedString(@"_check_key_aes_256_", nil);
-    
-    viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].encrypted;
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
 - (void)changeSimplyPassword
 {
     CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
@@ -509,12 +490,6 @@
     }
 }
 
-- (void)sendMailEncryptPass
-{
-    if ([MFMailComposeViewController canSendMail])
-        [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self nameImage:@"backgroundDetail"];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === BKPasscodeViewController ===
 #pragma --------------------------------------------------------------------------------------------
@@ -542,10 +517,6 @@
                 [app.activeMain.tableView reloadData];
             }
             
-            // email Key EAS-256
-            if (aViewController.fromType == CCBKPasscodeFromCheckCryptoKey)
-                [self sendMailEncryptPass];
-            
             // change simply
             if (aViewController.fromType == CCBKPasscodeFromSimply) {
                 
@@ -571,18 +542,6 @@
 
 - (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
 {
-    if (aViewController.fromType == CCBKPasscodeFromCheckCryptoKey) {
-        
-        NSString *key = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
-        
-        if ([aPasscode isEqualToString:key]) {
-            self.lockUntilDate = nil;
-            self.failedAttempts = 0;
-            aResultHandler(YES);
-        } else aResultHandler(NO);
-        
-    }
-    
     if (aViewController.fromType == CCBKPasscodeFromSettingsPasscode || aViewController.fromType == CCBKPasscodeFromSimply) {
         
         if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {

@@ -854,49 +854,6 @@
     return fileName;
 }
 
-+ (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form nameImage:(NSString *)nameImage
-{
-    BOOL error = NO;
-    
-    if (validateEmail)
-        error = ![self isValidEmail:recipient];
-    
-    if (!error)
-        error = ![MFMailComposeViewController canSendMail];
-    
-    if (!error) {
-        
-        NSString *key = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
-        
-        MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
-        mc.mailComposeDelegate = form;
-        
-        [mc setSubject:NSLocalizedString(@"_title_mail_encryptpass_", nil)];
-        
-        NSString *htmlMsg =[NSString stringWithFormat:@"<html><body><p>%@ : %@ , %@</p></body></html>", NSLocalizedString(@"_text1_mail_encryptpass_", nil), key, NSLocalizedString(@"_text2_mail_encryptpass_", nil)];
-        
-        NSData *jpegData = UIImageJPEGRepresentation([UIImage imageNamed:nameImage], 1.0);
-        [mc addAttachmentData:jpegData mimeType:@"image/jpeg" fileName:@"cryptocloud.png"];
-        [mc setMessageBody:htmlMsg isHTML:YES];
-        
-        if ([self isValidEmail:recipient])
-            [mc setToRecipients:@[recipient]];
-        
-        [form presentViewController:mc animated:YES completion:NULL];
-        
-    } else {
-        
-        UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_mail_not_can_send_mail_", nil) preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil)  style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction * action) {
-                                                       [alert dismissViewControllerAnimated:YES completion:nil];
-                                                   }];
-        [alert addAction:ok];
-        [form presentViewController:alert animated:YES completion:nil];
-    }
-}
-
 + (NSArray *)createNameSubFolder:(PHFetchResult *)alassets
 {
     NSMutableOrderedSet *datesSubFolder = [NSMutableOrderedSet new];

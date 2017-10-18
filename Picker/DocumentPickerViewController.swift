@@ -531,7 +531,7 @@ extension DocumentPickerViewController {
         viewController.touchIDManager = touchIDManager
         viewController.title = title
         viewController.navigationItem.leftBarButtonItem = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonSystemItem.cancel, target: self, action: #selector(passcodeViewCloseButtonPressed(sender:)))
-        //viewController.navigationItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.cryptocloud
+        viewController.navigationItem.leftBarButtonItem?.tintColor = NCBrandColor.sharedInstance.encrypted
         
         let navController = UINavigationController.init(rootViewController: viewController)
         self.present(navController, animated: true, completion: nil)
