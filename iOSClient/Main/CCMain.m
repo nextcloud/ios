@@ -4034,10 +4034,11 @@
                                         }
                                     }];
         }
-        
+
+#ifdef DEBUG
         if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && [CCUtility isEndToEndEnabled:app.activeAccount]) {
             
-            [actionSheet addButtonWithTitle:titoloCriptaDecripta
+            [actionSheet addButtonWithTitle:@"Mark as encrypted"
                                       image:[UIImage imageNamed:@"actionSheetCrypto"]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
@@ -4047,6 +4048,20 @@
                                         [app.endToEndInterface markEndToEndFolderEncrypted:_metadata];                                        
                                     }];
         }
+        
+        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && [CCUtility isEndToEndEnabled:app.activeAccount]) {
+            
+            [actionSheet addButtonWithTitle:@"Delete as encrypted"
+                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        [app.endToEndInterface deleteEndToEndFolderEncrypted:_metadata];
+                                    }];
+        }
+#endif
         
         if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
             
