@@ -27,6 +27,10 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    var deletePublicKey = false;
+    var deletePrivateKey = false;
+    
+    
     override init() {
     }
     
@@ -35,7 +39,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // --------------------------------------------------------------------------------------------
     
     @objc func initEndToEndEncryption() {
-
+        
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
         metadataNet.action = actionGetEndToEndPublicKeys;
@@ -116,10 +120,21 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     func deleteEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
+        
+        deletePublicKey = true;
+        if (deletePrivateKey) {
+            deletePublicKey = false;
+            deletePrivateKey = false;
+            initEndToEndEncryption()
+        }
+
         appDelegate.messageNotification("E2E delete public key", description: "Public key was deleted", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.success, errorCode: 0)
     }
     
     func deleteEnd(toEndPublicKeyFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+        
+        deletePublicKey = false;
+        
         appDelegate.messageNotification("E2E delete public key", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
     }
     
@@ -212,10 +227,21 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     func deleteEnd(toEndPrivateKeySuccess metadataNet: CCMetadataNet!) {
+        
+        deletePrivateKey = true;
+        if (deletePublicKey) {
+            deletePublicKey = false;
+            deletePrivateKey = false;
+            initEndToEndEncryption()
+        }
+        
         appDelegate.messageNotification("E2E delete private key", description: "Private key was deleted", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.success, errorCode: 0)
     }
     
     func deleteEnd(toEndPrivateKeyFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+        
+        deletePrivateKey = false;
+        
         appDelegate.messageNotification("E2E delete private key", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
     }
     

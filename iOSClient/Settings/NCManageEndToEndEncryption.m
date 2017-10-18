@@ -63,11 +63,11 @@
 #ifdef DEBUG
     // Section DELETE KEYS -------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"Delete", nil)];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"Delete server keys ", nil)];
     [form addFormSection:section];
     
     // Delete publicKey
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deletePublicKey" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_encryption_delete_publicKey_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deletePublicKey" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete PublicKey", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -75,7 +75,7 @@
     [section addFormRow:row];
     
     // Delete privateKey
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deletePrivateKey" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_encryption_delete_privateKey_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deletePrivateKey" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete PrivateKey", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -108,9 +108,33 @@
 
 - (void)initE2E:(XLFormRowDescriptor *)sender
 {
-    [CCUtility initEndToEnd:app.activeAccount];
+    NSString *message;
+ 
+    [self deselectFormRow:sender];
+
+    if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
+        message = NSLocalizedString(@"_e2e_settings_encryption_initialize_already_request_", nil);
+    } else {
+        message = NSLocalizedString(@"_e2e_settings_encryption_initialize_request_", nil);
+    }
+        
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_e2e_settings_encryption_initialize_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
     
-    [app.endToEndInterface initEndToEndEncryption];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel action") style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        NSLog(@"Cancel action");
+    }];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        
+        [self deletePublicKey:sender];
+        [self deletePrivateKey:sender];
+        
+        [CCUtility initEndToEnd:app.activeAccount];
+    }];
+    
+    [alertController addAction:cancelAction];
+    [alertController addAction:okAction];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

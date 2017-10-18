@@ -578,6 +578,8 @@
 "_e2e_settings_encryption_"         = "End To End Encryption";
 "_e2e_settings_encryption_initialize_"      = "Initialize End To End Encryption";
 "_e2e_settings_encryption_not_available_"   = "End To End Encryption not available";
+"_e2e_settings_encryption_initialize_already_request_"  = "Service already inizialized, you want to reinitialize it ?";
+"_e2e_settings_encryption_initialize_request_" = "you want to start the End To End Encryption ?";
 
 
 
