@@ -24,6 +24,7 @@
 #import "NCManageEndToEndEncryption.h"
 #import "AppDelegate.h"
 #import "CCNetworking.h"
+#import "NCBridgeSwift.h"
 
 @implementation NCManageEndToEndEncryption
 
@@ -94,7 +95,7 @@
 {
     [CCUtility initEndToEnd:app.activeAccount];
     
-    [app.activeMain initEndToEnd];
+    [app.endToEndInterface initEndToEndEncryption];
 }
 
 @end

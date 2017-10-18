@@ -52,12 +52,12 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
         CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: metadataNet.key)
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: "E2E PublicKeys present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPublicKeys, note: "E2E PublicKeys present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
     }
     
     func getEndToEndPublicKeysFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
     
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: message as String!, type: k_activityTypeFailure, verbose: false, activeUrl: "")
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPublicKeys, note: message as String!, type: k_activityTypeFailure, verbose: false, activeUrl: "")
         
         switch errorCode {
             
@@ -75,7 +75,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 appDelegate.messageNotification("E2E public keys", description: "E2E Error to create PublicKey", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                 
-                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E Error to create PublicKey", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPublicKeys, note: "E2E Error to create PublicKey", type: k_activityTypeFailure, verbose: false, activeUrl: "")
                 
                 return
             }
@@ -105,14 +105,14 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         // OK signed key locally keychain
         CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: publicKey)
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: "E2E PublicKey sign on Server and stored locally", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E PublicKey sign on Server and stored locally", type: k_activityTypeFailure, verbose: false, activeUrl: "")
     }
 
     func signEnd(toEndPublicKeyFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
         appDelegate.messageNotification("E2E sign public keys", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: message, type: k_activityTypeFailure, verbose: false, activeUrl: "")
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: message, type: k_activityTypeFailure, verbose: false, activeUrl: "")
     }
     
     func deleteEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
@@ -139,19 +139,19 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             // Save mnemonic to keychain
             CCUtility.setEndToEndMnemonic(appDelegate.activeAccount, mnemonic:k_Mnemonic_test)
 
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
+            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
             
         } else {
             
             appDelegate.messageNotification("E2E decrypt private key", description: "E2E Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: "E2E Error to decrypt Private Key", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Error to decrypt Private Key", type: k_activityTypeFailure, verbose: false, activeUrl: "")
         }
     }
     
     func getEndToEndPrivateKeyCipherFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: message as String!, type: k_activityTypeFailure, verbose: false, activeUrl: "")
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: message as String!, type: k_activityTypeFailure, verbose: false, activeUrl: "")
         
         switch errorCode {
             
@@ -172,7 +172,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 appDelegate.messageNotification("E2E private keys", description: "E2E Error to create PublicKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                 
-                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E Error to create PublicKey chiper", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Error to create PublicKey chiper", type: k_activityTypeFailure, verbose: false, activeUrl: "")
                 
                 return
             }
@@ -203,14 +203,14 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: privateKey)
         CCUtility.setEndToEndMnemonic(appDelegate.activeAccount, mnemonic:metadataNet.password)
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E PrivateKey stored on Server and stored locally", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionStoreEndToEndPrivateKeyCipher, note: "E2E PrivateKey stored on Server and stored locally", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
     }
     
     func storeEnd(toEndPrivateKeyCipherFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
         appDelegate.messageNotification("E2E sign private key", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: message, type: k_activityTypeFailure, verbose: false, activeUrl: "")
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionStoreEndToEndPrivateKeyCipher, note: message, type: k_activityTypeFailure, verbose: false, activeUrl: "")
     }
     
     func deleteEnd(toEndPrivateKeySuccess metadataNet: CCMetadataNet!) {
@@ -227,12 +227,12 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     func getEndToEndServerPublicKeySuccess(_ metadataNet: CCMetadataNet!) {
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: "E2E Server PublicKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndServerPublicKey, note: "E2E Server PublicKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
     }
     
     func getEndToEndServerPublicKeyFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: metadataNet.selector, note: message as String!, type: k_activityTypeFailure, verbose: false, activeUrl: "")
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndServerPublicKey, note: message as String!, type: k_activityTypeFailure, verbose: false, activeUrl: "")
         
         switch (errorCode) {
             
