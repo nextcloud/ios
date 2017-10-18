@@ -112,10 +112,16 @@
  
     [self deselectFormRow:sender];
 
+    // select Passphrase
+    app.e2ePassphrase = k_passphrase_test;
+    
     if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-        message = NSLocalizedString(@"_e2e_settings_encryption_initialize_already_request_", nil);
+        
+        message = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", NSLocalizedString(@"_e2e_settings_encryption_initialize_already_request_", nil), NSLocalizedString(@"_e2e_settings_encryption_view_passphrase_", nil), app.e2ePassphrase];
+
     } else {
-        message = NSLocalizedString(@"_e2e_settings_encryption_initialize_request_", nil);
+
+        message = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", NSLocalizedString(@"_e2e_settings_encryption_initialize_request_", nil), NSLocalizedString(@"_e2e_settings_encryption_view_passphrase_", nil), app.e2ePassphrase];
     }
         
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_initialization_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];

@@ -222,7 +222,8 @@
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
     [application registerUserNotificationSettings:notificationSettings];
     
-    // NCEntoToEndInterface
+    // E2E Encryption
+    self.e2ePassphrase = nil;
     self.endToEndInterface = [NCEntoToEndInterface new];
     
     // Fabric
