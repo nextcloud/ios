@@ -36,6 +36,17 @@
     
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_e2e_settings_encryption_", nil)];
     
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+
+    if (capabilities.endToEndEncryption == NO) {
+        
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_encryption_not_available_", nil)];
+        [form addFormSection:section];
+        
+        return [super initWithForm:form];
+    }
+    
+    
     // Section INITIALIZE -------------------------------------------------
 
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_encryption_initialize_", nil)];
@@ -49,7 +60,7 @@
     row.action.formSelector = @selector(initE2E:);
     [section addFormRow:row];
     
-#ifdef DEBUGH
+#ifdef DEBUG
     // Section DELETE KEYS -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"Delete", nil)];
