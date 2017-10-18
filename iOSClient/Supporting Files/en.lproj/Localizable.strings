@@ -97,7 +97,7 @@
 "_lock_active_"             = "Lock: Active";
 "_lock_not_active_"         = "Lock: Not Active";
 "_lock_protection_no_screen_"        = "Do not ask at startup";
-"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for protected folders only or Encryption passphrase";
+"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for protected folders only or for read the encryption passphrase";
 "_url_"                     = "URL";
 "_username_"                = "Username";
 "_change_credentials_"      = "Change your credentials";
