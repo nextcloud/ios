@@ -34,7 +34,6 @@
 #import "CTAssetCheckmark.h"
 #import "JDStatusBarNotification.h"
 #import "NCAutoUpload.h"
-#import "NCEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>

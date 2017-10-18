@@ -31,7 +31,6 @@
 #import "CCSynchronize.h"
 #import "CCMain.h"
 #import "CCDetail.h"
-#import "NCEndToEndEncryption.h"
 #import "Firebase.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
