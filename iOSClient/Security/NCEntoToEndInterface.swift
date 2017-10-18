@@ -61,35 +61,39 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         switch errorCode {
             
-            case 400:
-                appDelegate.messageNotification("E2E public keys", description: "bad request: unpredictable internal error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            case 404:
-                // public keys couldn't be found
-                // remove keychain
-                CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: nil)
+        case 400:
             
-                let publicKey = NCEndToEndEncryption.sharedManager().createEnd(toEndPublicKey: appDelegate.activeUserID, directoryUser: appDelegate.directoryUser)
-                if (publicKey != nil) {
-                
-                    let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-
-                    metadataNet.action = actionSignEndToEndPublicKey;
-                    metadataNet.key = publicKey;
-                
-                    appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-                
-                } else {
-                
-                    appDelegate.messageNotification("E2E public keys", description: "E2E Error to create PublicKey", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                
-                    NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E Error to create PublicKey", type: k_activityTypeFailure, verbose: false, activeUrl: "")
-                }
+            appDelegate.messageNotification("E2E public keys", description: "bad request: unpredictable internal error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
-            case 409:
-                appDelegate.messageNotification("E2E public keys", description: "forbidden: the user can't access the public keys", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        case 404:
             
-            default:
-                appDelegate.messageNotification("E2E public keys", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            // public keys couldn't be found
+            // remove keychain
+            CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: nil)
+            
+            guard let publicKey = NCEndToEndEncryption.sharedManager().createEnd(toEndPublicKey: appDelegate.activeUserID, directoryUser: appDelegate.directoryUser) else {
+                
+                appDelegate.messageNotification("E2E public keys", description: "E2E Error to create PublicKey", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E Error to create PublicKey", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                
+                return
+            }
+            
+            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+            
+            metadataNet.action = actionSignEndToEndPublicKey;
+            metadataNet.key = publicKey;
+            
+            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+            
+        case 409:
+        
+            appDelegate.messageNotification("E2E public keys", description: "forbidden: the user can't access the public keys", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            
+        default:
+        
+            appDelegate.messageNotification("E2E public keys", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
 
@@ -151,42 +155,43 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         switch errorCode {
             
-            case 400:
+        case 400:
                 
-                appDelegate.messageNotification("E2E public keys", description: "bad request: unpredictable internal error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            appDelegate.messageNotification("E2E public keys", description: "bad request: unpredictable internal error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
-            case 404:
-                // private keys couldn't be found
-                // remove keychain
-                CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: nil)
-                CCUtility.setEndToEndMnemonic(appDelegate.activeAccount, mnemonic: nil)
+        case 404:
+            
+            // private keys couldn't be found
+            // remove keychain
+            CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: nil)
+            CCUtility.setEndToEndMnemonic(appDelegate.activeAccount, mnemonic: nil)
 
-                let mnemonic = k_Mnemonic_test;
+            let mnemonic = k_Mnemonic_test;
             
-                let privateKeyChiper = NCEndToEndEncryption.sharedManager().createEnd(toEndPrivateKey: appDelegate.activeUserID, directoryUser: appDelegate.directoryUser, mnemonic: mnemonic)
+            guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().createEnd(toEndPrivateKey: appDelegate.activeUserID, directoryUser: appDelegate.directoryUser, mnemonic: mnemonic) else {
+                
+                appDelegate.messageNotification("E2E private keys", description: "E2E Error to create PublicKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E Error to create PublicKey chiper", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                
+                return
+            }
             
-                if (privateKeyChiper != nil) {
+            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
                     
-                    let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+            metadataNet.action = actionStoreEndToEndPrivateKeyCipher
+            metadataNet.key = privateKeyChiper
+            metadataNet.password = mnemonic
                     
-                    metadataNet.action = actionStoreEndToEndPrivateKeyCipher
-                    metadataNet.key = privateKeyChiper
-                    metadataNet.password = mnemonic
-                    
-                    appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-                    
-                } else {
-                    
-                    appDelegate.messageNotification("E2E private keys", description: "E2E Error to create PublicKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-                    
-                    NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E Error to create PublicKey chiper", type: k_activityTypeFailure, verbose: false, activeUrl: "")
-                }
+            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             
-            case 409:
-                appDelegate.messageNotification("E2E private keys", description: "forbidden: the user can't access the private keys", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        case 409:
             
-            default:
-                appDelegate.messageNotification("E2E private keys", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            appDelegate.messageNotification("E2E private keys", description: "forbidden: the user can't access the private keys", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            
+        default:
+            
+            appDelegate.messageNotification("E2E private keys", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
     
