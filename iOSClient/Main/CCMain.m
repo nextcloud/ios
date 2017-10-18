@@ -36,7 +36,6 @@
 #import "NCAutoUpload.h"
 #import "NCEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
-#import "NYMnemonic.h"
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {

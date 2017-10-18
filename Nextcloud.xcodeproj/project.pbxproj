@@ -605,14 +605,6 @@
 		F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7B381BF1C074E3E004693F8 /* Error.strings */; };
 		F7FCFFD81D70798C000E6E29 /* CCPeekPop.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */; };
 		F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */; };
-		F7FD60491F8FBAD7007FE2DF /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FD60481F8FB996007FE2DF /* NYMnemonic.m */; };
-		F7FD604A1F8FBAD7007FE2DF /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FD60481F8FB996007FE2DF /* NYMnemonic.m */; };
-		F7FD604B1F8FBAD8007FE2DF /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FD60481F8FB996007FE2DF /* NYMnemonic.m */; };
-		F7FD604C1F8FBAD8007FE2DF /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FD60481F8FB996007FE2DF /* NYMnemonic.m */; };
-		F7FD604D1F8FBADF007FE2DF /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7FD60461F8FB996007FE2DF /* english.txt */; };
-		F7FD604E1F8FBAE0007FE2DF /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7FD60461F8FB996007FE2DF /* english.txt */; };
-		F7FD604F1F8FBAE0007FE2DF /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7FD60461F8FB996007FE2DF /* english.txt */; };
-		F7FD60501F8FBAE0007FE2DF /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7FD60461F8FB996007FE2DF /* english.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1517,9 +1509,6 @@
 		F7FCFFD61D70798C000E6E29 /* CCPeekPop.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCPeekPop.storyboard; sourceTree = "<group>"; };
 		F7FCFFDD1D707B83000E6E29 /* CCPeekPop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPeekPop.h; sourceTree = "<group>"; };
 		F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPeekPop.m; sourceTree = "<group>"; };
-		F7FD60461F8FB996007FE2DF /* english.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = english.txt; sourceTree = "<group>"; };
-		F7FD60471F8FB996007FE2DF /* NYMnemonic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NYMnemonic.h; sourceTree = "<group>"; };
-		F7FD60481F8FB996007FE2DF /* NYMnemonic.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NYMnemonic.m; sourceTree = "<group>"; };
 		F7FE125C1BAC03FB0041924B /* CCBKPasscode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBKPasscode.h; sourceTree = "<group>"; };
 		F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBKPasscode.m; sourceTree = "<group>"; };
 		F7FFEACD1F82BB1C005E5C17 /* CCCellMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CCCellMain.h; path = Main/CCCellMain.h; sourceTree = "<group>"; };
@@ -1738,7 +1727,6 @@
 				F7659A2F1DC0B737004860C4 /* iRate */,
 				F70F04821C889183008DAB36 /* MBProgressHUD */,
 				F7DC5FD31F00F98B00A903C7 /* MGSwipeTableCell */,
-				F7FD60441F8FB996007FE2DF /* NYMnemonic */,
 				F7540EE11D5B238600C3FFA8 /* openssl */,
 				F75037421DBFA91A008FB480 /* PureLayout */,
 				F70F05241C889184008DAB36 /* Reachability */,
@@ -3004,24 +2992,6 @@
 			path = PeekPop;
 			sourceTree = "<group>";
 		};
-		F7FD60441F8FB996007FE2DF /* NYMnemonic */ = {
-			isa = PBXGroup;
-			children = (
-				F7FD60451F8FB996007FE2DF /* languages */,
-				F7FD60471F8FB996007FE2DF /* NYMnemonic.h */,
-				F7FD60481F8FB996007FE2DF /* NYMnemonic.m */,
-			);
-			path = NYMnemonic;
-			sourceTree = "<group>";
-		};
-		F7FD60451F8FB996007FE2DF /* languages */ = {
-			isa = PBXGroup;
-			children = (
-				F7FD60461F8FB996007FE2DF /* english.txt */,
-			);
-			path = languages;
-			sourceTree = "<group>";
-		};
 		F7FE125B1BAC03FB0041924B /* Security */ = {
 			isa = PBXGroup;
 			children = (
@@ -3220,7 +3190,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F7FD604E1F8FBAE0007FE2DF /* english.txt in Resources */,
 				F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */,
 				F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */,
 				F7145A1C1D12E3B700CAFEEC /* CCMove.storyboard in Resources */,
@@ -3238,7 +3207,6 @@
 			files = (
 				F7FC88FD1E141A3F006D0506 /* Error.strings in Resources */,
 				F70944BD1F86364000AE4541 /* MainInterface.storyboard in Resources */,
-				F7FD604F1F8FBAE0007FE2DF /* english.txt in Resources */,
 				F7FC88FB1E141A34006D0506 /* BKPasscodeView.strings in Resources */,
 				F7FC88FC1E141A39006D0506 /* Localizable.strings in Resources */,
 				F700222E1EC479840080073F /* Custom.xcassets in Resources */,
@@ -3253,7 +3221,6 @@
 				F7BB50C81F22384700C47094 /* Error.strings in Resources */,
 				F7BB50C61F22383D00C47094 /* BKPasscodeView.strings in Resources */,
 				F7BB50C71F22384100C47094 /* Localizable.strings in Resources */,
-				F7FD60501F8FBAE0007FE2DF /* english.txt in Resources */,
 				F7BB50AE1F2236E900C47094 /* Custom.xcassets in Resources */,
 				F7BB50AD1F2236D100C47094 /* Images.xcassets in Resources */,
 			);
@@ -3326,7 +3293,6 @@
 				F77B0F571D118A16002130FE /* synchronizedcrypto.gif in Resources */,
 				F7F54CEE1E5B14C700E19C62 /* ImageSelectedSmallOff.png in Resources */,
 				F73B4EF31F470D9100BBEE4B /* GB2312Freq.tab in Resources */,
-				F7FD604D1F8FBADF007FE2DF /* english.txt in Resources */,
 				F7F54D051E5B14C800E19C62 /* VideoOverlay@3x.png in Resources */,
 				F7F54D011E5B14C700E19C62 /* UIBarButtonItemGrid@2x.png in Resources */,
 				F7F54CE71E5B14C700E19C62 /* ImageError@3x.png in Resources */,
@@ -3474,7 +3440,6 @@
 				F70022A81EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
 				F70022AB1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
 				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
-				F7FD604A1F8FBAD7007FE2DF /* NYMnemonic.m in Sources */,
 				F70022B41EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022CC1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F70022DB1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
@@ -3525,7 +3490,6 @@
 				F70022D01EC4C9100080073F /* OCShareUser.m in Sources */,
 				F70022EB1EC4C9100080073F /* OCXMLShareByLinkParser.m in Sources */,
 				F743447B1E127EAC001CC831 /* CCUtility.m in Sources */,
-				F7FD604B1F8FBAD8007FE2DF /* NYMnemonic.m in Sources */,
 				F70022A91EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
 				F70022BE1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F77EB6291EC08037003F814F /* CCExifGeo.m in Sources */,
@@ -3596,7 +3560,6 @@
 				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
 				F7BB50BA1F22374A00C47094 /* CCNetworking.m in Sources */,
 				F7BB50DD1F2238B100C47094 /* NSString+Encode.m in Sources */,
-				F7FD604C1F8FBAD8007FE2DF /* NYMnemonic.m in Sources */,
 				F7BB50D51F22389600C47094 /* NSDate+RFC1123.m in Sources */,
 				F7BB50A31F2236C500C47094 /* CCGlobal.m in Sources */,
 				F76B3CD11EAE01BD00921AC9 /* NCBrand.swift in Sources */,
@@ -3760,7 +3723,6 @@
 				F762CAF91EACB66200B38484 /* XLFormCheckCell.m in Sources */,
 				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
 				F762CB101EACB66200B38484 /* NSPredicate+XLFormAdditions.m in Sources */,
-				F7FD60491F8FBAD7007FE2DF /* NYMnemonic.m in Sources */,
 				F7D424691F063B82009C9782 /* CTAssetsGridViewLayout.m in Sources */,
 				F7D4237E1F0596C6009C9782 /* ReaderDocument.m in Sources */,
 				F7D424661F063B82009C9782 /* CTAssetsGridViewCell.m in Sources */,
