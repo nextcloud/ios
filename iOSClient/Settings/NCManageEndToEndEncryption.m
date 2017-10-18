@@ -36,6 +36,20 @@
     
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_e2e_settings_encryption_", nil)];
     
+    // Section INITIALIZE -------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_encryption_initialize_", nil)];
+    [form addFormSection:section];
+    
+    // Inizializze e2e
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"initE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_encryption_initialize_", nil)];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    row.action.formSelector = @selector(initE2E:);
+    [section addFormRow:row];
+    
+#ifdef DEBUGH
     // Section DELETE KEYS -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"Delete", nil)];
@@ -56,17 +70,7 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     row.action.formSelector = @selector(deletePrivateKey:);
     [section addFormRow:row];
-    
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"Init", nil)];
-    [form addFormSection:section];
-    
-    // Inizializze e2e
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"initE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_encryption_initialize_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(initE2E:);
-    [section addFormRow:row];
+#endif
     
     return [super initWithForm:form];
 }

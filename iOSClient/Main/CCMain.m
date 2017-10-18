@@ -1182,14 +1182,13 @@
     metadataNet.action = actionGetActivityServer;
     [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     
-#ifdef DEBUG
     // Get End-To-End PrivateKey (if enabled)
     if (capabilities.isEndToEndEncryptionEnabled) {
         
         if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
             
             // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"Encryption E2E available" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionEndToEndEncryption selector:metadataNet.selector note:@"Encryption E2E available" type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:@""];
             
         } else {
             
@@ -1197,8 +1196,6 @@
             [app.endToEndInterface initEndToEndEncryption];
         }
     }
-#endif
-    
 }
 
 #pragma mark -
