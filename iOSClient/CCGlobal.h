@@ -210,7 +210,7 @@ extern NSString *const dav;
 #define actionDeleteEndToEndPrivateKey                  @"deleteEndToEndPrivateKey"
 #define actionGetEndToEndServerPublicKey                @"getEndToEndServerPublicKey"
 #define actionMarkEndToEndFolderEncrypted               @"markEndToEndFolderEncrypted"
-#define actionDeleteEndToEndFolderEncrypted             @"deleteEndToEndFolderEncrypted"
+#define actionDeletemarkEndToEndFolderEncrypted         @"deletemarkEndToEndFolderEncrypted"
 
 
 // Metadata : FileType

@@ -331,11 +331,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)        
     }
     
-    func deleteEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
+    func deletemarkEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
         print("E2E delete folder success")
     }
     
-    func deleteEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+    func deletemarkEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
        
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
@@ -348,11 +348,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         }
     }
     
-    @objc func deleteEndToEndFolderEncrypted(_ metadata: tableMetadata) {
+    @objc func deletemarkEndToEndFolderEncrypted(_ metadata: tableMetadata) {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
-        metadataNet.action = actionDeleteEndToEndFolderEncrypted;
+        metadataNet.action = actionDeletemarkEndToEndFolderEncrypted;
         metadataNet.fileID = metadata.fileID;
         
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)

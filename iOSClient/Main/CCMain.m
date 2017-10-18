@@ -4058,7 +4058,7 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        [app.endToEndInterface deleteEndToEndFolderEncrypted:_metadata];
+                                        [app.endToEndInterface deletemarkEndToEndFolderEncrypted:_metadata];
                                     }];
         }
 #endif

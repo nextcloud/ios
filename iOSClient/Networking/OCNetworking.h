@@ -145,8 +145,8 @@
 - (void)markEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
 - (void)markEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
-- (void)deleteEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
-- (void)deleteEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)deletemarkEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
+- (void)deletemarkEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 @end
 
