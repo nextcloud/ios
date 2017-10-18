@@ -332,7 +332,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     func deletemarkEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
-        print("E2E delete folder success")
+        print("E2E delete mark folder success")
     }
     
     func deletemarkEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
