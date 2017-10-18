@@ -282,7 +282,7 @@ cleanup:
     return publicKey;
 }
 
-- (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser mnemonic:(NSString *)mnemonic
+- (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase
 {
     NSMutableData *privateKeyCipherData = [NSMutableData new];
 
@@ -296,7 +296,10 @@ cleanup:
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
     NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
     
-    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
+    // Remove all whitespaces from passphrase
+    passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
+    
+    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
     
     NSData *initVectorData = [self generateIV:AES_IVEC_LENGTH];
     NSData *privateKeyData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]];
@@ -355,14 +358,18 @@ cleanup:
 #pragma mark - Register client for Server with exists Key pair
 #
 
-- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher mnemonic:(NSString *)mnemonic
+- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase
 {
     NSMutableData *privateKeyData = [NSMutableData new];
     
     // Key (data)
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
     NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
-    CCKeyDerivationPBKDF(kCCPBKDF2, mnemonic.UTF8String, mnemonic.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
+    
+    // Remove all whitespaces from passphrase
+    passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
+    
+    CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
     
     // Split
     NSRange range = [privateKeyCipher rangeOfString:IV_DELIMITER_ENCODED];

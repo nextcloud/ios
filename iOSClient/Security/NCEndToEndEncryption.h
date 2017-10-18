@@ -35,9 +35,9 @@
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
 
 - (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser;
-- (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser mnemonic:(NSString *)mnemonic;
+- (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase;
 
-- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher mnemonic:(NSString *)mnemonic;
+- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase;
 
 - (NSString *)getCSRFromDisk:(NSString *)directoryUser delete:(BOOL)delete;
 - (NSString *)getPrivateKeyFromDisk:(NSString *)directoryUser delete:(BOOL)delete;

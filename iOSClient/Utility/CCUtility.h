@@ -93,7 +93,7 @@
 
 + (void)setEndToEndPublicKeySign:(NSString *)account publicKey:(NSString *)publicKey;
 + (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
-+ (void)setEndToEndMnemonic:(NSString *)account mnemonic:(NSString *)mnemonic;
++ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
 + (void)initEndToEnd:(NSString *)account;
 
 // GET
@@ -143,7 +143,7 @@
 
 + (NSString *)getEndToEndPublicKeySign:(NSString *)account;
 + (NSString *)getEndToEndPrivateKey:(NSString *)account;
-+ (NSString *)getEndToEndMnemonic:(NSString *)account;
++ (NSString *)getEndToEndPassphrase:(NSString *)account;
 + (BOOL)isEndToEndEnabled:(NSString *)account;
 
 // ===== Varius =====

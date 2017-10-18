@@ -35,7 +35,7 @@
 
 #define E2E_PublicKeySign       @"EndToEndPublicKeySign_"
 #define E2E_PrivateKeyCipher    @"EndToEndPrivateKeyCipher_"
-#define E2E_Mnemonic            @"EndToEndMnemonic_"
+#define E2E_Passphrase          @"EndToEndPassphrase_"
 
 
 @implementation CCUtility
@@ -243,17 +243,17 @@
     [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndMnemonic:(NSString *)account mnemonic:(NSString *)mnemonic
++ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase
 {
-    NSString *key = [E2E_Mnemonic stringByAppendingString:account];
-    [UICKeyChainStore setString:mnemonic forKey:key service:k_serviceShareKeyChain];
+    NSString *key = [E2E_Passphrase stringByAppendingString:account];
+    [UICKeyChainStore setString:passphrase forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)initEndToEnd:(NSString *)account
 {
     [self setEndToEndPublicKeySign:account publicKey:nil];
     [self setEndToEndPrivateKey:account privateKey:nil];
-    [self setEndToEndMnemonic:account mnemonic:nil];
+    [self setEndToEndPassphrase:account passphrase:nil];
 }
 
 #pragma ------------------------------ GET
@@ -464,9 +464,9 @@
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getEndToEndMnemonic:(NSString *)account
++ (NSString *)getEndToEndPassphrase:(NSString *)account
 {
-    NSString *key = [E2E_Mnemonic stringByAppendingString:account];
+    NSString *key = [E2E_Passphrase stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
@@ -474,9 +474,9 @@
 {
     NSString *publicKeySign = [self getEndToEndPublicKeySign:account];
     NSString *privateKey = [self getEndToEndPrivateKey:account];
-    NSString *mnemonic = [self getEndToEndMnemonic:account];
+    NSString *passphrase = [self getEndToEndPassphrase:account];
     
-    if (mnemonic.length > 0 && privateKey.length > 0 && publicKeySign.length > 0) {
+    if (passphrase.length > 0 && privateKey.length > 0 && publicKeySign.length > 0) {
         
         return YES;
         
