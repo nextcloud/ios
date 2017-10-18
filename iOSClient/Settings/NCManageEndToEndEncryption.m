@@ -24,6 +24,7 @@
 #import "NCManageEndToEndEncryption.h"
 #import "AppDelegate.h"
 #import "CCNetworking.h"
+#import "NYMnemonic.h"
 #import "NCBridgeSwift.h"
 
 @implementation NCManageEndToEndEncryption
@@ -113,7 +114,8 @@
     [self deselectFormRow:sender];
 
     // select Passphrase
-    app.e2ePassphrase = k_passphrase_test;
+    //app.e2ePassphrase = k_passphrase_test;
+    app.e2ePassphrase = [NYMnemonic generateMnemonicString:@128 language:@"english"];
     
     if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
         
