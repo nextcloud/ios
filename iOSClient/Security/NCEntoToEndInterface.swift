@@ -129,24 +129,22 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     func getEndToEndPrivateKeyCipherSuccess(_ metadataNet: CCMetadataNet!) {
         
-        let privateKey = NCEndToEndEncryption.sharedManager().decryptPrivateKeyCipher(metadataNet.key, mnemonic: k_Mnemonic_test)
-        
-        if (privateKey != nil) {
-            
-            // Save to keychain
-            CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: privateKey)
-            
-            // Save mnemonic to keychain
-            CCUtility.setEndToEndMnemonic(appDelegate.activeAccount, mnemonic:k_Mnemonic_test)
-
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
-            
-        } else {
+        guard let privateKey = NCEndToEndEncryption.sharedManager().decryptPrivateKeyCipher(metadataNet.key, mnemonic: k_Mnemonic_test) else {
             
             appDelegate.messageNotification("E2E decrypt private key", description: "E2E Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Error to decrypt Private Key", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+            
+            return
         }
+        
+        // Save to keychain
+        CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: privateKey)
+            
+        // Save mnemonic to keychain
+        CCUtility.setEndToEndMnemonic(appDelegate.activeAccount, mnemonic:k_Mnemonic_test)
+
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
     }
     
     func getEndToEndPrivateKeyCipherFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {

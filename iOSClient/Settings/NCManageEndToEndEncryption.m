@@ -78,7 +78,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
     
     metadataNet.action = actionDeleteEndToEndPublicKey;
-    [app addNetworkingOperationQueue:app.netQueue delegate:app.activeMain metadataNet:metadataNet];
+    [app addNetworkingOperationQueue:app.netQueue delegate:app.endToEndInterface metadataNet:metadataNet];
 }
 
 - (void)deletePrivateKey:(XLFormRowDescriptor *)sender
@@ -88,7 +88,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
 
     metadataNet.action = actionDeleteEndToEndPrivateKey;
-    [app addNetworkingOperationQueue:app.netQueue delegate:app.activeMain metadataNet:metadataNet];
+    [app addNetworkingOperationQueue:app.netQueue delegate:app.endToEndInterface metadataNet:metadataNet];
 }
 
 - (void)initE2E:(XLFormRowDescriptor *)sender
