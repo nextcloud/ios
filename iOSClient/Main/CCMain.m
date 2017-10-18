@@ -3763,7 +3763,7 @@
 
         viewController.title = NSLocalizedString(@"_passcode_protection_", nil);
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].encrypted;
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -3910,7 +3910,7 @@
     
     actionSheet.automaticallyTintButtonImages = @(NO);
     
-    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].cryptocloud };
+    actionSheet.encryptedButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].encrypted };
     actionSheet.buttonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor blackColor] };
     actionSheet.cancelButtonTextAttributes = @{ NSFontAttributeName:[UIFont boldSystemFontOfSize:17], NSForegroundColorAttributeName:[UIColor blackColor] };
     actionSheet.disableButtonTextAttributes = @{ NSFontAttributeName:[UIFont systemFontOfSize:16], NSForegroundColorAttributeName:[UIColor darkGrayColor] };
@@ -4051,7 +4051,7 @@
         
         if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && [CCUtility isEndToEndEnabled:app.activeAccount]) {
             
-            [actionSheet addButtonWithTitle:@"Delete as encrypted"
+            [actionSheet addButtonWithTitle:@"Delete mark as encrypted"
                                       image:[UIImage imageNamed:@"actionSheetCrypto"]
                             backgroundColor:[UIColor whiteColor]
                                      height: 50.0
@@ -5186,7 +5186,6 @@
             
             viewController.title = NSLocalizedString(@"_folder_blocked_", nil);
             viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-            //viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
             
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
             [self presentViewController:navController animated:YES completion:nil];

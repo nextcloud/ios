@@ -30,7 +30,7 @@ class CreateMenuAdd: NSObject {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     let fontButton = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: UIColor.black]
-    let fontEncrypted = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.cryptocloud as UIColor]
+    let fontEncrypted = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.encrypted as UIColor]
     let fontCancel = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue-Bold", size: 17)!, NSAttributedStringKey.foregroundColor: UIColor.black]
     let fontDisable = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: UIColor.darkGray]
 

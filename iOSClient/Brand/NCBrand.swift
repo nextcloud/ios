@@ -35,7 +35,7 @@ class NCBrandColor: NSObject {
 
     @objc public var brand:                   UIColor
     @objc public var connectionNo:            UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
-    @objc public var cryptocloud:             UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
+    @objc public var encrypted:               UIColor = .red
     @objc public var navigationBarProgress:   UIColor = .white
     @objc public var navigationBarText:       UIColor = .white
     @objc public var menuBackground:          UIColor = .white
@@ -98,7 +98,6 @@ class NCBrandColor: NSObject {
     @objc public let disable_linkLoginProvider:       Bool = false
     @objc public let disable_request_login_url:       Bool = false
     @objc public let disable_multiaccount:            Bool = false
-    @objc public let disable_cryptocloudsystem:       Bool = false
     @objc public let disable_manage_account:          Bool = false
     
     override init() {
