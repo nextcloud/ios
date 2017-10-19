@@ -2250,6 +2250,49 @@
     }];
 }
 
+- (void)lockEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
+    serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileID];
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request lockEndToEndFolderEncrypted:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        NSString *token;
+        
+        //Return success
+        successRequest(response, token, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        //Return error
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
+    serverPath = [NSString stringWithFormat:@"%@/encrypted/%@", serverPath, fileID];
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request unlockEndToEndFolderEncrypted:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        //Return success
+        successRequest(response,request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        //Return error
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
 
 #pragma mark - Clear Cache
 
