@@ -124,9 +124,6 @@
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
-// E2E Encryption passphrase
-@property (nonatomic, strong) NSString *e2ePassphrase;
-
 // Maintenance Mode
 @property BOOL maintenanceMode;
 

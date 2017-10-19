@@ -222,7 +222,6 @@
     [application registerUserNotificationSettings:notificationSettings];
     
     // E2E Encryption
-    self.e2ePassphrase = nil;
     self.endToEndInterface = [NCEntoToEndInterface new];
     
     // Fabric

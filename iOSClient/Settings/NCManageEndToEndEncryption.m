@@ -24,7 +24,6 @@
 #import "NCManageEndToEndEncryption.h"
 #import "AppDelegate.h"
 #import "CCNetworking.h"
-#import "NYMnemonic.h"
 
 #import "NCBridgeSwift.h"
 
@@ -57,6 +56,23 @@
     
     if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
    
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_activated_", nil)];
+        [form addFormSection:section];
+        
+        // Section PASSPHRASE -------------------------------------------------
+        
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
+        [form addFormSection:section];
+        
+        // Read Passphrase
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"readPassphrase" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        row.action.formSelector = @selector(readPassphrase:);
+        [section addFormRow:row];
+        
+    } else {
         // Section START E2E -------------------------------------------------
 
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_start_", nil)];
@@ -68,25 +84,7 @@
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(startE2E:);
-        [section addFormRow:row];
-   
-        // Section PASSPHRASE -------------------------------------------------
-    
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
-        [form addFormSection:section];
-    
-        // Read Passphrase
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"readPassphrase" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-        row.action.formSelector = @selector(readPassphrase:);
-        [section addFormRow:row];
-        
-    } else {
-        
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_started_", nil)];
-        [form addFormSection:section];
+        [section addFormRow:row];   
     }
     
 #ifdef DEBUG
@@ -232,7 +230,7 @@
 {
     [aViewController dismissViewControllerAnimated:YES completion:nil];
     
-    NSString *message = [NSString stringWithFormat:@"%@\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), [CCUtility getEndToEndPassphrase:app.activeAccount]];
+    NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), [CCUtility getEndToEndPassphrase:app.activeAccount]];
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
