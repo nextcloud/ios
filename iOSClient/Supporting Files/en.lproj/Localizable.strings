@@ -588,6 +588,6 @@
 "_e2e_settings_activated_"          = "End To End Encryption activated";
 "_e2e_settings_view_passphrase_"    = "This 12 word phrase is like a very strong password: it provides full access to view and use your encrypted files. Please write it down and keep it somewhere safe.";
 "_e2e_settings_read_passphrase_"    = "Read passphrase";
-"_e2e_settings_lock_not_active_"    = "Lock not active, go back to "Settings" and activate it";
+"_e2e_settings_lock_not_active_"    = "Lock not active, go back to \"Settings\" and activate it";
 "_e2e_settings_the_passphrase_is_"  = "The passphrase is: \n\n";
 
