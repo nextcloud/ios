@@ -1564,6 +1564,7 @@
     [metadataNet setSharePermission: self.sharePermission];
     [metadataNet setSize: self.size];
     [metadataNet setTaskStatus: self.taskStatus];
+    [metadataNet setToken: self.token];
     
     return metadataNet;
 }

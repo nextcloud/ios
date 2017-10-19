@@ -148,6 +148,12 @@
 - (void)deletemarkEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
 - (void)deletemarkEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
+- (void)lockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
+- (void)lockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
+- (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 @end
 
 @interface OCURLSessionManager : AFURLSessionManager

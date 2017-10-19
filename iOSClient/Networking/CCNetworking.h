@@ -123,6 +123,7 @@
 @property NSInteger sharePermission;
 @property long size;
 @property NSInteger taskStatus;
+@property (nonatomic, strong) NSString *token;
 
 - (id)initWithAccount:(NSString *)withAccount;
 - (id)copyWithZone:(NSZone *)zone;

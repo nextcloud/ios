@@ -1926,7 +1926,7 @@
     
     [communication markEndToEndFolderEncrypted:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        // 200 ok: body contain the public key
+        // 200 ok
         
         if ([self.delegate respondsToSelector:@selector(markEndToEndFolderEncryptedSuccess:)])
             [self.delegate markEndToEndFolderEncryptedSuccess:_metadataNet];
@@ -1960,7 +1960,7 @@
     
     [communication deletemarkEndToEndFolderEncrypted:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        // 200 ok: body contain the public key
+        // 200 ok
         
         if ([self.delegate respondsToSelector:@selector(deletemarkEndToEndFolderEncryptedSuccess:)])
             [self.delegate deletemarkEndToEndFolderEncryptedSuccess:_metadataNet];
@@ -1976,6 +1976,75 @@
         // Error
         if ([self.delegate respondsToSelector:@selector(deletemarkEndToEndFolderEncryptedFailure:message:errorCode:)])
             [self.delegate deletemarkEndToEndFolderEncryptedFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+}
+
+- (void)lockEndToEndFolderEncrypted
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication lockEndToEndFolderEncrypted:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID token:_metadataNet.token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
+        
+        // 200 ok: file locked successful
+        _metadataNet.token = token;
+
+        if ([self.delegate respondsToSelector:@selector(lockEndToEndFolderEncryptedSuccess:)])
+            [self.delegate lockEndToEndFolderEncryptedSuccess:_metadataNet];
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        // Error
+        if ([self.delegate respondsToSelector:@selector(lockEndToEndFolderEncryptedFailure:message:errorCode:)])
+            [self.delegate lockEndToEndFolderEncryptedFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+}
+
+- (void)unlockEndToEndFolderEncrypted
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication unlockEndToEndFolderEncrypted:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        // 200 ok: file unlocked successful
+        
+        if ([self.delegate respondsToSelector:@selector(unlockEndToEndFolderEncryptedSuccess:)])
+            [self.delegate unlockEndToEndFolderEncryptedSuccess:_metadataNet];
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        // Error
+        if ([self.delegate respondsToSelector:@selector(unlockEndToEndFolderEncryptedFailure:message:errorCode:)])
+            [self.delegate unlockEndToEndFolderEncryptedFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)

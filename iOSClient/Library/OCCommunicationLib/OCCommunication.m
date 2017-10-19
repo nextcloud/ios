@@ -2254,6 +2254,9 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileID];
+    if (token) {
+        serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
+    }
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
