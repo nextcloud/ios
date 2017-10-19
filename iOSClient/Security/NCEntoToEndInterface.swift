@@ -215,22 +215,33 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: nil)
             CCUtility.setEndToEndPassphrase(appDelegate.activeAccount, passphrase: nil)
             
-            guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().createEnd(toEndPrivateKey: appDelegate.activeUserID, directoryUser: appDelegate.directoryUser, passphrase: appDelegate.e2ePassphrase) else {
+            // message
+            let message = NSLocalizedString("_e2e_settings_start_request_", comment: "") + "\n\n" + NSLocalizedString("_e2e_settings_view_passphrase_", comment: "") + "\n\n"
+            
+            let alertController = UIAlertController(title: NSLocalizedString("_start_", comment: ""), message: NSLocalizedString(message, comment: ""), preferredStyle: .alert)
+            
+            let OKAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+
+                guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().createEnd(toEndPrivateKey: self.appDelegate.activeUserID, directoryUser: self.appDelegate.directoryUser, passphrase: self.appDelegate.e2ePassphrase) else {
+                    
+                    self.appDelegate.messageNotification("E2E private keys", description: "E2E Error to create PublicKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    
+                    NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Error to create PublicKey chiper", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                    
+                    return
+                }
                 
-                appDelegate.messageNotification("E2E private keys", description: "E2E Error to create PublicKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                let metadataNet: CCMetadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)
                 
-                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Error to create PublicKey chiper", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                metadataNet.action = actionStoreEndToEndPrivateKeyCipher
+                metadataNet.key = privateKeyChiper
+                metadataNet.password = self.appDelegate.e2ePassphrase
                 
-                return
+                self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
             
-            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-                    
-            metadataNet.action = actionStoreEndToEndPrivateKeyCipher
-            metadataNet.key = privateKeyChiper
-            metadataNet.password = appDelegate.e2ePassphrase
-                    
-            appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+            alertController.addAction(OKAction)
+            appDelegate.activeMain.present(alertController, animated: true)
             
         case 409:
             
