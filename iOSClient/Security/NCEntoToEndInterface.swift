@@ -159,8 +159,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         // request Passphrase
         
         var passphraseTextField: UITextField?
-        
-        let alertController = UIAlertController(title: "UIAlertController", message: "UIAlertController With TextField", preferredStyle: .alert)
+                
+        let alertController = UIAlertController(title: NSLocalizedString("_e2e_passphrase_request_title_", comment: ""), message: NSLocalizedString("_e2e_passphrase_request_message_", comment: ""), preferredStyle: .alert)
         
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
             
@@ -401,6 +401,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         let alertController = UIAlertController(title: NSLocalizedString(title, comment: ""), message: NSLocalizedString(message, comment: ""), preferredStyle: .alert)
         
         let OKAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+            
+             NotificationCenter.default.post(name: Notification.Name("reloadManageEndToEndEncryption"), object: nil)
         }
         alertController.addAction(OKAction)
 

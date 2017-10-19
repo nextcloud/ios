@@ -588,4 +588,6 @@
 "_e2e_settings_read_passphrase_"    = "Read passphrase";
 "_e2e_settings_lock_not_active_"    = "Lock not active, go back to \"Settings\" and activate it";
 "_e2e_settings_the_passphrase_is_"  = "The passphrase is:";
+"_e2e_passphrase_request_title_"    = "Request passphrase";
+"_e2e_passphrase_request_message_"  = "Insert the 12 word";
 

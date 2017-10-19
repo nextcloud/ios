@@ -36,7 +36,27 @@
 
 @implementation NCManageEndToEndEncryption
 
--(id)init
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];
+        [self initializeForm];
+    }
+    return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];
+        [self initializeForm];
+    }
+    return self;
+}
+
+- (void)initializeForm
 {
     XLFormDescriptor *form ;
     XLFormSectionDescriptor *section;
@@ -48,16 +68,36 @@
 
     if (capabilities.endToEndEncryption == NO) {
         
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_not_available_", nil)];
+        // Section SERVICE NOT AVAILABLE -------------------------------------------------
+        
+        section = [XLFormSectionDescriptor formSection];
         [form addFormSection:section];
         
-        return [super initWithForm:form];
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_not_available_", nil)];
+        [row.cellConfig setObject:[UIImage imageNamed:@"no_red"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [section addFormRow:row];
+        
+        self.form = form;
+
+        return;
     }
     
     if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-   
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_activated_", nil)];
+        
+        // Section SERVICE ACTIVATED -------------------------------------------------
+        
+        section = [XLFormSectionDescriptor formSection];
         [form addFormSection:section];
+        
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"serviceActivated" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_e2e_settings_activated_", nil)];
+        [row.cellConfig setObject:[UIImage imageNamed:@"ok_green"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        [section addFormRow:row];
         
         // Section PASSPHRASE -------------------------------------------------
         
@@ -119,8 +159,17 @@
     
 #endif
     
-    return [super initWithForm:form];
+    self.form = form;
 }
+
+-(void)reloadForm
+{
+    [self initializeForm];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Action ===
+#pragma --------------------------------------------------------------------------------------------
 
 - (void)deletePublicKey:(XLFormRowDescriptor *)sender
 {
@@ -147,6 +196,8 @@
     [self deselectFormRow:sender];
     
     [CCUtility initEndToEnd:app.activeAccount];
+    
+    [self initializeForm];
 }
 
 - (void)startE2E:(XLFormRowDescriptor *)sender
