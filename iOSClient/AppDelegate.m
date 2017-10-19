@@ -63,10 +63,7 @@
     // Brand
     if ([NCBrandOptions sharedInstance].use_firebase) {
     
-        /*
-         In order for this to work, proper GoogleService-Info.plist must be included
-         */
-    
+        //In order for this to work, proper GoogleService-Info.plist must be included
         @try {
             [FIRApp configure];
         } @catch (NSException *exception) {
