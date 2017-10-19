@@ -26,12 +26,9 @@ import Foundation
 class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    var deletePublicKey = false;
-    var deletePrivateKey = false;
-    
-    var signPublicKey = false;
-    var storePrivateKey = false;
+        
+    var getSignPublicKey = false;
+    var getStorePrivateKey = false;
     
     override init() {
     }
@@ -41,6 +38,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // --------------------------------------------------------------------------------------------
     
     @objc func initEndToEndEncryption() {
+        
+        getSignPublicKey = false;
+        getStorePrivateKey = false;
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
@@ -58,11 +58,20 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
         CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: metadataNet.key)
         
+        getSignPublicKey = true
+        if (getStorePrivateKey) {
+            getSignPublicKey = false
+            getStorePrivateKey = false
+            alertController("_success_", message: "_e2e_settings_activated_")
+        }
+        
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPublicKeys, note: "E2E PublicKeys present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
     }
     
     func getEndToEndPublicKeysFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
     
+        getSignPublicKey = false
+
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPublicKeys, note: message as String!, type: k_activityTypeFailure, verbose: false, activeUrl: "")
         
         switch errorCode {
@@ -116,19 +125,19 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         // OK signed key locally keychain
         CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: publicKey)
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E PublicKey sign on Server and stored locally", type: k_activityTypeFailure, verbose: false, activeUrl: "")
-        
-        signPublicKey = true
-        if (storePrivateKey) {
-            signPublicKey = false
-            storePrivateKey = false
+        getSignPublicKey = true
+        if (getStorePrivateKey) {
+            getSignPublicKey = false
+            getStorePrivateKey = false
             alertController("_success_", message: "_e2e_settings_activated_")
         }
+        
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E PublicKey sign on Server and stored locally", type: k_activityTypeFailure, verbose: false, activeUrl: "")
     }
 
     func signEnd(toEndPublicKeyFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
-        signPublicKey = false
+        getSignPublicKey = false
         
         appDelegate.messageNotification("E2E sign public keys", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         
@@ -136,20 +145,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     func deleteEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
-        
-        deletePublicKey = true
-        if (deletePrivateKey) {
-            deletePublicKey = false
-            deletePrivateKey = false
-            initEndToEndEncryption()
-        }
+        appDelegate.messageNotification("E2E delete public key", description: "Success", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.success, errorCode: 0)
     }
     
     func deleteEnd(toEndPublicKeyFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
-        deletePublicKey = false
-        
-        appDelegate.messageNotification("E2E delete public key", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+        appDelegate.messageNotification("E2E delete public key", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------
@@ -179,12 +179,19 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             // Save to keychain
             CCUtility.setEndToEndPrivateKey(self.appDelegate.activeAccount, privateKey: privateKey)
-            
             // Save passphrase to keychain
             CCUtility.setEndToEndPassphrase(self.appDelegate.activeAccount, passphrase:passphrase)
             
+            self.getStorePrivateKey = true
+            if (self.getSignPublicKey) {
+                self.getSignPublicKey = false
+                self.getStorePrivateKey = false
+                self.alertController("_success_", message: "_e2e_settings_activated_")
+            }
+            
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
         })
+        
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in
         }
         
@@ -199,6 +206,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     func getEndToEndPrivateKeyCipherFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+        
+        getStorePrivateKey = false;
         
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: message as String!, type: k_activityTypeFailure, verbose: false, activeUrl: "")
         
@@ -267,19 +276,20 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: privateKey)
         CCUtility.setEndToEndPassphrase(appDelegate.activeAccount, passphrase:metadataNet.password)
         
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionStoreEndToEndPrivateKeyCipher, note: "E2E PrivateKey stored on Server and stored locally", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
-        
-        storePrivateKey = true
-        if (signPublicKey) {
-            signPublicKey = false
-            storePrivateKey = false
+        getStorePrivateKey = true
+        if (getSignPublicKey) {
+            getSignPublicKey = false
+            getStorePrivateKey = false
             alertController("_success_", message: "_e2e_settings_activated_")
         }
+        
+        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionStoreEndToEndPrivateKeyCipher, note: "E2E PrivateKey stored on Server and stored locally", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
+
     }
     
     func storeEnd(toEndPrivateKeyCipherFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
-        storePrivateKey = false
+        getStorePrivateKey = false
         
         appDelegate.messageNotification("E2E sign private key", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         
@@ -287,20 +297,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     func deleteEnd(toEndPrivateKeySuccess metadataNet: CCMetadataNet!) {
-        
-        deletePrivateKey = true
-        if (deletePublicKey) {
-            deletePublicKey = false
-            deletePrivateKey = false
-            initEndToEndEncryption()
-        }
+        appDelegate.messageNotification("E2E delete private key", description: "Success", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.success, errorCode: 0)
     }
     
     func deleteEnd(toEndPrivateKeyFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
-        deletePrivateKey = false
-        
-        appDelegate.messageNotification("E2E delete private key", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+        appDelegate.messageNotification("E2E delete private key", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------
