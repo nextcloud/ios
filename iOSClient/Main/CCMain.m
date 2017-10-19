@@ -4007,7 +4007,7 @@
         }
 
 #ifdef DEBUG
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && [CCUtility isEndToEndEnabled:app.activeAccount]) {
+        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
             
             [actionSheet addButtonWithTitle:@"Mark as encrypted"
                                       image:[UIImage imageNamed:@"actionSheetCrypto"]
@@ -4020,7 +4020,7 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory && [CCUtility isEndToEndEnabled:app.activeAccount]) {
+        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
             
             [actionSheet addButtonWithTitle:@"Delete mark as encrypted"
                                       image:[UIImage imageNamed:@"actionSheetCrypto"]
@@ -4032,6 +4032,33 @@
                                         [app.endToEndInterface deletemarkEndToEndFolderEncrypted:_metadata];
                                     }];
         }
+        
+        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
+            
+            [actionSheet addButtonWithTitle:@"Lock file"
+                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        [app.endToEndInterface lockEndToEndFolderEncrypted:_metadata];
+                                    }];
+        }
+        
+        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
+            
+            [actionSheet addButtonWithTitle:@"Unlock file"
+                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        [app.endToEndInterface unlockEndToEndFolderEncrypted:_metadata];
+                                    }];
+        }
+        
 #endif
         
         if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {

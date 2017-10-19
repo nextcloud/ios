@@ -1007,10 +1007,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 - (void)lockEndToEndFolderEncrypted:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                             failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
-    _requestMethod = @"PUT";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    _requestMethod = @"POST";
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -1024,9 +1021,6 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                                   failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"DELETE";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     

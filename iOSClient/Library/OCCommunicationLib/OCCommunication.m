@@ -2264,6 +2264,8 @@
     
     [request lockEndToEndFolderEncrypted:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
+        NSData *responseData = (NSData*) responseObject;
+
         NSString *token;
         
         //Return success
