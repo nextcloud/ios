@@ -39,7 +39,7 @@
     [super viewDidLoad];
     
     self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"_cancel_", nil);
-    self.title = NSLocalizedString(@"_crypto_cloud_upload_", nil);
+    self.title = NSLocalizedString(@"_upload_", nil);
     
     serverUrlLocal= [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
     destinationTitle = NSLocalizedString(@"_home_", nil);

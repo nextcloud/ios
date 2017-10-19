@@ -283,7 +283,7 @@
     [aViewController dismissViewControllerAnimated:YES completion:nil];
     
     NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:app.activeAccount];
-    NSLog(@"Passphrase: %@", e2ePassphrase);
+    NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
     
     NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
     

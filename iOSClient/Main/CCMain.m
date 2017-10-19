@@ -3242,23 +3242,6 @@
             [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
     }];
     
-    /*
-    if (app.isCryptoCloudMode) {
-    
-        // ITEM ENCRYPTED ------------------------------------------------------------------------------------------------------
-    
-        app.encryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_encrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"encryptedSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
-                [self performSelector:@selector(encryptedSelectedFiles) withObject:nil];
-        }];
-    
-        // ITEM DECRYPTED ----------------------------------------------------------------------------------------------------
-    
-        app.decryptItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_decrypted_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"decryptedSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
-                [self performSelector:@selector(decryptedSelectedFiles) withObject:nil];
-        }];
-    }
-    */
-    
     // ITEM DOWNLOAD ----------------------------------------------------------------------------------------------------
     
     app.downloadItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_download_selected_files_folders_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"downloadSelectedFiles"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
@@ -3271,16 +3254,6 @@
             [self saveSelectedFiles];
     }];
 
-    // REMENU --------------------------------------------------------------------------------------------------------------
-    
-    /*
-    if (app.isCryptoCloudMode) {
-        app.reSelectMenu = [[REMenu alloc] initWithItems:@[app.deleteItem,app.moveItem, app.encryptItem, app.decryptItem, app.downloadItem, app.saveItem]];
-    } else {
-        app.reSelectMenu = [[REMenu alloc] initWithItems:@[app.deleteItem,app.moveItem, app.downloadItem, app.saveItem]];
-    }
-    */
-    
     app.reSelectMenu = [[REMenu alloc] initWithItems:@[app.deleteItem,app.moveItem, app.downloadItem, app.saveItem]];
 
     app.reSelectMenu.imageOffset = CGSizeMake(5, -1);
@@ -3872,9 +3845,7 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     if (!serverUrl) return;
     
-    NSString *titoloCriptaDecripta, *titoloLock, *titleFavorite;
-    
-    titoloCriptaDecripta = [NSString stringWithFormat:NSLocalizedString(@"_encrypt_", nil)];
+    NSString *titoloLock, *titleFavorite;
     
     if (_metadata.favorite) {
         
@@ -4177,39 +4148,6 @@
                                     }];
         }
         
-        /*
-        if (app.isCryptoCloudMode) {
-            
-            [actionSheet addButtonWithTitle:titoloCriptaDecripta
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [self performSelector:@selector(cmdEncryptedDecryptedFile) withObject:nil];
-                                    }];
-        }
-        */
-        
-#ifdef DEBUG
-        
-        /*
-        [actionSheet addButtonWithTitle:@"Hide file"
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"admin"] color:[NCBrandColor sharedInstance].brand]
-                        backgroundColor:[UIColor whiteColor]
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    
-                                    [[NCManageDatabase sharedInstance] setMetadataStatusWithFileID:_metadata.fileID status:k_metadataStatusHide];
-                                    
-                                    [self reloadDatasource];
-                                }];
-        */ 
-        
-#endif
-
         [actionSheet show];
     }
 }
