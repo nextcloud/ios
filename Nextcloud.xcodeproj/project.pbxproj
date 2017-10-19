@@ -233,12 +233,6 @@
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */; };
-		F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */; };
-		F75EDFAD1E8C106900E6F369 /* FirebaseCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA71E8C106900E6F369 /* FirebaseCore.framework */; };
-		F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA81E8C106900E6F369 /* FirebaseInstanceID.framework */; };
-		F75EDFAF1E8C106900E6F369 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFA91E8C106900E6F369 /* FirebaseMessaging.framework */; };
-		F75EDFB01E8C106900E6F369 /* GoogleToolboxForMac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFAA1E8C106900E6F369 /* GoogleToolboxForMac.framework */; };
-		F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFAB1E8C106900E6F369 /* Protobuf.framework */; };
 		F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */; };
 		F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */; };
 		F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA41EACB66200B38484 /* XLFormBaseCell.m */; };
@@ -1003,13 +997,6 @@
 		F75B923F1ECAE55F00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Intro.strings; sourceTree = "<group>"; };
 		F75B92401ECAE55F00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Error.strings; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
-		F75EDFA51E8C106900E6F369 /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
-		F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
-		F75EDFA71E8C106900E6F369 /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
-		F75EDFA81E8C106900E6F369 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
-		F75EDFA91E8C106900E6F369 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseMessaging.framework; sourceTree = "<group>"; };
-		F75EDFAA1E8C106900E6F369 /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
-		F75EDFAB1E8C106900E6F369 /* Protobuf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Protobuf.framework; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		F762CAA31EACB66200B38484 /* XLFormBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFormBaseCell.h; sourceTree = "<group>"; };
@@ -1562,17 +1549,11 @@
 				F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */,
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
 				F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
-				F75EDFAC1E8C106900E6F369 /* FirebaseAnalytics.framework in Frameworks */,
-				F75EDFAE1E8C106900E6F369 /* FirebaseInstanceID.framework in Frameworks */,
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
-				F75EDFB11E8C106900E6F369 /* Protobuf.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
-				F75EDFAD1E8C106900E6F369 /* FirebaseCore.framework in Frameworks */,
-				F75EDFAF1E8C106900E6F369 /* FirebaseMessaging.framework in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
-				F75EDFB01E8C106900E6F369 /* GoogleToolboxForMac.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2111,21 +2092,6 @@
 			);
 			path = SwiftyAvatar;
 			sourceTree = "<group>";
-		};
-		F75EDFA41E8C106900E6F369 /* Analytics */ = {
-			isa = PBXGroup;
-			children = (
-				F75EDFA51E8C106900E6F369 /* Firebase.h */,
-				F75EDFA61E8C106900E6F369 /* FirebaseAnalytics.framework */,
-				F75EDFA71E8C106900E6F369 /* FirebaseCore.framework */,
-				F75EDFA81E8C106900E6F369 /* FirebaseInstanceID.framework */,
-				F75EDFA91E8C106900E6F369 /* FirebaseMessaging.framework */,
-				F75EDFAA1E8C106900E6F369 /* GoogleToolboxForMac.framework */,
-				F75EDFAB1E8C106900E6F369 /* Protobuf.framework */,
-			);
-			name = Analytics;
-			path = "Libraries external/Analytics";
-			sourceTree = SOURCE_ROOT;
 		};
 		F762CA9F1EACB66200B38484 /* XLForm */ = {
 			isa = PBXGroup;
@@ -2912,7 +2878,6 @@
 			isa = PBXGroup;
 			children = (
 				F70F02A81C889183008DAB36 /* Libraries external */,
-				F75EDFA41E8C106900E6F369 /* Analytics */,
 				F7A377131EB2364A002856D3 /* Fabric */,
 				F70022561EC4C9100080073F /* OCCommunicationLib */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,

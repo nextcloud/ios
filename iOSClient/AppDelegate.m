@@ -31,14 +31,17 @@
 #import "CCSynchronize.h"
 #import "CCMain.h"
 #import "CCDetail.h"
-#import "Firebase.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 #import "JDStatusBarNotification.h"
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+/* Remove comment for activate Firebase and push notification */
+//#import "Firebase.h"
+//@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
 {
     
 }
@@ -63,6 +66,9 @@
     // Brand
     if ([NCBrandOptions sharedInstance].use_firebase) {
     
+        /* Remove comment for activate Firebase and push notification */
+        
+        /*
         //In order for this to work, proper GoogleService-Info.plist must be included
         @try {
             [FIRApp configure];
@@ -91,6 +97,7 @@
             [FIRMessaging messaging].remoteMessageDelegate = self;
             #endif
         }
+         */
     }
 
     NSString *dir;
@@ -409,6 +416,9 @@
     [application registerForRemoteNotifications];
 }
 
+/* Remove comment for activate Firebase and push notification */
+
+/*
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     // test
@@ -443,6 +453,7 @@
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }    
 }
+*/
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
@@ -503,8 +514,10 @@
     }
 }
 
-#pragma FIREBASE
+/* Remove comment for activate Firebase and push notification */
 
+#pragma FIREBASE
+/*
 - (void)tokenRefreshNotification:(NSNotification *)notification {
     
     // Note that this callback will be fired everytime a new token is generated, including the first
@@ -546,6 +559,7 @@
     NSLog(@"[LOG] %@", remoteMessage.appData);
 }
 #endif
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Quick Actions - ShotcutItem =====
