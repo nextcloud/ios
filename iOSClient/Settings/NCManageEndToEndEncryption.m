@@ -113,9 +113,10 @@
         [section addFormRow:row];
         
     } else {
+        
         // Section START E2E -------------------------------------------------
 
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_start_", nil)];
+        section = [XLFormSectionDescriptor formSection];
         [form addFormSection:section];
     
         // Start e2e
