@@ -394,7 +394,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // --------------------------------------------------------------------------------------------
 
     func unlockEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
-        print("E2E lock file  success")
+        print("E2E lock file success")
     }
     
     func unlockEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
@@ -421,7 +421,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     func lockEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
-        print("E2E lock file  success")
+        print("E2E lock file success")
     }
     
     func lockEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
