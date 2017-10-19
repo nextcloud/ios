@@ -26,7 +26,7 @@ import Foundation
 class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        
+    
     var getSignPublicKey = false;
     var getStorePrivateKey = false;
     
@@ -59,10 +59,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: metadataNet.key)
         
         getSignPublicKey = true
+        
         if (getStorePrivateKey) {
-            getSignPublicKey = false
-            getStorePrivateKey = false
-            alertController("_success_", message: "_e2e_settings_activated_")
+            alertControllerSuccess("_success_", message: "_e2e_settings_activated_")
         }
         
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPublicKeys, note: "E2E PublicKeys present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
@@ -126,10 +125,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: publicKey)
         
         getSignPublicKey = true
+        
         if (getStorePrivateKey) {
-            getSignPublicKey = false
-            getStorePrivateKey = false
-            alertController("_success_", message: "_e2e_settings_activated_")
+            alertControllerSuccess("_success_", message: "_e2e_settings_activated_")
         }
         
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionSignEndToEndPublicKey, note: "E2E PublicKey sign on Server and stored locally", type: k_activityTypeFailure, verbose: false, activeUrl: "")
@@ -183,10 +181,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             CCUtility.setEndToEndPassphrase(self.appDelegate.activeAccount, passphrase:passphrase)
             
             self.getStorePrivateKey = true
+            
             if (self.getSignPublicKey) {
-                self.getSignPublicKey = false
-                self.getStorePrivateKey = false
-                self.alertController("_success_", message: "_e2e_settings_activated_")
+                self.alertControllerSuccess("_success_", message: "_e2e_settings_activated_")
             }
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
@@ -277,10 +274,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         CCUtility.setEndToEndPassphrase(appDelegate.activeAccount, passphrase:metadataNet.password)
         
         getStorePrivateKey = true
+        
         if (getSignPublicKey) {
-            getSignPublicKey = false
-            getStorePrivateKey = false
-            alertController("_success_", message: "_e2e_settings_activated_")
+            alertControllerSuccess("_success_", message: "_e2e_settings_activated_")
         }
         
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionStoreEndToEndPrivateKeyCipher, note: "E2E PrivateKey stored on Server and stored locally", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
@@ -397,7 +393,10 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // MARK: Form
     // --------------------------------------------------------------------------------------------
     
-    func alertController(_ title: String, message: String) {
+    func alertControllerSuccess(_ title: String, message: String) {
+        
+        getSignPublicKey = false
+        getStorePrivateKey = false
         
         let alertController = UIAlertController(title: NSLocalizedString(title, comment: ""), message: NSLocalizedString(message, comment: ""), preferredStyle: .alert)
         
