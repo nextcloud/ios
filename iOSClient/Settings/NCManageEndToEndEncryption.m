@@ -55,22 +55,21 @@
         return [super initWithForm:form];
     }
     
-    
-    // Section INITIALIZE -------------------------------------------------
-
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_initialize_", nil)];
-    [form addFormSection:section];
-    
-    // Inizializze e2e
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"initE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_initialize_", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(initE2E:);
-    [section addFormRow:row];
-   
     if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-        
+   
+        // Section START E2E -------------------------------------------------
+
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_start_", nil)];
+        [form addFormSection:section];
+    
+        // Start e2e
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"startE2E" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_start_", nil)];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        row.action.formSelector = @selector(startE2E:);
+        [section addFormRow:row];
+   
         // Section PASSPHRASE -------------------------------------------------
     
         section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
@@ -83,6 +82,11 @@
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(readPassphrase:);
         [section addFormRow:row];
+        
+    } else {
+        
+        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_started_", nil)];
+        [form addFormSection:section];
     }
     
 #ifdef DEBUG
@@ -147,42 +151,12 @@
     [CCUtility initEndToEnd:app.activeAccount];
 }
 
-- (void)initE2E:(XLFormRowDescriptor *)sender
+- (void)startE2E:(XLFormRowDescriptor *)sender
 {
-    NSString *message;
- 
     [self deselectFormRow:sender];
 
-    // select Passphrase
-    //app.e2ePassphrase = k_passphrase_test;
-    app.e2ePassphrase = [NYMnemonic generateMnemonicString:@128 language:@"english"];
-    
-    if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-        
-        message = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", NSLocalizedString(@"_e2e_settings_initialize_already_request_", nil), NSLocalizedString(@"_e2e_settings_view_passphrase_", nil), app.e2ePassphrase];
-
-    } else {
-
-        message = [NSString stringWithFormat:@"%@\n\n%@\n\n%@", NSLocalizedString(@"_e2e_settings_initialize_request_", nil), NSLocalizedString(@"_e2e_settings_view_passphrase_", nil), app.e2ePassphrase];
-    }
-        
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_initialization_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-    
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", @"Cancel action") style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        NSLog(@"Cancel action");
-    }];
-    
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        
-        [self deletePublicKey:sender];
-        [self deletePrivateKey:sender];
-        
-        [CCUtility initEndToEnd:app.activeAccount];
-    }];
-    
-    [alertController addAction:cancelAction];
-    [alertController addAction:okAction];
-    [self presentViewController:alertController animated:YES completion:nil];
+    [CCUtility initEndToEnd:app.activeAccount];
+    [app.endToEndInterface initEndToEndEncryption];
 }
 
 - (void)readPassphrase:(XLFormRowDescriptor *)sender

@@ -158,22 +158,44 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     func getEndToEndPrivateKeyCipherSuccess(_ metadataNet: CCMetadataNet!) {
         
-        guard let privateKey = NCEndToEndEncryption.sharedManager().decryptPrivateKeyCipher(metadataNet.key, passphrase: appDelegate.e2ePassphrase) else {
+        // request Passphrase
+        
+        var passphraseTextField: UITextField?
+        
+        let alertController = UIAlertController(title: "UIAlertController", message: "UIAlertController With TextField", preferredStyle: .alert)
+        
+        let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
             
-            appDelegate.messageNotification("E2E decrypt private key", description: "E2E Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            let passphrase = passphraseTextField?.text
+
+            guard let privateKey = NCEndToEndEncryption.sharedManager().decryptPrivateKeyCipher(metadataNet.key, passphrase: passphrase) else {
+                
+                self.appDelegate.messageNotification("E2E decrypt private key", description: "E2E Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Error to decrypt Private Key", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                
+                return
+            }
             
-            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Error to decrypt Private Key", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+            // Save to keychain
+            CCUtility.setEndToEndPrivateKey(self.appDelegate.activeAccount, privateKey: privateKey)
             
-            return
+            // Save passphrase to keychain
+            CCUtility.setEndToEndPassphrase(self.appDelegate.activeAccount, passphrase:passphrase)
+            
+            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
+        })
+        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in
         }
         
-        // Save to keychain
-        CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: privateKey)
-            
-        // Save passphrase to keychain
-        CCUtility.setEndToEndPassphrase(appDelegate.activeAccount, passphrase:appDelegate.e2ePassphrase)
-
-        NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
+        alertController.addAction(ok)
+        alertController.addAction(cancel)
+        alertController.addTextField { (textField) -> Void in
+            passphraseTextField = textField
+            passphraseTextField?.placeholder = "Enter passphrase (12 words)"
+        }
+        
+        appDelegate.activeMain.present(alertController, animated: true)
     }
     
     func getEndToEndPrivateKeyCipherFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {

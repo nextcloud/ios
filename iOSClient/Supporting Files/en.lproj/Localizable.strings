@@ -581,10 +581,9 @@
 
 "_e2e_settings_title_"              = "Encryption";
 "_e2e_settings_"                    = "End To End Encryption";
-"_e2e_settings_initialize_"         = "Initialize End To End Encryption";
+"_e2e_settings_start_"              = "Start End To End Encryption";
 "_e2e_settings_not_available_"      = "End To End Encryption not available";
-"_e2e_settings_initialize_already_request_" = "Service already started, you want to restart it?";
-"_e2e_settings_initialize_request_" = "Do you want to start the End To End Encryption?";
+"_e2e_settings_start_request_"      = "Do you want to start the End To End Encryption?";
 "_e2e_settings_activated_"          = "End To End Encryption activated";
 "_e2e_settings_view_passphrase_"    = "This 12 word phrase is like a very strong password: it provides full access to view and use your encrypted files. Please write it down and keep it somewhere safe.";
 "_e2e_settings_read_passphrase_"    = "Read passphrase";
