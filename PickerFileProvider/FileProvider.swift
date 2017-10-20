@@ -126,17 +126,17 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             // Update
             let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
             let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
-            let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(uploadID)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
-
+            let destinationDirectoryUser = "\(directoryUser!)/\(uploadID)"
+            
             // copy sourceURL on directoryUser
             do {
-                try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+                try FileManager.default.removeItem(atPath: destinationDirectoryUser)
             } catch _ {
                 print("file do not exists")
             }
             
             do {
-                try FileManager.default.copyItem(at: url, to: destinationURLDirectoryUser)
+                try FileManager.default.copyItem(atPath: url.path, toPath: destinationDirectoryUser)
             } catch _ {
                 print("file do not exists")
                 self.stopProvidingItem(at: url)
@@ -153,15 +153,15 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             // New
             let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
-            let destinationURLDirectoryUser = URL(string: "file://\(directoryUser!)/\(fileName)".addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)!
+            let destinationDirectoryUser = "\(directoryUser!)/\(fileName)"
             
             do {
-                try FileManager.default.removeItem(at: destinationURLDirectoryUser)
+                try FileManager.default.removeItem(atPath: destinationDirectoryUser)
             } catch _ {
                 print("file do not exists")
             }
             do {
-                try FileManager.default.copyItem(at: url, to: destinationURLDirectoryUser)
+                try FileManager.default.copyItem(atPath: url.path, toPath: destinationDirectoryUser)
             } catch _ {
                 print("file do not exists")
                 self.stopProvidingItem(at: url)
