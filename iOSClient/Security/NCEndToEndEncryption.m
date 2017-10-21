@@ -203,7 +203,7 @@
     
 #ifdef DEBUG
     // Save to disk [DEBUG MODE]
-    [self savePEMWithCert:x509 key:pkey directoryUser:directoryUser];
+    [self saveToDiskPEMWithCert:x509 key:pkey directoryUser:directoryUser];
 #endif
     
     return YES;
@@ -239,7 +239,7 @@ cleanup:
     return pkey;
 }
 
-- (BOOL)savePEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser
+- (BOOL)saveToDiskPEMWithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser
 {
     FILE *f;
     
@@ -295,7 +295,6 @@ cleanup:
     return YES;
 }
 
-/*
 - (BOOL)saveP12WithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished
 {
     //PKCS12 * p12 = PKCS12_create([password UTF8String], NULL, pkey, x509, NULL, 0, 0, PKCS12_DEFAULT_ITER, 1, NID_key_usage);
@@ -314,7 +313,50 @@ cleanup:
     
     return YES;
 }
-*/
+
+- (NSString *)getCSRFromDisk:(NSString *)directoryUser delete:(BOOL)delete
+{
+    NSError *error;
+    
+    NSString *csr = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
+    
+    if (delete)
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] error:nil];
+    
+    if (error)
+    return nil;
+    else
+    return csr;
+}
+
+- (NSString *)getCSR
+{
+    return [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)getPrivateKeyFromDisk:(NSString *)directoryUser delete:(BOOL)delete
+{
+    NSError *error;
+    
+    NSString *privateKey = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] encoding:NSUTF8StringEncoding error:&error];
+    
+    if (delete)
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] error:nil];
+    
+    if (error)
+    return nil;
+    else
+    return privateKey;
+}
+
+- (NSString *)getPrivateKey
+{
+    return [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
+}
+
+#
+#pragma mark - Register client for Server with exists Key pair
+#
 
 - (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
@@ -390,48 +432,8 @@ cleanup:
     }
 }
 
-- (NSString *)getCSRFromDisk:(NSString *)directoryUser delete:(BOOL)delete
-{
-    NSError *error;
-
-    NSString *csr = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
-
-    if (delete)
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] error:nil];
-    
-    if (error)
-        return nil;
-    else
-        return csr;
-}
-
-- (NSString *)getCSR
-{
-    return [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding];
-}
-
-- (NSString *)getPrivateKeyFromDisk:(NSString *)directoryUser delete:(BOOL)delete
-{
-    NSError *error;
-    
-    NSString *privateKey = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] encoding:NSUTF8StringEncoding error:&error];
-    
-    if (delete)
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] error:nil];
-    
-    if (error)
-        return nil;
-    else
-        return privateKey;
-}
-
-- (NSString *)getPrivateKey
-{
-    return [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
-}
-
 #
-#pragma mark - Register client for Server with exists Key pair
+#pragma mark - No key pair exists on the server
 #
 
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase
