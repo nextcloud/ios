@@ -2124,7 +2124,7 @@
     }];
 }
 
-- (void)signEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)signEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey,NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
@@ -2135,8 +2135,44 @@
     
     [request signEndToEndPublicKey:serverPath publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
+        NSData *responseData = (NSData*) responseObject;
+        NSString *publicKey;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] Get E2E PublicKey : %@",jsongParsed);
+        
+        if (jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"public-key"] && ![[data valueForKey:@"public-key"] isKindOfClass:[NSNull class]]) {
+                    
+                    publicKey = [data valueForKey:@"public-key"];
+                }
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+            }
+        }
+        
         //Return success
-        successRequest(response, request.redirectedServer);
+        successRequest(response, publicKey, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         

@@ -1750,10 +1750,11 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication signEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication signEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
         
         // 200 ok: body contain the public key
-        
+        _metadataNet.key = publicKey;
+
         if ([self.delegate respondsToSelector:@selector(signEndToEndPublicKeySuccess:)])
             [self.delegate signEndToEndPublicKeySuccess:_metadataNet];
         

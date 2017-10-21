@@ -117,8 +117,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     func signEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
 
-        // Insert CSR To Cheychain end delete
-        guard let publicKey = NCEndToEndEncryption.sharedManager().getCSR() else {
+        // Insert publicKey To Cheychain end delete
+        guard let publicKey = metadataNet.key else {
             
             appDelegate.messageNotification("E2E public key", description: "Error : publicKey not present", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             
