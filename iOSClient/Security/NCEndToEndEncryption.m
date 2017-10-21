@@ -394,9 +394,8 @@ cleanup:
         bzero(cPrivateKey, sizeof(cPrivateKey));
         [privateKeyData getBytes:cPrivateKey length:privateKeyData.length];
         
-        BIO *priv_bio = BIO_new_mem_buf(cPrivateKey, privateKeyData.length);
-        RSA *rsaPrivKey = PEM_read_bio_RSAPrivateKey(priv_bio, NULL, NULL, NULL);
-
+        //BIO *priv_bio = BIO_new_mem_buf(cPrivateKey, privateKeyData.length);
+        //RSA *rsaPrivKey = PEM_read_bio_RSAPrivateKey(priv_bio, NULL, NULL, NULL);
 
         if ([privateKey containsString:@"-----BEGIN PRIVATE KEY-----"] && [privateKey containsString:@"-----END PRIVATE KEY-----"])
             return privateKey;
