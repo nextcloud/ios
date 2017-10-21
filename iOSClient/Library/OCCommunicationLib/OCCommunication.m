@@ -1971,7 +1971,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Get E2E PublicKey : %@",jsongParsed);
+        NSLog(@"[LOG] E2E Get PublicKey : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2029,7 +2029,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Get E2E PrivateKey : %@",jsongParsed);
+        NSLog(@"[LOG] E2E Get PrivateKey : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2084,7 +2084,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Get E2E Server PublicKey : %@",jsongParsed);
+        NSLog(@"[LOG] E2E Get Server PublicKey : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2141,7 +2141,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Sign E2E PublicKey : %@",jsongParsed);
+        NSLog(@"[LOG] E2E Sign PublicKey : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2198,7 +2198,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Store E2E PrivateKey : %@",jsongParsed);
+        NSLog(@"[LOG] E2E Store PrivateKey : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2342,7 +2342,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Lock E2E File : %@",jsongParsed);
+        NSLog(@"[LOG] E2E Lock File : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2420,7 +2420,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Store E2E Metadata : %@",jsongParsed);
+        NSLog(@"[LOG] E2E Store Metadata : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2477,7 +2477,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Get E2E Metadata : %@",jsongParsed);
+        NSLog(@"[LOG] E2E Get Metadata : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2534,7 +2534,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Update E2E Metadata : %@",jsongParsed);
+        NSLog(@"[LOG] E2E Update Metadata : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
