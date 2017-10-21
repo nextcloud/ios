@@ -50,11 +50,19 @@
 #define PBKDF2_KEY_LENGTH           256
 #define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
 
-#define fileNameCertificate         @"e2e_cert.pem"
-#define fileNameCSR                 @"e2e_csr.pem"
-#define fileNamePrivateKey          @"e2e_privateKey.pem"
-#define fileNamePubliceKey          @"e2e_publicKey.pem"
+#define fileNameCertificate         @"cert.pem"
+#define fileNameCSR                 @"csr.pem"
+#define fileNamePrivateKey          @"privateKey.pem"
+#define fileNamePubliceKey          @"publicKey.pem"
 
+
+@interface NCEndToEndEncryption ()
+{
+    NSData *_privateKeyData;
+    NSData *_publicKeyData;
+    NSData *_csrData;
+}
+@end
 
 @implementation NCEndToEndEncryption
 
@@ -152,8 +160,51 @@
     
     X509_print_fp(stdout, x509);
     
-    // Save to disk
+    // Extract CSR, publicKey, privateKey
+    int len;
+    char *keyBytes;
+    
+    // CSR
+    BIO *csrBIO = BIO_new(BIO_s_mem());
+    X509_REQ *certReq = X509_to_X509_REQ(x509, pkey, EVP_sha256());
+    PEM_write_bio_X509_REQ(csrBIO, certReq);
+    
+    len = BIO_pending(csrBIO);
+    keyBytes  = malloc(len);
+    
+    BIO_read(csrBIO, keyBytes, len);
+    _csrData = [NSData dataWithBytes:keyBytes length:len];
+    NSLog(@"\n%@", [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding]);
+    
+    // PublicKey
+    BIO *publicKeyBIO = BIO_new(BIO_s_mem());
+    PEM_write_bio_PUBKEY(publicKeyBIO, pkey);
+    
+    len = BIO_pending(publicKeyBIO);
+    keyBytes  = malloc(len);
+    
+    BIO_read(publicKeyBIO, keyBytes, len);
+    _publicKeyData = [NSData dataWithBytes:keyBytes length:len];
+    NSLog(@"\n%@", [[NSString alloc] initWithData:_publicKeyData encoding:NSUTF8StringEncoding]);
+    
+    // PrivateKey
+    BIO *privateKeyBIO = BIO_new(BIO_s_mem());
+    PEM_write_bio_PKCS8PrivateKey(privateKeyBIO, pkey, NULL, NULL, 0, NULL, NULL);
+    
+    len = BIO_pending(privateKeyBIO);
+    keyBytes = malloc(len);
+    
+    BIO_read(privateKeyBIO, keyBytes, len);
+    _privateKeyData = [NSData dataWithBytes:keyBytes length:len];
+    NSLog(@"\n%@", [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding]);
+    
+    if(keyBytes)
+        free(keyBytes);
+    
+#ifdef DEBUG
+    // Save to disk [DEBUG MODE]
     [self savePEMWithCert:x509 key:pkey directoryUser:directoryUser];
+#endif
     
     return YES;
 }
@@ -193,7 +244,6 @@ cleanup:
     FILE *f;
     
     // Certificate
-    /*
     NSString *certificatePath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCertificate];
     f = fopen([certificatePath fileSystemRepresentation], "wb");
     if (PEM_write_X509(f, x509) < 0) {
@@ -203,20 +253,17 @@ cleanup:
     }
     NSLog(@"Saved cert to %@", certificatePath);
     fclose(f);
-    */
     
     // PublicKey
-    /*
-     NSString *publicKeyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePubliceKey];
-     f = fopen([publicKeyPath fileSystemRepresentation], "wb");
-     if (PEM_write_PUBKEY(f, pkey) < 0) {
-     // Error
-     fclose(f);
-     return NO;
-     }
-     NSLog(@"Saved publicKey to %@", publicKeyPath);
-     fclose(f);
-     */
+    NSString *publicKeyPath = [NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePubliceKey];
+    f = fopen([publicKeyPath fileSystemRepresentation], "wb");
+    if (PEM_write_PUBKEY(f, pkey) < 0) {
+        // Error
+        fclose(f);
+        return NO;
+    }
+    NSLog(@"Saved publicKey to %@", publicKeyPath);
+    fclose(f);
     
     // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
     // file using the password and cipher you provide.
@@ -269,27 +316,46 @@ cleanup:
 }
 */
 
-- (NSString *)createPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
+- (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
-    // Create Certificate, if do not exists
+    /*
+    // Create Certificate, if do not exists [Disk Version]
     if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR]]) {
         
         if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
             return nil;
     }
     
-    NSString *publicKey = [self getCSRFromDisk:directoryUser delete:NO];
+    NSString *csr = [self getCSRFromDisk:directoryUser delete:NO];
+    */
     
-    return publicKey;
+    // Create Certificate, if do not exists
+    if (!_csrData) {
+        if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
+            return nil;
+    }
+    
+    NSString *csr = [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding];
+    
+    return csr;
 }
 
 - (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase
 {
     NSMutableData *privateKeyCipherData = [NSMutableData new];
 
-    // Create Certificate, if do not exists
+    /*
+    // Create Certificate, if do not exists [Disk Version]
     if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]]) {
         
+        if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
+            return nil;
+    }
+     
+    NSData *privateKeyData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]];
+    */
+    
+    if (!_privateKeyData) {
         if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
             return nil;
     }
@@ -303,9 +369,8 @@ cleanup:
     CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
     
     NSData *initVectorData = [self generateIV:AES_IVEC_LENGTH];
-    NSData *privateKeyData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]];
 
-    BOOL result = [self encryptData:privateKeyData cipherData:&privateKeyCipherData keyData:keyData initVectorData:initVectorData tagData:nil];
+    BOOL result = [self encryptData:_privateKeyData cipherData:&privateKeyCipherData keyData:keyData initVectorData:initVectorData tagData:nil];
     
     if (result && privateKeyCipherData) {
         
@@ -329,7 +394,7 @@ cleanup:
 {
     NSError *error;
 
-    NSString *publicKey = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
+    NSString *csr = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
 
     if (delete)
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] error:nil];
@@ -337,7 +402,12 @@ cleanup:
     if (error)
         return nil;
     else
-        return publicKey;
+        return csr;
+}
+
+- (NSString *)getCSR
+{
+    return [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding];
 }
 
 - (NSString *)getPrivateKeyFromDisk:(NSString *)directoryUser delete:(BOOL)delete
@@ -355,11 +425,16 @@ cleanup:
         return privateKey;
 }
 
+- (NSString *)getPrivateKey
+{
+    return [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
+}
+
 #
 #pragma mark - Register client for Server with exists Key pair
 #
 
-- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
+- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase
 {
     NSMutableData *privateKeyData = [NSMutableData new];
     

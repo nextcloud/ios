@@ -29,17 +29,17 @@
 
 + (instancetype)sharedManager;
 
-- (NSString *)createSHA512:(NSString *)string;
+- (NSString *)getCSR;
+- (NSString *)getPrivateKey;
 
 - (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
 
-- (NSString *)createPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser;
+- (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser;
 - (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase;
+- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase;
 
-- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
 
-- (NSString *)getCSRFromDisk:(NSString *)directoryUser delete:(BOOL)delete;
-- (NSString *)getPrivateKeyFromDisk:(NSString *)directoryUser delete:(BOOL)delete;
+- (NSString *)createSHA512:(NSString *)string;
 
 @end
