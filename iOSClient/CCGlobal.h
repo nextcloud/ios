@@ -213,6 +213,7 @@ extern NSString *const dav;
 #define actionDeletemarkEndToEndFolderEncrypted         @"deletemarkEndToEndFolderEncrypted"
 #define actionLockEndToEndFolderEncrypted               @"lockEndToEndFolderEncrypted"
 #define actionUnlockEndToEndFolderEncrypted             @"unlockEndToEndFolderEncrypted"
+#define actionStoreEndToEndMetadata                     @"storeEndToEndMetadata"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"

@@ -154,6 +154,9 @@
 - (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
 - (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
+- (void)storeEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
+- (void)storeEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 @end
 
 @interface OCURLSessionManager : AFURLSessionManager
