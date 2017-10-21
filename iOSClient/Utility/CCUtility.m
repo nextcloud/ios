@@ -34,7 +34,7 @@
 #define INTRO_MessageType       @"MessageType_"
 
 #define E2E_PublicKey           @"EndToEndPublicKey_"
-#define E2E_PrivateKeyCipher    @"EndToEndPrivateKeyCipher_"
+#define E2E_PrivateKey          @"EndToEndPrivateKey_"
 #define E2E_Passphrase          @"EndToEndPassphrase_"
 
 
@@ -239,7 +239,7 @@
 
 + (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
 {
-    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
+    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
     [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
 }
 
@@ -460,7 +460,7 @@
 
 + (NSString *)getEndToEndPrivateKey:(NSString *)account
 {
-    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
+    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
