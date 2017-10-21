@@ -34,7 +34,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     // --------------------------------------------------------------------------------------------
-    // MARK: End To End Encryption - PublicKey
+    // MARK: Initialize
     // --------------------------------------------------------------------------------------------
     
     @objc func initEndToEndEncryption() {
@@ -53,6 +53,10 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         metadataNet.action = actionGetEndToEndServerPublicKey;
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
+    
+    // --------------------------------------------------------------------------------------------
+    // MARK: Manage PublicKey
+    // --------------------------------------------------------------------------------------------
     
     func getEndToEndPublicKeysSuccess(_ metadataNet: CCMetadataNet!) {
     
@@ -151,7 +155,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     // --------------------------------------------------------------------------------------------
-    // MARK: End To End Encryption - PrivateKey
+    // MARK: Manage PrivateKey
     // --------------------------------------------------------------------------------------------
     
     func getEndToEndPrivateKeyCipherSuccess(_ metadataNet: CCMetadataNet!) {
@@ -301,7 +305,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     // --------------------------------------------------------------------------------------------
-    // MARK: End To End Encryption - Server PublicKey
+    // MARK: Manage Server PublicKey
     // --------------------------------------------------------------------------------------------
     
     func getEndToEndServerPublicKeySuccess(_ metadataNet: CCMetadataNet!) {
@@ -390,7 +394,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     // --------------------------------------------------------------------------------------------
-    // MARK: Mark/Delete Encrypted Folder
+    // MARK: Lock/Unlock Encrypted Folder
     // --------------------------------------------------------------------------------------------
 
     func unlockEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
@@ -448,7 +452,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     // --------------------------------------------------------------------------------------------
-    // MARK: Metadata
+    // MARK: Manage Metadata
     // --------------------------------------------------------------------------------------------
     
     func getEndToEndMetadataSuccess(_ metadataNet: CCMetadataNet!) {
