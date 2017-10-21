@@ -85,7 +85,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             // remove keychain
             CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: nil)
             
-            guard let publicKey = NCEndToEndEncryption.sharedManager().createEnd(toEndPublicKey: appDelegate.activeUserID, directoryUser: appDelegate.directoryUser) else {
+            guard let publicKey = NCEndToEndEncryption.sharedManager().createPublicKey(appDelegate.activeUserID, directoryUser: appDelegate.directoryUser) else {
                 
                 appDelegate.messageNotification("E2E public keys", description: "E2E Error to create PublicKey", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                 
@@ -167,7 +167,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             let passphrase = passphraseTextField?.text
             let publicKey = CCUtility.getEndToEndPublicKeySign(self.appDelegate.activeAccount)
             
-            guard let privateKey = NCEndToEndEncryption.sharedManager().decryptPrivateKeyCipher(metadataNet.key, passphrase: passphrase, publicKey: publicKey) else {
+            guard let privateKey = NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase, publicKey: publicKey) else {
                 
                 self.appDelegate.messageNotification("E2E decrypt private key", description: "E2E Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                 
@@ -229,8 +229,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_title_", comment: ""), message: NSLocalizedString(message, comment: ""), preferredStyle: .alert)
             
             let OKAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-
-                guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().createEnd(toEndPrivateKey: self.appDelegate.activeUserID, directoryUser: self.appDelegate.directoryUser, passphrase: e2ePassphrase) else {
+                                
+                guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.activeUserID, directoryUser: self.appDelegate.directoryUser, passphrase: e2ePassphrase) else {
                     
                     self.appDelegate.messageNotification("E2E private keys", description: "E2E Error to create PublicKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     

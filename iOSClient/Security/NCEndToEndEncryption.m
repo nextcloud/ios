@@ -269,7 +269,7 @@ cleanup:
 }
 */
 
-- (NSString *)createEndToEndPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
+- (NSString *)createPublicKey:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
     // Create Certificate, if do not exists
     if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR]]) {
@@ -283,7 +283,7 @@ cleanup:
     return publicKey;
 }
 
-- (NSString *)createEndToEndPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase
+- (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase
 {
     NSMutableData *privateKeyCipherData = [NSMutableData new];
 
@@ -359,7 +359,7 @@ cleanup:
 #pragma mark - Register client for Server with exists Key pair
 #
 
-- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
+- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
 {
     NSMutableData *privateKeyData = [NSMutableData new];
     
