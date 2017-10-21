@@ -37,6 +37,7 @@
 #import <openssl/ssl.h>
 #import <openssl/err.h>
 #import <openssl/bn.h>
+#import <openssl/md5.h>
 
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
@@ -358,7 +359,7 @@ cleanup:
 #pragma mark - Register client for Server with exists Key pair
 #
 
-- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase
+- (NSString *)decryptPrivateKeyCipher:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
 {
     NSMutableData *privateKeyData = [NSMutableData new];
     
@@ -388,6 +389,15 @@ cleanup:
     if (result && privateKeyData) {
         
         NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
+        
+        unsigned char cPrivateKey[privateKeyData.length];
+        bzero(cPrivateKey, sizeof(cPrivateKey));
+        [privateKeyData getBytes:cPrivateKey length:privateKeyData.length];
+        
+        BIO *priv_bio = BIO_new_mem_buf(cPrivateKey, privateKeyData.length);
+        RSA *rsaPrivKey = PEM_read_bio_RSAPrivateKey(priv_bio, NULL, NULL, NULL);
+
+
         if ([privateKey containsString:@"-----BEGIN PRIVATE KEY-----"] && [privateKey containsString:@"-----END PRIVATE KEY-----"])
             return privateKey;
         else
@@ -578,7 +588,7 @@ cleanup:
 - (NSString *)getMD5:(NSString *)input
 {
     // Create pointer to the string as UTF8
-    const char *ptr = [input UTF8String];
+    const char *ptr = [input cStringUsingEncoding:NSUTF8StringEncoding];
     
     // Create byte array of unsigned chars
     unsigned char md5Buffer[CC_MD5_DIGEST_LENGTH];
@@ -592,6 +602,67 @@ cleanup:
         [output appendFormat:@"%02x",md5Buffer[i]];
     
     return output;
+}
+
+-(NSString *)getSHA1:(NSString *)input
+{
+    const char *cstr = [input cStringUsingEncoding:NSUTF8StringEncoding];
+    NSData *data = [NSData dataWithBytes:cstr length:input.length];
+    
+    uint8_t digest[CC_SHA1_DIGEST_LENGTH];
+    
+    CC_SHA1(data.bytes, (unsigned int)data.length, digest);
+    
+    NSMutableString* output = [NSMutableString stringWithCapacity:CC_SHA1_DIGEST_LENGTH * 2];
+    
+    for(int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++)
+        [output appendFormat:@"%02x", digest[i]];
+    
+    return output;
+}
+
+- (NSData *)hashValueMD5OfData:(NSData *)data
+{
+    MD5_CTX md5Ctx;
+    unsigned char hashValue[MD5_DIGEST_LENGTH];
+    if(!MD5_Init(&md5Ctx)) {
+        return nil;
+    }
+    if (!MD5_Update(&md5Ctx, data.bytes, data.length)) {
+        return nil;
+    }
+    if (!MD5_Final(hashValue, &md5Ctx)) {
+        return nil;
+    }
+    return [NSData dataWithBytes:hashValue length:MD5_DIGEST_LENGTH];
+}
+
+- (NSString *)hexadecimalString:(NSData *)input
+{
+    const unsigned char *dataBuffer = (const unsigned char *) [input bytes];
+    
+    if (!dataBuffer) {
+        return [NSString string];
+    }
+    
+    NSUInteger dataLength = [input length];
+    NSMutableString *hexString = [NSMutableString stringWithCapacity:(dataLength * 2)];
+    
+    for (int i = 0; i < dataLength; ++i) {
+        [hexString appendString:[NSString stringWithFormat:@"%02lx", (unsigned long) dataBuffer[i]]];
+    }
+    
+    return [NSString stringWithString:hexString];
+}
+
+-(NSString *)stringRemoveBeginEnd:(NSString *)input
+{
+    input = [input stringByReplacingOccurrencesOfString:@"-----BEGIN CERTIFICATE-----\n" withString:@""];
+    input = [input stringByReplacingOccurrencesOfString:@"\n-----END CERTIFICATE-----" withString:@""];
+    input = [input stringByReplacingOccurrencesOfString:@"-----BEGIN PRIVATE KEY-----\n" withString:@""];
+    input = [input stringByReplacingOccurrencesOfString:@"\n-----END PRIVATE KEY-----" withString:@""];
+    
+    return input;
 }
 
 @end

@@ -165,8 +165,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
             
             let passphrase = passphraseTextField?.text
+            let publicKey = CCUtility.getEndToEndPublicKeySign(self.appDelegate.activeAccount)
             
-            guard let privateKey = NCEndToEndEncryption.sharedManager().decryptPrivateKeyCipher(metadataNet.key, passphrase: passphrase) else {
+            guard let privateKey = NCEndToEndEncryption.sharedManager().decryptPrivateKeyCipher(metadataNet.key, passphrase: passphrase, publicKey: publicKey) else {
                 
                 self.appDelegate.messageNotification("E2E decrypt private key", description: "E2E Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                 
