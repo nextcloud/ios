@@ -305,7 +305,7 @@ cleanup:
     NSData *initVectorData = [self generateIV:AES_IVEC_LENGTH];
     NSData *privateKeyData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]];
 
-    BOOL result = [self aes256gcmEncrypt:privateKeyData cipherData:&privateKeyCipherData keyData:keyData initVectorData:initVectorData tagData:nil];
+    BOOL result = [self encryptData:privateKeyData cipherData:&privateKeyCipherData keyData:keyData initVectorData:initVectorData tagData:nil];
     
     if (result && privateKeyCipherData) {
         
@@ -384,19 +384,20 @@ cleanup:
     NSString *initVectorBase64 = [privateKeyCipher substringFromIndex:idx];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:initVectorBase64 options:0];
     
-    BOOL result = [self aes256gcmDecrypt:privateKeyCipherData plainData:&privateKeyData keyData:keyData initVectorData:initVectorData tag:nil];
+    BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData initVectorData:initVectorData tag:nil];
     
     if (result && privateKeyData) {
         
         NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
         
-        unsigned char cPrivateKey[privateKeyData.length];
-        bzero(cPrivateKey, sizeof(cPrivateKey));
-        [privateKeyData getBytes:cPrivateKey length:privateKeyData.length];
+        //unsigned char cPrivateKey[privateKeyData.length];
+        //bzero(cPrivateKey, sizeof(cPrivateKey));
+        //[privateKeyData getBytes:cPrivateKey length:privateKeyData.length];
         
         //BIO *priv_bio = BIO_new_mem_buf(cPrivateKey, privateKeyData.length);
         //RSA *rsaPrivKey = PEM_read_bio_RSAPrivateKey(priv_bio, NULL, NULL, NULL);
 
+        // Temp test REMOVE !!
         if ([privateKey containsString:@"-----BEGIN PRIVATE KEY-----"] && [privateKey containsString:@"-----END PRIVATE KEY-----"])
             return privateKey;
         else
@@ -421,7 +422,7 @@ cleanup:
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
     
-    BOOL result = [self aes256gcmEncrypt:plainData cipherData:&cipherData keyData:keyData initVectorData:initVectorData tagData:&tagData];
+    BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData initVectorData:initVectorData tagData:&tagData];
     
     if (cipherData != nil && result) {
         [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"encrypted.dms"] atomically:YES];
@@ -438,15 +439,15 @@ cleanup:
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
     NSString *tag = @"PboI9tqHHX3QeAA22PIu4w==";
     
-    BOOL result = [self aes256gcmDecrypt:cipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tag:tag];
+    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tag:tag];
     
     if (plainData != nil && result) {
         [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted"] atomically:YES];
     }
 }
 
-// encrypt plain data
-- (BOOL)aes256gcmEncrypt:(NSData*)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tagData:(NSData **)tagData
+// encrypt data AES 256 GCM NOPADING
+- (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tagData:(NSData **)tagData
 {
     int status = 0;
     *cipherData = [NSMutableData dataWithLength:[plainData length]];
@@ -487,8 +488,8 @@ cleanup:
     return (status != 0); // OpenSSL uses 1 for success
 }
 
-// decrypt cipher data
-- (BOOL)aes256gcmDecrypt:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tag:(NSString *)tag
+// decrypt data AES 256 GCM NOPADING
+- (BOOL)decryptData:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tag:(NSString *)tag
 {    
     int status = 0;
     int numberOfBytes = 0;
@@ -518,6 +519,7 @@ cleanup:
         if (![authenticationTag isEqualToString:tag])
             return NO;
     }
+    
     /* Create and initialise the context */
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     
@@ -603,7 +605,7 @@ cleanup:
     return output;
 }
 
--(NSString *)getSHA1:(NSString *)input
+- (NSString *)getSHA1:(NSString *)input
 {
     const char *cstr = [input cStringUsingEncoding:NSUTF8StringEncoding];
     NSData *data = [NSData dataWithBytes:cstr length:input.length];
@@ -654,7 +656,7 @@ cleanup:
     return [NSString stringWithString:hexString];
 }
 
--(NSString *)stringRemoveBeginEnd:(NSString *)input
+- (NSString *)stringRemoveBeginEnd:(NSString *)input
 {
     input = [input stringByReplacingOccurrencesOfString:@"-----BEGIN CERTIFICATE-----\n" withString:@""];
     input = [input stringByReplacingOccurrencesOfString:@"\n-----END CERTIFICATE-----" withString:@""];
