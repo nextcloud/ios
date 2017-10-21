@@ -1679,7 +1679,6 @@
     
     [communication getEndToEndPublicKeys:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
         
-        // 200 ok: body contain the public key
         _metadataNet.key = publicKey;
 
         if ([self.delegate respondsToSelector:@selector(getEndToEndPublicKeysSuccess:)])
@@ -1714,7 +1713,6 @@
     
     [communication getEndToEndPrivateKeyCipher:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKeyChiper, NSString *redirectedServer) {
         
-        // 200 ok: body contain the private key
         _metadataNet.key = privateKeyChiper;
         
         if ([self.delegate respondsToSelector:@selector(getEndToEndPrivateKeyCipherSuccess:)])
@@ -1752,7 +1750,6 @@
     
     [communication signEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
         
-        // 200 ok: body contain the public key
         _metadataNet.key = publicKey;
 
         if ([self.delegate respondsToSelector:@selector(signEndToEndPublicKeySuccess:)])
@@ -1790,7 +1787,6 @@
     
     [communication storeEndToEndPrivateKeyCipher:[_activeUrl stringByAppendingString:@"/"] privateKeyChiper:privateKeyChiper onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer) {
         
-        // 200 ok: body contain the private key
         _metadataNet.key = privateKey;
 
         if ([self.delegate respondsToSelector:@selector(storeEndToEndPrivateKeyCipherSuccess:)])
@@ -1825,8 +1821,6 @@
     
     [communication deleteEndToEndPublicKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        // 200 ok:  public key was deleted
-        
         if ([self.delegate respondsToSelector:@selector(deleteEndToEndPublicKeySuccess:)])
             [self.delegate deleteEndToEndPublicKeySuccess:_metadataNet];
         
@@ -1858,8 +1852,6 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication deleteEndToEndPrivateKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        
-        // 200 ok: private key was deleted
         
         if ([self.delegate respondsToSelector:@selector(deleteEndToEndPrivateKeySuccess:)])
             [self.delegate deleteEndToEndPrivateKeySuccess:_metadataNet];
@@ -1893,7 +1885,6 @@
     
     [communication getEndToEndServerPublicKey:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *redirectedServer) {
         
-        // 200 ok: body contain the public key
         _metadataNet.key = publicKey;
         
         if ([self.delegate respondsToSelector:@selector(getEndToEndServerPublicKeySuccess:)])
@@ -1928,8 +1919,6 @@
     
     [communication markEndToEndFolderEncrypted:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        // 200 ok
-        
         if ([self.delegate respondsToSelector:@selector(markEndToEndFolderEncryptedSuccess:)])
             [self.delegate markEndToEndFolderEncryptedSuccess:_metadataNet];
         
@@ -1961,8 +1950,6 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication deletemarkEndToEndFolderEncrypted:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        
-        // 200 ok
         
         if ([self.delegate respondsToSelector:@selector(deletemarkEndToEndFolderEncryptedSuccess:)])
             [self.delegate deletemarkEndToEndFolderEncryptedSuccess:_metadataNet];
@@ -1996,7 +1983,6 @@
     
     [communication lockEndToEndFolderEncrypted:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID token:_metadataNet.token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
-        // 200 ok: file locked successful
         _metadataNet.token = token;
 
         if ([self.delegate respondsToSelector:@selector(lockEndToEndFolderEncryptedSuccess:)])
@@ -2031,8 +2017,6 @@
     
     [communication unlockEndToEndFolderEncrypted:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        // 200 ok: file unlocked successful
-        
         if ([self.delegate respondsToSelector:@selector(unlockEndToEndFolderEncryptedSuccess:)])
             [self.delegate unlockEndToEndFolderEncryptedSuccess:_metadataNet];
         
@@ -2063,9 +2047,9 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication storeEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID metadata:_metadataNet.options onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication storeEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID encryptedMetadata:_metadataNet.options onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
         
-        // 200 ok: metadata stored successful
+        _metadataNet.options = encryptedMetadata;
         
         if ([self.delegate respondsToSelector:@selector(storeEndToEndMetadataSuccess:)])
         [self.delegate storeEndToEndMetadataSuccess:_metadataNet];
@@ -2097,11 +2081,9 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication getEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *metadata, NSString *redirectedServer) {
+    [communication getEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
         
-        // 200 ok: metadata get successful
-        
-        _metadataNet.options = metadata;
+        _metadataNet.options = encryptedMetadata;
         
         if ([self.delegate respondsToSelector:@selector(getEndToEndMetadataSuccess:)])
         [self.delegate getEndToEndMetadataSuccess:_metadataNet];
@@ -2133,9 +2115,9 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication updateEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID metadata:_metadataNet.options onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication updateEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID encryptedMetadata:_metadataNet.options onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
         
-        // 200 ok: metadata updated successful
+        _metadataNet.options = encryptedMetadata;
         
         if ([self.delegate respondsToSelector:@selector(updateEndToEndMetadataSuccess:)])
         [self.delegate updateEndToEndMetadataSuccess:_metadataNet];
@@ -2168,9 +2150,7 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication deleteEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        
-        // 200 ok: metadata delete successful
-        
+                
         if ([self.delegate respondsToSelector:@selector(deleteEndToEndMetadataSuccess:)])
         [self.delegate deleteEndToEndMetadataSuccess:_metadataNet];
         
