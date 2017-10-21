@@ -448,6 +448,37 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     // --------------------------------------------------------------------------------------------
+    // MARK: Metadata
+    // --------------------------------------------------------------------------------------------
+    
+    func getEndToEndMetadataSuccess(_ metadataNet: CCMetadataNet!) {
+        print("E2E get metadata file success")
+    }
+    
+    func getEndToEndMetadataFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+        
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
+        }
+        
+        if (errorCode != kOCErrorServerUnauthorized) {
+            
+            appDelegate.messageNotification("_error_", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        }
+    }
+    
+    @objc func getEndToEndMetadata(_ metadata: tableMetadata) {
+        
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+        
+        metadataNet.action = actionGetEndToEndMetadata;
+        metadataNet.fileID = metadata.fileID;
+        
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+    
+    // --------------------------------------------------------------------------------------------
     // MARK: Form
     // --------------------------------------------------------------------------------------------
     

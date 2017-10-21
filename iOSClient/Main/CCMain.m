@@ -2320,30 +2320,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Encrypted/Decrypted File =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)encryptedSelectedFiles
-{
-}
-
-- (void)decryptedSelectedFiles
-{
-}
-
-- (void)cmdEncryptedDecryptedFile
-{
-}
-
-- (void)encryptedFile:(tableMetadata *)metadata
-{
-}
-
-- (void)decryptedFile:(tableMetadata *)metadata
-{
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Progress & Task Button =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -4058,6 +4034,20 @@
                                         [app.endToEndInterface unlockEndToEndFolderEncrypted:_metadata];
                                     }];
         }
+        
+        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
+            
+            [actionSheet addButtonWithTitle:@"Get metadata file"
+                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        [app.endToEndInterface getEndToEndMetadata:_metadata];
+                                    }];
+        }
+        
         
 #endif
         
