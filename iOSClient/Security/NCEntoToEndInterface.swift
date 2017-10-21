@@ -60,7 +60,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     func getEndToEndPublicKeysSuccess(_ metadataNet: CCMetadataNet!) {
     
-        CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: metadataNet.key)
+        CCUtility.setEndToEndPublicKey(appDelegate.activeAccount, publicKey: metadataNet.key)
         
         getSignPublicKey = true
         
@@ -87,7 +87,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             // public keys couldn't be found
             // remove keychain
-            CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: nil)
+            CCUtility.setEndToEndPublicKey(appDelegate.activeAccount, publicKey: nil)
             
             guard let csr = NCEndToEndEncryption.sharedManager().createCSR(appDelegate.activeUserID, directoryUser: appDelegate.directoryUser) else {
                 
@@ -126,7 +126,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         }
         
         // OK signed key locally keychain
-        CCUtility.setEndToEndPublicKeySign(appDelegate.activeAccount, publicKey: publicKey)
+        CCUtility.setEndToEndPublicKey(appDelegate.activeAccount, publicKey: publicKey)
         
         getSignPublicKey = true
         

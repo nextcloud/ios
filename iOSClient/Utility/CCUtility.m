@@ -33,7 +33,7 @@
 
 #define INTRO_MessageType       @"MessageType_"
 
-#define E2E_PublicKeySign       @"EndToEndPublicKeySign_"
+#define E2E_PublicKey           @"EndToEndPublicKey_"
 #define E2E_PrivateKeyCipher    @"EndToEndPrivateKeyCipher_"
 #define E2E_Passphrase          @"EndToEndPassphrase_"
 
@@ -231,9 +231,9 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPublicKeySign:(NSString *)account publicKey:(NSString *)publicKey
++ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
 {
-    NSString *key = [E2E_PublicKeySign stringByAppendingString:account];
+    NSString *key = [E2E_PublicKey stringByAppendingString:account];
     [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
@@ -251,7 +251,7 @@
 
 + (void)initEndToEnd:(NSString *)account
 {
-    [self setEndToEndPublicKeySign:account publicKey:nil];
+    [self setEndToEndPublicKey:account publicKey:nil];
     [self setEndToEndPrivateKey:account privateKey:nil];
     [self setEndToEndPassphrase:account passphrase:nil];
 }
@@ -452,9 +452,9 @@
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (NSString *)getEndToEndPublicKeySign:(NSString *)account
++ (NSString *)getEndToEndPublicKey:(NSString *)account
 {
-    NSString *key = [E2E_PublicKeySign stringByAppendingString:account];
+    NSString *key = [E2E_PublicKey stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
@@ -472,11 +472,11 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
-    NSString *publicKeySign = [self getEndToEndPublicKeySign:account];
+    NSString *publicKey = [self getEndToEndPublicKey:account];
     NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
     
-    if (passphrase.length > 0 && privateKey.length > 0 && publicKeySign.length > 0) {
+    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0) {
         
         return YES;
         
