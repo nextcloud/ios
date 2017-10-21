@@ -2063,7 +2063,7 @@
     
     [communication storeEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID metadata:_metadataNet.options onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        // 200 ok: file locked successful
+        // 200 ok: metadata stored successful
         
         if ([self.delegate respondsToSelector:@selector(storeEndToEndMetadataSuccess:)])
         [self.delegate storeEndToEndMetadataSuccess:_metadataNet];
@@ -2097,7 +2097,8 @@
     
     [communication getEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *metadata, NSString *redirectedServer) {
         
-        // 200 ok: file locked successful
+        // 200 ok: metadata get successful
+        
         _metadataNet.options = metadata;
         
         if ([self.delegate respondsToSelector:@selector(getEndToEndMetadataSuccess:)])
@@ -2132,7 +2133,7 @@
     
     [communication updateEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID metadata:_metadataNet.options onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        // 200 ok: file locked successful
+        // 200 ok: metadata updated successful
         
         if ([self.delegate respondsToSelector:@selector(updateEndToEndMetadataSuccess:)])
         [self.delegate updateEndToEndMetadataSuccess:_metadataNet];
@@ -2166,7 +2167,7 @@
     
     [communication deleteEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        // 200 ok: file locked successful
+        // 200 ok: metadata delete successful
         
         if ([self.delegate respondsToSelector:@selector(deleteEndToEndMetadataSuccess:)])
         [self.delegate deleteEndToEndMetadataSuccess:_metadataNet];
