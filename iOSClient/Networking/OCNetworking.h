@@ -157,6 +157,9 @@
 - (void)storeEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
 - (void)storeEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
+- (void)getEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
+- (void)getEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
 @end
 
 @interface OCURLSessionManager : AFURLSessionManager
