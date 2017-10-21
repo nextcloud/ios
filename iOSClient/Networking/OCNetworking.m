@@ -2047,9 +2047,9 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication storeEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID encryptedMetadata:_metadataNet.options onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
+    [communication storeEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID encryptedMetadata:_metadataNet.encryptedMetadata onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
         
-        _metadataNet.options = encryptedMetadata;
+        _metadataNet.encryptedMetadata = encryptedMetadata;
         
         if ([self.delegate respondsToSelector:@selector(storeEndToEndMetadataSuccess:)])
         [self.delegate storeEndToEndMetadataSuccess:_metadataNet];
@@ -2083,7 +2083,7 @@
     
     [communication getEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
         
-        _metadataNet.options = encryptedMetadata;
+        _metadataNet.encryptedMetadata = encryptedMetadata;
         
         if ([self.delegate respondsToSelector:@selector(getEndToEndMetadataSuccess:)])
         [self.delegate getEndToEndMetadataSuccess:_metadataNet];
@@ -2115,9 +2115,9 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication updateEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID encryptedMetadata:_metadataNet.options onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
+    [communication updateEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID encryptedMetadata:_metadataNet.encryptedMetadata onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
         
-        _metadataNet.options = encryptedMetadata;
+        _metadataNet.encryptedMetadata = encryptedMetadata;
         
         if ([self.delegate respondsToSelector:@selector(updateEndToEndMetadataSuccess:)])
         [self.delegate updateEndToEndMetadataSuccess:_metadataNet];
