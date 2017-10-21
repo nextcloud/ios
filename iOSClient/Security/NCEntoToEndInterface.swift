@@ -85,8 +85,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
         case 404:
             
-            // public keys couldn't be found
-            // remove keychain
+            // public keys couldn't be found, remove keychain
             CCUtility.setEndToEndPublicKey(appDelegate.activeAccount, publicKey: nil)
             
             guard let csr = NCEndToEndEncryption.sharedManager().createCSR(appDelegate.activeUserID, directoryUser: appDelegate.directoryUser) else {
@@ -117,7 +116,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     func signEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
 
-        // Insert publicKey To Cheychain end delete
         guard let publicKey = metadataNet.key else {
             
             appDelegate.messageNotification("E2E publicKey", description: "Error : publicKey not present", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
@@ -125,7 +123,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return
         }
         
-        // OK signed key locally keychain
         CCUtility.setEndToEndPublicKey(appDelegate.activeAccount, publicKey: publicKey)
         
         getSignPublicKey = true
@@ -170,7 +167,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             let passphrase = passphraseTextField?.text
             
-            guard let privateKey = NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase) else {
+            guard (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase)) != nil else {
                 
                 self.appDelegate.messageNotification("E2E decrypt privateKey", description: "E2E Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                 
@@ -180,8 +177,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             }
             
             // Save to keychain
-            CCUtility.setEndToEndPrivateKey(self.appDelegate.activeAccount, privateKey: privateKey)
-            // Save passphrase to keychain
+            CCUtility.setEndToEndPrivateKeyCipher(self.appDelegate.activeAccount, privateKeyCipher: metadataNet.key)
             CCUtility.setEndToEndPassphrase(self.appDelegate.activeAccount, passphrase:passphrase)
             
             self.getStorePrivateKey = true
@@ -220,9 +216,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
         case 404:
             
-            // private key couldn't be found
-            // remove keychain
-            CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: nil)
+            // private key couldn't be found, remove keychain
+            CCUtility.setEndToEndPrivateKeyCipher(appDelegate.activeAccount, privateKeyCipher: nil)
             CCUtility.setEndToEndPassphrase(appDelegate.activeAccount, passphrase: nil)
             
             // message
@@ -266,15 +261,14 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     func storeEnd(toEndPrivateKeyCipherSuccess metadataNet: CCMetadataNet!) {
         
-        // Insert PrivateKey (end delete) and passphrase to Cheychain
-        guard let privateKey = metadataNet.key else {
+        guard let privateKeyCipher = metadataNet.key else {
             
             appDelegate.messageNotification("E2E privateKey", description: "Error : privateKey not present", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             
             return
         }
         
-        CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: privateKey)
+        CCUtility.setEndToEndPrivateKeyCipher(appDelegate.activeAccount, privateKeyCipher: privateKeyCipher)
         CCUtility.setEndToEndPassphrase(appDelegate.activeAccount, passphrase:metadataNet.password)
         
         getStorePrivateKey = true
