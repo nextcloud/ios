@@ -29,9 +29,6 @@
 
 + (instancetype)sharedManager;
 
-- (NSString *)getCSR;
-- (NSString *)getPrivateKey;
-
 - (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
 - (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
 

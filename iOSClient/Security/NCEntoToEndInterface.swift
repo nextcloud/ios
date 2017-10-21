@@ -267,7 +267,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     func storeEnd(toEndPrivateKeyCipherSuccess metadataNet: CCMetadataNet!) {
         
         // Insert PrivateKey (end delete) and passphrase to Cheychain
-        guard let privateKey = NCEndToEndEncryption.sharedManager().getPrivateKey() else {
+        guard let privateKey = metadataNet.key else {
             
             appDelegate.messageNotification("E2E privateKey", description: "Error : privateKey not present", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             

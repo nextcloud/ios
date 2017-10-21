@@ -314,63 +314,12 @@ cleanup:
     return YES;
 }
 
-- (NSString *)getCSRFromDisk:(NSString *)directoryUser delete:(BOOL)delete
-{
-    NSError *error;
-    
-    NSString *csr = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] encoding:NSUTF8StringEncoding error:&error];
-    
-    if (delete)
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR] error:nil];
-    
-    if (error)
-    return nil;
-    else
-    return csr;
-}
-
-- (NSString *)getCSR
-{
-    return [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding];
-}
-
-- (NSString *)getPrivateKeyFromDisk:(NSString *)directoryUser delete:(BOOL)delete
-{
-    NSError *error;
-    
-    NSString *privateKey = [NSString stringWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] encoding:NSUTF8StringEncoding error:&error];
-    
-    if (delete)
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey] error:nil];
-    
-    if (error)
-    return nil;
-    else
-    return privateKey;
-}
-
-- (NSString *)getPrivateKey
-{
-    return [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
-}
-
 #
 #pragma mark - Register client for Server with exists Key pair
 #
 
 - (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser
 {
-    /*
-    // Create Certificate, if do not exists [Disk Version]
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameCSR]]) {
-        
-        if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
-            return nil;
-    }
-    
-    NSString *csr = [self getCSRFromDisk:directoryUser delete:NO];
-    */
-    
     // Create Certificate, if do not exists
     if (!_csrData) {
         if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
@@ -386,17 +335,6 @@ cleanup:
 {
     NSMutableData *privateKeyCipherData = [NSMutableData new];
 
-    /*
-    // Create Certificate, if do not exists [Disk Version]
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]]) {
-        
-        if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
-            return nil;
-    }
-     
-    NSData *privateKeyData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNamePrivateKey]];
-    */
-    
     if (!_privateKeyData) {
         if (![self generateCertificateX509WithUserID:userID directoryUser:directoryUser])
             return nil;

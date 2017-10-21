@@ -2084,7 +2084,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Get E2E PublicKey : %@",jsongParsed);
+        NSLog(@"[LOG] Get E2E Server PublicKey : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2141,7 +2141,7 @@
         //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Get E2E PublicKey : %@",jsongParsed);
+        NSLog(@"[LOG] Sign E2E PublicKey : %@",jsongParsed);
         
         if (jsongParsed.allKeys > 0) {
             
@@ -2181,7 +2181,7 @@
     }];
 }
 
-- (void)storeEndToEndPrivateKeyCipher:(NSString*)serverPath privateKeyChiper:(NSString *)privateKeyChiper onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)storeEndToEndPrivateKeyCipher:(NSString*)serverPath privateKeyChiper:(NSString *)privateKeyChiper onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/private-key"];
@@ -2192,8 +2192,44 @@
     
     [request storeEndToEndPrivateKeyCipher:serverPath privateKeyChiper:privateKeyChiper onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
+        NSData *responseData = (NSData*) responseObject;
+        NSString *privateKey;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] Store E2E PrivateKey : %@",jsongParsed);
+        
+        if (jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"private-key"] && ![[data valueForKey:@"private-key"] isKindOfClass:[NSNull class]]) {
+                    
+                    privateKey = [data valueForKey:@"private-key"];
+                }
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+            }
+        }
+        
         //Return success
-        successRequest(response, request.redirectedServer);
+        successRequest(response, privateKey, request.redirectedServer);
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         
