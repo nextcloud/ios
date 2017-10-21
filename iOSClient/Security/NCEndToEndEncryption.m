@@ -486,7 +486,21 @@ cleanup:
 }
 
 #
-#pragma mark - Encrypt/Decrypt AES/GCM/NoPadding as cipher (128 bit key size)
+#pragma mark - Encrypt/Decrypt String
+#
+
+- (NSString *)encryptStringAsymmetric:(NSString *)string publicKey:(NSString *)publicKey
+{
+    return nil;
+}
+
+- (NSString *)decryptStringAsymmetric:(NSString *)string privateKey:(NSString *)privateKey
+{
+    return nil;
+}
+
+#
+#pragma mark - Encrypt/Decrypt Files AES/GCM/NoPadding as cipher (128 bit key size)
 #
 
 - (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
