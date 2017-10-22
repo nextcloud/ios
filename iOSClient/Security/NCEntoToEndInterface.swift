@@ -224,11 +224,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 }
                 
                 let metadataNet: CCMetadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)
-                
+
                 metadataNet.action = actionStoreEndToEndPrivateKeyCipher
                 metadataNet.key = privateKeyChiper
                 metadataNet.password = e2ePassphrase
-                
+                    
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
             
