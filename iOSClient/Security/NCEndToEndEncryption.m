@@ -447,9 +447,9 @@ cleanup:
     if (rsa == NULL)
         return nil;
 
-    unsigned char *output = (unsigned char *) malloc(4096);
+    unsigned char *encrypted = (unsigned char *) malloc(4096);
     
-    int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], output, rsa, RSA_CIPHER);
+    int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], encrypted, rsa, RSA_CIPHER);
     if(encrypted_length == -1) {
         char buffer[500];
         ERR_error_string(ERR_get_error(), buffer);
@@ -457,14 +457,11 @@ cleanup:
         return nil;
     }
     
-    NSData *encryptData = [[NSData alloc] initWithBytes:output length:encrypted_length];
+    NSData *encryptData = [[NSData alloc] initWithBytes:encrypted length:encrypted_length];
     
-    if (output)
-        free(output);
-    free (bio);
-    free (x509);
-    free (evpkey);
-    free (rsa);
+    if (encrypted)
+        free(encrypted);
+    free(rsa);
     
     return encryptData;
 }
@@ -494,9 +491,9 @@ cleanup:
     
     if (decrypted)
         free(decrypted);
-    free (bio);
-    free (rsa);
-    
+    free(bio);
+    free(rsa);
+
     return decryptString;
 }
 
