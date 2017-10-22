@@ -450,6 +450,10 @@ cleanup:
     
     if (output)
         free(output);
+    free (bio);
+    free (x509);
+    free (evpkey);
+    free (rsa);
     
     return encryptData;
 }
@@ -464,7 +468,6 @@ cleanup:
     RSA *rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL);
     if (rsa == NULL)
         return nil;
-    BIO_free(bio);
     
     unsigned char *decrypted = (unsigned char *) malloc([chiperData length]);
     
@@ -480,6 +483,8 @@ cleanup:
     
     if (decrypted)
         free(decrypted);
+    free (bio);
+    free (rsa);
     
     return decryptString;
 }
