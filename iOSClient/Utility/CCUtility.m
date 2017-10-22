@@ -235,9 +235,6 @@
 {
     NSString *key = [E2E_PublicKey stringByAppendingString:account];
     [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
-    
-    NSString *x = [self getEndToEndPublicKey:account];
-    NSLog(@"x");
 }
 
 + (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher
