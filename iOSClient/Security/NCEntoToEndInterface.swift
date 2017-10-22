@@ -115,14 +115,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     func signEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
 
-        guard let publicKey = metadataNet.key else {
-            
-            appDelegate.messageNotification("E2E publicKey", description: "Error : publicKey not present", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            
-            return
-        }
-        
-        CCUtility.setEndToEndPublicKey(appDelegate.activeAccount, publicKey: publicKey)
+        CCUtility.setEndToEndPublicKey(appDelegate.activeAccount, publicKey: metadataNet.key)
         
         // Request PrivateKey chiper to Server
         getPrivateKeyCipher()
@@ -251,14 +244,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     func storeEnd(toEndPrivateKeyCipherSuccess metadataNet: CCMetadataNet!) {
         
-        guard let privateKeyCipher = metadataNet.key else {
-            
-            appDelegate.messageNotification("E2E privateKey", description: "Error : privateKey not present", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            
-            return
-        }
-        
-        CCUtility.setEndToEndPrivateKeyCipher(appDelegate.activeAccount, privateKeyCipher: privateKeyCipher)
+        CCUtility.setEndToEndPrivateKeyCipher(appDelegate.activeAccount, privateKeyCipher: metadataNet.key)
         CCUtility.setEndToEndPassphrase(appDelegate.activeAccount, passphrase:metadataNet.password)
         
         // request publicKey Server()
@@ -291,7 +277,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         CCUtility.setEndToEndPublicKeyServer(appDelegate.activeAccount, publicKey: metadataNet.key)
         
-        // OK Activated
+        // All OK Activated flsg on Manage EndToEnd Encryption
         NotificationCenter.default.post(name: Notification.Name("reloadManageEndToEndEncryption"), object: nil)
         
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndServerPublicKey, note: "E2E Server PublicKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
