@@ -174,6 +174,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             // --------- verify privateKey encrypt/decrypt asymmetric key ---------
             
+            /*
             let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.activeAccount)
             guard let encryptData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(self.ASYMMETRIC_STRING_TEST, publicKey: publicKey) else {
                 
@@ -201,13 +202,14 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 return
             }
+            */
             
             // Save to keychain
             CCUtility.setEndToEndPrivateKeyCipher(self.appDelegate.activeAccount, privateKeyCipher: metadataNet.key)
             CCUtility.setEndToEndPassphrase(self.appDelegate.activeAccount, passphrase:passphrase)
             
             // request publicKey Server()
-            //self.getPublicKeyServer()
+            self.getPublicKeyServer()
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
         })
