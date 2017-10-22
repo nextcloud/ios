@@ -49,7 +49,7 @@
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
 #define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
-#define TEST_KEY                    @"hello"
+#define ASYMMETRIC_STRING_TEST      @"Nextcloud a safe home for all your data"
 
 #define fileNameCertificate         @"cert.pem"
 #define fileNameCSR                 @"csr.pem"
@@ -406,12 +406,12 @@ cleanup:
         
         NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
 
-        NSData *encryptData = [self encryptAsymmetricString:TEST_KEY publicKey:publicKey];
+        NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
             return nil;
         NSString *decryptString = [self decryptAsymmetricData:encryptData privateKey:privateKey];
         
-        if (decryptString && [decryptString isEqualToString:TEST_KEY])
+        if (decryptString && [decryptString isEqualToString:ASYMMETRIC_STRING_TEST])
             return privateKey;
         else
             return nil;
@@ -431,14 +431,14 @@ cleanup:
     NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
     unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
     
+    // Extract real publicKey
     BIO *bio = BIO_new_mem_buf(pKey, -1);
     X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
     EVP_PKEY *evpkey = X509_get_pubkey(x509);
     RSA *rsa = EVP_PKEY_get1_RSA(evpkey);
     BIO_free(bio);
 
-    int maxSize = RSA_size(rsa);
-    unsigned char *output = (unsigned char *) malloc(maxSize * sizeof(char));
+    unsigned char *output = (unsigned char *) malloc([plainData length]);
     
     int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], output, rsa, RSA_PKCS1_PADDING);
     if(encrypted_length == -1) {
@@ -459,7 +459,7 @@ cleanup:
     RSA *rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL);
     BIO_free(bio);
     
-    unsigned char *decrypted = (unsigned char *) malloc(1000);
+    unsigned char *decrypted = (unsigned char *) malloc([chiperData length]);
     
     int decrypted_length = RSA_private_decrypt((int)[chiperData length], [chiperData bytes], decrypted, rsa, RSA_PKCS1_PADDING);
     if(decrypted_length == -1) {
