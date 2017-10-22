@@ -49,6 +49,7 @@
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
 #define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
+#define TEST_KEY                    @"ciao"
 
 #define fileNameCertificate         @"cert.pem"
 #define fileNameCSR                 @"csr.pem"
@@ -374,7 +375,7 @@ cleanup:
 #pragma mark - No key pair exists on the server
 #
 
-- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase
+- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
 {
     NSMutableData *privateKeyData = [NSMutableData new];
     
@@ -405,6 +406,8 @@ cleanup:
         
         NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
         
+        NSData *encryptData = [self encryptAsymmetricString:TEST_KEY publicKey:publicKey];
+        
         //unsigned char cPrivateKey[privateKeyData.length];
         //bzero(cPrivateKey, sizeof(cPrivateKey));
         //[privateKeyData getBytes:cPrivateKey length:privateKeyData.length];
@@ -424,12 +427,39 @@ cleanup:
 }
 
 #
-#pragma mark - Encrypt/Decrypt String
+#pragma mark - Asymmetric Encrypt/Decrypt String
 #
 
-- (NSString *)encryptStringAsymmetric:(NSString *)string publicKey:(NSString *)publicKey
+- (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey
 {
-    return nil;
+    //unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
+    
+    char *pKey = "-----BEGIN PUBLIC KEY-----\n"
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwMu7BZF451FjUXYNr323\n"
+    "aeeaCW2a7s6eHHs8Gz5qgQ/zDegub6is3jwdTZJyGcRcN1DxKQsLcOa3F18KSiCk\n"
+    "yzIWjNV4YH7GdV7Ke2qLjcQUs7wktGUKyPYJmDWGYv/QN0Sbbol9IbeLjSBHUt16\n"
+    "xBex5IIpQqDtBy0RZvAMdUUB1rezKka0bC+b5CmE4ysIRFyFiweSlGsSdkaS9q1l\n"
+    "d+c/V4LMxljNbhdpfpiniWAD3lm9+mDJzToOiqz+nH9SHs4ClEThBAScI00xJH36\n"
+    "3mDvY0x6HVDyCsueC9jtfZKnI2uwM2tbUU4iDkCaIYm6VE6h1qs5AkrxH1o6K2lC\n"
+    "kQIDAQAB\n"
+    "-----END PUBLIC KEY-----\n";
+
+    
+    BIO *bio = BIO_new_mem_buf(pKey, -1);
+    RSA *rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, 0, NULL);
+    BIO_free(bio);
+
+    NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
+    
+    int maxSize = RSA_size(rsa);
+    unsigned char *output = (unsigned char *) malloc(maxSize * sizeof(char));
+    
+    int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], output, rsa, RSA_PKCS1_PADDING);
+    if(encrypted_length == -1) {
+        return nil;
+    }
+   
+    return [NSData dataWithBytes:output length:encrypted_length];
 }
 
 - (NSString *)decryptStringAsymmetric:(NSString *)string privateKey:(NSString *)privateKey
