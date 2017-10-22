@@ -160,9 +160,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         let alertController = UIAlertController(title: NSLocalizedString("_e2e_passphrase_request_title_", comment: ""), message: NSLocalizedString("_e2e_passphrase_request_message_", comment: ""), preferredStyle: .alert)
         
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
-            
-            DispatchQueue.main.async(execute: {
-                
+                            
             let passphrase = passphraseTextField?.text
             
             guard let privateKey = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase)) else {
@@ -212,7 +210,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             self.getPublicKeyServer()
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
-            })
         })
         
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in

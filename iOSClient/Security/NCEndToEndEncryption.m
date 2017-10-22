@@ -436,7 +436,7 @@ cleanup:
     if (rsa == NULL)
         return nil;
 
-    unsigned char *output = (unsigned char *) malloc([plainData length]);
+    unsigned char *output = (unsigned char *) malloc(1000);
     
     int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], output, rsa, RSA_CIPHER);
     if(encrypted_length == -1) {
