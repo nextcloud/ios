@@ -44,13 +44,13 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
-        metadataNet.action = actionGetEndToEndServerPublicKey;
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-        
         metadataNet.action = actionGetEndToEndPublicKeys;
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
 
         metadataNet.action = actionGetEndToEndPrivateKeyCipher;
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        
+        metadataNet.action = actionGetEndToEndServerPublicKey;
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     

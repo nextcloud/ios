@@ -434,10 +434,17 @@ cleanup:
     
     // Extract real publicKey
     BIO *bio = BIO_new_mem_buf(pKey, -1);
+    if (bio == NULL)
+        return nil;
     X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
+    if (x509 == NULL)
+        return nil;
     EVP_PKEY *evpkey = X509_get_pubkey(x509);
+    if (evpkey == NULL)
+        return nil;
     RSA *rsa = EVP_PKEY_get1_RSA(evpkey);
-    BIO_free(bio);
+    if (rsa == NULL)
+        return nil;
 
     unsigned char *output = (unsigned char *) malloc([plainData length]);
     
@@ -449,7 +456,12 @@ cleanup:
         return nil;
     }
     
-    return [NSData dataWithBytes:output length:encrypted_length];
+    NSData *encryptData = [[NSData alloc] initWithBytes:output length:encrypted_length];
+    
+    if (output)
+        free(output);
+    
+    return encryptData;
 }
 
 - (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey
@@ -457,7 +469,11 @@ cleanup:
     unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
     
     BIO *bio = BIO_new_mem_buf(pKey, -1);
+    if (bio == NULL)
+        return nil;
     RSA *rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL);
+    if (rsa == NULL)
+        return nil;
     BIO_free(bio);
     
     unsigned char *decrypted = (unsigned char *) malloc([chiperData length]);
@@ -470,7 +486,12 @@ cleanup:
         return nil;
     }
     
-    return [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
+    NSString *decryptString = [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
+    
+    if (decrypted)
+        free(decrypted);
+    
+    return decryptString;
 }
 
 #
