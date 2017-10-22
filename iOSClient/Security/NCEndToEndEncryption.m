@@ -49,7 +49,7 @@
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
 #define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
-#define TEST_KEY                    @"ciao"
+#define TEST_KEY                    @"hello"
 
 #define fileNameCertificate         @"cert.pem"
 #define fileNameCSR                 @"csr.pem"
@@ -409,18 +409,11 @@ cleanup:
         NSData *encryptData = [self encryptAsymmetricString:TEST_KEY publicKey:publicKey];
         NSString *decryptString = [self decryptAsymmetricData:encryptData privateKey:privateKey];
         
-        //unsigned char cPrivateKey[privateKeyData.length];
-        //bzero(cPrivateKey, sizeof(cPrivateKey));
-        //[privateKeyData getBytes:cPrivateKey length:privateKeyData.length];
-        
-        //BIO *priv_bio = BIO_new_mem_buf(cPrivateKey, privateKeyData.length);
-        //RSA *rsaPrivKey = PEM_read_bio_RSAPrivateKey(priv_bio, NULL, NULL, NULL);
-
-        // Temp test REMOVE !!
-        if ([privateKey containsString:@"-----BEGIN PRIVATE KEY-----"] && [privateKey containsString:@"-----END PRIVATE KEY-----"])
+        if (decryptString && [decryptString isEqualToString:TEST_KEY])
             return privateKey;
         else
             return nil;
+        
     } else {
         
         return nil;
@@ -444,31 +437,33 @@ cleanup:
     "3mDvY0x6HVDyCsueC9jtfZKnI2uwM2tbUU4iDkCaIYm6VE6h1qs5AkrxH1o6K2lC\n"
     "kQIDAQAB\n"
     "-----END PUBLIC KEY-----\n";
-
     
     BIO *bio = BIO_new_mem_buf(pKey, -1);
     RSA *rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, 0, NULL);
     BIO_free(bio);
 
     NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
-    NSMutableData *cipherData = [NSMutableData dataWithLength:[plainData length]];
-    unsigned char *pCipherData = [cipherData mutableBytes];
+    //NSMutableData *cipherData = [NSMutableData dataWithLength:[plainData length]];
+    //unsigned char *pCipherData = [cipherData mutableBytes];
 
-    int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], pCipherData, rsa, RSA_PKCS1_PADDING);
+    int maxSize = RSA_size(rsa);
+    unsigned char *output = (unsigned char *) malloc(maxSize * sizeof(char));
+    
+    int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], output, rsa, RSA_PKCS1_PADDING);
     if(encrypted_length == -1) {
         char buffer[500];
         ERR_error_string(ERR_get_error(), buffer);
         NSLog(@"%@",[NSString stringWithUTF8String:buffer]);
         return nil;
     }
-   
-    return [NSData dataWithBytes:pCipherData length:[plainData length]];
+    
+    return [NSData dataWithBytes:output length:encrypted_length];
 }
 
 - (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey
 {
     //unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
-
+    
     char *pKey = "-----BEGIN RSA PRIVATE KEY-----\n"
     "MIIEowIBAAKCAQEAwMu7BZF451FjUXYNr323aeeaCW2a7s6eHHs8Gz5qgQ/zDegu\n"
     "b6is3jwdTZJyGcRcN1DxKQsLcOa3F18KSiCkyzIWjNV4YH7GdV7Ke2qLjcQUs7wk\n"
@@ -501,6 +496,23 @@ cleanup:
     RSA *rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL);
     BIO_free(bio);
     
+    // Allocate a buffer
+    unsigned char *decrypted = (unsigned char *) malloc(1000);
+    
+    // Fill buffer with decrypted data
+    int decrypted_length = RSA_private_decrypt((int)[chiperData length], [chiperData bytes], decrypted, rsa, RSA_PKCS1_PADDING);
+    if(decrypted_length == -1) {
+        char buffer[500];
+        ERR_error_string(ERR_get_error(), buffer);
+        NSLog(@"%@",[NSString stringWithUTF8String:buffer]);
+        return nil;
+    }
+    
+    NSString *plain = [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
+
+    return plain;
+    
+    /*
     NSMutableData *plainData = [NSMutableData dataWithLength:[chiperData length]];
     unsigned char *pPlainData = [plainData mutableBytes];
 
@@ -515,6 +527,7 @@ cleanup:
     NSString *plain = [[NSString alloc] initWithBytes:pPlainData length:sizeof(pPlainData) encoding:NSUTF8StringEncoding];
     
     return plain;
+    */
 }
 
 #
