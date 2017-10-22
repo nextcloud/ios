@@ -407,6 +407,8 @@ cleanup:
         NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
         
         NSData *encryptData = [self encryptAsymmetricString:TEST_KEY publicKey:publicKey];
+        if (!encryptData)
+            return nil;
         NSString *decryptString = [self decryptAsymmetricData:encryptData privateKey:privateKey];
         
         if (decryptString && [decryptString isEqualToString:TEST_KEY])
@@ -426,6 +428,8 @@ cleanup:
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey
 {
+    NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
+
     //unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
     
     char *pKey = "-----BEGIN PUBLIC KEY-----\n"
@@ -441,10 +445,6 @@ cleanup:
     BIO *bio = BIO_new_mem_buf(pKey, -1);
     RSA *rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, 0, NULL);
     BIO_free(bio);
-
-    NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
-    //NSMutableData *cipherData = [NSMutableData dataWithLength:[plainData length]];
-    //unsigned char *pCipherData = [cipherData mutableBytes];
 
     int maxSize = RSA_size(rsa);
     unsigned char *output = (unsigned char *) malloc(maxSize * sizeof(char));
@@ -496,10 +496,8 @@ cleanup:
     RSA *rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL);
     BIO_free(bio);
     
-    // Allocate a buffer
     unsigned char *decrypted = (unsigned char *) malloc(1000);
     
-    // Fill buffer with decrypted data
     int decrypted_length = RSA_private_decrypt((int)[chiperData length], [chiperData bytes], decrypted, rsa, RSA_PKCS1_PADDING);
     if(decrypted_length == -1) {
         char buffer[500];
@@ -511,23 +509,6 @@ cleanup:
     NSString *plain = [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
 
     return plain;
-    
-    /*
-    NSMutableData *plainData = [NSMutableData dataWithLength:[chiperData length]];
-    unsigned char *pPlainData = [plainData mutableBytes];
-
-    int decrypted_length = RSA_private_decrypt((int)[chiperData length], [chiperData bytes], pPlainData, rsa, RSA_PKCS1_PADDING);
-    if(decrypted_length == -1) {
-        char buffer[500];
-        ERR_error_string(ERR_get_error(), buffer);
-        NSLog(@"%@",[NSString stringWithUTF8String:buffer]);
-        return nil;
-    }
-    
-    NSString *plain = [[NSString alloc] initWithBytes:pPlainData length:sizeof(pPlainData) encoding:NSUTF8StringEncoding];
-    
-    return plain;
-    */
 }
 
 #
