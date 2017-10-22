@@ -174,7 +174,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             // --------- verify privateKey encrypt/decrypt asymmetric key ---------
             
-            /*
             let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.activeAccount)
             guard let encryptData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(self.ASYMMETRIC_STRING_TEST, publicKey: publicKey) else {
                 
@@ -202,7 +201,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 return
             }
-            */
             
             // Save to keychain
             CCUtility.setEndToEndPrivateKeyCipher(self.appDelegate.activeAccount, privateKeyCipher: metadataNet.key)
