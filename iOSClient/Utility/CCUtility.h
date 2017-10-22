@@ -95,7 +95,7 @@
 + (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher;
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
 + (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey;
-+ (void)initEndToEnd:(NSString *)account;
++ (void)clearAllKeysEndToEnd:(NSString *)account;
 
 // GET
 

@@ -255,7 +255,7 @@
     [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)initEndToEnd:(NSString *)account
++ (void)clearAllKeysEndToEnd:(NSString *)account
 {
     [self setEndToEndPublicKey:account publicKey:nil];
     [self setEndToEndPrivateKeyCipher:account privateKeyCipher:nil];

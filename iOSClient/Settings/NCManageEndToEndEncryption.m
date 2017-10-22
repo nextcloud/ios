@@ -196,7 +196,7 @@
 {
     [self deselectFormRow:sender];
     
-    [CCUtility initEndToEnd:app.activeAccount];
+    [CCUtility clearAllKeysEndToEnd:app.activeAccount];
     
     [self initializeForm];
 }
@@ -205,7 +205,7 @@
 {
     [self deselectFormRow:sender];
 
-    [CCUtility initEndToEnd:app.activeAccount];
+    [CCUtility clearAllKeysEndToEnd:app.activeAccount];
     [app.endToEndInterface initEndToEndEncryption];
 }
 
