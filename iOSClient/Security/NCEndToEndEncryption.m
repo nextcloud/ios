@@ -429,27 +429,12 @@ cleanup:
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey
 {
     NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
-    
     unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
-    
-    /*
-    char *pKey = "-----BEGIN PUBLIC KEY-----\n"
-    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwMu7BZF451FjUXYNr323\n"
-    "aeeaCW2a7s6eHHs8Gz5qgQ/zDegub6is3jwdTZJyGcRcN1DxKQsLcOa3F18KSiCk\n"
-    "yzIWjNV4YH7GdV7Ke2qLjcQUs7wktGUKyPYJmDWGYv/QN0Sbbol9IbeLjSBHUt16\n"
-    "xBex5IIpQqDtBy0RZvAMdUUB1rezKka0bC+b5CmE4ysIRFyFiweSlGsSdkaS9q1l\n"
-    "d+c/V4LMxljNbhdpfpiniWAD3lm9+mDJzToOiqz+nH9SHs4ClEThBAScI00xJH36\n"
-    "3mDvY0x6HVDyCsueC9jtfZKnI2uwM2tbUU4iDkCaIYm6VE6h1qs5AkrxH1o6K2lC\n"
-    "kQIDAQAB\n"
-    "-----END PUBLIC KEY-----\n";
-    */
     
     BIO *bio = BIO_new_mem_buf(pKey, -1);
     X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
     EVP_PKEY *evpkey = X509_get_pubkey(x509);
     RSA *rsa = EVP_PKEY_get1_RSA(evpkey);
-
-//RSA *rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, 0, NULL);
     BIO_free(bio);
 
     int maxSize = RSA_size(rsa);
@@ -469,35 +454,6 @@ cleanup:
 - (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey
 {
     unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
-    /*
-    char *pKey = "-----BEGIN RSA PRIVATE KEY-----\n"
-    "MIIEowIBAAKCAQEAwMu7BZF451FjUXYNr323aeeaCW2a7s6eHHs8Gz5qgQ/zDegu\n"
-    "b6is3jwdTZJyGcRcN1DxKQsLcOa3F18KSiCkyzIWjNV4YH7GdV7Ke2qLjcQUs7wk\n"
-    "tGUKyPYJmDWGYv/QN0Sbbol9IbeLjSBHUt16xBex5IIpQqDtBy0RZvAMdUUB1rez\n"
-    "Kka0bC+b5CmE4ysIRFyFiweSlGsSdkaS9q1ld+c/V4LMxljNbhdpfpiniWAD3lm9\n"
-    "+mDJzToOiqz+nH9SHs4ClEThBAScI00xJH363mDvY0x6HVDyCsueC9jtfZKnI2uw\n"
-    "M2tbUU4iDkCaIYm6VE6h1qs5AkrxH1o6K2lCkQIDAQABAoIBAChqzWNGcu0zb7nF\n"
-    "IOtYVJocFnvBgYhswlLANwKTHCrAWDjjItD/sHXKbm4ztD3Yn2htTJFJInXhuCJr\n"
-    "JzIRE9sRPg76NYktKpeybope9LCcmaZwW9WBlTg59Br3pZude14KwPb0Vco6u0Oz\n"
-    "r6AclD8FpKJ98v5n1Cj79rj4u/PdTXZP+Fmz8y0KAgM1s39rtiaAHKGCcyfb1awf\n"
-    "pCsYL0IvmU1Z00sPe5dzSqLY4HcIyT2kIMqnC0c0HTPtU6A5GI7dPMQsJy+ZEsWo\n"
-    "kR4YdymmN3C11gdd8kTpExdm1Ick5GfgUfc5hYYTBUO4n8bWJFJLxY6MtjdRfWHc\n"
-    "SBg4hw0CgYEA3vYaOzk8gUgUVkhnAsyoRNPkMKOH+EbOWuAssK3lQ2U8gvryJngz\n"
-    "KaQEGnluHvwK69BkJQQ5+PTMKhvhDZ4Ur9t6K7iZ3io3XLafH+jZk8alxYtZen00\n"
-    "Z38z2VQ8gjYHjfXGKNs1YGcfb+uJ5a8YMGbNjYTdGkIeWL0DLdrYH78CgYEA3V1R\n"
-    "fTPCY93kxOfYEnRvsO7HY6/4aESAMthROABd9IbYzmsA2Jkcs9Cns3MvWoLpbUY5\n"
-    "c36WDn9pZOg8vF0dday9Gr/ZrisEv7MgFl0FloyNsnGviHHFfoLPbOjEPUGXcRy2\n"
-    "1350nFJ2L0e9XcHgvPSjkmwcLbGgkrtWgjJoMa8CgYB0URPSPcPw9jeV4+PJtBc9\n"
-    "AQYU0duHjPjus/Dco3vtswzkkCJwK1kVqjlxzlPC2l6gM3FrVk8gMCWq+ixovEWy\n"
-    "kN+lm4K6Qm/rcGKHdSS9UW7+JfqiSltiexwDj0yZ6bH7P3MHsYShLGtcKhcguj32\n"
-    "Ukt+PwhSQJgwVzsnWvpRZQKBgQCDFrIdLLufHFZPbOR9+UnzQ1P8asb2KCqq8YMX\n"
-    "YNBC8GAPzToRCor+yT+mez29oezN81ouVPZT24v0X7sn6RR7DTJnVtl31K3ZQCBu\n"
-    "XePjRZTb6YsDiCxmQNzJKAaeJ+ug5lo4vwAbWpH2actwbFHEVDNRkIgXXysx+ZK/\n"
-    "Q06ErQKBgHzXwrSRWppsQGdxSrU1Ynwg0bIirfi2N8zyHgFutQzdkDXY5N0gRG7a\n"
-    "Xz8GFJecE8Goz8Mw2NigtBC4EystXievCwR3EztDyU5PgvEQV7d+0GLKtCG6QFqC\n"
-    "gZKlwzSf9rLhfXYCrWgqg7ZXsiaADQePw+fU2dudERxmg3gokBFL\n"
-    "-----END RSA PRIVATE KEY-----\n";
-    */
     
     BIO *bio = BIO_new_mem_buf(pKey, -1);
     RSA *rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL);
@@ -513,9 +469,7 @@ cleanup:
         return nil;
     }
     
-    NSString *plain = [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
-
-    return plain;
+    return [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
 }
 
 #
