@@ -207,7 +207,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             CCUtility.setEndToEndPassphrase(self.appDelegate.activeAccount, passphrase:passphrase)
             
             // request publicKey Server()
-            self.getPublicKeyServer()
+            //self.getPublicKeyServer()
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E PrivateKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
         })
