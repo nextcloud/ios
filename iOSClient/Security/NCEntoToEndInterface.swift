@@ -44,13 +44,13 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
+        metadataNet.action = actionGetEndToEndServerPublicKey;
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        
         metadataNet.action = actionGetEndToEndPublicKeys;
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
 
         metadataNet.action = actionGetEndToEndPrivateKeyCipher;
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-        
-        metadataNet.action = actionGetEndToEndServerPublicKey;
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
@@ -166,7 +166,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
             
             let passphrase = passphraseTextField?.text
-            let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.activeAccount)
+            let publicKey = CCUtility.getEndToEndPublicKeyServer(self.appDelegate.activeAccount)
             
             guard (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase, publicKey: publicKey)) != nil else {
                 
@@ -304,6 +304,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // --------------------------------------------------------------------------------------------
     
     func getEndToEndServerPublicKeySuccess(_ metadataNet: CCMetadataNet!) {
+        
+        CCUtility.setEndToEndPublicKeyServer(appDelegate.activeAccount, publicKey: metadataNet.key)
         
         NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndServerPublicKey, note: "E2E Server PublicKey present on Server and stored to keychain", type: k_activityTypeSuccess, verbose: false, activeUrl: "")
     }

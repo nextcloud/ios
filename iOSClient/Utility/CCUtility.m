@@ -36,7 +36,7 @@
 #define E2E_PublicKey           @"EndToEndPublicKey_"
 #define E2E_PrivateKeyCipher    @"EndToEndPrivateKeyCipher_"
 #define E2E_Passphrase          @"EndToEndPassphrase_"
-
+#define E2E_PublicKeyServer     @"EndToEndPublicKeyServer_"
 
 @implementation CCUtility
 
@@ -249,11 +249,18 @@
     [UICKeyChainStore setString:passphrase forKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey
+{
+    NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+}
+
 + (void)initEndToEnd:(NSString *)account
 {
     [self setEndToEndPublicKey:account publicKey:nil];
     [self setEndToEndPrivateKeyCipher:account privateKeyCipher:nil];
     [self setEndToEndPassphrase:account passphrase:nil];
+    [self setEndToEndPublicKeyServer:account publicKey:nil];
 }
 
 #pragma ------------------------------ GET
@@ -470,13 +477,20 @@
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
++ (NSString *)getEndToEndPublicKeyServer:(NSString *)account
+{
+    NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
     NSString *publicKey = [self getEndToEndPublicKey:account];
     NSString *privateKey = [self getEndToEndPrivateKeyCipher:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
+    NSString *publicKeyServer = [self getEndToEndPublicKeyServer:account];
     
-    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0) {
+    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0 && publicKeyServer.length > 0) {
         
         return YES;
         
