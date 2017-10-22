@@ -27,8 +27,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    let ASYMMETRIC_STRING_TEST = "Nextcloud a safe home for all your data"
-    
     override init() {
     }
     
@@ -163,7 +161,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                             
             let passphrase = passphraseTextField?.text
             
-            guard let privateKey = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase)) else {
+            let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.activeAccount)
+
+            guard let privateKey = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase, publicKey: publicKey)) else {
                 
                 self.appDelegate.messageNotification("E2E decrypt privateKey", description: "Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                 
@@ -172,35 +172,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 return
             }
             
-            // --------- verify privateKey encrypt/decrypt asymmetric key ---------
-            
-            let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.activeAccount)
-            guard let encryptData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(self.ASYMMETRIC_STRING_TEST, publicKey: publicKey) else {
-                
-                self.appDelegate.messageNotification("E2E Verify privateKey", description: "Error to encrypt asymmetric key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-                
-                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Verify privateKey, error to encrypt asymmetric key", type: k_activityTypeFailure, verbose: false, activeUrl: "")
-                
-                return
-            }
-            
-            guard let decryptString = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encryptData, privateKey: privateKey) else {
-                
-                self.appDelegate.messageNotification("E2E Verify privateKey", description: "Error to decrypt asymmetric key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-                
-                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Verify privateKey, error to decrypt asymmetric key", type: k_activityTypeFailure, verbose: false, activeUrl: "")
-                
-                return
-            }
-            
-            if (decryptString != self.ASYMMETRIC_STRING_TEST) {
-                
-                self.appDelegate.messageNotification("E2E Verify privateKey", description: "Error verify data encrypt/decrypt", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-                
-                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Verify privateKey, error verify data encrypt/decrypt", type: k_activityTypeFailure, verbose: false, activeUrl: "")
-                
-                return
-            }
+            // privateKey
+            print(privateKey)
             
             // Save to keychain
             CCUtility.setEndToEndPrivateKeyCipher(self.appDelegate.activeAccount, privateKeyCipher: metadataNet.key)

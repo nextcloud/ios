@@ -47,6 +47,7 @@
 #define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
 
 #define RSA_CIPHER                  RSA_PKCS1_PADDING
+#define ASYMMETRIC_STRING_TEST      @"Nextcloud a safe home for all your data"
 
 #define fileNameCertificate         @"cert.pem"
 #define fileNameCSR                 @"csr.pem"
@@ -375,7 +376,7 @@ cleanup:
 #pragma mark - No key pair exists on the server
 #
 
-- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase
+- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
 {
     NSMutableData *privateKeyData = [NSMutableData new];
     
@@ -405,7 +406,17 @@ cleanup:
     if (result && privateKeyData) {
         
         NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
-        return privateKey;
+        
+        NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
+        if (!encryptData)
+            return nil;
+        
+        NSString *decryptString = [self decryptAsymmetricData:encryptData privateKey:privateKey];
+        
+        if (decryptString && [decryptString isEqualToString:ASYMMETRIC_STRING_TEST])
+            return privateKey;
+        else
+            return nil;
         
     } else {
         
@@ -436,7 +447,7 @@ cleanup:
     if (rsa == NULL)
         return nil;
 
-    unsigned char *output = (unsigned char *) malloc(1000);
+    unsigned char *output = (unsigned char *) malloc(4096);
     
     int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], output, rsa, RSA_CIPHER);
     if(encrypted_length == -1) {
@@ -469,7 +480,7 @@ cleanup:
     if (rsa == NULL)
         return nil;
     
-    unsigned char *decrypted = (unsigned char *) malloc([chiperData length]);
+    unsigned char *decrypted = (unsigned char *) malloc(4096);
     
     int decrypted_length = RSA_private_decrypt((int)[chiperData length], [chiperData bytes], decrypted, rsa, RSA_CIPHER);
     if(decrypted_length == -1) {
