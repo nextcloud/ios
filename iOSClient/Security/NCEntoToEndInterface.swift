@@ -166,7 +166,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
             
             let passphrase = passphraseTextField?.text
-            let publicKey = CCUtility.getEndToEndPublicKeyServer(self.appDelegate.activeAccount)
+            let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.activeAccount)
             
             guard (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase, publicKey: publicKey)) != nil else {
                 

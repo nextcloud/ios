@@ -405,7 +405,7 @@ cleanup:
     if (result && privateKeyData) {
         
         NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
-        
+
         NSData *encryptData = [self encryptAsymmetricString:TEST_KEY publicKey:publicKey];
         if (!encryptData)
             return nil;
@@ -429,9 +429,10 @@ cleanup:
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey
 {
     NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
-
-    //unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
     
+    unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
+    
+    /*
     char *pKey = "-----BEGIN PUBLIC KEY-----\n"
     "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwMu7BZF451FjUXYNr323\n"
     "aeeaCW2a7s6eHHs8Gz5qgQ/zDegub6is3jwdTZJyGcRcN1DxKQsLcOa3F18KSiCk\n"
@@ -441,6 +442,7 @@ cleanup:
     "3mDvY0x6HVDyCsueC9jtfZKnI2uwM2tbUU4iDkCaIYm6VE6h1qs5AkrxH1o6K2lC\n"
     "kQIDAQAB\n"
     "-----END PUBLIC KEY-----\n";
+    */
     
     BIO *bio = BIO_new_mem_buf(pKey, -1);
     RSA *rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, 0, NULL);
@@ -462,8 +464,8 @@ cleanup:
 
 - (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey
 {
-    //unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
-    
+    unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
+    /*
     char *pKey = "-----BEGIN RSA PRIVATE KEY-----\n"
     "MIIEowIBAAKCAQEAwMu7BZF451FjUXYNr323aeeaCW2a7s6eHHs8Gz5qgQ/zDegu\n"
     "b6is3jwdTZJyGcRcN1DxKQsLcOa3F18KSiCkyzIWjNV4YH7GdV7Ke2qLjcQUs7wk\n"
@@ -491,6 +493,7 @@ cleanup:
     "Xz8GFJecE8Goz8Mw2NigtBC4EystXievCwR3EztDyU5PgvEQV7d+0GLKtCG6QFqC\n"
     "gZKlwzSf9rLhfXYCrWgqg7ZXsiaADQePw+fU2dudERxmg3gokBFL\n"
     "-----END RSA PRIVATE KEY-----\n";
+    */
     
     BIO *bio = BIO_new_mem_buf(pKey, -1);
     RSA *rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL);
