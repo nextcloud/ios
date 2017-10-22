@@ -445,7 +445,11 @@ cleanup:
     */
     
     BIO *bio = BIO_new_mem_buf(pKey, -1);
-    RSA *rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, 0, NULL);
+    X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
+    EVP_PKEY *evpkey = X509_get_pubkey(x509);
+    RSA *rsa = EVP_PKEY_get1_RSA(evpkey);
+
+//RSA *rsa = PEM_read_bio_RSA_PUBKEY(bio, NULL, 0, NULL);
     BIO_free(bio);
 
     int maxSize = RSA_size(rsa);
