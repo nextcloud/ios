@@ -205,7 +205,6 @@
 {
     [self deselectFormRow:sender];
 
-    [CCUtility clearAllKeysEndToEnd:app.activeAccount];
     [app.endToEndInterface initEndToEndEncryption];
 }
 

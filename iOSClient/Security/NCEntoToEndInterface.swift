@@ -36,6 +36,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     @objc func initEndToEndEncryption() {
         
+        // Clear all keys 
+        CCUtility.clearAllKeysEnd(toEnd: appDelegate.activeAccount)
+        
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
         metadataNet.action = actionGetEndToEndPublicKeys
