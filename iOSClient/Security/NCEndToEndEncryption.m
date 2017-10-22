@@ -47,7 +47,6 @@
 #define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
 
 #define RSA_CIPHER                  RSA_PKCS1_PADDING
-#define ASYMMETRIC_STRING_TEST      @"Nextcloud a safe home for all your data"
 
 #define fileNameCertificate         @"cert.pem"
 #define fileNameCSR                 @"csr.pem"
@@ -376,7 +375,7 @@ cleanup:
 #pragma mark - No key pair exists on the server
 #
 
-- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
+- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase
 {
     NSMutableData *privateKeyData = [NSMutableData new];
     
@@ -406,16 +405,7 @@ cleanup:
     if (result && privateKeyData) {
         
         NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
-
-        NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
-        if (!encryptData)
-            return nil;
-        NSString *decryptString = [self decryptAsymmetricData:encryptData privateKey:privateKey];
-        
-        if (decryptString && [decryptString isEqualToString:ASYMMETRIC_STRING_TEST])
-            return privateKey;
-        else
-            return nil;
+        return privateKey;
         
     } else {
         

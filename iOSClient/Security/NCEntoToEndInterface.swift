@@ -27,6 +27,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
+    let ASYMMETRIC_STRING_TEST = "Nextcloud a safe home for all your data"
+    
     override init() {
     }
     
@@ -89,7 +91,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             guard let csr = NCEndToEndEncryption.sharedManager().createCSR(appDelegate.activeUserID, directoryUser: appDelegate.directoryUser) else {
                 
-                appDelegate.messageNotification("E2E Csr", description: "E2E Error to create Csr", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                appDelegate.messageNotification("E2E Csr", description: "Error to create Csr", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                 
                 NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPublicKeys, note: "E2E Error to create Csr", type: k_activityTypeFailure, verbose: false, activeUrl: "")
                 
@@ -160,13 +162,42 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
             
             let passphrase = passphraseTextField?.text
-            let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.activeAccount)
             
-            guard (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase, publicKey: publicKey)) != nil else {
+            guard let privateKey = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase)) else {
                 
-                self.appDelegate.messageNotification("E2E decrypt privateKey", description: "E2E Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                self.appDelegate.messageNotification("E2E decrypt privateKey", description: "Error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                 
                 NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Error to decrypt PrivateKey", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                
+                return
+            }
+            
+            // --------- verify privateKey encrypt/decrypt asymmetric key ---------
+            
+            let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.activeAccount)
+            guard let encryptData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(self.ASYMMETRIC_STRING_TEST, publicKey: publicKey) else {
+                
+                self.appDelegate.messageNotification("E2E Verify privateKey", description: "Error to encrypt asymmetric key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Verify privateKey, error to encrypt asymmetric key", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                
+                return
+            }
+            
+            guard let decryptString = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encryptData, privateKey: privateKey) else {
+                
+                self.appDelegate.messageNotification("E2E Verify privateKey", description: "Error to decrypt asymmetric key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Verify privateKey, error to decrypt asymmetric key", type: k_activityTypeFailure, verbose: false, activeUrl: "")
+                
+                return
+            }
+            
+            if (decryptString != self.ASYMMETRIC_STRING_TEST) {
+                
+                self.appDelegate.messageNotification("E2E Verify privateKey", description: "Error verify data encrypt/decrypt", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                
+                NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Verify privateKey, error verify data encrypt/decrypt", type: k_activityTypeFailure, verbose: false, activeUrl: "")
                 
                 return
             }
@@ -216,7 +247,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                                 
                 guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.activeUserID, directoryUser: self.appDelegate.directoryUser, passphrase: e2ePassphrase) else {
                     
-                    self.appDelegate.messageNotification("E2E privateKey", description: "E2E Error to create PrivateKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+                    self.appDelegate.messageNotification("E2E privateKey", description: "Error to create PrivateKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     
                     NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndPrivateKeyCipher, note: "E2E Error to create PrivateKey chiper", type: k_activityTypeFailure, verbose: false, activeUrl: "")
                     
