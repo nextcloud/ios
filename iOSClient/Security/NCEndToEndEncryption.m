@@ -41,14 +41,12 @@
 
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
-#define AES_KEY_LENGTH              16
-#define AES_IVEC_LENGTH             16
-#define AES_GCM_TAG_LENGTH          16
-
 #define IV_DELIMITER_ENCODED        @"fA==" // "|" base64 encoded
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
 #define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
+
+#define RSA_CIPHER                  RSA_PKCS1_PADDING
 #define ASYMMETRIC_STRING_TEST      @"Nextcloud a safe home for all your data"
 
 #define fileNameCertificate         @"cert.pem"
@@ -56,6 +54,9 @@
 #define fileNamePrivateKey          @"privateKey.pem"
 #define fileNamePubliceKey          @"publicKey.pem"
 
+#define AES_KEY_LENGTH              16
+#define AES_IVEC_LENGTH             16
+#define AES_GCM_TAG_LENGTH          16
 
 @interface NCEndToEndEncryption ()
 {
@@ -440,7 +441,7 @@ cleanup:
 
     unsigned char *output = (unsigned char *) malloc([plainData length]);
     
-    int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], output, rsa, RSA_PKCS1_PADDING);
+    int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], output, rsa, RSA_CIPHER);
     if(encrypted_length == -1) {
         char buffer[500];
         ERR_error_string(ERR_get_error(), buffer);
@@ -461,7 +462,7 @@ cleanup:
     
     unsigned char *decrypted = (unsigned char *) malloc([chiperData length]);
     
-    int decrypted_length = RSA_private_decrypt((int)[chiperData length], [chiperData bytes], decrypted, rsa, RSA_PKCS1_PADDING);
+    int decrypted_length = RSA_private_decrypt((int)[chiperData length], [chiperData bytes], decrypted, rsa, RSA_CIPHER);
     if(decrypted_length == -1) {
         char buffer[500];
         ERR_error_string(ERR_get_error(), buffer);
