@@ -296,7 +296,7 @@
     viewController.touchIDManager = touchIDManager;
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].encrypted;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -331,7 +331,7 @@
         viewController.title = NSLocalizedString(@"_passcode_activate_", nil);
         
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].encrypted;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
                
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -363,7 +363,7 @@
         viewController.title = NSLocalizedString(@"_disabling_passcode_", nil);
             
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].encrypted;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];

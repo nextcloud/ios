@@ -319,7 +319,7 @@
     viewController.touchIDManager = touchIDManager;
     viewController.title = [NCBrandOptions sharedInstance].brand;
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].encrypted;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navController animated:YES completion:nil];
