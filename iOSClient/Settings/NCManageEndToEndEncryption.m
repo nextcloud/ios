@@ -101,15 +101,30 @@
         
         // Section PASSPHRASE -------------------------------------------------
         
-        section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
+        section = [XLFormSectionDescriptor formSection];
         [form addFormSection:section];
         
         // Read Passphrase
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"readPassphrase" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_read_passphrase_", nil)];
+        [row.cellConfig setObject:[UIImage imageNamed:@"e2eReadPassphrase"] forKey:@"imageView.image"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(readPassphrase:);
+        [section addFormRow:row];
+        
+        // Section DELETE -------------------------------------------------
+        
+        section = [XLFormSectionDescriptor formSection];
+        [form addFormSection:section];
+        
+        // remove locally Encryption
+        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"removeLocallyEncryption" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_e2e_settings_remove_", nil)];
+        [row.cellConfig setObject:[UIImage imageNamed:@"e2eRemoveLocallyEncryption"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+        [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+        row.action.formSelector = @selector(removeLocallyEncryption:);
         [section addFormRow:row];
         
     } else {
@@ -150,14 +165,6 @@
     row.action.formSelector = @selector(deletePrivateKey:);
     [section addFormRow:row];
     
-    // Delete locally Encryption
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"deleteLocallyEncryption" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"Delete locally encryption", nil)];
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
-    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
-    row.action.formSelector = @selector(deleteLocallyEncryption:);
-    [section addFormRow:row];
-    
 #endif
     
     self.form = form;
@@ -171,35 +178,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Action ===
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)deletePublicKey:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-    metadataNet.action = actionDeleteEndToEndPublicKey;
-    [app addNetworkingOperationQueue:app.netQueue delegate:app.endToEndInterface metadataNet:metadataNet];
-}
-
-- (void)deletePrivateKey:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-
-    metadataNet.action = actionDeleteEndToEndPrivateKey;
-    [app addNetworkingOperationQueue:app.netQueue delegate:app.endToEndInterface metadataNet:metadataNet];
-}
-
-- (void)deleteLocallyEncryption:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    [CCUtility clearAllKeysEndToEnd:app.activeAccount];
-    
-    [self initializeForm];
-}
 
 - (void)startE2E:(XLFormRowDescriptor *)sender
 {
@@ -248,6 +226,67 @@
     }
 }
 
+
+- (void)removeLocallyEncryption:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    if ([[CCUtility getBlockCode] length]) {
+        
+        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
+        viewController.delegate = self;
+        viewController.fromType = CCBKPasscodeFromRemoveEncryption;
+        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
+        
+        if ([CCUtility getSimplyBlockCode]) {
+            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
+            viewController.passcodeInputView.maximumLength = 6;
+        } else {
+            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
+            viewController.passcodeInputView.maximumLength = 64;
+        }
+        
+        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
+        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
+        viewController.touchIDManager = touchIDManager;
+        
+        viewController.title = NSLocalizedString(@"_e2e_settings_remove_", nil);
+        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
+        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].encrypted;
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        [self presentViewController:navigationController animated:YES completion:nil];
+        
+    } else {
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:NSLocalizedString(@"_e2e_settings_lock_not_active_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        }];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
+
+- (void)deletePublicKey:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionDeleteEndToEndPublicKey;
+    [app addNetworkingOperationQueue:app.netQueue delegate:app.endToEndInterface metadataNet:metadataNet];
+}
+
+- (void)deletePrivateKey:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    
+    metadataNet.action = actionDeleteEndToEndPrivateKey;
+    [app addNetworkingOperationQueue:app.netQueue delegate:app.endToEndInterface metadataNet:metadataNet];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === BKPasscodeViewController ===
 #pragma --------------------------------------------------------------------------------------------
@@ -281,16 +320,37 @@
 {
     [aViewController dismissViewControllerAnimated:YES completion:nil];
     
-    NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:app.activeAccount];
-    NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
+    if (aViewController.fromType == CCBKPasscodeFromCheckPassphrase) {
     
-    NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
+        NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:app.activeAccount];
+        NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
     
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    }];
-    [alertController addAction:okAction];
-    [self presentViewController:alertController animated:YES completion:nil];
+        NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
+    
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        }];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+    
+    if (aViewController.fromType == CCBKPasscodeFromRemoveEncryption) {
+     
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_e2e_settings_remove_", nil) message:NSLocalizedString(@"_e2e_settings_remove_message_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [CCUtility clearAllKeysEndToEnd:app.activeAccount];
+            [self initializeForm];
+        }];
+        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+            NSLog(@"Cancel action");
+        }];
+        
+        [alertController addAction:okAction];
+        [alertController addAction:cancelAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
 }
 
 @end
