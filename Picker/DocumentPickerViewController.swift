@@ -679,18 +679,19 @@ extension DocumentPickerViewController: UITableViewDataSource {
 
         if metadata!.directory == false {
             
-            let fileNamePath = "\(directoryUser)/\(metadata!.fileID)"
-            
-            if FileManager.default.fileExists(atPath: fileNamePath) && metadata!.typeFile != k_metadataTypeFile_document {
-                
-                downloadFileSuccess(recordMetadata.fileID, serverUrl: self.serverUrl!, selector: selectorLoadFileView, selectorPost: nil)
-                
-            } else {
-            
-                CCNetworking.shared().downloadFile(metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
-
-                hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
+            // Delete old record metadata and file
+            do {
+                try FileManager.default.removeItem(atPath: "\(directoryUser)/\(metadata!.fileID)")
+            } catch _ {
             }
+            do {
+                try FileManager.default.removeItem(atPath: "\(directoryUser)/\(metadata!.fileID).ico")
+            } catch {
+            }
+            
+            CCNetworking.shared().downloadFile(metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
+
+            hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
             
         } else {
                         
@@ -733,7 +734,6 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
         self.navigationController?.pushViewController(nextViewController, animated: true)
     }
-
 }
 
 // MARK: - Class UITableViewCell
