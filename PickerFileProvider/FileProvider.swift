@@ -94,7 +94,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         // Called at some point after the file has changed; the provider may then trigger an upload
                 
         let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
-        NSLog("Item changed at URL %@ %lu", url as NSURL, fileSize)
+        NSLog("[LOG] Item changed at URL %@ %lu", url as NSURL, fileSize)
 
         guard let account = NCManageDatabase.sharedInstance.getAccountActive() else {
             self.stopProvidingItem(at: url)

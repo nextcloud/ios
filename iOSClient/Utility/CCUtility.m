@@ -548,7 +548,7 @@
     [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
 
     if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
-        NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
+        NSLog(@"[LOG] Date '%@' could not be parsed: %@", dateString, error);
         date = [NSDate date];
     }
 

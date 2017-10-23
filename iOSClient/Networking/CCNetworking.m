@@ -422,7 +422,7 @@
             
                 NSString *dateString = [fields objectForKey:@"Date"];
                 if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
-                    NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
+                    NSLog(@"[LOG] Date '%@' could not be parsed: %@", dateString, error);
                     date = [NSDate date];
                 }
             
@@ -467,7 +467,7 @@
                 NSString *dateString = [fields objectForKey:@"Date"];
                 if (dateString) {
                     if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
-                        NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
+                        NSLog(@"[LOG] Date '%@' could not be parsed: %@", dateString, error);
                         date = [NSDate date];
                     }
                 } else {
@@ -626,7 +626,7 @@
             
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
     } else {
-        NSLog(@"metadata not found");
+        NSLog(@"[LOG] metadata not found");
     }
 }
 

@@ -176,7 +176,7 @@
     
     BIO_read(csrBIO, keyBytes, len);
     _csrData = [NSData dataWithBytes:keyBytes length:len];
-    NSLog(@"\n%@", [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding]);
+    NSLog(@"[LOG] \n%@", [[NSString alloc] initWithData:_csrData encoding:NSUTF8StringEncoding]);
     
     // PublicKey
     BIO *publicKeyBIO = BIO_new(BIO_s_mem());
@@ -187,7 +187,7 @@
     
     BIO_read(publicKeyBIO, keyBytes, len);
     _publicKeyData = [NSData dataWithBytes:keyBytes length:len];
-    NSLog(@"\n%@", [[NSString alloc] initWithData:_publicKeyData encoding:NSUTF8StringEncoding]);
+    NSLog(@"[LOG] \n%@", [[NSString alloc] initWithData:_publicKeyData encoding:NSUTF8StringEncoding]);
     
     // PrivateKey
     BIO *privateKeyBIO = BIO_new(BIO_s_mem());
@@ -198,7 +198,7 @@
     
     BIO_read(privateKeyBIO, keyBytes, len);
     _privateKeyData = [NSData dataWithBytes:keyBytes length:len];
-    NSLog(@"\n%@", [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding]);
+    NSLog(@"[LOG] \n%@", [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding]);
     
     if(keyBytes)
         free(keyBytes);
@@ -253,7 +253,7 @@ cleanup:
         fclose(f);
         return NO;
     }
-    NSLog(@"Saved cert to %@", certificatePath);
+    NSLog(@"[LOG] Saved cert to %@", certificatePath);
     fclose(f);
     
     // PublicKey
@@ -264,7 +264,7 @@ cleanup:
         fclose(f);
         return NO;
     }
-    NSLog(@"Saved publicKey to %@", publicKeyPath);
+    NSLog(@"[LOG] Saved publicKey to %@", publicKeyPath);
     fclose(f);
     
     // Here you write the private key (pkey) to disk. OpenSSL will encrypt the
@@ -279,7 +279,7 @@ cleanup:
         fclose(f);
         return NO;
     }
-    NSLog(@"Saved privatekey to %@", privatekeyPath);
+    NSLog(@"[LOG] Saved privatekey to %@", privatekeyPath);
     fclose(f);
     
     // CSR Request sha256
@@ -291,7 +291,7 @@ cleanup:
         fclose(f);
         return NO;
     }
-    NSLog(@"Saved csr to %@", csrPath);
+    NSLog(@"[LOG] Saved csr to %@", csrPath);
     fclose(f);
     
     return YES;
@@ -310,7 +310,7 @@ cleanup:
         fclose(f);
         return NO;
     }
-    NSLog(@"Saved p12 to %@", path);
+    NSLog(@"[LOG] Saved p12 to %@", path);
     fclose(f);
     
     return YES;
@@ -453,7 +453,7 @@ cleanup:
     if(encrypted_length == -1) {
         char buffer[500];
         ERR_error_string(ERR_get_error(), buffer);
-        NSLog(@"%@",[NSString stringWithUTF8String:buffer]);
+        NSLog(@"[LOG]  %@",[NSString stringWithUTF8String:buffer]);
         return nil;
     }
     
@@ -483,7 +483,7 @@ cleanup:
     if(decrypted_length == -1) {
         char buffer[500];
         ERR_error_string(ERR_get_error(), buffer);
-        NSLog(@"%@",[NSString stringWithUTF8String:buffer]);
+        NSLog(@"[LOG] %@",[NSString stringWithUTF8String:buffer]);
         return nil;
     }
     

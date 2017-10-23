@@ -629,7 +629,7 @@
     [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:app.activeAccount];
     (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
 
-    NSLog(@"Align Photo Library %lu", (unsigned long)[assets count]);
+    NSLog(@"[LOG] Align Photo Library %lu", (unsigned long)[assets count]);
 }
 
 @end

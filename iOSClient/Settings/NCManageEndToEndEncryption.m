@@ -344,7 +344,7 @@
         }];
         
         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-            NSLog(@"Cancel action");
+            NSLog(@"[LOG] Cancel action");
         }];
         
         [alertController addAction:okAction];

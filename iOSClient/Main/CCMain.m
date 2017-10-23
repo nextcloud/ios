@@ -650,12 +650,12 @@
 
 - (void)documentMenuWasCancelled:(UIDocumentMenuViewController *)documentMenu
 {
-    NSLog(@"Cancelled");
+    NSLog(@"[LOG] Cancelled");
 }
 
 - (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller
 {
-    NSLog(@"Cancelled");
+    NSLog(@"[LOG] Cancelled");
 }
 
 - (void)documentMenu:(UIDocumentMenuViewController *)documentMenu didPickDocumentPicker:(UIDocumentPickerViewController *)documentPicker
@@ -811,7 +811,7 @@
             }];
             
             UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                NSLog(@"Cancel action");
+                NSLog(@"[LOG] Cancel action");
             }];
             
             UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -3920,7 +3920,7 @@
                                         }];
                                         
                                         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                            NSLog(@"Cancel action");
+                                            NSLog(@"[LOG] Cancel action");
                                         }];
                                         
                                         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
@@ -4124,7 +4124,7 @@
                                     }];
                                     
                                     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                        NSLog(@"Cancel action");
+                                        NSLog(@"[LOG] Cancel action");
                                     }];
                                     
                                     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
