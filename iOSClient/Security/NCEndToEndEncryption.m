@@ -595,9 +595,10 @@ cleanup:
     [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
     
     // set up tag
-    //unsigned char cTag[AES_GCM_TAG_LENGTH];
-    //bzero(cTag, AES_GCM_TAG_LENGTH);
-    //[tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
+    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
+    unsigned char cTag[AES_GCM_TAG_LENGTH];
+    bzero(cTag, AES_GCM_TAG_LENGTH);
+    [tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
     
     /* verify tag if exists*/
     if (tag) {
