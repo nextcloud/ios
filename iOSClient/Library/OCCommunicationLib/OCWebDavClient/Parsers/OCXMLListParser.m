@@ -84,6 +84,10 @@
         
         //If has lenght, there are an item
         if ([_xmlChars length]) {
+            
+            //BUG ?? https://github.com/nextcloud/server/issues/6925
+            _xmlChars = (NSMutableString *)[_xmlChars stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
+            
             //Create FileDto
             _currentFile = [OCFileDto new];
              _currentFile.isDirectory = NO;
@@ -196,11 +200,6 @@
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
-    
-    //BUG ?? https://github.com/nextcloud/server/issues/6925
-    
-    string = [string stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
-    
     [_xmlChars appendString:string];
 }
 
