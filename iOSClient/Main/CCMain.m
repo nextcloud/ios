@@ -4990,7 +4990,7 @@
             
 #ifdef DEBUG
             // TEST ENCRYPTED/DECRYPTED
-            if ([_metadata.fileName containsString:@"enc.dms"]) {
+            if ([_metadata.fileName containsString:@".dms"]) {
                 [[NCEndToEndEncryption sharedManager] decryptMetadata:_metadata activeUrl:app.directoryUser];
             }
             
