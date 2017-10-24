@@ -196,6 +196,11 @@
 }
 
 - (void)parser:(NSXMLParser *)parser foundCharacters:(NSString *)string {
+    
+    //BUG ?? https://github.com/nextcloud/server/issues/6925
+    
+    string = [string stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
+    
     [_xmlChars appendString:string];
 }
 
