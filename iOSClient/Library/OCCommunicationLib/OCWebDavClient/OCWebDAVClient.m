@@ -276,20 +276,40 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     
-    body = @"<?xml version=\"1.0\"?><d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:basicsearch><d:select><d:prop>";
-    
-    
-    // OCFileDto
-    body = [body stringByAppendingString:@"<d:resourcetype/><oc:fileid/><d:getcontenttype/><d:getetag/><oc:size/><d:getcontentlength/><d:getlastmodified/><oc:id/><oc:permissions/><oc:favorite/>"];
-    
-    if (dateLastModified.length > 0) {
-        
-         body = [NSString stringWithFormat:@"%@</d:prop></d:select><d:from><d:scope><d:href>/files/%@%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", body, userID, folder, fileName];
-        
-    } else {
-        
-         body = [NSString stringWithFormat:@"%@</d:prop></d:select><d:from><d:scope><d:href>/files/%@%@</d:href><d:depth>infinity</d:depth></d:scope></d:from><d:where><d:like><d:prop><d:displayname/></d:prop><d:literal>%@</d:literal></d:like></d:where><d:orderby/></d:basicsearch></d:searchrequest>", body, userID, folder, fileName];
-    }
+    body = [NSString stringWithFormat: @""
+            "<?xml version=\"1.0\"?>"
+            "<d:searchrequest xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\">"
+                "<d:basicsearch>"
+                    "<d:select>"
+                        "<d:prop>"
+                            "<d:getlastmodified />"
+                            "<d:getetag />"
+                            "<d:getcontenttype />"
+                            "<d:resourcetype/>"
+                            "<d:getcontentlength />"
+                            "<oc:fileid/>"
+                            "<oc:id/>"
+                            "<oc:permissions />"
+                            "<oc:size />"
+                            "<oc:favorite/>"
+                        "</d:prop>"
+                    "</d:select>"
+                    "<d:from>"
+                        "<d:scope>"
+                            "<d:href>/files/%@%@</d:href>"
+                            "<d:depth>infinity</d:depth>"
+                        "</d:scope>"
+                    "</d:from>"
+                    "<d:where>"
+                        "<d:like>"
+                            //"<d:prop><d:getcontenttype/></d:prop>"
+                            //"<d:literal>image/%</d:literal>"
+                            "<d:prop><d:displayname/></d:prop>"
+                            "<d:literal>%@</d:literal>"
+                        "</d:like>"
+                    "</d:where>"
+                "</d:basicsearch>"
+            "</d:searchrequest>", userID, folder, fileName];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
