@@ -327,8 +327,17 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
     
-    NSString *body = [NSString stringWithFormat:@"<?xml version=\"1.0\"?><d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:set><d:prop><oc:favorite>%i</oc:favorite></d:prop></d:set></d:propertyupdate>", (favorite ? 1 : 0)];
-                      
+    NSString *body;
+    body = [NSString stringWithFormat: @""
+            "<?xml version=\"1.0\"?>"
+            "<d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\">"
+                "<d:set>"
+                    "<d:prop>"
+                        "<oc:favorite>%i</oc:favorite>"
+                    "</d:prop>"
+                "</d:set>"
+            "</d:propertyupdate>", (favorite ? 1 : 0)];
+    
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
@@ -345,19 +354,27 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSParameterAssert(success);
     
     _requestMethod = @"REPORT";
+        
+    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:[NSString stringWithFormat:@"%@/files/%@%@", path, userID, folder] parameters:nil];
     
-    //REPORT remote.php/dav/files/user/path/to/folder
-
-    path = [NSString stringWithFormat:@"%@/files/%@%@", path, userID, folder];
-    
-    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil];
-    
-    body = @"<?xml version=\"1.0\"?><oc:filter-files xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><oc:filter-rules><oc:favorite>1</oc:favorite></oc:filter-rules><d:prop>"; //<oc:id/></d:prop></oc:filter-files>";
-    
-    // OCFileDto
-    body = [body stringByAppendingString:@"<d:resourcetype/><oc:fileid/><d:getetag/><d:getcontentlength/><oc:size/><d:getlastmodified/><oc:id/><oc:permissions/><oc:favorite/>"];
-    
-    body = [NSString stringWithFormat:@"%@</d:prop></oc:filter-files>", body];
+    body = [NSString stringWithFormat: @""
+            "<?xml version=\"1.0\"?>"
+            "<oc:filter-files xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
+                "<d:prop>"
+                    "<d:resourcetype/>"
+                    "<oc:fileid/>"
+                    "<d:getetag/>"
+                    "<d:getcontentlength/>"
+                    "<oc:size/>"
+                    "<d:getlastmodified/>"
+                    "<oc:id/>"
+                    "<oc:permissions/>"
+                    "<oc:favorite/>"
+                "</d:prop>"
+                "<oc:filter-rules>"
+                    "<oc:favorite>1</oc:favorite>"
+                "</oc:filter-rules>"
+            "</oc:filter-files>"];
     
     [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"text/xml" forHTTPHeaderField:@"Content-Type"];
