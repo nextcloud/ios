@@ -1535,6 +1535,7 @@
     [metadataNet setAccount: self.account];
     [metadataNet setAction: self.action];
     [metadataNet setAssetLocalIdentifier: self.assetLocalIdentifier];
+    [metadataNet setContentType: self.contentType];
     [metadataNet setDate: self.date];
     [metadataNet setDelegate: self.delegate];
     [metadataNet setDepth: self.depth];
