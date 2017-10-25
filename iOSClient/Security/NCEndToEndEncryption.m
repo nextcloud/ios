@@ -402,6 +402,10 @@ cleanup:
     NSString *initVectorBase64 = [privateKeyCipher substringFromIndex:idx];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:initVectorBase64 options:0];
     
+    //TEST
+    //keyData = [[NSData alloc] initWithBase64EncodedString:@"djv1aVEVz6GROxRjme7Sx8jRJ6qpobRi8auVZnPfuN0=" options:0];
+    //initVectorData = [[NSData alloc] initWithBase64EncodedString:@"XYD93yGS2viPrB1e" options:0];
+    
     BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH initVectorData:initVectorData tag:nil];
     
     if (result && privateKeyData) {
@@ -539,7 +543,7 @@ cleanup:
     }
 }
 
-// encrypt data AES GCM NOPADING
+// Encryption using GCM mode
 - (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData keyLen:(int)keyLen initVectorData:(NSData *)initVectorData tagData:(NSData **)tagData
 {
     int status = 0;
@@ -593,7 +597,7 @@ cleanup:
     return status; // OpenSSL uses 1 for success
 }
 
-// decrypt data AES GCM NOPADING
+// Decryption using GCM mode
 - (BOOL)decryptData:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData keyLen:(int)keyLen initVectorData:(NSData *)initVectorData tag:(NSString *)tag
 {    
     int status = 0;
