@@ -196,6 +196,8 @@
         _xmlBucket = nil;
     } else if ([elementName isEqualToString:@"oc:favorite"]) {
         _currentFile.isFavorite = [_xmlChars boolValue];
+    } else if ([elementName isEqualToString:@"nc:is-encrypted"]) {
+        _currentFile.isEncrypted = [_xmlChars boolValue];
     }
 }
 

@@ -47,5 +47,7 @@
 @property (nonatomic, copy) NSString *permissions;
 @property (nonatomic, copy) NSString *ocId;
 @property BOOL isFavorite;
+@property BOOL isEncrypted;
+
 
 @end
