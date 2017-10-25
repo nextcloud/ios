@@ -601,15 +601,17 @@ cleanup:
     [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
     
     // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cIv length:AES_KEY_LENGTH];
+    printData = [NSData dataWithBytes:cIv length:AES_IVEC_LENGTH];
     NSLog(@"IV %@", [printData base64EncodedStringWithOptions:0]);
     // -----------------------
     
     // set up tag
+    /*
     NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
     unsigned char cTag[AES_GCM_TAG_LENGTH];
     bzero(cTag, AES_GCM_TAG_LENGTH);
     [tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
+    */
     
     /* verify tag if exists*/
     if (tag) {
