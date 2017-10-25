@@ -350,7 +350,7 @@
 "unknow"                        = "UNKNOWN";
 "video"                         = "VIDEO";
 
-"_file_del_only_local_"         = "File not present on the server";
+"_file_del_only_local_"         = "File not present on server";
 
 "_copy_file_"                   = "Copy file";
 "_copy_files_"                  = "Copy files";
@@ -367,7 +367,7 @@
 
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
 "_password_pdf_error_"          = "Wrong password";
-"_error_download_photobrowser_" = "Error: Unable to download the photo";
+"_error_download_photobrowser_" = "Error: Unable to download photo";
 
 // Share
 
@@ -464,8 +464,8 @@
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
 "_preview_filename_"                = "Example preview of filename. You can use the mask MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm for date/time";
-"_forbidden_characters_"            = "Invalid character in the filename";
-"_add_filenametype_"                = "Add type in filename";
+"_forbidden_characters_"            = "Invalid character in filename";
+"_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
 
 // Notification
@@ -492,15 +492,15 @@
 // EndToEnd Encryption
 
 "_e2e_settings_title_"              = "Encryption";
-"_e2e_settings_"                    = "End To End Encryption";
-"_e2e_settings_start_"              = "Start End To End Encryption";
-"_e2e_settings_not_available_"      = "End To End Encryption not available";
-"_e2e_settings_activated_"          = "End To End Encryption activated";
-"_e2e_settings_view_passphrase_"    = "This 12 word phrase is like a very strong password: It provides full access to view and use your encrypted files. Please write it down and keep it somewhere safe.";
+"_e2e_settings_"                    = "End-to-end encryption";
+"_e2e_settings_start_"              = "Start end-to-end encryption";
+"_e2e_settings_not_available_"      = "End-to-end encryption not available";
+"_e2e_settings_activated_"          = "End-to-end encryption activated";
+"_e2e_settings_view_passphrase_"    = "This 12 word phrase is a very strong password providing full access to view and use your encrypted files. Please write it down and keep it somewhere safe.";
 "_e2e_settings_read_passphrase_"    = "Read passphrase";
 "_e2e_settings_lock_not_active_"    = "Lock not active, go back to \"Settings\" and activate it";
 "_e2e_settings_the_passphrase_is_"  = "The passphrase is:";
 "_e2e_passphrase_request_title_"    = "Request passphrase";
-"_e2e_passphrase_request_message_"  = "Insert the 12 word";
-"_e2e_settings_remove_"             = "Remove locally the encryption";
-"_e2e_settings_remove_message_"      = "By removing the encryption you also lose the passphrase, go ahead ?";
+"_e2e_passphrase_request_message_"  = "Insert the 12 words";
+"_e2e_settings_remove_"             = "Remove the encryption locally";
+"_e2e_settings_remove_message_"     = "Confirm removing encryption along with the passphrase.";
