@@ -54,7 +54,8 @@
 #define fileNamePrivateKey          @"privateKey.pem"
 #define fileNamePubliceKey          @"publicKey.pem"
 
-#define AES_KEY_LENGTH              16
+#define AES_KEY_128_LENGTH          16
+#define AES_KEY_256_LENGTH          32
 #define AES_IVEC_LENGTH             16
 #define AES_GCM_TAG_LENGTH          16
 
@@ -352,7 +353,7 @@ cleanup:
     
     NSData *initVectorData = [self generateIV:AES_IVEC_LENGTH];
 
-    BOOL result = [self encryptData:_privateKeyData cipherData:&privateKeyCipherData keyData:keyData initVectorData:initVectorData tagData:nil];
+    BOOL result = [self encryptData:_privateKeyData cipherData:&privateKeyCipherData keyData:keyData keyLen:AES_KEY_256_LENGTH initVectorData:initVectorData tagData:nil];
     
     if (result && privateKeyCipherData) {
         
@@ -401,7 +402,7 @@ cleanup:
     NSString *initVectorBase64 = [privateKeyCipher substringFromIndex:idx];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:initVectorBase64 options:0];
     
-    BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData initVectorData:initVectorData tag:nil];
+    BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH initVectorData:initVectorData tag:nil];
     
     if (result && privateKeyData) {
         
@@ -511,7 +512,7 @@ cleanup:
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
     
-    BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData initVectorData:initVectorData tagData:&tagData];
+    BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH initVectorData:initVectorData tagData:&tagData];
     
     if (cipherData != nil && result) {
         [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"encrypted.dms"] atomically:YES];
@@ -528,7 +529,7 @@ cleanup:
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
     NSString *tag = @"PboI9tqHHX3QeAA22PIu4w==";
     
-    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData initVectorData:initVectorData tag:tag];
+    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH initVectorData:initVectorData tag:tag];
     
     if (plainData != nil && result) {
         [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted"] atomically:YES];
@@ -536,15 +537,15 @@ cleanup:
 }
 
 // encrypt data AES 256 GCM NOPADING
-- (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tagData:(NSData **)tagData
+- (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData keyLen:(int)keyLen initVectorData:(NSData *)initVectorData tagData:(NSData **)tagData
 {
     int status = 0;
     *cipherData = [NSMutableData dataWithLength:[plainData length]];
     
     // set up key
-    unsigned char cKey[AES_KEY_LENGTH];
+    unsigned char cKey[keyLen];
     bzero(cKey, sizeof(cKey));
-    [keyData getBytes:cKey length:AES_KEY_LENGTH];
+    [keyData getBytes:cKey length:keyLen];
     
     // set up ivec
     unsigned char cIv[AES_IVEC_LENGTH];
@@ -578,7 +579,7 @@ cleanup:
 }
 
 // decrypt data AES 256 GCM NOPADING
-- (BOOL)decryptData:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData initVectorData:(NSData *)initVectorData tag:(NSString *)tag
+- (BOOL)decryptData:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData keyLen:(int)keyLen initVectorData:(NSData *)initVectorData tag:(NSString *)tag
 {    
     int status = 0;
     int numberOfBytes = 0;
@@ -586,12 +587,12 @@ cleanup:
     *plainData = [NSMutableData dataWithLength:[cipherData length]];
     
     // set up key
-    unsigned char cKey[AES_KEY_LENGTH];
+    unsigned char cKey[keyLen];
     bzero(cKey, sizeof(cKey));
-    [keyData getBytes:cKey length:AES_KEY_LENGTH];
+    [keyData getBytes:cKey length:keyLen];
     
     // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cKey length:AES_KEY_LENGTH];
+    printData = [NSData dataWithBytes:cKey length:keyLen];
     NSLog(@"Key %@", [printData base64EncodedStringWithOptions:0]);
     // -----------------------
     
