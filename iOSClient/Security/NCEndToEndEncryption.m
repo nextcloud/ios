@@ -573,12 +573,6 @@ cleanup:
     status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
     
     if (status && tagData) {
-        
-        unsigned char cTag[AES_GCM_TAG_LENGTH];
-        bzero(cTag, AES_GCM_TAG_LENGTH);
-        
-        status = EVP_CIPHER_CTX_ctrl (ctx, EVP_CTRL_GCM_GET_TAG, AES_GCM_TAG_LENGTH, cTag);
-        *tagData = [NSData dataWithBytes:cTag length:AES_GCM_TAG_LENGTH];
     }
     
     EVP_CIPHER_CTX_free(ctx);
@@ -613,7 +607,7 @@ cleanup:
     NSLog(@"IV %@", [printData base64EncodedStringWithOptions:0]);
     // -----------------------
     
-    /* verify tag if exists*/
+    // Verify tag if exists
     if (tag) {
         
         NSData *authenticationTagData = [cipherData subdataWithRange:NSMakeRange([cipherData length] - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
@@ -650,12 +644,6 @@ cleanup:
     status = EVP_DecryptUpdate (ctx, ctBytes, &numberOfBytes, [cipherData bytes], (int)[cipherData length]);
     if (! status)
         return NO;
-    
-    
-    /* Finalise the decryption. A positive return value indicates success, anything else is a failure - the plaintext is n trustworthy. */
-    //status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
-    //if (!status)
-    //    return NO;
     
     // Without test Final
     EVP_DecryptFinal_ex (ctx, NULL, &numberOfBytes);
