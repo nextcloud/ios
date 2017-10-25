@@ -927,6 +927,7 @@
     
     metadata.account = activeAccount;
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
+    metadata.encrypted = itemDto.isEncrypted;
     metadata.directory = itemDto.isDirectory;
     metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
