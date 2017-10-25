@@ -539,10 +539,11 @@ cleanup:
     }
 }
 
-// encrypt data AES 256 GCM NOPADING
+// encrypt data AES GCM NOPADING
 - (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData keyLen:(int)keyLen initVectorData:(NSData *)initVectorData tagData:(NSData **)tagData
 {
     int status = 0;
+    int numberOfBytes = 0;
     *cipherData = [NSMutableData dataWithLength:[plainData length]];
     
     // set up key
@@ -555,31 +556,44 @@ cleanup:
     bzero(cIv, AES_IVEC_LENGTH);
     [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
     
-    // set up to Encrypt AES 128 GCM
-    int numberOfBytes = 0;
+    // Create and initialise the context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     
+    // Initialise the encryption operation
     if (keyLen == AES_KEY_128_LENGTH)
         status = EVP_EncryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
     else if (keyLen == AES_KEY_256_LENGTH)
         status = EVP_EncryptInit_ex (ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
     
-    // set the key and ivec
-    EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
-    EVP_EncryptInit_ex (ctx, NULL, NULL, cKey, cIv);
+    // Set IV length if default 12 bytes (96 bits) is not appropriate
+    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
+    if (! status)
+        return NO;
     
+    // Initialise key and IV
+    status = EVP_EncryptInit_ex (ctx, NULL, NULL, cKey, cIv);
+    if (! status)
+        return NO;
+    
+    // Provide the message to be encrypted, and obtain the encrypted output
     unsigned char * ctBytes = [*cipherData mutableBytes];
-    EVP_EncryptUpdate (ctx, ctBytes, &numberOfBytes, [plainData bytes], (int)[plainData length]);
+    status = EVP_EncryptUpdate (ctx, ctBytes, &numberOfBytes, [plainData bytes], (int)[plainData length]);
+    if (! status)
+        return NO;
+    
+    //Finalise the encryption
     status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
     
     if (status && tagData) {
     }
     
+    // Free
     EVP_CIPHER_CTX_free(ctx);
-    return (status != 0); // OpenSSL uses 1 for success
+    
+    return status; // OpenSSL uses 1 for success
 }
 
-// decrypt data AES 256 GCM NOPADING
+// decrypt data AES GCM NOPADING
 - (BOOL)decryptData:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData keyLen:(int)keyLen initVectorData:(NSData *)initVectorData tag:(NSString *)tag
 {    
     int status = 0;
@@ -645,8 +659,10 @@ cleanup:
     if (! status)
         return NO;
     
-    // Without test Final
+    //Finalise the encryption
     EVP_DecryptFinal_ex (ctx, NULL, &numberOfBytes);
+    
+    // Free
     EVP_CIPHER_CTX_free(ctx);
     
     return status; // OpenSSL uses 1 for success
