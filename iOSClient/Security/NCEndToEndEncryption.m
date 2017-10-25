@@ -589,6 +589,11 @@ cleanup:
     bzero(cKey, sizeof(cKey));
     [keyData getBytes:cKey length:AES_KEY_LENGTH];
     
+    // ----- DEBUG Print
+    NSData *printKeyData = [NSData dataWithBytes:cKey length:AES_KEY_LENGTH];
+    NSLog(@"%@", [printKeyData base64EncodedStringWithOptions:0]);
+    // -----------------
+    
     // set up ivec
     unsigned char cIv[AES_IVEC_LENGTH];
     bzero(cIv, AES_IVEC_LENGTH);

@@ -4650,11 +4650,16 @@
         
     } else {
         
-        if (metadata.directory)
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
-        else
+        if (metadata.directory) {
+            
+            if (metadata.encrypted)
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[UIColor redColor]];
+            else
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
+
+        } else {
             cell.file.image = [UIImage imageNamed:metadata.iconName];
-        
+        }
         if (metadata.thumbnailExists)
             [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     }
