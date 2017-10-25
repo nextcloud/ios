@@ -406,7 +406,10 @@ cleanup:
     
     if (result && privateKeyData) {
         
-        NSString *privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
+        NSString *privateKey;
+        
+        privateKey = [privateKeyData base64EncodedStringWithOptions:0];
+        privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
         
         NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
@@ -555,7 +558,11 @@ cleanup:
     // set up to Encrypt AES 128 GCM
     int numberOfBytes = 0;
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    EVP_EncryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
+    
+    if (keyLen == AES_KEY_128_LENGTH)
+        status = EVP_EncryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
+    else if (keyLen == AES_KEY_256_LENGTH)
+        status = EVP_EncryptInit_ex (ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
     
     // set the key and ivec
     EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
@@ -606,14 +613,6 @@ cleanup:
     NSLog(@"IV %@", [printData base64EncodedStringWithOptions:0]);
     // -----------------------
     
-    // set up tag
-    /*
-    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
-    unsigned char cTag[AES_GCM_TAG_LENGTH];
-    bzero(cTag, AES_GCM_TAG_LENGTH);
-    [tagData getBytes:cTag length:AES_GCM_TAG_LENGTH];
-    */
-    
     /* verify tag if exists*/
     if (tag) {
         
@@ -624,34 +623,34 @@ cleanup:
             return NO;
     }
     
-    /* Create and initialise the context */
+    // Create and initialise the context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     
-    /* Initialise the decryption operation. */
-    status = EVP_DecryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
+    // Initialise the decryption operation
+    if (keyLen == AES_KEY_128_LENGTH)
+        status = EVP_DecryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
+    else if (keyLen == AES_KEY_256_LENGTH)
+        status = EVP_DecryptInit_ex (ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
+    
     if (! status)
         return NO;
     
-    /* Set IV length. Not necessary if this is 12 bytes (96 bits) */
+    // Set IV length. Not necessary if this is 12 bytes (96 bits)
     status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
     if (! status)
         return NO;
     
-    /* Initialise key and IV */
-    status = EVP_DecryptInit_ex (ctx, NULL, NULL, cKey, cIv);
+    // Initialise key and IV
+    status = EVP_DecryptInit_ex(ctx, NULL, NULL, cKey, cIv);
     if (! status)
         return NO;
     
-    /* Provide the message to be decrypted, and obtain the plaintext output. */
+    // Provide the message to be decrypted, and obtain the plaintext output
     unsigned char * ctBytes = [*plainData mutableBytes];
     status = EVP_DecryptUpdate (ctx, ctBytes, &numberOfBytes, [cipherData bytes], (int)[cipherData length]);
     if (! status)
         return NO;
     
-    /* Set expected tag value. Works in OpenSSL 1.0.1d and later */
-    //status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AES_GCM_TAG_LENGTH, cTag);
-    //if (!status)
-    //    return NO;
     
     /* Finalise the decryption. A positive return value indicates success, anything else is a failure - the plaintext is n trustworthy. */
     //status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
