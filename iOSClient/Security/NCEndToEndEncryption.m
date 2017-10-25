@@ -582,6 +582,7 @@ cleanup:
 {    
     int status = 0;
     int numberOfBytes = 0;
+    NSData *printData;
     *plainData = [NSMutableData dataWithLength:[cipherData length]];
     
     // set up key
@@ -589,15 +590,20 @@ cleanup:
     bzero(cKey, sizeof(cKey));
     [keyData getBytes:cKey length:AES_KEY_LENGTH];
     
-    // ----- DEBUG Print
-    NSData *printKeyData = [NSData dataWithBytes:cKey length:AES_KEY_LENGTH];
-    NSLog(@"%@", [printKeyData base64EncodedStringWithOptions:0]);
-    // -----------------
+    // ----- DEBUG Print -----
+    printData = [NSData dataWithBytes:cKey length:AES_KEY_LENGTH];
+    NSLog(@"Key %@", [printData base64EncodedStringWithOptions:0]);
+    // -----------------------
     
     // set up ivec
     unsigned char cIv[AES_IVEC_LENGTH];
     bzero(cIv, AES_IVEC_LENGTH);
     [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
+    
+    // ----- DEBUG Print -----
+    printData = [NSData dataWithBytes:cIv length:AES_KEY_LENGTH];
+    NSLog(@"IV %@", [printData base64EncodedStringWithOptions:0]);
+    // -----------------------
     
     // set up tag
     NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
