@@ -668,12 +668,8 @@ cleanup:
     if (! status)
         return NO;
     
-    //     if(!EVP_DecryptUpdate(ctx, ptext, &plen, ciphertext, ciphertext_length - 16)) {
-    //    int ret = EVP_DecryptFinal_ex(ctx, ptext + plen, &len);
-
     //Finalise the encryption
-    len = pPlainLen;
-    int statusEND = EVP_DecryptFinal_ex(ctx,(unsigned char*)pPlain + pPlainLen, (int *)&len);
+    EVP_DecryptFinal_ex(ctx,NULL, &pPlainLen);
     
     // Free
     EVP_CIPHER_CTX_free(ctx);
