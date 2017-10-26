@@ -410,9 +410,7 @@ cleanup:
     
     if (result && privateKeyData) {
         
-        NSString *privateKey;
-        
-        privateKey = [privateKeyData base64EncodedStringWithOptions:0];
+        NSString *privateKey = [self base64Decode:privateKeyData];
         
         NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
@@ -658,7 +656,7 @@ cleanup:
         return NO;
     
     // Provide the message to be decrypted, and obtain the plaintext output
-    cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - [tagData length])]; // remove TAG
+    cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - 16)]; // remove TAG
     *plainData = [NSMutableData dataWithLength:([cipherData length])];
     int pPlainLen = 0;
     unsigned char * pPlain = [*plainData mutableBytes];
@@ -803,25 +801,25 @@ cleanup:
     return string;
 }
 
-- (NSData *)base64Decode:(NSString *)input
+- (NSString *)base64Decode:(NSData *)input
 {
     NSMutableData *data = [NSMutableData data];
 
-    BIO *buffer = BIO_new_mem_buf((void *)[input UTF8String], (int)[input length]);
+    BIO *buffer = BIO_new_mem_buf((void *)[input bytes], (int)[input length]);
     BIO *base64 = BIO_new(BIO_f_base64());
     buffer = BIO_push(base64, buffer);
     BIO_set_flags(base64, BIO_FLAGS_BASE64_NO_NL);
     
-    char chars[512];
-    int length = BIO_read(buffer, chars, sizeof(chars));
+    char chars[input.length];
+    int length = BIO_read(buffer, chars, (int)sizeof(chars));
     while (length > 0) {
         [data appendBytes:chars length:length];
-        length = BIO_read(buffer, chars, sizeof(chars));
+        length = BIO_read(buffer, chars, (int)sizeof(chars));
     }
     
     BIO_free_all(buffer);
     
-    return data;
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
 @end
