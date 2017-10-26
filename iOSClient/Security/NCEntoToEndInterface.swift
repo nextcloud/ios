@@ -150,6 +150,21 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
         let alertController = UIAlertController(title: NSLocalizedString("_e2e_passphrase_request_title_", comment: ""), message: NSLocalizedString("_e2e_passphrase_request_message_", comment: ""), preferredStyle: .alert)
         
+        //TEST
+        /*
+        if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            
+            let fileURL = dir.appendingPathComponent("privatekey.txt")
+            
+            //writing
+            do {
+                try metadataNet.key.write(to: fileURL, atomically: false, encoding: .utf8)
+            }
+            catch {/* error handling here */}
+        }
+        */
+        //
+        
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) -> Void in
                             
             let passphrase = passphraseTextField?.text
