@@ -411,6 +411,7 @@ cleanup:
     if (result && privateKeyData) {
         
         NSString *privateKey = [self base64Decode:privateKeyData];
+        privateKey = [self structPEMFormat:privateKey];
         
         NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
@@ -774,16 +775,6 @@ cleanup:
     return [NSString stringWithString:hexString];
 }
 
-- (NSString *)stringRemoveBeginEnd:(NSString *)input
-{
-    input = [input stringByReplacingOccurrencesOfString:@"-----BEGIN CERTIFICATE-----\n" withString:@""];
-    input = [input stringByReplacingOccurrencesOfString:@"\n-----END CERTIFICATE-----" withString:@""];
-    input = [input stringByReplacingOccurrencesOfString:@"-----BEGIN PRIVATE KEY-----\n" withString:@""];
-    input = [input stringByReplacingOccurrencesOfString:@"\n-----END PRIVATE KEY-----" withString:@""];
-    
-    return input;
-}
-
 - (NSString *)base64Encode:(NSData *)input
 {
     void *bytes;
@@ -820,6 +811,34 @@ cleanup:
     BIO_free_all(buffer);
     
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)structPEMFormat:(NSString *)input
+{
+    NSMutableArray *substringArray = [NSMutableArray array];
+    NSInteger startingPoint = 0;
+    NSInteger substringLength = 65;
+
+    for (NSInteger i = 0; i < input.length / substringLength; i++) {
+        NSString *substring = [input substringWithRange:NSMakeRange(startingPoint, substringLength)];
+        substring = [substring stringByAppendingString:@"\n"];
+        [substringArray addObject:substring];
+        startingPoint += substringLength;
+    }
+    
+    if (startingPoint < input.length) {
+        NSString *substring = [input substringWithRange:NSMakeRange(startingPoint, input.length-startingPoint)];
+        substring = [substring stringByAppendingString:@"\n"];
+        [substringArray addObject:substring];
+     }
+    
+    NSMutableString *result = [NSMutableString new];
+    [result appendString:@"-----BEGIN PRIVATE KEY-----\n"];
+    for (NSObject * obj in substringArray)
+        [result appendString:[obj description]];
+    [result appendString:@"-----END PRIVATE KEY-----\n"];
+
+    return result;
 }
 
 @end
