@@ -405,8 +405,8 @@ cleanup:
     NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
     
     //TEST
-    keyData = [[NSData alloc] initWithBase64EncodedString:@"djv1aVEVz6GROxRjme7Sx8jRJ6qpobRi8auVZnPfuN0=" options:0];
-    initVectorData = [[NSData alloc] initWithBase64EncodedString:@"XYD93yGS2viPrB1e" options:0];
+    //keyData = [[NSData alloc] initWithBase64EncodedString:@"djv1aVEVz6GROxRjme7Sx8jRJ6qpobRi8auVZnPfuN0=" options:0];
+    //initVectorData = [[NSData alloc] initWithBase64EncodedString:@"XYD93yGS2viPrB1e" options:0];
     //
     
     BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH initVectorData:initVectorData tag:nil];
@@ -775,6 +775,45 @@ cleanup:
     input = [input stringByReplacingOccurrencesOfString:@"\n-----END PRIVATE KEY-----" withString:@""];
     
     return input;
+}
+
+- (NSString *)base64Encode:(NSData *)input
+{
+    void *bytes;
+
+    BIO *buffer = BIO_new(BIO_s_mem());
+    BIO *base64 = BIO_new(BIO_f_base64());
+    buffer = BIO_push(base64, buffer);
+    BIO_write(buffer, [input bytes], (int)[input length]);
+    
+    NSUInteger length = BIO_get_mem_data(buffer, &bytes);
+    NSString *string = [[NSString alloc] initWithBytes:bytes length:length encoding:NSUTF8StringEncoding];
+    
+    BIO_free_all(buffer);
+    
+    return string;
+}
+
+
+- (NSData *)base64Decode:(NSString *)input
+{
+    NSMutableData *data = [NSMutableData data];
+
+    BIO *buffer = BIO_new_mem_buf((void *)[input UTF8String], (int)[input length]);
+    BIO *base64 = BIO_new(BIO_f_base64());
+    buffer = BIO_push(base64, buffer);
+    BIO_set_flags(base64, BIO_FLAGS_BASE64_NO_NL);
+    
+    char chars[512];
+    int length = BIO_read(buffer, chars, sizeof(chars));
+    while (length > 0) {
+        [data appendBytes:chars length:length];
+        length = BIO_read(buffer, chars, sizeof(chars));
+    }
+    
+    BIO_free_all(buffer);
+    
+    return data;
 }
 
 @end
