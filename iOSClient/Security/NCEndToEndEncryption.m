@@ -386,6 +386,7 @@ cleanup:
     NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
     
     // Remove all whitespaces from passphrase
+    passphrase = @"stingunknownpianoselectglorylobsterdialjacketthreeconsiderdestroywin";
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
     
     CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
@@ -404,11 +405,6 @@ cleanup:
     // PrivateKey
     NSString *privateKeyCipherBase64 = [privateKeyCipher substringToIndex:(range.location)];
     NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
-    
-    //TEST
-    //keyData = [[NSData alloc] initWithBase64EncodedString:@"djv1aVEVz6GROxRjme7Sx8jRJ6qpobRi8auVZnPfuN0=" options:0];
-    //initVectorData = [[NSData alloc] initWithBase64EncodedString:@"XYD93yGS2viPrB1e" options:0];
-    //
     
     BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:tagData];
     
