@@ -390,17 +390,19 @@ cleanup:
     
     CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
     
-    // Split
+    // Find range for IV_DELIMITER_ENCODED
     NSRange range = [privateKeyCipher rangeOfString:IV_DELIMITER_ENCODED];
-    NSInteger idx = range.location + range.length;
+   
+    // Init Vector
+    NSString *initVectorBase64 = [privateKeyCipher substringFromIndex:(range.location + range.length)];
+    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:initVectorBase64 options:0];
+    
+    // TAG
+    NSString *tag = [privateKeyCipher substringWithRange:NSMakeRange(range.location - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
     
     // PrivateKey
-    NSString *privateKeyCipherBase64 = [privateKeyCipher substringToIndex:range.location];
+    NSString *privateKeyCipherBase64 = [privateKeyCipher substringToIndex:(range.location - AES_GCM_TAG_LENGTH)];
     NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
-
-    // Init Vector
-    NSString *initVectorBase64 = [privateKeyCipher substringFromIndex:idx];
-    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:initVectorBase64 options:0];
     
     //TEST
     keyData = [[NSData alloc] initWithBase64EncodedString:@"djv1aVEVz6GROxRjme7Sx8jRJ6qpobRi8auVZnPfuN0=" options:0];
@@ -411,10 +413,7 @@ cleanup:
     
     if (result && privateKeyData) {
         
-        NSString *privateKey;
-        
-        privateKey = [privateKeyData base64EncodedStringWithOptions:0];
-        //privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
+        NSString *privateKey = [privateKeyData base64EncodedStringWithOptions:0];
         
         NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
