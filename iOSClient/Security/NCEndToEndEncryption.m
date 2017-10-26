@@ -414,7 +414,7 @@ cleanup:
         NSString *privateKey;
         
         privateKey = [privateKeyData base64EncodedStringWithOptions:0];
-        privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
+        //privateKey = [[NSString alloc] initWithData:privateKeyData encoding:NSUTF8StringEncoding];
         
         NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
