@@ -414,7 +414,9 @@ cleanup:
     
     if (result && privateKeyData) {
         
-        NSString *privateKey = [privateKeyData base64EncodedStringWithOptions:0];
+        NSString *privateKey;
+        
+        privateKey = [privateKeyData base64EncodedStringWithOptions:0];
         
         NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
@@ -673,7 +675,8 @@ cleanup:
         return NO;
     
     //Finalise the encryption
-    EVP_DecryptFinal_ex (ctx, NULL, &numberOfBytes);
+    len = numberOfBytes;
+    status = EVP_DecryptFinal_ex (ctx, ctBytes + numberOfBytes, &len);
     
     // Free
     EVP_CIPHER_CTX_free(ctx);
