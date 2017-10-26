@@ -409,8 +409,7 @@ cleanup:
     
     if (result && privateKeyData) {
         
-        NSString *privateKey = [self base64Decode:privateKeyData];
-        privateKey = [self structPEMFormat:privateKey];
+        NSString *privateKey = [self derToPem:privateKeyData];
         
         NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
@@ -660,7 +659,7 @@ cleanup:
     *plainData = [NSMutableData dataWithLength:([cipherData length])];
     int pPlainLen = 0;
     unsigned char * pPlain = [*plainData mutableBytes];
-    status = EVP_DecryptUpdate (ctx, pPlain, &pPlainLen, [cipherData bytes], (int)([cipherData length]));
+    status = EVP_DecryptUpdate(ctx, pPlain, &pPlainLen, [cipherData bytes], (int)([cipherData length]));
     if (! status)
         return NO;
     
@@ -669,9 +668,12 @@ cleanup:
     if (! status)
         return NO;
     
+    //     if(!EVP_DecryptUpdate(ctx, ptext, &plen, ciphertext, ciphertext_length - 16)) {
+    //    int ret = EVP_DecryptFinal_ex(ctx, ptext + plen, &len);
+
     //Finalise the encryption
     len = pPlainLen;
-    int statusEND = EVP_DecryptFinal_ex (ctx, pPlain + pPlainLen, &len);
+    int statusEND = EVP_DecryptFinal_ex(ctx,(unsigned char*)pPlain + pPlainLen, (int *)&len);
     
     // Free
     EVP_CIPHER_CTX_free(ctx);
@@ -812,12 +814,15 @@ cleanup:
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
-- (NSString *)structPEMFormat:(NSString *)input
+- (NSString *)derToPem:(NSData *)inputData
 {
     NSMutableArray *substringArray = [NSMutableArray array];
     NSInteger startingPoint = 0;
     NSInteger substringLength = 65;
 
+    // decode Base64
+    NSString *input = [self base64Decode:inputData];
+    
     for (NSInteger i = 0; i < input.length / substringLength; i++) {
         NSString *substring = [input substringWithRange:NSMakeRange(startingPoint, substringLength)];
         substring = [substring stringByAppendingString:@"\n"];
