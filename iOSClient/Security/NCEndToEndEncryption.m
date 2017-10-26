@@ -386,7 +386,6 @@ cleanup:
     NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
     
     // Remove all whitespaces from passphrase
-    passphrase = @"stingunknownpianoselectglorylobsterdialjacketthreeconsiderdestroywin";
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
     
     CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
