@@ -343,7 +343,7 @@ cleanup:
             return nil;
     }
     
-    NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
+    NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
     NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
     
     // Remove all whitespaces from passphrase
@@ -382,7 +382,7 @@ cleanup:
     NSMutableData *privateKeyData = [NSMutableData new];
     
     // Key (data)
-    NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH];
+    NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
     NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
     
     // Remove all whitespaces from passphrase
