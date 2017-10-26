@@ -794,7 +794,6 @@ cleanup:
     return string;
 }
 
-
 - (NSData *)base64Decode:(NSString *)input
 {
     NSMutableData *data = [NSMutableData data];
