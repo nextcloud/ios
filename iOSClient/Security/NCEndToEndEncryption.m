@@ -606,10 +606,8 @@ cleanup:
 - (BOOL)decryptData:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData keyLen:(int)keyLen ivData:(NSData *)ivData tagData:(NSData *)tagData
 {    
     int status = 0;
-    int numberOfBytes = 0;
     int len = 0;
     NSData *printData;
-    *plainData = [NSMutableData dataWithLength:[cipherData length]];
     
     // set up key
     len = keyLen;
@@ -664,8 +662,11 @@ cleanup:
         return NO;
     
     // Provide the message to be decrypted, and obtain the plaintext output
-    unsigned char * ctBytes = [*plainData mutableBytes];
-    status = EVP_DecryptUpdate (ctx, ctBytes, &numberOfBytes, [cipherData bytes], (int)[cipherData length]);
+    cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - [tagData length])]; // remove TAG
+    *plainData = [NSMutableData dataWithLength:([cipherData length])];
+    int pPlainLen = 0;
+    unsigned char * pPlain = [*plainData mutableBytes];
+    status = EVP_DecryptUpdate (ctx, pPlain, &pPlainLen, [cipherData bytes], (int)([cipherData length]));
     if (! status)
         return NO;
     
@@ -675,8 +676,8 @@ cleanup:
         return NO;
     
     //Finalise the encryption
-    len = numberOfBytes;
-    status = EVP_DecryptFinal_ex (ctx, ctBytes + numberOfBytes, &len);
+    len = pPlainLen;
+    int statusEND = EVP_DecryptFinal_ex (ctx, pPlain + pPlainLen, &len);
     
     // Free
     EVP_CIPHER_CTX_free(ctx);
