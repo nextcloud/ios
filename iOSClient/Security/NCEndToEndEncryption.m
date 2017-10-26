@@ -394,14 +394,15 @@ cleanup:
     NSRange range = [privateKeyCipher rangeOfString:IV_DELIMITER_ENCODED];
    
     // Init Vector
-    NSString *initVectorBase64 = [privateKeyCipher substringFromIndex:(range.location + range.length)];
-    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:initVectorBase64 options:0];
+    NSString *ivBase64 = [privateKeyCipher substringFromIndex:(range.location + range.length)];
+    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:ivBase64 options:0];
     
     // TAG
-    NSString *tag = [privateKeyCipher substringWithRange:NSMakeRange(range.location - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
+    NSString *tagBase64 = [privateKeyCipher substringWithRange:NSMakeRange(range.location - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
+    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tagBase64 options:0];
     
     // PrivateKey
-    NSString *privateKeyCipherBase64 = [privateKeyCipher substringToIndex:(range.location - AES_GCM_TAG_LENGTH)];
+    NSString *privateKeyCipherBase64 = [privateKeyCipher substringToIndex:(range.location)];
     NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
     
     //TEST
@@ -409,7 +410,7 @@ cleanup:
     //initVectorData = [[NSData alloc] initWithBase64EncodedString:@"XYD93yGS2viPrB1e" options:0];
     //
     
-    BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH initVectorData:initVectorData tag:nil];
+    BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:tagData];
     
     if (result && privateKeyData) {
         
@@ -536,11 +537,13 @@ cleanup:
     NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
     NSString *tag = @"PboI9tqHHX3QeAA22PIu4w==";
     
+    /*
     BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH initVectorData:initVectorData tag:tag];
     
     if (plainData != nil && result) {
         [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted"] atomically:YES];
     }
+    */
 }
 
 // Encryption using GCM mode
@@ -598,68 +601,74 @@ cleanup:
 }
 
 // Decryption using GCM mode
-- (BOOL)decryptData:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData keyLen:(int)keyLen initVectorData:(NSData *)initVectorData tag:(NSString *)tag
+- (BOOL)decryptData:(NSData *)cipherData plainData:(NSMutableData **)plainData keyData:(NSData *)keyData keyLen:(int)keyLen ivData:(NSData *)ivData tagData:(NSData *)tagData
 {    
     int status = 0;
     int numberOfBytes = 0;
+    int len = 0;
     NSData *printData;
     *plainData = [NSMutableData dataWithLength:[cipherData length]];
     
     // set up key
-    unsigned char cKey[keyLen];
+    len = keyLen;
+    unsigned char cKey[len];
     bzero(cKey, sizeof(cKey));
-    [keyData getBytes:cKey length:keyLen];
-    
+    [keyData getBytes:cKey length:len];
     // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cKey length:keyLen];
+    printData = [NSData dataWithBytes:cKey length:len];
     NSLog(@"Key %@", [printData base64EncodedStringWithOptions:0]);
     // -----------------------
     
     // set up ivec
-    unsigned char cIv[AES_IVEC_LENGTH];
-    bzero(cIv, AES_IVEC_LENGTH);
-    [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
-    
+    len = (int)[ivData length];
+    unsigned char cIV[len];
+    bzero(cIV, sizeof(cIV));
+    [ivData getBytes:cIV length:len];
     // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cIv length:AES_IVEC_LENGTH];
+    printData = [NSData dataWithBytes:cIV length:len];
     NSLog(@"IV %@", [printData base64EncodedStringWithOptions:0]);
     // -----------------------
     
-    // Verify tag if exists
-    if (tag) {
-        
-        NSData *authenticationTagData = [cipherData subdataWithRange:NSMakeRange([cipherData length] - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
-        NSString *authenticationTag = [authenticationTagData base64EncodedStringWithOptions:0];
-    
-        if (![authenticationTag isEqualToString:tag])
-            return NO;
-    }
+    // set up tag
+    len = (int)[tagData length];;
+    unsigned char cTag[len];
+    bzero(cTag, sizeof(cTag));
+    [tagData getBytes:cTag length:len];
+    // ----- DEBUG Print -----
+    printData = [NSData dataWithBytes:cTag length:len];
+    NSLog(@"Tag %@", [printData base64EncodedStringWithOptions:0]);
+    // -----------------------
     
     // Create and initialise the context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     
     // Initialise the decryption operation
     if (keyLen == AES_KEY_128_LENGTH)
-        status = EVP_DecryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
+        status = EVP_DecryptInit_ex(ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
     else if (keyLen == AES_KEY_256_LENGTH)
-        status = EVP_DecryptInit_ex (ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
+        status = EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
     
     if (! status)
         return NO;
     
     // Set IV length. Not necessary if this is 12 bytes (96 bits)
-    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
+    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, (int)sizeof(cIV), NULL);
     if (! status)
         return NO;
     
     // Initialise key and IV
-    status = EVP_DecryptInit_ex(ctx, NULL, NULL, cKey, cIv);
+    status = EVP_DecryptInit_ex(ctx, NULL, NULL, cKey, cIV);
     if (! status)
         return NO;
     
     // Provide the message to be decrypted, and obtain the plaintext output
     unsigned char * ctBytes = [*plainData mutableBytes];
     status = EVP_DecryptUpdate (ctx, ctBytes, &numberOfBytes, [cipherData bytes], (int)[cipherData length]);
+    if (! status)
+        return NO;
+    
+    // Tag is the last 16 bytes
+    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, (int)sizeof(cTag), cTag);
     if (! status)
         return NO;
     
