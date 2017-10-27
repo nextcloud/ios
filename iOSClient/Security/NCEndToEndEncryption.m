@@ -351,9 +351,9 @@ cleanup:
     
     CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
     
-    NSData *initVectorData = [self generateIV:AES_IVEC_LENGTH];
+    NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
 
-    BOOL result = [self encryptData:_privateKeyData cipherData:&privateKeyCipherData keyData:keyData keyLen:AES_KEY_256_LENGTH initVectorData:initVectorData tagData:nil];
+    BOOL result = [self encryptData:_privateKeyData cipherData:&privateKeyCipherData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:nil];
     
     if (result && privateKeyCipherData) {
         
@@ -362,7 +362,7 @@ cleanup:
         NSString *privateKeyCipherWithInitVectorBase64;
 
         privateKeyCipherBase64 = [privateKeyCipherData base64EncodedStringWithOptions:0];
-        initVectorBase64 = [initVectorData base64EncodedStringWithOptions:0];
+        initVectorBase64 = [ivData base64EncodedStringWithOptions:0];
         privateKeyCipherWithInitVectorBase64 = [NSString stringWithFormat:@"%@%@%@", privateKeyCipherBase64, IV_DELIMITER_ENCODED, initVectorBase64];
         
         return privateKeyCipherWithInitVectorBase64;
@@ -516,9 +516,9 @@ cleanup:
 
     NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
-    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
+    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
     
-    BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH initVectorData:initVectorData tagData:&tagData];
+    BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
     
     if (cipherData != nil && result) {
         [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"encrypted.dms"] atomically:YES];
@@ -543,24 +543,41 @@ cleanup:
 }
 
 // Encryption using GCM mode
-- (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData keyLen:(int)keyLen initVectorData:(NSData *)initVectorData tagData:(NSData **)tagData
+- (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData keyLen:(int)keyLen ivData:(NSData *)ivData tagData:(NSData **)tagData
 {
     int status = 0;
-    int numberOfBytes = 0;
-    *cipherData = [NSMutableData dataWithLength:[plainData length]];
+    int len = 0;
+    NSData *printData;
     
     // set up key
-    unsigned char cKey[keyLen];
+    len = keyLen;
+    unsigned char cKey[len];
     bzero(cKey, sizeof(cKey));
-    [keyData getBytes:cKey length:keyLen];
-    
+    [keyData getBytes:cKey length:len];
+    // ----- DEBUG Print -----
+    printData = [NSData dataWithBytes:cKey length:len];
+    NSLog(@"Key %@", [printData base64EncodedStringWithOptions:0]);
+    // -----------------------
+
     // set up ivec
-    unsigned char cIv[AES_IVEC_LENGTH];
-    bzero(cIv, AES_IVEC_LENGTH);
-    [initVectorData getBytes:cIv length:AES_IVEC_LENGTH];
+    len = AES_IVEC_LENGTH;
+    unsigned char cIV[len];
+    bzero(cIV, sizeof(cIV));
+    [ivData getBytes:cIV length:len];
+    // ----- DEBUG Print -----
+    printData = [NSData dataWithBytes:cIV length:len];
+    NSLog(@"IV %@", [printData base64EncodedStringWithOptions:0]);
+    // -----------------------
+    
+    // set up tag
+    len = AES_GCM_TAG_LENGTH;
+    unsigned char cTag[len];
+    bzero(cTag, sizeof(cTag));
     
     // Create and initialise the context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    if (! ctx)
+        return NO;
     
     // Initialise the encryption operation
     if (keyLen == AES_KEY_128_LENGTH)
@@ -568,27 +585,36 @@ cleanup:
     else if (keyLen == AES_KEY_256_LENGTH)
         status = EVP_EncryptInit_ex (ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
     
-    // Set IV length if default 12 bytes (96 bits) is not appropriate
-    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, AES_IVEC_LENGTH, NULL);
+    if (! status)
+        return NO;
+    
+    // Set IV length. Not necessary if this is 12 bytes (96 bits)
+    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, (int)sizeof(cIV), NULL);
     if (! status)
         return NO;
     
     // Initialise key and IV
-    status = EVP_EncryptInit_ex (ctx, NULL, NULL, cKey, cIv);
+    status = EVP_EncryptInit_ex (ctx, NULL, NULL, cKey, cIV);
     if (! status)
         return NO;
     
     // Provide the message to be encrypted, and obtain the encrypted output
+    *cipherData = [NSMutableData dataWithLength:[plainData length]];
     unsigned char * ctBytes = [*cipherData mutableBytes];
-    status = EVP_EncryptUpdate (ctx, ctBytes, &numberOfBytes, [plainData bytes], (int)[plainData length]);
+    int pCipherLen = 0;
+    status = EVP_EncryptUpdate (ctx, ctBytes, &pCipherLen, [plainData bytes], (int)[plainData length]);
     if (! status)
         return NO;
     
     //Finalise the encryption
-    status = EVP_EncryptFinal_ex (ctx, ctBytes+numberOfBytes, &numberOfBytes);
+    len = pCipherLen;
+    status = EVP_EncryptFinal_ex(ctx, ctBytes+pCipherLen, &len);
+    if (! status)
+        return NO;
     
-    if (status && tagData) {
-    }
+    //Get the tag
+    status = EVP_CIPHER_CTX_ctrl (ctx, EVP_CTRL_GCM_GET_TAG, (int)sizeof(cTag), cTag);
+    *tagData = [NSData dataWithBytes:cTag length:sizeof(cTag)];
     
     // Free
     EVP_CIPHER_CTX_free(ctx);
@@ -635,6 +661,8 @@ cleanup:
     
     // Create and initialise the context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
+    if (! ctx)
+        return NO;
     
     // Initialise the decryption operation
     if (keyLen == AES_KEY_128_LENGTH)
