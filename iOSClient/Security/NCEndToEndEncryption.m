@@ -819,7 +819,7 @@ cleanup:
     NSString *input = [self base64Decode:inputData];
     
     NSMutableString *result = [NSMutableString stringWithString: input];
-    for(long i=substringLength;i<=result.length+1;i++) {
+    for(long i=substringLength;i<=input.length;i++) {
         [result insertString: @"\n" atIndex: i];
         i+=substringLength;
     }
