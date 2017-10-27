@@ -380,6 +380,7 @@ cleanup:
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
 {
     NSMutableData *privateKeyData = [NSMutableData new];
+    NSString *privateKey;
     
     // Key (data)
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
@@ -405,11 +406,13 @@ cleanup:
     NSString *privateKeyCipherBase64 = [privateKeyCipher substringToIndex:(range.location)];
     NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
     
+    // Decrypt 
     BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:tagData];
     
-    if (result && privateKeyData) {
-        
-        NSString *privateKey = [self derToPem:privateKeyData];
+    if (result && privateKeyData)
+        privateKey = [self derToPemPrivateKey:privateKeyData];
+    
+    if (privateKey) {
         
         NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
@@ -808,7 +811,7 @@ cleanup:
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
-- (NSString *)derToPem:(NSData *)inputData
+- (NSString *)derToPemPrivateKey:(NSData *)inputData
 {
     NSInteger substringLength = 65;
 
