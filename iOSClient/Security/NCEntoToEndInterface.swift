@@ -25,6 +25,10 @@ import Foundation
 
 class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
+    struct e2eMetadata: Codable {
+        var files: String
+    }
+    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     override init() {
@@ -441,6 +445,18 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // --------------------------------------------------------------------------------------------
     
     func getEndToEndMetadataSuccess(_ metadataNet: CCMetadataNet!) {
+        
+        let decoder = JSONDecoder.init()
+        let data = metadataNet.encryptedMetadata.data(using: .utf8)
+        
+        do {
+            
+            let post = try decoder.decode(e2eMetadata.self, from: data!)
+            
+        } catch let error {
+            print("errore nella codifica dei dati", error)
+        }
+        
         print("E2E get metadata file success")
     }
     
