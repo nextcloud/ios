@@ -810,31 +810,20 @@ cleanup:
 
 - (NSString *)derToPem:(NSData *)inputData
 {
-    NSMutableArray *substringArray = [NSMutableArray array];
-    NSInteger startingPoint = 0;
     NSInteger substringLength = 65;
 
-    // decode Base64
+    // decode Base64 (From Android ?!?!?!?)
     NSString *input = [self base64Decode:inputData];
     
-    for (NSInteger i = 0; i < input.length / substringLength; i++) {
-        NSString *substring = [input substringWithRange:NSMakeRange(startingPoint, substringLength)];
-        substring = [substring stringByAppendingString:@"\n"];
-        [substringArray addObject:substring];
-        startingPoint += substringLength;
+    NSMutableString *result = [NSMutableString stringWithString: input];
+
+    for(long i=substringLength;i<=input.length+1;i++) {
+        [result insertString: @"\n" atIndex: i];
+        i+=substringLength;
     }
     
-    if (startingPoint < input.length) {
-        NSString *substring = [input substringWithRange:NSMakeRange(startingPoint, input.length-startingPoint)];
-        substring = [substring stringByAppendingString:@"\n"];
-        [substringArray addObject:substring];
-     }
-    
-    NSMutableString *result = [NSMutableString new];
-    [result appendString:@"-----BEGIN PRIVATE KEY-----\n"];
-    for (NSObject * obj in substringArray)
-        [result appendString:[obj description]];
-    [result appendString:@"-----END PRIVATE KEY-----\n"];
+    [result insertString: @"-----BEGIN PRIVATE KEY-----\n" atIndex: 0];
+    [result appendString:@"\n-----END PRIVATE KEY-----\n"];
 
     return result;
 }
