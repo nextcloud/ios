@@ -1,8 +1,8 @@
-# [Nextcloud](https://nextcloud.com)  iOS app V 2.17.8
+# [Nextcloud](https://nextcloud.com)  iOS app V 2.18.0
 
-[<img src="Animation.gif" 
-      alt="Download from App Storey" 
-      height="400">](https://itunes.apple.com/us/app/nextcloud/id1125420102?mt=8)
+[<img src="Animation.gif"
+alt="Download from App Storey"
+height="400">](https://itunes.apple.com/us/app/nextcloud/id1125420102?mt=8)
 
 [![irc](https://img.shields.io/badge/IRC-%23nextcloud%20on%20freenode-orange.svg)](https://webchat.freenode.net/?channels=nextcloud)
 [![irc](https://img.shields.io/badge/IRC-%23nextcloud--mobile%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=nextcloud-mobile)
@@ -10,7 +10,7 @@
 Check out https://nextcloud.com and follow us on https://twitter.com/nextclouders or https://twitter.com/NextcloudiOS
 
 ## How to contribute
-If you want to [contribute](https://nextcloud.com/contribute/) to Nextcloud, you are very welcome: 
+If you want to [contribute](https://nextcloud.com/contribute/) to Nextcloud, you are very welcome:
 
 - on our IRC channels **#nextcloud** `(irc://#nextcloud@freenode.net)` and **#nextcloud-mobile** `(irc://#nextcloud-mobile@freenode.net)` on freenode
 - our forum at https://help.nextcloud.com/c/clients/ios
