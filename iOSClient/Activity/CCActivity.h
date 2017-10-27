@@ -1,6 +1,6 @@
 //
 //  CCActivity.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 12/04/17.
 //  Copyright (c) 2017 TWS. All rights reserved.

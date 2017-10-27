@@ -1,6 +1,6 @@
  //
 //  CCSplit.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 09/10/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -100,39 +100,78 @@
 {
     // Brand
     if ([NCBrandOptions sharedInstance].disable_intro) {
-
-        [CCUtility setIntro:@"1.0"];
+        
+        [CCUtility setIntroMessage:k_Intro set:YES];
+        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
     
-        [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
+        [self introWillFinish:nil type:nil wasSkipped:NO];
 
     } else {
     
-        if ([CCUtility getIntro:@"1.0"] == NO) {
+        // -1-
+        if ([CCUtility getIntroMessage:k_Intro] == NO) {
         
-            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
-            [_intro showIntroCryptoCloud:0.0];
+            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro];
+            [_intro show];
         
-        } else {
+        }
         
-            [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
+        // -2-
+        else if ([CCUtility getIntroMessage:k_Intro_no_cryptocloud] == NO) {
+            
+            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
+            [_intro show];
+        }
+        
+        // NO INTRO
+        else {
+            
+            [self introWillFinish:nil type:nil wasSkipped:NO];
         }
     }
 }
 
-- (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
+- (void)introWillFinish:(EAIntroView *)introView type:(NSString *)type wasSkipped:(BOOL)wasSkipped
 {
-    [CCUtility setIntro:@"1.0"];
+    // -1-
+    if ([type isEqualToString:k_Intro]) {
+        
+        [CCUtility setIntroMessage:k_Intro set:YES];
+        // next
+        _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
+        [_intro show];
+        //
+        return;
+    }
+    
+    // -2-
+    if ([type isEqualToString:k_Intro_no_cryptocloud]) {
+        
+        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
+    }
+    
+    // check account
     [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== newAccount =====
+#pragma mark === Delegate Login ===
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)loginSuccess:(NSInteger)loginType
 {
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
+
+- (void)loginDisappear
+{
+    app.activeLogin = nil;
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== newAccount =====
+#pragma --------------------------------------------------------------------------------------------
+
 
 - (void)newAccount
 {
@@ -165,7 +204,7 @@
     UINavigationController *secondaryNC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCDetailNC"];
     
     // Color
-    [app aspectNavigationControllerBar:secondaryNC.navigationBar encrypted:NO online:YES hidden:NO];
+    [app aspectNavigationControllerBar:secondaryNC.navigationBar online:YES hidden:NO];
     
     // Ensure back button is enabled
     UIViewController *detailViewController = [secondaryNC visibleViewController];

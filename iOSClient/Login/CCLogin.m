@@ -1,6 +1,6 @@
 //
 //  CCLogin.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 09/04/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -28,7 +28,6 @@
 
 @interface CCLogin ()
 {
-    UIAlertView *alertView;
     UIView *rootView;
 }
 @end
@@ -102,12 +101,7 @@
         _baseUrl.text = app.activeUrl;
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
-        
-        // https://github.com/nextcloud/ios/issues/331
-        tableAccount *tbAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        _user.text = tbAccount.username;
-        //_user.text = app.activeUser;
-        
+        _user.text = app.activeUser;
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }
@@ -133,6 +127,15 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+}
+
+//
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+    
+    if ([self.delegate respondsToSelector:@selector(loginDisappear)])
+        [self.delegate loginDisappear];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -166,34 +169,6 @@
 
 - (void)testUrl
 {
-    // Use MultiDomain check if this is correct
-    if ([NCBrandOptions sharedInstance].use_multiDomains == YES) {
-        
-        BOOL foundDomain = NO;
-        NSString *message = @"";
-        
-        for (NSString *domain in [NCBrandOptions sharedInstance].loginBaseUrlMultiDomains) {
-            
-            message = [NSString stringWithFormat:@"%@ %@", message, domain.lowercaseString];
-            
-            if ([self.baseUrl.text.lowercaseString containsString:domain.lowercaseString])
-                foundDomain = YES;
-        }
-        
-        if (!foundDomain) {
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:[NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_error_multidomain_", nil), message]  preferredStyle:UIAlertControllerStyleAlert];
-            
-            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                self.baseUrl.text = @"";
-            }]];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
-
-            return;
-        }
-    }
-    
     self.login.enabled = NO;
     self.loadingBaseUrl.hidden = NO;
     
@@ -231,8 +206,11 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_connection_error_",nil) message:[error localizedDescription] delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                    [alertView show];
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                    
+                    [alertController addAction:okAction];
+                    [self presentViewController:alertController animated:YES completion:nil];
                 });
             }
             
@@ -277,7 +255,7 @@
     if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withPassword:self.password.text withUrl:nil isCryptoCloudMode:NO];
+    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:nil];
     NSError *error = [ocNet checkServerSync:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV]];
     
     if (!error) {
@@ -291,10 +269,12 @@
             tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
             
             // Setting App active account
-            [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activePassword:tbAccount.password];
+            [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
 
             // Dismiss
-            [self.delegate loginSuccess:_loginType];
+            if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
+                [self.delegate loginSuccess:_loginType];
+            
             [self dismissViewControllerAnimated:YES completion:nil];
             
         } else {
@@ -305,7 +285,7 @@
             // Read User Profile
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
             metadataNet.action = actionGetUserProfile;
-            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text isCryptoCloudMode:NO]];
+            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text]];
         }
         
     } else {
@@ -315,8 +295,11 @@
             NSString *description = [error.userInfo objectForKey:@"NSLocalizedDescription"];
             NSString *message = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil), description];
             
-            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-            [alertView show];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            
+            [alertController addAction:okAction];
+            [self presentViewController:alertController animated:YES completion:nil];
         }
     }
         
@@ -332,8 +315,11 @@
 {
     [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
     
-    alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-    [alertView show];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+    
+    [alertController addAction:okAction];
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
@@ -341,15 +327,17 @@
     // Verify if the account already exists
     if (userProfile.id.length > 0 && self.baseUrl.text.length > 0 && self.user.text.length > 0) {
     
-        tableAccount *accountAlreadyExists = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"url = %@ AND user = %@ AND username != %@", self.baseUrl.text, userProfile.id, self.user.text]];
+        tableAccount *accountAlreadyExists = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"url = %@ AND user = %@ AND userID != %@", self.baseUrl.text, userProfile.id, self.user.text]];
         
         if (accountAlreadyExists) {
             
             [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
             
-            NSString *message = [NSString stringWithFormat:NSLocalizedString(@"_account_already_exists_", nil), userProfile.id];
-            alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:message delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-            [alertView show];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:[NSString stringWithFormat:NSLocalizedString(@"_account_already_exists_", nil), userProfile.id] preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            
+            [alertController addAction:okAction];
+            [self presentViewController:alertController animated:YES completion:nil];
             
             return;
         }
@@ -367,10 +355,11 @@
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
         
         // Setting App active account
-        [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activePassword:account.password];
+        [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
     
         // Ok ! Dismiss
-        [self.delegate loginSuccess:_loginType];
+        if ([self.delegate respondsToSelector:@selector(loginSuccess:)])        
+            [self.delegate loginSuccess:_loginType];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [self dismissViewControllerAnimated:YES completion:nil];

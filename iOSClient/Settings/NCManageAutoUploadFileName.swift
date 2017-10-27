@@ -1,6 +1,6 @@
 //
 //  NCManageAutoUploadFileName.swift
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 19/07/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -63,7 +63,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         
         let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameAutoUploadMask)
-        if fileNameMask.characters.count > 0 {
+        if fileNameMask.count > 0 {
             row.value = fileNameMask
         }
         section.addFormRow(row)
@@ -128,7 +128,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         
@@ -192,7 +192,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
             
             let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             
-            if valueRenameTrimming.characters.count > 0 {
+            if valueRenameTrimming.count > 0 {
                 
                 self.form.delegate = nil
                 CCUtility.setFileNameMask(valueRenameTrimming, key: k_keyFileNameAutoUploadMask)

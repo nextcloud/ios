@@ -1,6 +1,6 @@
 //
 //  CCSettings.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 24/11/14.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -27,8 +27,8 @@
 #import "OCCapabilities.h"
 #import "CCSynchronize.h"
 #import "CCAdvanced.h"
-#import "CCManageCryptoCloud.h"
 #import "CCManageAccount.h"
+#import "NCManageEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
 
 #define alertViewEsci 1
@@ -82,12 +82,12 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Section : PASSWORD --------------------------------------------------------------
+    // Section : LOCK --------------------------------------------------------------
     
-    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_passcode_", nil)];
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_lock_", nil)];
     [form addFormSection:section];
     
-    // Passcode
+    // Lock active YES/NO
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"bloccopasscode" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_lock_not_active_", nil)];
     [row.cellConfig setObject:[UIImage imageNamed:@"settingsPasscodeNO"] forKey:@"imageView.image"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -102,26 +102,25 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Passcode only directory
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"onlylockdir" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_folder_", nil)];
+    // Lock no screen
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"onlylockdir" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_no_screen_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    // Section CRYPTO CLOUD SYSTEM ------------------------------------------
+#ifdef DEBUG
+    // Section : E2EEncryption --------------------------------------------------------------
+
+    section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_title_", nil)];
+    [form addFormSection:section];
     
-    // Brand
-    if ([NCBrandOptions sharedInstance].disable_cryptocloudsystem == NO) {
-    
-        section = [XLFormSectionDescriptor formSection];
-        [form addFormSection:section];
-    
-        // Crypto Cloud
-        row = [XLFormRowDescriptor formRowDescriptorWithTag:@"cryptocloud" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_crypto_cloud_system_", nil)];
-        [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:@"settingsCryptoCloud"] forKey:@"imageView.image"];
-        row.action.viewControllerClass = [CCManageCryptoCloud class];
-        [section addFormRow:row];
-    }
+    // EndToEnd Encryption
+    NSString *title = [NSString stringWithFormat:@"%@ (%@)",NSLocalizedString(@"_e2e_settings_", nil), NSLocalizedString(@"_experimental_", nil)];
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:title];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"settingsE2EEncryption"] forKey:@"imageView.image"];
+    row.action.viewControllerClass = [NCManageEndToEndEncryption class];
+    [section addFormRow:row];
+#endif
     
     // Section Advanced -------------------------------------------------
     
@@ -170,9 +169,10 @@
     [super viewWillAppear:animated];
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.tableView.showsVerticalScrollIndicator = NO;
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadForm];
@@ -273,25 +273,6 @@
     }
 }
 
-- (void)checkEncryptPass:(XLFormRowDescriptor *)sender
-{
-    CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
-    viewController.delegate = self;
-    viewController.fromType = CCBKPasscodeFromCheckCryptoKey;
-    viewController.type = BKPasscodeViewControllerCheckPasscodeType;
-    
-    viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
-    viewController.passcodeInputView.maximumLength = 64;
-    
-    viewController.title = NSLocalizedString(@"_check_key_aes_256_", nil);
-    
-    viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-
 - (void)changeSimplyPassword
 {
     CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
@@ -317,7 +298,7 @@
     viewController.touchIDManager = touchIDManager;
     
     viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-    viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
+    viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -352,7 +333,7 @@
         viewController.title = NSLocalizedString(@"_passcode_activate_", nil);
         
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
                
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -384,7 +365,7 @@
         viewController.title = NSLocalizedString(@"_disabling_passcode_", nil);
             
         viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
-        viewController.navigationItem.leftBarButtonItem.tintColor = [NCBrandColor sharedInstance].cryptocloud;
+        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -403,7 +384,7 @@
             NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
             if (!serverUrl) continue;
             
-            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileNamePrint];
+            serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
 
             NSString *serverUrlBeginWith = serverUrl;
             
@@ -434,7 +415,11 @@
             sectionName = NSLocalizedString(@"_favorite_offline_footer_", nil);
         }
         break;
-        case 5: {
+        case 2: {
+            sectionName = NSLocalizedString(@"_lock_protection_no_screen_footer_", nil);
+        }
+        break;
+        case 4: {
             
             tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
             
@@ -507,12 +492,6 @@
     }
 }
 
-- (void)sendMailEncryptPass
-{
-    if ([MFMailComposeViewController canSendMail])
-        [CCUtility sendMailEncryptPass:[CCUtility getEmail] validateEmail:NO form:self nameImage:@"backgroundDetail"];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === BKPasscodeViewController ===
 #pragma --------------------------------------------------------------------------------------------
@@ -540,10 +519,6 @@
                 [app.activeMain.tableView reloadData];
             }
             
-            // email Key EAS-256
-            if (aViewController.fromType == CCBKPasscodeFromCheckCryptoKey)
-                [self sendMailEncryptPass];
-            
             // change simply
             if (aViewController.fromType == CCBKPasscodeFromSimply) {
                 
@@ -569,18 +544,6 @@
 
 - (void)passcodeViewController:(CCBKPasscode *)aViewController authenticatePasscode:(NSString *)aPasscode resultHandler:(void (^)(BOOL))aResultHandler
 {
-    if (aViewController.fromType == CCBKPasscodeFromCheckCryptoKey) {
-        
-        NSString *key = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
-        
-        if ([aPasscode isEqualToString:key]) {
-            self.lockUntilDate = nil;
-            self.failedAttempts = 0;
-            aResultHandler(YES);
-        } else aResultHandler(NO);
-        
-    }
-    
     if (aViewController.fromType == CCBKPasscodeFromSettingsPasscode || aViewController.fromType == CCBKPasscodeFromSimply) {
         
         if ([aPasscode isEqualToString:[CCUtility getBlockCode]]) {

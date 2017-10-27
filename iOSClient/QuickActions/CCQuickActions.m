@@ -1,6 +1,6 @@
 //
 //  CCQuickActions.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 30/06/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -30,8 +30,6 @@
 
 @interface CCQuickActions ()
 {
-    BOOL _cryptated;
-    
     CTAssetsPickerController *_picker;
     CCMove *_move;
     CCMain *_mainVC;
@@ -57,15 +55,13 @@
 {
     if (self = [super init]) {
         
-        _cryptated = NO;
     }
     
     return self;
 }
 
-- (void)startQuickActionsEncrypted:(BOOL)cryptated viewController:(UITableViewController *)viewController
+- (void)startQuickActionsViewController:(UITableViewController *)viewController
 {
-    _cryptated = cryptated;
     _mainVC = (CCMain *)viewController;
     
     [self openAssetsPickerController];
@@ -79,7 +75,6 @@
     if (_move)
         [_move dismissViewControllerAnimated:NO completion:nil];
     
-    _cryptated = NO;
     _picker = nil;
     _move = nil;
     _assets = nil;
@@ -96,7 +91,7 @@
     [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
     
     UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];
-    [app aspectNavigationControllerBar:navBar encrypted:NO online:YES hidden:NO];
+    [app aspectNavigationControllerBar:navBar online:YES hidden:NO];
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -154,7 +149,7 @@
 
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
 {    
-    [_mainVC uploadFileAsset:_assets serverUrl:serverUrlTo cryptated:_cryptated useSubFolder:NO session:k_upload_session];
+    [_mainVC uploadFileAsset:_assets serverUrl:serverUrlTo useSubFolder:NO session:k_upload_session];
 }
 
 - (void)moveOpenWindow:(NSArray *)indexPaths
@@ -163,11 +158,7 @@
     
     _move = (CCMove *)navigationController.topViewController;
     
-    if (_cryptated)
-        _move.move.title = NSLocalizedString(@"_upload_encrypted_file_", nil);
-    else
-        _move.move.title = NSLocalizedString(@"_upload_file_", nil);
-
+    _move.move.title = NSLocalizedString(@"_upload_file_", nil);
     _move.delegate = self;
     _move.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     _move.barTintColor = [NCBrandColor sharedInstance].brand;

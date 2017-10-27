@@ -10,24 +10,27 @@ import UIKit
 
 @objc protocol CCLoginDelegateWeb: class {
     func loginSuccess(_: NSInteger)
+    func loginDisappear()
 }
 
 public class CCLoginWeb: UIViewController {
 
-    enum enumLoginType : NSInteger {
+    /*
+    @objc enum enumLoginTypeWeb : NSInteger {
         case loginAdd = 0
         case loginAddForced = 1
         case loginModifyPasswordUser = 2
     }
+    */
     
-    weak var delegate: CCLoginDelegateWeb?
+    @objc weak var delegate: CCLoginDelegateWeb?
+    @objc var loginType = loginAdd
     
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var loginType = loginAdd
     var doneButtonVisible: Bool = false
     
-    func presentModalWithDefaultTheme(_ vc: UIViewController) {
+    @objc func presentModalWithDefaultTheme(_ vc: UIViewController) {
         
         self.viewController = vc
         
@@ -61,8 +64,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     var serverUrl : String = keyValue[0].replacingOccurrences(of: "/server:", with: "")
                     
-                    if (serverUrl.characters.last == "/") {
-                        serverUrl = String(serverUrl.characters.dropLast())
+                    if (serverUrl.last == "/") {
+                        serverUrl = String(serverUrl.dropLast())
                     }
                 
                     let username : String = keyValue[1].replacingOccurrences(of: "user:", with: "")
@@ -77,7 +80,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     if (tableAccount.account == account) {
                     
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activePassword: password)
+                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
                 
                         self.viewController?.dismiss(animated: true, completion: nil)
@@ -89,6 +92,12 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
 
     public func didFinishLoading(success: Bool, url: URL) {
         print("Finished loading. Success: \(success).")
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        self.delegate?.loginDisappear()
     }
 }
 

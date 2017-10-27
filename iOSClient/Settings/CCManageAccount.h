@@ -1,6 +1,6 @@
 //
 //  CCManageAccount.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 12/03/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -24,7 +24,6 @@
 #import "XLFormViewController.h"
 #import "XLForm.h"
 #import "CCLogin.h"
-#import "CCCoreData.h"
 
 
 @interface CCManageAccount : XLFormViewController

@@ -1,6 +1,6 @@
 //
 //  CCIntro.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 05/11/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -30,18 +30,20 @@
 
 @interface CCIntro : NSObject <EAIntroDelegate>
 
-- (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView;
+- (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView type:(NSString *)type;
 
 @property (nonatomic, weak) id <CCIntroDelegate> delegate;
 @property (nonatomic, strong) UIView *rootView;
+@property (nonatomic, strong) NSString *type;
 
-- (void)showIntroCryptoCloud:(CGFloat)duration;
+
+- (void)show;
 
 @end
 
 @protocol CCIntroDelegate <NSObject>
 
-@optional - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped;
-@optional - (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped;
+@optional - (void)introWillFinish:(EAIntroView *)introView type:(NSString *)type wasSkipped:(BOOL)wasSkipped;
+@optional - (void)introDidFinish:(EAIntroView *)introView type:(NSString *)type wasSkipped:(BOOL)wasSkipped;
 
 @end

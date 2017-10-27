@@ -1,6 +1,6 @@
 //
 //  NCDatabase.swift
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 06/05/17.
 //  Copyright © 2017 TWS. All rights reserved.
@@ -25,83 +25,86 @@ import RealmSwift
 
 class tableAccount: Object {
 
-    dynamic var account = ""
-    dynamic var active: Bool = false
-    dynamic var address = ""
-    dynamic var autoUpload: Bool = false
-    dynamic var autoUploadBackground: Bool = false
-    dynamic var autoUploadCreateSubfolder: Bool = false
-    dynamic var autoUploadFileName = ""
-    dynamic var autoUploadDirectory = ""
-    dynamic var autoUploadFull: Bool = false
-    dynamic var autoUploadImage: Bool = false
-    dynamic var autoUploadVideo: Bool = false
-    dynamic var autoUploadWWAnPhoto: Bool = false
-    dynamic var autoUploadWWAnVideo: Bool = false
-    dynamic var displayName = ""
-    dynamic var email = ""
-    dynamic var enabled: Bool = false
-    dynamic var optimization = NSDate()
-    dynamic var password = ""
-    dynamic var phone = ""
-    dynamic var quota: Double = 0
-    dynamic var quotaFree: Double = 0
-    dynamic var quotaRelative: Double = 0
-    dynamic var quotaTotal: Double = 0
-    dynamic var quotaUsed: Double = 0
-    dynamic var twitter = ""
-    dynamic var url = ""
-    dynamic var user = ""
-    dynamic var username = ""
-    dynamic var webpage = ""
+    @objc dynamic var account = ""
+    @objc dynamic var active: Bool = false
+    @objc dynamic var address = ""
+    @objc dynamic var autoUpload: Bool = false
+    @objc dynamic var autoUploadBackground: Bool = false
+    @objc dynamic var autoUploadCreateSubfolder: Bool = false
+    @objc dynamic var autoUploadFileName = ""
+    @objc dynamic var autoUploadDirectory = ""
+    @objc dynamic var autoUploadFull: Bool = false
+    @objc dynamic var autoUploadImage: Bool = false
+    @objc dynamic var autoUploadVideo: Bool = false
+    @objc dynamic var autoUploadWWAnPhoto: Bool = false
+    @objc dynamic var autoUploadWWAnVideo: Bool = false
+    @objc dynamic var autoUploadFormatCompatibility: Bool = false
+    @objc dynamic var displayName = ""
+    @objc dynamic var email = ""
+    @objc dynamic var enabled: Bool = false
+    @objc dynamic var optimization = NSDate()
+    @objc dynamic var password = ""
+    @objc dynamic var phone = ""
+    @objc dynamic var quota: Double = 0
+    @objc dynamic var quotaFree: Double = 0
+    @objc dynamic var quotaRelative: Double = 0
+    @objc dynamic var quotaTotal: Double = 0
+    @objc dynamic var quotaUsed: Double = 0
+    @objc dynamic var twitter = ""
+    @objc dynamic var url = ""
+    @objc dynamic var user = ""
+    @objc dynamic var userID = ""
+    @objc dynamic var webpage = ""
 }
 
 class tableActivity: Object {
     
-    dynamic var account = ""
-    dynamic var action = "Activity"
-    dynamic var date = NSDate()
-    dynamic var file = ""
-    dynamic var fileID = ""
-    dynamic var idActivity: Double = 0
-    dynamic var link = ""
-    dynamic var note = ""
-    dynamic var selector = ""
-    dynamic var type = ""
-    dynamic var verbose: Bool = false
+    @objc dynamic var account = ""
+    @objc dynamic var action = "Activity"
+    @objc dynamic var date = NSDate()
+    @objc dynamic var file = ""
+    @objc dynamic var fileID = ""
+    @objc dynamic var idActivity: Double = 0
+    @objc dynamic var link = ""
+    @objc dynamic var note = ""
+    @objc dynamic var selector = ""
+    @objc dynamic var type = ""
+    @objc dynamic var verbose: Bool = false
 }
 
 class tableCapabilities: Object {
     
-    dynamic var account = ""
-    dynamic var themingBackground = ""
-    dynamic var themingColor = ""
-    dynamic var themingLogo = ""
-    dynamic var themingName = ""
-    dynamic var themingSlogan = ""
-    dynamic var themingUrl = ""
-    dynamic var versionMajor: Int = 0
-    dynamic var versionMicro: Int = 0
-    dynamic var versionMinor: Int = 0
-    dynamic var versionString = ""
+    @objc dynamic var account = ""
+    @objc dynamic var themingBackground = ""
+    @objc dynamic var themingColor = ""
+    @objc dynamic var themingLogo = ""
+    @objc dynamic var themingName = ""
+    @objc dynamic var themingSlogan = ""
+    @objc dynamic var themingUrl = ""
+    @objc dynamic var versionMajor: Int = 0
+    @objc dynamic var versionMicro: Int = 0
+    @objc dynamic var versionMinor: Int = 0
+    @objc dynamic var versionString = ""
+    @objc dynamic var endToEndEncryption: Bool = false
+    @objc dynamic var endToEndEncryptionVersion = ""
 }
 
 class tableCertificates: Object {
     
-    dynamic var certificateLocation = ""
+    @objc dynamic var certificateLocation = ""
 }
 
 class tableDirectory: Object {
     
-    dynamic var account = ""
-    dynamic var dateReadDirectory: NSDate? = nil
-    dynamic var directoryID = ""
-    dynamic var etag = ""
-    dynamic var favorite: Bool = false
-    dynamic var fileID = ""
-    dynamic var lock: Bool = false
-    dynamic var permissions = ""
-    dynamic var serverUrl = ""
+    @objc dynamic var account = ""
+    @objc dynamic var dateReadDirectory: NSDate? = nil
+    @objc dynamic var directoryID = ""
+    @objc dynamic var etag = ""
+    @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileID = ""
+    @objc dynamic var lock: Bool = false
+    @objc dynamic var permissions = ""
+    @objc dynamic var serverUrl = ""
     
     override static func primaryKey() -> String {
         return "directoryID"
@@ -110,40 +113,39 @@ class tableDirectory: Object {
 
 class tableExternalSites: Object {
     
-    dynamic var account = ""
-    dynamic var icon = ""
-    dynamic var idExternalSite: Int = 0
-    dynamic var lang = ""
-    dynamic var name = ""
-    dynamic var type = ""
-    dynamic var url = ""
+    @objc dynamic var account = ""
+    @objc dynamic var icon = ""
+    @objc dynamic var idExternalSite: Int = 0
+    @objc dynamic var lang = ""
+    @objc dynamic var name = ""
+    @objc dynamic var type = ""
+    @objc dynamic var url = ""
 }
 
 class tableGPS: Object {
     
-    dynamic var latitude = ""
-    dynamic var location = ""
-    dynamic var longitude = ""
-    dynamic var placemarkAdministrativeArea = ""
-    dynamic var placemarkCountry = ""
-    dynamic var placemarkLocality = ""
-    dynamic var placemarkPostalCode = ""
-    dynamic var placemarkThoroughfare = ""
+    @objc dynamic var latitude = ""
+    @objc dynamic var location = ""
+    @objc dynamic var longitude = ""
+    @objc dynamic var placemarkAdministrativeArea = ""
+    @objc dynamic var placemarkCountry = ""
+    @objc dynamic var placemarkLocality = ""
+    @objc dynamic var placemarkPostalCode = ""
+    @objc dynamic var placemarkThoroughfare = ""
 }
 
 class tableLocalFile: Object {
     
-    dynamic var account = ""
-    dynamic var date = NSDate()
-    dynamic var etag = ""
-    dynamic var exifDate = NSDate()
-    dynamic var exifLatitude = ""
-    dynamic var exifLongitude = ""
-    dynamic var favorite: Bool = false
-    dynamic var fileID = ""
-    dynamic var fileName = ""
-    dynamic var fileNamePrint = ""
-    dynamic var size: Double = 0
+    @objc dynamic var account = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var etag = ""
+    @objc dynamic var exifDate = NSDate()
+    @objc dynamic var exifLatitude = ""
+    @objc dynamic var exifLongitude = ""
+    @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileID = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var size: Double = 0
     
     override static func primaryKey() -> String {
         return "fileID"
@@ -152,38 +154,28 @@ class tableLocalFile: Object {
 
 class tableMetadata: Object {
     
-    dynamic var account = ""
-    dynamic var assetLocalIdentifier = ""
-    dynamic var cryptated: Bool = false
-    dynamic var date = NSDate()
-    dynamic var directory: Bool = false
-    dynamic var directoryID = ""
-    dynamic var errorPasscode: Bool = false
-    dynamic var etag = ""
-    dynamic var favorite: Bool = false
-    dynamic var fileID = ""
-    dynamic var fileName = ""
-    dynamic var fileNameData = ""
-    dynamic var fileNamePrint = ""
-    dynamic var iconName = ""
-    dynamic var model = ""
-    dynamic var nameCurrentDevice = ""
-    dynamic var permissions = ""
-    dynamic var protocolCrypto = ""
-    dynamic var session = ""
-    dynamic var sessionError = ""
-    dynamic var sessionID = ""
-    dynamic var sessionSelector = ""
-    dynamic var sessionSelectorPost = ""
-    dynamic var sessionTaskIdentifier: Int = -1
-    dynamic var sessionTaskIdentifierPlist: Int = -1
-    dynamic var size: Double = 0
-    dynamic var status: Double = 0
-    dynamic var thumbnailExists: Bool = false
-    dynamic var title = ""
-    dynamic var type = ""
-    dynamic var typeFile = ""
-    dynamic var uuid = ""
+    @objc dynamic var account = ""
+    @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var directory: Bool = false
+    @objc dynamic var directoryID = ""
+    @objc dynamic var encrypted: Bool = false
+    @objc dynamic var etag = ""
+    @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileID = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var iconName = ""
+    @objc dynamic var permissions = ""
+    @objc dynamic var session = ""
+    @objc dynamic var sessionError = ""
+    @objc dynamic var sessionID = ""
+    @objc dynamic var sessionSelector = ""
+    @objc dynamic var sessionSelectorPost = ""
+    @objc dynamic var sessionTaskIdentifier: Int = -1
+    @objc dynamic var size: Double = 0
+    @objc dynamic var status: Double = 0
+    @objc dynamic var thumbnailExists: Bool = false
+    @objc dynamic var typeFile = ""
     
     override static func primaryKey() -> String {
         return "fileID"
@@ -196,12 +188,12 @@ class tableMetadata: Object {
 
 class tablePhotoLibrary: Object {
     
-    dynamic var account = ""
-    dynamic var assetLocalIdentifier = ""
-    dynamic var creationDate: NSDate? = nil
-    dynamic var idAsset = ""
-    dynamic var modificationDate: NSDate? = nil
-    dynamic var mediaType: Int = 0
+    @objc dynamic var account = ""
+    @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var creationDate: NSDate? = nil
+    @objc dynamic var idAsset = ""
+    @objc dynamic var modificationDate: NSDate? = nil
+    @objc dynamic var mediaType: Int = 0
 
     override static func primaryKey() -> String {
         return "idAsset"
@@ -210,14 +202,12 @@ class tablePhotoLibrary: Object {
 
 class tableQueueDownload: Object {
     
-    dynamic var account = ""
-    dynamic var fileID = ""
-    dynamic var downloadData: Bool = false
-    dynamic var downloadPlist: Bool = false
-    dynamic var selector = ""
-    dynamic var selectorPost = ""
-    dynamic var serverUrl = ""
-    dynamic var session = ""
+    @objc dynamic var account = ""
+    @objc dynamic var fileID = ""
+    @objc dynamic var selector = ""
+    @objc dynamic var selectorPost = ""
+    @objc dynamic var serverUrl = ""
+    @objc dynamic var session = ""
 
     override static func primaryKey() -> String {
         return "fileID"
@@ -226,23 +216,23 @@ class tableQueueDownload: Object {
 
 class tableQueueUpload: Object {
     
-    dynamic var account = ""
-    dynamic var assetLocalIdentifier = ""
-    dynamic var date = NSDate()
-    dynamic var fileName = ""
-    dynamic var lock: Bool = false
-    dynamic var priority: Int = 0
-    dynamic var selector = ""
-    dynamic var selectorPost = ""
-    dynamic var serverUrl = ""
-    dynamic var session = ""
+    @objc dynamic var account = ""
+    @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var fileName = ""
+    @objc dynamic var lock: Bool = false
+    @objc dynamic var priority: Int = 0
+    @objc dynamic var selector = ""
+    @objc dynamic var selectorPost = ""
+    @objc dynamic var serverUrl = ""
+    @objc dynamic var session = ""
 }
 
 class tableShare: Object {
     
-    dynamic var account = ""
-    dynamic var fileName = ""
-    dynamic var serverUrl = ""
-    dynamic var shareLink = ""
-    dynamic var shareUserAndGroup = ""
+    @objc dynamic var account = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var serverUrl = ""
+    @objc dynamic var shareLink = ""
+    @objc dynamic var shareUserAndGroup = ""
 }

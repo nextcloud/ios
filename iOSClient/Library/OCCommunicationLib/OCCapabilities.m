@@ -28,7 +28,7 @@
         self.themingSlogan = @"";
         self.themingUrl = @"";
         
-        self.clientSideEncryptionVersion = @"";
+        self.endToEndEncryptionVersion = @"";
     }
     return self;
 }

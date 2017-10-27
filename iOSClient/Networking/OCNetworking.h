@@ -1,6 +1,6 @@
 //
 //  OCnetworking.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 10/05/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -34,7 +34,7 @@
 
 @interface OCnetworking : NSOperation <CCNetworkingDelegate>
 
-- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl isCryptoCloudMode:(BOOL)isCryptoCloudMode;
+- (id)initWithDelegate:(id <OCNetworkingDelegate>)delegate metadataNet:(CCMetadataNet *)metadataNet withUser:(NSString *)withUser withUserID:(NSString *)withUserID withPassword:(NSString *)withPassword withUrl:(NSString *)withUrl;
 
 @property (nonatomic, weak) id <OCNetworkingDelegate> delegate;
 
@@ -123,6 +123,48 @@
 
 // Subscribing Nextcloud Server
 - (void)subscribingNextcloudServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+// End-to-End Encryption
+- (void)getEndToEndPublicKeysSuccess:(CCMetadataNet *)metadataNet;
+- (void)getEndToEndPublicKeysFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)signEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet;
+- (void)signEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)deleteEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet;
+- (void)deleteEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)getEndToEndPrivateKeyCipherSuccess:(CCMetadataNet *)metadataNet;
+- (void)getEndToEndPrivateKeyCipherFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)storeEndToEndPrivateKeyCipherSuccess:(CCMetadataNet *)metadataNet;
+- (void)storeEndToEndPrivateKeyCipherFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)deleteEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet;
+- (void)deleteEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet;
+- (void)getEndToEndServerPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)markEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
+- (void)markEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)deletemarkEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
+- (void)deletemarkEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)lockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
+- (void)lockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
+- (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)storeEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
+- (void)storeEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)getEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
+- (void)getEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)updateEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
+- (void)updateEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+
+- (void)deleteEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
+- (void)deleteEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 @end
 

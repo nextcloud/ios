@@ -46,7 +46,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.17.8</string>
+	<string>2.18.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -69,7 +69,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>00002</string>
+	<string>00017</string>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -101,8 +101,12 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>The use of GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>The use of GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>The use of GPS is used to detect new photos from camera roll on background, the use of GPS only when the App is in use is useless</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>$(PRODUCT_NAME)</string>
 	<key>UIBackgroundModes</key>

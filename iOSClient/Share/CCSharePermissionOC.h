@@ -1,6 +1,6 @@
 //
 //  CCSharePermissionOC.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 07/03/16.
 //  Copyright (c) 2017 TWS. All rights reserved.

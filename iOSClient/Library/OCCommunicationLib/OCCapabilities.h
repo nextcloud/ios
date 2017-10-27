@@ -65,8 +65,8 @@
 @property (nonatomic, strong) NSString *themingSlogan;
 @property (nonatomic, strong) NSString *themingUrl;
 
-// Client Side Encryption
-@property (nonatomic) BOOL isClientSideEncryptionEnabled;
-@property (nonatomic, strong) NSString *clientSideEncryptionVersion;
+// End to End Encryption
+@property (nonatomic) BOOL isEndToEndEncryptionEnabled;
+@property (nonatomic, strong) NSString *endToEndEncryptionVersion;
 
 @end

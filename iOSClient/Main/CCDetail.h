@@ -1,6 +1,6 @@
 //
 //  CCDetail.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 16/01/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -26,11 +26,9 @@
 #import <WebKit/WebKit.h>
 
 #import "UIImage+animatedGIF.h"
-#import "LMMediaPlayerView.h"
 #import "TWMessageBarManager.h"
 #import "MWPhotoBrowser.h"
 #import "ReaderViewController.h"
-#import "UINavigationController+CCProgress.h"
 #import "CCGraphics.h"
 
 @class tableMetadata;

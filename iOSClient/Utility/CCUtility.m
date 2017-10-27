@@ -1,6 +1,6 @@
 //
 //  CCUtility.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 02/02/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -30,6 +30,13 @@
 #import <openssl/bio.h>
 #import <openssl/err.h>
 #import <openssl/pem.h>
+
+#define INTRO_MessageType       @"MessageType_"
+
+#define E2E_PublicKey           @"EndToEndPublicKey_"
+#define E2E_PrivateKeyCipher    @"EndToEndPrivateKeyCipher_"
+#define E2E_Passphrase          @"EndToEndPassphrase_"
+#define E2E_PublicKeyServer     @"EndToEndPublicKeyServer_"
 
 @implementation CCUtility
 
@@ -145,20 +152,17 @@
     [UICKeyChainStore setString:groupby forKey:@"groupby" service:k_serviceShareKeyChain];
 }
 
-+ (void)setIntro:(NSString *)version
++ (void)setIntroMessage:(NSString *)type set:(BOOL)set
 {
-    [UICKeyChainStore setString:@"true" forKey:version service:k_serviceShareKeyChain];
+    NSString *key = [INTRO_MessageType stringByAppendingString:type];
+    NSString *sSet = (set) ? @"true" : @"false";
+
+    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setActiveAccountExt:(NSString *)activeAccount
 {
     [UICKeyChainStore setString:activeAccount forKey:@"activeAccountExt" service:k_serviceShareKeyChain];
-}
-
-+ (void)setCryptatedExt:(BOOL)cryptated
-{
-    NSString *sCryptated = (cryptated) ? @"true" : @"false";
-    [UICKeyChainStore setString:sCryptated forKey:@"cryptatedExt" service:k_serviceShareKeyChain];
 }
 
 + (void)setServerUrlExt:(NSString *)serverUrl
@@ -227,6 +231,38 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
++ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
+{
+    NSString *key = [E2E_PublicKey stringByAppendingString:account];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher
+{
+    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
+    [UICKeyChainStore setString:privateKeyCipher forKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase
+{
+    NSString *key = [E2E_Passphrase stringByAppendingString:account];
+    [UICKeyChainStore setString:passphrase forKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey
+{
+    NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)clearAllKeysEndToEnd:(NSString *)account
+{
+    [self setEndToEndPublicKey:account publicKey:nil];
+    [self setEndToEndPrivateKeyCipher:account privateKeyCipher:nil];
+    [self setEndToEndPassphrase:account passphrase:nil];
+    [self setEndToEndPublicKeyServer:account publicKey:nil];
+}
+
 #pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
@@ -250,11 +286,6 @@
     NSString *uuid = [[UIDevice currentDevice] identifierForVendor].UUIDString;
     return uuid;
 #endif
-}
-
-+ (NSString *)getNameCurrentDevice
-{
-    return [[UIDevice currentDevice] name];
 }
 
 + (NSString *)getVersion
@@ -339,9 +370,11 @@
     return groupby;
 }
 
-+ (BOOL)getIntro:(NSString *)version
++ (BOOL)getIntroMessage:(NSString *)type
 {
-    return [[UICKeyChainStore stringForKey:version service:k_serviceShareKeyChain] boolValue];
+    NSString *key = [INTRO_MessageType stringByAppendingString:type];
+    
+    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
 }
 
 + (NSString *)getIncrementalNumber
@@ -359,11 +392,6 @@
 + (NSString *)getActiveAccountExt
 {
     return [UICKeyChainStore stringForKey:@"activeAccountExt" service:k_serviceShareKeyChain];
-}
-
-+ (BOOL)getCryptatedExt
-{
-    return [[UICKeyChainStore stringForKey:@"cryptatedExt" service:k_serviceShareKeyChain] boolValue];
 }
 
 + (NSString *)getServerUrlExt
@@ -431,6 +459,47 @@
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
 }
 
++ (NSString *)getEndToEndPublicKey:(NSString *)account
+{
+    NSString *key = [E2E_PublicKey stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getEndToEndPrivateKeyCipher:(NSString *)account
+{
+    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getEndToEndPassphrase:(NSString *)account
+{
+    NSString *key = [E2E_Passphrase stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getEndToEndPublicKeyServer:(NSString *)account
+{
+    NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
+    return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (BOOL)isEndToEndEnabled:(NSString *)account
+{
+    NSString *publicKey = [self getEndToEndPublicKey:account];
+    NSString *privateKey = [self getEndToEndPrivateKeyCipher:account];
+    NSString *passphrase = [self getEndToEndPassphrase:account];
+    NSString *publicKeyServer = [self getEndToEndPublicKeyServer:account];
+    
+    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0 && publicKeyServer.length > 0) {
+        
+        return YES;
+        
+    } else {
+                
+        return NO;
+    }
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====
 #pragma --------------------------------------------------------------------------------------------
@@ -479,7 +548,7 @@
     [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
 
     if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
-        NSLog(@"Date '%@' could not be parsed: %@", dateString, error);
+        NSLog(@"[LOG] Date '%@' could not be parsed: %@", dateString, error);
         date = [NSDate date];
     }
 
@@ -648,7 +717,7 @@
     return [activeUrl stringByAppendingString:webDAV];
 }
 
-// Return path of User Crypto Cloud / <user dir>
+// Return path of User
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
 {
     NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
@@ -705,7 +774,7 @@
     return [paths objectAtIndex:0];
 }
 
-// Return the path of directory Crypto Cloud / Audio
+// Return the path of directory Audio
 + (NSString *)getDirectoryAudio
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
@@ -781,7 +850,9 @@
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl
 {
-    NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] URLByDeletingLastPathComponent];
+    //NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] URLByDeletingLastPathComponent]; DEPRECATED iOS9
+    
+    NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]] URLByDeletingLastPathComponent];
     
     NSString *pather = [[url absoluteString] stringByRemovingPercentEncoding];
     
@@ -795,49 +866,6 @@
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
     
     return fileName;
-}
-
-+ (void)sendMailEncryptPass:(NSString *)recipient validateEmail:(BOOL)validateEmail form:(id)form nameImage:(NSString *)nameImage
-{
-    BOOL error = NO;
-    
-    if (validateEmail)
-        error = ![self isValidEmail:recipient];
-    
-    if (!error)
-        error = ![MFMailComposeViewController canSendMail];
-    
-    if (!error) {
-        
-        NSString *key = [CCUtility getKeyChainPasscodeForUUID:[CCUtility getUUID]];
-        
-        MFMailComposeViewController *mc = [[MFMailComposeViewController alloc] init];
-        mc.mailComposeDelegate = form;
-        
-        [mc setSubject:NSLocalizedString(@"_title_mail_encryptpass_", nil)];
-        
-        NSString *htmlMsg =[NSString stringWithFormat:@"<html><body><p>%@ : %@ , %@</p></body></html>", NSLocalizedString(@"_text1_mail_encryptpass_", nil), key, NSLocalizedString(@"_text2_mail_encryptpass_", nil)];
-        
-        NSData *jpegData = UIImageJPEGRepresentation([UIImage imageNamed:nameImage], 1.0);
-        [mc addAttachmentData:jpegData mimeType:@"image/jpeg" fileName:@"cryptocloud.png"];
-        [mc setMessageBody:htmlMsg isHTML:YES];
-        
-        if ([self isValidEmail:recipient])
-            [mc setToRecipients:@[recipient]];
-        
-        [form presentViewController:mc animated:YES completion:NULL];
-        
-    } else {
-        
-        UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_mail_not_can_send_mail_", nil) preferredStyle:UIAlertControllerStyleAlert];
-        
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil)  style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction * action) {
-                                                       [alert dismissViewControllerAnimated:YES completion:nil];
-                                                   }];
-        [alert addAction:ok];
-        [form presentViewController:alert animated:YES completion:nil];
-    }
 }
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)alassets
@@ -879,13 +907,8 @@
     metadata.etag = etag;
     metadata.fileID = fileID;
     metadata.fileName = fileName;
-    metadata.fileNameData = fileName;
-    metadata.fileNamePrint = fileName;
-    metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
     metadata.size = size;
     metadata.status = status;
-    metadata.type = k_metadataType_file;
-    metadata.uuid = [CCUtility getUUID];
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:directoryID];
     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -896,56 +919,26 @@
     return metadata;
 }
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName fileNamePrint:(NSString *)fileNamePrint serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
 {
     tableMetadata *metadata = [tableMetadata new];
     
     fileName = [CCUtility removeForbiddenCharactersServer:fileName];
-    fileNamePrint = [CCUtility removeForbiddenCharactersServer:fileNamePrint];
     
     metadata.account = activeAccount;
-    metadata.cryptated = NO;
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
+    metadata.encrypted = itemDto.isEncrypted;
     metadata.directory = itemDto.isDirectory;
-    metadata.errorPasscode = false;
     metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
     metadata.directoryID = directoryID;
     metadata.fileName = fileName;
-    metadata.fileNameData = [CCUtility trasformedFileNamePlistInCrypto:fileName];
-    metadata.fileNamePrint = fileNamePrint;
     metadata.iconName = @"";
-    metadata.model = @"";
-    metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
     metadata.permissions = itemDto.permissions;
-    metadata.protocolCrypto = @"";
     metadata.etag = itemDto.etag;
     metadata.size = itemDto.size;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-    metadata.sessionTaskIdentifierPlist = k_taskIdentifierDone;
-    metadata.title = @"";
-    metadata.type = k_metadataType_file;
     metadata.typeFile = @"";
-    metadata.uuid = [CCUtility getUUID];
-    
-    switch ([self getTypeFileName:metadata.fileName]) {
-            
-        case k_metadataTypeFilenamePlist:
-            
-            metadata.cryptated = YES;            
-            metadata.fileNamePrint = @" ";
-            
-            [self insertInformationPlist:metadata directoryUser:directoryUser];
-            
-            break;
-            
-        case k_metadataTypeFilenameCrypto:
-            
-            metadata.cryptated = YES;
-            metadata.fileNamePrint = @"";
-            
-            break;
-    }
     
     [self insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
     
@@ -954,18 +947,14 @@
 
 + (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory
 {
-    if ([metadata.type isEqualToString: k_metadataType_template]) {
-        
-        metadata.typeFile = k_metadataTypeFile_template;
-    
-    } else if ([metadata.fileName isEqualToString:@"."]) {
+    if ([metadata.fileName isEqualToString:@"."]) {
         
         metadata.typeFile = k_metadataTypeFile_unknown;
         metadata.iconName = @"file";
         
     } else if (!metadata.directory) {
         
-        CFStringRef fileExtension = (__bridge CFStringRef)[metadata.fileNamePrint pathExtension];
+        CFStringRef fileExtension = (__bridge CFStringRef)[metadata.fileName pathExtension];
         CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
@@ -977,12 +966,6 @@
         else
             metadata.thumbnailExists = NO;
         
-        // if wrong code, icon protect
-        if (metadata.errorPasscode) {
-            metadata.typeFile = k_metadataTypeFile_unknown;
-            metadata.iconName = @"plist";
-            return metadata;
-        }
         // Type compress
         if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
             metadata.typeFile = k_metadataTypeFile_compress;
@@ -1043,8 +1026,7 @@
                 
             } else {
             
-                if (metadata.cryptated) metadata.iconName = @"plist";
-                else metadata.iconName = @"file";
+                metadata.iconName = @"file";
             }
         }
         
@@ -1055,104 +1037,10 @@
         // icon directory
         metadata.typeFile = k_metadataTypeFile_directory;
         
-        if (metadata.cryptated) metadata.iconName = @"foldercrypto";
-        else metadata.iconName = @"folder";
+        metadata.iconName = @"folder";
         
         if([metadata.fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory])
             metadata.iconName = @"folderphotocamera";
-    }
-    
-    return metadata;
-}
-
-+ (tableMetadata *)insertInformationPlist:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser
-{
-    NSString *fileNamePlist, *temp, *passcode;
-    NSError *error;
-    
-    // find the plist
-    // 1) directory temp
-    // 2) directory serverUrl
-    
-    temp = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:temp]) fileNamePlist = temp;
-    else {
-        temp = [NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileName];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:temp]) fileNamePlist = temp;
-    }
-    
-    if (!fileNamePlist)
-        return nil;
-    
-    NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithContentsOfFile:fileNamePlist];
-    NSString *title =  [data objectForKey:@"title"];
-    NSString *len = [data objectForKey:@"len"];
-    NSString *uuid = [data objectForKey:@"uuid"];
-    
-    // AutoInsert password if possible Versione 1.3
-    [[CCCrypto sharedManager] autoInsertPasscodeUUID:uuid text:title];
-    
-    passcode = [[CCCrypto sharedManager] getKeyPasscode:uuid];
-
-    metadata.cryptated = YES;
-    metadata.directory = [[data objectForKey:@"dir"] boolValue];
-    metadata.iconName = [data objectForKey:@"icon"];
-    metadata.model = [data objectForKey:@"model"];
-    metadata.nameCurrentDevice = [data objectForKey:@"namecurrentdevice"];
-    metadata.protocolCrypto = [data objectForKey:@"protocol"];
-    metadata.size = (long) [len longLongValue];
-    if ([data objectForKey:@"image"] == nil)
-        metadata.thumbnailExists = NO;
-    else
-        metadata.thumbnailExists = YES;
-    metadata.title = title;
-    metadata.type = [data objectForKey:@"type"];
-    metadata.uuid = uuid;
-    
-    // Optimization V2.12
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID]] && !metadata.directory) {
-    
-        // exists image V1.8
-        NSData *imageData = [data objectForKey:@"image"];
-        if (imageData) {
-        
-            if (passcode) imageData = [RNDecryptor decryptData:imageData withSettings:kRNCryptorAES256Settings password:passcode error:&error];
-            else imageData = nil;
-        
-            if (imageData && error == nil) {
-            
-                UIImage *image = [UIImage imageWithData:imageData];
-                if (image) {
-                
-                    if (image.size.width == 128 && image.size.height == 128)
-                        [CCGraphics saveIcoWithEtag:metadata.fileID image:image writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] copy:NO move:NO fromPath:nil toPath:nil];
-                    else
-                        [CCGraphics saveIcoWithEtag:metadata.fileID image:[CCGraphics scaleImage:image toSize:CGSizeMake(128, 128)] writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, metadata.fileID] copy:NO move:NO fromPath:nil toPath:nil];
-                }
-            }
-        }
-    }
-    
-    if (passcode) {
-        
-        metadata.fileNamePrint = [AESCrypt decrypt:title password:passcode];
-        
-        if ([metadata.fileNamePrint length]) {
-            
-            metadata.errorPasscode = false;
-            
-        } else {
-            
-            // succede che è stata inserito un Passcode nuovo per lo stesso UUID
-            metadata.fileNamePrint = NSLocalizedString(@"_insert_password_", nil);
-            metadata.errorPasscode = true;
-        }
-        
-    } else {
-        
-        metadata.errorPasscode = true;
-        if (!metadata.uuid) metadata.fileNamePrint = @" ";
-        else metadata.fileNamePrint = NSLocalizedString(@"_insert_password_", nil);
     }
     
     return metadata;
@@ -1173,109 +1061,15 @@
     [[NSFileManager defaultManager] fileExistsAtPath:fileNamePath isDirectory:&isDirectory];
     metadata.directory = isDirectory;
     
-    metadata.errorPasscode = false;
     metadata.fileID = fileName;
     metadata.directoryID = directory;
     metadata.fileName = fileName;
-    metadata.fileNameData = fileName;
-    metadata.fileNamePrint = fileName;
-    metadata.nameCurrentDevice = [CCUtility getNameCurrentDevice];
-    metadata.protocolCrypto = k_versionProtocolPlist;
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
-    metadata.type = k_metadataType_file;
-    metadata.title = @"";
-    metadata.uuid = [CCUtility getUUID];
-    
-    if ([CCUtility isCryptoPlistString:fileName])
-        metadata = [CCUtility insertInformationPlist:metadata directoryUser:directory];
     
     [self insertTypeFileIconName:metadata serverUrl:directory autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
     
     return metadata;
-}
-
-// Return file name plist -> crypto
-+ (NSString *)trasformedFileNamePlistInCrypto:(NSString *)fileName
-{
-    if([self isCryptoPlistString:fileName])
-        return [fileName substringToIndex:[fileName length] - 6];
-    
-    return fileName;
-}
-
-// Return file name crypto -> plist
-+ (NSString *)trasformedFileNameCryptoInPlist:(NSString *)fileName
-{
-    if([self isCryptoString:fileName])
-        return [fileName stringByAppendingString:@".plist"];
-    
-    return fileName;
-}
-
-// It's file crypto ? 64 + crypto = 70
-+ (BOOL)isCryptoString:(NSString *)fileName
-{
-    NSString *crypto;
-    if ([fileName length] != 70) return false;
-    
-    crypto = [fileName substringWithRange:NSMakeRange(64, 6)];
-    
-    if ([crypto isEqualToString:@"crypto"]) return true;
-    else return false;
-}
-
-// It's file crypto.plist ? 64 + crypto.plist = 76
-+ (BOOL)isCryptoPlistString:(NSString *)fileName
-{
-    NSString *cryptoPlist;
-    if ([fileName length] != 76) return false;
-    
-    cryptoPlist = [fileName substringWithRange:NSMakeRange(64, 12)];
-    
-    if ([cryptoPlist isEqualToString:@"crypto.plist"]) return true;
-    else return false;
-}
-
-// It's file plain
-+ (BOOL)isFileNotCryptated:(NSString *)filename
-{
-    if ([self isCryptoPlistString:filename] == NO && [self isCryptoString:filename] == NO) return true;
-    else return false;
-}
-
-// It's file encrypted
-+ (BOOL)isFileCryptated:(NSString *)filename
-{
-    if ([self isCryptoPlistString:filename] == YES || [self isCryptoString:filename] == YES) return true;
-    else return false;
-}
-
-+ (NSInteger)getTypeFileName:(NSString *)fileName
-{
-    NSUInteger len = [fileName length];
-    
-    switch (len) {
-            
-        case 70:
-            
-            if ([[fileName substringWithRange:NSMakeRange(64, 6)] isEqualToString:@"crypto"]) return k_metadataTypeFilenameCrypto;
-            else return k_metadataTypeFilenamePlain;
-            break;
-            
-        case 76:
-            
-            if ([[fileName substringWithRange:NSMakeRange(64, 12)] isEqualToString:@"crypto.plist"]) return k_metadataTypeFilenamePlist;
-            else return k_metadataTypeFilenamePlain;
-            break;
-            
-        default:
-            
-            return k_metadataTypeFilenamePlain;
-            break;
-    }
-    
-    return k_metadataTypeFilenamePlain;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1348,18 +1142,6 @@
     }
     
     return theDate;
-}
-
-+ (ALAssetsLibrary *)defaultAssetsLibrary
-{
-    static dispatch_once_t pred = 0;
-    static ALAssetsLibrary *library = nil;
-    
-    dispatch_once(&pred, ^{
-        library = [[ALAssetsLibrary alloc] init];
-    });
-    
-    return library;
 }
 
 + (NSDate *)datetimeWithOutTime:(NSDate *)datDate

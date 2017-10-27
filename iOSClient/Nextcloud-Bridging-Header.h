@@ -10,6 +10,8 @@
 #import "CCGraphics.h"
 #import "NCAutoUpload.h"
 #import "NCUchardet.h"
+#import "NCEndToEndEncryption.h"
+#import "NYMnemonic.h"
 
 #import "OCActivity.h"
 #import "OCUserProfile.h"
@@ -18,8 +20,3 @@
 #import "OCSharedDto.h"
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
-
-#import "TableAccount+CoreDataClass.h"
-#import "TableCertificates+CoreDataClass.h"
-#import "TableDirectory+CoreDataClass.h"
-#import "TableLocalFile+CoreDataClass.h"

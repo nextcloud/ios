@@ -1,6 +1,6 @@
 //
 //  CCQuickActions.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 30/06/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -32,7 +32,7 @@
 
 + (instancetype) quickActionsManager;
 
-- (void)startQuickActionsEncrypted:(BOOL)cryptated viewController:(UITableViewController *)viewController;
+- (void)startQuickActionsViewController:(UITableViewController *)viewController;
 
 - (void)closeAll;
 

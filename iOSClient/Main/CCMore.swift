@@ -54,6 +54,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
+        if #available(iOS 11.0, *) {
+            //tableView.contentInsetAdjustmentBehavior = .never
+        }
+        
         themingBackground.image = UIImage.init(named: "themingBackground")
         
         // create tap gesture recognizer
@@ -156,7 +160,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         self.navigationItem.title = NSLocalizedString("_more_", comment: "")
         
         // Aspect
-        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, encrypted: false, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
 
         // +
@@ -173,7 +177,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
-    func changeTheming() {
+    @objc func changeTheming() {
         
         if let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png") {
             themingBackground.image = theminBackgroundFile
@@ -186,7 +190,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         }
     }
     
-    func changeUserProfile() {
+    @objc func changeUserProfile() {
      
         if let themingAvatarFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png") {
             themingAvatar.image = themingAvatarFile
@@ -353,7 +357,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         }
     }
     
-    func tapLabelQuotaExternalSite() {
+    @objc func tapLabelQuotaExternalSite() {
         
         if (quotaMenu.count > 0) {
             
@@ -375,18 +379,22 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         }
     }
     
-    func tapImageLogoManageAccount() {
+    @objc func tapImageLogoManageAccount() {
         
         let controller = CCManageAccount.init()
         
         self.navigationController?.pushViewController(controller, animated: true)
     }
-
+    
     func loginSuccess(_ loginType: NSInteger) {
         
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil)
         
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))
+    }
+    
+    func loginDisappear() {
+        
     }
 }
 

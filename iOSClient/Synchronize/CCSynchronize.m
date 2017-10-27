@@ -1,6 +1,6 @@
 //
 //  CCSynchronize.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 19/10/16.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -122,10 +122,6 @@
         
         for (tableMetadata *record in tableMetadatas) {
             
-            // reject cryptated
-            if (record.cryptated)
-                continue;
-            
             BOOL fileIDFound = NO;
             
             for (tableMetadata *metadata in metadatas) {
@@ -148,7 +144,7 @@
             
             if (metadata.directory && metadataNet.serverUrl) {
                 
-                NSString *dirForDelete = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
+                NSString *dirForDelete = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
                 
                 [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete];
             }
@@ -166,14 +162,10 @@
         
         for (tableMetadata *metadata in metadatas) {
             
-            // reject cryptated
-            if (metadata.cryptated)
-                continue;
-            
             // RECURSIVE DIRECTORY MODE
             if (metadata.directory) {
                 
-                    NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileNameData];
+                    NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
                     NSString *etag = metadata.etag;
                 
                     // Verify if do not exists this Metadata
@@ -256,7 +248,6 @@
     metadataNet.action = actionReadFile;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
-    metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
@@ -361,18 +352,9 @@
         
         if (changeRev) {
             
-            if ([metadata.type isEqualToString: k_metadataType_file]) {
-                
-                // remove file and ico
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
-            }
-            
-            if ([metadata.type isEqualToString: k_metadataType_template]) {
-                
-                // remove model
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName] error:nil];
-            }
+            // remove file and ico
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
             
             [metadatas addObject:metadata];
         }
@@ -392,19 +374,10 @@
     for (tableMetadata *metadata in metadatas) {
         
         NSString *selector, *selectorPost;
-        BOOL downloadData = NO, downloadPlist = NO;
         CCMetadataNet *metadataNet = [CCMetadataNet new];
         
-        if ([metadata.type isEqualToString: k_metadataType_file]) {
-            downloadData = YES;
-            selector = selectorDownloadSynchronize;
-        }
+        selector = selectorDownloadSynchronize;
         
-        if ([metadata.type isEqualToString: k_metadataType_template]) {
-            downloadPlist = YES;
-            selector = selectorLoadPlist;
-        }
-            
         // Clear date for dorce refresh view
         if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
             serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
@@ -418,8 +391,6 @@
         [metadataToAdd addObject:metadata];
        
         metadataNet.fileID = fileID;
-        metadataNet.downloadData = downloadData;
-        metadataNet.downloadPlist = downloadPlist;
         metadataNet.selector = selector;
         metadataNet.selectorPost = selectorPost;
         metadataNet.serverUrl = serverUrl;

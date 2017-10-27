@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 04/09/14.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -23,25 +23,25 @@
 
 #import "AppDelegate.h"
 
-#import <MagicalRecord/MagicalRecord.h>
-#import "CCCoreData.h"
 #import "iRate.h"
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"
-#import "CCCrypto.h"
 #import "CCGraphics.h"
 #import "CCPhotos.h"
 #import "CCSynchronize.h"
 #import "CCMain.h"
 #import "CCDetail.h"
-#import "Firebase.h"
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 #import "JDStatusBarNotification.h"
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+/* Remove comment for activate Firebase and push notification */
+//#import "Firebase.h"
+//@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
 {
     
 }
@@ -66,10 +66,10 @@
     // Brand
     if ([NCBrandOptions sharedInstance].use_firebase) {
     
+        /* Remove comment for activate Firebase and push notification */
+        
         /*
-         In order for this to work, proper GoogleService-Info.plist must be included
-         */
-    
+        //In order for this to work, proper GoogleService-Info.plist must be included
         @try {
             [FIRApp configure];
         } @catch (NSException *exception) {
@@ -97,6 +97,7 @@
             [FIRMessaging messaging].remoteMessageDelegate = self;
             #endif
         }
+         */
     }
 
     NSString *dir;
@@ -118,11 +119,6 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
 
-    // create Crypto Cloud in Group => Library, Application Support, Crypto Cloud
-    dir = [[dirGroup URLByAppendingPathComponent:appDatabase] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
-    
     // create dir Database Nextcloud
     dir = [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
@@ -130,14 +126,6 @@
 
     NSError *error = nil;
     [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:dir error:&error];
-    
-    [MagicalRecord setupCoreDataStackWithAutoMigratingSqliteStoreNamed:(id)[dirGroup URLByAppendingPathComponent:[appDatabase stringByAppendingPathComponent:@"cryptocloud"]]];
-    
-#ifdef DEBUG
-    [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelWarn];
-#else
-    [MagicalRecord setLoggingLevel:MagicalRecordLoggingLevelOff];
-#endif
     
     // Verify upgrade
     if ([self upgrade]) {
@@ -155,7 +143,7 @@
 
         } else {
         
-            [self settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activePassword:account.password];
+            [self settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
         }
     }
     
@@ -182,10 +170,6 @@
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
     self.listChangeTask = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
-    
-    // Player audio
-    self.player = [LMMediaPlayerView sharedPlayerView];
-    self.player.delegate = self;
             
     // setting Reachable in back
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -208,7 +192,7 @@
 
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
-    [app aspectNavigationControllerBar:navigationController.navigationBar encrypted:NO online:YES hidden:NO];
+    [app aspectNavigationControllerBar:navigationController.navigationBar online:YES hidden:NO];
     
     // Settings TabBar
     [self createTabBarController];
@@ -240,6 +224,9 @@
     UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
     [application registerUserNotificationSettings:notificationSettings];
+    
+    // E2E Encryption
+    self.endToEndInterface = [NCEntoToEndInterface new];
     
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
@@ -307,8 +294,6 @@
 //
 - (void)applicationWillTerminate:(UIApplication *)application
 {    
-    [MagicalRecord cleanUp];
-
     NSLog(@"[LOG] bye bye, Nextcloud !");
 }
 
@@ -368,45 +353,47 @@
 
 - (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType
 {
-    if ([NCBrandOptions sharedInstance].use_login_web) {
-        
-        if (!_activeLoginWeb.isViewLoaded || !_activeLoginWeb.view.window) {
-        
-            _activeLoginWeb = [CCLoginWeb new];
-            _activeLoginWeb.delegate = delegate;
-            _activeLoginWeb.loginType = loginType;
-        
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [_activeLoginWeb presentModalWithDefaultTheme:delegate];
-            });
-        }
-        
-    } else {
-        
-        if (!_activeLogin.isViewLoaded || !_activeLogin.view.window) {
+    @synchronized (self) {
 
-            _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
-            _activeLogin.delegate = delegate;
-            _activeLogin.loginType = loginType;
+        if ([NCBrandOptions sharedInstance].use_login_web) {
         
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [self.window makeKeyAndVisible];
-                [self.window.rootViewController presentViewController:_activeLogin animated:YES completion:nil];
-            });
+            if (!_activeLoginWeb.view.window) {
+        
+                _activeLoginWeb = [CCLoginWeb new];
+                _activeLoginWeb.delegate = delegate;
+                _activeLoginWeb.loginType = loginType;
+        
+                dispatch_async(dispatch_get_main_queue(), ^ {
+                    [_activeLoginWeb presentModalWithDefaultTheme:delegate];
+                });
+            }
+        
+        } else {
+        
+            if (_activeLogin == nil) {
+
+                _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
+                _activeLogin.delegate = delegate;
+                _activeLogin.loginType = loginType;
+        
+                dispatch_async(dispatch_get_main_queue(), ^ {
+                    [delegate presentViewController:_activeLogin animated:YES completion:nil];
+                });
+            }
         }
     }
 }
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Setting Active Account for all APP =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activePassword:(NSString *)activePassword
+- (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword
 {
     self.activeAccount = activeAccount;
     self.activeUrl = activeUrl;
     self.activeUser = activeUser;
+    self.activeUserID = activeUserID;
     self.activePassword = activePassword;
     
     self.directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];
@@ -429,6 +416,9 @@
     [application registerForRemoteNotifications];
 }
 
+/* Remove comment for activate Firebase and push notification */
+
+/*
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     // test
@@ -441,7 +431,7 @@
     NSString *pushToken = [[FIRInstanceID instanceID] token];
     // NSString *pushToken = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
     
-    NSString *pushTokenHash = [[CCCrypto sharedManager] createSHA512:pushToken];
+    NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:pushToken];
     NSDictionary *devicePushKey = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"DevicePushKey-Info" ofType:@"plist"]];
     
 #ifdef DEBUG
@@ -463,6 +453,7 @@
         [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
     }    
 }
+*/
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
 {
@@ -496,7 +487,7 @@
 
 }
 
-- (void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
     UIApplicationState state = [application applicationState];
     
@@ -523,8 +514,10 @@
     }
 }
 
-#pragma FIREBASE
+/* Remove comment for activate Firebase and push notification */
 
+#pragma FIREBASE
+/*
 - (void)tokenRefreshNotification:(NSNotification *)notification {
     
     // Note that this callback will be fired everytime a new token is generated, including the first
@@ -566,6 +559,7 @@
     NSLog(@"[LOG] %@", remoteMessage.appData);
 }
 #endif
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Quick Actions - ShotcutItem =====
@@ -577,24 +571,13 @@
 
     UIApplicationShortcutIcon *shortcutPhotosIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionPhotos"];
     UIApplicationShortcutIcon *shortcutUploadIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionUpload"];
-    UIApplicationShortcutIcon *shortcutUploadEncryptedIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionUploadEncrypted"];
     
     UIApplicationShortcutItem *shortcutPhotos = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.photos", bundleId] localizedTitle:NSLocalizedString(@"_photo_camera_", nil) localizedSubtitle:nil icon:shortcutPhotosIcon userInfo:nil];
     UIApplicationShortcutItem *shortcutUpload = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.upload", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadIcon userInfo:nil];
-    UIApplicationShortcutItem *shortcutUploadEncrypted = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.uploadEncrypted", bundleId] localizedTitle:NSLocalizedString(@"_upload_encrypted_file_", nil) localizedSubtitle:nil icon:shortcutUploadEncryptedIcon userInfo:nil];
-    
-    if (app.isCryptoCloudMode) {
-        
-        // add the array to our app
-        if (shortcutUploadEncrypted && shortcutUpload && shortcutPhotos)
-            [UIApplication sharedApplication].shortcutItems = @[shortcutUploadEncrypted, shortcutUpload, shortcutPhotos];
-
-    } else {
-
-        // add the array to our app
-        if (shortcutUpload && shortcutPhotos)
-            [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
-    }
+   
+    // add the array to our app
+    if (shortcutUpload && shortcutPhotos)
+        [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
 }
 
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler
@@ -645,7 +628,7 @@
                 [_activeMain.navigationController popToRootViewControllerAnimated:NO];
 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    [[CCQuickActions quickActionsManager] startQuickActionsEncrypted:NO viewController:_activeMain];
+                    [[CCQuickActions quickActionsManager] startQuickActionsViewController:_activeMain];
                 });
             }
         });
@@ -684,7 +667,7 @@
                 [_activeMain.navigationController popToRootViewControllerAnimated:NO];
                 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    [[CCQuickActions quickActionsManager] startQuickActionsEncrypted:YES viewController:_activeMain];
+                    [[CCQuickActions quickActionsManager] startQuickActionsViewController:_activeMain];
                 });
             }
         });
@@ -847,7 +830,7 @@
         } else {
             [tbItem setBadgeValue:nil];
             
-            NSDictionary* userInfo = @{@"fileID": @"", @"serverUrl": @"", @"cryptated": [NSNumber numberWithFloat:0], @"progress": [NSNumber numberWithFloat:0]};
+            NSDictionary* userInfo = @{@"fileID": @"", @"serverUrl": @"", @"progress": [NSNumber numberWithFloat:0]};
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
         }
     }
@@ -861,9 +844,15 @@
 {
     UITabBarItem *item;
     NSLayoutConstraint *constraint;
+    CGFloat multiplier = 0;
+    CGFloat safeAreaBottom = 0;
     
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+    
+    if (@available(iOS 11, *)) {
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
+    }
     
     [app aspectTabBar:tabBarController.tabBar hidden:NO];
     
@@ -899,34 +888,37 @@
     
     // Plus Button
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    button.tag = 99;
-    button.frame = CGRectMake(0.0, 0.0, buttonImage.size.width, buttonImage.size.height);
-    [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
-    [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
-    [button addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
+    UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
+    buttonPlus.tag = 99;
+    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
+    [buttonPlus addTarget:self action:@selector(handleTouchTabbarCenter:) forControlEvents:UIControlEventTouchUpInside];
     
-    [button setTranslatesAutoresizingMaskIntoConstraints:NO];
-    [tabBarController.view addSubview:button];
+    [buttonPlus setTranslatesAutoresizingMaskIntoConstraints:NO];
+    [tabBarController.tabBar addSubview:buttonPlus];
     
-    constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
-    
+    constraint =[NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0];
     [tabBarController.view addConstraint:constraint];
     
-    constraint =[NSLayoutConstraint constraintWithItem:button attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:-5];
+    multiplier = 1 * (tabBarController.tabBar.frame.size.height - safeAreaBottom) / tabBarController.tabBar.frame.size.height;
+    constraint =[NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:multiplier constant:0];
+    [tabBarController.view addConstraint:constraint];
     
+    multiplier = 0.8 * (tabBarController.tabBar.frame.size.height - safeAreaBottom) / tabBarController.tabBar.frame.size.height;
+    
+    constraint =[NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeHeight multiplier:multiplier constant:0];
+    [tabBarController.view addConstraint:constraint];
+    
+    constraint =[NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeHeight multiplier:multiplier constant:0];
     [tabBarController.view addConstraint:constraint];
 }
 
-- (void)aspectNavigationControllerBar:(UINavigationBar *)nav encrypted:(BOOL)encrypted online:(BOOL)online hidden:(BOOL)hidden
+- (void)aspectNavigationControllerBar:(UINavigationBar *)nav online:(BOOL)online hidden:(BOOL)hidden
 {
     nav.translucent = NO;
     nav.barTintColor = [NCBrandColor sharedInstance].brand;
     nav.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
-    
-    if (encrypted)
-        [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].cryptocloud}];
     
     if (!online)
         [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].connectionNo}];
@@ -977,7 +969,7 @@
     if (self.maintenanceMode)
         return;
     
-    UIView *view = [(UIButton *)sender superview];
+    UIView *view = [[(UIButton *)sender superview] superview];
     
     CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brand];
     
@@ -1098,53 +1090,6 @@
     
     // Tint Color GLOBAL WINDOW
     [self.window setTintColor:[NCBrandColor sharedInstance].brand];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Media Player Control =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)remoteControlReceivedWithEvent:(UIEvent *)event
-{
-    switch (event.subtype) {
-            
-        case UIEventSubtypeRemoteControlPlay:
-            
-            if (self.player.mediaPlayer) {
-                
-                NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-                
-                if (self.player.mediaPlayer.nowPlayingItem.title)
-                    [songInfo setObject:self.player.mediaPlayer.nowPlayingItem.title forKey:MPMediaItemPropertyTitle];
-                
-                if (self.player.mediaPlayer.nowPlayingItem.artist)
-                    [songInfo setObject:self.player.mediaPlayer.nowPlayingItem.artist forKey:MPMediaItemPropertyArtist];
-                
-                [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
-                
-                [self.player.mediaPlayer play];
-            }
-            break;
-        
-        case UIEventSubtypeRemoteControlPause:
-            
-            if (self.player.mediaPlayer) {
-                [self.player.mediaPlayer pause];
-            }
-            break;
-            
-        case UIEventSubtypeRemoteControlNextTrack:
-            // handle it break;
-        case UIEventSubtypeRemoteControlPreviousTrack:
-            // handle it break;
-        default:
-            break;
-    }
-}
-
-- (BOOL)mediaPlayerViewWillStartPlaying:(LMMediaPlayerView *)playerView media:(LMMediaItem *)media
-{
-    return YES;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1328,7 +1273,7 @@
 //
 // Method called by the system when all the background task has end
 //
-- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)())completionHandler
+- (void)application:(UIApplication *)application handleEventsForBackgroundURLSession:(NSString *)identifier completionHandler:(void (^)(void))completionHandler
 {
     NSLog(@"[LOG] Start handle Events For Background URLSession: %@", identifier);
     
@@ -1348,7 +1293,7 @@
 {
     id operation;
     
-    operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withPassword:_activePassword withUrl:_activeUrl isCryptoCloudMode:_isCryptoCloudMode];
+    operation = [[OCnetworking alloc] initWithDelegate:delegate metadataNet:metadataNet withUser:_activeUser withUserID:_activeUserID withPassword:_activePassword withUrl:_activeUrl];
         
     [operation setQueuePriority:metadataNet.priority];
     
@@ -1406,7 +1351,7 @@
     
     if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {
@@ -1419,13 +1364,8 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
         
-        BOOL downloadData = NO, downloadPlist = NO;
-            
-        if (metadata.sessionTaskIdentifier != k_taskIdentifierDone) downloadData = YES;
-        if (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone) downloadPlist = YES;
-        
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] downloadFile:fileID serverUrl:serverUrl downloadData:downloadData downloadPlist:downloadPlist selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
+            [[CCNetworking sharedNetworking] downloadFile:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
         });
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
@@ -1439,7 +1379,7 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone sessionTaskIdentifierPlist:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     }
     
     // remove ChangeTask (fileID) from the list
@@ -1470,7 +1410,7 @@
         return;
     
     // BACKGROND & FOREGROUND
-    NSLog(@"-PROCESS-AUTO-UPLOAD-");
+    NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
     
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         
@@ -1505,7 +1445,7 @@
         metadataNet = [[NCManageDatabase sharedInstance] getQueueDownload];
         if (metadataNet) {
             
-            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileID serverUrl:metadataNet.serverUrl downloadData:metadataNet.downloadData downloadPlist:metadataNet.downloadPlist selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:app.activeMain];
+            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileID serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:app.activeMain];
             
         } else
             break;
@@ -1537,7 +1477,7 @@
     // ------------------------- <selector Auto Upload All> ----------------------
     
     // Verify num error MAX 10 after STOP
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND (sessionTaskIdentifier = %i OR sessionTaskIdentifierPlist = %i)", _activeAccount, selectorUploadAutoUploadAll, k_taskIdentifierError, k_taskIdentifierError] sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND sessionTaskIdentifier = %i", _activeAccount, selectorUploadAutoUploadAll, k_taskIdentifierError] sorted:nil ascending:NO];
     
     NSInteger errorCount = [metadatas count];
     
@@ -1682,50 +1622,6 @@
     NSString *actualBuild = [CCUtility getBuild];
     
     /* ---------------------- UPGRADE VERSION ----------------------- */
-    
-    if (([actualVersion compare:@"2.17.3" options:NSNumericSearch] == NSOrderedAscending)) {
-    
-        // Migrate Certificates Table From CoreData to Realm
-        
-        NSArray *listCertificateLocation = [CCCoreData migrateCertificatesLocation];
-        
-        for (NSString *certificateLocation in listCertificateLocation)
-            [[NCManageDatabase sharedInstance] addCertificates:certificateLocation];
-    }
-    
-    // VERSION < 2.17.4
-    
-    if (([actualVersion compare:@"2.17.4" options:NSNumericSearch] == NSOrderedAscending)) {
-        
-        [self maintenanceMode:YES];
-        
-        // Change type order
-        [CCUtility setOrderSettings:@"fileName"];
-        
-        // Migrate Account Table From CoreData to Realm
-        
-        NSArray *listAccount = [CCCoreData migrateAccount];
-        for (TableAccount *account in listAccount)
-            [[NCManageDatabase sharedInstance] addTableAccountFromCoredata:account];
-        
-        // Align Photo Library
-        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-        
-        // Most important is done
-        [CCUtility setVersion];
-        [CCUtility setBuild];
-
-        // Directories + LocalFile
-        NSArray *listDirectories = [CCCoreData migrateDirectories];
-        for (TableDirectory *directory in listDirectories)
-            [[NCManageDatabase sharedInstance] addTableDirectoryFromCoredata:directory];
-        
-        NSArray *listLocalFile = [CCCoreData migrateLocalFile];
-        for (TableLocalFile *localFile in listLocalFile)
-            [[NCManageDatabase sharedInstance] addTableLocalFileFromCoredata:localFile];
-        
-        [self maintenanceMode:NO];
-    }
     
     // VERSION < 2.17.6
 

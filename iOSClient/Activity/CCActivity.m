@@ -1,6 +1,6 @@
 //
 //  CCActivity.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 12/04/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -81,7 +81,7 @@
     _verbose = [CCUtility getActivityVerboseHigh];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button

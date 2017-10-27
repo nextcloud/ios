@@ -412,7 +412,16 @@
 {
     //TWS
     //CGFloat navigationBarOffset = self.appearsBehindNavigationBar && self.navigationBar ? ([UIApplication sharedApplication].statusBarHidden ? 44 : 64) : 0;
-    CGFloat navigationBarOffset = self.appearsBehindNavigationBar && self.navigationBar ? ([UIApplication sharedApplication].statusBarHidden ? 64 : 64) : 0;
+    
+    CGFloat offsetY = 0;
+    
+    if (@available(iOS 11, *)) {
+        UIEdgeInsets insets = [UIApplication sharedApplication].delegate.window.safeAreaInsets;
+        if (insets.bottom > 0)
+            offsetY = 20;
+    }
+    
+    CGFloat navigationBarOffset = self.appearsBehindNavigationBar && self.navigationBar ? ([UIApplication sharedApplication].statusBarHidden ? 44+offsetY : 64+offsetY) : 0;
     
     return navigationBarOffset;
 }

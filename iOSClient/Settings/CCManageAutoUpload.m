@@ -1,6 +1,6 @@
 //
 //  CCManageAutoUpload.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 01/09/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -155,6 +155,18 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
+    // Auto Upload Format Compatibility
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadFormatCompatibility" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_autoupload_format_compatibility_", nil)];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+    if (tableAccount.autoUploadCreateSubfolder) row.value = @1;
+    else row.value = @0;
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+    
     // Auto Upload file name
     
     section = [XLFormSectionDescriptor formSection];
@@ -178,9 +190,10 @@
     [super viewWillAppear:animated];
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.tableView.showsVerticalScrollIndicator = NO;
 
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Request permission for camera roll access
@@ -253,10 +266,13 @@
             [[NCAutoUpload sharedInstance] checkIfLocationIsEnabled];
                             
             if(isLocationIsEnabled == YES) {
-                    
-                UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:NSLocalizedString(@"_autoupload_background_msg_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                [alertView show];
-                    
+                
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_autoupload_background_title_", nil) message:NSLocalizedString(@"_autoupload_background_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                
+                [alertController addAction:okAction];
+                [self presentViewController:alertController animated:YES completion:nil];
+                
                 [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadBackground" state:YES];
                     
             } else {
@@ -320,6 +336,11 @@
         [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadWWAnVideo" state:[[rowDescriptor.value valueData] boolValue]];
     }
     
+    if ([rowDescriptor.tag isEqualToString:@"autoUploadFormatCompatibility"]) {
+        
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadFormatCompatibility" state:[[rowDescriptor.value valueData] boolValue]];
+    }    
+    
     if ([rowDescriptor.tag isEqualToString:@"autoUploadCreateSubfolder"]) {
         
         [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadCreateSubfolder" state:[[rowDescriptor.value valueData] boolValue]];
@@ -349,6 +370,8 @@
     
     XLFormRowDescriptor *rowAutoUploadCreateSubfolder = [self.form formRowWithTag:@"autoUploadCreateSubfolder"];
 
+    XLFormRowDescriptor *rowAutoUploadFormatCompatibility = [self.form formRowWithTag:@"autoUploadFormatCompatibility"];
+    
     XLFormRowDescriptor *rowAutoUploadFileName = [self.form formRowWithTag:@"autoUploadFileName"];
     
     // - STATUS ---------------------
@@ -375,9 +398,11 @@
     if (tableAccount.autoUploadFull)
         [rowAutoUploadFull setValue:@1]; else [rowAutoUploadFull setValue:@0];
     
+    if (tableAccount.autoUploadFormatCompatibility)
+        [rowAutoUploadFormatCompatibility setValue:@1]; else [rowAutoUploadFormatCompatibility setValue:@0];
+    
     if (tableAccount.autoUploadCreateSubfolder)
         [rowAutoUploadCreateSubfolder setValue:@1]; else [rowAutoUploadCreateSubfolder setValue:@0];
-    
 
     // - HIDDEN --------------------------------------------------------------------------
     
@@ -393,6 +418,8 @@
     
     rowAutoUploadCreateSubfolder.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
+    rowAutoUploadFormatCompatibility.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+
     rowAutoUploadFileName.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
     
     // -----------------------------------------------------------------------------------
@@ -425,6 +452,10 @@
             else sectionName = @"";
             break;
         case 6:
+            if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_format_compatibility_footer_", nil);
+            else sectionName = @"";
+            break;
+        case 7:
             if (tableAccount.autoUpload) sectionName =  NSLocalizedString(@"_autoupload_filenamemask_footer_", nil);
             else sectionName = @"";
             break;

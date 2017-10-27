@@ -84,6 +84,10 @@
         
         //If has lenght, there are an item
         if ([_xmlChars length]) {
+            
+            //BUG ?? https://github.com/nextcloud/server/issues/6925
+            _xmlChars = (NSMutableString *)[_xmlChars stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
+            
             //Create FileDto
             _currentFile = [OCFileDto new];
              _currentFile.isDirectory = NO;
@@ -192,6 +196,8 @@
         _xmlBucket = nil;
     } else if ([elementName isEqualToString:@"oc:favorite"]) {
         _currentFile.isFavorite = [_xmlChars boolValue];
+    } else if ([elementName isEqualToString:@"nc:is-encrypted"]) {
+        _currentFile.isEncrypted = [_xmlChars boolValue];
     }
 }
 

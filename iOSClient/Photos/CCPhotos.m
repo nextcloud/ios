@@ -1,6 +1,6 @@
 //
 //  CCPhotos.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 29/07/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -84,7 +84,7 @@
     [super viewWillAppear:animated];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
@@ -92,6 +92,13 @@
 
     
     [self reloadDatasource];
+}
+
+- (void)viewSafeAreaInsetsDidChange
+{
+    [super viewSafeAreaInsetsDidChange];
+    
+    self.collectionView.contentInset = self.view.safeAreaInsets;
 }
 
 - (void)changeTheming
@@ -102,13 +109,33 @@
     [self.collectionView reloadData];
 }
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    // Before rotation
+    
+    [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        
+        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
+            
+            // Portrait
+            
+        } else {
+            
+            // Landscape
+        }
+        
+    }];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Gestione Grafica Window =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)setUINavigationBarDefault
 {
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     
     // select
     UIImage *icon = [UIImage imageNamed:@"seleziona"];
@@ -285,7 +312,7 @@
     
     for (tableMetadata *metadata in _selectedMetadatas) {
     
-        NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint];
+        NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
         
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:fileNamePath error:nil];
         
@@ -404,13 +431,7 @@
 
 - (void)deleteFileOrFolder:(tableMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
 {
-    
-    if (metadata.cryptated) {
-        [_queueMetadatas addObject:selectorDeleteCrypto];
-        [_queueMetadatas addObject:selectorDeletePlist];
-    } else {
-        [_queueMetadatas addObject:selectorDelete];
-    }
+    [_queueMetadatas addObject:selectorDelete];
     
     [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
 
@@ -465,13 +486,8 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    NSDictionary *dict = notification.userInfo;
-    float progress = [[dict valueForKey:@"progress"] floatValue];
-    
-    if (progress == 0)
-        [self.navigationController cancelCCProgress];
-    else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCBrandColor sharedInstance].navigationBarProgress];
+    //NSDictionary *dict = notification.userInfo;
+    //float progress = [[dict valueForKey:@"progress"] floatValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -703,10 +719,6 @@
         if (self.detailViewController.isViewLoaded && self.detailViewController.view.window)
             return NO;
     
-    // Video running exit
-    if (self.detailViewController.photoBrowser.currentVideoPlayerViewController.isViewLoaded && self.detailViewController.photoBrowser.currentVideoPlayerViewController.view.window)
-        return NO;
-    
     // ok perform segue
     return YES;
 }
@@ -733,7 +745,7 @@
     self.detailViewController.metadataDetail = _metadata;
     self.detailViewController.dateFilterQuery = _metadata.date;
     
-    [self.detailViewController setTitle:_metadata.fileNamePrint];
+    [self.detailViewController setTitle:_metadata.fileName];
 }
 
 @end

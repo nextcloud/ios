@@ -1,6 +1,6 @@
 //
 //  CCIntro.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 05/11/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -33,40 +33,62 @@
 
 @implementation CCIntro
 
-- (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView
+- (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView type:(NSString *)type
 {
     self = [super init];
     
     if (self) {
         self.delegate = delegate;
         self.rootView = delegateView;
+        self.type = type;
     }
 
     return self;
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle
+{
+    return UIStatusBarStyleLightContent;
+}
+
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    
-    if (self.delegate && [self.delegate respondsToSelector:@selector(introWillFinish:wasSkipped:)])
-        [self.delegate introWillFinish:introView wasSkipped:wasSkipped];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(introWillFinish:type:wasSkipped:)])
+        [self.delegate introWillFinish:introView type:self.type wasSkipped:wasSkipped];
 }
 
 - (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(introDidFinish:wasSkipped:)])
-        [self.delegate introDidFinish:introView wasSkipped:wasSkipped];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(introDidFinish:type:wasSkipped:)])
+        [self.delegate introDidFinish:introView type:self.type wasSkipped:wasSkipped];
 }
 
-- (void)showIntroCryptoCloud:(CGFloat)duration
+- (void)show
+{
+    if ([self.type isEqualToString:k_Intro])
+        [self showIntro];
+    
+    if ([self.type isEqualToString:k_Intro_no_cryptocloud])
+        [self showIntroNoCryptoCloud];
+}
+
+- (void)showIntro
 {
     //NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
     CGFloat height = self.rootView.bounds.size.height;
     
-    if (height <= 480) { titleIconPositionY = 20; titlePositionY = 260; descPositionY = 230; }
-    if (height >= 500 && height <= 800) { titleIconPositionY = 50; titlePositionY = height / 2; descPositionY = height / 2 - 40 ; }
-    if (height >= 1024) { titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250; }
+    if (height <= 480) {
+        titleIconPositionY = 20; titlePositionY = 260; descPositionY = 230;
+    }
+    
+    // 812 = iPhoneX
+    if (height > 480 && height <= 812) {
+        titleIconPositionY = 50; titlePositionY = height / 2; descPositionY = height / 2 - 40 ;
+    }
+    
+    if (height > 812) {
+        titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250;
+    }
     
     EAIntroPage *page1 = [EAIntroPage page];
 
@@ -157,9 +179,58 @@
 
     [intro setDelegate:self];
     [intro setPages:@[page1,page11,page2,page3]];
-    [intro showInView:self.rootView animateDuration:duration];
+    [intro showInView:self.rootView animateDuration:0];
+}
+
+- (void)showIntroNoCryptoCloud
+{
+    //NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
+    CGFloat height = self.rootView.bounds.size.height;
     
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+    if (height <= 480) {
+        titleIconPositionY = 20; titlePositionY = 260; descPositionY = 230;
+    }
+    
+    // 812 = iPhoneX
+    if (height > 480 && height <= 812) {
+        titleIconPositionY = 50; titlePositionY = height / 2; descPositionY = height / 2 - 40 ;
+    }
+    
+    if (height > 812) {
+        titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250;
+    }
+    
+    EAIntroPage *page1 = [EAIntroPage page];
+    
+    page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"IntroNoCryptoCloud"]];
+    page1.bgImage = [UIImage imageNamed:@"bgbianco"];
+    page1.showTitleView = NO;
+
+    page1.titlePositionY = titlePositionY;
+    page1.titleColor = [UIColor blackColor];
+    page1.titleFont = [UIFont systemFontOfSize:20];
+    page1.title = NSLocalizedStringFromTable(@"_introNoCryptoCloud_1_title_", @"Intro", nil);
+
+    page1.descPositionY = descPositionY;
+    page1.descColor = [UIColor blackColor];
+    page1.descFont = [UIFont systemFontOfSize:14];
+    page1.desc = NSLocalizedStringFromTable(@"_introNoCryptoCloud_1_text_",  @"Intro", nil);
+
+    page1.titleIconPositionY = titleIconPositionY;
+    
+    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds];
+    
+    intro.tapToNext = YES;
+    intro.pageControl.pageIndicatorTintColor = [UIColor clearColor];
+    intro.pageControl.currentPageIndicatorTintColor = [UIColor clearColor];
+    intro.pageControl.backgroundColor = [UIColor clearColor];
+    [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    intro.skipButton.enabled = NO;
+    intro.skipButton.alpha = 0.f;
+    
+    [intro setDelegate:self];
+    [intro setPages:@[page1]];
+    [intro showInView:self.rootView animateDuration:0.3];
 }
 
 @end

@@ -1,6 +1,6 @@
 //
 //  NSNotificationCenter+MainThread.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 28/05/17.
 //  Copyright (c) 2017 TWS. All rights reserved.

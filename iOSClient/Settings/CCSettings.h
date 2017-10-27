@@ -1,6 +1,6 @@
 //
 //  CCSettings.h
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 24/11/14.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -28,7 +28,6 @@
 #import "BKPasscodeViewController.h"
 #import "CCUtility.h"
 #import "CCHud.h"
-#import "TableAccount+CoreDataClass.h"
 
 @interface CCSettings : XLFormViewController <BKPasscodeViewControllerDelegate, MFMailComposeViewControllerDelegate>
 

@@ -1,6 +1,6 @@
 //
 //  Acknowledgements.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 14/11/14.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -39,7 +39,8 @@
 {
     [super viewDidLoad];
     
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
+    self.navigationController.navigationBar.translucent = false;
     
     NSURL *rtfPath;
     
@@ -49,7 +50,7 @@
     
     rtfPath = [[NSBundle mainBundle]  URLForResource:@"Acknowledgements" withExtension:@"rtf"];
     
-    NSAttributedString *attributedStringWithRtf = [[NSAttributedString alloc] initWithFileURL:rtfPath options:@{NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType} documentAttributes:nil error:nil];
+    NSAttributedString *attributedStringWithRtf = [[NSAttributedString alloc] initWithURL:rtfPath options:@{NSDocumentTypeDocumentAttribute:NSRTFTextDocumentType} documentAttributes:nil error:nil];
     self.txtTermini.attributedText = attributedStringWithRtf;
     
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -64,7 +65,7 @@
     [super viewDidAppear:animated];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     
     [self.txtTermini setContentOffset:CGPointZero animated:NO];
     self.txtTermini.hidden = false;

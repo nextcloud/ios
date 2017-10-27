@@ -1,6 +1,6 @@
 //
 //  NCBrandColor.swift
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 24/04/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -25,81 +25,78 @@ import UIKit
 
 class NCBrandColor: NSObject {
 
-    static let sharedInstance: NCBrandColor = {
+    @objc static let sharedInstance: NCBrandColor = {
         let instance = NCBrandColor()
         return instance
     }()
 
     // Color
-    public let customer:                UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    @objc public let customer:                UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
 
-    public var brand:                   UIColor
-    public var connectionNo:            UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
-    public var cryptocloud:             UIColor = UIColor(red: 241.0/255.0, green: 90.0/255.0, blue: 34.0/255.0, alpha: 1.0)
-    public var navigationBarProgress:   UIColor = .white
-    public var navigationBarText:       UIColor = .white
-    public var menuBackground:          UIColor = .white
-    public var moreNormal:              UIColor = .black
-    public var moreSettings:            UIColor = .black
-    public var seperator:               UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
-    public var tabBar:                  UIColor = .white
-    public var tableBackground:         UIColor = .white
-    public var transferBackground:      UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
-    public let nextcloud:               UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
+    @objc public var brand:                   UIColor
+    @objc public var connectionNo:            UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
+    @objc public var encrypted:               UIColor = .red
+    @objc public var navigationBarProgress:   UIColor = .white
+    @objc public var navigationBarText:       UIColor = .white
+    @objc public var menuBackground:          UIColor = .white
+    @objc public var moreNormal:              UIColor = .black
+    @objc public var moreSettings:            UIColor = .black
+    @objc public var seperator:               UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
+    @objc public var tabBar:                  UIColor = .white
+    @objc public var tableBackground:         UIColor = .white
+    @objc public var transferBackground:      UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
+    @objc public let nextcloud:               UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     
     override init() {
         self.brand = self.customer
     }
     
     // Color modify
-    public func getColorSelectBackgrond() -> UIColor {
+    @objc public func getColorSelectBackgrond() -> UIColor {
         return self.brand.withAlphaComponent(0.1)
     }
 }
 
-class NCBrandOptions: NSObject {
+@objc class NCBrandOptions: NSObject {
     
-    static let sharedInstance: NCBrandOptions = {
+    @objc static let sharedInstance: NCBrandOptions = {
         let instance = NCBrandOptions()
         return instance
     }()
     
-    public let brand:                           String = "Nextcloud"
-    public let mailMe:                          String = "ios@nextcloud.com"
-    public let textCopyrightNextcloudiOS:       String = "Nextcloud for iOS %@ © 2017 T.W.S. Inc."
-    public let textCopyrightNextcloudServer:    String = "Nextcloud Server %@"
-    public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
-    public let loginBaseUrlMultiDomains:        [String] = ["domain.com", "domain.it"]
-    public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
-    public let linkLoginProvider:               String = "https://nextcloud.com/providers"
-    public let textLoginProvider:               String = "_login_bottom_label_"
-    public let middlewarePingUrl:               String = ""
-    public let webLoginAutenticationProtocol:   String = ""
-    public let webCloseViewProtocol:            String = ""
-    public let folderBrandAutoUpload:           String = ""
+    @objc public let brand:                           String = "Nextcloud"
+    @objc public let mailMe:                          String = "ios@nextcloud.com"
+    @objc public let textCopyrightNextcloudiOS:       String = "Nextcloud for iOS %@ © 2017 T.W.S. Inc."
+    @objc public let textCopyrightNextcloudServer:    String = "Nextcloud Server %@"
+    @objc public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
+    @objc public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
+    @objc public let linkLoginProvider:               String = "https://nextcloud.com/providers"
+    @objc public let textLoginProvider:               String = "_login_bottom_label_"
+    @objc public let middlewarePingUrl:               String = ""
+    @objc public let webLoginAutenticationProtocol:   String = ""
+    @objc public let webCloseViewProtocol:            String = ""
+    @objc public let folderBrandAutoUpload:           String = ""
 
     // Auto Upload default folder
-    public var folderDefaultAutoUpload:         String = "Photos"
+    @objc public var folderDefaultAutoUpload:         String = "Photos"
     
     // Capabilities Group
-    public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
+    @objc public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
     
     // Options
-    public let use_login_web:                   Bool = false
-    public let use_firebase:                    Bool = false
-    public let use_default_auto_upload:         Bool = false
-    public let use_themingColor:                Bool = true
-    public let use_themingBackground:           Bool = true
-    public let use_multiDomains:                Bool = false
-    public let use_middlewarePing:              Bool = false
-    public let use_storeLocalAutoUploadAll:     Bool = false
+    @objc public let use_login_web:                   Bool = false
+    @objc public let use_firebase:                    Bool = false
+    @objc public let use_default_auto_upload:         Bool = false
+    @objc public let use_themingColor:                Bool = true
+    @objc public let use_themingBackground:           Bool = true
+    @objc public let use_middlewarePing:              Bool = false
+    @objc public let use_storeLocalAutoUploadAll:     Bool = false
     
-    public let disable_intro:                   Bool = false
-    public let disable_linkLoginProvider:       Bool = false
-    public let disable_request_login_url:       Bool = false
-    public let disable_multiaccount:            Bool = false
-    public let disable_cryptocloudsystem:       Bool = false
-    public let disable_manage_account:          Bool = false
+    @objc public let disable_intro:                   Bool = false
+    @objc public let disable_linkLoginProvider:       Bool = false
+    @objc public let disable_request_login_url:       Bool = false
+    @objc public let disable_multiaccount:            Bool = false
+    @objc public let disable_manage_account:          Bool = false
     
     override init() {
         

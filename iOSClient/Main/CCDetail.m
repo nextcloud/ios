@@ -1,6 +1,6 @@
 //
 //  CCDetail.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 16/01/15.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -66,7 +66,6 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(backNavigationController) name:@"detailBack" object:nil];
 
-
         self.metadataDetail = [[tableMetadata alloc] init];
         self.photos = [[NSMutableArray alloc] init];
         self.thumbs = [[NSMutableArray alloc] init];
@@ -74,7 +73,7 @@
         _dataSourceDirectoryID = [[NSMutableOrderedSet alloc] init];
         _indexNowVisible = -1;
         _fileIDNowVisible = nil;
-        
+
         app.activeDetail = self;
     }
     return self;
@@ -138,10 +137,6 @@
 // remove all view
 - (void)removeAllView
 {
-    // Audio
-    if (appDelegate.player)
-        [appDelegate.player removeFromSuperview];
-        
     // Document
     if (_webView) {
         [_webView removeFromSuperview];
@@ -155,7 +150,7 @@
         _readerPDFViewController = nil;
     }
         
-    // Photo-Video
+    // Photo-Video-Audio
     if (_photoBrowser) {
         [_photos removeAllObjects];
         [_thumbs removeAllObjects];
@@ -187,7 +182,13 @@
 
 - (void)createToolbar
 {
-    _toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT, self.view.bounds.size.width, TOOLBAR_HEIGHT)];
+    CGFloat safeAreaBottom = 0;
+    
+    if (@available(iOS 11, *)) {
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    }
+
+    _toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom, self.view.bounds.size.width, TOOLBAR_HEIGHT)];
     
     UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
     UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
@@ -232,94 +233,35 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),^{
                     
-            [CCGraphics createNewImageFrom:self.metadataDetail.fileID directoryUser:app.directoryUser fileNameTo:self.metadataDetail.fileID fileNamePrint:self.metadataDetail.fileNamePrint size:@"m" imageForUpload:NO typeFile:self.metadataDetail.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+            [CCGraphics createNewImageFrom:self.metadataDetail.fileID directoryUser:app.directoryUser fileNameTo:self.metadataDetail.fileID extension:[self.metadataDetail.fileName pathExtension] size:@"m" imageForUpload:NO typeFile:self.metadataDetail.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
         });
     }
     
-    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] || [self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_video]) {
+    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] || [self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_audio]) {
         
         self.edgesForExtendedLayout = UIRectEdgeAll;
-        [self viewImage];
-    }
-    
-    if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_audio]) {
-        
-        self.edgesForExtendedLayout = UIRectEdgeBottom;
-        [self viewAudio];
-        [self createToolbar];
-        [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
-
+        [self viewImageVideoAudio];
     }
     
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
-        _fileNameExtension = [[self.metadataDetail.fileNamePrint pathExtension] uppercaseString];
+        _fileNameExtension = [[self.metadataDetail.fileName pathExtension] uppercaseString];
         
         if ([_fileNameExtension isEqualToString:@"PDF"]) {
             
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewPDF:@""];
             [self createToolbar];
-            [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+            [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
 
         } else {
 
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewDocument];
             [self createToolbar];
-            [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+            [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
         }
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  View Audio =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)viewAudio
-{
-    NSString *fileName;
-    
-    if (_sourceDirectoryLocal) {
-        
-        fileName = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
-        
-    } else {
-        
-        fileName = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryAudio], self.metadataDetail.fileNamePrint];
-        
-        [[NSFileManager defaultManager] removeItemAtPath:fileName error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
-    }
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:fileName] == NO) {
-        
-        [self backNavigationController];
-        return;
-    }
-    
-    appDelegate.player.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
-    appDelegate.player.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-    appDelegate.player.nextButton.hidden = true;
-    appDelegate.player.previousButton.hidden = true;
-    appDelegate.player.fullscreenButton_.hidden = true;
-    
-    LMMediaItem *item = [[LMMediaItem alloc] initWithInfo:@{LMMediaItemInfoURLKey:[NSURL fileURLWithPath:fileName], LMMediaItemInfoContentTypeKey:@(LMMediaItemContentTypeVideo)}];
-    item.title = self.metadataDetail.fileNamePrint;
-    item.artist = [NCBrandOptions sharedInstance].brand;
-    
-    [appDelegate.player.mediaPlayer removeAllMediaInQueue];
-    [appDelegate.player.mediaPlayer addMedia:item];
-    [appDelegate.player.mediaPlayer play];
-    
-    // Info
-    NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-    [songInfo setObject:app.player.mediaPlayer.nowPlayingItem.title forKey:MPMediaItemPropertyTitle];
-    [songInfo setObject:app.player.mediaPlayer.nowPlayingItem.artist forKey:MPMediaItemPropertyArtist];
-    [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
-    
-    [self.view addSubview:appDelegate.player];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -329,14 +271,19 @@
 - (void)viewDocument
 {
     NSString *fileName;
+    CGFloat safeAreaBottom = 0;
+    
+    if (@available(iOS 11, *)) {
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    }
     
     if (_sourceDirectoryLocal) {
         
-        fileName = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
+        fileName = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileName];
         
     } else {
         
-        fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNamePrint];
+        fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileName];
         
         [[NSFileManager defaultManager] removeItemAtPath:fileName error:nil];
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
@@ -354,23 +301,14 @@
     wkPreferences.javaScriptEnabled = false;
     WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
     wkConfig.preferences = wkPreferences;
-
-    self.webView = [[WKWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT)) configuration:wkConfig];
+    
+    self.webView = [[WKWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom)) configuration:wkConfig];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
     [self.webView setBackgroundColor:[UIColor whiteColor]];
     [self.webView setOpaque:NO];
     
     if ( [_fileNameExtension isEqualToString:@"CSS"] || [_fileNameExtension isEqualToString:@"PY"] || [_fileNameExtension isEqualToString:@"XML"] || [_fileNameExtension isEqualToString:@"JS"] ) {
-        
-        NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:[NSURL fileURLWithPath:fileName]];
-        [headRequest setHTTPMethod:@"HEAD"];
-        NSHTTPURLResponse *headResponse;
-        NSError *error = nil;
-        [NSURLConnection sendSynchronousRequest:headRequest returningResponse:&headResponse error:&error];
-        if (error != nil) {
-            NSLog(@"[LOG] loadURLWithString %@",[error localizedDescription]);
-        }
         
         NSString *dataFile = [[NSString alloc] initWithData:[NSData dataWithContentsOfURL:url] encoding:NSASCIIStringEncoding];
         
@@ -407,7 +345,7 @@
 #pragma mark ===== View Image =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)viewImage
+- (void)viewImageVideoAudio
 {
     self.photoBrowser = [[MWPhotoBrowser alloc] initWithDelegate:self];
     _reload = NO;
@@ -428,19 +366,11 @@
         if (self.metadataDetail.fileID && [metadata.fileID isEqualToString:self.metadataDetail.fileID])
             [self.photoBrowser setCurrentPhotoIndex:index];
         
-        if (metadata.cryptated) {
+        [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownload"]]];
             
-            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownloadCrypto"]]];
-            [self.thumbs addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownloadCrypto"]]];
-            
-        } else {
-            
-            [self.photos addObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownload"]]];
-            
-            MWPhoto *thumb = [MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownload"]];
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) thumb.isVideo = YES;
-            [self.thumbs addObject:thumb];
-        }
+        MWPhoto *thumb = [MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewDownload"]];
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) thumb.isVideo = YES;
+        [self.thumbs addObject:thumb];
         
         // add directory
         [_dataSourceDirectoryID addObject:metadata.directoryID];
@@ -454,10 +384,8 @@
     self.photoBrowser.displaySelectionButtons = NO;
     self.photoBrowser.alwaysShowControls = NO;
     self.photoBrowser.zoomPhotosToFill = NO;
-    self.photoBrowser.startOnGrid = NO;
     self.photoBrowser.autoPlayOnAppear = NO;
     self.photoBrowser.delayToHideElements = 15;
-    self.photoBrowser.enableGrid = YES;
     
     if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
         
@@ -480,7 +408,7 @@
 {
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
-    NSString *titleDir = metadata.fileNamePrint;
+    NSString *titleDir = metadata.fileName;
     self.title = titleDir;
     
     return titleDir;
@@ -511,8 +439,8 @@
     }
     
     // Title
-    if (metadata && !photoBrowser.isGridController)
-        self.title = metadata.fileNamePrint;
+    if (metadata)
+        self.title = metadata.fileName;
     
     if (_reload) {
         
@@ -540,7 +468,7 @@
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
                 NSString *fileImage = [NSString stringWithFormat:@"%@/%@", directory, metadata.fileID];
-                NSString *ext = [CCUtility getExtension:metadata.fileNamePrint];
+                NSString *ext = [CCUtility getExtension:metadata.fileName];
                 
                 if ([ext isEqualToString:@"GIF"]) image = [UIImage animatedImageWithAnimatedGIFURL:[NSURL fileURLWithPath:fileImage]];
                 else image = [UIImage imageWithContentsOfFile:fileImage];
@@ -574,7 +502,7 @@
                 if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]]) {
                     
                     // remove and make the simbolic link in temp
-                    NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNamePrint];
+                    NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
                     
                     [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
                     [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID] toPath:toPath error:nil];
@@ -597,6 +525,44 @@
                     }
                 }
             }
+            
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) {
+                
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID]]) {
+                    
+                    MWPhoto *audio;
+                    UIImage *audioImage;
+                    
+                    // remove and make the simbolic link in temp
+                    NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
+                    
+                    [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
+                    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", directory, metadata.fileID] toPath:toPath error:nil];
+                    NSURL *url = [NSURL fileURLWithPath:toPath];
+                    
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", directory, metadata.fileID]]) {
+                        audioImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", directory, metadata.fileID]];
+                    } else {
+                        audioImage = [UIImage imageNamed:@"notaMusic"]; //[CCGraphics scaleImage:[UIImage imageNamed:@"notaMusic"] toSize:CGSizeMake(200, 200) isAspectRation:YES];
+                    }
+                    
+                    audio = [MWPhoto photoWithImage:audioImage];
+                    audio.videoURL = url;
+                    [self.photos replaceObjectAtIndex:index withObject:audio];
+                    
+                } else {
+                    
+                    if ([metadata.sessionError length] > 0 ) {
+                        
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
+                        
+                    } else {
+                        
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[CCGraphics drawText:[NSLocalizedString(@"_loading_", nil) stringByAppendingString:@"..."] inImage:[UIImage imageNamed:@"button1000x200"] colorText:[UIColor darkGrayColor] sizeOfFont:50]]];
+                    }
+                }
+            }
+            
         }
         
         // energy saving memory
@@ -621,26 +587,6 @@
     return nil;
 }
 
-- (void)gridWillAppear:(MWPhotoBrowser *)photoBrowser
-{
-    // reload [BUG]
-    [self.photoBrowser reloadData];
-    
-    // in grid clear all MWPhoto : energy saving memory
-    if (self.photos.count > 1 && [self.dataSourceImagesVideos count] > 0) {
-        for(int index=0; index < self.photos.count; index++)
-            [_photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:nil]];
-    }
-    
-    self.title = [NSString stringWithFormat:@"Album %lu %@", (unsigned long)_photos.count,  NSLocalizedString(@"photos", nil)];
-}
-
-- (void)gridWillDisappear:(MWPhotoBrowser *)photoBrowser
-{    
-    //
-    photoBrowser.toolbar.hidden = NO;
-}
-
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser thumbPhotoAtIndex:(NSUInteger)index
 {
     NSString *directory;
@@ -660,7 +606,7 @@
             
             if (_sourceDirectoryLocal) {
                 
-                image = [CCGraphics createNewImageFrom:metadata.fileID directoryUser:directory fileNameTo:metadata.fileID fileNamePrint:metadata.fileNamePrint size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
+                image = [CCGraphics createNewImageFrom:metadata.fileID directoryUser:directory fileNameTo:metadata.fileID extension:[metadata.fileName pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:NO optimizedFileName:[CCUtility getOptimizedPhoto]];
                 
             } else {
                 
@@ -691,11 +637,11 @@
     
     if (_sourceDirectoryLocal) {
         
-        filePath = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
+        filePath = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileName];
         
     } else {
         
-        filePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNamePrint];
+        filePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName];
         
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:filePath error:nil];
@@ -752,13 +698,8 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    NSDictionary *dict = notification.userInfo;
-    float progress = [[dict valueForKey:@"progress"] floatValue];
-    
-    if (progress == 0)
-        [self.navigationController cancelCCProgress];
-    else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCBrandColor sharedInstance].navigationBarProgress];
+    //NSDictionary *dict = notification.userInfo;
+    //float progress = [[dict valueForKey:@"progress"] floatValue];
 }
 
 - (void)downloadPhotoBrowserFailure:(NSInteger)errorCode
@@ -788,10 +729,7 @@
         }
     }
     
-    // do not reload is Video on air
-    if (_photoBrowser.currentVideoPlayerViewController.isViewLoaded && _photoBrowser.currentVideoPlayerViewController.view.window) return;
-    
-    if ([metadataVar.fileID isEqualToString:_fileIDNowVisible] || [self.photoBrowser isGridReload:index]) {
+    if ([metadataVar.fileID isEqualToString:_fileIDNowVisible]) {
         
         [self.photoBrowser reloadData];
         
@@ -808,7 +746,7 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
     if (serverUrl)
-        [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl downloadData:YES downloadPlist:NO selector:selectorLoadViewImage selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:app.activeMain];
+        [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl selector:selectorLoadViewImage selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:app.activeMain];
 }
 
 - (void)insertGeocoderLocation:(NSNotification *)notification
@@ -828,12 +766,6 @@
         MWPhoto *photo = [self.photos objectAtIndex:_indexNowVisible];
             
         [self setLocationCaptionPhoto:photo fileID:fileID];
-            
-        if (![self.photoBrowser isGridController]) {
-            
-            //[self.photoBrowser hideControls];
-            //[self.photoBrowser showControls];
-        }
     }
 }
 
@@ -892,11 +824,11 @@
     
     if (_sourceDirectoryLocal) {
         
-        fileName = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
+        fileName = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileName];
         
     } else {
         
-        fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNamePrint];
+        fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileName];
         
         [[NSFileManager defaultManager] removeItemAtPath:fileName error:nil];
         [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
@@ -905,8 +837,11 @@
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileName isDirectory:nil] == NO) {
         
         // read file error
-        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_read_file_error_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-        [alertView show];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_read_file_error_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+        
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
     }
     
     CGPDFDocumentRef pdf = CGPDFDocumentCreateWithURL((CFURLRef)[NSURL fileURLWithPath:fileName]);
@@ -939,8 +874,11 @@
                     // failure
                     if (CGPDFDocumentUnlockWithPassword(pdf, key) == NO) {
                         
-                        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_password_pdf_error_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-                        [alertView show];
+                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_password_pdf_error_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                        
+                        [alertController addAction:okAction];
+                        [self presentViewController:alertController animated:YES completion:nil];
                         
                     } else {
                         
@@ -959,20 +897,28 @@
     } else {
         
         // read file error
-        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_read_file_error_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-        [alertView show];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_read_file_error_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+        
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
     }
 }
 
 - (void)readerPDF:(NSString *)fileName password:(NSString *)password
 {
     ReaderDocument *documentPDF = [ReaderDocument withDocumentFilePath:fileName password:password];
+    CGFloat safeAreaBottom = 0;
+    
+    if (@available(iOS 11, *)) {
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    }
     
     if (documentPDF != nil) {
         
         self.readerPDFViewController = [[ReaderViewController alloc] initWithReaderDocument:documentPDF];
         self.readerPDFViewController.delegate = self;
-        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
         [self.readerPDFViewController updateContentViews];
 
         [self addChildViewController:self.readerPDFViewController];
@@ -980,22 +926,34 @@
         [self.readerPDFViewController didMoveToParentViewController:self];
         
     } else {
+
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_read_file_error_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
         
-        UIAlertView * alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_read_file_error_", nil) delegate:nil cancelButtonTitle:nil otherButtonTitles:NSLocalizedString(@"_ok_", nil), nil];
-        [alertView show];
-        
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
     }
 }
 
 - (void)handleSingleTapReader
 {
+    UILayoutGuide *layoutGuide;
+    CGFloat safeAreaTop = 0;
+    CGFloat safeAreaBottom = 0;
+    
+    if (@available(iOS 11, *)) {
+        layoutGuide = [UIApplication sharedApplication].delegate.window.safeAreaLayoutGuide;
+        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    }
+    
     self.navigationController.navigationBarHidden = !self.navigationController.navigationBarHidden;
     _toolbar.hidden = !_toolbar.isHidden;
     
     if (_toolbar.isHidden) {
-        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height);
+        self.readerPDFViewController.view.frame = CGRectMake(0, safeAreaTop, self.view.bounds.size.width, self.view.bounds.size.height - safeAreaTop - safeAreaBottom);
     } else {
-        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT);
+        self.readerPDFViewController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
     }
     [self.readerPDFViewController updateContentViews];
 }
@@ -1025,12 +983,11 @@
     // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
     if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataNet.fileID]) {
         
-        [app.player.mediaPlayer stop];
         
         NSArray *viewsToRemove = [self.view subviews];
         for (id element in viewsToRemove) {
             
-            if ([element isMemberOfClass:[UIView class]] || [element isMemberOfClass:[UIToolbar class]] || [element isMemberOfClass:[LMMediaPlayerView class]])
+            if ([element isMemberOfClass:[UIView class]] || [element isMemberOfClass:[UIToolbar class]])
                 [element removeFromSuperview];
         }
         
@@ -1080,27 +1037,6 @@
     
     viewController.metadata = self.metadataDetail;
     
-    /*
-     typedef NS_ENUM(NSInteger, UIModalTransitionStyle) {
-     UIModalTransitionStyleCoverVertical = 0,
-     UIModalTransitionStyleFlipHorizontal __TVOS_PROHIBITED,
-     UIModalTransitionStyleCrossDissolve,
-     UIModalTransitionStylePartialCurl NS_ENUM_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED,
-     };
-     
-     typedef NS_ENUM(NSInteger, UIModalPresentationStyle) {
-     UIModalPresentationFullScreen = 0,
-     UIModalPresentationPageSheet NS_ENUM_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED,
-     UIModalPresentationFormSheet NS_ENUM_AVAILABLE_IOS(3_2) __TVOS_PROHIBITED,
-     UIModalPresentationCurrentContext NS_ENUM_AVAILABLE_IOS(3_2),
-     UIModalPresentationCustom NS_ENUM_AVAILABLE_IOS(7_0),
-     UIModalPresentationOverFullScreen NS_ENUM_AVAILABLE_IOS(8_0),
-     UIModalPresentationOverCurrentContext NS_ENUM_AVAILABLE_IOS(8_0),
-     UIModalPresentationPopover NS_ENUM_AVAILABLE_IOS(8_0) __TVOS_PROHIBITED,
-     UIModalPresentationNone NS_ENUM_AVAILABLE_IOS(7_0) = -1,
-     };
-     */
-    
     navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
     navigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
     
@@ -1111,15 +1047,15 @@
 {
     NSString *filePath;
     
-    if ([self.metadataDetail.fileNamePrint length] == 0) return;
+    if ([self.metadataDetail.fileName length] == 0) return;
     
     if (_sourceDirectoryLocal) {
         
-        filePath = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileNamePrint];
+        filePath = [NSString stringWithFormat:@"%@/%@", self.metadataDetail.directoryID, self.metadataDetail.fileName];
         
     } else {
         
-        filePath = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), self.metadataDetail.fileNamePrint];
+        filePath = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), self.metadataDetail.fileName];
     }
     
     self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
@@ -1139,7 +1075,7 @@
 
 - (void)deleteButtonPressed:(UIBarButtonItem *)sender
 {
-    if ([self.metadataDetail.fileNamePrint length] == 0) return;
+    if ([self.metadataDetail.fileName length] == 0) return;
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     

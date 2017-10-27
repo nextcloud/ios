@@ -1,6 +1,6 @@
 //
 //  CCTransfers.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 12/04/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -85,7 +85,7 @@
     [super viewWillAppear:animated];
         
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[app.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadDatasource];
@@ -146,7 +146,6 @@
 {
     NSDictionary *dict = notification.userInfo;
     NSString *fileID = [dict valueForKey:@"fileID"];
-    BOOL cryptated = [[dict valueForKey:@"cryptated"] boolValue];
     float progress = [[dict valueForKey:@"progress"] floatValue];
     
     // Check
@@ -160,9 +159,7 @@
     if (indexPath && indexPath.row == 0) {
         
         CCTransfersCell *cell = (CCTransfersCell *)[_tableView cellForRowAtIndexPath:indexPath];
-        
-        if (cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
-        else cell.progressView.progressTintColor = [UIColor blackColor];
+        cell.progressView.progressTintColor = [UIColor blackColor];
         
         cell.progressView.hidden = NO;
         [cell.progressView setProgress:progress];
@@ -200,9 +197,6 @@
     for (NSString *key in _sectionDataSource.allRecordsDataSource.allKeys) {
         
         tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
-        
-        if ([metadata.session containsString:@"download"] && (metadata.sessionTaskIdentifierPlist != k_taskIdentifierDone))
-            continue;
         
         if ([metadata.session containsString:@"upload"] && (metadata.sessionTaskIdentifier != k_taskIdentifierStop))
             continue;
@@ -244,7 +238,7 @@
         
         tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
         
-        if ([metadata.session containsString:@"upload"] && metadata.cryptated && ((metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist >= 0) || (metadata.sessionTaskIdentifier >= 0 && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone)))
+        if ([metadata.session containsString:@"upload"] && ((metadata.sessionTaskIdentifier == k_taskIdentifierDone) || (metadata.sessionTaskIdentifier >= 0)))
             continue;
         
         [app.activeMain cancelTaskButton:metadata reloadTable:lastAndRefresh];
@@ -284,7 +278,7 @@
             continue;
         }
         
-        if ([metadata.session containsString:@"upload"] && metadata.cryptated && ((metadata.sessionTaskIdentifier == k_taskIdentifierDone && metadata.sessionTaskIdentifierPlist >= 0) || (metadata.sessionTaskIdentifier >= 0 && metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone)))
+        if ([metadata.session containsString:@"upload"] && ((metadata.sessionTaskIdentifier == k_taskIdentifierDone) || (metadata.sessionTaskIdentifier >= 0)))
             continue;
         
         [app.activeMain stopTaskButton:metadata];
@@ -394,7 +388,7 @@
     titleLabel.textAlignment = NSTextAlignmentLeft;
     titleLabel.text = titleSection;
     titleLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [visualEffectView addSubview:titleLabel];
+    [visualEffectView.contentView addSubview:titleLabel];
     
     // element (s) on right
     UILabel *elementLabel=[[UILabel alloc]initWithFrame:CGRectMake(-8, 3, 0, 13)];
@@ -416,7 +410,7 @@
         elementLabel.text = [NSString stringWithFormat:@"%@ %@", numberTitle, NSLocalizedString(@"_element_",nil)];
     
     // view
-    [visualEffectView addSubview:elementLabel];
+    [visualEffectView.contentView addSubview:elementLabel];
     
     return visualEffectView;
 }
@@ -564,21 +558,15 @@
     cell.reloadTaskButton.hidden = YES;
     cell.stopTaskButton.hidden = YES;
     
-    // colori e font
-    if (metadata.cryptated) {
-        cell.labelTitle.textColor = [NCBrandColor sharedInstance].cryptocloud;
-        cell.labelInfoFile.textColor = [UIColor blackColor];
-    } else {
-        cell.labelTitle.textColor = [UIColor blackColor];
-        cell.labelInfoFile.textColor = [UIColor blackColor];
-    }
+    cell.labelTitle.textColor = [UIColor blackColor];
+    cell.labelInfoFile.textColor = [UIColor blackColor];
     
     // ----------------------------------------------------------------------------------------------------------
     // File Name & Folder
     // ----------------------------------------------------------------------------------------------------------
     
     // nome del file
-    cell.labelTitle.text = metadata.fileNamePrint;
+    cell.labelTitle.text = metadata.fileName;
     
     // è una directory
     if (metadata.directory) {
@@ -594,13 +582,6 @@
         
         dataFile = [CCUtility dateDiff:metadata.date];
         lunghezzaFile = [CCUtility transformedSize:metadata.size];
-        
-        // Plist ancora da scaricare
-        if (metadata.cryptated && [metadata.title length] == 0) {
-            
-            dataFile = @" ";
-            lunghezzaFile = @" ";
-        }
         
         NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
         [dateFormatter setDateStyle:NSDateFormatterShortStyle];
@@ -627,46 +608,30 @@
     }
     
     // ----------------------------------------------------------------------------------------------------------
-    // Image Status cyptated & Lock Passcode
-    // ----------------------------------------------------------------------------------------------------------
-    
-    // File Cyptated
-    if (metadata.cryptated && metadata.directory == NO && [metadata.type isEqualToString: k_metadataType_template] == NO) {
-        
-        cell.status.image = [UIImage imageNamed:@"lock"];
-    }
-    
-    // ----------------------------------------------------------------------------------------------------------
     // downloadFile
     // ----------------------------------------------------------------------------------------------------------
     
     if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"download"].location != NSNotFound) {
         
-        if (metadata.cryptated) cell.status.image = [UIImage imageNamed:@"statusdownloadcrypto"];
-        else cell.status.image = [UIImage imageNamed:@"statusdownload"];
+        cell.status.image = [UIImage imageNamed:@"statusdownload"];
         
         // Fai comparire il RELOAD e lo STOP solo se non è un Task Plist
-        if (metadata.sessionTaskIdentifierPlist == k_taskIdentifierDone) {
+        
+        [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
-            if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptaskcrypto"] forState:UIControlStateNormal];
-            else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
+        cell.cancelTaskButton.hidden = NO;
             
-            cell.cancelTaskButton.hidden = NO;
+        [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
-            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
-            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
-            
-            cell.reloadTaskButton.hidden = NO;
-        }
+        cell.reloadTaskButton.hidden = NO;
+        
         
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
         
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
-            else cell.progressView.progressTintColor = [UIColor blackColor];
-            
+            cell.progressView.progressTintColor = [UIColor blackColor];
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
         }
@@ -675,7 +640,7 @@
         // downloadFile Error
         // ----------------------------------------------------------------------------------------------------------
         
-        if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
+        if (metadata.sessionTaskIdentifier == k_taskIdentifierError) {
             
             cell.status.image = [UIImage imageNamed:@"statuserror"];
             
@@ -692,28 +657,23 @@
     
     if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"upload"].location != NSNotFound) {
         
-        if (metadata.cryptated) cell.status.image = [UIImage imageNamed:@"statusuploadcrypto"];
-        else cell.status.image = [UIImage imageNamed:@"statusupload"];
+        cell.status.image = [UIImage imageNamed:@"statusupload"];
         
-        if (metadata.cryptated)[cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetaskcrypto"] forState:UIControlStateNormal];
-        else [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetask"] forState:UIControlStateNormal];
+        [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetask"] forState:UIControlStateNormal];
         cell.cancelTaskButton.hidden = NO;
         
         if (metadata.sessionTaskIdentifier == k_taskIdentifierStop) {
             
-            if (metadata.cryptated)[cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtaskcrypto"] forState:UIControlStateNormal];
-            else [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
+            [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
-            if (metadata.cryptated) cell.status.image = [UIImage imageNamed:@"statusstopcrypto"];
-            else cell.status.image = [UIImage imageNamed:@"statusstop"];
+            cell.status.image = [UIImage imageNamed:@"statusstop"];
             
             cell.reloadTaskButton.hidden = NO;
             cell.stopTaskButton.hidden = YES;
             
         } else {
             
-            if (metadata.cryptated)[cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptaskcrypto"] forState:UIControlStateNormal];
-            else [cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
+            [cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
             cell.stopTaskButton.hidden = NO;
             cell.reloadTaskButton.hidden = YES;
@@ -729,8 +689,7 @@
         float progress = [[app.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         if (progress > 0) {
             
-            if (metadata.cryptated) cell.progressView.progressTintColor = [NCBrandColor sharedInstance].cryptocloud;
-            else cell.progressView.progressTintColor = [UIColor blackColor];
+            cell.progressView.progressTintColor = [UIColor blackColor];
             
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
@@ -740,7 +699,7 @@
         // uploadFileError
         // ----------------------------------------------------------------------------------------------------------
         
-        if (metadata.sessionTaskIdentifier == k_taskIdentifierError || metadata.sessionTaskIdentifierPlist == k_taskIdentifierError) {
+        if (metadata.sessionTaskIdentifier == k_taskIdentifierError) {
             
             cell.labelTitle.enabled = NO;
             cell.status.image = [UIImage imageNamed:@"statuserror"];

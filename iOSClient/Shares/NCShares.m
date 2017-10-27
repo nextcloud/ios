@@ -1,6 +1,6 @@
 //
 //  NCShares.m
-//  Crypto Cloud Technology Nextcloud
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 05/06/17.
 //  Copyright (c) 2017 TWS. All rights reserved.
@@ -81,7 +81,7 @@
     [super viewWillAppear:animated];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar encrypted:NO online:[appDelegate.reachability isReachable] hidden:NO];
+    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
@@ -101,13 +101,8 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    NSDictionary *dict = notification.userInfo;
-    float progress = [[dict valueForKey:@"progress"] floatValue];
-    
-    if (progress == 0)
-        [self.navigationController cancelCCProgress];
-    else
-        [self.navigationController setCCProgressPercentage:progress*100 andTintColor:[NCBrandColor sharedInstance].navigationBarProgress];
+    //NSDictionary *dict = notification.userInfo;
+    //float progress = [[dict valueForKey:@"progress"] floatValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -192,7 +187,6 @@
     metadataNet.action = actionUnShare;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
-    metadataNet.fileNamePrint = metadata.fileNamePrint;
     metadataNet.selector = selectorUnshare;
     metadataNet.serverUrl = tableShare.serverUrl;
     
@@ -343,7 +337,6 @@
             
         metadataNet.action = actionReadFile;
         metadataNet.fileName = table.fileName;
-        metadataNet.fileNamePrint = table.fileName;
         metadataNet.serverUrl = table.serverUrl;
         
         [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
