@@ -410,9 +410,9 @@ cleanup:
     BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:tagData];
     
     if (result && privateKeyData)
-        privateKey = [self derToPemPrivateKey:privateKeyData];
-    
-    if (privateKey) {
+        privateKey = [self base64Decode:privateKeyData];
+
+        if (privateKey) {
         
         NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
         if (!encryptData)
@@ -815,9 +815,6 @@ cleanup:
 {
     NSInteger substringLength = 65;
 
-    // decode Base64 (From Android ?!?!?!?)
-    NSString *input = [self base64Decode:inputData];
-    
     NSMutableString *result = [NSMutableString stringWithString: input];
     for(long i=substringLength;i<=input.length;i++) {
         [result insertString: @"\n" atIndex: i];
