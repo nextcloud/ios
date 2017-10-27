@@ -1821,6 +1821,11 @@
         _loadingFolder = NO;
         [self tableViewReloadData];
     }
+    
+    // Is encrypted folder get metadata
+    if (metadataFolder.encrypted == true) {
+        [app.endToEndInterface getEndToEndMetadata:metadataFolder];
+    }
 }
 
 - (void)readFolder:(NSString *)serverUrl
