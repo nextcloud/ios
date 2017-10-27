@@ -811,7 +811,7 @@ cleanup:
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
-- (NSString *)derToPemPrivateKey:(NSData *)inputData
+- (NSString *)derToPemPrivateKey:(NSString *)input
 {
     NSInteger substringLength = 65;
 
