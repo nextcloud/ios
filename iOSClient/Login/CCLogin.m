@@ -169,34 +169,6 @@
 
 - (void)testUrl
 {
-    // Use MultiDomain check if this is correct
-    if ([NCBrandOptions sharedInstance].use_multiDomains == YES) {
-        
-        BOOL foundDomain = NO;
-        NSString *message = @"";
-        
-        for (NSString *domain in [NCBrandOptions sharedInstance].loginBaseUrlMultiDomains) {
-            
-            message = [NSString stringWithFormat:@"%@ %@", message, domain.lowercaseString];
-            
-            if ([self.baseUrl.text.lowercaseString containsString:domain.lowercaseString])
-                foundDomain = YES;
-        }
-        
-        if (!foundDomain) {
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:[NSString stringWithFormat:@"%@ %@", NSLocalizedString(@"_error_multidomain_", nil), message]  preferredStyle:UIAlertControllerStyleAlert];
-            
-            [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                self.baseUrl.text = @"";
-            }]];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
-
-            return;
-        }
-    }
-    
     self.login.enabled = NO;
     self.loadingBaseUrl.hidden = NO;
     

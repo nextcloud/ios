@@ -69,7 +69,6 @@ class NCBrandColor: NSObject {
     @objc public let textCopyrightNextcloudiOS:       String = "Nextcloud for iOS %@ © 2017 T.W.S. Inc."
     @objc public let textCopyrightNextcloudServer:    String = "Nextcloud Server %@"
     @objc public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
-    @objc public let loginBaseUrlMultiDomains:        [String] = ["domain.com", "domain.it"]
     @objc public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
     @objc public let linkLoginProvider:               String = "https://nextcloud.com/providers"
     @objc public let textLoginProvider:               String = "_login_bottom_label_"
@@ -90,7 +89,6 @@ class NCBrandColor: NSObject {
     @objc public let use_default_auto_upload:         Bool = false
     @objc public let use_themingColor:                Bool = true
     @objc public let use_themingBackground:           Bool = true
-    @objc public let use_multiDomains:                Bool = false
     @objc public let use_middlewarePing:              Bool = false
     @objc public let use_storeLocalAutoUploadAll:     Bool = false
     
