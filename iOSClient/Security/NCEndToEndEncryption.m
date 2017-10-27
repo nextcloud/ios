@@ -529,16 +529,14 @@ cleanup:
     
     NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
-    NSData *initVectorData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
-    NSString *tag = @"PboI9tqHHX3QeAA22PIu4w==";
+    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
+    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:@"PboI9tqHHX3QeAA22PIu4w==" options:0];
     
-    /*
-    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH initVectorData:initVectorData tag:tag];
+    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
     
     if (plainData != nil && result) {
         [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted"] atomically:YES];
     }
-    */
 }
 
 // Encryption using GCM mode
