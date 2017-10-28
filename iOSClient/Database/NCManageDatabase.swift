@@ -977,7 +977,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table e2e Encryption
     
-    @objc func adde2eEncryption(_ e2e: e2eEncryption) -> e2eEncryption? {
+    @objc func adde2eEncryption(_ e2e: tableE2eEncryption) -> tableE2eEncryption? {
 
         guard self.getAccountActive() != nil else {
             return nil
@@ -994,7 +994,42 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return e2eEncryption.init(value: e2e)
+        return tableE2eEncryption.init(value: e2e)
+    }
+    
+    @objc func deletee2eEncryption(predicate: NSPredicate) {
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        realm.delete(result)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func gete2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
+        
+        guard self.getAccountActive() != nil else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).first else {
+            return nil
+        }
+        
+        return tableE2eEncryption.init(value: result)
     }
     
     //MARK: -

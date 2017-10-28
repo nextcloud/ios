@@ -111,7 +111,7 @@ class tableDirectory: Object {
     }
 }
 
-class e2eEncryption: Object {
+class tableE2eEncryption: Object {
     
     @objc dynamic var authenticationTag = ""
     @objc dynamic var fileID = ""
