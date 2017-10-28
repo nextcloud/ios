@@ -311,12 +311,14 @@
     
     // change account
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-    if (tableAccount)
+    if (tableAccount) {
+        
         [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
  
-    // Init home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
-        
+        // Init home
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+    }
+    
     [self UpdateForm];
 }
 

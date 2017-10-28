@@ -2982,13 +2982,15 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
-        if (tableAccount)
+        if (tableAccount) {
+            
             [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
     
-        // go to home sweet home
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+            // go to home sweet home
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
         
-        [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+            [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+        }
     });
 }
 

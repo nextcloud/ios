@@ -357,17 +357,19 @@
         
         // Set this account as default
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
+        if (account) {
         
-        // Setting App active account
-        [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
+            // Setting App active account
+            [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
     
-        // Ok ! Dismiss
-        if ([self.delegate respondsToSelector:@selector(loginSuccess:)])        
-            [self.delegate loginSuccess:_loginType];
+            // Ok ! Dismiss
+            if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
+                [self.delegate loginSuccess:_loginType];
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self dismissViewControllerAnimated:YES completion:nil];
-        });
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self dismissViewControllerAnimated:YES completion:nil];
+            });
+        }
     }
 }
 
