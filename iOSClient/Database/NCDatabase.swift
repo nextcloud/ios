@@ -111,6 +111,23 @@ class tableDirectory: Object {
     }
 }
 
+class e2eEncryption: Object {
+    
+    @objc dynamic var authenticationTag = ""
+    @objc dynamic var fileID = ""
+    @objc dynamic var filename = ""
+    @objc dynamic var fileNameEncrypted = ""
+    @objc dynamic var key = ""
+    @objc dynamic var initializationVector = ""
+    @objc dynamic var metadataKey: Int = 0
+    @objc dynamic var mimetype = ""
+    @objc dynamic var version: Int = 0
+    
+    override static func primaryKey() -> String {
+        return "fileID"
+    }
+}
+
 class tableExternalSites: Object {
     
     @objc dynamic var account = ""

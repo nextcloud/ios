@@ -57,7 +57,9 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 10,
+            schemaVersion: 11,
+            
+            // 11 : Add Object e2eEncryption
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -970,6 +972,9 @@ class NCManageDatabase: NSObject {
         }
     }
 
+    //MARK: -
+    //MARK: Table e2e Encryption
+    
     //MARK: -
     //MARK: Table External Sites
     
