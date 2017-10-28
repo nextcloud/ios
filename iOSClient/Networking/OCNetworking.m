@@ -1780,7 +1780,7 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     // URL Encode
-    NSString *privateKeyChiper = [CCUtility URLEncodeStringFromString:_metadataNet.key];
+    NSString *privateKeyChiper = [CCUtility URLEncodeStringFromString:_metadataNet.keyCipher];
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];

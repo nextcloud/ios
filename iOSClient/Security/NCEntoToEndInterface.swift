@@ -253,8 +253,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 let metadataNet: CCMetadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)
 
                 metadataNet.action = actionStoreEndToEndPrivateKeyCipher
-                metadataNet.key = privateKeyChiper
-                metadataNet.options = privateKey
+                metadataNet.key = privateKey! as String
+                metadataNet.keyCipher = privateKeyChiper
                 metadataNet.password = e2ePassphrase
                     
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
@@ -275,7 +275,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     func storeEnd(toEndPrivateKeyCipherSuccess metadataNet: CCMetadataNet!) {
         
-        CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: metadataNet.options as! String)
+        CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: metadataNet.key)
         CCUtility.setEndToEndPassphrase(appDelegate.activeAccount, passphrase:metadataNet.password)
         
         // request publicKey Server()

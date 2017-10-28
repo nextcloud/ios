@@ -1551,6 +1551,7 @@
     [metadataNet setFileName: self.fileName];
     [metadataNet setFileNameTo: self.fileNameTo];
     [metadataNet setKey: self.key];
+    [metadataNet setKeyCipher: self.keyCipher];
     [metadataNet setOptions: self.options];
     [metadataNet setPassword: self.password];
     [metadataNet setPathFolder: self.pathFolder];
