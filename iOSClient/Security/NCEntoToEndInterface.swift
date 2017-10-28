@@ -25,17 +25,17 @@ import Foundation
 
 class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
-    struct metadata: Codable {
+    struct e2eMetadataElement: Codable {
         
-        let files: [String:Element]
+        let initializationVector: String
+        let authenticationTag: String
+        let metadataKey: Int
+        let encrypted: String
+    }
+    
+    struct e2eMetadata: Codable {
         
-        struct Element: Codable {
-            
-            let initializationVector: String
-            let authenticationTag: String
-            let metadataKey: Int
-            let encrypted: String
-        }
+        let files: [String:e2eMetadataElement]
     }
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -460,8 +460,24 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         do {
             
-            let response = try decoder.decode(metadata.self, from: data!)
+            let response = try decoder.decode(e2eMetadata.self, from: data!)
+            let files = response.files
+            
+            for metadata in files {
+                
+                let fileNameID = metadata.key
+                let element = metadata.value as e2eMetadataElement
+                
+                let iv = element.initializationVector
+                let tag = element.authenticationTag
+                let encrypted = element.encrypted
+                
+                print(metadata)
+
+            }
+            
             print(response)
+
             
         } catch let error {
             
