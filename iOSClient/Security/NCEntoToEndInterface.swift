@@ -475,9 +475,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 let tag = element.authenticationTag
                 let encrypted = element.encrypted
                 
-                let privateKey = CCUtility.getEndToEndPrivateKey(appDelegate.activeAccount)
-                
-                
                 print(metadata)
 
             }
