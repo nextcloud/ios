@@ -26,8 +26,17 @@ import Foundation
 class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
     struct e2eMetadata: Codable {
-        var files: String
+        
+        let files: [String:Element]
+        
+        struct Element: Codable {
+            
+            let key:String
+            
+        }
     }
+
+    
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -451,7 +460,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         do {
             
-            let post = try decoder.decode(e2eMetadata.self, from: data!)
+            let response = try decoder.decode(e2eMetadata.self, from: data!)
+            print(response)
             
         } catch let error {
             print("errore nella codifica dei dati", error)
