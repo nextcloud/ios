@@ -31,13 +31,20 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         struct Element: Codable {
             
-            let key:String
+            let initializationVector: String
+            let authenticationTag: String
+            let metadataKey: Int
             
+            struct encrypted: Codable {
+                
+                let key: String
+                let filename: String
+                let mimetype: String
+                let version: Int
+            }
         }
     }
 
-    
-    
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     override init() {
