@@ -5,9 +5,23 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### [2.18.0] - 2017-xx-xx
+### [2.18.1] - 2017-xx-xx
 
 ### [2.17.9] - 2017-xx-xx
+
+## [2.18.0] - 2017-10-27
+### Added
+- More compatibility with iOS 11 and with iPhone X
+- Added on AutoUpload "More compatibility" for save image in JPEG instead of HEIF
+
+### Fixed
+- File Provider: Crashes #382
+- File Provider: Saving File O365 not working and still not downloading file each time. #397
+
+### Changed
+- Removed Crypto Cloud System, for decrypt your files download the App : Crypto Cloud for Nextcloud (it's free)
+- Removed grid view on Photo/Video reader
+- Removed cache on Document Provider
 
 ## [2.17.8] - 2017-09-08
 ### Fixed
