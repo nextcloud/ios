@@ -92,7 +92,7 @@
 + (void)setShowHiddenFiles:(BOOL)show;
 
 + (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
-+ (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher;
++ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
 + (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey;
 + (void)clearAllKeysEndToEnd:(NSString *)account;
@@ -143,7 +143,7 @@
 + (BOOL)getShowHiddenFiles;
 
 + (NSString *)getEndToEndPublicKey:(NSString *)account;
-+ (NSString *)getEndToEndPrivateKeyCipher:(NSString *)account;
++ (NSString *)getEndToEndPrivateKey:(NSString *)account;
 + (NSString *)getEndToEndPassphrase:(NSString *)account;
 + (NSString *)getEndToEndPublicKeyServer:(NSString *)account;
 + (BOOL)isEndToEndEnabled:(NSString *)account;

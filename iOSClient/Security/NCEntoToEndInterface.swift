@@ -197,7 +197,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             print(privateKey)
             
             // Save to keychain
-            CCUtility.setEndToEndPrivateKeyCipher(self.appDelegate.activeAccount, privateKeyCipher: metadataNet.key)
+            CCUtility.setEndToEndPrivateKey(self.appDelegate.activeAccount, privateKey: privateKey)
             CCUtility.setEndToEndPassphrase(self.appDelegate.activeAccount, passphrase:passphrase)
             
             // request publicKey Server()
@@ -472,7 +472,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 let tag = element.authenticationTag
                 let encrypted = element.encrypted
                 
+                //let privateKey = CCUtility.getEndToEndPrivateKeyCipher(<#T##account: String!##String!#>)
                 
+                //NCEndToEndEncryption.sharedManager().decryptAsymmetricData(<#T##chiperData: Data!##Data!#>, privateKey: <#T##String!#>)
                 
                 
                 print(metadata)

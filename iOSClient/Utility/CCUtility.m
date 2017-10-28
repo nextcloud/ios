@@ -34,7 +34,7 @@
 #define INTRO_MessageType       @"MessageType_"
 
 #define E2E_PublicKey           @"EndToEndPublicKey_"
-#define E2E_PrivateKeyCipher    @"EndToEndPrivateKeyCipher_"
+#define E2E_PrivateKey          @"EndToEndPrivateKey_"
 #define E2E_Passphrase          @"EndToEndPassphrase_"
 #define E2E_PublicKeyServer     @"EndToEndPublicKeyServer_"
 
@@ -237,10 +237,10 @@
     [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher
++ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
 {
-    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
-    [UICKeyChainStore setString:privateKeyCipher forKey:key service:k_serviceShareKeyChain];
+    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
+    [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase
@@ -258,7 +258,7 @@
 + (void)clearAllKeysEndToEnd:(NSString *)account
 {
     [self setEndToEndPublicKey:account publicKey:nil];
-    [self setEndToEndPrivateKeyCipher:account privateKeyCipher:nil];
+    [self setEndToEndPrivateKey:account privateKey:nil];
     [self setEndToEndPassphrase:account passphrase:nil];
     [self setEndToEndPublicKeyServer:account publicKey:nil];
 }
@@ -465,9 +465,9 @@
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getEndToEndPrivateKeyCipher:(NSString *)account
++ (NSString *)getEndToEndPrivateKey:(NSString *)account
 {
-    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
+    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
@@ -486,7 +486,7 @@
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
     NSString *publicKey = [self getEndToEndPublicKey:account];
-    NSString *privateKey = [self getEndToEndPrivateKeyCipher:account];
+    NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
     NSString *publicKeyServer = [self getEndToEndPublicKeyServer:account];
     
