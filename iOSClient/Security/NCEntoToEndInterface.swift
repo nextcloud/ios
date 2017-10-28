@@ -238,8 +238,10 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_title_", comment: ""), message: NSLocalizedString(message, comment: ""), preferredStyle: .alert)
             
             let OKAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-                                
-                guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.activeUserID, directoryUser: self.appDelegate.directoryUser, passphrase: e2ePassphrase) else {
+                
+                var privateKey : NSString?
+                
+                guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.activeUserID, directoryUser: self.appDelegate.directoryUser, passphrase: e2ePassphrase, privateKey: &privateKey) else {
                     
                     self.appDelegate.messageNotification("E2E privateKey", description: "Error to create PrivateKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     
@@ -252,6 +254,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
                 metadataNet.action = actionStoreEndToEndPrivateKeyCipher
                 metadataNet.key = privateKeyChiper
+                metadataNet.options = privateKey
                 metadataNet.password = e2ePassphrase
                     
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
@@ -272,7 +275,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     func storeEnd(toEndPrivateKeyCipherSuccess metadataNet: CCMetadataNet!) {
         
-        CCUtility.setEndToEndPrivateKeyCipher(appDelegate.activeAccount, privateKeyCipher: metadataNet.key)
+        CCUtility.setEndToEndPrivateKey(appDelegate.activeAccount, privateKey: metadataNet.options as! String)
         CCUtility.setEndToEndPassphrase(appDelegate.activeAccount, passphrase:metadataNet.password)
         
         // request publicKey Server()

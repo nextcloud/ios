@@ -334,7 +334,7 @@ cleanup:
     return csr;
 }
 
-- (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase
+- (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey
 {
     NSMutableData *privateKeyCipherData = [NSMutableData new];
 
@@ -365,6 +365,7 @@ cleanup:
         initVectorBase64 = [ivData base64EncodedStringWithOptions:0];
         privateKeyCipherWithInitVectorBase64 = [NSString stringWithFormat:@"%@%@%@", privateKeyCipherBase64, IV_DELIMITER_ENCODED, initVectorBase64];
         
+        *privateKey = [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
         return privateKeyCipherWithInitVectorBase64;
         
     } else {
