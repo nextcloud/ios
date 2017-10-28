@@ -2518,20 +2518,20 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				F7A54C341C6267B500E2C8BF /* CCExifGeo.h */,
-				F7A54C351C6267B500E2C8BF /* CCExifGeo.m */,
 				F76C3B871C638A4C00DC4301 /* CCError.h */,
 				F76C3B881C638A4C00DC4301 /* CCError.m */,
-				F7514EDA1C7B1336008F3338 /* CCHud.h */,
-				F7514EDB1C7B1336008F3338 /* CCHud.m */,
+				F7A54C341C6267B500E2C8BF /* CCExifGeo.h */,
+				F7A54C351C6267B500E2C8BF /* CCExifGeo.m */,
 				F76C3B831C6388BC00DC4301 /* CCGraphics.h */,
 				F76C3B841C6388BC00DC4301 /* CCGraphics.m */,
+				F7514EDA1C7B1336008F3338 /* CCHud.h */,
+				F7514EDB1C7B1336008F3338 /* CCHud.m */,
 				F7053E3C1C639DF500741EA5 /* CCUtility.h */,
 				F7053E3D1C639DF500741EA5 /* CCUtility.m */,
-				F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */,
-				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
 				F78071071EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.h */,
 				F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */,
+				F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */,
+				F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
