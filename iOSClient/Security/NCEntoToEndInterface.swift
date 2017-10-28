@@ -472,6 +472,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 let tag = element.authenticationTag
                 let encrypted = element.encrypted
                 
+                
+                
+                
                 print(metadata)
 
             }
