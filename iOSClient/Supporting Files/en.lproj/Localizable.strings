@@ -53,7 +53,7 @@
 "_destination_"             = "Destination";
 "_ok_"                      = "OK";
 "_beta_version_"            = "Beta version";
-"_function_in_testing_"     = "Function in testing, please send information to any problems or malfunctions.";
+"_function_in_testing_"     = "Function in testing. Please send information to us about any problems or malfunctions.";
 "_done_"                    = "Done";
 "_passcode_too_short_"      = "Passcode too short, at least 4 characters required";
 "_selected_"                = "Selected";
