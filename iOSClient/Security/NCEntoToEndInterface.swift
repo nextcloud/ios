@@ -25,7 +25,7 @@ import Foundation
 
 class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
-    struct e2eMetadata: Codable {
+    struct metadata: Codable {
         
         let files: [String:Element]
         
@@ -34,14 +34,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             let initializationVector: String
             let authenticationTag: String
             let metadataKey: Int
-            
-            struct encrypted: Codable {
-                
-                let key: String
-                let filename: String
-                let mimetype: String
-                let version: Int
-            }
+            let encrypted: String
         }
     }
 
@@ -467,14 +460,15 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         do {
             
-            let response = try decoder.decode(e2eMetadata.self, from: data!)
+            let response = try decoder.decode(metadata.self, from: data!)
             print(response)
             
         } catch let error {
-            print("errore nella codifica dei dati", error)
+            
+            appDelegate.messageNotification("_error_", description: "Error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            
+            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionEndToEndEncryption, selector: actionGetEndToEndServerPublicKey, note: error.localizedDescription, type: k_activityTypeSuccess, verbose: false, activeUrl: "")
         }
-        
-        print("E2E get metadata file success")
     }
     
     func getEndToEndMetadataFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
