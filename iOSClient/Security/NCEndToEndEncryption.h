@@ -30,7 +30,7 @@
 + (instancetype)sharedManager;
 
 - (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
-- (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
+- (NSString *)decryptMetadata:(NSString *)cipher key:(NSString *)key iv:(NSString *)iv tag:(NSString *)tag;
 
 - (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser;
 - (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;

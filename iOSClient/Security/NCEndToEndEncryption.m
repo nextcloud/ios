@@ -527,7 +527,8 @@ cleanup:
     }
 }
 
-- (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
+/*
+- (void)decryptMetadata:(NSString *)metadata activeUrl:(NSString *)activeUrl
 {
     NSMutableData *plainData;
     
@@ -541,6 +542,25 @@ cleanup:
     if (plainData != nil && result) {
         [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted"] atomically:YES];
     }
+}
+*/
+
+- (NSString *)decryptMetadata:(NSString *)cipher key:(NSString *)key iv:(NSString *)iv tag:(NSString *)tag
+{
+    NSMutableData *plainData;
+    
+    NSData *cipherData = [cipher dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *keyData = [key dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *ivData = [iv dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *tagData = [tag dataUsingEncoding:NSUTF8StringEncoding];
+
+    
+    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
+    
+    if (plainData != nil && result)
+        return [[NSString alloc] initWithData:plainData encoding:NSUTF8StringEncoding];
+    else
+        return nil;
 }
 
 // Encryption using GCM mode

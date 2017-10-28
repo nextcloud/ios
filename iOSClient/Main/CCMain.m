@@ -4998,17 +4998,6 @@
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
             
-#ifdef DEBUG
-            // TEST ENCRYPTED/DECRYPTED
-            if ([_metadata.fileName containsString:@".dms"]) {
-                [[NCEndToEndEncryption sharedManager] decryptMetadata:_metadata activeUrl:app.directoryUser];
-            }
-            
-            if ([_metadata.fileName containsString:@"test_encry_marino.jpg"]) {
-                [[NCEndToEndEncryption sharedManager] encryptMetadata:_metadata activeUrl:app.directoryUser];
-            }
-#endif
-            
             [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
             
         } else {
