@@ -477,7 +477,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 let privateKey = CCUtility.getEndToEndPrivateKey(appDelegate.activeAccount)
                 
-                let x = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: privateKey, iv: iv, tag: tag)
+                let x = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encrypted.data(using: .utf8), privateKey: privateKey)
+                
+                //let x = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: privateKey, iv: iv, tag: tag)
                 
                 
                 print(metadata)
