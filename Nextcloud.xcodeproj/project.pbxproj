@@ -229,6 +229,10 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
+		F75131631FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */ = {isa = PBXBuildFile; fileRef = F75131621FA5EFF4002BB4D1 /* NCNetworkingSync.m */; };
+		F75131641FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */ = {isa = PBXBuildFile; fileRef = F75131621FA5EFF4002BB4D1 /* NCNetworkingSync.m */; };
+		F75131651FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */ = {isa = PBXBuildFile; fileRef = F75131621FA5EFF4002BB4D1 /* NCNetworkingSync.m */; };
+		F75131661FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */ = {isa = PBXBuildFile; fileRef = F75131621FA5EFF4002BB4D1 /* NCNetworkingSync.m */; };
 		F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */; };
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
@@ -901,6 +905,8 @@
 		F75037491DBFA91A008FB480 /* PureLayout+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PureLayout+Internal.h"; sourceTree = "<group>"; };
 		F750374A1DBFA91A008FB480 /* PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PureLayout.h; sourceTree = "<group>"; };
 		F750374B1DBFA91A008FB480 /* PureLayoutDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PureLayoutDefines.h; sourceTree = "<group>"; };
+		F75131611FA5EFF4002BB4D1 /* NCNetworkingSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCNetworkingSync.h; sourceTree = "<group>"; };
+		F75131621FA5EFF4002BB4D1 /* NCNetworkingSync.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCNetworkingSync.m; sourceTree = "<group>"; };
 		F7514EDA1C7B1336008F3338 /* CCHud.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCHud.h; sourceTree = "<group>"; };
 		F7514EDB1C7B1336008F3338 /* CCHud.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCHud.m; sourceTree = "<group>"; };
 		F7540EE21D5B238600C3FFA8 /* aes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
@@ -1988,6 +1994,8 @@
 				F732BA041D76CE1500E9878B /* CCNetworking.m */,
 				F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */,
 				F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */,
+				F75131611FA5EFF4002BB4D1 /* NCNetworkingSync.h */,
+				F75131621FA5EFF4002BB4D1 /* NCNetworkingSync.m */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -3423,6 +3431,7 @@
 				F70022C91EC4C9100080073F /* OCRichObjectStrings.m in Sources */,
 				F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */,
 				F70022C31EC4C9100080073F /* OCNotifications.m in Sources */,
+				F75131641FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */,
 				F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */,
 				F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F70022BD1EC4C9100080073F /* OCExternalSites.m in Sources */,
@@ -3471,6 +3480,7 @@
 				F73CC0741E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F77EB62B1EC0B50B003F814F /* CCCertificate.m in Sources */,
 				F7E718B01EB0FBE700FA58C9 /* CCGraphics.m in Sources */,
+				F75131651FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */,
 				F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */,
 				F70022D61EC4C9100080073F /* NSDate+ISO8601.m in Sources */,
 				F74344811E127F49001CC831 /* AFViewShaker.m in Sources */,
@@ -3540,6 +3550,7 @@
 				F7BB50C11F22378E00C47094 /* CCHud.m in Sources */,
 				F7BB50DE1F2238B700C47094 /* UtilsFramework.m in Sources */,
 				F7BB50D61F22389900C47094 /* OCHTTPRequestOperation.m in Sources */,
+				F75131661FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */,
 				F7BB50BD1F22376000C47094 /* CCCertificate.m in Sources */,
 				F7BB50DA1F2238A600C47094 /* OCXMLServerErrorsParser.m in Sources */,
 				F7BB50C51F22379B00C47094 /* NSNotificationCenter+MainThread.m in Sources */,
@@ -3758,6 +3769,7 @@
 				F7B1FBC81E72E3D1001781FE /* SwiftWebVCActivity.swift in Sources */,
 				F7D424741F063B82009C9782 /* CTAssetThumbnailView.m in Sources */,
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
+				F75131631FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */,
 				F762CB011EACB66200B38484 /* XLFormSelectorCell.m in Sources */,
 				F70022AD1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */,
 				F7D424531F063B82009C9782 /* NSBundle+CTAssetsPickerController.m in Sources */,
