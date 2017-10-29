@@ -347,9 +347,36 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return
         }
         
-        NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID)
+        if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
+            
+            // Unauthorized
+            if (error.code == kOCErrorServerUnauthorized) {
+                appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
+            }
+            
+            if (error.code != kOCErrorServerUnauthorized) {
+                
+                appDelegate.messageNotification("_error_", description: error.description as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            }
+            
+            return
+        }
         
-        NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token)
+        if let error = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token) as NSError? {
+            
+            // Unauthorized
+            if (error.code == kOCErrorServerUnauthorized) {
+                appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
+            }
+            
+            if (error.code != kOCErrorServerUnauthorized) {
+                
+                appDelegate.messageNotification("_error_", description: error.description as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            }
+            
+            return
+        }
+            
         
     }
     
