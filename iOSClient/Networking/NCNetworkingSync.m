@@ -27,7 +27,7 @@
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSError *returnError = nil;
-    __block NSString *paramToken = nil;
+    __block NSString *returnToken = nil;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
@@ -36,7 +36,7 @@
     
     [communication lockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:*token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
-        paramToken = token;
+        returnToken = token;
         dispatch_semaphore_signal(semaphore);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
@@ -48,7 +48,7 @@
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
-    *token = paramToken;
+    *token = returnToken;
     return returnError;
 }
 
