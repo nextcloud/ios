@@ -340,15 +340,31 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // MARK: Mark/Delete Encrypted Folder
     // --------------------------------------------------------------------------------------------
     
-    @objc func markEndToEndFolderEncrypted(_ serverUrl: String, fileID: String, token: String?) {
+    func markEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
+        print("E2E mark folder success")
+    }
+    
+    func markEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+    
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
+        }
         
-        let token = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, serverUrl: serverUrl , fileID: fileID, token: token)
+        if (errorCode != kOCErrorServerUnauthorized) {
+            
+            appDelegate.messageNotification("_error_", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        }
+    }
+    
+    @objc func markEndToEndFolderEncrypted(_ metadata: tableMetadata) {
         
+        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
+
+        metadataNet.action = actionMarkEndToEndFolderEncrypted;
+        metadataNet.fileID = metadata.fileID;
         
-        //NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, serverUrl: serverUrl, fileID: fileID)
-        
-        //NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, serverUrl: serverUrl, fileID: fileID, token: token)
-        
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)        
     }
     
     func deletemarkEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {

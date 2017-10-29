@@ -4000,9 +4000,14 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
+                                        /*
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                                             [app.endToEndInterface markEndToEndFolderEncrypted:self.serverUrl fileID:_metadata.fileID token:nil];
                                         });
+                                        */
+                                        
+                                        [app.endToEndInterface lockEndToEndFolderEncrypted:_metadata];
+                                        
                                     }];
         }
         
