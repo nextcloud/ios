@@ -357,14 +357,17 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         }
     }
     
-    @objc func markEndToEndFolderEncrypted(_ metadata: tableMetadata) {
+    @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, token: String?) {
         
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-
-        metadataNet.action = actionMarkEndToEndFolderEncrypted;
-        metadataNet.fileID = metadata.fileID;
+        guard let token = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: token) else {
+            
+            return
+        }
         
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)        
+        NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID)
+        
+        NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token)
+        
     }
     
     func deletemarkEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
