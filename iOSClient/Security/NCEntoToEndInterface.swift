@@ -344,9 +344,10 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         let token = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, serverUrl: serverUrl , fileID: fileID, token: token)
         
-        NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, serverUrl: serverUrl, fileID: fileID)
         
-        NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, serverUrl: serverUrl, fileID: fileID, token: token)
+        //NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, serverUrl: serverUrl, fileID: fileID)
+        
+        //NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, serverUrl: serverUrl, fileID: fileID, token: token)
         
     }
     

@@ -838,10 +838,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"GET";
     
     NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    //NSString *startParamater = [NSString stringWithFormat:@"&start=%@", start];
-
     serverPath = [serverPath stringByAppendingString:jsonQuery];
-    //serverPath = [serverPath stringByAppendingString:startParamater];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
