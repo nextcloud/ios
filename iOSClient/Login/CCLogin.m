@@ -25,6 +25,7 @@
 #import "AppDelegate.h"
 #import "CCUtility.h"
 #import "NCBridgeSwift.h"
+#import "NCNetworkingSync.h"
 
 @interface CCLogin ()
 {
@@ -259,9 +260,8 @@
     if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:nil];
-    NSError *error = [ocNet checkServerSync:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV]];
-    
+    NSError *error = [[NCNetworkingSync sharedManager] checkServer:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV] user:self.user.text userID:self.user.text password:self.password.text];
+
     if (!error) {
         
         // account

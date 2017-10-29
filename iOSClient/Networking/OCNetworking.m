@@ -1586,41 +1586,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Server =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (NSError *)checkServerSync:(NSString *)serverUrl
-{
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    __block NSError *returnError;
-    
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication checkServer:serverUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-        
-        returnError = nil;
-        dispatch_semaphore_signal(semaphore);
-
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        returnError = error;
-        dispatch_semaphore_signal(semaphore);
-    }];
-     
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
-     
-    return returnError;
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Capabilities =====
 #pragma --------------------------------------------------------------------------------------------
 
