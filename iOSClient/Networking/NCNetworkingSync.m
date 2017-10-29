@@ -23,7 +23,7 @@
     }
 }
 
-- (NSString *)lockEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID token:(NSString *)token
+- (NSString *)lockEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID token:(NSString *)token
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSString *returnToken = nil;
@@ -33,7 +33,7 @@
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication lockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
+    [communication lockEndToEndFolderEncrypted:[serverUrl stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
         returnToken = token;
         dispatch_semaphore_signal(semaphore);
@@ -49,7 +49,7 @@
     return returnToken;
 }
 
-- (NSError *)unlockEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID token:(NSString *)token
+- (NSError *)unlockEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID token:(NSString *)token
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSError *returnError= nil;
@@ -59,7 +59,7 @@
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication unlockEndToEndFolderEncrypted:[serverUrl stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         dispatch_semaphore_signal(semaphore);
         
@@ -75,7 +75,7 @@
     return returnError;
 }
 
-- (NSError *)markEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID
+- (NSError *)markEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSError *returnError= nil;
@@ -85,7 +85,7 @@
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication markEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication markEndToEndFolderEncrypted:[serverUrl stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         dispatch_semaphore_signal(semaphore);
         
@@ -101,7 +101,7 @@
     return returnError;
 }
 
-- (NSError *)deletemarkEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID
+- (NSError *)deletemarkEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSError *returnError= nil;
@@ -111,7 +111,7 @@
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication deletemarkEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication deletemarkEndToEndFolderEncrypted:[serverUrl stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         dispatch_semaphore_signal(semaphore);
 
