@@ -724,8 +724,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                          failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -760,8 +759,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
 
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -837,8 +835,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -854,8 +851,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];    
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -871,8 +867,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -888,8 +883,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -903,8 +897,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -918,8 +911,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -977,8 +969,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"DELETE";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -992,8 +983,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"DELETE";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -1007,8 +997,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"PUT";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -1022,8 +1011,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"DELETE";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -1037,8 +1025,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"POST";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -1052,8 +1039,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"DELETE";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -1091,8 +1077,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -1134,8 +1119,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"DELETE";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
