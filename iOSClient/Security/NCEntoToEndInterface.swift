@@ -340,7 +340,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // MARK: Mark/Delete Encrypted Folder
     // --------------------------------------------------------------------------------------------
     
-    @objc func markEndToEndFolderEncrypted(_ serverUrl: String, fileID: String, token: String) {
+    @objc func markEndToEndFolderEncrypted(_ serverUrl: String, fileID: String, token: String?) {
         
         let token = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, serverUrl: serverUrl , fileID: fileID, token: token)
         
