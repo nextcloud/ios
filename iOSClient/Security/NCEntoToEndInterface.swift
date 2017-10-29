@@ -342,42 +342,28 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, token: String?) {
         
-        guard let token = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: token) else {
+        var token : NSString? = token as NSString?
+
+        if let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: &token) as NSError? {
+            
+            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
             return
         }
         
         if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
             
-            // Unauthorized
-            if (error.code == kOCErrorServerUnauthorized) {
-                appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
-            }
-            
-            if (error.code != kOCErrorServerUnauthorized) {
-                
-                appDelegate.messageNotification("_error_", description: error.description as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
-            }
+            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
             return
         }
         
-        if let error = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token) as NSError? {
+        if let error = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token! as String) as NSError? {
             
-            // Unauthorized
-            if (error.code == kOCErrorServerUnauthorized) {
-                appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
-            }
-            
-            if (error.code != kOCErrorServerUnauthorized) {
-                
-                appDelegate.messageNotification("_error_", description: error.description as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
-            }
+            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
             return
-        }
-            
-        
+        }            
     }
     
     @objc func deletemarkEndToEndFolderEncrypted(_ metadata: tableMetadata) {
