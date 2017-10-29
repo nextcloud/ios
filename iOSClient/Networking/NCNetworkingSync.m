@@ -12,18 +12,18 @@
 
 @implementation NCNetworkingSync
 
-+ (NCNetworkingSync *)sharedNetworking {
-    static NCNetworkingSync *sharedNetworking;
++ (NCNetworkingSync *)sharedManager {
+    static NCNetworkingSync *sharedManager;
     @synchronized(self)
     {
-        if (!sharedNetworking) {
-            sharedNetworking = [NCNetworkingSync new];
+        if (!sharedManager) {
+            sharedManager = [NCNetworkingSync new];
         }
-        return sharedNetworking;
+        return sharedManager;
     }
 }
 
-+ (NSString *)lockEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID token:(NSString *)token
+- (NSString *)lockEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID token:(NSString *)token
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSString *returnToken = nil;
@@ -49,7 +49,7 @@
     return returnToken;
 }
 
-+ (NSError *)unlockEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID token:(NSString *)token
+- (NSError *)unlockEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID token:(NSString *)token
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSError *returnError= nil;
@@ -75,7 +75,7 @@
     return returnError;
 }
 
-+ (NSError *)markEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID
+- (NSError *)markEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSError *returnError= nil;
@@ -101,7 +101,7 @@
     return returnError;
 }
 
-+ (NSError *)deletemarkEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID
+- (NSError *)deletemarkEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSError *returnError= nil;

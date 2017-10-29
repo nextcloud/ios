@@ -4000,7 +4000,11 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        [app.endToEndInterface markEndToEndFolderEncrypted:_metadata];                                        
+                                        NSString *token = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:app.activeUser userID:app.activeUserID password:app.activePassword url:self.serverUrl fileID:_metadata.fileID token:nil];
+                                        
+                                        [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:app.activeUser userID:app.activeUserID password:app.activePassword url:self.serverUrl fileID:_metadata.fileID];
+                                        
+                                        [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:app.activeUser userID:app.activeUserID password:app.activePassword url:self.serverUrl fileID:_metadata.fileID token:token];
                                     }];
         }
         
@@ -4016,47 +4020,6 @@
                                         [app.endToEndInterface deletemarkEndToEndFolderEncrypted:_metadata];
                                     }];
         }
-        
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Lock file"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [app.endToEndInterface lockEndToEndFolderEncrypted:_metadata];
-                                    }];
-        }
-        
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Unlock file"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [app.endToEndInterface unlockEndToEndFolderEncrypted:_metadata];
-                                    }];
-        }
-        
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Get metadata file"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [app.endToEndInterface getEndToEndMetadata:_metadata];
-                                    }];
-        }
-        
-        
 #endif
         
         if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
