@@ -4000,11 +4000,9 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        NSString *token = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:app.activeUser userID:app.activeUserID password:app.activePassword url:self.serverUrl fileID:_metadata.fileID token:nil];
-                                        
-                                        [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:app.activeUser userID:app.activeUserID password:app.activePassword url:self.serverUrl fileID:_metadata.fileID];
-                                        
-                                        [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:app.activeUser userID:app.activeUserID password:app.activePassword url:self.serverUrl fileID:_metadata.fileID token:token];
+                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                                            [app.endToEndInterface markEndToEndFolderEncrypted:self.serverUrl fileID:_metadata.fileID token:@""];
+                                        });
                                     }];
         }
         
