@@ -340,23 +340,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // MARK: Mark/Delete Encrypted Folder
     // --------------------------------------------------------------------------------------------
     
-    func markEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
-        print("E2E mark folder success")
-    }
-    
-    func markEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-    
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized) {
-            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
-        }
-        
-        if (errorCode != kOCErrorServerUnauthorized) {
-            
-            appDelegate.messageNotification("_error_", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-        }
-    }
-    
     @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, token: String?) {
         
         guard let token = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: token) else {
@@ -370,89 +353,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
     }
     
-    func deletemarkEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
-        print("E2E delete mark folder success")
-    }
-    
-    func deletemarkEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-       
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized) {
-            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
-        }
-        
-        if (errorCode != kOCErrorServerUnauthorized) {
-            
-            appDelegate.messageNotification("_error_", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-        }
-    }
-    
     @objc func deletemarkEndToEndFolderEncrypted(_ metadata: tableMetadata) {
         
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
-        metadataNet.action = actionDeletemarkEndToEndFolderEncrypted;
-        metadataNet.fileID = metadata.fileID;
-        
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-    
-    // --------------------------------------------------------------------------------------------
-    // MARK: Lock/Unlock Encrypted Folder
-    // --------------------------------------------------------------------------------------------
-
-    func unlockEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
-        print("E2E lock file success")
-    }
-    
-    func unlockEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized) {
-            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
-        }
-        
-        if (errorCode != kOCErrorServerUnauthorized) {
-            
-            appDelegate.messageNotification("_error_", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-        }
-    }
-    
-    @objc func unlockEndToEndFolderEncrypted(_ metadata: tableMetadata) {
-        
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        
-        metadataNet.action = actionUnlockEndToEndFolderEncrypted;
-        metadataNet.fileID = metadata.fileID;
-        
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-    
-    func lockEnd(toEndFolderEncryptedSuccess metadataNet: CCMetadataNet!) {
-        print("E2E lock file success")
-    }
-    
-    func lockEnd(toEndFolderEncryptedFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized) {
-            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
-        }
-        
-        if (errorCode != kOCErrorServerUnauthorized) {
-            
-            appDelegate.messageNotification("_error_", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-        }
-    }
-    
-    @objc func lockEndToEndFolderEncrypted(_ metadata: tableMetadata) {
-        
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        
-        metadataNet.action = actionLockEndToEndFolderEncrypted;
-        metadataNet.fileID = metadata.fileID;
-        
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
     // --------------------------------------------------------------------------------------------
