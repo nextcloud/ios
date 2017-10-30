@@ -4625,11 +4625,15 @@
         
         if (metadata.directory) {
             
+            /*
             if (metadata.encrypted)
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[UIColor redColor]];
             else
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
-
+            */
+            
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
+            
         } else {
             cell.file.image = [UIImage imageNamed:metadata.iconName];
         }
@@ -4638,7 +4642,7 @@
     }
     
     // ----------------------------------------------------------------------------------------------------------
-    // Image Status cyptated & Lock Passcode
+    // Image Status Lock Passcode
     // ----------------------------------------------------------------------------------------------------------
     
     // Directory con passcode lock attivato
@@ -4648,6 +4652,13 @@
     
     if (metadata.directory && (directory.lock && [[CCUtility getBlockCode] length]))
         cell.status.image = [UIImage imageNamed:@"passcode"];
+    
+    // ----------------------------------------------------------------------------------------------------------
+    // Image Status Encrypted
+    // ----------------------------------------------------------------------------------------------------------
+    
+    if (metadata.encrypted)
+        cell.status.image = [UIImage imageNamed:@"encrypted"];
     
     // ----------------------------------------------------------------------------------------------------------
     // Favorite
