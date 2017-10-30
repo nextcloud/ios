@@ -366,9 +366,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         }            
     }
     
-    @objc func deletemarkEndToEndFolderEncrypted(_ metadata: tableMetadata) {
-        
-        
+    @objc func deletemarkEndToEndFolderEncrypted(_ metadata: tableMetadata) {        
     }
     
     // --------------------------------------------------------------------------------------------

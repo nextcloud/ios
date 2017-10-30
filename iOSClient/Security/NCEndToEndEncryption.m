@@ -352,8 +352,9 @@ cleanup:
     CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
     
     NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
+    NSData *tagData = [NSData new];
 
-    BOOL result = [self encryptData:_privateKeyData cipherData:&privateKeyCipherData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:nil];
+    BOOL result = [self encryptData:_privateKeyData cipherData:&privateKeyCipherData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:&tagData];
     
     if (result && privateKeyCipherData) {
         
