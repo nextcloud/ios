@@ -3888,12 +3888,12 @@
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
         
-        [actionSheet addButtonWithTitle: _metadata.fileName
-                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
-                        backgroundColor: [NCBrandColor sharedInstance].tabBar
-                                 height: 50.0
-                                   type: AHKActionSheetButtonTypeDisabled
-                                handler: nil
+        [actionSheet addButtonWithTitle:_metadata.fileName
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
+                        backgroundColor:[NCBrandColor sharedInstance].tabBar
+                                 height:50.0
+                                   type:AHKActionSheetButtonTypeDisabled
+                                handler:nil
         ];
         
         if (!lockDirectory) {
@@ -3901,7 +3901,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -3914,7 +3914,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -3952,7 +3952,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -3965,7 +3965,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -3990,48 +3990,52 @@
                                     }];
         }
 
-#ifdef DEBUG
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Mark as encrypted"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                            [app.endToEndInterface markEndToEndFolderEncrypted:app.activeUrl fileID:_metadata.fileID token:nil];
-                                        });
-                                    }];
-        }
-        
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Delete mark as encrypted"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [app.endToEndInterface deletemarkEndToEndFolderEncrypted:_metadata];
-                                    }];
-        }
-#endif
-        
         if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock
-                                      image:[UIImage imageNamed:@"actionSheetLock"]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
                                         [self performSelector:@selector(comandoLockPassword) withObject:nil];
                                     }];
         }
+        
+#ifdef DEBUG
+        if ([CCUtility isEndToEndEnabled:app.activeAccount] && !_metadata.encrypted) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
+                                      image:[UIImage imageNamed:@"encrypted_empty"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                                           if ([app.endToEndInterface markEndToEndFolderEncrypted:app.activeUrl fileID:_metadata.fileID token:nil])
+                                               [self readFolder:self.serverUrl];
+                                        });
+                                    }];
+        }
+        
+        if ([CCUtility isEndToEndEnabled:app.activeAccount] && _metadata.encrypted) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
+                                      image:[UIImage imageNamed:@"encrypted_empty"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                                            if ([app.endToEndInterface deletemarkEndToEndFolderEncrypted:app.activeUrl fileID:_metadata.fileID token:nil])
+                                                [self readFolder:self.serverUrl];
+                                        });
+                                    }];
+        }
+#endif
         
         [actionSheet show];
     }

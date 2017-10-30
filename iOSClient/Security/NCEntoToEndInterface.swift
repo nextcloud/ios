@@ -340,7 +340,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // MARK: Mark/Delete Encrypted Folder
     // --------------------------------------------------------------------------------------------
     
-    @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, token: String?) {
+    @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, token: String?) -> Bool {
         
         var token : NSString? = token as NSString?
 
@@ -348,25 +348,52 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
-            return
+            return false
         }
         
         if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
             
             appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
-            return
+            return false
         }
         
         if let error = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token! as String) as NSError? {
             
             appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
-            return
-        }            
+            return false
+        }
+        
+        return true
     }
     
-    @objc func deletemarkEndToEndFolderEncrypted(_ metadata: tableMetadata) {        
+    @objc func deletemarkEndToEndFolderEncrypted(_ url: String, fileID: String, token: String?) -> Bool {
+        
+        var token : NSString? = token as NSString?
+        
+        if let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: &token) as NSError? {
+            
+            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            
+            return false
+        }
+        
+        if let error = NCNetworkingSync.sharedManager().deletemarkEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
+            
+            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            
+            return false
+        }
+        
+        if let error = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token! as String) as NSError? {
+            
+            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            
+            return false
+        }
+        
+        return true
     }
     
     // --------------------------------------------------------------------------------------------
