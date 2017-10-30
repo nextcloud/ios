@@ -1350,8 +1350,9 @@
     if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
         
         NSString *file = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
+        PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
         
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] && status == PHAuthorizationStatusAuthorized) {
             
             UIImage *image = [UIImage imageWithContentsOfFile:file];
             
@@ -1361,7 +1362,7 @@
                 [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
         }
         
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] && status == PHAuthorizationStatusAuthorized) {
                         
             [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
             
@@ -1371,6 +1372,15 @@
             } else {
                 [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             }
+        }
+        
+        if (status != PHAuthorizationStatusAuthorized) {
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            
+            [alertController addAction:okAction];
+            [self presentViewController:alertController animated:YES completion:nil];
         }
         
         [self reloadDatasource:serverUrl];
