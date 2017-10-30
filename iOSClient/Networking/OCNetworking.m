@@ -1752,8 +1752,6 @@
     
     [communication storeEndToEndPrivateKeyCipher:[_activeUrl stringByAppendingString:@"/"] privateKeyChiper:privateKeyChiper onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer) {
         
-        _metadataNet.key = privateKey;
-
         if ([self.delegate respondsToSelector:@selector(storeEndToEndPrivateKeyCipherSuccess:)])
             [self.delegate storeEndToEndPrivateKeyCipherSuccess:_metadataNet];
         
