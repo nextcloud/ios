@@ -423,9 +423,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 let x = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encrypted.data(using: .utf8), privateKey: privateKey)
                 
-                //let x = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: privateKey, iv: iv, tag: tag)
-                
-                
                 print(metadata)
 
             }
