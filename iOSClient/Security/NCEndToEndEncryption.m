@@ -626,7 +626,7 @@ cleanup:
         return NO;
     
     // Provide the message to be encrypted, and obtain the encrypted output
-    [plainData appendBytes:"\x0" length:16];
+    [plainData appendBytes:"\x0" length:16]; // add TAG JAVA compatibility
     *cipherData = [NSMutableData dataWithLength:[plainData length]];
     unsigned char * ctBytes = [*cipherData mutableBytes];
     int pCipherLen = 0;
@@ -712,7 +712,7 @@ cleanup:
         return NO;
     
     // Provide the message to be decrypted, and obtain the plaintext output
-    cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - 16)]; // remove TAG
+    cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - 16)]; // remove TAG JAVA compatibility
     *plainData = [NSMutableData dataWithLength:([cipherData length])];
     int pPlainLen = 0;
     unsigned char * pPlain = [*plainData mutableBytes];
