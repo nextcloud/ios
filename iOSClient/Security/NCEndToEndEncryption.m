@@ -355,10 +355,11 @@ cleanup:
     NSData *tagData = [NSData new];
     
     /* ENCODE 64 privateKey JAVA compatibility */
-    NSString *string = [_privateKeyData base64EncodedStringWithOptions:0];
-    NSMutableData *strdata = (NSMutableData *)[string dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *privateKeyBase64 = [_privateKeyData base64EncodedStringWithOptions:0];
+    NSData *privateKeyBase64Data = [privateKeyBase64 dataUsingEncoding:NSUTF8StringEncoding];
+    /* --------------------------------------- */
     
-    BOOL result = [self encryptData:strdata cipherData:&privateKeyCipherData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:&tagData];
+    BOOL result = [self encryptData:privateKeyBase64Data cipherData:&privateKeyCipherData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:&tagData];
     
     if (result && privateKeyCipherData) {
         
@@ -417,8 +418,10 @@ cleanup:
     
     if (result && privateKeyData)
         
+        /* DENCODE 64 privateKey JAVA compatibility */
         privateKey = [self base64Decode:privateKeyData];
-
+        /* ---------------------------------------- */
+    
         if (privateKey) {
         
             NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
@@ -525,7 +528,7 @@ cleanup:
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
     NSData *ivData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
     
-    BOOL result = [self encryptData:(NSMutableData *)plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
+    BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
     
     if (cipherData != nil && result) {
         [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"encrypted.dms"] atomically:YES];
@@ -570,7 +573,7 @@ cleanup:
 }
 
 // Encryption using GCM mode
-- (BOOL)encryptData:(NSMutableData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData keyLen:(int)keyLen ivData:(NSData *)ivData tagData:(NSData **)tagData
+- (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData keyLen:(int)keyLen ivData:(NSData *)ivData tagData:(NSData **)tagData
 {
     int status = 0;
     int len = 0;
@@ -626,7 +629,6 @@ cleanup:
         return NO;
     
     // Provide the message to be encrypted, and obtain the encrypted output
-    [plainData appendBytes:"\x0" length:16]; // add TAG JAVA compatibility
     *cipherData = [NSMutableData dataWithLength:[plainData length]];
     unsigned char * ctBytes = [*cipherData mutableBytes];
     int pCipherLen = 0;
@@ -643,6 +645,9 @@ cleanup:
     //Get the tag
     status = EVP_CIPHER_CTX_ctrl (ctx, EVP_CTRL_GCM_GET_TAG, (int)sizeof(cTag), cTag);
     *tagData = [NSData dataWithBytes:cTag length:sizeof(cTag)];
+    
+    // add TAG JAVA compatibility
+    [*cipherData appendData:*tagData];
     
     // Free
     EVP_CIPHER_CTX_free(ctx);
