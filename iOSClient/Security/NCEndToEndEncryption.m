@@ -318,7 +318,7 @@ cleanup:
 }
 
 #
-#pragma mark - Register client for Server with exists Key pair
+#pragma mark - Create CSR & Encrypt Private Key
 #
 
 - (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser
@@ -381,7 +381,7 @@ cleanup:
 }
 
 #
-#pragma mark - No key pair exists on the server
+#pragma mark - Decrypt Private Key
 #
 
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
@@ -515,9 +515,10 @@ cleanup:
 }
 
 #
-#pragma mark - Encrypt/Decrypt Files AES/GCM/NoPadding as cipher (128 bit key size)
+#pragma mark - AES/GCM/NoPadding
 #
 
+/*
 - (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
 {
     NSMutableData *cipherData;
@@ -536,7 +537,6 @@ cleanup:
     }
 }
 
-/*
 - (void)decryptMetadata:(NSString *)metadata activeUrl:(NSString *)activeUrl
 {
     NSMutableData *plainData;
@@ -552,7 +552,6 @@ cleanup:
         [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"decrypted"] atomically:YES];
     }
 }
-*/
 
 - (NSString *)decryptMetadata:(NSString *)cipher key:(NSString *)key iv:(NSString *)iv tag:(NSString *)tag
 {
@@ -571,6 +570,7 @@ cleanup:
     else
         return nil;
 }
+*/
 
 // Encryption using GCM mode
 - (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData keyLen:(int)keyLen ivData:(NSData *)ivData tagData:(NSData **)tagData
