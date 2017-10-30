@@ -25,8 +25,6 @@ import Foundation
 
 class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
-    
-    
     struct e2eMetadata: Codable {
         
         struct metadataKey: Codable {
@@ -425,6 +423,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             let response = try decoder.decode(e2eMetadata.self, from: data!)
             let files = response.files
             let metadata = response.metadata
+            let sharing = response.sharing
             
             for file in files {
                 
