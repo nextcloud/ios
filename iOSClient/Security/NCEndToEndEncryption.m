@@ -483,7 +483,7 @@ cleanup:
     return encryptData;
 }
 
-- (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey
+- (NSString *)decryptAsymmetricDataOLD:(NSData *)chiperData privateKey:(NSString *)privateKey
 {
     unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
     
@@ -511,6 +511,33 @@ cleanup:
     free(bio);
     free(rsa);
 
+    return decryptString;
+}
+
+- (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey
+{
+    unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
+    ENGINE *eng = NULL;
+    int status = 0;
+    
+    BIO *bio = BIO_new_mem_buf(pKey, -1);
+    EVP_PKEY *privkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(privkey, eng);
+
+    status = EVP_PKEY_decrypt_init(ctx);
+    
+    status = EVP_PKEY_CTX_set_rsa_padding(ctx, 1);
+
+    unsigned long outLen = 0;
+    status = EVP_PKEY_decrypt(ctx, NULL, &outLen, [chiperData bytes], (int)[chiperData length]);
+
+    unsigned char *out = (unsigned char *) malloc(4096);
+
+    status = EVP_PKEY_decrypt(ctx, out, &outLen, [chiperData bytes], (int)[chiperData length]);
+
+    NSString *decryptString = [[NSString alloc] initWithBytes:out length:outLen encoding:NSUTF8StringEncoding];
+    
     return decryptString;
 }
 
