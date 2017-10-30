@@ -716,8 +716,10 @@ cleanup:
     if (! status)
         return NO;
     
+    // remove TAG JAVA compatibility
+    cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - 16)];
+    
     // Provide the message to be decrypted, and obtain the plaintext output
-    cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - 16)]; // remove TAG JAVA compatibility
     *plainData = [NSMutableData dataWithLength:([cipherData length])];
     int pPlainLen = 0;
     unsigned char * pPlain = [*plainData mutableBytes];
