@@ -883,6 +883,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
 
@@ -897,6 +899,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
 
@@ -910,6 +914,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
+    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
@@ -928,6 +934,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"POST";
     
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?csr=%@",publicKey]];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
@@ -946,6 +953,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"POST";
     
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?privateKey=%@",privateKeyChiper]];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
@@ -961,6 +969,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"DELETE";
     
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
 
@@ -974,6 +984,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                          failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"DELETE";
+    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
@@ -989,6 +1001,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"PUT";
     
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
 
@@ -1003,6 +1017,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"DELETE";
     
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
 
@@ -1016,6 +1032,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                             failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"POST";
+    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
@@ -1032,6 +1050,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"DELETE";
     
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?token=%@", token]];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
@@ -1050,6 +1069,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"POST";
     
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?metaData=%@", encryptedMetadata]];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
@@ -1066,6 +1086,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSParameterAssert(success);
     
     _requestMethod = @"GET";
+    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
@@ -1084,6 +1106,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"PUT";
     
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?metaData=%@", encryptedMetadata]];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
@@ -1100,7 +1123,9 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSParameterAssert(success);
     
     _requestMethod = @"DELETE";
-        
+    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
 
