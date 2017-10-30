@@ -49,8 +49,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         }
         
         let files: [String: filesKey]
-        let metadata: metadataKey;
-        //let sharing: sharingKey;
+        let metadata: metadataKey
+        let sharing: sharingKey?
     }
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
