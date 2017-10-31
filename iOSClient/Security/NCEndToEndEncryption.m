@@ -447,71 +447,52 @@ cleanup:
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey
 {
-    NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
     unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
+    ENGINE *eng = NULL;
+    int status = 0;
     
     // Extract real publicKey
     BIO *bio = BIO_new_mem_buf(pKey, -1);
-    if (bio == NULL)
+    if (!bio)
         return nil;
+    
     X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
-    if (x509 == NULL)
+    if (!x509)
         return nil;
-    EVP_PKEY *evpkey = X509_get_pubkey(x509);
-    if (evpkey == NULL)
+    
+    EVP_PKEY *key = X509_get_pubkey(x509);
+    if (!key)
         return nil;
-    RSA *rsa = EVP_PKEY_get1_RSA(evpkey);
-    if (rsa == NULL)
+    
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, eng);
+    if (!ctx)
         return nil;
+    
+    status = EVP_PKEY_encrypt_init(ctx);
+    if (status <= 0)
+        return nil;
+    
+    status = EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING);
+    if (status <= 0)
+        return nil;
+    
+    unsigned long outLen = 0;
+    NSData *plainData = [plain dataUsingEncoding:NSUTF8StringEncoding];
+    status = EVP_PKEY_encrypt(ctx, NULL, &outLen, [plainData bytes], (int)[plainData length]);
+    if (status <= 0 || outLen == 0)
+        return nil;
+    
+    unsigned char *out = (unsigned char *) OPENSSL_malloc(outLen);
+    status = EVP_PKEY_encrypt(ctx, out, &outLen, [plainData bytes], (int)[plainData length]);
+    if (status <= 0)
+        return nil;
+    
+    NSData *outData = [[NSData alloc] initWithBytes:out length:outLen];
 
-    unsigned char *encrypted = (unsigned char *) malloc(4096);
+    if (out)
+        free(out);
     
-    int encrypted_length = RSA_public_encrypt((int)[plainData length], [plainData bytes], encrypted, rsa, RSA_CIPHER);
-    if(encrypted_length == -1) {
-        char buffer[500];
-        ERR_error_string(ERR_get_error(), buffer);
-        NSLog(@"[LOG]  %@",[NSString stringWithUTF8String:buffer]);
-        return nil;
-    }
-    
-    NSData *encryptData = [[NSData alloc] initWithBytes:encrypted length:encrypted_length];
-    
-    if (encrypted)
-        free(encrypted);
-    free(rsa);
-    
-    return encryptData;
-}
-
-- (NSString *)decryptAsymmetricDataOLD:(NSData *)chiperData privateKey:(NSString *)privateKey
-{
-    unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
-    
-    BIO *bio = BIO_new_mem_buf(pKey, -1);
-    if (bio == NULL)
-        return nil;
-    RSA *rsa = PEM_read_bio_RSAPrivateKey(bio, NULL, 0, NULL);
-    if (rsa == NULL)
-        return nil;
-    
-    unsigned char *decrypted = (unsigned char *) malloc(4096);
-    
-    int decrypted_length = RSA_private_decrypt((int)[chiperData length], [chiperData bytes], decrypted, rsa, RSA_CIPHER);
-    if(decrypted_length == -1) {
-        char buffer[500];
-        ERR_error_string(ERR_get_error(), buffer);
-        NSLog(@"[LOG] %@",[NSString stringWithUTF8String:buffer]);
-        return nil;
-    }
-    
-    NSString *decryptString = [[NSString alloc] initWithBytes:decrypted length:decrypted_length encoding:NSUTF8StringEncoding];
-    
-    if (decrypted)
-        free(decrypted);
-    free(bio);
-    free(rsa);
-
-    return decryptString;
+    return outData;
 }
 
 - (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey
@@ -521,24 +502,41 @@ cleanup:
     int status = 0;
     
     BIO *bio = BIO_new_mem_buf(pKey, -1);
-    EVP_PKEY *privkey = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+    if (!bio)
+        return nil;
+    
+    EVP_PKEY *key = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+    if (!key)
+        return nil;
 
-    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(privkey, eng);
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, eng);
+    if (!ctx)
+        return nil;
 
     status = EVP_PKEY_decrypt_init(ctx);
+    if (status <= 0)
+        return nil;
     
-    status = EVP_PKEY_CTX_set_rsa_padding(ctx, 1);
-
+    status = EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING);
+    if (status <= 0)
+        return nil;
+    
     unsigned long outLen = 0;
     status = EVP_PKEY_decrypt(ctx, NULL, &outLen, [chiperData bytes], (int)[chiperData length]);
-
-    unsigned char *out = (unsigned char *) malloc(4096);
-
-    status = EVP_PKEY_decrypt(ctx, out, &outLen, [chiperData bytes], (int)[chiperData length]);
-
-    NSString *decryptString = [[NSString alloc] initWithBytes:out length:outLen encoding:NSUTF8StringEncoding];
+    if (status <= 0 || outLen == 0)
+        return nil;
     
-    return decryptString;
+    unsigned char *out = (unsigned char *) malloc(outLen);
+    status = EVP_PKEY_decrypt(ctx, out, &outLen, [chiperData bytes], (int)[chiperData length]);
+    if (status <= 0)
+        return nil;
+    
+    NSString *outString = [[NSString alloc] initWithBytes:out length:outLen encoding:NSUTF8StringEncoding];
+    
+    if (out)
+        free(out);
+    
+    return outString;
 }
 
 #
@@ -642,17 +640,17 @@ cleanup:
     else if (keyLen == AES_KEY_256_LENGTH)
         status = EVP_EncryptInit_ex (ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
     
-    if (! status)
+    if (status <= 0)
         return NO;
     
     // Set IV length. Not necessary if this is 12 bytes (96 bits)
     status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, (int)sizeof(cIV), NULL);
-    if (! status)
+    if (status <= 0)
         return NO;
     
     // Initialise key and IV
     status = EVP_EncryptInit_ex (ctx, NULL, NULL, cKey, cIV);
-    if (! status)
+    if (status <= 0)
         return NO;
     
     // Provide the message to be encrypted, and obtain the encrypted output
@@ -660,13 +658,13 @@ cleanup:
     unsigned char * ctBytes = [*cipherData mutableBytes];
     int pCipherLen = 0;
     status = EVP_EncryptUpdate(ctx, ctBytes, &pCipherLen, [plainData bytes], (int)[plainData length]);
-    if (! status)
+    if (status <= 0)
         return NO;
     
     //Finalise the encryption
     len = pCipherLen;
     status = EVP_EncryptFinal_ex(ctx, ctBytes+pCipherLen, &len);
-    if (! status)
+    if (status <= 0)
         return NO;
     
     //Get the tag
@@ -731,17 +729,17 @@ cleanup:
     else if (keyLen == AES_KEY_256_LENGTH)
         status = EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
     
-    if (! status)
+    if (status <= 0)
         return NO;
     
     // Set IV length. Not necessary if this is 12 bytes (96 bits)
     status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, (int)sizeof(cIV), NULL);
-    if (! status)
+    if (status <= 0)
         return NO;
     
     // Initialise key and IV
     status = EVP_DecryptInit_ex(ctx, NULL, NULL, cKey, cIV);
-    if (! status)
+    if (status <= 0)
         return NO;
     
     // remove TAG JAVA compatibility
@@ -753,12 +751,12 @@ cleanup:
     int pPlainLen = 0;
     unsigned char * pPlain = [*plainData mutableBytes];
     status = EVP_DecryptUpdate(ctx, pPlain, &pPlainLen, [cipherData bytes], (int)([cipherData length]));
-    if (! status)
+    if (status <= 0)
         return NO;
     
     // Tag is the last 16 bytes
     status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, (int)sizeof(cTag), cTag);
-    if (! status)
+    if (status <= 0)
         return NO;
     
     //Finalise the encryption
