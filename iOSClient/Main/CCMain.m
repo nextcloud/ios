@@ -4635,14 +4635,10 @@
         
         if (metadata.directory) {
             
-            /*
             if (metadata.encrypted)
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[UIColor redColor]];
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brand];
             else
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
-            */
-            
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
             
         } else {
             cell.file.image = [UIImage imageNamed:metadata.iconName];
@@ -4667,8 +4663,8 @@
     // Image Status Encrypted
     // ----------------------------------------------------------------------------------------------------------
     
-    if (metadata.encrypted)
-        cell.status.image = [UIImage imageNamed:@"encrypted"];
+   // if (metadata.encrypted)
+   //     cell.status.image = [UIImage imageNamed:@"encrypted"];
     
     // ----------------------------------------------------------------------------------------------------------
     // Favorite
