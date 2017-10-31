@@ -40,7 +40,8 @@
 @interface CCPhotos: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
-
+@property (nonatomic, strong) NSString *directoryStartDatasource;
+ 
 - (void)downloadFileSuccess:(tableMetadata *)metadata;
 - (void)downloadFileFailure:(NSInteger)errorCode;
 

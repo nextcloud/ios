@@ -61,6 +61,17 @@
     return self;
 }
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    
+    if (self) {
+        
+    }
+    
+    return self;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== View =====
 #pragma --------------------------------------------------------------------------------------------
@@ -507,10 +518,10 @@
     if (app.activeAccount.length == 0)
         return;
     
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+    _directoryStartDatasource = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     NSDate *dateDateRecordDirectory = nil;
     
-    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl BEGINSWITH %@", app.activeAccount, autoUploadPath] sorted:@"dateReadDirectory" ascending:false];
+    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl BEGINSWITH %@", app.activeAccount, _directoryStartDatasource] sorted:@"dateReadDirectory" ascending:false];
     if ([directories count] > 0) {
         tableDirectory *directory = [directories objectAtIndex:0];
         dateDateRecordDirectory = directory.dateReadDirectory;
@@ -518,10 +529,10 @@
     
     if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
 
-        NSLog(@"[LOG] Photos rebuild Data Source serverUrl : %@", autoUploadPath);
+        NSLog(@"[LOG] Photos rebuild Data Source serverUrl : %@", _directoryStartDatasource);
 
         _dateReadDataSource = [NSDate date];
-        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:autoUploadPath];
+        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:_directoryStartDatasource];
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:app.activeAccount];
         
         [self reloadCollection];
