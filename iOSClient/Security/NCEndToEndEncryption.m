@@ -482,7 +482,7 @@ cleanup:
     if (status <= 0 || outLen == 0)
         return nil;
     
-    unsigned char *out = (unsigned char *) OPENSSL_malloc(outLen);
+    unsigned char *out = (unsigned char *) malloc(outLen);
     status = EVP_PKEY_encrypt(ctx, out, &outLen, [plainData bytes], (int)[plainData length]);
     if (status <= 0)
         return nil;
