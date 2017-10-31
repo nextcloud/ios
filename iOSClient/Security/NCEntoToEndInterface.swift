@@ -235,9 +235,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         case 400:
             appDelegate.messageNotification("E2E get privateKey", description: "bad request: unpredictable internal error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
-        case 403:
-            appDelegate.messageNotification("E2E get privateKey", description: "forbidden: the user can't access the private key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            
         case 404:
             // message
             let e2ePassphrase = NYMnemonic.generateString(128, language: "english")
@@ -268,6 +265,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             alertController.addAction(OKAction)
             appDelegate.activeMain.present(alertController, animated: true)
+            
+        case 409:
+            appDelegate.messageNotification("E2E get privateKey", description: "forbidden: the user can't access the private key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
         default:
             appDelegate.messageNotification("E2E get privateKey", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
