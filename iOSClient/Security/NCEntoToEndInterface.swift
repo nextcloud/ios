@@ -104,11 +104,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         switch errorCode {
             
         case 400:
-            
             appDelegate.messageNotification("E2E get publicKey", description: "bad request: unpredictable internal error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
         case 404:
-            
             guard let csr = NCEndToEndEncryption.sharedManager().createCSR(appDelegate.activeUserID, directoryUser: appDelegate.directoryUser) else {
                 
                 appDelegate.messageNotification("E2E Csr", description: "Error to create Csr", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -124,11 +122,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             
         case 409:
-        
             appDelegate.messageNotification("E2E get publicKey", description: "forbidden: the user can't access the public keys", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
         default:
-        
             appDelegate.messageNotification("E2E get publicKey", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
@@ -323,11 +319,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         switch (errorCode) {
             
         case 400:
-            
             appDelegate.messageNotification("E2E Server publicKey", description: "bad request: unpredictable internal error", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
         case 404:
-            
             appDelegate.messageNotification("E2E Server publicKey", description: "Server publickey doesn't exists", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
         case 409:
