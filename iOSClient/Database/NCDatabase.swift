@@ -119,6 +119,7 @@ class tableE2eEncryption: Object {
     @objc dynamic var fileNameEncrypted = ""
     @objc dynamic var key = ""
     @objc dynamic var initializationVector = ""
+    @objc dynamic var lock = ""
     @objc dynamic var metadataKey: Int = 0
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
