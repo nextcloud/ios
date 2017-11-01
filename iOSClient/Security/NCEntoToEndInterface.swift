@@ -516,7 +516,10 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 let iv = element.initializationVector
                 let tag = element.authenticationTag
-                let encrypted = element.encrypted
+               // let encrypted = element.encrypted
+                
+                let encrypted = "XPUVMfWoncNybAiLFcYpFgL6cnKH4rt80nc1NEsZfp2FleWkYIzkNN7GD01k0qVdnFZGKreaLceZ+QnPPLMsbuhF50hcMPQN2wRYTQMfsxX1vk/C6RShGX18/xp19Fg8aVTMCORIyCXpXHHwdboOaz1gdJYlDydhXD37xKNxdiGBbR/7d1E25E59Hnx331jO8aeaje7YW5F/g0GzEWNXvWSkXKWCuhtepgX/WwBQspyDcarpvKkALb7KdzGxq2OcpWGEcjoDsAU3IghmbIDYxm+f5wk/D/kBTr/0UIY+wlV+h8peBEVbqTk/1hmzolU25jDEvvIVSxRQ/cs27cv1gQ==";
+
                 
                 let x = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encrypted.data(using: .utf8), privateKey: privateKey)
                 
