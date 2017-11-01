@@ -540,6 +540,10 @@ cleanup:
     return outString;
 }
 
+#
+#pragma mark - Encrypt / Decrypt file
+#
+
 - (BOOL)encryptFileName:(NSString *)fileName directoryUser:(NSString *)directoryUser data:(NSData *)data key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
 {
     NSMutableData *cipherData;
