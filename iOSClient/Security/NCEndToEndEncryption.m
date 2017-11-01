@@ -540,24 +540,35 @@ cleanup:
     return outString;
 }
 
-- (NSString *)encryptFileName:(NSString *)fileName fileID:(NSString *)fileID activeUrl:(NSString *)activeUrl
+- (BOOL)encryptFileName:(NSString *)fileName directoryUser:(NSString *)directoryUser data:(NSData *)data key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
 {
     NSMutableData *cipherData;
     NSData *tagData;
-    NSString* authenticationTag;
-
-    NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, fileID]];
+    NSData *plainData;
+    
+    if (data) {
+        plainData = data;
+    } else {
+        plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
+    }
+    
     NSData *keyData = [self generateKey:AES_KEY_128_LENGTH];
     NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
     
     BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
     
     if (cipherData != nil && result) {
-        [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@.dms", activeUrl, fileID] atomically:YES];
-        authenticationTag = [tagData base64EncodedStringWithOptions:0];
+        
+        [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName] atomically:YES];
+        
+        *key = [keyData base64EncodedStringWithOptions:0];
+        *initializationVector = [ivData base64EncodedStringWithOptions:0];
+        *authenticationTag = [tagData base64EncodedStringWithOptions:0];
+
+        return true;
     }
     
-    return nil;
+    return false;
 }
 
 /*

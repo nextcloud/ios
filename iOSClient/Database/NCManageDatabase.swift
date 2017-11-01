@@ -57,10 +57,13 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 12,
+            schemaVersion: 15,
             
-            // 11 : Add Object e2eEncryption
+            // 11 : Add object tableE2eEncryption
             // 12 : Add encrypted on tableQueueDownload, tableQueueUpload
+            // 13 : Add account on object tableE2eEncryption
+            // 14 : Add fileNameEncrypted on tableQueueUpload
+            // 15 : remove fileID add serverUrl and change primary key for fileNameEncrypted on tableE2eEncryption (change fields name)
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -606,6 +609,21 @@ class NCManageDatabase: NSObject {
         return result.versionMajor
     }
 
+    @objc func getEndToEndEncryptionVersion() -> Float {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return 0
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
+            return 0
+        }
+        
+        return Float(result.endToEndEncryptionVersion)!
+    }
+    
     @objc func compareServerVersion(_ versionCompare: String) -> Int {
         
         guard let tableAccount = self.getAccountActive() else {
@@ -1828,6 +1846,7 @@ class NCManageDatabase: NSObject {
         
         let metadataNet = CCMetadataNet()
         
+        metadataNet.account = result.account
         metadataNet.encrypted = result.encrypted
         metadataNet.fileID = result.fileID
         metadataNet.selector = result.selector
@@ -1898,6 +1917,7 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.encrypted = metadataNet.encrypted
                         addObject.fileName = metadataNet.fileName
+                        addObject.fileNameEncrypted = metadataNet.fileNameEncrypted
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -1942,6 +1962,7 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.encrypted = metadataNet.encrypted
                         addObject.fileName = metadataNet.fileName
+                        addObject.fileNameEncrypted = metadataNet.fileNameEncrypted
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -1978,9 +1999,11 @@ class NCManageDatabase: NSObject {
         
         let metadataNet = CCMetadataNet()
         
+        metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
         metadataNet.encrypted = result.encrypted
         metadataNet.fileName = result.fileName
+        metadataNet.fileNameEncrypted = result.fileNameEncrypted
         metadataNet.priority = result.priority
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost

@@ -462,7 +462,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         // Create "files"
         for recordE2eEncryption in recordsE2eEncryption {
             
-            let plainEncrypted = recordE2eEncryption.key+"|"+recordE2eEncryption.filename+"|"+recordE2eEncryption.mimetype+"|"+",\(recordE2eEncryption.version)"
+            let plainEncrypted = recordE2eEncryption.key+"|"+recordE2eEncryption.fileName+"|"+recordE2eEncryption.mimeType+"|"+",\(recordE2eEncryption.version)"
             guard let encryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(plainEncrypted, publicKey: publicKey) else {
                 
                 appDelegate.messageNotification("E2E encore metadata", description: "Serious internal error in creation \"encrypted\" key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)

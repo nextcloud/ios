@@ -29,6 +29,8 @@
 
 + (instancetype)sharedManager;
 
+- (BOOL)encryptFileName:(NSString *)fileName directoryUser:(NSString *)directoryUser data:(NSData *)data key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
+
 //- (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
 //- (NSString *)decryptMetadata:(NSString *)cipher key:(NSString *)key iv:(NSString *)iv tag:(NSString *)tag;
 

@@ -22,7 +22,7 @@
 //
 
 #import "CCNetworking.h"
-
+#import "NCEndToEndEncryption.h"
 #import "AppDelegate.h"
 #import "CCCertificate.h"
 #import "NSDate+ISO8601.h"
@@ -764,7 +764,6 @@
         if (assetMediaType == PHAssetMediaTypeImage) {
         
             __block PHAsset *asset = result[0];
-            __block NSError *error = nil;
             
             PHImageRequestOptions *options = [PHImageRequestOptions new];
             options.networkAccessAllowed = YES; // iCloud
@@ -772,19 +771,23 @@
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
                 tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+                BOOL result = YES;
+                NSError *error = nil;
 
                 if ([dataUTI isEqualToString:@"public.heic"] && tableAccount.autoUploadFormatCompatibility) {
                     
                     UIImage *image = [UIImage imageWithData:imageData];
-                    NSData *imageDataJPEG = UIImageJPEGRepresentation(image, 1.0);
+                    imageData = UIImageJPEGRepresentation(image, 1.0);
                     NSString *fileNameJPEG = [[metadataNet.fileName lastPathComponent] stringByDeletingPathExtension];
                     metadataNet.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     
-                    [imageDataJPEG writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                    if (!metadataNet.encrypted)
+                        [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                     
                 } else {
                     
-                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                    if (!metadataNet.encrypted)
+                        [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                 }
                 
                 if (error) {
@@ -796,9 +799,43 @@
                 
                 } else {
                     
-                    // OOOOOK
+                    // *** ENCRYPTED ***
+                    if (metadataNet.encrypted) {
+                        
+                        NSString *key;
+                        NSString *initializationVector;
+                        NSString *authenticationTag;
+                        
+                        result = [[NCEndToEndEncryption sharedManager] encryptFileName:metadataNet.fileName directoryUser: _directoryUser data:imageData key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag];
+                        
+                        // Write to DB
+                        if (result) {
+                            
+                            tableE2eEncryption *addObject = [tableE2eEncryption new];
+                            
+                            addObject.account = metadataNet.account;
+                            addObject.authenticationTag = authenticationTag;
+                            addObject.fileName = metadataNet.fileName;
+                            addObject.fileNameEncrypted = metadataNet.fileNameEncrypted;
+                            addObject.key = key;
+                            addObject.initializationVector = initializationVector;
+                            addObject.mimeType =  @"";
+                            addObject.serverUrl = metadataNet.serverUrl;
+                            addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
+                            
+                            (void)[[NCManageDatabase sharedInstance] adde2eEncryption:addObject];
+                        }                        
+                    }
+                    
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                        if (result) {
+                            // OOOOOK
+                            [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                        } else {
+                            // ERROR
+                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Image request encrypted failed [%@]", error.description] errorCode:error.code];
+                        }
                     });
                 }
             }];
@@ -827,6 +864,9 @@
                     [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         
                         if (AVAssetExportSessionStatusCompleted == exportSession.status) {
+                            
+                            // *** ENCRYPTED ***
+                            
                             
                             // OOOOOOK
                             dispatch_async(dispatch_get_main_queue(), ^{
@@ -1550,6 +1590,7 @@
     [metadataNet setExpirationTime: self.expirationTime];
     [metadataNet setFileID: self.fileID];
     [metadataNet setFileName: self.fileName];
+    [metadataNet setFileNameEncrypted: self.fileNameEncrypted];
     [metadataNet setFileNameTo: self.fileNameTo];
     [metadataNet setKey: self.key];
     [metadataNet setKeyCipher: self.keyCipher];
