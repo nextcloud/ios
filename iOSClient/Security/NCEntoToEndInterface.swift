@@ -342,21 +342,21 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
 
         if let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: &token) as NSError? {
             
-            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
             return false
         }
         
         if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
             
-            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
             return false
         }
         
         if let error = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token! as String) as NSError? {
             
-            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
             return false
         }
@@ -370,21 +370,21 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         if let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: &token) as NSError? {
             
-            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            appDelegate.messageNotification("E2E Remove mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
             return false
         }
         
         if let error = NCNetworkingSync.sharedManager().deletemarkEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
             
-            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            appDelegate.messageNotification("E2E Remove mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
             return false
         }
         
         if let error = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token! as String) as NSError? {
             
-            appDelegate.messageNotification("_error_", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
+            appDelegate.messageNotification("E2E Remove mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
             return false
         }
@@ -398,12 +398,13 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     func getEndToEndMetadataSuccess(_ metadataNet: CCMetadataNet!) {
         
-        let decoder = JSONDecoder.init()
+        let jsonDecoder = JSONDecoder.init()
         let data = metadataNet.encryptedMetadata.data(using: .utf8)
         
         do {
             
-            let response = try decoder.decode(e2eMetadata.self, from: data!)
+            let response = try jsonDecoder.decode(e2eMetadata.self, from: data!)
+            
             let files = response.files
             let metadata = response.metadata
             let sharing = response.sharing
@@ -430,7 +431,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
         } catch let error {
             
-            appDelegate.messageNotification("_error_", description: "Error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            appDelegate.messageNotification("E2E decode metadata", description: "Error in decoding metadata ("+error.localizedDescription+")", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
         }
     }
     
@@ -438,12 +439,12 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
-            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
-        }
-        
-        if (errorCode != kOCErrorServerUnauthorized) {
             
-            appDelegate.messageNotification("_error_", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
+            
+        } else if (errorCode != 404) {
+            
+            appDelegate.messageNotification("E2E Get metadata", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
     
@@ -457,4 +458,53 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
+    @objc func encoderMetadata (_ recordsE2eEncryption: [tableE2eEncryption], publicKey: String, version: Int) -> String? {
+        
+        let jsonEncoder = JSONEncoder.init()
+        var files = [String: e2eMetadata.filesKey]()
+        
+        // Create "files"
+        for recordE2eEncryption in recordsE2eEncryption {
+            
+            let plainEncrypted = recordE2eEncryption.key+"|"+recordE2eEncryption.filename+"|"+recordE2eEncryption.mimetype+"|"+",\(recordE2eEncryption.version)"
+            guard let encryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(plainEncrypted, publicKey: publicKey) else {
+                
+                appDelegate.messageNotification("E2E encore metadata", description: "Error in creation \"encrypted\" key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                return nil
+            }
+            
+            
+            let e2eMetadataFilesKey = e2eMetadata.filesKey(initializationVector: recordE2eEncryption.initializationVector, authenticationTag: recordE2eEncryption.authenticationTag, metadataKey: 0, encrypted: String(data: encryptedData, encoding: .utf8)!)
+            files.updateValue(e2eMetadataFilesKey, forKey: recordE2eEncryption.fileNameEncrypted)
+        }
+        
+        // Create "metadata"
+        let e2eMetadataKey = e2eMetadata.metadataKey(metadataKeys: ["0":"dcccecfvdfvfvsfdvefvefvefvefvefv"], version: version)
+
+        // Create final Json e2emetadata
+        let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey, sharing: nil)
+
+        do {
+            
+            let jsonData = try jsonEncoder.encode(e2emetadata)
+            let jsonString = String(data: jsonData, encoding: .utf8)
+            print("JSON String : " + jsonString!)
+            
+            return jsonString
+            
+        } catch let error {
+            
+            appDelegate.messageNotification("E2E encore metadata", description: "Error in encoding metadata ("+error.localizedDescription+")", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+        }
+        
+        return nil
+    }
 }
+
+
+
+
+
+
+
+
