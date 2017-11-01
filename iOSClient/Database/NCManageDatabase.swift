@@ -57,9 +57,10 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 11,
+            schemaVersion: 12,
             
             // 11 : Add Object e2eEncryption
+            // 12 : Add encrypted on tableQueueDownload, tableQueueUpload
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -1728,7 +1729,8 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Queue Download
     
-    @objc func addQueueDownload(fileID: String, selector: String, selectorPost: String?, serverUrl: String, session: String) -> Bool {
+    /*
+    @objc func addQueueDownload(fileID: String, encrypted: Bool, selector: String, selectorPost: String?, serverUrl: String, session: String) -> Bool {
         
         guard let tableAccount = self.getAccountActive() else {
             return false
@@ -1750,6 +1752,7 @@ class NCManageDatabase: NSObject {
                     let addObject = tableQueueDownload()
                         
                     addObject.account = tableAccount.account
+                    addObject.encrypted = encrypted
                     addObject.fileID = fileID
                     addObject.selector = selector
                         
@@ -1770,6 +1773,7 @@ class NCManageDatabase: NSObject {
         
         return true
     }
+    */
     
     @objc func addQueueDownload(metadatasNet: [CCMetadataNet]) {
         
@@ -1788,6 +1792,7 @@ class NCManageDatabase: NSObject {
                     let addObject = tableQueueDownload()
                     
                     addObject.account = tableAccount.account
+                    addObject.encrypted = metadataNet.encrypted
                     addObject.fileID = metadataNet.fileID
                     addObject.selector = metadataNet.selector
                     
@@ -1823,6 +1828,7 @@ class NCManageDatabase: NSObject {
         
         let metadataNet = CCMetadataNet()
         
+        metadataNet.encrypted = result.encrypted
         metadataNet.fileID = result.fileID
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost
@@ -1890,6 +1896,7 @@ class NCManageDatabase: NSObject {
                         
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addObject.encrypted = metadataNet.encrypted
                         addObject.fileName = metadataNet.fileName
                         addObject.selector = metadataNet.selector
                         
@@ -1933,6 +1940,7 @@ class NCManageDatabase: NSObject {
                         
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addObject.encrypted = metadataNet.encrypted
                         addObject.fileName = metadataNet.fileName
                         addObject.selector = metadataNet.selector
                         
@@ -1971,6 +1979,7 @@ class NCManageDatabase: NSObject {
         let metadataNet = CCMetadataNet()
         
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
+        metadataNet.encrypted = result.encrypted
         metadataNet.fileName = result.fileName
         metadataNet.priority = result.priority
         metadataNet.selector = result.selector

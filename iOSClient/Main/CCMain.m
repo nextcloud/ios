@@ -1605,11 +1605,14 @@
         if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
             return;
     
+    // Is encrypted
+    BOOL isEncrypted = [CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount];
+    
     NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);
     
     for (PHAsset *asset in assets) {
         
-        if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount]) {
+        if (isEncrypted) {
             fileName = [CCUtility generateEncryptedFileName];
         } else {
             fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType];
@@ -1645,6 +1648,7 @@
             
             metadataNet.action = actionReadFile;
             metadataNet.assetLocalIdentifier = asset.localIdentifier;
+            metadataNet.encrypted = isEncrypted;
             metadataNet.fileName = fileName;
             metadataNet.session = session;
             metadataNet.selector = selectorReadFileUploadFile;

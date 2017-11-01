@@ -1542,6 +1542,7 @@
     [metadataNet setDirectory: self.directory];
     [metadataNet setDirectoryID: self.directoryID];
     [metadataNet setDirectoryIDTo: self.directoryIDTo];
+    [metadataNet setEncrypted: self.encrypted];
     [metadataNet setEncryptedMetadata: self.encryptedMetadata];
     [metadataNet setErrorCode: self.errorCode];
     [metadataNet setErrorRetry: self.errorRetry];
