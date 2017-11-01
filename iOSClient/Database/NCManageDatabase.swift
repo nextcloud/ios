@@ -996,10 +996,10 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table e2e Encryption
     
-    @objc func adde2eEncryption(_ e2e: tableE2eEncryption) -> tableE2eEncryption? {
+    @objc func adde2eEncryption(_ e2e: tableE2eEncryption) -> Bool {
 
         guard self.getAccountActive() != nil else {
-            return nil
+            return false
         }
         
         let realm = try! Realm()
@@ -1010,10 +1010,10 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
+            return false
         }
         
-        return tableE2eEncryption.init(value: e2e)
+        return true
     }
     
     @objc func deletee2eEncryption(predicate: NSPredicate) {

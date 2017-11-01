@@ -819,11 +819,19 @@
                             addObject.fileNameEncrypted = metadataNet.fileNameEncrypted;
                             addObject.key = key;
                             addObject.initializationVector = initializationVector;
-                            addObject.mimeType =  @"";
+                            
+                            CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[metadataNet.fileName pathExtension], NULL);
+                            CFStringRef mimeTypeRef = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+                            if (mimeTypeRef) {
+                                addObject.mimeType = (__bridge NSString *)mimeTypeRef;
+                            } else {
+                                addObject.mimeType = @"application/octet-stream";
+                            }
+
                             addObject.serverUrl = metadataNet.serverUrl;
                             addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
                             
-                            (void)[[NCManageDatabase sharedInstance] adde2eEncryption:addObject];
+                            result = [[NCManageDatabase sharedInstance] adde2eEncryption:addObject];
                         }                        
                     }
                     
