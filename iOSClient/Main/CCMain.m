@@ -775,14 +775,23 @@
         
         NSString *serverUrl = [app getTabBarControllerActiveServerUrl];
         
-        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:NO session:k_upload_session delegate:self];
-        form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
-        
-        [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-                
-        [self presentViewController:navigationController animated:YES completion:nil];        
+        BOOL isEncrypted = [CCUtility isFolderEncrypted:serverUrl account:app.activeAccount];
+
+        if (isEncrypted) {
+            
+            [self uploadFileAsset:assets serverUrl:serverUrl useSubFolder:NO session:k_upload_session];
+            
+        } else {
+            
+            CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:NO session:k_upload_session delegate:self];
+            form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
+            
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
+            
+            [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+            
+            [self presentViewController:navigationController animated:YES completion:nil];
+        }
     }];
 }
 
