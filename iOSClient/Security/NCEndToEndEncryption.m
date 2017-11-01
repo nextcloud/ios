@@ -538,29 +538,27 @@ cleanup:
     return outString;
 }
 
-#
-#pragma mark - AES/GCM/NoPadding
-#
-
-/*
-- (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl
+- (NSString *)encryptFileName:(NSString *)fileName fileID:(NSString *)fileID activeUrl:(NSString *)activeUrl
 {
     NSMutableData *cipherData;
     NSData *tagData;
     NSString* authenticationTag;
 
-    NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, metadata.fileID]];
+    NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, fileID]];
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
-    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:@"gKm3n+mJzeY26q4OfuZEqg==" options:0];
+    NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
     
     BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
     
     if (cipherData != nil && result) {
-        [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", activeUrl, @"encrypted.dms"] atomically:YES];
+        [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@.dms", activeUrl, fileID] atomically:YES];
         authenticationTag = [tagData base64EncodedStringWithOptions:0];
     }
+    
+    return nil;
 }
 
+/*
 - (void)decryptMetadata:(NSString *)metadata activeUrl:(NSString *)activeUrl
 {
     NSMutableData *plainData;
@@ -595,6 +593,10 @@ cleanup:
         return nil;
 }
 */
+
+#
+#pragma mark - AES/GCM/NoPadding
+#
 
 // Encryption using GCM mode
 - (BOOL)encryptData:(NSData *)plainData cipherData:(NSMutableData **)cipherData keyData:(NSData *)keyData keyLen:(int)keyLen ivData:(NSData *)ivData tagData:(NSData **)tagData
