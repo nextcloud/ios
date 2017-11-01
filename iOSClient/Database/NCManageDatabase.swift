@@ -685,7 +685,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableCertificates.self)
     
-        return Array(results.map { "\(localCertificatesFolder)\($0.certificateLocation)" })
+        return Array(results.map { "\(localCertificatesFolder)/\($0.certificateLocation)" })
     }
     
     //MARK: -
