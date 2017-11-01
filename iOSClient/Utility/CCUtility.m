@@ -893,6 +893,31 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== E2E Encrypted =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (NSString *)generateEncryptedFileName
+{
+    NSString *UUID = [[NSUUID UUID] UUIDString];
+    
+    return [[UUID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
+}
+
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account
+{
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directory = 1 AND encrypted = 1", account] sorted:@"directoryID" ascending:false];
+    
+    for (tableMetadata *metadata in metadatas) {
+        
+        NSString *serverUrlEncrypted = [NSString stringWithFormat:@"%@/%@", [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID], metadata.fileName];
+        if ([serverUrl containsString:serverUrlEncrypted])
+            return true;
+    }
+    
+    return false;
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 

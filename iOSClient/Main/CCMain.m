@@ -1586,6 +1586,7 @@
     BOOL useSubFolder = [[arguments objectAtIndex:2] boolValue];
     NSString *session = [arguments objectAtIndex:3];
     
+    NSString *fileName;
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
@@ -1599,7 +1600,11 @@
     
     for (PHAsset *asset in assets) {
         
-        NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType];
+        if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount]) {
+            fileName = [CCUtility generateEncryptedFileName];
+        } else {
+            fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType];
+        }
         
         NSDate *assetDate = asset.creationDate;
         NSDateFormatter *formatter = [[NSDateFormatter alloc] init];

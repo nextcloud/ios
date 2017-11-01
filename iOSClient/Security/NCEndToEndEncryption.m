@@ -38,6 +38,8 @@
 #import <openssl/err.h>
 #import <openssl/bn.h>
 #import <openssl/md5.h>
+#import <openssl/rand.h>
+
 
 #define addName(field, value) X509_NAME_add_entry_by_txt(name, field, MBSTRING_ASC, (unsigned char *)value, -1, -1, 0); NSLog(@"%s: %s", field, value);
 
@@ -545,7 +547,7 @@ cleanup:
     NSString* authenticationTag;
 
     NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", activeUrl, fileID]];
-    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:@"WANM0gRv+DhaexIsI0T3Lg==" options:0];
+    NSData *keyData = [self generateKey:AES_KEY_128_LENGTH];
     NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
     
     BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
@@ -786,12 +788,22 @@ cleanup:
     return output;
 }
 
-- (NSData *)generateIV:(int)ivLength
+- (NSData *)generateIV:(int)length
 {
-    NSMutableData  *ivData = [NSMutableData dataWithLength:ivLength];
-    (void)SecRandomCopyBytes(kSecRandomDefault, ivLength, ivData.mutableBytes);
+    NSMutableData  *ivData = [NSMutableData dataWithLength:length];
+    (void)SecRandomCopyBytes(kSecRandomDefault, length, ivData.mutableBytes);
     
     return ivData;
+}
+
+- (NSData *)generateKey:(int)length
+{
+    NSMutableData *keyData = [NSMutableData dataWithLength:length];
+    unsigned char *pKeyData = [keyData mutableBytes];
+
+    RAND_bytes(pKeyData, length);
+    
+    return keyData;
 }
 
 - (NSString *)getMD5:(NSString *)input

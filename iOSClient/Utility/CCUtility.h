@@ -181,6 +181,11 @@
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
+// ===== E2E Encrypted =====
+
++ (NSString *)generateEncryptedFileName;
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account;
+
 // ===== CCMetadata =====
 
 + (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status;
