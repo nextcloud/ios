@@ -516,12 +516,16 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 let iv = element.initializationVector
                 let tag = element.authenticationTag
-               // let encrypted = element.encrypted
+                //let encrypted = element.encrypted
                 
-                let encrypted = "XPUVMfWoncNybAiLFcYpFgL6cnKH4rt80nc1NEsZfp2FleWkYIzkNN7GD01k0qVdnFZGKreaLceZ+QnPPLMsbuhF50hcMPQN2wRYTQMfsxX1vk/C6RShGX18/xp19Fg8aVTMCORIyCXpXHHwdboOaz1gdJYlDydhXD37xKNxdiGBbR/7d1E25E59Hnx331jO8aeaje7YW5F/g0GzEWNXvWSkXKWCuhtepgX/WwBQspyDcarpvKkALb7KdzGxq2OcpWGEcjoDsAU3IghmbIDYxm+f5wk/D/kBTr/0UIY+wlV+h8peBEVbqTk/1hmzolU25jDEvvIVSxRQ/cs27cv1gQ==";
+                let encrypted = "kyFWXpuA1qlb3fHLbZQSwmv3718oIe8qwE7spkqMVmYggWp5dzOcgDQbkicfnR/BzNQm28MtRKnQSk6UzNl8k5Ii/bxbu2Ki8zYMy5YUrF/WKxpV16icsqYafV56OAymtzWuwHhouO63oAGQF2B2uqGRPP1JbnhmKj8TA+72stmwgF01IpOUtKreieV2C9n815J9Nw=="
+                
+                let dataDecoded : NSData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0))!
 
                 
-                let x = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(encrypted.data(using: .utf8), privateKey: privateKey)
+                
+                
+                let x = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(dataDecoded as Data!, privateKey: privateKey)
                 
                 print(metadata)
                 

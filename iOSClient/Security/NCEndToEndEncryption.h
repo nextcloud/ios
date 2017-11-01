@@ -39,7 +39,7 @@
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey;
-- (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey;
+- (NSString *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
 
 - (NSString *)createSHA512:(NSString *)string;
