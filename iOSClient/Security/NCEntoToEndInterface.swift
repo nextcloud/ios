@@ -508,16 +508,21 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             let files = response.files
             let metadata = response.metadata
-            let sharing = response.sharing
+            //let sharing = response.sharing
+            
+            var planMetadataKeys = [String:String]()
             
             for metadataKeys in metadata.metadataKeys {
                 
-                let metadataKeysKey = metadataKeys.key
-                let metadataKeysValue = metadataKeys.value
-                
-                let metadataKeysValueDecoded : NSData = NSData(base64Encoded: metadataKeysValue, options: NSData.Base64DecodingOptions(rawValue: 0))!
+                guard let metadataKeysData : NSData = NSData(base64Encoded: metadataKeys.value, options: NSData.Base64DecodingOptions(rawValue: 0)) else {
+                    return nil
+                }
 
-                let metadataKey = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeysValueDecoded as Data!, privateKey: privateKey)
+                guard let metadataKey = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeysData as Data!, privateKey: privateKey) else {
+                    return nil
+                }
+                
+                planMetadataKeys[metadataKeys.key] = metadataKey
             }
             
             for file in files {
@@ -528,9 +533,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 let iv = element.initializationVector
                 let tag = element.authenticationTag
                 let encrypted = element.encrypted
+                let metadataKeysKey = element.metadataKey
+                let key = planMetadataKeys["\(metadataKeysKey)"]
                 
                 
-                guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, privateKey: privateKey, initializationVector: iv, authenticationTag: tag) else {
+                guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, privateKey: key, initializationVector: iv, authenticationTag: tag) else {
                     
                     return nil
                 }
