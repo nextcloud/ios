@@ -1644,10 +1644,7 @@
             
             metadataNet.action = actionReadFile;
             metadataNet.assetLocalIdentifier = asset.localIdentifier;
-            metadataNet.encrypted = isEncrypted;
             metadataNet.fileName = fileName;
-            if (isEncrypted)
-                metadataNet.fileNameIdentifier = [CCUtility generateRandomIdentifier];
             metadataNet.session = session;
             metadataNet.selector = selectorReadFileUploadFile;
             metadataNet.serverUrl = serverUrl;

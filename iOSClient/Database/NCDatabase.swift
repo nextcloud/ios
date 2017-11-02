@@ -222,7 +222,6 @@ class tablePhotoLibrary: Object {
 class tableQueueDownload: Object {
     
     @objc dynamic var account = ""
-    @objc dynamic var encrypted: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var selector = ""
     @objc dynamic var selectorPost = ""
@@ -239,9 +238,7 @@ class tableQueueUpload: Object {
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var date = NSDate()
-    @objc dynamic var encrypted: Bool = false
     @objc dynamic var fileName = ""
-    @objc dynamic var fileNameIdentifier = ""
     @objc dynamic var lock: Bool = false
     @objc dynamic var priority: Int = 0
     @objc dynamic var selector = ""

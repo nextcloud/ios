@@ -101,7 +101,6 @@
 @property BOOL directory;
 @property (nonatomic, strong) NSString *directoryID;
 @property (nonatomic, strong) NSString *directoryIDTo;
-@property BOOL encrypted;
 @property (nonatomic, strong) NSString *encryptedMetadata;
 @property NSInteger errorCode;
 @property NSInteger errorRetry;
@@ -109,7 +108,6 @@
 @property (nonatomic, strong) NSString *expirationTime;
 @property (nonatomic, strong) NSString *fileID;
 @property (nonatomic, strong) NSString *fileName;
-@property (nonatomic, strong) NSString *fileNameIdentifier;
 @property (nonatomic, strong) NSString *fileNameTo;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *keyCipher;

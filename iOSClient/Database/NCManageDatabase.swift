@@ -1839,7 +1839,6 @@ class NCManageDatabase: NSObject {
                     let addObject = tableQueueDownload()
                     
                     addObject.account = tableAccount.account
-                    addObject.encrypted = metadataNet.encrypted
                     addObject.fileID = metadataNet.fileID
                     addObject.selector = metadataNet.selector
                     
@@ -1876,7 +1875,6 @@ class NCManageDatabase: NSObject {
         let metadataNet = CCMetadataNet()
         
         metadataNet.account = result.account
-        metadataNet.encrypted = result.encrypted
         metadataNet.fileID = result.fileID
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost
@@ -1944,9 +1942,7 @@ class NCManageDatabase: NSObject {
                         
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-                        addObject.encrypted = metadataNet.encrypted
                         addObject.fileName = metadataNet.fileName
-                        addObject.fileNameIdentifier = metadataNet.fileNameIdentifier
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -1989,9 +1985,7 @@ class NCManageDatabase: NSObject {
                         
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-                        addObject.encrypted = metadataNet.encrypted
                         addObject.fileName = metadataNet.fileName
-                        addObject.fileNameIdentifier = metadataNet.fileNameIdentifier
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -2030,9 +2024,7 @@ class NCManageDatabase: NSObject {
         
         metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
-        metadataNet.encrypted = result.encrypted
         metadataNet.fileName = result.fileName
-        metadataNet.fileNameIdentifier = result.fileNameIdentifier
         metadataNet.priority = result.priority
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost

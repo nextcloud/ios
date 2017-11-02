@@ -553,17 +553,15 @@ cleanup:
 #pragma mark - Encrypt / Decrypt file
 #
 
-- (BOOL)encryptFileName:(NSString *)fileName directoryUser:(NSString *)directoryUser data:(NSData *)data key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
+- (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directoryUser:(NSString *)directoryUser key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag
 {
     NSMutableData *cipherData;
     NSData *tagData;
     NSData *plainData;
     
-    if (data) {
-        plainData = data;
-    } else {
-        plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
-    }
+    plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
+    if (plainData == nil)
+        return false;
     
     NSData *keyData = [self generateKey:AES_KEY_128_LENGTH];
     NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
@@ -572,7 +570,7 @@ cleanup:
     
     if (cipherData != nil && result) {
         
-        [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName] atomically:YES];
+        [cipherData writeToFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameIdentifier] atomically:YES];
         
         *key = [keyData base64EncodedStringWithOptions:0];
         *initializationVector = [ivData base64EncodedStringWithOptions:0];

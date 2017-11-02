@@ -734,6 +734,43 @@
 #pragma mark =====  Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (BOOL)newEndToEndFile:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier serverUrl:(NSString *)serverUrl
+{
+    NSString *key;
+    NSString *initializationVector;
+    NSString *authenticationTag;
+    
+    BOOL result = [[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:fileNameIdentifier directoryUser: _directoryUser key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag];
+    
+    // Write to DB
+    if (result) {
+        
+        tableE2eEncryption *addObject = [tableE2eEncryption new];
+        
+        addObject.account = _activeAccount;
+        addObject.authenticationTag = authenticationTag;
+        addObject.fileName = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+        addObject.fileNameIdentifier = fileNameIdentifier;
+        addObject.key = key;
+        addObject.initializationVector = initializationVector;
+        
+        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[fileName pathExtension], NULL);
+        CFStringRef mimeTypeRef = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+        if (mimeTypeRef) {
+            addObject.mimeType = (__bridge NSString *)mimeTypeRef;
+        } else {
+            addObject.mimeType = @"application/octet-stream";
+        }
+        
+        addObject.serverUrl = serverUrl;
+        addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
+        
+        result = [[NCManageDatabase sharedInstance] addE2eEncryption:addObject];
+    }
+    
+    return result;
+}
+
 - (void)uploadFileFromAssetLocalIdentifier:(CCMetadataNet *)metadataNet delegate:(id)delegate
 {
     //delegate
@@ -781,13 +818,11 @@
                     NSString *fileNameJPEG = [[metadataNet.fileName lastPathComponent] stringByDeletingPathExtension];
                     metadataNet.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     
-                    if (!metadataNet.encrypted)
-                        [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                     
                 } else {
                     
-                    if (!metadataNet.encrypted)
-                        [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                 }
                 
                 if (error) {
@@ -798,10 +833,6 @@
                     });
                 
                 } else {
-                    
-                    // *** ENCRYPTED ***
-                    if (metadataNet.encrypted)
-                        [self newEndToEndFile:metadataNet data:imageData];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (result) {
@@ -841,9 +872,6 @@
                         
                         if (AVAssetExportSessionStatusCompleted == exportSession.status) {
                             
-                            // *** ENCRYPTED ***
-                            
-                            
                             // OOOOOOK
                             dispatch_async(dispatch_get_main_queue(), ^{
                                 [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
@@ -870,43 +898,6 @@
     }
 }
 
-- (BOOL)newEndToEndFile:(CCMetadataNet *)metadataNet data:(NSData *)data
-{
-    NSString *key;
-    NSString *initializationVector;
-    NSString *authenticationTag;
-    
-    BOOL result = [[NCEndToEndEncryption sharedManager] encryptFileName:metadataNet.fileName directoryUser: _directoryUser data:data key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag];
-    
-    // Write to DB
-    if (result) {
-        
-        tableE2eEncryption *addObject = [tableE2eEncryption new];
-        
-        addObject.account = metadataNet.account;
-        addObject.authenticationTag = authenticationTag;
-        addObject.fileName = [CCUtility returnFileNamePathFromFileName:metadataNet.fileName serverUrl:metadataNet.serverUrl activeUrl:_activeUrl];
-        addObject.fileNameIdentifier = metadataNet.fileNameIdentifier;
-        addObject.key = key;
-        addObject.initializationVector = initializationVector;
-        
-        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[metadataNet.fileName pathExtension], NULL);
-        CFStringRef mimeTypeRef = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
-        if (mimeTypeRef) {
-            addObject.mimeType = (__bridge NSString *)mimeTypeRef;
-        } else {
-            addObject.mimeType = @"application/octet-stream";
-        }
-        
-        addObject.serverUrl = metadataNet.serverUrl;
-        addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
-        
-        result = [[NCManageDatabase sharedInstance] addE2eEncryption:addObject];
-    }
-    
-    return result;
-}
-
 - (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     [self upload:fileName serverUrl:serverUrl assetLocalIdentifier:nil session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
@@ -917,12 +908,6 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
     
-    // create Metadata
-    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
-    
-    __block tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
-    
     //fileID
     NSString *uploadID =  [k_uploadSessionID stringByAppendingString:[CCUtility createRandomString:16]];
     
@@ -930,6 +915,30 @@
     if (delegate)
         [_delegates setObject:delegate forKey:uploadID];
     
+    // Is Encrypted ?
+    BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
+    if (encrypted) {
+        
+        NSString *fileNameIdentifier = [CCUtility generateRandomIdentifier];
+        BOOL result = [self newEndToEndFile:fileName fileNameIdentifier:fileNameIdentifier serverUrl:serverUrl];
+        if (result == false) {
+            
+            // Error for uploadFileFailure
+            if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                [[self getDelegate:uploadID] uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"E2E Error to create encrypted file" errorCode:0];
+            
+            return;
+        }
+        
+        // Now the fileName is fileNameIdentifier
+        fileName = fileNameIdentifier;
+    }
+    
+    // create Metadata
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+    
+    __block tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
     
     metadata.date = [NSDate new];
     metadata.fileID = uploadID;
@@ -1124,9 +1133,8 @@
         // OOOOOOKKKK remove record on Table Auto Upload
         [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
         
-        // If
-        NSString *fileNamePathServer = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
-        
+        // *** IS ENCRYPTED ***
+        BOOL isEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
         
         // Manage uploadTask cancel,suspend,resume
         if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
@@ -1570,7 +1578,6 @@
     self = [super init];
     
     self.priority = NSOperationQueuePriorityNormal;
-    self.fileNameIdentifier = @"";
     
     return self;
 }
@@ -1601,7 +1608,6 @@
     [metadataNet setDirectory: self.directory];
     [metadataNet setDirectoryID: self.directoryID];
     [metadataNet setDirectoryIDTo: self.directoryIDTo];
-    [metadataNet setEncrypted: self.encrypted];
     [metadataNet setEncryptedMetadata: self.encryptedMetadata];
     [metadataNet setErrorCode: self.errorCode];
     [metadataNet setErrorRetry: self.errorRetry];
@@ -1609,7 +1615,6 @@
     [metadataNet setExpirationTime: self.expirationTime];
     [metadataNet setFileID: self.fileID];
     [metadataNet setFileName: self.fileName];
-    [metadataNet setFileNameIdentifier: self.fileNameIdentifier];
     [metadataNet setFileNameTo: self.fileNameTo];
     [metadataNet setKey: self.key];
     [metadataNet setKeyCipher: self.keyCipher];
