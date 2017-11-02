@@ -1058,7 +1058,6 @@
 
 - (void)uploadURLSession:(NSString *)fileName serverUrl:(NSString *)serverUrl sessionID:(NSString*)sessionID session:(NSString *)session taskStatus:(NSInteger)taskStatus assetLocalIdentifier:(NSString *)assetLocalIdentifier selector:(NSString *)selector
 {
-    NSURLSession *sessionUpload;
     NSURL *url;
     NSMutableURLRequest *request;
     PHAsset *asset;
@@ -1110,48 +1109,50 @@
         return;
     }
     
-    if ([session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
-    else if ([session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
-    else if ([session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 
-    NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameForUpload]]];
-    
-    // Error
-    if (uploadTask == nil) {
-        
-        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Upload task not available" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskNil] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-        
-        NSLog(@"[LOG] Upload file TaskIdentifier [error CCErrorTaskNil] - %@", fileName);
-        
-    } else {
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-        
-        // OOOOOOKKKK remove record on Table Auto Upload
-        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-        
+        NSURLSession *sessionUpload;
+
         // *** IS ENCRYPTED ***
         BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
         if (encrypted) {
             
             NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
-            
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-            
             NSError *error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
         }
-        
-        // Manage uploadTask cancel,suspend,resume
-        if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
-        else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
-        else if (taskStatus == k_taskStatusResume) [uploadTask resume];
-        
-        NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
-    }
+    
+        // NSURLSession
+        if ([session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
+        else if ([session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
+        else if ([session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
 
-    dispatch_async(dispatch_get_main_queue(), ^{
+        NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameForUpload]]];
+    
+        // Error
+        if (uploadTask == nil) {
+        
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Upload task not available" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        
+            [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:[NSString stringWithFormat:@"%@", @k_CCErrorTaskNil] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+        
+            NSLog(@"[LOG] Upload file TaskIdentifier [error CCErrorTaskNil] - %@", fileName);
+        
+        } else {
+        
+            [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+        
+            // OOOOOOKKKK remove record on Table Auto Upload
+            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+        
+            // Manage uploadTask cancel,suspend,resume
+            if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
+            else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
+            else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+        
+            NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
+        }
+
         // refresh main
         if ([self.delegate respondsToSelector:@selector(reloadDatasource:)])
             [self.delegate reloadDatasource:serverUrl];
@@ -1159,7 +1160,7 @@
 #ifndef EXTENSION
         [app updateApplicationIconBadgeNumber];
 #endif
-    });
+     });
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data

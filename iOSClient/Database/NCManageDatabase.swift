@@ -1063,7 +1063,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND tokenLock != nil AND tokenLock != ''", tableAccount.account, serverUrl).first else {
+        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND tokenLock != ''", tableAccount.account, serverUrl).first else {
             return nil
         }
         
