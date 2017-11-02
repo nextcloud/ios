@@ -1112,6 +1112,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 
         NSURLSession *sessionUpload;
+        NSError *error;
 
         // *** IS ENCRYPTED ***
         BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
@@ -1119,7 +1120,7 @@
             
             NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-            NSError *error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
+            error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
         }
     
         // NSURLSession
