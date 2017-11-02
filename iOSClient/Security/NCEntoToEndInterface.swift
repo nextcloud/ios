@@ -510,6 +510,16 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             let metadata = response.metadata
             let sharing = response.sharing
             
+            for metadataKeys in metadata.metadataKeys {
+                
+                let metadataKeysKey = metadataKeys.key
+                let metadataKeysValue = metadataKeys.value
+                
+                let metadataKeysValueDecoded : NSData = NSData(base64Encoded: metadataKeysValue, options: NSData.Base64DecodingOptions(rawValue: 0))!
+
+                let metadataKey = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeysValueDecoded as Data!, privateKey: privateKey)
+            }
+            
             for file in files {
                 
                 let fileNameIdentifier = file.key
@@ -518,6 +528,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 let iv = element.initializationVector
                 let tag = element.authenticationTag
                 let encrypted = element.encrypted
+                
                 
                 guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, privateKey: privateKey, initializationVector: iv, authenticationTag: tag) else {
                     
