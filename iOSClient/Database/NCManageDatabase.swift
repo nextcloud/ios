@@ -997,7 +997,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table e2e Encryption
     
-    @objc func adde2eEncryption(_ e2e: tableE2eEncryption) -> Bool {
+    @objc func addE2eEncryption(_ e2e: tableE2eEncryption) -> Bool {
 
         guard self.getAccountActive() != nil else {
             return false
@@ -1017,7 +1017,7 @@ class NCManageDatabase: NSObject {
         return true
     }
     
-    @objc func deletee2eEncryption(predicate: NSPredicate) {
+    @objc func deleteE2eEncryption(predicate: NSPredicate) {
         
         let realm = try! Realm()
         
@@ -1037,7 +1037,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func gete2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
+    @objc func getE2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
         
         guard self.getAccountActive() != nil else {
             return nil
@@ -1050,6 +1050,31 @@ class NCManageDatabase: NSObject {
         }
         
         return tableE2eEncryption.init(value: result)
+    }
+    
+    @objc func setE2eEncryptionTokenLock(fileName: String, token: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND fileName = %@", tableAccount.account, fileName).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        result.tokenLock = token
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
     }
     
     //MARK: -

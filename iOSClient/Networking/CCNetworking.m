@@ -828,10 +828,9 @@
                                 addObject.mimeType = @"application/octet-stream";
                             }
 
-                            addObject.serverUrl = metadataNet.serverUrl;
                             addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
                             
-                            result = [[NCManageDatabase sharedInstance] adde2eEncryption:addObject];
+                            result = [[NCManageDatabase sharedInstance] addE2eEncryption:addObject];
                         }                        
                     }
                     
