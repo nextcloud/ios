@@ -426,7 +426,6 @@ cleanup:
     
         if (privateKey) {
         
-            /*
             NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
             if (!encryptData)
                 return nil;
@@ -437,11 +436,7 @@ cleanup:
                 return privateKey;
             else
                 return nil;
-            */
             
-            return privateKey;
-
-                    
     } else {
         
         return nil;
