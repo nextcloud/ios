@@ -86,6 +86,10 @@
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
     
+    // Automatic Upload Folder
+    NSString *_autoUploadFileName;
+    NSString *_autoUploadDirectory;
+    
     BOOL _loadingFolder;
 }
 @end
@@ -3908,9 +3912,6 @@
         
         if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
-        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-        
         [actionSheet addButtonWithTitle:_metadata.fileName
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
                         backgroundColor:[NCBrandColor sharedInstance].tabBar
@@ -3932,7 +3933,7 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
@@ -3970,7 +3971,7 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
@@ -3983,7 +3984,7 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand]
@@ -4013,7 +4014,7 @@
                                     }];
         }
 
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] color:[NCBrandColor sharedInstance].brand]
@@ -4255,6 +4256,10 @@
         
             _sectionDataSource = [CCSectionDataSourceMetadata new];
             _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy activeAccount:app.activeAccount];
+            
+            // get auto upload folder
+            _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+            _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
         }
         
     } else {
@@ -4650,6 +4655,8 @@
             
             if (metadata.encrypted)
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brand];
+            else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand];
             else
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand];
             
