@@ -325,7 +325,7 @@
     NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
  
     // Update directory etag
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag];
+    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID];
     
     for (tableMetadata *metadata in metadatas) {
         

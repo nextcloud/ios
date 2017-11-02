@@ -765,7 +765,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?) {
+    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, fileID: String?) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -786,6 +786,9 @@ class NCManageDatabase: NSObject {
                 }
                 if let etag = etag {
                     result.etag = etag
+                }
+                if let fileID = fileID {
+                    result.fileID = fileID
                 }
             }
         } catch let error {

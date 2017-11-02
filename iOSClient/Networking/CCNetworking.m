@@ -898,6 +898,7 @@
             addObject.mimeType = @"application/octet-stream";
         }
         
+        addObject.serverUrl = metadataNet.serverUrl;
         addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
         
         result = [[NCManageDatabase sharedInstance] addE2eEncryption:addObject];
@@ -1122,6 +1123,10 @@
         
         // OOOOOOKKKK remove record on Table Auto Upload
         [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+        
+        // If
+        NSString *fileNamePathServer = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+        
         
         // Manage uploadTask cancel,suspend,resume
         if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
@@ -1563,18 +1568,20 @@
 - (id)init
 {
     self = [super init];
+    
     self.priority = NSOperationQueuePriorityNormal;
+    self.fileNameIdentifier = @"";
+    
     return self;
 }
 
 - (id)initWithAccount:(NSString *)withAccount
 {
-    self = [super init];
+    self = [self init];
     
     if (self) {
-        
+
         _account = withAccount;
-        _priority = NSOperationQueuePriorityNormal;
     }
     
     return self;

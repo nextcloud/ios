@@ -119,9 +119,10 @@ class tableE2eEncryption: Object {
     @objc dynamic var fileNameIdentifier = ""
     @objc dynamic var key = ""
     @objc dynamic var initializationVector = ""
-    @objc dynamic var tokenLock = ""
     @objc dynamic var metadataKey: Int = 0
     @objc dynamic var mimeType = ""
+    @objc dynamic var serverUrl = ""
+    @objc dynamic var tokenLock = ""
     @objc dynamic var version: Int = 0
     
     override static func primaryKey() -> String {
