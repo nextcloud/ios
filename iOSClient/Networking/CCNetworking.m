@@ -800,39 +800,8 @@
                 } else {
                     
                     // *** ENCRYPTED ***
-                    if (metadataNet.encrypted) {
-                        
-                        NSString *key;
-                        NSString *initializationVector;
-                        NSString *authenticationTag;
-                        
-                        result = [[NCEndToEndEncryption sharedManager] encryptFileName:metadataNet.fileName directoryUser: _directoryUser data:imageData key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag];
-                        
-                        // Write to DB
-                        if (result) {
-                            
-                            tableE2eEncryption *addObject = [tableE2eEncryption new];
-                            
-                            addObject.account = metadataNet.account;
-                            addObject.authenticationTag = authenticationTag;
-                            addObject.fileName = [CCUtility returnFileNamePathFromFileName:metadataNet.fileName serverUrl:metadataNet.serverUrl activeUrl:_activeUrl];
-                            addObject.fileNameIdentifier = metadataNet.fileNameIdentifier;
-                            addObject.key = key;
-                            addObject.initializationVector = initializationVector;
-                            
-                            CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[metadataNet.fileName pathExtension], NULL);
-                            CFStringRef mimeTypeRef = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
-                            if (mimeTypeRef) {
-                                addObject.mimeType = (__bridge NSString *)mimeTypeRef;
-                            } else {
-                                addObject.mimeType = @"application/octet-stream";
-                            }
-
-                            addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
-                            
-                            result = [[NCManageDatabase sharedInstance] addE2eEncryption:addObject];
-                        }                        
-                    }
+                    if (metadataNet.encrypted)
+                        [self newEndToEndFile:metadataNet data:imageData];
                     
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (result) {
@@ -899,6 +868,42 @@
             }];
         }
     }
+}
+
+- (BOOL)newEndToEndFile:(CCMetadataNet *)metadataNet data:(NSData *)data
+{
+    NSString *key;
+    NSString *initializationVector;
+    NSString *authenticationTag;
+    
+    BOOL result = [[NCEndToEndEncryption sharedManager] encryptFileName:metadataNet.fileName directoryUser: _directoryUser data:data key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag];
+    
+    // Write to DB
+    if (result) {
+        
+        tableE2eEncryption *addObject = [tableE2eEncryption new];
+        
+        addObject.account = metadataNet.account;
+        addObject.authenticationTag = authenticationTag;
+        addObject.fileName = [CCUtility returnFileNamePathFromFileName:metadataNet.fileName serverUrl:metadataNet.serverUrl activeUrl:_activeUrl];
+        addObject.fileNameIdentifier = metadataNet.fileNameIdentifier;
+        addObject.key = key;
+        addObject.initializationVector = initializationVector;
+        
+        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[metadataNet.fileName pathExtension], NULL);
+        CFStringRef mimeTypeRef = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+        if (mimeTypeRef) {
+            addObject.mimeType = (__bridge NSString *)mimeTypeRef;
+        } else {
+            addObject.mimeType = @"application/octet-stream";
+        }
+        
+        addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
+        
+        result = [[NCManageDatabase sharedInstance] addE2eEncryption:addObject];
+    }
+    
+    return result;
 }
 
 - (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
