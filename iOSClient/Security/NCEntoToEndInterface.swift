@@ -496,7 +496,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         return nil
     }
     
-     @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String) -> String? {
+    // let dataDecoded : NSData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0))!
+    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String) -> String? {
         
         let jsonDecoder = JSONDecoder.init()
         let data = e2eMetaDataJSON.data(using: .utf8)
@@ -511,24 +512,19 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             for file in files {
                 
-                let fileNameID = file.key
+                let fileNameIdentifier = file.key
                 let element = file.value as e2eMetadata.filesKey
                 
                 let iv = element.initializationVector
                 let tag = element.authenticationTag
-                //let encrypted = element.encrypted
+                let encrypted = element.encrypted
                 
-                let encrypted = "kyFWXpuA1qlb3fHLbZQSwmv3718oIe8qwE7spkqMVmYggWp5dzOcgDQbkicfnR/BzNQm28MtRKnQSk6UzNl8k5Ii/bxbu2Ki8zYMy5YUrF/WKxpV16icsqYafV56OAymtzWuwHhouO63oAGQF2B2uqGRPP1JbnhmKj8TA+72stmwgF01IpOUtKreieV2C9n815J9Nw=="
-                
-                let dataDecoded : NSData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0))!
-
-                
-                
-                
-                let x = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(dataDecoded as Data!, privateKey: privateKey)
-                
-                print(metadata)
-                
+                guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, privateKey: privateKey, initializationVector: iv, authenticationTag: tag) else {
+                    
+                    return nil
+                }
+            
+                print(decyptedMetadata)
             }
             
             print(response)
