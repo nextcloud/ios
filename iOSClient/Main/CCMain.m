@@ -2329,9 +2329,6 @@
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
     
-    //if (autoUploadDirectory) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-    //else  metadataNet.serverUrl = _serverUrl;
-    
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return;
     
@@ -3994,12 +3991,11 @@
                                     handler:^(AHKActionSheet *as) {
                                         
                                         // Settings new folder Automatatic upload
-                                        NSString *oldAutoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-                                        
                                         [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:_metadata.fileName];
                                         [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:app.activeUrl];
                                         
-                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:oldAutoUploadDirectory directoryID:nil];
+                                        // Clear data (old) Auto Upload
+                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:_autoUploadDirectory directoryID:nil];
                                         
                                         if (app.activeAccount.length > 0 && app.activePhotos)
                                             [app.activePhotos reloadDatasourceForced];
