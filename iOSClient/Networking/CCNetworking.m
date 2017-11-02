@@ -905,6 +905,7 @@
 
 - (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
+    NSString *fileNamePlain = fileName;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
     
@@ -935,10 +936,7 @@
     }
     
     // create Metadata
-    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
-    
-    __block tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName directory:_directoryUser activeAccount:_activeAccount autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    __block tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName fileNamePlain:fileNamePlain directory:_directoryUser activeAccount:_activeAccount];
     
     metadata.date = [NSDate new];
     metadata.fileID = uploadID;
@@ -988,7 +986,7 @@
                 [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataDelete.fileID]];
 
                 // -- Go to Upload --
-                [CCGraphics createNewImageFrom:metadata.fileName directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileName pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
+                [CCGraphics createNewImageFrom:fileNamePlain directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[fileNamePlain pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
                 
                 metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 
@@ -1014,9 +1012,8 @@
             
         // -- Go to upload --
             
-#ifndef EXTENSION
-        [CCGraphics createNewImageFrom:metadata.fileName directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileName pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
-#endif
+        [CCGraphics createNewImageFrom:fileNamePlain directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[fileNamePlain pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
+
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
         if (metadata) {

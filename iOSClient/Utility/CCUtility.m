@@ -935,11 +935,7 @@
     metadata.size = size;
     metadata.status = status;
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:directoryID];
-    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:serverUrl];
-    
-    [self insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    [self insertTypeFileIconName:fileName metadata:metadata];
     
     return metadata;
 }
@@ -965,21 +961,21 @@
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
     metadata.typeFile = @"";
     
-    [self insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    [self insertTypeFileIconName:fileName metadata:metadata];
     
     return metadata;
 }
 
-+ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory
++ (void)insertTypeFileIconName:(NSString *)fileName metadata:(tableMetadata *)metadata
 {
-    if ([metadata.fileName isEqualToString:@"."]) {
+    if ([fileName isEqualToString:@"."]) {
         
         metadata.typeFile = k_metadataTypeFile_unknown;
         metadata.iconName = @"file";
         
-    } else if (!metadata.directory) {
+    } else {
         
-        CFStringRef fileExtension = (__bridge CFStringRef)[metadata.fileName pathExtension];
+        CFStringRef fileExtension = (__bridge CFStringRef)[fileName pathExtension];
         CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
@@ -1013,7 +1009,6 @@
         }
         // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") [MD]
         else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
-            
             metadata.typeFile = k_metadataTypeFile_document;
             metadata.iconName = @"document";
             
@@ -1057,21 +1052,10 @@
         
         if (fileUTI)
             CFRelease(fileUTI);
-        
-    } else {
-        // icon directory
-        metadata.typeFile = k_metadataTypeFile_directory;
-        
-        metadata.iconName = @"folder";
-        
-        if([metadata.fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory])
-            metadata.iconName = @"folderphotocamera";
     }
-    
-    return metadata;
 }
 
-+ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory
++ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNamePlain:(NSString *)fileNamePlain directory:(NSString *)directory activeAccount:(NSString *)activeAccount
 {
     tableMetadata *metadata = [[tableMetadata alloc] init];
     
@@ -1092,7 +1076,7 @@
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
     
-    [self insertTypeFileIconName:metadata serverUrl:directory autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    [self insertTypeFileIconName:fileNamePlain metadata:metadata];
     
     return metadata;
 }

@@ -192,10 +192,9 @@
 
 + (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
 
++ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNamePlain:(NSString *)fileNamePlain directory:(NSString *)directory activeAccount:(NSString *)activeAccount;
 
-+ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
-
-+ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
++ (void)insertTypeFileIconName:(NSString *)fileName metadata:(tableMetadata *)metadata;
 
 // ===== Third parts =====
 
