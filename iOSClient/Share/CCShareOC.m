@@ -127,7 +127,7 @@
     } else {
         
         if (self.metadata.directory)
-            self.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:self.metadata.iconName] color:[NCBrandColor sharedInstance].brand];
+            self.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand];
         else
             self.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
 
