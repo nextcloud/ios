@@ -29,11 +29,6 @@
 
 + (instancetype)sharedManager;
 
-- (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directoryUser:(NSString *)directoryUser key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
-
-//- (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
-//- (NSString *)decryptMetadata:(NSString *)cipher key:(NSString *)key iv:(NSString *)iv tag:(NSString *)tag;
-
 - (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser;
 - (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
@@ -41,6 +36,9 @@
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey;
 - (NSString *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
+- (NSString *)decryptMetadata:(NSString *)encrypted privateKey:(NSString *)privateKey initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
+
+- (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directoryUser:(NSString *)directoryUser key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
 
 - (NSString *)createSHA512:(NSString *)string;
 

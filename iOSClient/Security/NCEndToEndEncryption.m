@@ -554,6 +554,27 @@ cleanup:
 }
 
 #
+#pragma mark - Encrypt / Decrypt Metadata
+#
+
+- (NSString *)decryptMetadata:(NSString *)encrypted privateKey:(NSString *)privateKey initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag
+{
+    NSMutableData *plainData;
+    
+    NSData *cipherData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *keyData = [privateKey dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *ivData = [initializationVector dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *tagData = [authenticationTag dataUsingEncoding:NSUTF8StringEncoding];
+
+    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
+    
+    if (plainData != nil && result)
+        return [[NSString alloc] initWithData:plainData encoding:NSUTF8StringEncoding];
+    else
+        return nil;
+}
+
+#
 #pragma mark - Encrypt / Decrypt file
 #
 
