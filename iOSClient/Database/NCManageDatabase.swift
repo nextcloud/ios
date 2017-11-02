@@ -1055,6 +1055,21 @@ class NCManageDatabase: NSObject {
         return tableE2eEncryption.init(value: result)
     }
     
+    @objc func getE2eEncryptionTokenLock(serverUrl: String) -> String? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND tokenLock != nil AND tokenLock != ''", tableAccount.account, serverUrl).first else {
+            return nil
+        }
+        
+        return result.tokenLock
+    }
+    
     @objc func setE2eEncryptionTokenLock(fileName: String, token: String) {
         
         guard let tableAccount = self.getAccountActive() else {

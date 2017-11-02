@@ -23,6 +23,7 @@
 
 #import "CCNetworking.h"
 #import "NCEndToEndEncryption.h"
+#import "NCNetworkingSync.h"
 #import "AppDelegate.h"
 #import "CCCertificate.h"
 #import "NSDate+ISO8601.h"
@@ -1061,6 +1062,7 @@
     NSURL *url;
     NSMutableURLRequest *request;
     PHAsset *asset;
+
     
     NSString *fileNamePath = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] encodeString:NSUTF8StringEncoding];
         
@@ -1131,7 +1133,15 @@
         [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
         
         // *** IS ENCRYPTED ***
-        BOOL isEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
+        BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
+        if (encrypted) {
+            
+            NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
+            
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+            
+            NSError *error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
+        }
         
         // Manage uploadTask cancel,suspend,resume
         if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
