@@ -116,7 +116,7 @@ class tableE2eEncryption: Object {
     @objc dynamic var account = ""
     @objc dynamic var authenticationTag = ""
     @objc dynamic var fileName = ""
-    @objc dynamic var fileNameEncrypted = ""
+    @objc dynamic var fileNameIdentifier = ""
     @objc dynamic var key = ""
     @objc dynamic var initializationVector = ""
     @objc dynamic var lock = ""
@@ -126,7 +126,7 @@ class tableE2eEncryption: Object {
     @objc dynamic var version: Int = 0
     
     override static func primaryKey() -> String {
-        return "fileNameEncrypted"
+        return "fileNameIdentifier"
     }
 }
 
@@ -241,7 +241,7 @@ class tableQueueUpload: Object {
     @objc dynamic var date = NSDate()
     @objc dynamic var encrypted: Bool = false
     @objc dynamic var fileName = ""
-    @objc dynamic var fileNameEncrypted = ""
+    @objc dynamic var fileNameIdentifier = ""
     @objc dynamic var lock: Bool = false
     @objc dynamic var priority: Int = 0
     @objc dynamic var selector = ""

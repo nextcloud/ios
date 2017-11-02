@@ -896,7 +896,7 @@
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------
 
-+ (NSString *)generateEncryptedFileName
++ (NSString *)generateRandomIdentifier
 {
     NSString *UUID = [[NSUUID UUID] UUIDString];
     

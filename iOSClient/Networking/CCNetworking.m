@@ -815,8 +815,8 @@
                             
                             addObject.account = metadataNet.account;
                             addObject.authenticationTag = authenticationTag;
-                            addObject.fileName = metadataNet.fileName;
-                            addObject.fileNameEncrypted = metadataNet.fileNameEncrypted;
+                            addObject.fileName = [CCUtility returnFileNamePathFromFileName:metadataNet.fileName serverUrl:metadataNet.serverUrl activeUrl:_activeUrl];
+                            addObject.fileNameIdentifier = metadataNet.fileNameIdentifier;
                             addObject.key = key;
                             addObject.initializationVector = initializationVector;
                             
@@ -1598,7 +1598,7 @@
     [metadataNet setExpirationTime: self.expirationTime];
     [metadataNet setFileID: self.fileID];
     [metadataNet setFileName: self.fileName];
-    [metadataNet setFileNameEncrypted: self.fileNameEncrypted];
+    [metadataNet setFileNameIdentifier: self.fileNameIdentifier];
     [metadataNet setFileNameTo: self.fileNameTo];
     [metadataNet setKey: self.key];
     [metadataNet setKeyCipher: self.keyCipher];

@@ -1918,7 +1918,7 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.encrypted = metadataNet.encrypted
                         addObject.fileName = metadataNet.fileName
-                        addObject.fileNameEncrypted = metadataNet.fileNameEncrypted
+                        addObject.fileNameIdentifier = metadataNet.fileNameIdentifier
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -1963,7 +1963,7 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.encrypted = metadataNet.encrypted
                         addObject.fileName = metadataNet.fileName
-                        addObject.fileNameEncrypted = metadataNet.fileNameEncrypted
+                        addObject.fileNameIdentifier = metadataNet.fileNameIdentifier
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -2004,7 +2004,7 @@ class NCManageDatabase: NSObject {
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
         metadataNet.encrypted = result.encrypted
         metadataNet.fileName = result.fileName
-        metadataNet.fileNameEncrypted = result.fileNameEncrypted
+        metadataNet.fileNameIdentifier = result.fileNameIdentifier
         metadataNet.priority = result.priority
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost

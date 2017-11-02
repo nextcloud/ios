@@ -109,7 +109,7 @@
 @property (nonatomic, strong) NSString *expirationTime;
 @property (nonatomic, strong) NSString *fileID;
 @property (nonatomic, strong) NSString *fileName;
-@property (nonatomic, strong) NSString *fileNameEncrypted;
+@property (nonatomic, strong) NSString *fileNameIdentifier;
 @property (nonatomic, strong) NSString *fileNameTo;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *keyCipher;

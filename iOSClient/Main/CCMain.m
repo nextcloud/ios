@@ -1647,7 +1647,7 @@
             metadataNet.encrypted = isEncrypted;
             metadataNet.fileName = fileName;
             if (isEncrypted)
-                metadataNet.fileNameEncrypted = [CCUtility generateEncryptedFileName];
+                metadataNet.fileNameIdentifier = [CCUtility generateRandomIdentifier];
             metadataNet.session = session;
             metadataNet.selector = selectorReadFileUploadFile;
             metadataNet.serverUrl = serverUrl;

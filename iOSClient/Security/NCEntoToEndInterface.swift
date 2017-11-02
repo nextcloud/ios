@@ -471,7 +471,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             
             let e2eMetadataFilesKey = e2eMetadata.filesKey(initializationVector: recordE2eEncryption.initializationVector, authenticationTag: recordE2eEncryption.authenticationTag, metadataKey: 0, encrypted: String(data: encryptedData, encoding: .utf8)!)
-            files.updateValue(e2eMetadataFilesKey, forKey: recordE2eEncryption.fileNameEncrypted)
+            files.updateValue(e2eMetadataFilesKey, forKey: recordE2eEncryption.fileNameIdentifier)
         }
         
         // Create "metadata"
