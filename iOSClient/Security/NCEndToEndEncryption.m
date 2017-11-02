@@ -812,7 +812,7 @@ cleanup:
     //Finalise the encryption
     EVP_DecryptFinal_ex(ctx,NULL, &pPlainLen);
     
-    // Free
+    // Free'
     EVP_CIPHER_CTX_free(ctx);
     
     return status; // OpenSSL uses 1 for success
