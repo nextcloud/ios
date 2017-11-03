@@ -515,10 +515,12 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             for metadataKeys in metadata.metadataKeys {
                 
                 guard let metadataKeysData : NSData = NSData(base64Encoded: metadataKeys.value, options: NSData.Base64DecodingOptions(rawValue: 0)) else {
+                    appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                     return nil
                 }
 
                 guard let metadataKey = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeysData as Data!, privateKey: privateKey) else {
+                    appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                     return nil
                 }
                 
@@ -538,7 +540,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 
                 guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, privateKey: key, initializationVector: iv, authenticationTag: tag) else {
-                    
+                    appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                     return nil
                 }
             
@@ -556,7 +558,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         return e2eMetaDataJSON
     }
-    
 }
 
 
