@@ -62,7 +62,6 @@ class NCManageDatabase: NSObject {
              /*
              
              11 : Add object tableE2eEncryption
-                  Add encrypted on tableQueueDownload, tableQueueUpload
 
              */
             

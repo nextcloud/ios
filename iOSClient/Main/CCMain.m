@@ -779,23 +779,14 @@
         
         NSString *serverUrl = [app getTabBarControllerActiveServerUrl];
         
-        BOOL isEncrypted = [CCUtility isFolderEncrypted:serverUrl account:app.activeAccount];
-
-        if (isEncrypted) {
+        CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:NO session:k_upload_session delegate:self];
+        form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
             
-            [self uploadFileAsset:assets serverUrl:serverUrl useSubFolder:NO session:k_upload_session];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
             
-        } else {
-            
-            CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:NO session:k_upload_session delegate:self];
-            form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
-            
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
-            
-            [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-            
-            [self presentViewController:navigationController animated:YES completion:nil];
-        }
+        [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+        
+        [self presentViewController:navigationController animated:YES completion:nil];
     }];
 }
 
@@ -1608,9 +1599,6 @@
     if ([autoUploadPath isEqualToString:serverUrl])
         if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
             return;
-    
-    // Is encrypted
-    BOOL isEncrypted = [CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount];
     
     NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);
     
