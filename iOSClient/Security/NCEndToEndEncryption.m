@@ -426,7 +426,6 @@ cleanup:
     
         if (privateKey) {
         
-            /*
             NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
             if (!encryptData)
                 return nil;
@@ -437,7 +436,6 @@ cleanup:
                 return privateKey;
             else
                 return nil;
-            */
             
             return privateKey;
             
@@ -479,6 +477,14 @@ cleanup:
         return nil;
     
     status = EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING);
+    if (status <= 0)
+        return nil;
+    
+    status = EVP_PKEY_CTX_set_rsa_oaep_md(ctx, EVP_sha256());
+    if (status <= 0)
+        return nil;
+    
+    status = EVP_PKEY_CTX_set_rsa_mgf1_md(ctx, EVP_sha256());
     if (status <= 0)
         return nil;
     
@@ -561,21 +567,23 @@ cleanup:
 {
     NSMutableData *plainData;
     
-    NSData *cipherData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
     NSData *keyData = [privateKey dataUsingEncoding:NSUTF8StringEncoding];
     NSData *ivData = [initializationVector dataUsingEncoding:NSUTF8StringEncoding];
     
-
+    // Tag
     NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
     authenticationTag = [encrypted substringWithRange:NSMakeRange(range.location - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
     NSData *tagData = [authenticationTag dataUsingEncoding:NSUTF8StringEncoding];
     
+    // Cipher
+    NSString *cipher = [encrypted substringToIndex:(range.location)];
+    NSData *cipherData = [cipher dataUsingEncoding:NSUTF8StringEncoding];
     
     BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
     
     if (plainData != nil && result) {
         NSString *plain = [plainData base64EncodedStringWithOptions:0];
-        return plain; //[[NSString alloc] initWithData:plainData encoding:NSUTF8StringEncoding];
+        return plain;
     } else {
         return nil;
     }
