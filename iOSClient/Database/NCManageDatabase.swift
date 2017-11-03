@@ -59,11 +59,8 @@ class NCManageDatabase: NSObject {
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
             schemaVersion: 11,
             
-             /*
-             
-             11 : Add object tableE2eEncryption
-
-             */
+            // 10 : Version 2.18.0
+            // 11 : Add object tableE2eEncryption
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
