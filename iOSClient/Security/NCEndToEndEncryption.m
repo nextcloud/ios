@@ -453,18 +453,21 @@ cleanup:
 - (NSString *)decryptMetadata:(NSString *)encrypted privateKey:(NSString *)privateKey initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag
 {
     NSMutableData *plainData;
-    
-    NSData *keyData = [privateKey dataUsingEncoding:NSUTF8StringEncoding];
-    NSData *ivData = [initializationVector dataUsingEncoding:NSUTF8StringEncoding];
+    NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
+
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:privateKey options:0];
+    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:initializationVector options:0];
     
     // Tag
-    NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
     authenticationTag = [encrypted substringWithRange:NSMakeRange(range.location - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
-    NSData *tagData = [authenticationTag dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:authenticationTag options:0];
     
     // Cipher
     NSString *cipher = [encrypted substringToIndex:(range.location)];
-    NSData *cipherData = [cipher dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *cipherData = [[NSData alloc] initWithBase64EncodedString:cipher options:0];
+        
+    //NSData *tagData = [[NSData alloc] initWithBase64EncodedString:authenticationTag options:0];
+    //NSData *cipherData = [[NSData alloc] initWithBase64EncodedString:encrypted options:0];
     
     BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
     

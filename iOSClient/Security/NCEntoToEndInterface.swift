@@ -510,7 +510,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             let metadata = response.metadata
             //let sharing = response.sharing
             
-            var planMetadataKeys = [String:String]()
+            var decodeMetadataKeys = [String:String]()
             
             for metadataKeys in metadata.metadataKeys {
                 
@@ -524,7 +524,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                     return nil
                 }
                 
-                planMetadataKeys[metadataKeys.key] = metadataKey
+                decodeMetadataKeys[metadataKeys.key] = metadataKey
             }
             
             for file in files {
@@ -536,8 +536,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 let tag = element.authenticationTag
                 let encrypted = element.encrypted
                 let metadataKeysKey = element.metadataKey
-                let key = planMetadataKeys["\(metadataKeysKey)"]
-                
+                let key = decodeMetadataKeys["\(metadataKeysKey)"]
                 
                 guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, privateKey: key, initializationVector: iv, authenticationTag: tag) else {
                     appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
