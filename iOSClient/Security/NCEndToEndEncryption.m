@@ -450,23 +450,20 @@ cleanup:
 #pragma mark - Encrypt / Decrypt Metadata
 #
 
-- (NSString *)decryptMetadata:(NSString *)encrypted Key:(NSString *)Key
+- (NSString *)decryptMetadata:(NSString *)encrypted key:(NSString *)key
 {
     NSMutableData *plainData;
     NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
-
-    // Key
-    NSData *keyData = [self base64DecodeString:Key];
     
     // Tag
     NSString *tag  = [encrypted substringWithRange:NSMakeRange(range.location + range.length, encrypted.length - (range.location + range.length))];
-    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
+    NSData *tagData = [self base64DecodeString:tag];
     
     // Cipher
     NSString *cipher = [encrypted substringToIndex:(range.location)];
-    NSData *cipherData = [[NSData alloc] initWithBase64EncodedString:cipher options:0];
+    NSData *cipherData = [self base64DecodeString:cipher];
     
-    BOOL result = [self decryptMetadataJ:cipherData keyData:keyData tagData:tagData];
+    BOOL result = [self decryptMetadataJ:cipherData key:key tagData:tagData];
     
     if (plainData != nil && result) {
         
@@ -561,16 +558,13 @@ cleanup:
 #pragma mark - Asymmetric Encrypt/Decrypt Metadata JSON
 #
 
-- (NSString *)decryptMetadataJ:(NSData *)metadataData keyData:(NSData *)keyData tagData:(NSData *)tagData
+- (NSString *)decryptMetadataJ:(NSData *)metadataData key:(NSString *)key tagData:(NSData *)tagData
 {
     int status = 0;
     int len = 0;
 
     // set up key
-    len = (int)keyData.length;
-    unsigned char cKey[len];
-    bzero(cKey, sizeof(cKey));
-    [keyData getBytes:cKey length:len];
+    unsigned char *cKey = (unsigned char *)[key UTF8String];
    
     // set up tag
     len = (int)[tagData length];;
