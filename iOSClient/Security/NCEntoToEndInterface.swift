@@ -538,7 +538,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 let metadataKeysKey = element.metadataKey
                 let key = decodeMetadataKeys["\(metadataKeysKey)"]
                 
-                guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, privateKey: key, initializationVector: iv, authenticationTag: tag) else {
+                guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: key) else {
                     appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                     return nil
                 }

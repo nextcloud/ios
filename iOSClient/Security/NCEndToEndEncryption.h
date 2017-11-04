@@ -36,7 +36,7 @@
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey;
 - (NSString *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
-- (NSString *)decryptMetadata:(NSString *)encrypted privateKey:(NSString *)privateKey initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
+- (NSString *)decryptMetadata:(NSString *)encrypted Key:(NSString *)Key;
 
 - (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directoryUser:(NSString *)directoryUser key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
 

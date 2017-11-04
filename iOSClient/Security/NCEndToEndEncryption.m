@@ -450,16 +450,16 @@ cleanup:
 #pragma mark - Encrypt / Decrypt Metadata
 #
 
-- (NSString *)decryptMetadata:(NSString *)encrypted privateKey:(NSString *)privateKey initializationVector:(NSString *)initializationVector
+- (NSString *)decryptMetadata:(NSString *)encrypted Key:(NSString *)Key
 {
     NSMutableData *plainData;
     NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
 
     // Key
-    NSData *keyData = [self base64DecodeString:privateKey];
+    NSData *keyData = [self base64DecodeString:Key];
     
     // Tag
-    NSString *tag  = [encrypted substringWithRange:NSMakeRange(range.location - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
+    NSString *tag  = [encrypted substringWithRange:NSMakeRange(range.location + range.length, encrypted.length - (range.location + range.length))];
     NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
     
     // Cipher
@@ -565,28 +565,19 @@ cleanup:
 {
     int status = 0;
     int len = 0;
-    NSData *printData;
 
     // set up key
     len = (int)keyData.length;
     unsigned char cKey[len];
     bzero(cKey, sizeof(cKey));
     [keyData getBytes:cKey length:len];
-    // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cKey length:len];
-    NSLog(@"Key %@", [printData base64EncodedStringWithOptions:0]);
-    // -----------------------
-    
+   
     // set up tag
     len = (int)[tagData length];;
     unsigned char cTag[len];
     bzero(cTag, sizeof(cTag));
     [tagData getBytes:cTag length:len];
-    // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cTag length:len];
-    NSLog(@"Tag %@", [printData base64EncodedStringWithOptions:0]);
-    // -----------------------
-    
+   
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     if (!ctx)
         return nil;
@@ -617,10 +608,8 @@ cleanup:
         return nil;
     
     int f_len = outLen;
-    status = EVP_DecryptFinal_ex(ctx,NULL, &f_len);
-    if (status <= 0)
-        return nil;
-    
+    EVP_DecryptFinal_ex(ctx,NULL, &f_len);
+  
     NSString *outString = [[NSString alloc] initWithBytes:out length:outLen encoding:NSUTF8StringEncoding];
     
     if (out)
