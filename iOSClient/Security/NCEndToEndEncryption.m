@@ -819,38 +819,25 @@ cleanup:
 {    
     int status = 0;
     int len = 0;
-    NSData *printData;
     
     // set up key
     len = keyLen;
     unsigned char cKey[len];
     bzero(cKey, sizeof(cKey));
     [keyData getBytes:cKey length:len];
-    // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cKey length:len];
-    NSLog(@"Key %@", [printData base64EncodedStringWithOptions:0]);
-    // -----------------------
     
     // set up ivec
     len = (int)[ivData length];
     unsigned char cIV[len];
     bzero(cIV, sizeof(cIV));
     [ivData getBytes:cIV length:len];
-    // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cIV length:len];
-    NSLog(@"IV %@", [printData base64EncodedStringWithOptions:0]);
-    // -----------------------
-    
+   
     // set up tag
     len = (int)[tagData length];;
     unsigned char cTag[len];
     bzero(cTag, sizeof(cTag));
     [tagData getBytes:cTag length:len];
-    // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cTag length:len];
-    NSLog(@"Tag %@", [printData base64EncodedStringWithOptions:0]);
-    // -----------------------
-    
+
     // Create and initialise the context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
     if (! ctx)
@@ -876,7 +863,7 @@ cleanup:
         return NO;
     
     // remove TAG JAVA compatibility
-    cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - 16)];
+    cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - AES_GCM_TAG_LENGTH)];
     // -----------------------------
     
     // Provide the message to be decrypted, and obtain the plaintext output
