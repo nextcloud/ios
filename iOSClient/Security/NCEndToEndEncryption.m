@@ -785,17 +785,17 @@ cleanup:
     if (status <= 0)
         return NO;
     
-    //Finalise the encryption
+    // Finalise the encryption
     len = cCipherLen;
     status = EVP_EncryptFinal_ex(ctx, cCipher+cCipherLen, &len);
     if (status <= 0)
         return NO;
     
-    //Get the tag
+    // Get the tag
     status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, (int)sizeof(cTag), cTag);
     *tagData = [NSData dataWithBytes:cTag length:sizeof(cTag)];
     
-    // add TAG JAVA compatibility
+    // Add TAG JAVA compatibility
     [*cipherData appendData:*tagData];
     // --------------------------
     
@@ -853,7 +853,7 @@ cleanup:
     if (status <= 0)
         return NO;
     
-    // remove TAG JAVA compatibility
+    // Remove TAG JAVA compatibility
     cipherData = [cipherData subdataWithRange:NSMakeRange(0, cipherData.length - AES_GCM_TAG_LENGTH)];
     // -----------------------------
     
@@ -870,7 +870,7 @@ cleanup:
     if (status <= 0)
         return NO;
     
-    //Finalise the encryption
+    // Finalise the encryption
     EVP_DecryptFinal_ex(ctx,NULL, &cPlainLen);
     
     // Free
