@@ -760,9 +760,9 @@ cleanup:
     
     // Initialise the encryption operation
     if (keyLen == AES_KEY_128_LENGTH)
-        status = EVP_EncryptInit_ex (ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
+        status = EVP_EncryptInit_ex(ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
     else if (keyLen == AES_KEY_256_LENGTH)
-        status = EVP_EncryptInit_ex (ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
+        status = EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL);
     
     if (status <= 0)
         return NO;
@@ -792,7 +792,7 @@ cleanup:
         return NO;
     
     //Get the tag
-    status = EVP_CIPHER_CTX_ctrl (ctx, EVP_CTRL_GCM_GET_TAG, (int)sizeof(cTag), cTag);
+    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, (int)sizeof(cTag), cTag);
     *tagData = [NSData dataWithBytes:cTag length:sizeof(cTag)];
     
     // add TAG JAVA compatibility
@@ -831,7 +831,7 @@ cleanup:
 
     // Create and initialise the context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (! ctx)
+    if (!ctx)
         return NO;
     
     // Initialise the decryption operation
@@ -871,7 +871,7 @@ cleanup:
         return NO;
     
     //Finalise the encryption
-    EVP_DecryptFinal_ex(ctx,NULL, &pPlainLen);
+    int err = EVP_DecryptFinal_ex(ctx,NULL, &pPlainLen);
     
     // Free
     EVP_CIPHER_CTX_free(ctx);
