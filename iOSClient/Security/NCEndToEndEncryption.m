@@ -735,27 +735,18 @@ cleanup:
 {
     int status = 0;
     int len = 0;
-    NSData *printData;
     
     // set up key
     len = keyLen;
     unsigned char cKey[len];
     bzero(cKey, sizeof(cKey));
     [keyData getBytes:cKey length:len];
-    // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cKey length:len];
-    NSLog(@"Key %@", [printData base64EncodedStringWithOptions:0]);
-    // -----------------------
 
     // set up ivec
     len = AES_IVEC_LENGTH;
     unsigned char cIV[len];
     bzero(cIV, sizeof(cIV));
     [ivData getBytes:cIV length:len];
-    // ----- DEBUG Print -----
-    printData = [NSData dataWithBytes:cIV length:len];
-    NSLog(@"IV %@", [printData base64EncodedStringWithOptions:0]);
-    // -----------------------
     
     // set up tag
     len = AES_GCM_TAG_LENGTH;
