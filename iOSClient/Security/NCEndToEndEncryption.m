@@ -871,7 +871,7 @@ cleanup:
         return NO;
     
     //Finalise the encryption
-    int err = EVP_DecryptFinal_ex(ctx,NULL, &pPlainLen);
+    EVP_DecryptFinal_ex(ctx,NULL, &pPlainLen);
     
     // Free
     EVP_CIPHER_CTX_free(ctx);
