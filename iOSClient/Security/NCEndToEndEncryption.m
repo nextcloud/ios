@@ -755,7 +755,7 @@ cleanup:
     
     // Create and initialise the context
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (! ctx)
+    if (!ctx)
         return NO;
     
     // Initialise the encryption operation
@@ -779,15 +779,15 @@ cleanup:
     
     // Provide the message to be encrypted, and obtain the encrypted output
     *cipherData = [NSMutableData dataWithLength:[plainData length]];
-    unsigned char * ctBytes = [*cipherData mutableBytes];
-    int pCipherLen = 0;
-    status = EVP_EncryptUpdate(ctx, ctBytes, &pCipherLen, [plainData bytes], (int)[plainData length]);
+    unsigned char * cCipher = [*cipherData mutableBytes];
+    int cCipherLen = 0;
+    status = EVP_EncryptUpdate(ctx, cCipher, &cCipherLen, [plainData bytes], (int)[plainData length]);
     if (status <= 0)
         return NO;
     
     //Finalise the encryption
-    len = pCipherLen;
-    status = EVP_EncryptFinal_ex(ctx, ctBytes+pCipherLen, &len);
+    len = cCipherLen;
+    status = EVP_EncryptFinal_ex(ctx, cCipher+cCipherLen, &len);
     if (status <= 0)
         return NO;
     
@@ -859,9 +859,9 @@ cleanup:
     
     // Provide the message to be decrypted, and obtain the plaintext output
     *plainData = [NSMutableData dataWithLength:([cipherData length])];
-    int pPlainLen = 0;
-    unsigned char * pPlain = [*plainData mutableBytes];
-    status = EVP_DecryptUpdate(ctx, pPlain, &pPlainLen, [cipherData bytes], (int)([cipherData length]));
+    int cPlainLen = 0;
+    unsigned char * cPlain = [*plainData mutableBytes];
+    status = EVP_DecryptUpdate(ctx, cPlain, &cPlainLen, [cipherData bytes], (int)([cipherData length]));
     if (status <= 0)
         return NO;
     
@@ -871,7 +871,7 @@ cleanup:
         return NO;
     
     //Finalise the encryption
-    EVP_DecryptFinal_ex(ctx,NULL, &pPlainLen);
+    EVP_DecryptFinal_ex(ctx,NULL, &cPlainLen);
     
     // Free
     EVP_CIPHER_CTX_free(ctx);
