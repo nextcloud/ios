@@ -457,11 +457,11 @@ cleanup:
     
     // Tag
     NSString *tag  = [encrypted substringWithRange:NSMakeRange(range.location + range.length, encrypted.length - (range.location + range.length))];
-    NSData *tagData = [self base64DecodeString:tag];
-    
+    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
+
     // Cipher
     NSString *cipher = [encrypted substringToIndex:(range.location)];
-    NSData *cipherData = [self base64DecodeString:cipher];
+    NSData *cipherData = [[NSData alloc] initWithBase64EncodedString:cipher options:0];
     
     BOOL result = [self decryptMetadataJ:cipherData key:key tagData:tagData];
     
@@ -604,6 +604,8 @@ cleanup:
     int f_len = outLen;
     EVP_DecryptFinal_ex(ctx,NULL, &f_len);
   
+    NSData *outData = [[NSData alloc] initWithBytes:out length:outLen];
+    NSString *x = [self base64DecodeData:outData];
     NSString *outString = [[NSString alloc] initWithBytes:out length:outLen encoding:NSUTF8StringEncoding];
     
     if (out)
