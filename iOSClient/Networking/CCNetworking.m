@@ -756,118 +756,115 @@
         return;
     }
     
-    @synchronized (self) {
+    PHAsset *assetResult = result[0];
+    PHAssetMediaType assetMediaType = assetResult.mediaType;
     
-        PHAsset *assetResult = result[0];
-        PHAssetMediaType assetMediaType = assetResult.mediaType;
-    
-        // IMAGE
-        if (assetMediaType == PHAssetMediaTypeImage) {
+    // IMAGE
+    if (assetMediaType == PHAssetMediaTypeImage) {
         
-            __block PHAsset *asset = result[0];
+        __block PHAsset *asset = result[0];
             
-            PHImageRequestOptions *options = [PHImageRequestOptions new];
-            options.networkAccessAllowed = YES; // iCloud
+        PHImageRequestOptions *options = [PHImageRequestOptions new];
+        options.networkAccessAllowed = YES; // iCloud
             
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+        [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
-                tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-                BOOL result = YES;
-                NSError *error = nil;
+            tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+            BOOL result = YES;
+            NSError *error = nil;
 
-                if ([dataUTI isEqualToString:@"public.heic"] && tableAccount.autoUploadFormatCompatibility) {
+            if ([dataUTI isEqualToString:@"public.heic"] && tableAccount.autoUploadFormatCompatibility) {
                     
-                    UIImage *image = [UIImage imageWithData:imageData];
-                    imageData = UIImageJPEGRepresentation(image, 1.0);
-                    NSString *fileNameJPEG = [[metadataNet.fileName lastPathComponent] stringByDeletingPathExtension];
-                    metadataNet.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
+                UIImage *image = [UIImage imageWithData:imageData];
+                imageData = UIImageJPEGRepresentation(image, 1.0);
+                NSString *fileNameJPEG = [[metadataNet.fileName lastPathComponent] stringByDeletingPathExtension];
+                metadataNet.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     
-                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                     
-                } else {
+            } else {
                     
-                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
-                }
+                [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+            }
                 
-                if (error) {
+            if (error) {
                 
-                    dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                        [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
+                });
+                
+            } else {
+                    
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (result) {
+                        // OOOOOK
+                        [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                    } else {
+                        // ERROR
                         if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                            [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
-                    });
-                
-                } else {
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (result) {
-                            // OOOOOK
-                            [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
-                        } else {
-                            // ERROR
-                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
                                 [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Image request encrypted failed [%@]", error.description] errorCode:error.code];
-                        }
-                    });
-                }
-            }];
-        }
+                    }
+                });
+            }
+        }];
+    }
     
-        // VIDEO
-        if (assetMediaType == PHAssetMediaTypeVideo) {
+    // VIDEO
+    if (assetMediaType == PHAssetMediaTypeVideo) {
         
-            __block PHAsset *asset = result[0];
+        __block PHAsset *asset = result[0];
         
-            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-            options.networkAccessAllowed = YES; // iCloud
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.networkAccessAllowed = YES; // iCloud
             
-            [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
+        [[PHImageManager defaultManager] requestPlayerItemForVideo:asset options:options resultHandler:^(AVPlayerItem * _Nullable playerItem, NSDictionary * _Nullable info) {
                 
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]])
-                    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] error:nil];
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]])
+                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] error:nil];
                 
-                AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
+            AVAssetExportSession *exportSession = [[AVAssetExportSession alloc] initWithAsset:playerItem.asset presetName:AVAssetExportPresetHighestQuality];
                 
-                if (exportSession) {
+            if (exportSession) {
                     
-                    exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]];
-                    exportSession.outputFileType = AVFileTypeQuickTimeMovie;
+                exportSession.outputURL = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]];
+                exportSession.outputFileType = AVFileTypeQuickTimeMovie;
                     
-                    [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                [exportSession exportAsynchronouslyWithCompletionHandler:^{
                         
-                        if (AVAssetExportSessionStatusCompleted == exportSession.status) {
+                    if (AVAssetExportSessionStatusCompleted == exportSession.status) {
                             
-                            // OOOOOOK
-                            dispatch_async(dispatch_get_main_queue(), ^{
+                        // OOOOOOK
+                        dispatch_async(dispatch_get_main_queue(), ^{
                                 
-                                // Verify lenth of export file
-                                unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] error:nil] fileSize];
+                            // Verify lenth of export file
+                            unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] error:nil] fileSize];
                                 
-                                if (fileSize > 0) {
-                                    [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
-                                } else {
-                                    if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                        [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:@"Video export failed" errorCode:0];
-                                }
-                            });
-                            
-                        } else  {
-                        
-                            dispatch_async(dispatch_get_main_queue(), ^{
+                            if (fileSize > 0) {
+                                [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                            } else {
                                 if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
-                            });
-                        }
-                    }];
+                                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:@"Video export failed" errorCode:0];
+                            }
+                        });
+                            
+                    } else  {
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video export failed [%@]", exportSession.error.description] errorCode:exportSession.error.code];
+                        });
+                    }
+                }];
                     
-                } else {
+            } else {
                 
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                            [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:@"Create Video session failed [Internal error]" errorCode:k_CCErrorInternalError];
-                    });
-                }
-            }];
-        }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                        [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:@"Create Video session failed [Internal error]" errorCode:k_CCErrorInternalError];
+                });
+            }
+        }];
     }
 }
 
