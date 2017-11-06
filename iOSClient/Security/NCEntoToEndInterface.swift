@@ -524,7 +524,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                     return nil
                 }
                 
-                decodeMetadataKeys[metadataKeys.key] = metadataKey
+                // Encode to Base64
+                let metadataKeyData = Data(base64Encoded: metadataKey, options: NSData.Base64DecodingOptions(rawValue: 0))!
+                let metadataKeyBase64 = String(data: metadataKeyData, encoding: .utf8)
+
+                decodeMetadataKeys[metadataKeys.key] = metadataKeyBase64
             }
             
             for file in files {
