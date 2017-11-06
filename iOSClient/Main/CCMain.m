@@ -525,7 +525,7 @@
 {
     _refreshControl = [UIRefreshControl new];
     
-    if (@available(iOS 11.0, *)) {
+    if (@available(iOS 11, *)) {
         [self.tableView setRefreshControl:_refreshControl];
         _refreshControl.tintColor = [UIColor whiteColor];
     } else {
