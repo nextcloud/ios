@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# [Nextcloud](https://nextcloud.com)  iOS app V 2.18.0
-=======
 # [Nextcloud](https://nextcloud.com)  iOS app V 2.18.1
->>>>>>> develop
 
 [<img src="Animation.gif"
 alt="Download from App Storey"
