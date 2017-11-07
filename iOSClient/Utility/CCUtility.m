@@ -686,9 +686,9 @@
             fileName = [fileName stringByReplacingOccurrencesOfString:@"ampm" withString:ampm];
 
             if (addFileNameType)
-                fileName = [NSString stringWithFormat:@"%@ %@-%@.%@", fileNameType, fileName, numberFileName, fileNameExt];
+                fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileName, numberFileName, fileNameExt];
             else
-                fileName = [NSString stringWithFormat:@"%@-%@.%@", fileName, numberFileName, fileNameExt];
+                fileName = [NSString stringWithFormat:@"%@ %@.%@", fileName, numberFileName, fileNameExt];
             
         } else {
             
