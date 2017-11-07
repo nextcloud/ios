@@ -27,6 +27,40 @@
 #pragma mark ============================
 #pragma --------------------------------------------------------------------------------------------
 
+- (NSError *)uploadFile:(NSString *)localFilePathName remoteFilePathName:(NSString *)remoteFilePathName user:(NSString *)user userID:(NSString *)userID password:(NSString *)password
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    __block NSError *returnError = nil;
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+    [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication uploadFileSession:localFilePathName toDestiny:remoteFilePathName onCommunication:communication progress:^(NSProgress *progress) {
+        // Progress
+    } successRequest:^(NSURLResponse *response, NSString *redirectedServer) {
+        
+        dispatch_semaphore_signal(semaphore);
+        
+    } failureRequest:^(NSURLResponse *response, NSString *redirectedServer, NSError *error) {
+        
+        returnError = error;
+        dispatch_semaphore_signal(semaphore);
+
+    } failureBeforeRequest:^(NSError *error) {
+        
+        returnError = error;
+        dispatch_semaphore_signal(semaphore);
+
+    }];
+     
+     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
+     
+     return returnError;
+}
+
 - (NSError *)checkServer:(NSString *)serverUrl user:(NSString *)user userID:(NSString *)userID password:(NSString *)password
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
