@@ -57,7 +57,10 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 10,
+            schemaVersion: 11,
+            
+            // 10 : Version 2.18.0
+            // 11 : Add object tableE2eEncryption
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -289,7 +292,7 @@ class NCManageDatabase: NSObject {
         return folderPhotos
     }
     
-    @objc func setAccountActive(_ account: String) -> tableAccount {
+    @objc func setAccountActive(_ account: String) -> tableAccount? {
         
         let realm = try! Realm()
         
@@ -314,7 +317,8 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
+            return nil
         }
         
         return activeAccount
@@ -341,7 +345,7 @@ class NCManageDatabase: NSObject {
                 print("[LOG] Could not write to database: ", error)
             }
         } else {
-            print("property not found")
+            print("[LOG] property not found")
         }
     }
     
@@ -365,7 +369,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
 
@@ -389,7 +393,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -430,7 +434,7 @@ class NCManageDatabase: NSObject {
                 result.quotaUsed = userProfile.quotaUsed
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -572,7 +576,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -602,6 +606,21 @@ class NCManageDatabase: NSObject {
         return result.versionMajor
     }
 
+    @objc func getEndToEndEncryptionVersion() -> Float {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return 0
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
+            return 0
+        }
+        
+        return Float(result.endToEndEncryptionVersion)!
+    }
+    
     @objc func compareServerVersion(_ versionCompare: String) -> Int {
         
         guard let tableAccount = self.getAccountActive() else {
@@ -652,7 +671,7 @@ class NCManageDatabase: NSObject {
                 realm.add(addObject)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -662,7 +681,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableCertificates.self)
     
-        return Array(results.map { "\(localCertificatesFolder)\($0.certificateLocation)" })
+        return Array(results.map { "\(localCertificatesFolder)/\($0.certificateLocation)" })
     }
     
     //MARK: -
@@ -707,7 +726,8 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
+            return ""
         }
         
         return directoryID
@@ -737,11 +757,11 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
-    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?) {
+    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, fileID: String?) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -763,9 +783,12 @@ class NCManageDatabase: NSObject {
                 if let etag = etag {
                     result.etag = etag
                 }
+                if let fileID = fileID {
+                    result.fileID = fileID
+                }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -799,7 +822,7 @@ class NCManageDatabase: NSObject {
                 realm.add(result, update: true)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -915,7 +938,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -941,7 +964,7 @@ class NCManageDatabase: NSObject {
                 update = true
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
             return false
         }
         
@@ -966,10 +989,108 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
 
+    //MARK: -
+    //MARK: Table e2e Encryption
+    
+    @objc func addE2eEncryption(_ e2e: tableE2eEncryption) -> Bool {
+
+        guard self.getAccountActive() != nil else {
+            return false
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                realm.add(e2e, update: true)
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return false
+        }
+        
+        return true
+    }
+    
+    @objc func deleteE2eEncryption(predicate: NSPredicate) {
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        realm.delete(result)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func getE2eEncryption(predicate: NSPredicate) -> tableE2eEncryption? {
+        
+        guard self.getAccountActive() != nil else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).first else {
+            return nil
+        }
+        
+        return tableE2eEncryption.init(value: result)
+    }
+    
+    @objc func getE2eEncryptionTokenLock(serverUrl: String) -> String? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND tokenLock != ''", tableAccount.account, serverUrl).first else {
+            return nil
+        }
+        
+        return result.tokenLock
+    }
+    
+    @objc func setE2eEncryptionTokenLock(fileName: String, token: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND fileName = %@", tableAccount.account, fileName).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        result.tokenLock = token
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
+    }
+    
     //MARK: -
     //MARK: Table External Sites
     
@@ -997,7 +1118,7 @@ class NCManageDatabase: NSObject {
                 realm.add(addObject)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
 
@@ -1017,7 +1138,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -1106,7 +1227,7 @@ class NCManageDatabase: NSObject {
                 realm.add(addObject, update: true)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -1126,7 +1247,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -1163,7 +1284,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -1203,7 +1324,8 @@ class NCManageDatabase: NSObject {
                 realm.add(metadata, update: true)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
+            return nil
         }
         
         self.setDateReadDirectory(directoryID: directoryID)
@@ -1226,7 +1348,8 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
+            return nil
         }
         
         if let serverUrl = serverUrl {
@@ -1266,6 +1389,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return
         }
         
         for directoryID in directoriesID {
@@ -1291,7 +1415,8 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
+            return
         }
         
         self.setDateReadDirectory(directoryID: directoryID)
@@ -1309,7 +1434,7 @@ class NCManageDatabase: NSObject {
                 realm.add(metadata, update: true)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
             return nil
         }
         
@@ -1355,6 +1480,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return
         }
         
         if let directoryID = directoryID {
@@ -1386,6 +1512,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return
         }
         
         if let directoryID = directoryID {
@@ -1417,6 +1544,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return
         }
         
         if let directoryID = directoryID {
@@ -1609,7 +1737,7 @@ class NCManageDatabase: NSObject {
                     }
                 }
             } catch let error {
-                print("Could not write to database: ", error)
+                print("[LOG] Could not write to database: ", error)
                 return false
             }
         }
@@ -1659,7 +1787,8 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Queue Download
     
-    @objc func addQueueDownload(fileID: String, selector: String, selectorPost: String?, serverUrl: String, session: String) -> Bool {
+    /*
+    @objc func addQueueDownload(fileID: String, encrypted: Bool, selector: String, selectorPost: String?, serverUrl: String, session: String) -> Bool {
         
         guard let tableAccount = self.getAccountActive() else {
             return false
@@ -1681,6 +1810,7 @@ class NCManageDatabase: NSObject {
                     let addObject = tableQueueDownload()
                         
                     addObject.account = tableAccount.account
+                    addObject.encrypted = encrypted
                     addObject.fileID = fileID
                     addObject.selector = selector
                         
@@ -1701,6 +1831,7 @@ class NCManageDatabase: NSObject {
         
         return true
     }
+    */
     
     @objc func addQueueDownload(metadatasNet: [CCMetadataNet]) {
         
@@ -1754,6 +1885,7 @@ class NCManageDatabase: NSObject {
         
         let metadataNet = CCMetadataNet()
         
+        metadataNet.account = result.account
         metadataNet.fileID = result.fileID
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost
@@ -1901,6 +2033,7 @@ class NCManageDatabase: NSObject {
         
         let metadataNet = CCMetadataNet()
         
+        metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
         metadataNet.fileName = result.fileName
         metadataNet.priority = result.priority
@@ -2024,7 +2157,7 @@ class NCManageDatabase: NSObject {
                 }
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     
@@ -2123,6 +2256,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return nil
         }
         
         return ["\(serverUrl)\(fileName)" : share]
@@ -2181,6 +2315,7 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+            return nil
         }
 
         return [sharesLink, sharesUserAndGroup]
@@ -2202,7 +2337,7 @@ class NCManageDatabase: NSObject {
                 realm.delete(results)
             }
         } catch let error {
-            print("Could not write to database: ", error)
+            print("[LOG] Could not write to database: ", error)
         }
     }
     

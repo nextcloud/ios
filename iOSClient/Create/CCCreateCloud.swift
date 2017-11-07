@@ -380,7 +380,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         case 3:
             return "    " + NSLocalizedString("_rename_filename_", comment: "")
         case 4:
-            return NSLocalizedString("_preview_filename_", comment: "")
+            return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm")
         default:
             return ""
         }
@@ -473,7 +473,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
         }
         
-        return NSLocalizedString("_preview_filename_", comment: "") + ":" + "\n\n" + returnString
+        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm") + ":" + "\n\n" + returnString
     }
     
     @objc func changeDestinationFolder(_ sender: XLFormRowDescriptor) {

@@ -25,6 +25,7 @@
 #import "AppDelegate.h"
 #import "CCUtility.h"
 #import "NCBridgeSwift.h"
+#import "NCNetworkingSync.h"
 
 @interface CCLogin ()
 {
@@ -47,21 +48,22 @@
     
     if ([NCBrandOptions sharedInstance].disable_linkLoginProvider) {
         self.bottomLabel.hidden = YES;
+    } else {
+    
+        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
+        
+            // Portrait
+            self.bottomLabel.hidden = NO;
+        
+        } else {
+        
+            // Landscape
+            self.bottomLabel.hidden = YES;
+        }
     }
-
+    
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tabBottomLabel)];
     [self.bottomLabel addGestureRecognizer:tapGesture];
-    
-    if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
-        
-        // Portrait
-        self.bottomLabel.hidden = NO;
-        
-    } else {
-        
-        // Landscape
-        self.bottomLabel.hidden = YES;
-    }
     
     self.annulla.tintColor = [NCBrandColor sharedInstance].customer;
     
@@ -148,15 +150,18 @@
 {
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
-        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
+        if (![NCBrandOptions sharedInstance].disable_linkLoginProvider) {
+        
+            if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
             
-            // Portrait
-            self.bottomLabel.hidden = NO;
+                // Portrait
+                self.bottomLabel.hidden = NO;
             
-        } else {
+            } else {
             
-            // Landscape
-            self.bottomLabel.hidden = YES;
+                // Landscape
+                self.bottomLabel.hidden = YES;
+            }
         }
     }];
     
@@ -255,9 +260,8 @@
     if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    OCnetworking *ocNet = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:nil];
-    NSError *error = [ocNet checkServerSync:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV]];
-    
+    NSError *error = [[NCNetworkingSync sharedManager] checkServer:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV] user:self.user.text userID:self.user.text password:self.password.text];
+
     if (!error) {
         
         // account
@@ -353,17 +357,19 @@
         
         // Set this account as default
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
+        if (account) {
         
-        // Setting App active account
-        [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
+            // Setting App active account
+            [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
     
-        // Ok ! Dismiss
-        if ([self.delegate respondsToSelector:@selector(loginSuccess:)])        
-            [self.delegate loginSuccess:_loginType];
+            // Ok ! Dismiss
+            if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
+                [self.delegate loginSuccess:_loginType];
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self dismissViewControllerAnimated:YES completion:nil];
-        });
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self dismissViewControllerAnimated:YES completion:nil];
+            });
+        }
     }
 }
 

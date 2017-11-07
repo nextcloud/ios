@@ -54,7 +54,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
-        if #available(iOS 11.0, *) {
+        if #available(iOS 11, *) {
             //tableView.contentInsetAdjustmentBehavior = .never
         }
         

@@ -2382,16 +2382,16 @@
     }];
 }
 
-- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/encrypted/%@", serverPath, fileID];
+    serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileID];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request unlockEndToEndFolderEncrypted:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request unlockEndToEndFolderEncrypted:serverPath token:token onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         //Return success
         successRequest(response, request.redirectedServer);
@@ -2489,9 +2489,9 @@
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                if ([data valueForKey:@"encrypted-meta-data"] && ![[data valueForKey:@"encrypted-meta-data"] isKindOfClass:[NSNull class]]) {
+                if ([data valueForKey:@"meta-data"] && ![[data valueForKey:@"meta-data"] isKindOfClass:[NSNull class]]) {
                     
-                    encryptedMetadata = [data valueForKey:@"encrypted-meta-data"];
+                    encryptedMetadata = [data valueForKey:@"meta-data"];
                 }
                 
             } else {
@@ -2546,9 +2546,9 @@
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                if ([data valueForKey:@"encrypted-meta-data"] && ![[data valueForKey:@"encrypted-meta-data"] isKindOfClass:[NSNull class]]) {
+                if ([data valueForKey:@"meta-data"] && ![[data valueForKey:@"meta-data"] isKindOfClass:[NSNull class]]) {
                     
-                    encryptedMetadata = [data valueForKey:@"encrypted-meta-data"];
+                    encryptedMetadata = [data valueForKey:@"meta-data"];
                 }
                 
             } else {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13526" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="4IE-mo-rkp">
     <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13527"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -579,22 +579,6 @@
             </objects>
             <point key="canvasLocation" x="5857" y="1218"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="60G-IQ-Axc">
-            <objects>
-                <viewController id="5u0-hQ-Qcc" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="vDQ-hO-q2d">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <viewLayoutGuide key="safeArea" id="U4L-Xb-r91"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="DJa-X9-gd4"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="rff-dP-xgt" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="7934" y="1218"/>
-        </scene>
         <!--Photos-->
         <scene sceneID="IuY-Iu-oAm">
             <objects>
@@ -617,7 +601,7 @@
         <!--Navigation Controller-->
         <scene sceneID="cip-AF-Ks2">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Cc7-4O-z6Q" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" enabled="NO" title="" image="tabBarPlus" id="vIy-cM-ojV"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="jCU-so-Np6">
@@ -625,9 +609,6 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
-                    <connections>
-                        <segue destination="5u0-hQ-Qcc" kind="relationship" relationship="rootViewController" id="XaQ-dk-iGO"/>
-                    </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ohd-Sv-ssv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -636,7 +617,7 @@
         <!--More-->
         <scene sceneID="4RE-f1-SKU">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="1Z8-Bx-Dqo" sceneMemberID="viewController">
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="1Z8-Bx-Dqo" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="More" image="tabBarMore" id="U4f-qS-cgh"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="yVo-p8-ApS">

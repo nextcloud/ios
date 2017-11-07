@@ -43,7 +43,6 @@
 @property (nonatomic, assign) BOOL isFinished;
 
 - (NSError *)readFileSync:(NSString *)filePathName;
-- (NSError *)checkServerSync:(NSString *)serverUrl;
 - (BOOL)automaticCreateFolderSync:(NSString *)folderPathName;
 
 @end
@@ -141,18 +140,6 @@
 
 - (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet;
 - (void)getEndToEndServerPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-- (void)markEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
-- (void)markEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-- (void)deletemarkEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
-- (void)deletemarkEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-- (void)lockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
-- (void)lockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-- (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
-- (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)storeEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
 - (void)storeEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;

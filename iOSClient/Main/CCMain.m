@@ -35,6 +35,7 @@
 #import "JDStatusBarNotification.h"
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
+#import "NCNetworkingSync.h"
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
@@ -84,6 +85,10 @@
     // Login
     CCLoginWeb *_loginWeb;
     CCLogin *_loginVC;
+    
+    // Automatic Upload Folder
+    NSString *_autoUploadFileName;
+    NSString *_autoUploadDirectory;
     
     BOOL _loadingFolder;
 }
@@ -520,7 +525,7 @@
 {
     _refreshControl = [UIRefreshControl new];
     
-    if (@available(iOS 11.0, *)) {
+    if (@available(iOS 11, *)) {
         [self.tableView setRefreshControl:_refreshControl];
         _refreshControl.tintColor = [UIColor whiteColor];
     } else {
@@ -776,12 +781,12 @@
         
         CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:NO session:k_upload_session delegate:self];
         form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
-        
+            
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
-        
+            
         [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-                
-        [self presentViewController:navigationController animated:YES completion:nil];        
+        
+        [self presentViewController:navigationController animated:YES completion:nil];
     }];
 }
 
@@ -1349,8 +1354,9 @@
     if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
         
         NSString *file = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
+        PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
         
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] && status == PHAuthorizationStatusAuthorized) {
             
             UIImage *image = [UIImage imageWithContentsOfFile:file];
             
@@ -1360,7 +1366,7 @@
                 [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
         }
         
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] && status == PHAuthorizationStatusAuthorized) {
                         
             [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
             
@@ -1370,6 +1376,15 @@
             } else {
                 [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             }
+        }
+        
+        if (status != PHAuthorizationStatusAuthorized) {
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            
+            [alertController addAction:okAction];
+            [self presentViewController:alertController animated:YES completion:nil];
         }
         
         [self reloadDatasource:serverUrl];
@@ -1575,6 +1590,7 @@
     BOOL useSubFolder = [[arguments objectAtIndex:2] boolValue];
     NSString *session = [arguments objectAtIndex:3];
     
+    
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
@@ -1759,7 +1775,7 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID] clearDateReadDirectoryID:metadataNet.directoryID];
         
@@ -1820,6 +1836,11 @@
                 
         _loadingFolder = NO;
         [self tableViewReloadData];
+    }
+    
+    // Is encrypted folder get metadata
+    if (metadataFolder.encrypted == true) {
+        [app.endToEndInterface getEndToEndMetadata:metadataFolder];
     }
 }
 
@@ -2295,9 +2316,6 @@
     
     fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
     if (![fileNameFolder length]) return;
-    
-    //if (autoUploadDirectory) metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-    //else  metadataNet.serverUrl = _serverUrl;
     
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return;
@@ -2977,13 +2995,15 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
-        if (tableAccount)
+        if (tableAccount) {
+            
             [app settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
     
-        // go to home sweet home
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+            // go to home sweet home
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
         
-        [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+            [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+        }
     });
 }
 
@@ -3877,15 +3897,12 @@
         
         if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
-        NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-        NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-        
-        [actionSheet addButtonWithTitle: _metadata.fileName
-                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
-                        backgroundColor: [NCBrandColor sharedInstance].tabBar
-                                 height: 50.0
-                                   type: AHKActionSheetButtonTypeDisabled
-                                handler: nil
+        [actionSheet addButtonWithTitle:_metadata.fileName
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:_metadata.iconName] color:[NCBrandColor sharedInstance].brand]
+                        backgroundColor:[NCBrandColor sharedInstance].tabBar
+                                 height:50.0
+                                   type:AHKActionSheetButtonTypeDisabled
+                                handler:nil
         ];
         
         if (!lockDirectory) {
@@ -3893,7 +3910,7 @@
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -3901,12 +3918,12 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -3939,12 +3956,12 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES) && !lockDirectory) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -3952,22 +3969,21 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
                                         // Settings new folder Automatatic upload
-                                        NSString *oldAutoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
-                                        
                                         [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:_metadata.fileName];
                                         [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:app.activeUrl];
                                         
-                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:oldAutoUploadDirectory directoryID:nil];
+                                        // Clear data (old) Auto Upload
+                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:_autoUploadDirectory directoryID:nil];
                                         
                                         if (app.activeAccount.length > 0 && app.activePhotos)
                                             [app.activePhotos reloadDatasourceForced];
@@ -3982,87 +3998,52 @@
                                     }];
         }
 
-#ifdef DEBUG
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Mark as encrypted"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [app.endToEndInterface markEndToEndFolderEncrypted:_metadata];                                        
-                                    }];
-        }
-        
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Delete mark as encrypted"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [app.endToEndInterface deletemarkEndToEndFolderEncrypted:_metadata];
-                                    }];
-        }
-        
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Lock file"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [app.endToEndInterface lockEndToEndFolderEncrypted:_metadata];
-                                    }];
-        }
-        
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Unlock file"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [app.endToEndInterface unlockEndToEndFolderEncrypted:_metadata];
-                                    }];
-        }
-        
-        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:@"Get metadata file"
-                                      image:[UIImage imageNamed:@"actionSheetCrypto"]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        [app.endToEndInterface getEndToEndMetadata:_metadata];
-                                    }];
-        }
-        
-        
-#endif
-        
-        if (!([_metadata.fileName isEqualToString:autoUploadFileName] == YES && [serverUrl isEqualToString:autoUploadDirectory] == YES)) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock
-                                      image:[UIImage imageNamed:@"actionSheetLock"]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] color:[NCBrandColor sharedInstance].brand]
                             backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
                                         [self performSelector:@selector(comandoLockPassword) withObject:nil];
                                     }];
         }
+        
+#ifdef DEBUG
+        if ([CCUtility isEndToEndEnabled:app.activeAccount] && !_metadata.encrypted) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
+                                      image:[UIImage imageNamed:@"encrypted_empty"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                                           if ([app.endToEndInterface markEndToEndFolderEncrypted:app.activeUrl fileID:_metadata.fileID token:nil])
+                                               [self readFolder:self.serverUrl];
+                                        });
+                                    }];
+        }
+        
+        if ([CCUtility isEndToEndEnabled:app.activeAccount] && _metadata.encrypted) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
+                                      image:[UIImage imageNamed:@"encrypted_empty"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                                            if ([app.endToEndInterface deletemarkEndToEndFolderEncrypted:app.activeUrl fileID:_metadata.fileID token:nil])
+                                                [self readFolder:self.serverUrl];
+                                        });
+                                    }];
+        }
+#endif
         
         [actionSheet show];
     }
@@ -4259,6 +4240,10 @@
         
             _sectionDataSource = [CCSectionDataSourceMetadata new];
             _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy activeAccount:app.activeAccount];
+            
+            // get auto upload folder
+            _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+            _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:app.activeUrl];
         }
         
     } else {
@@ -4653,10 +4638,12 @@
         if (metadata.directory) {
             
             if (metadata.encrypted)
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[UIColor redColor]];
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brand];
+            else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand];
             else
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
-
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand];
+            
         } else {
             cell.file.image = [UIImage imageNamed:metadata.iconName];
         }
@@ -4665,7 +4652,7 @@
     }
     
     // ----------------------------------------------------------------------------------------------------------
-    // Image Status cyptated & Lock Passcode
+    // Image Status Lock Passcode
     // ----------------------------------------------------------------------------------------------------------
     
     // Directory con passcode lock attivato
@@ -4675,6 +4662,13 @@
     
     if (metadata.directory && (directory.lock && [[CCUtility getBlockCode] length]))
         cell.status.image = [UIImage imageNamed:@"passcode"];
+    
+    // ----------------------------------------------------------------------------------------------------------
+    // Image Status Encrypted
+    // ----------------------------------------------------------------------------------------------------------
+    
+   // if (metadata.encrypted)
+   //     cell.status.image = [UIImage imageNamed:@"encrypted"];
     
     // ----------------------------------------------------------------------------------------------------------
     // Favorite
@@ -4992,17 +4986,6 @@
         
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
-            
-#ifdef DEBUG
-            // TEST ENCRYPTED/DECRYPTED
-            if ([_metadata.fileName containsString:@".dms"]) {
-                [[NCEndToEndEncryption sharedManager] decryptMetadata:_metadata activeUrl:app.directoryUser];
-            }
-            
-            if ([_metadata.fileName containsString:@"test_encry_marino.jpg"]) {
-                [[NCEndToEndEncryption sharedManager] encryptMetadata:_metadata activeUrl:app.directoryUser];
-            }
-#endif
             
             [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
             

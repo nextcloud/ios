@@ -53,7 +53,7 @@
 "_destination_"             = "Destination";
 "_ok_"                      = "OK";
 "_beta_version_"            = "Beta version";
-"_function_in_testing_"     = "Function in testing, please send information to any problems or malfunctions.";
+"_function_in_testing_"     = "Function in testing. Please send information to us about any problems or malfunctions.";
 "_done_"                    = "Done";
 "_passcode_too_short_"      = "Passcode too short, at least 4 characters required";
 "_selected_"                = "Selected";
@@ -246,11 +246,11 @@
 "_today_"                                   = "Today";
 "_time_"                                    = "Time: %@\n\n%@";
 "_location_not_enabled_"                    = "Location Services not enabled";
-"_location_not_enabled_msg_"                = "Please go to \"Settings\" and turn on \"Location Services\" to allow automatic photo/video uploads.";
+"_location_not_enabled_msg_"                = "Please go to \"Settings\" and turn on \"Location Services\"";
 "_access_photo_not_enabled_"                = "Access to Photos not enabled";
-"_access_photo_not_enabled_msg_"            = "Please go to \"Settings\" and turn on \"Photo Access\" to allow automatic photo/video uploads.";
+"_access_photo_not_enabled_msg_"            = "Please go to \"Settings\" and turn on \"Photo Access\"";
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
-"_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\" to allow automatic photo/video uploads.";
+"_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\"";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
 "_create_full_upload_"                      = "Creating archive… May take a long time, please wait.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
@@ -467,7 +467,7 @@
 "_use_folder_photos_"               = "Use the Photos folder as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
-"_preview_filename_"                = "Example preview of filename. You can use the mask MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm for date/time";
+"_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";
 "_forbidden_characters_"            = "Invalid character in filename";
 "_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
@@ -508,3 +508,5 @@
 "_e2e_passphrase_request_message_"  = "Insert the 12 words";
 "_e2e_settings_remove_"             = "Remove the encryption locally";
 "_e2e_settings_remove_message_"     = "Confirm removing encryption along with the passphrase.";
+"_e2e_set_folder_encrypted_"        = "Set as encrypted";
+"_e2e_remove_folder_encrypted_"     = "Remove as encrypted";

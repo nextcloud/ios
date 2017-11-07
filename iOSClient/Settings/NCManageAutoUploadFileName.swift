@@ -160,7 +160,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         case 1:
             return "    " + NSLocalizedString("_rename_filename_", comment: "")
         case 2:
-            return NSLocalizedString("_preview_filename_", comment: "")
+            return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm")
         default:
             return ""
         }
@@ -212,6 +212,6 @@ class NCManageAutoUploadFileName: XLFormViewController {
             returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: nil, keyFileNameType: k_keyFileNameAutoUploadType)
         }
         
-        return NSLocalizedString("_preview_filename_", comment: "") + ":" + "\n\n" + returnString
+        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm") + ":" + "\n\n" + returnString
     }
 }

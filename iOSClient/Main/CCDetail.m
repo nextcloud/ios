@@ -298,7 +298,7 @@
     NSURL *url = [NSURL fileURLWithPath:fileName];
 
     WKPreferences *wkPreferences = [[WKPreferences alloc] init];
-    wkPreferences.javaScriptEnabled = false;
+    wkPreferences.javaScriptEnabled = true;
     WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
     wkConfig.preferences = wkPreferences;
     

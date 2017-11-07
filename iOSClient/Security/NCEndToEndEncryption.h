@@ -29,16 +29,16 @@
 
 + (instancetype)sharedManager;
 
-- (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
-- (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
-
 - (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser;
-- (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase;
+- (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey;
-- (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey;
+- (NSString *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
+- (NSString *)decryptMetadata:(NSString *)encrypted key:(NSString *)key;
+
+- (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directoryUser:(NSString *)directoryUser key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
 
 - (NSString *)createSHA512:(NSString *)string;
 

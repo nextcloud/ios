@@ -76,7 +76,9 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     NCManageDatabase.sharedInstance.deleteAccount(account)
                     NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password)
                                     
-                    let tableAccount : tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account)
+                    guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+                        return
+                    }
                 
                     if (tableAccount.account == account) {
                     

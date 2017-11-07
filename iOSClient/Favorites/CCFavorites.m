@@ -388,7 +388,7 @@
     } else {
         
         if (metadata.directory)
-            iconHeader = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
+            iconHeader = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand];
         else
             iconHeader = [UIImage imageNamed:metadata.iconName];
     }
