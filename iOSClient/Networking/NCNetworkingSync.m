@@ -45,7 +45,9 @@
         
     } failureRequest:^(NSURLResponse *response, NSString *redirectedServer, NSError *error) {
         
-        returnError = error;
+        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+        
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:httpResponse.statusCode userInfo:[NSDictionary dictionaryWithObject:@"Upload file error" forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
 
     } failureBeforeRequest:^(NSError *error) {
@@ -77,7 +79,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        returnError = error;
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:@"Check server error" forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
     }];
     
@@ -103,7 +105,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        returnError = error;
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:@"Read file error" forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
     }];
     
