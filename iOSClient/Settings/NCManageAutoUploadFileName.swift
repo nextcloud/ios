@@ -190,7 +190,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         
         if let valueRename = valueRename {
             
-            let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+            let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.newlines)
             
             if valueRenameTrimming.count > 0 {
                 
