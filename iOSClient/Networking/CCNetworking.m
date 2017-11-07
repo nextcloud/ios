@@ -1123,13 +1123,16 @@
             NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
         }
 
-        // refresh main
-        if ([self.delegate respondsToSelector:@selector(reloadDatasource:)])
-            [self.delegate reloadDatasource:serverUrl];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // refresh main
+            if ([self.delegate respondsToSelector:@selector(reloadDatasource:)])
+                [self.delegate reloadDatasource:serverUrl];
         
 #ifndef EXTENSION
-        [app updateApplicationIconBadgeNumber];
+            [app updateApplicationIconBadgeNumber];
 #endif
+        });
+        
      });
 }
 
