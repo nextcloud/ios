@@ -1052,6 +1052,24 @@ class NCManageDatabase: NSObject {
         return tableE2eEncryption.init(value: result)
     }
     
+    @objc func getE2eEncryptions(predicate: NSPredicate) -> [tableE2eEncryption]? {
+        
+        guard self.getAccountActive() != nil else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        let results : Results<tableE2eEncryption>
+        
+        results = realm.objects(tableE2eEncryption.self).filter(predicate)
+        
+        if (results.count > 0) {
+            return Array(results.map { tableE2eEncryption.init(value:$0) })
+        } else {
+            return nil
+        }
+    }
+    
     @objc func getE2eEncryptionTokenLock(serverUrl: String) -> String? {
         
         guard let tableAccount = self.getAccountActive() else {

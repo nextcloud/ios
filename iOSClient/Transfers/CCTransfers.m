@@ -311,7 +311,7 @@
     
     NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND ((session CONTAINS 'upload') OR (session CONTAINS 'download' AND (sessionSelector != 'loadPlist')))", app.activeAccount] sorted:@"sessionTaskIdentifier" ascending:YES];
     
-    _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata groupByField:@"session" activeAccount:app.activeAccount];
+    _sectionDataSource  = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:app.listProgressMetadata e2eEncryption:nil groupByField:@"session" activeAccount:app.activeAccount];
         
     [_tableView reloadData];    
 }

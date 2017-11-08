@@ -532,7 +532,7 @@
 
         _dateReadDataSource = [NSDate date];
         NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:_directoryStartDatasource];
-        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:app.activeAccount];
+        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil e2eEncryption:nil groupByField:@"date" activeAccount:app.activeAccount];
         
         [self reloadCollection];
     }

@@ -418,7 +418,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return
         }
         
-        if (decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: metadataNet.serverUrl) == false) {
+        let serverUrl = metadataNet.serverUrl + "/" + metadataNet.fileName
+        
+        if (decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: serverUrl) == false) {
             return
         }
 
@@ -445,6 +447,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         metadataNet.action = actionGetEndToEndMetadata;
         metadataNet.fileID = metadata.fileID;
+        metadataNet.fileName = metadata.fileName;
         
         guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
             

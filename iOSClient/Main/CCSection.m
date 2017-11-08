@@ -54,7 +54,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata e2eEncryption:(NSArray *)e2eEncryption groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     long counterSessionDownload = 0;
@@ -74,7 +74,9 @@
     for (tableMetadata* metadata in records) {
         
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
+            
             [copyRecords insertObject:metadata atIndex:0];
+            
         } else {
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_directory] && directoryOnTop) {
