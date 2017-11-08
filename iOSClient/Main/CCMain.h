@@ -64,9 +64,6 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UISearchController *searchController;
 
-@property (nonatomic, strong) NSString *e2eMetaDataJSON;
-
-
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
 

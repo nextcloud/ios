@@ -38,6 +38,14 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             let recipient: [String: String]
         }
         
+        struct encrypted: Codable {
+            
+            let key: String
+            let filename: String
+            let mimetype: String
+            let version: Int
+        }
+        
         struct filesKey: Codable {
             
             let initializationVector: String
@@ -410,12 +418,10 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return
         }
         
-        guard let e2eMetaDataJSON = decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey) else {
+        if (decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey) == false) {
             return
         }
 
-        // Assign e2eMetaDataJSON for ServerUrl Main
-        main.e2eMetaDataJSON = e2eMetaDataJSON
         // Reload data source
         main.reloadDatasource(metadataNet.serverUrl)
     }
@@ -497,7 +503,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     }
     
     // let dataDecoded : NSData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0))!
-    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String) -> String? {
+    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String) -> Bool {
         
         let jsonDecoder = JSONDecoder.init()
         let data = e2eMetaDataJSON.data(using: .utf8)
@@ -516,12 +522,12 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 guard let metadataKeysData : NSData = NSData(base64Encoded: metadataKeys.value, options: NSData.Base64DecodingOptions(rawValue: 0)) else {
                     appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-                    return nil
+                    return false
                 }
 
                 guard let metadataKey = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeysData as Data!, privateKey: privateKey) else {
                     appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-                    return nil
+                    return false
                 }
                 
                 // Encode to Base64
@@ -544,22 +550,27 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: key) else {
                     appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-                    return nil
+                    return false
                 }
-            
-                print(decyptedMetadata)
+                
+                do {
+                    
+                    let decrypted = try jsonDecoder.decode(e2eMetadata.encrypted.self, from: decyptedMetadata.data(using: .utf8)!)
+                    
+                } catch let error {
+                    
+                    appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata ("+error.localizedDescription+")", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                    return false
+                }
             }
-            
-            print(response)
-            
             
         } catch let error {
             
             appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata ("+error.localizedDescription+")", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            return nil
+            return false
         }
         
-        return e2eMetaDataJSON
+        return true
     }
 }
 
