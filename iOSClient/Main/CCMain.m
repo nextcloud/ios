@@ -91,6 +91,9 @@
     NSString *_autoUploadDirectory;
     
     BOOL _loadingFolder;
+    
+    // e2e
+    BOOL _folderEncrypted;
 }
 @end
 
@@ -4172,7 +4175,7 @@
         return;
     
     // Search Mode
-    if(_isSearchMode) {
+    if (_isSearchMode) {
         
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy activeAccount:app.activeAccount];
 
@@ -4250,6 +4253,9 @@
         
          NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
     }
+    
+    // is This a Folder Encrypted ?
+    _folderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:app.activeAccount];
     
     [self tableViewReloadData];
 }
