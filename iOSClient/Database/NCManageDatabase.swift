@@ -1085,7 +1085,7 @@ class NCManageDatabase: NSObject {
         return result.tokenLock
     }
     
-    @objc func setE2eEncryptionTokenLock(fileName: String, token: String) {
+    @objc func setE2eEncryptionTokenLock(fileName: String, serverUrl: String, token: String) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -1095,7 +1095,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND fileName = %@", tableAccount.account, fileName).first else {
+        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", tableAccount.account, fileName, serverUrl).first else {
             realm.cancelWrite()
             return
         }
