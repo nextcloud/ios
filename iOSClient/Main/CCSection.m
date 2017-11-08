@@ -88,7 +88,7 @@
             
         } else {
             
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_directory] && directoryOnTop) {
+            if (metadata.directory && directoryOnTop) {
                 [copyRecords insertObject:metadata atIndex:numDirectory++];
             } else {
                 [copyRecords addObject:metadata];

@@ -3150,8 +3150,10 @@
     else { titoloNuovo = NSLocalizedString(@"_directory_on_top_no_", nil); }
     
     app.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"menuDirectoryOnTop"] color:[NCBrandColor sharedInstance].brand] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([CCUtility getDirectoryOnTop]) [self directoryOnTop:NO];
-            else [self directoryOnTop:YES];
+            if ([CCUtility getDirectoryOnTop])
+                [self directoryOnTop:NO];
+            else
+                [self directoryOnTop:YES];
     }];
     
 

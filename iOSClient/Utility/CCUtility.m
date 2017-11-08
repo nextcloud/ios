@@ -973,6 +973,10 @@
         metadata.typeFile = k_metadataTypeFile_unknown;
         metadata.iconName = @"file";
         
+    } else if (metadata.directory) {
+        
+        metadata.typeFile = k_metadataTypeFile_directory;
+        
     } else {
         
         CFStringRef fileExtension = (__bridge CFStringRef)[fileName pathExtension];
