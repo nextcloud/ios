@@ -54,7 +54,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata e2eEncryption:(NSArray *)e2eEncryption groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata e2eEncryptions:(NSArray *)e2eEncryptions groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     long counterSessionDownload = 0;
@@ -72,6 +72,15 @@
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     
     for (tableMetadata* metadata in records) {
+        
+        // Is a Encrypted metadata ?
+        for (tableE2eEncryption *e2eEncryption in e2eEncryptions) {
+            if ([metadata.fileName isEqualToString:e2eEncryption.fileNameIdentifier]) {
+                metadata.encrypted = true;
+                metadata.fileName = e2eEncryption.fileName;
+                break;
+            }
+        }
         
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
             
