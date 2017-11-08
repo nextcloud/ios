@@ -36,7 +36,6 @@
 @interface CCDetail : UIViewController <UIDocumentInteractionControllerDelegate, MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
 
 @property (nonatomic, strong) tableMetadata *metadataDetail;
-@property BOOL sourceDirectoryLocal;
 @property (nonatomic, strong) NSDate *dateFilterQuery;
 
 // Document

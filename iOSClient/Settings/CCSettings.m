@@ -107,7 +107,7 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
-/*
+    /*
 #ifdef DEBUG
     // Section : E2EEncryption --------------------------------------------------------------
 

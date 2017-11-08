@@ -46,7 +46,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.18.1</string>
+	<string>2.18.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -107,8 +107,10 @@
 	<string>The use of GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>The use of GPS is used to detect new photos from camera roll on background, the use of GPS only when the App is in use is useless</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>$(PRODUCT_NAME) requires access to the photo library</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>$(PRODUCT_NAME)</string>
+	<string>$(PRODUCT_NAME) requires access to the photo library</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
