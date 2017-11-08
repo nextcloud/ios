@@ -415,7 +415,6 @@ cleanup:
     NSString *privateKeyCipherBase64 = [privateKeyCipher substringToIndex:(range.location)];
     NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
     
-    // Decrypt 
     BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:tagData];
     
     if (result && privateKeyData)
@@ -455,15 +454,22 @@ cleanup:
     NSMutableData *plainData;
     NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
     
-    // Tag
-    NSString *tag  = [encrypted substringWithRange:NSMakeRange(range.location + range.length, encrypted.length - (range.location + range.length))];
-    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
-
     // Cipher
     NSString *cipher = [encrypted substringToIndex:(range.location)];
     NSData *cipherData = [[NSData alloc] initWithBase64EncodedString:cipher options:0];
     
-    BOOL result = [self decryptMetadataJ:cipherData key:key tagData:tagData];
+    // Key
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
+    
+    // IV
+    NSString *iv  = [encrypted substringWithRange:NSMakeRange(range.location + range.length, encrypted.length - (range.location + range.length))];
+    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:iv options:0];
+
+    // TAG
+    NSString *tag = [cipher substringWithRange:NSMakeRange(cipher.length - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
+    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tag options:0];
+    
+    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
     
     if (plainData != nil && result) {
         
@@ -554,65 +560,6 @@ cleanup:
 #pragma mark - OPENSSL ENCRYPT/DECRYPT
 #
 
-#
-#pragma mark - Asymmetric Encrypt/Decrypt Metadata JSON
-#
-
-- (NSString *)decryptMetadataJ:(NSData *)metadataData key:(NSString *)key tagData:(NSData *)tagData
-{
-    int status = 0;
-    int len = 0;
-
-    // set up key
-    unsigned char *cKey = (unsigned char *)[key UTF8String];
-   
-    // set up tag
-    len = (int)[tagData length];;
-    unsigned char cTag[len];
-    bzero(cTag, sizeof(cTag));
-    [tagData getBytes:cTag length:len];
-   
-    EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
-    if (!ctx)
-        return nil;
-    
-    status = EVP_DecryptInit_ex(ctx, EVP_aes_128_gcm(), NULL, NULL, NULL);
-    if (status <= 0)
-        return nil;
-    
-    EVP_CIPHER_CTX_set_padding(ctx, 0);
-
-    unsigned char *iv = (unsigned char *)"0123456789012345";
-    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 16, NULL);
-    if (status <= 0)
-        return nil;
-    
-    status = EVP_DecryptInit_ex(ctx, NULL, NULL, cKey, iv);
-    if (status <= 0)
-        return nil;
-    
-    int outLen = 0;
-    unsigned char *out = (unsigned char *) malloc(metadataData.length + 16);
-    status = EVP_DecryptUpdate(ctx, out, &outLen, [metadataData bytes], (int)[metadataData length]);
-    if (status <= 0 || outLen == 0)
-        return nil;
-    
-    status = EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, cTag);
-    if (status <= 0)
-        return nil;
-    
-    int f_len = outLen;
-    EVP_DecryptFinal_ex(ctx,NULL, &f_len);
-  
-    NSData *outData = [[NSData alloc] initWithBytes:out length:outLen];
-    NSString *x = [self base64DecodeData:outData];
-    NSString *outString = [[NSString alloc] initWithBytes:out length:outLen encoding:NSUTF8StringEncoding];
-    
-    if (out)
-        free(out);
-    
-    return outString;
-}
 
 #
 #pragma mark - Asymmetric Encrypt/Decrypt String
