@@ -478,7 +478,9 @@ cleanup:
         /* ---------------------------------------- */
     
         return plain;
+        
     } else {
+        
         return nil;
     }
 }
