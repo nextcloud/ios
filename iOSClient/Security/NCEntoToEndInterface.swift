@@ -562,7 +562,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                     object.fileNameIdentifier = fileNameIdentifier
                     object.key = decrypted.key
                     object.initializationVector = element.initializationVector
-                    object.metadataKey = element.metadataKey
                     object.mimeType = decrypted.mimetype
                     object.serverUrl = serverUrl
                     object.version = decrypted.version
