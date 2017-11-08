@@ -552,8 +552,6 @@
             
         return;
     }
-        
-    [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:selector sessionSelectorPost:selectorPost sessionTaskIdentifier:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@",metadata.fileID]];
     
     // Lock if encrypted directory
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -568,11 +566,19 @@
             if (error == nil && tokenLock != nil) {
                 [[NCManageDatabase sharedInstance] setE2eEncryptionTokenLockWithFileName:metadata.fileName serverUrl:serverUrl token:tokenLock];
             } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
+                        [[self getDelegate:fileID] downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:@"Lock directory error" errorCode:error.code];
+                });
                 return;
             }
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
+            
+            // Start download session
+            [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:selector sessionSelectorPost:selectorPost sessionTaskIdentifier:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@",metadata.fileID]];
+            
             [self downloaURLSession:metadata.fileName serverUrl:serverUrl fileID:metadata.fileID session:session taskStatus:taskStatus selector:selector];
         });
     });
