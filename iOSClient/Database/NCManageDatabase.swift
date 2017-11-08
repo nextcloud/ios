@@ -61,7 +61,7 @@ class NCManageDatabase: NSObject {
             
             // 10 : Version 2.18.0
             // 11 : Add object tableE2eEncryption
-            // 12 : Change primary key of tableE2eEncryption for fileNameIdentifier and remove filed metadataKey
+            // 12 : Change primary key of tableE2eEncryption for fileNameIdentifier, remove filed metadataKey, add tokenLock on Table Directory
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -896,6 +896,21 @@ class NCManageDatabase: NSObject {
         return result.serverUrl
     }
     
+    @objc func getDirectoryTokenLock(serverUrl: String) -> String? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@ AND tokenLock != ''", tableAccount.account, serverUrl).first else {
+            return nil
+        }
+        
+        return result.tokenLock
+    }
+    
     @objc func setDateReadDirectory(directoryID: String) {
         
         guard let tableAccount = self.getAccountActive() else {
@@ -994,6 +1009,30 @@ class NCManageDatabase: NSObject {
         }
     }
 
+    @objc func setDirectoryTokenLock(serverUrl: String, token: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        result.tokenLock = token
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
+    }
     //MARK: -
     //MARK: Table e2e Encryption
     
@@ -1067,46 +1106,6 @@ class NCManageDatabase: NSObject {
             return Array(results.map { tableE2eEncryption.init(value:$0) })
         } else {
             return nil
-        }
-    }
-    
-    @objc func getE2eEncryptionTokenLock(serverUrl: String) -> String? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
-        let realm = try! Realm()
-        
-        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND tokenLock != ''", tableAccount.account, serverUrl).first else {
-            return nil
-        }
-        
-        return result.tokenLock
-    }
-    
-    @objc func setE2eEncryptionTokenLock(fileName: String, serverUrl: String, token: String) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", tableAccount.account, fileName, serverUrl).first else {
-            realm.cancelWrite()
-            return
-        }
-        
-        result.tokenLock = token
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return
         }
     }
     

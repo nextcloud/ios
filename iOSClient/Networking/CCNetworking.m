@@ -557,14 +557,17 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
-
-            NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
             
-            NSError *error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
+            NSString *tokenLock = [[NCManageDatabase sharedInstance] getDirectoryTokenLockWithServerUrl:serverUrl];
+            NSError *error;
+            
+            if (tokenLock.length == 0) {
+                tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+                error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
+            }
             
             if (error == nil && tokenLock != nil) {
-                [[NCManageDatabase sharedInstance] setE2eEncryptionTokenLockWithFileName:metadata.fileName serverUrl:serverUrl token:tokenLock];
+                [[NCManageDatabase sharedInstance] setDirectoryTokenLockWithServerUrl:serverUrl token:tokenLock];
             } else {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])

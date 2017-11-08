@@ -103,6 +103,7 @@ class tableDirectory: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var lock: Bool = false
+    @objc dynamic var tokenLock = ""
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     
@@ -121,7 +122,6 @@ class tableE2eEncryption: Object {
     @objc dynamic var initializationVector = ""
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
-    @objc dynamic var tokenLock = ""
     @objc dynamic var version: Int = 0
     
     override static func primaryKey() -> String {
