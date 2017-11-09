@@ -553,38 +553,9 @@
         return;
     }
     
-    // Lock if encrypted directory
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
+    [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:selector sessionSelectorPost:selectorPost sessionTaskIdentifier:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@",metadata.fileID]];
             
-            NSString *tokenLock = [[NCManageDatabase sharedInstance] getDirectoryTokenLockWithServerUrl:serverUrl];
-            NSError *error;
-            
-            if (tokenLock.length == 0) {
-                tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-                error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
-            }
-            
-            if (error == nil && tokenLock != nil) {
-                [[NCManageDatabase sharedInstance] setDirectoryTokenLockWithServerUrl:serverUrl token:tokenLock];
-            } else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileFailure:serverUrl:selector:message:errorCode:)])
-                        [[self getDelegate:fileID] downloadFileFailure:fileID serverUrl:serverUrl selector:selector message:@"Lock directory error" errorCode:error.code];
-                });
-                return;
-            }
-        }
-
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            // Start download session
-            [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:selector sessionSelectorPost:selectorPost sessionTaskIdentifier:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@",metadata.fileID]];
-            
-            [self downloaURLSession:metadata.fileName serverUrl:serverUrl fileID:metadata.fileID session:session taskStatus:taskStatus selector:selector];
-        });
-    });
+    [self downloaURLSession:metadata.fileName serverUrl:serverUrl fileID:metadata.fileID session:session taskStatus:taskStatus selector:selector];
 }
 
 - (void)downloaURLSession:(NSString *)fileName serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector
