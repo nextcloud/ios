@@ -78,6 +78,7 @@
             if ([metadata.fileName isEqualToString:e2eEncryption.fileNameIdentifier]) {
                 metadata.encrypted = true;
                 metadata.fileName = e2eEncryption.fileName;
+                [CCUtility insertTypeFileIconName:metadata.fileName metadata:metadata];
                 break;
             }
         }
