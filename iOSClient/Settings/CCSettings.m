@@ -108,6 +108,7 @@
     [section addFormRow:row];
 
 #ifdef DEBUG
+    
     // Section : E2EEncryption --------------------------------------------------------------
 
     section = [XLFormSectionDescriptor formSectionWithTitle:NSLocalizedString(@"_e2e_settings_title_", nil)];
@@ -120,6 +121,7 @@
     [row.cellConfig setObject:[UIImage imageNamed:@"settingsE2EEncryption"] forKey:@"imageView.image"];
     row.action.viewControllerClass = [NCManageEndToEndEncryption class];
     [section addFormRow:row];
+    
 #endif
 
     
