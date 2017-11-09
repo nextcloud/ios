@@ -344,9 +344,9 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     // MARK: Manage Mark/Delete Encrypted Folder
     // --------------------------------------------------------------------------------------------
     
-    @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, token: String?) -> Bool {
+    @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, serverUrl: String) -> Bool {
         
-        var token : NSString? = token as NSString?
+        var token =  NCManageDatabase.sharedInstance.getDirectoryTokenLock(serverUrl: serverUrl) as NSString?
 
         if let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: &token) as NSError? {
             
@@ -354,6 +354,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             return false
         }
+        
+        NCManageDatabase.sharedInstance.setDirectoryTokenLock(serverUrl: serverUrl, token: token! as String)
         
         if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
             
@@ -369,12 +371,14 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return false
         }
         
+        NCManageDatabase.sharedInstance.setDirectoryTokenLock(serverUrl: serverUrl, token: "")
+        
         return true
     }
     
-    @objc func deletemarkEndToEndFolderEncrypted(_ url: String, fileID: String, token: String?) -> Bool {
+    @objc func deletemarkEndToEndFolderEncrypted(_ url: String, fileID: String, serverUrl: String) -> Bool {
         
-        var token : NSString? = token as NSString?
+        var token =  NCManageDatabase.sharedInstance.getDirectoryTokenLock(serverUrl: serverUrl) as NSString?
         
         if let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: &token) as NSError? {
             
@@ -382,6 +386,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             return false
         }
+        
+        NCManageDatabase.sharedInstance.setDirectoryTokenLock(serverUrl: serverUrl, token: token! as String)
         
         if let error = NCNetworkingSync.sharedManager().deletemarkEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
             
@@ -396,6 +402,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             return false
         }
+        
+        NCManageDatabase.sharedInstance.setDirectoryTokenLock(serverUrl: serverUrl, token: "")
         
         return true
     }

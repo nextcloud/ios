@@ -4027,8 +4027,10 @@
                                     handler:^(AHKActionSheet *as) {
                                         
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                           if ([app.endToEndInterface markEndToEndFolderEncrypted:app.activeUrl fileID:_metadata.fileID token:nil])
-                                               [self readFolder:self.serverUrl];
+                                           if ([app.endToEndInterface markEndToEndFolderEncrypted:app.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]])
+                                               dispatch_async(dispatch_get_main_queue(), ^{
+                                                   [self readFolder:self.serverUrl];
+                                               });
                                         });
                                     }];
         }
@@ -4043,8 +4045,10 @@
                                     handler:^(AHKActionSheet *as) {
                                         
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                            if ([app.endToEndInterface deletemarkEndToEndFolderEncrypted:app.activeUrl fileID:_metadata.fileID token:nil])
-                                                [self readFolder:self.serverUrl];
+                                            if ([app.endToEndInterface deletemarkEndToEndFolderEncrypted:app.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]])
+                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                    [self readFolder:self.serverUrl];
+                                                });
                                         });
                                     }];
         }
