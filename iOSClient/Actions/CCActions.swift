@@ -384,13 +384,15 @@ class CCActions: NSObject {
     
     @objc func deleteFile(metadata: tableMetadata, serverUrl: String) {
         
+        let fileNamePath = appDelegate.directoryUser + "/" + metadata.fileID
+        
         do {
-            try FileManager.default.removeItem(atPath: "\(appDelegate.directoryUser)/\(metadata.fileID)")
+            try FileManager.default.removeItem(atPath: fileNamePath)
         } catch {
             // handle error
         }
         do {
-            try FileManager.default.removeItem(atPath: "\(appDelegate.directoryUser)/\(metadata.fileID).ico")
+            try FileManager.default.removeItem(atPath: fileNamePath + ".ico")
         } catch {
             // handle error
         }
