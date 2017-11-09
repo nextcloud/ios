@@ -5,9 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### [2.18.1] - 2017-xx-xx
+### [2.18.3] - 2017-xx-xx
 
-### [2.17.9] - 2017-xx-xx
+## [2.18.2] - 2017-11-07
+### Fixed
+- upload and save photo / video on camera roll
+
+## [2.18.1] - 2017-11-06
+### Fixed
+- iPhone X UI
+- Crash when save selected images/videos without permission
+- Microsoft Excel sheets with multiple "pages" now works
 
 ## [2.18.0] - 2017-10-27
 ### Added
