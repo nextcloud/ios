@@ -4206,6 +4206,10 @@
     _directoryGroupBy = [CCUtility getGroupBySettings];
     _directoryOrder = [CCUtility getOrderSettings];
     
+    // Remove optimization for encrypted directory
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount])
+        _dateReadDataSource = nil;
+    
     // Controllo data lettura Data Source
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, serverUrl]];
     

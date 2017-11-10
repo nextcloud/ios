@@ -330,6 +330,7 @@
         [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:app.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:app.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
         [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:app.activeAccount];
