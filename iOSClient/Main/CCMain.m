@@ -1843,7 +1843,11 @@
     
     // Is encrypted folder get metadata
     if (metadataFolder.encrypted == true) {
-        [app.endToEndInterface getEndToEndMetadata:metadataFolder];
+        
+        if ([CCUtility isEndToEndEnabled:app.activeAccount])
+            [app.endToEndInterface getEndToEndMetadata:metadataFolder];
+        else
+            [app messageNotification:@"_info_" description:@"You are in a encrypted directory, go to on \"Settings\" and enable the End-To-End Encryption" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];            
     }
 }
 
