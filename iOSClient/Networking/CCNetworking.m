@@ -572,6 +572,7 @@
     NSData *authData = [[NSString stringWithFormat:@"%@:%@", _activeUser, _activePassword] dataUsingEncoding:NSUTF8StringEncoding];
     NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
+    [request setValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
     
     if ([session isEqualToString:k_download_session]) sessionDownload = [self sessionDownload];
     else if ([session isEqualToString:k_download_session_foreground]) sessionDownload = [self sessionDownloadForeground];
@@ -1041,7 +1042,8 @@
     NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
     [request setHTTPMethod:@"PUT"];
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
-    
+    [request setValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+
     // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier)
     if (assetLocalIdentifier) {
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
