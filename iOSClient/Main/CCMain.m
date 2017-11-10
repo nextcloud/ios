@@ -1139,10 +1139,13 @@
         
             //UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]]; DEPRECATED iOS9
             UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]]]];
-            if (themingBackground)
-                [UIImagePNGRepresentation(themingBackground) writeToFile:[NSString stringWithFormat:@"%@/themingBackground.png", app.directoryUser] atomically:YES];
-            else
+            if (themingBackground) {
+                 dispatch_async(dispatch_get_main_queue(), ^{
+                     [UIImagePNGRepresentation(themingBackground) writeToFile:[NSString stringWithFormat:@"%@/themingBackground.png", app.directoryUser] atomically:YES];
+                 });
+            } else {
                 [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/themingBackground.png", app.directoryUser] error:nil];
+            }
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -1873,7 +1876,7 @@
 #pragma mark ===== Search =====
 #pragma --------------------------------------------------------------------------------------------
 
--(void)searchStartTimer
+- (void)searchStartTimer
 {
     NSString *home = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
     
@@ -1885,7 +1888,7 @@
     [self.tableView reloadEmptyDataSet];
 }
 
--(void)updateSearchResultsForSearchController:(UISearchController *)searchController
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     //[self setNeedsStatusBarAppearanceUpdate];
 
