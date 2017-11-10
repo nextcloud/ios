@@ -493,9 +493,8 @@ cleanup:
 {
     NSMutableData *cipherData;
     NSData *tagData;
-    NSData *plainData;
-    
-    plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
+   
+    NSData *plainData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
     if (plainData == nil)
         return false;
     
@@ -512,6 +511,27 @@ cleanup:
         *initializationVector = [ivData base64EncodedStringWithOptions:0];
         *authenticationTag = [tagData base64EncodedStringWithOptions:0];
 
+        return true;
+    }
+    
+    return false;
+}
+
+- (BOOL)decryptFileID:(NSString *)fileID directoryUser:(NSString *)directoryUser key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag
+{
+    NSMutableData *plainData;
+
+    NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]];
+    if (cipherData == nil)
+        return false;
+    
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
+    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:initializationVector options:0];
+    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:authenticationTag options:0];
+
+    BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
+    if (plainData != nil && result) {
+        [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID] atomically:YES];
         return true;
     }
     

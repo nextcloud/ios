@@ -1295,10 +1295,16 @@
 
 - (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
 {
-    __block tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-    
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     if (metadata == nil)
         return;
+    
+    tableE2eEncryption *e2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier = %@ AND serverUrl = %@", metadata.fileName, serverUrl]];
+    if (e2eEncryption) {
+        metadata.encrypted = true;
+        metadata.fileName = e2eEncryption.fileName;
+        [CCUtility insertTypeFileIconName:metadata.fileName metadata:metadata];
+    }
     
     // Download
     if ([selector isEqualToString:selectorDownloadFile]) {
@@ -1399,30 +1405,6 @@
         [self reloadDatasource:serverUrl];
         
         [self copyFileToPasteboard:metadata];
-    }
-    
-    //download file plist
-    if ([selector isEqualToString:selectorLoadPlist]) {
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        
-            long countSelectorLoadPlist = 0;
-        
-            for (NSOperation *operation in [app.netQueue operations]) {
-            
-                if ([((OCnetworking *)operation).metadataNet.selector isEqualToString:selectorLoadPlist])
-                    countSelectorLoadPlist++;
-            }
-            
-            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
-            
-            if ((countSelectorLoadPlist == 0 || countSelectorLoadPlist % k_maxConcurrentOperation == 0) && [metadata.directoryID isEqualToString:directoryID] && directoryID) {
-            
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self reloadDatasource:serverUrl];
-                });
-            }
-        });
     }
     
     //selectorLoadViewImage
