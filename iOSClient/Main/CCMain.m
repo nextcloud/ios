@@ -1829,10 +1829,14 @@
     // Is encrypted folder get metadata
     if (metadataFolder.encrypted == true) {
         
-        if ([CCUtility isEndToEndEnabled:app.activeAccount])
+        if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
+            
             [app.endToEndInterface getEndToEndMetadata:metadataFolder];
-        else
-            [app messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];            
+            
+        } else {
+            
+            [app messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        }
     }
 }
 
