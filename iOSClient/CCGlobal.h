@@ -148,7 +148,6 @@ extern NSString *const dav;
 #define selectorGetUserAndGroup                         @"getUserAndGroup"
 #define selectorLoadFileView                            @"loadFileView"
 #define selectorLoadModelView                           @"loadModelView"
-#define selectorLoadPlist                               @"loadPlist"
 #define selectorLoadViewImage                           @"loadViewImage"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorMove                                    @"move"
