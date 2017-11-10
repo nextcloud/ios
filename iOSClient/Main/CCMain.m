@@ -1832,7 +1832,7 @@
         if ([CCUtility isEndToEndEnabled:app.activeAccount])
             [app.endToEndInterface getEndToEndMetadata:metadataFolder];
         else
-            [app messageNotification:@"_info_" description:@"You are in a encrypted directory, go to on \"Settings\" and enable the End-To-End Encryption" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];            
+            [app messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];            
     }
 }
 
@@ -4997,11 +4997,18 @@
             [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
             
         } else {
-                
-            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
             
-            NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
-            if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+            if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount] && ![CCUtility isEndToEndEnabled:app.activeAccount]) {
+                
+                [app messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                
+            } else {
+            
+                [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            
+                NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
+                if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+            }
         }
     }
     
