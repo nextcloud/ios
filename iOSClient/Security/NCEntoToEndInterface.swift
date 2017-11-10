@@ -318,6 +318,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         CCUtility.setEndToEndPublicKeyServer(appDelegate.activeAccount, publicKey: metadataNet.key)
         
+        // Clear Table
+        NCManageDatabase.sharedInstance.clearTable(tableMetadata.self, account: appDelegate.activeAccount)
+        NCManageDatabase.sharedInstance.clearTable(tableDirectory.self, account: appDelegate.activeAccount)
+        NCManageDatabase.sharedInstance.clearTable(tableE2eEncryption.self, account: appDelegate.activeAccount)
+
         // All OK Activated flsg on Manage EndToEnd Encryption
         NotificationCenter.default.post(name: Notification.Name("reloadManageEndToEndEncryption"), object: nil)
     }
@@ -416,13 +421,13 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         guard let privateKey = CCUtility.getEndToEndPrivateKey(appDelegate.activeAccount) else {
             
-            appDelegate.messageNotification("E2E Get Metadata Success", description: "Serious internal error: PrivareKey not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            appDelegate.messageNotification("E2E Get Metadata", description: "Serious internal error: PrivareKey not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             return
         }
 
         guard let main = appDelegate.listMainVC[metadataNet.serverUrl] as? CCMain else {
             
-            appDelegate.messageNotification("E2E Get Metadata Success", description: "Serious internal error: Main not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            appDelegate.messageNotification("E2E Get Metadata", description: "Serious internal error: Main not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             return
         }
         
@@ -433,7 +438,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         }
 
         // Reload data source
-        main.reloadDatasource(metadataNet.serverUrl)
+        main.reloadDatasource(serverUrl)
     }
     
     func getEndToEndMetadataFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
