@@ -194,32 +194,6 @@
     
     // Title
     [self setTitle];
-    
-    // Search
-    self.definesPresentationContext = YES;
-    self.searchController.searchResultsUpdater = self;
-    self.searchController.dimsBackgroundDuringPresentation = NO;
-    self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].seperator;
-    [self.searchController.searchBar sizeToFit];
-    self.searchController.searchBar.delegate = self;
-    
-    if (@available(iOS 11, *)) {
-        self.navigationItem.searchController = self.searchController;
-        self.navigationItem.hidesSearchBarWhenScrolling = true;
-        self.navigationItem.searchController.searchBar.tintColor = [UIColor whiteColor];
-        
-        UITextField *textField = [self.searchController.searchBar valueForKey:@"searchField"];
-        textField.textColor = [UIColor blackColor];
-        textField.tintColor = [UIColor blackColor];
-        
-        UIView *backgroundView = textField.subviews.firstObject;
-        backgroundView.backgroundColor = UIColor.whiteColor;
-        backgroundView.layer.cornerRadius = 10;
-        backgroundView.clipsToBounds = YES;
-    } else {
-        self.tableView.tableHeaderView = self.searchController.searchBar;
-        [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
-    }
 }
 
 // Apparirà
@@ -251,6 +225,13 @@
     
     // Plus Button
     [app plusButtonVisibile:true];
+    
+    //
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount]) {
+        [self searchEnabled:NO];
+    } else {
+        [self searchEnabled:YES];
+    }
 }
 
 // E' arrivato
@@ -1883,6 +1864,52 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Search =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)searchEnabled:(BOOL)enabled
+{
+    if (enabled) {
+        
+        self.definesPresentationContext = YES;
+        self.searchController.searchResultsUpdater = self;
+        self.searchController.dimsBackgroundDuringPresentation = NO;
+        self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].seperator;
+        [self.searchController.searchBar sizeToFit];
+        self.searchController.searchBar.delegate = self;
+    
+        if (@available(iOS 11, *)) {
+            
+            self.navigationItem.searchController = self.searchController;
+            self.navigationItem.hidesSearchBarWhenScrolling = true;
+            self.navigationItem.searchController.searchBar.tintColor = [UIColor whiteColor];
+        
+            UITextField *textField = [self.searchController.searchBar valueForKey:@"searchField"];
+            textField.textColor = [UIColor blackColor];
+            textField.tintColor = [UIColor blackColor];
+        
+            UIView *backgroundView = textField.subviews.firstObject;
+            backgroundView.backgroundColor = UIColor.whiteColor;
+            backgroundView.layer.cornerRadius = 10;
+            backgroundView.clipsToBounds = YES;
+            
+        } else {
+            
+            self.tableView.tableHeaderView = self.searchController.searchBar;
+            [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
+        }
+        
+    } else {
+        
+        if (@available(iOS 11, *)) {
+            
+            self.navigationItem.searchController = nil;
+            
+        } else {
+            
+            self.tableView.tableHeaderView = nil;
+        }
+        
+    }
+}
 
 - (void)searchStartTimer
 {
