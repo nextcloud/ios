@@ -57,7 +57,7 @@
 
     }];
      
-     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
          [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
      
      return returnError;
@@ -83,7 +83,7 @@
         dispatch_semaphore_signal(semaphore);
     }];
     
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
     return returnError;
@@ -109,7 +109,7 @@
         dispatch_semaphore_signal(semaphore);
     }];
     
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
     return returnError;
@@ -141,7 +141,7 @@
         dispatch_semaphore_signal(semaphore);
     }];
     
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
     *token = returnToken;
@@ -168,7 +168,7 @@
         dispatch_semaphore_signal(semaphore);
     }];
     
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
     return returnError;
@@ -194,7 +194,7 @@
         dispatch_semaphore_signal(semaphore);
     }];
     
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
     return returnError;
@@ -220,7 +220,7 @@
         dispatch_semaphore_signal(semaphore);
     }];
     
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
     return returnError;
