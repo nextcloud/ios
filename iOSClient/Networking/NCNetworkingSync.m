@@ -45,7 +45,7 @@
         
     } failureRequest:^(NSURLResponse *response, NSString *redirectedServer, NSError *error) {
         
-        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
         
         returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:httpResponse.statusCode userInfo:[NSDictionary dictionaryWithObject:@"Upload file error" forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
