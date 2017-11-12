@@ -2156,7 +2156,7 @@
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil encrypted:false];
         }
     
         // next
@@ -2312,7 +2312,7 @@
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
 {
     NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];    
-    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil];
+    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil encrypted:false];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID]];
         

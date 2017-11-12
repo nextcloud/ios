@@ -248,7 +248,7 @@
             OCFileDto *itemDtoFolder = [items objectAtIndex:0];
             //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:itemDtoFolder.permissions];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:itemDtoFolder.permissions encrypted:itemDtoFolder.isEncrypted];
             _metadataNet.directoryID = directoryID;
 
             NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -307,7 +307,7 @@
                     fileName = [fileName substringToIndex:[fileName length] - 1];
                     serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
                         
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDtoFolder.permissions];
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDtoFolder.permissions encrypted:itemDto.isEncrypted];
                 }
                 
                 // ----- BUG #942 ---------
@@ -434,7 +434,7 @@
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
                 serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
-                NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
+                NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
 
                 [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
             }
@@ -594,7 +594,7 @@
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
             
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
         }

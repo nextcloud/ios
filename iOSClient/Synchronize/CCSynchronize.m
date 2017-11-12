@@ -301,7 +301,7 @@
             NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
             
             // Add Directory
-            (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:metadataNet.account permissions:nil];
+            (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:metadataNet.account permissions:nil encrypted:false];
             tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
             
             // Verify changed etag
