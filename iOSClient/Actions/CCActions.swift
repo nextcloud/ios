@@ -106,6 +106,7 @@ class CCActions: NSObject {
         metadataNet.directoryID = metadata.directoryID
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = metadata.fileName
+        metadataNet.fileNameView = metadata.fileNameView
         metadataNet.selector = selectorDelete
         metadataNet.serverUrl = serverUrl
 
@@ -160,7 +161,7 @@ class CCActions: NSObject {
             return
         }
         
-        if metadata.fileName == fileName {
+        if metadata.fileNameView == fileName {
             return
         }
         
@@ -181,14 +182,13 @@ class CCActions: NSObject {
                 
             return;
         }
-
-        // Plain
-            
+        
         metadataNet.action = actionMoveFileOrFolder
         metadataNet.delegate = delegate
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = metadata.fileName
         metadataNet.fileNameTo = fileName
+        metadataNet.fileNameView = metadata.fileNameView
         metadataNet.selector = selectorRename
         metadataNet.serverUrl = serverUrl
         metadataNet.serverUrlTo = serverUrl
@@ -300,6 +300,7 @@ class CCActions: NSObject {
         metadataNet.delegate = delegate
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
+        metadataNet.fileNameView = metadata.fileNameView
         metadataNet.options = "m"
         metadataNet.priority = Operation.QueuePriority.low.rawValue
         metadataNet.selector = selectorDownloadThumbnail;
