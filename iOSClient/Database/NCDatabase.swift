@@ -99,6 +99,7 @@ class tableDirectory: Object {
     @objc dynamic var account = ""
     @objc dynamic var dateReadDirectory: NSDate? = nil
     @objc dynamic var directoryID = ""
+    @objc dynamic var encrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
