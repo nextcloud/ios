@@ -319,9 +319,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         CCUtility.setEndToEndPublicKeyServer(appDelegate.activeAccount, publicKey: metadataNet.key)
         
         // Clear Table
-        NCManageDatabase.sharedInstance.clearTable(tableMetadata.self, account: appDelegate.activeAccount)
         NCManageDatabase.sharedInstance.clearTable(tableDirectory.self, account: appDelegate.activeAccount)
         NCManageDatabase.sharedInstance.clearTable(tableE2eEncryption.self, account: appDelegate.activeAccount)
+
+        // Reload All Datasource
+        NotificationCenter.default.post(name: Notification.Name("clearDateReadDataSource"), object: nil)
 
         // All OK Activated flsg on Manage EndToEnd Encryption
         NotificationCenter.default.post(name: Notification.Name("reloadManageEndToEndEncryption"), object: nil)
