@@ -190,36 +190,32 @@
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            
             self.login.enabled = YES;
             self.loadingBaseUrl.hidden = YES;
-        });
-
-        if (error != nil) {
+        
+            if (error != nil) {
             
-            NSLog(@"[LOG] Error: %ld - %@",(long)[error code] , [error localizedDescription]);
+                NSLog(@"[LOG] Error: %ld - %@",(long)[error code] , [error localizedDescription]);
             
-            // self signed certificate
-            if ([error code] == NSURLErrorServerCertificateUntrusted) {
+                // self signed certificate
+                if ([error code] == NSURLErrorServerCertificateUntrusted) {
                 
-                NSLog(@"[LOG] Error NSURLErrorServerCertificateUntrusted");
+                    NSLog(@"[LOG] Error NSURLErrorServerCertificateUntrusted");
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
                     [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
-                });
-            
-            } else {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+                } else {
                     
                     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
                     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
                     
                     [alertController addAction:okAction];
                     [self presentViewController:alertController animated:YES completion:nil];
-                });
+                }
             }
-            
-        }
+        });
+        
     }];
     
     [task resume];
@@ -414,9 +410,8 @@
 - (IBAction)handleButtonLogin:(id)sender
 {
     if ([self.baseUrl.text length] > 0 && [self.user.text length] && [self.password.text length]) {
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            [self performSelector:@selector(loginCloud) withObject:nil];
+            [self loginCloud];
         });
     }
 }
