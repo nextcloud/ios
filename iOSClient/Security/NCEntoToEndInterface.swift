@@ -439,7 +439,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return
         }
 
-        // Reload data source
+        // Clear all date directory and reload data source
+        NCManageDatabase.sharedInstance.setClearAllDateReadDirectory()
         main.reloadDatasource(serverUrl)
     }
     
