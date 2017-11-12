@@ -133,7 +133,7 @@
 
     }
     
-    self.labelTitle.text = self.metadata.fileName;
+    self.labelTitle.text = self.metadata.fileNameView;
     self.labelTitle.textColor = [UIColor blackColor];
     
     self.tableView.tableHeaderView = ({UIView *line = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0.1 / UIScreen.mainScreen.scale)];

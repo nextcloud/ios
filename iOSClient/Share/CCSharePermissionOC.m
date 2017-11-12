@@ -105,7 +105,7 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sharepath" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_share_permission_path_", nil)];
-    row.value = self.metadata.fileName;
+    row.value = self.metadata.fileNameView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
