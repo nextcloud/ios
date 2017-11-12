@@ -79,7 +79,7 @@
     } else {
         
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
-        label.text = self.passMetadata.fileName;
+        label.text = self.passMetadata.fileNameView;
         
         label.textColor = NCBrandColor.sharedInstance.navigationBarText;
         
@@ -164,7 +164,7 @@
     if ([self.delegate respondsToSelector:@selector(dismissMove)])
         [self.delegate dismissMove];
     
-    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileName];
+    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNameView];
         
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -442,7 +442,7 @@
     
     cell.detailTextLabel.text = @"";
     cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
-    cell.textLabel.text = metadata.fileName;
+    cell.textLabel.text = metadata.fileNameView;
     
     return cell;
 }
