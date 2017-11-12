@@ -765,7 +765,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, fileID: String?) {
+    @objc func setDirectory(serverUrl: String, serverUrlTo: String?, etag: String?, fileID: String?, encrypted: Bool) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -780,7 +780,7 @@ class NCManageDatabase: NSObject {
                     return
                 }
                 
-                //result.encrypted = encrypted
+                result.encrypted = encrypted
                 if let serverUrlTo = serverUrlTo {
                     result.serverUrl = serverUrlTo
 
