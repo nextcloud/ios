@@ -231,7 +231,7 @@
     // verifico se esiste l'icona e se la posso creare
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadataDetail.fileID]] == NO) {
         
-        [CCGraphics createNewImageFrom:self.metadataDetail.fileID directoryUser:app.directoryUser fileNameTo:self.metadataDetail.fileID extension:[self.metadataDetail.fileName pathExtension] size:@"m" imageForUpload:NO typeFile:self.metadataDetail.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+        [CCGraphics createNewImageFrom:self.metadataDetail.fileID directoryUser:app.directoryUser fileNameTo:self.metadataDetail.fileID extension:[self.metadataDetail.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:self.metadataDetail.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
     }
     
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] || [self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_audio]) {
@@ -695,7 +695,7 @@
     // verifico se esiste l'icona e se la posso creare
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataVar.fileID]] == NO) {
         
-        [CCGraphics createNewImageFrom:metadataVar.fileID directoryUser:app.directoryUser fileNameTo:metadataVar.fileID extension:[metadataVar.fileName pathExtension] size:@"m" imageForUpload:NO typeFile:metadataVar.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+        [CCGraphics createNewImageFrom:metadataVar.fileID directoryUser:app.directoryUser fileNameTo:metadataVar.fileID extension:[metadataVar.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadataVar.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
     }
 }
 
