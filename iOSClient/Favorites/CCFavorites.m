@@ -321,10 +321,10 @@
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:fileNamePath toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:fileNamePath toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
         
-        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName]];
+        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView]];
         
         _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
         _docController.delegate = self;
@@ -393,7 +393,7 @@
             iconHeader = [UIImage imageNamed:metadata.iconName];
     }
     
-    [actionSheet addButtonWithTitle: metadata.fileName image: iconHeader backgroundColor: [NCBrandColor sharedInstance].tabBar height: 50.0 type: AHKActionSheetButtonTypeDisabled handler: nil
+    [actionSheet addButtonWithTitle: metadata.fileNameView image: iconHeader backgroundColor: [NCBrandColor sharedInstance].tabBar height: 50.0 type: AHKActionSheetButtonTypeDisabled handler: nil
     ];
 
     // Share
@@ -696,7 +696,7 @@
     if (serverUrl) {
         
         vc.serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileName];
-        vc.titleViewControl = _metadata.fileName;
+        vc.titleViewControl = _metadata.fileNameView;
     
         [self.navigationController pushViewController:vc animated:YES];
     }
@@ -744,7 +744,7 @@
     _detailViewController.dateFilterQuery = nil;
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     
-    [_detailViewController setTitle:_metadata.fileName];
+    [_detailViewController setTitle:_metadata.fileNameView];
 }
 
 @end
