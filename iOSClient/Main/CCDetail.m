@@ -93,7 +93,7 @@
 
     self.imageBackground.image = [UIImage imageNamed:@"backgroundDetail"];
     
-    if ([self.metadataDetail.fileName length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
+    if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
     
         // open view
         [self viewFile];
@@ -242,7 +242,7 @@
     
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
-        _fileNameExtension = [[self.metadataDetail.fileName pathExtension] uppercaseString];
+        _fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
         
         if ([_fileNameExtension isEqualToString:@"PDF"]) {
             
@@ -274,7 +274,7 @@
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
-    fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileName];
+    fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNameView];
         
     [[NSFileManager defaultManager] removeItemAtPath:fileName error:nil];
     [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
@@ -398,7 +398,7 @@
 {
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
-    NSString *titleDir = metadata.fileName;
+    NSString *titleDir = metadata.fileNameView;
     self.title = titleDir;
     
     return titleDir;
@@ -424,7 +424,7 @@
     
     // Title
     if (metadata)
-        self.title = metadata.fileName;
+        self.title = metadata.fileNameView;
     
     if (_reload) {
         
@@ -446,7 +446,7 @@
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
                 NSString *fileImage = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
-                NSString *ext = [CCUtility getExtension:metadata.fileName];
+                NSString *ext = [CCUtility getExtension:metadata.fileNameView];
                 
                 if ([ext isEqualToString:@"GIF"]) image = [UIImage animatedImageWithAnimatedGIFURL:[NSURL fileURLWithPath:fileImage]];
                 else image = [UIImage imageWithContentsOfFile:fileImage];
@@ -480,7 +480,7 @@
                 if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]]) {
                     
                     // remove and make the simbolic link in temp
-                    NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
+                    NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView];
                     
                     [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
                     [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:toPath error:nil];
@@ -512,7 +512,7 @@
                     UIImage *audioImage;
                     
                     // remove and make the simbolic link in temp
-                    NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
+                    NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView];
                     
                     [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
                     [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:toPath error:nil];
@@ -594,7 +594,7 @@
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     if (metadata == nil) return;
     
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName];
+    NSString *filePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNameView];
         
     [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
     [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:filePath error:nil];
@@ -778,7 +778,7 @@
 
 - (void)viewPDF:(NSString *)password
 {
-    NSString *fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileName];
+    NSString *fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNameView];
         
     [[NSFileManager defaultManager] removeItemAtPath:fileName error:nil];
     [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
@@ -994,9 +994,9 @@
 
 - (void)actionButtonPressed:(UIBarButtonItem *)sender
 {
-    if ([self.metadataDetail.fileName length] == 0) return;
+    if ([self.metadataDetail.fileNameView length] == 0) return;
     
-    NSString *filePath = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), self.metadataDetail.fileName];
+    NSString *filePath = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), self.metadataDetail.fileNameView];
 
     self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
 
@@ -1015,7 +1015,7 @@
 
 - (void)deleteButtonPressed:(UIBarButtonItem *)sender
 {
-    if ([self.metadataDetail.fileName length] == 0) return;
+    if ([self.metadataDetail.fileNameView length] == 0) return;
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
