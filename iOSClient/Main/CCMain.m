@@ -1333,9 +1333,9 @@
         
         [self reloadDatasource:serverUrl];
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
-        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName]];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
+        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView]];
         
         _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
         _docController.delegate = self;
@@ -1361,11 +1361,11 @@
         
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] && status == PHAuthorizationStatusAuthorized) {
                         
-            [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileName] error:nil];
+            [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
             
-            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileName])) {
+            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView])) {
                 
-                UISaveVideoAtPathToSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileName], self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
+                UISaveVideoAtPathToSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView], self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
             } else {
                 [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             }
@@ -1941,7 +1941,7 @@
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
         if (!directoryID) return;
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID = %@ AND account = %@ AND fileName CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID = %@ AND account = %@ AND fileNameView CONTAINS[cd] %@", directoryID, app.activeAccount, fileName];
         NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
             
         [_searchResultMetadatas removeAllObjects];
@@ -2227,6 +2227,7 @@
     metadataNet.directoryID = metadata.directoryID;
     metadataNet.directoryIDTo = directoryIDTo;
     metadataNet.fileName = metadata.fileName;
+    metadataNet.fileNameView = metadata.fileNameView;
     metadataNet.fileNameTo = metadata.fileName;
     metadataNet.etag = metadata.etag;
     metadataNet.selector = selectorMove;
@@ -2645,6 +2646,7 @@
     metadataNet.action = actionShare;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl];
+    metadataNet.fileNameView = metadata.fileNameView;
     metadataNet.password = password;
     metadataNet.selector = selectorShare;
     metadataNet.serverUrl = serverUrl;
@@ -2681,6 +2683,7 @@
     metadataNet.action = actionUnShare;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
+    metadataNet.fileNameView = metadata.fileNameView;
     metadataNet.selector = selectorUnshare;
     metadataNet.serverUrl = serverUrl;
     metadataNet.share = share;
@@ -2749,6 +2752,7 @@
     metadataNet.fileID = metadata.fileID;
     metadataNet.directoryID = directoryID;
     metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:app.activeUrl];
+    metadataNet.fileNameView = metadata.fileNameView;
     metadataNet.serverUrl = serverUrl;
     metadataNet.selector = selectorShare;
     metadataNet.share = user;
@@ -2770,6 +2774,7 @@
     metadataNet.action = actionReadShareServer;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
+    metadataNet.fileNameView = metadata.fileNameView;
     metadataNet.selector = selectorOpenWindowShare;
     metadataNet.serverUrl = serverUrl;
     
@@ -3631,10 +3636,10 @@
                     
                     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
                         
-                        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileName]];
+                        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNameView]];
                         
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileName serverUrl:_serverUrl session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNameView serverUrl:_serverUrl session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
                         });
                         
                         timer += 0.1;
@@ -3925,7 +3930,7 @@
         
         if (directory.lock && [[CCUtility getBlockCode] length] && app.sessionePasscodeLock == nil) lockDirectory = YES;
         
-        [actionSheet addButtonWithTitle:_metadata.fileName
+        [actionSheet addButtonWithTitle:_metadata.fileNameView
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand]
                         backgroundColor:[NCBrandColor sharedInstance].tabBar
                                  height:50.0
@@ -3958,7 +3963,7 @@
                                         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                         
                                         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                            textField.text = _metadata.fileName;
+                                            textField.text = _metadata.fileNameView;
                                             //textField.selectedTextRange = [textField textRangeFromPosition:textField.beginningOfDocument toPosition:textField.endOfDocument];
                                             //textField.delegate = self;
                                             [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
@@ -4099,7 +4104,7 @@
         else
             iconHeader = [UIImage imageNamed:_metadata.iconName];
         
-        [actionSheet addButtonWithTitle: _metadata.fileName
+        [actionSheet addButtonWithTitle: _metadata.fileNameView
                                   image: iconHeader
                         backgroundColor: [NCBrandColor sharedInstance].tabBar
                                  height: 50.0
@@ -4143,7 +4148,7 @@
                                         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                     
                                         [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                            textField.text = _metadata.fileName;
+                                            textField.text = _metadata.fileNameView;
                                             [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                         }];
                                     

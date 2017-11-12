@@ -125,7 +125,7 @@
         }
         else if ([groupByField isEqualToString:@"none"]) dataSection = @"_none_";
         else if ([groupByField isEqualToString:@"date"]) dataSection = [CCUtility datetimeWithOutTime:metadata.date];
-        else if ([groupByField isEqualToString:@"alphabetic"]) dataSection = [[metadata.fileName substringToIndex:1] uppercaseString];
+        else if ([groupByField isEqualToString:@"alphabetic"]) dataSection = [[metadata.fileNameView substringToIndex:1] uppercaseString];
         else if ([groupByField isEqualToString:@"typefile"]) dataSection = metadata.typeFile;
         if (!dataSection) dataSection = @"_none_";
         
