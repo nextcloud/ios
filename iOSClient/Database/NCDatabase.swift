@@ -182,6 +182,7 @@ class tableMetadata: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
+    @objc dynamic var fileNameView = ""
     @objc dynamic var iconName = ""
     @objc dynamic var permissions = ""
     @objc dynamic var session = ""

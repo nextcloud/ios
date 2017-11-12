@@ -77,8 +77,8 @@
         for (tableE2eEncryption *e2eEncryption in e2eEncryptions) {
             if ([metadata.fileName isEqualToString:e2eEncryption.fileNameIdentifier]) {
                 metadata.encrypted = true;
-                metadata.fileName = e2eEncryption.fileName;
-                [CCUtility insertTypeFileIconName:metadata.fileName metadata:metadata];
+                metadata.fileNameView = e2eEncryption.fileName;
+                [CCUtility insertTypeFileIconName:metadata.fileNameView metadata:metadata];
                 break;
             }
         }

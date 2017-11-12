@@ -932,6 +932,7 @@
     metadata.etag = etag;
     metadata.fileID = fileID;
     metadata.fileName = fileName;
+    metadata.fileNameView = fileName;
     metadata.size = size;
     metadata.status = status;
     
@@ -954,6 +955,7 @@
     metadata.fileID = itemDto.ocId;
     metadata.directoryID = directoryID;
     metadata.fileName = fileName;
+    metadata.fileNameView = fileName;
     metadata.iconName = @"";
     metadata.permissions = itemDto.permissions;
     metadata.etag = itemDto.etag;
@@ -966,9 +968,9 @@
     return metadata;
 }
 
-+ (void)insertTypeFileIconName:(NSString *)fileName metadata:(tableMetadata *)metadata
++ (void)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
 {
-    if ([fileName isEqualToString:@"."]) {
+    if ([fileNameView isEqualToString:@"."]) {
         
         metadata.typeFile = k_metadataTypeFile_unknown;
         metadata.iconName = @"file";
@@ -979,7 +981,7 @@
         
     } else {
         
-        CFStringRef fileExtension = (__bridge CFStringRef)[fileName pathExtension];
+        CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
         CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
@@ -1077,6 +1079,7 @@
     metadata.fileID = fileName;
     metadata.directoryID = directory;
     metadata.fileName = fileName;
+    metadata.fileNameView = fileName;
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
     

@@ -566,7 +566,7 @@
     // ----------------------------------------------------------------------------------------------------------
     
     // nome del file
-    cell.labelTitle.text = metadata.fileName;
+    cell.labelTitle.text = metadata.fileNameView;
     
     // è una directory
     if (metadata.directory) {

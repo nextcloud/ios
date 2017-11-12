@@ -556,7 +556,7 @@
     cell.labelTitle.textColor = [UIColor blackColor];
     
     // filename
-    cell.labelTitle.text = metadata.fileName;
+    cell.labelTitle.text = metadata.fileNameView;
     cell.labelInfoFile.text = @"";
     
     // Shared

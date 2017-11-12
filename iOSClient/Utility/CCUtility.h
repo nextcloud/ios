@@ -194,7 +194,7 @@
 
 + (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNamePlain:(NSString *)fileNamePlain directory:(NSString *)directory activeAccount:(NSString *)activeAccount;
 
-+ (void)insertTypeFileIconName:(NSString *)fileName metadata:(tableMetadata *)metadata;
++ (void)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata;
 
 // ===== Third parts =====
 
