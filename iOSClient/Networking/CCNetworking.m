@@ -911,9 +911,8 @@
     metadata.sessionSelector = selector;
     metadata.sessionSelectorPost = selectorPost;
     
-    // *** IS ENCRYPTED ***
-    BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
-    if (encrypted) {
+    // *** IS ENCRYPTED ---> ENCRYPTED FILE ***
+    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
         
         // Create encrypted file
         NSString *fileNameIdentifier = [CCUtility generateRandomIdentifier];
@@ -926,41 +925,6 @@
             
             return;
         }
-        
-        // Create/update Metadata
-        
-        BOOL updateMetadata;
-        
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", _activeAccount, directoryID]];
-        
-        if (directory.e2eMetadataJSON.length > 0) {
-            
-            updateMetadata = YES;
-            
-        } else {
-            
-            updateMetadata = NO;
-            
-        }
-        
-        // ...
-        
-        // Upload Metadata
-        
-        // ...
-        
-        
-        /*
-         NSError *error;
-         BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
-         if (encrypted) {
-         
-         NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
-         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-         error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
-         }
-         */
-        
         
         // Now the fileName is fileNameIdentifier
         metadata.fileName = fileNameIdentifier;
@@ -1147,6 +1111,33 @@
         NSLog(@"[LOG] Upload file TaskIdentifier [error CCErrorTaskNil] - %@", fileName);
         
     } else {
+        
+        // *** IS ENCRYPTED ---> SEND METADATA ***
+        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
+        
+            BOOL updateMetadata;
+        
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+        
+            if (directory.e2eMetadataJSON.length > 0) {
+                updateMetadata = YES;
+            } else {
+                updateMetadata = NO;
+            }
+            
+            // Preparing metadata
+            
+            // Send metadata
+        
+            /*
+             NSError *error;
+         
+             NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
+             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+             error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
+             }
+             */
+        }
         
         [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
         
