@@ -211,7 +211,7 @@ class CCActions: NSObject {
                 return
             }
             
-            NCManageDatabase.sharedInstance.setDirectory(serverUrl: directory!, serverUrlTo: directoryTo!, etag: nil, fileID: nil, encrypted: directoryTable.encrypted)
+            NCManageDatabase.sharedInstance.setDirectory(serverUrl: directory!, serverUrlTo: directoryTo!, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted)
             
         } else {
             

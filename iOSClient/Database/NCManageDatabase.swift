@@ -711,7 +711,7 @@ class NCManageDatabase: NSObject {
                 
                     directoryID = NSUUID().uuidString
                     addObject.directoryID = directoryID
-                    addObject.encrypted = encrypted
+                    addObject.e2eEncrypted = encrypted
                 
                     if let permissions = permissions {
                         addObject.permissions = permissions
@@ -725,7 +725,7 @@ class NCManageDatabase: NSObject {
                         result!.permissions = permissions
                     }
                     directoryID = result!.directoryID
-                    result!.encrypted = encrypted
+                    result!.e2eEncrypted = encrypted
                     realm.add(result!, update: true)
                 }
             }
@@ -780,7 +780,7 @@ class NCManageDatabase: NSObject {
                     return
                 }
                 
-                result.encrypted = encrypted
+                result.e2eEncrypted = encrypted
                 if let serverUrlTo = serverUrlTo {
                     result.serverUrl = serverUrlTo
 
@@ -912,7 +912,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        return result.tokenLock
+        return result.e2eTokenLock
     }
     
     @objc func setDateReadDirectory(directoryID: String) {
@@ -1028,7 +1028,7 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        result.tokenLock = token
+        result.e2eTokenLock = token
         
         do {
             try realm.commitWrite()

@@ -76,7 +76,7 @@
         // Is a Encrypted metadata ?
         for (tableE2eEncryption *e2eEncryption in e2eEncryptions) {
             if ([metadata.fileName isEqualToString:e2eEncryption.fileNameIdentifier]) {
-                metadata.encrypted = true;
+                metadata.e2eEncrypted = true;
                 metadata.fileNameView = e2eEncryption.fileName;
                 [CCUtility insertTypeFileIconName:metadata.fileNameView metadata:metadata];
                 break;

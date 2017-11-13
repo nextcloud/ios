@@ -99,12 +99,13 @@ class tableDirectory: Object {
     @objc dynamic var account = ""
     @objc dynamic var dateReadDirectory: NSDate? = nil
     @objc dynamic var directoryID = ""
-    @objc dynamic var encrypted: Bool = false
+    @objc dynamic var e2eEncrypted: Bool = false
+    @objc dynamic var e2eMetadataJSON = ""
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var lock: Bool = false
-    @objc dynamic var tokenLock = ""
+    @objc dynamic var e2eTokenLock = ""
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     
@@ -178,7 +179,7 @@ class tableMetadata: Object {
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var directoryID = ""
-    @objc dynamic var encrypted: Bool = false
+    @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""

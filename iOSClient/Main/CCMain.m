@@ -1285,7 +1285,7 @@
     
     tableE2eEncryption *e2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier = %@ AND serverUrl = %@", metadata.fileName, serverUrl]];
     if (e2eEncryption) {
-        metadata.encrypted = true;
+        metadata.e2eEncrypted = true;
         metadata.fileName = e2eEncryption.fileName;
         [CCUtility insertTypeFileIconName:metadata.fileName metadata:metadata];
     }
@@ -1744,7 +1744,7 @@
         
     } else {
         
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.encrypted];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", metadataNet.account, metadataNet.directoryID] clearDateReadDirectoryID:metadataNet.directoryID];
         
@@ -1808,7 +1808,7 @@
     }
     
     // Is encrypted folder get metadata
-    if (metadataFolder.encrypted == true) {
+    if (metadataFolder.e2eEncrypted == true) {
         
         if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
             
@@ -4033,7 +4033,7 @@
         }
         
 #ifdef DEBUG
-        if ([CCUtility isEndToEndEnabled:app.activeAccount] && !_metadata.encrypted) {
+        if ([CCUtility isEndToEndEnabled:app.activeAccount] && !_metadata.e2eEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
@@ -4054,7 +4054,7 @@
                                     }];
         }
         
-        if ([CCUtility isEndToEndEnabled:app.activeAccount] && _metadata.encrypted) {
+        if ([CCUtility isEndToEndEnabled:app.activeAccount] && _metadata.e2eEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
@@ -4686,7 +4686,7 @@
         
         if (metadata.directory) {
             
-            if (metadata.encrypted)
+            if (metadata.e2eEncrypted)
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brand];
             else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand];

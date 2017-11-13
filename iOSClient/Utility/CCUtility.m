@@ -949,7 +949,7 @@
     
     metadata.account = activeAccount;
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
-    metadata.encrypted = itemDto.isEncrypted;
+    metadata.e2eEncrypted = itemDto.isEncrypted;
     metadata.directory = itemDto.isDirectory;
     metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
@@ -988,7 +988,7 @@
         
         // thumbnailExists
             
-        if (([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"]) && metadata.encrypted == NO)
+        if (([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"]) && metadata.e2eEncrypted == NO)
             metadata.thumbnailExists = YES;
         else
             metadata.thumbnailExists = NO;

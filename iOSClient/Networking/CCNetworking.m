@@ -937,7 +937,7 @@
         
         // Now the fileName is fileNameIdentifier
         metadata.fileName = fileNameIdentifier;
-        metadata.encrypted = true;
+        metadata.e2eEncrypted = true;
     }
     
     // File exists ???
