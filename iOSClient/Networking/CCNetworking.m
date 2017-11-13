@@ -897,10 +897,25 @@
     if (delegate)
         [_delegates setObject:delegate forKey:uploadID];
     
-    // Is Encrypted ?
+    // create Metadata
+    __block tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName fileNamePlain:fileNamePlain directory:_directoryUser activeAccount:_activeAccount];
+    
+    metadata.date = [NSDate new];
+    metadata.fileID = uploadID;
+    metadata.directoryID = directoryID;
+    metadata.fileName = fileName;
+    metadata.fileNameView = fileName;
+    metadata.assetLocalIdentifier = assetLocalIdentifier;
+    metadata.session = session;
+    metadata.sessionID = uploadID;
+    metadata.sessionSelector = selector;
+    metadata.sessionSelectorPost = selectorPost;
+    
+    // *** IS ENCRYPTED ***
     BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
     if (encrypted) {
         
+        // Create encrypted file
         NSString *fileNameIdentifier = [CCUtility generateRandomIdentifier];
         BOOL result = [self newEndToEndFile:fileName fileNameIdentifier:fileNameIdentifier serverUrl:serverUrl];
         if (result == false) {
@@ -912,23 +927,19 @@
             return;
         }
         
+        // Create/update Metadata
+        
+        // ...
+        
+        // Upload Metadata
+        
+        // ...
+        
         // Now the fileName is fileNameIdentifier
-        fileName = fileNameIdentifier;
+        metadata.fileName = fileNameIdentifier;
+        metadata.encrypted = true;
     }
     
-    // create Metadata
-    __block tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName fileNamePlain:fileNamePlain directory:_directoryUser activeAccount:_activeAccount];
-    
-    metadata.date = [NSDate new];
-    metadata.fileID = uploadID;
-    metadata.directoryID = directoryID;
-    metadata.fileName = fileName;
-    metadata.assetLocalIdentifier = assetLocalIdentifier;
-    metadata.session = session;
-    metadata.sessionID = uploadID;
-    metadata.sessionSelector = selector;
-    metadata.sessionSelectorPost = selectorPost;
-        
     // File exists ???
     if (errorCode == 403) {
             
@@ -1109,18 +1120,6 @@
         NSLog(@"[LOG] Upload file TaskIdentifier [error CCErrorTaskNil] - %@", fileName);
         
     } else {
-        
-        // *** IS ENCRYPTED --> LOCK ***
-        /*
-         NSError *error;
-         BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
-         if (encrypted) {
-         
-         NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
-         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-         error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
-         }
-         */
         
         [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
         
@@ -1573,7 +1572,7 @@
         
         addObject.account = _activeAccount;
         addObject.authenticationTag = authenticationTag;
-        addObject.fileName = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+        addObject.fileName = fileName;
         addObject.fileNameIdentifier = fileNameIdentifier;
         addObject.key = key;
         addObject.initializationVector = initializationVector;

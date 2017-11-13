@@ -123,7 +123,7 @@ class tableE2eEncryption: Object {
     @objc dynamic var initializationVector = ""
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
-    @objc dynamic var version: Int = 0
+    @objc dynamic var version: Int = 1
     
     override static func primaryKey() -> String {
         return "fileNameIdentifier"
