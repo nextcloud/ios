@@ -3422,7 +3422,7 @@
         return NO;
     }
 
-    if (@selector(pasteFile:) == action || @selector(pasteFileEncrypted:) == action) {
+    if (@selector(pasteFile:) == action) {
         
         UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
         NSArray *items = [pasteboard items];
@@ -3459,7 +3459,7 @@
         return NO;
     }
     
-    if (@selector(pasteFiles:) == action || @selector(pasteFilesEncrypted:) == action) {
+    if (@selector(pasteFiles:) == action) {
         
         BOOL isValid = NO;
         
@@ -3593,22 +3593,10 @@
     [self uploadFilePasteArray:[pasteboard items] cryptated:NO];
 }
 
-- (void)pasteFileEncrypted:(id)sender
-{
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [self uploadFilePasteArray:[pasteboard items] cryptated:YES];
-}
-
 - (void)pasteFiles:(id)sender
 {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     [self uploadFilePasteArray:[pasteboard items] cryptated:NO];
-}
-
-- (void)pasteFilesEncrypted:(id)sender
-{
-    UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [self uploadFilePasteArray:[pasteboard items] cryptated:YES];
 }
 
 - (void)uploadFilePasteArray:(NSArray *)items cryptated:(BOOL)cryptated
