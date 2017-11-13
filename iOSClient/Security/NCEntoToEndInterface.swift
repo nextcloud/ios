@@ -529,11 +529,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         do {
             
-            let response = try jsonDecoder.decode(e2eMetadata.self, from: data!)
+            let decode = try jsonDecoder.decode(e2eMetadata.self, from: data!)
             
-            let files = response.files
-            let metadata = response.metadata
-            //let sharing = response.sharing
+            let files = decode.files
+            let metadata = decode.metadata
+            //let sharing = decode.sharing ---> V 2.0
             
             var decodeMetadataKeys = [String:String]()
             
@@ -559,10 +559,10 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             for file in files {
                 
                 let fileNameIdentifier = file.key
-                let element = file.value as e2eMetadata.filesKey
+                let elementOfFile = file.value as e2eMetadata.filesKey
                 
-                let encrypted = element.encrypted
-                let key = decodeMetadataKeys["\(element.metadataKey)"]
+                let encrypted = elementOfFile.encrypted
+                let key = decodeMetadataKeys["\(elementOfFile.metadataKey)"]
                 
                 guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: key) else {
                     appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
@@ -571,19 +571,19 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                 
                 do {
                     
-                    let decrypted = try jsonDecoder.decode(e2eMetadata.encrypted.self, from: decyptedMetadata.data(using: .utf8)!)
+                    let decode = try jsonDecoder.decode(e2eMetadata.encrypted.self, from: decyptedMetadata.data(using: .utf8)!)
                     
                     let object = tableE2eEncryption()
                     
                     object.account = appDelegate.activeAccount
-                    object.authenticationTag = element.authenticationTag
-                    object.fileName = decrypted.filename
+                    object.authenticationTag = elementOfFile.authenticationTag
+                    object.fileName = decode.filename
                     object.fileNameIdentifier = fileNameIdentifier
-                    object.key = decrypted.key
-                    object.initializationVector = element.initializationVector
-                    object.mimeType = decrypted.mimetype
+                    object.key = decode.key
+                    object.initializationVector = elementOfFile.initializationVector
+                    object.mimeType = decode.mimetype
                     object.serverUrl = serverUrl
-                    object.version = decrypted.version
+                    object.version = decode.version
                     
                     if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
                         appDelegate.messageNotification("E2E decode metadata", description: "Serious internal write DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
