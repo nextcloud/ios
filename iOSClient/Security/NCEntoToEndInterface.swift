@@ -362,7 +362,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return false
         }
         
-        NCManageDatabase.sharedInstance.setDirectoryTokenLock(serverUrl: serverUrl, token: token! as String)
+        NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: token! as String)
         
         if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
             
@@ -378,7 +378,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return false
         }
         
-        NCManageDatabase.sharedInstance.setDirectoryTokenLock(serverUrl: serverUrl, token: "")
+        NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: "")
         
         return true
     }
@@ -394,7 +394,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return false
         }
         
-        NCManageDatabase.sharedInstance.setDirectoryTokenLock(serverUrl: serverUrl, token: token! as String)
+        NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: token! as String)
         
         if let error = NCNetworkingSync.sharedManager().deletemarkEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
             
@@ -410,7 +410,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return false
         }
         
-        NCManageDatabase.sharedInstance.setDirectoryTokenLock(serverUrl: serverUrl, token: "")
+        NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: "")
         
         return true
     }
@@ -585,7 +585,14 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
                     object.serverUrl = serverUrl
                     object.version = decode.version
                     
+                    // Write file parameter for decrypted on DB
                     if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
+                        appDelegate.messageNotification("E2E decode metadata", description: "Serious internal write DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                        return false
+                    }
+                    
+                    // Write e2eMetaDataJSON on DB
+                    if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataJSON(serverUrl: serverUrl, metadata: e2eMetaDataJSON) == false {
                         appDelegate.messageNotification("E2E decode metadata", description: "Serious internal write DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                         return false
                     }

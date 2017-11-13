@@ -1013,7 +1013,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func setDirectoryTokenLock(serverUrl: String, token: String) {
+    @objc func setDirectoryE2ETokenLock(serverUrl: String, token: String) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -1037,6 +1037,34 @@ class NCManageDatabase: NSObject {
             return
         }
     }
+    
+    @objc func setDirectoryE2EMetadataJSON(serverUrl: String, metadata: String) -> Bool {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return false
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+            realm.cancelWrite()
+            return false
+        }
+        
+        result.e2eMetadataJSON = metadata
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return false
+        }
+        
+        return true
+    }
+    
     //MARK: -
     //MARK: Table e2e Encryption
     
