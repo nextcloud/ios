@@ -900,7 +900,7 @@ class NCManageDatabase: NSObject {
         return result.serverUrl
     }
     
-    @objc func getDirectoryTokenLock(serverUrl: String) -> String? {
+    @objc func getDirectoryE2ETokenLock(serverUrl: String) -> String? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
