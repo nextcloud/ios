@@ -1122,11 +1122,8 @@
             e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption publicKey:[CCUtility getEndToEndPublicKey:_activeAccount]];
             
             if (!e2eMetadataJSON) {
-                
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error in encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-                
-                [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Serious internal error in encoding metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                
+                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error to encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+                [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Serious internal error to encoding metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
                 return;
             }
         }
@@ -1137,17 +1134,14 @@
             if (e2eMetadataJSON) {
                 if ([self SendEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl] == false) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error in encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-                        
+                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Error to send metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
                         [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Error to send metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                        
                         return;
                     });
                 }
             }
         
             dispatch_async(dispatch_get_main_queue(), ^{
-
                 [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
         
                 // OOOOOOKKKK remove record on Table Auto Upload
