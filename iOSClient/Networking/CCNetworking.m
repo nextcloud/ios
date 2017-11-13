@@ -929,11 +929,38 @@
         
         // Create/update Metadata
         
+        BOOL updateMetadata;
+        
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", _activeAccount, directoryID]];
+        
+        if (directory.e2eMetadataJSON.length > 0) {
+            
+            updateMetadata = YES;
+            
+        } else {
+            
+            updateMetadata = NO;
+            
+        }
+        
         // ...
         
         // Upload Metadata
         
         // ...
+        
+        
+        /*
+         NSError *error;
+         BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
+         if (encrypted) {
+         
+         NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
+         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+         error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
+         }
+         */
+        
         
         // Now the fileName is fileNameIdentifier
         metadata.fileName = fileNameIdentifier;
