@@ -1092,18 +1092,6 @@
     
     NSURLSession *sessionUpload;
     
-    // *** IS ENCRYPTED --> LOCK ***
-    /*
-    NSError *error;
-    BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
-    if (encrypted) {
-            
-        NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-        error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
-    }
-    */
-    
     // NSURLSession
     if ([session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
     else if ([session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
@@ -1121,6 +1109,18 @@
         NSLog(@"[LOG] Upload file TaskIdentifier [error CCErrorTaskNil] - %@", fileName);
         
     } else {
+        
+        // *** IS ENCRYPTED --> LOCK ***
+        /*
+         NSError *error;
+         BOOL encrypted = [CCUtility isFolderEncrypted:serverUrl account:_activeAccount];
+         if (encrypted) {
+         
+         NSString *tokenLock = [[NCManageDatabase sharedInstance] getE2eEncryptionTokenLockWithServerUrl:serverUrl];
+         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+         error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&tokenLock];
+         }
+         */
         
         [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
         
