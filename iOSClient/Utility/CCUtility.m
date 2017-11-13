@@ -905,7 +905,7 @@
 
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account
 {
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directory = 1 AND encrypted = 1", account] sorted:@"directoryID" ascending:false];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directory = 1 AND e2eEncrypted = 1", account] sorted:@"directoryID" ascending:false];
     
     for (tableMetadata *metadata in metadatas) {
         
