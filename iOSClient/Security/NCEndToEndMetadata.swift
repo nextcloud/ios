@@ -106,8 +106,6 @@ class NCEndToEndMetadata : NSObject  {
         }
     }
     
-    
-    // let dataDecoded : NSData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0))!
     @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String) -> Bool {
         
         let jsonDecoder = JSONDecoder.init()
