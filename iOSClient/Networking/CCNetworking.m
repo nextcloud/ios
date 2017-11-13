@@ -1597,6 +1597,7 @@
         addObject.authenticationTag = authenticationTag;
         addObject.fileName = fileName;
         addObject.fileNameIdentifier = fileNameIdentifier;
+        addObject.fileNamePath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
         addObject.key = key;
         addObject.initializationVector = initializationVector;
         

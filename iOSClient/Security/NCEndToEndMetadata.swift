@@ -109,7 +109,7 @@ class NCEndToEndMetadata : NSObject  {
         }
     }
     
-    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String) -> Bool {
+    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String, url: String) -> Bool {
         
         let jsonDecoder = JSONDecoder.init()
         let data = e2eMetaDataJSON.data(using: .utf8)
@@ -163,11 +163,14 @@ class NCEndToEndMetadata : NSObject  {
                     object.authenticationTag = elementOfFile.authenticationTag
                     object.fileName = decode.filename
                     object.fileNameIdentifier = fileNameIdentifier
+                    object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: decode.filename, serverUrl: serverUrl, activeUrl: url)
                     object.key = decode.key
                     object.initializationVector = elementOfFile.initializationVector
                     object.mimeType = decode.mimetype
                     object.serverUrl = serverUrl
                     object.version = decode.version
+                    
+                    // [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
                     
                     // Write file parameter for decrypted on DB
                     if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {

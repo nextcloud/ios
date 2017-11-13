@@ -61,8 +61,7 @@ class NCManageDatabase: NSObject {
             
             // 10 : Version 2.18.0
             // 11 : Add object tableE2eEncryption
-            // 12 : Change primary key of tableE2eEncryption for fileNameIdentifier, remove filed metadataKey, add tokenLock and encrypted on Table Directory
-            //    : add fileNameView on Metadata
+            // 12 : Change primary key of tableE2eEncryption
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0

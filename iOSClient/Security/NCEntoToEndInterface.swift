@@ -402,7 +402,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         let serverUrl = metadataNet.serverUrl + "/" + metadataNet.fileName
         
         // Decode metadata JSON
-        if NCEndToEndMetadata.sharedInstance.decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: serverUrl, account: appDelegate.activeAccount) == false {
+        if NCEndToEndMetadata.sharedInstance.decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) == false {
         
             appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             return
