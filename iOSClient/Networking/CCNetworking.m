@@ -1127,26 +1127,40 @@
                 
                 [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Serious internal error in encoding metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
                 
-                NSLog(@"[LOG] Upload Serious internal error in encoding metadata - %@", fileName);
+                return;
             }
         }
         
-        // *** IS e2eMetadataJSON ---> SEND METADATA ***
-        if (e2eMetadataJSON) {
-        }
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+
+            // *** IS e2eMetadataJSON ---> SEND METADATA ***
+            if (e2eMetadataJSON) {
+                if ([self SendEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl] == false) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error in encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+                        
+                        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Error to send metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+                        
+                        return;
+                    });
+                }
+            }
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+            dispatch_async(dispatch_get_main_queue(), ^{
+
+                [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
         
-        // OOOOOOKKKK remove record on Table Auto Upload
-        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+                // OOOOOOKKKK remove record on Table Auto Upload
+                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
         
-        // Manage uploadTask cancel,suspend,resume
-        if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
-        else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
-        else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+                // Manage uploadTask cancel,suspend,resume
+                if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
+                else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
+                else if (taskStatus == k_taskStatusResume) [uploadTask resume];
         
-        NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
-            
+                NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
+            });
+        });
     }
 
     // refresh main
@@ -1614,8 +1628,9 @@
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     
     NSString *e2eTokenLock = directory.e2eTokenLock;
+    NSError *error;
     
-    NSError *error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&e2eTokenLock];
+    error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&e2eTokenLock];
     if (error) {
         return false;
     }
@@ -1623,11 +1638,21 @@
     [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:e2eTokenLock];
     
     if (directory.e2eMetadataJSON.length > 0) {
-        //[[NCNetworkingSync sharedManager] 
+        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata];
     } else {
-        
+        error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata];
+    }
+    if (error) {
+        return false;
     }
     
+    error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:e2eTokenLock];
+    if (error) {
+        return false;
+    }
+    
+    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
+
     return true;
 }
 

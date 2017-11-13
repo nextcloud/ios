@@ -4032,7 +4032,6 @@
                                     }];
         }
         
-#ifdef DEBUG
         if ([CCUtility isEndToEndEnabled:app.activeAccount] && !_metadata.e2eEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
@@ -4074,7 +4073,6 @@
                                         });
                                     }];
         }
-#endif
         
         [actionSheet show];
     }
