@@ -788,7 +788,6 @@
         [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
             tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-            BOOL result = YES;
             NSError *error = nil;
 
             if ([dataUTI isEqualToString:@"public.heic"] && tableAccount.autoUploadFormatCompatibility) {
@@ -815,14 +814,8 @@
             } else {
                     
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if (result) {
-                        // OOOOOK
-                        [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
-                    } else {
-                        // ERROR
-                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Image request encrypted failed [%@]", error.description] errorCode:error.code];
-                    }
+                    // OOOOOK
+                    [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
                 });
             }
         }];
