@@ -1116,13 +1116,6 @@
         
         // *** IS ENCRYPTED ---> CREATE METADATA ***
         if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
-        
-            BOOL updateMetadata;
-        
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-        
-            if (directory.e2eMetadataJSON.length > 0) updateMetadata = YES;
-            else updateMetadata = NO;
             
             NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
             
@@ -1614,6 +1607,28 @@
     }
     
     return result;
+}
+
+- (BOOL)SendEndToEndMetadata:(NSString *)metadata serverUrl:(NSString *)serverUrl
+{
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+    
+    NSString *e2eTokenLock = directory.e2eTokenLock;
+    
+    NSError *error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&e2eTokenLock];
+    if (error) {
+        return false;
+    }
+    
+    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:e2eTokenLock];
+    
+    if (directory.e2eMetadataJSON.length > 0) {
+        //[[NCNetworkingSync sharedManager] 
+    } else {
+        
+    }
+    
+    return true;
 }
 
 @end

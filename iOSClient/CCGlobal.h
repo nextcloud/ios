@@ -208,9 +208,7 @@ extern NSString *const dav;
 #define actionDeleteEndToEndPublicKey                   @"deleteEndToEndPublicKey"
 #define actionDeleteEndToEndPrivateKey                  @"deleteEndToEndPrivateKey"
 #define actionGetEndToEndServerPublicKey                @"getEndToEndServerPublicKey"
-#define actionStoreEndToEndMetadata                     @"storeEndToEndMetadata"
 #define actionGetEndToEndMetadata                       @"getEndToEndMetadata"
-#define actionUpdateEndToEndMetadata                    @"updateEndToEndMetadata"
 #define actionDeleteEndToEndMetadata                    @"deleteEndToEndMetadata"
 
 // Metadata : FileType

@@ -141,14 +141,8 @@
 - (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet;
 - (void)getEndToEndServerPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
-- (void)storeEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
-- (void)storeEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
 - (void)getEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
 - (void)getEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-- (void)updateEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
-- (void)updateEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)deleteEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
 - (void)deleteEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
