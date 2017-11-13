@@ -64,6 +64,53 @@ class NCEndToEndMetadata : NSObject  {
         return instance
     }()
     
+    // --------------------------------------------------------------------------------------------
+    // MARK: Encode / Decode JSON Metadata
+    // --------------------------------------------------------------------------------------------
+    
+    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], publicKey: String, version: Int) -> String? {
+        
+        let jsonEncoder = JSONEncoder.init()
+        var files = [String: e2eMetadata.filesKey]()
+        
+        // Create "files"
+        for recordE2eEncryption in recordsE2eEncryption {
+            
+            let plainEncrypted = recordE2eEncryption.key+"|"+recordE2eEncryption.fileName+"|"+recordE2eEncryption.mimeType+"|"+",\(recordE2eEncryption.version)"
+            guard let encryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(plainEncrypted, publicKey: publicKey) else {
+                
+                //appDelegate.messageNotification("E2E encore metadata", description: "Serious internal error in creation \"encrypted\" key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                return nil
+            }
+            
+            
+            let e2eMetadataFilesKey = e2eMetadata.filesKey(initializationVector: recordE2eEncryption.initializationVector, authenticationTag: recordE2eEncryption.authenticationTag, metadataKey: 0, encrypted: String(data: encryptedData, encoding: .utf8)!)
+            files.updateValue(e2eMetadataFilesKey, forKey: recordE2eEncryption.fileNameIdentifier)
+        }
+        
+        // Create "metadata"
+        let e2eMetadataKey = e2eMetadata.metadataKey(metadataKeys: ["0":"dcccecfvdfvfvsfdvefvefvefvefvefv"], version: version)
+        
+        // Create final Json e2emetadata
+        let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey, sharing: nil)
+        
+        do {
+            
+            let jsonData = try jsonEncoder.encode(e2emetadata)
+            let jsonString = String(data: jsonData, encoding: .utf8)
+            print("JSON String : " + jsonString!)
+            
+            return jsonString
+            
+        } catch let error {
+            
+            //appDelegate.messageNotification("E2E encore metadata", description: "Serious internal error in encoding metadata ("+error.localizedDescription+")", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+        }
+        
+        return nil
+    }
+    
+    
     // let dataDecoded : NSData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0))!
     @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String) -> String? {
         
