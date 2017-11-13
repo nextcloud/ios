@@ -401,10 +401,10 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         let serverUrl = metadataNet.serverUrl + "/" + metadataNet.fileName
         
-        let error = NCEndToEndMetadata.sharedInstance.decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: serverUrl, account: appDelegate.activeAccount) as String?
+        // Decode metadata JSON
+        if NCEndToEndMetadata.sharedInstance.decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: serverUrl, account: appDelegate.activeAccount) == false {
         
-        if error != nil {
-            appDelegate.messageNotification("E2E decode metadata", description: error!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             return
         }
 

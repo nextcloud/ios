@@ -78,11 +78,9 @@ class NCEndToEndMetadata : NSObject  {
             
             let plainEncrypted = recordE2eEncryption.key+"|"+recordE2eEncryption.fileName+"|"+recordE2eEncryption.mimeType+"|"+",\(recordE2eEncryption.version)"
             guard let encryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(plainEncrypted, publicKey: publicKey) else {
-                
-                //appDelegate.messageNotification("E2E encore metadata", description: "Serious internal error in creation \"encrypted\" key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                print("Serious internal error in encoding metadata")
                 return nil
             }
-            
             
             let e2eMetadataFilesKey = e2eMetadata.filesKey(initializationVector: recordE2eEncryption.initializationVector, authenticationTag: recordE2eEncryption.authenticationTag, metadataKey: 0, encrypted: String(data: encryptedData, encoding: .utf8)!)
             files.updateValue(e2eMetadataFilesKey, forKey: recordE2eEncryption.fileNameIdentifier)
@@ -103,16 +101,14 @@ class NCEndToEndMetadata : NSObject  {
             return jsonString
             
         } catch let error {
-            
-            //appDelegate.messageNotification("E2E encore metadata", description: "Serious internal error in encoding metadata ("+error.localizedDescription+")", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            print("Serious internal error in encoding metadata ("+error.localizedDescription+")")
+            return nil
         }
-        
-        return nil
     }
     
     
     // let dataDecoded : NSData = NSData(base64Encoded: encrypted, options: NSData.Base64DecodingOptions(rawValue: 0))!
-    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String) -> String? {
+    @objc func decoderMetadata(_ e2eMetaDataJSON: String, privateKey: String, serverUrl: String, account: String) -> Bool {
         
         let jsonDecoder = JSONDecoder.init()
         let data = e2eMetaDataJSON.data(using: .utf8)
@@ -130,11 +126,11 @@ class NCEndToEndMetadata : NSObject  {
             for metadataKeys in metadata.metadataKeys {
                 
                 guard let metadataKeysData : NSData = NSData(base64Encoded: metadataKeys.value, options: NSData.Base64DecodingOptions(rawValue: 0)) else {
-                    return "Serious internal error in decoding metadata"
+                    return false
                 }
                 
                 guard let metadataKey = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeysData as Data!, privateKey: privateKey) else {
-                    return "Serious internal error in decoding metadata"
+                    return false
                 }
                 
                 // Encode to Base64
@@ -153,7 +149,7 @@ class NCEndToEndMetadata : NSObject  {
                 let key = decodeMetadataKeys["\(elementOfFile.metadataKey)"]
                 
                 guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: key) else {
-                    return "Serious internal error in decoding metadata"
+                    return false
                 }
                 
                 do {
@@ -174,23 +170,25 @@ class NCEndToEndMetadata : NSObject  {
                     
                     // Write file parameter for decrypted on DB
                     if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
-                        return "Serious internal write DB"
+                        return false
                     }
                     
                     // Write e2eMetaDataJSON on DB
                     if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataJSON(serverUrl: serverUrl, metadata: e2eMetaDataJSON) == false {
-                        return "Serious internal write DB"
+                        return false
                     }
                     
                 } catch let error {
-                    return "Serious internal error in decoding metadata ("+error.localizedDescription+")"
+                    print("Serious internal error in decoding metadata ("+error.localizedDescription+")")
+                    return false
                 }
             }
             
         } catch let error {
-            return "Serious internal error in decoding metadata ("+error.localizedDescription+")"
+            print("Serious internal error in decoding metadata ("+error.localizedDescription+")")
+            return false
         }
         
-        return nil
+        return true
     }
 }
