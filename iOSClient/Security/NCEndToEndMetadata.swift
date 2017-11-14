@@ -88,7 +88,7 @@ class NCEndToEndMetadata : NSObject  {
                 let encryptedJsonData = try jsonEncoder.encode(encrypted)
                 let encryptedJsonString = String(data: encryptedJsonData, encoding: .utf8)
                 
-                guard let encryptedEncryptionData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(encryptedJsonString, publicKey: publicKey) else {
+                guard let encryptedEncryptionData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(encryptedJsonString, publicKey: nil, privateKey: privateKey) else {
                     print("Serious internal error in encoding metadata")
                     return nil
                 }

@@ -425,7 +425,7 @@ cleanup:
     
         if (privateKey) {
         
-            NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey];
+            NSData *encryptData = [self encryptAsymmetricString:ASYMMETRIC_STRING_TEST publicKey:publicKey privateKey:nil];
             if (!encryptData)
                 return nil;
         
@@ -550,24 +550,42 @@ cleanup:
 #pragma mark - Asymmetric Encrypt/Decrypt String
 #
 
-- (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey
+- (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey
 {
-    unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
     ENGINE *eng = NULL;
+    EVP_PKEY *key = NULL;
     int status = 0;
     
-    // Extract real publicKey
-    BIO *bio = BIO_new_mem_buf(pKey, -1);
-    if (!bio)
-        return nil;
+    if (publicKey != nil) {
+        
+        unsigned char *pKey = (unsigned char *)[publicKey UTF8String];
+
+        // Extract real publicKey
+        BIO *bio = BIO_new_mem_buf(pKey, -1);
+        if (!bio)
+            return nil;
+        
+        X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
+        if (!x509)
+            return nil;
+        
+        key = X509_get_pubkey(x509);
+        if (!key)
+            return nil;
+    }
     
-    X509 *x509 = PEM_read_bio_X509(bio, NULL, 0, NULL);
-    if (!x509)
-        return nil;
-    
-    EVP_PKEY *key = X509_get_pubkey(x509);
-    if (!key)
-        return nil;
+    if (privateKey != nil) {
+        
+        unsigned char *pKey = (unsigned char *)[privateKey UTF8String];
+
+        BIO *bio = BIO_new_mem_buf(pKey, -1);
+        if (!bio)
+            return nil;
+        
+        key = PEM_read_bio_PrivateKey(bio, NULL, NULL, NULL);
+        if (!key)
+            return nil;
+    }
     
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(key, eng);
     if (!ctx)
