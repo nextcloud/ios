@@ -149,7 +149,7 @@ class NCEndToEndMetadata : NSObject  {
                     return false
                 }
                 
-                // Encode to Base64
+                // Initialize a `Data` from a Base-64 encoded String
                 let publicKeyBase64Data = Data(base64Encoded: publicKeyBase64, options: NSData.Base64DecodingOptions(rawValue: 0))!
                 let publicKey = String(data: publicKeyBase64Data, encoding: .utf8)
                 
@@ -164,13 +164,13 @@ class NCEndToEndMetadata : NSObject  {
                 let encrypted = filesCodable.encrypted
                 let key = publicKeys["\(filesCodable.metadataKey)"]
                 
-                guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: key) else {
+                guard let encryptedFileAttributesJson = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: key) else {
                     return false
                 }
                 
                 do {
                     
-                    let encryptedFileAttributes = try jsonDecoder.decode(e2eMetadata.encryptedFileAttributes.self, from: decyptedMetadata.data(using: .utf8)!)
+                    let encryptedFileAttributes = try jsonDecoder.decode(e2eMetadata.encryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
                     
                     let object = tableE2eEncryption()
                     
