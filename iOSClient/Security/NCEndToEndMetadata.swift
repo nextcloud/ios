@@ -137,23 +137,23 @@ class NCEndToEndMetadata : NSObject  {
             let metadata = decode.metadata
             //let sharing = decode.sharing ---> V 2.0
             
-            var decodeMetadataKeys = [String:String]()
+            var publicKeys = [String:String]()
             
             for metadataKeys in metadata.metadataKeys {
                 
-                guard let metadataKeysData : NSData = NSData(base64Encoded: metadataKeys.value, options: NSData.Base64DecodingOptions(rawValue: 0)) else {
+                guard let publicKeyEncryptedData : NSData = NSData(base64Encoded: metadataKeys.value, options: NSData.Base64DecodingOptions(rawValue: 0)) else {
                     return false
                 }
                 
-                guard let metadataKey = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeysData as Data!, privateKey: privateKey) else {
+                guard let publicKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(publicKeyEncryptedData as Data!, privateKey: privateKey) else {
                     return false
                 }
                 
                 // Encode to Base64
-                let metadataKeyData = Data(base64Encoded: metadataKey, options: NSData.Base64DecodingOptions(rawValue: 0))!
-                let metadataKeyBase64 = String(data: metadataKeyData, encoding: .utf8)
+                let publicKeyBase64Data = Data(base64Encoded: publicKeyBase64, options: NSData.Base64DecodingOptions(rawValue: 0))!
+                let publicKey = String(data: publicKeyBase64Data, encoding: .utf8)
                 
-                decodeMetadataKeys[metadataKeys.key] = metadataKeyBase64
+                publicKeys[metadataKeys.key] = publicKey
             }
             
             for file in files {
@@ -162,7 +162,7 @@ class NCEndToEndMetadata : NSObject  {
                 let filesCodable = file.value as e2eMetadata.filesCodable
                 
                 let encrypted = filesCodable.encrypted
-                let key = decodeMetadataKeys["\(filesCodable.metadataKey)"]
+                let key = publicKeys["\(filesCodable.metadataKey)"]
                 
                 guard let decyptedMetadata = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: key) else {
                     return false
