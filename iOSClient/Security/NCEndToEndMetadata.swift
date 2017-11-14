@@ -75,7 +75,7 @@ class NCEndToEndMetadata : NSObject  {
         var version = 1
         
         // Generate Key
-        let key = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString()
+        let key = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString() // AES_KEY_128_LENGTH
         guard let metadataKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) else {
             return nil
         }
