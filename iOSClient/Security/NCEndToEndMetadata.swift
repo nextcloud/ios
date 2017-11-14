@@ -50,8 +50,8 @@ class NCEndToEndMetadata : NSObject  {
             
             let initializationVector: String
             let authenticationTag: String
-            let metadataKey: Int
-            let encrypted: String // encryptedFileAttributes
+            let metadataKey: Int                // Number of metadataKey
+            let encrypted: String               // encryptedFileAttributes
         }
         
         let files: [String: filesCodable]
@@ -141,23 +141,23 @@ class NCEndToEndMetadata : NSObject  {
             let metadata = decode.metadata
             //let sharing = decode.sharing ---> V 2.0
             
-            var publicKeys = [String:String]()
+            var metadataKeysDictionary = [String:String]()
             
-            for metadataKeys in metadata.metadataKeys {
+            for metadataKeyDictionaryEncrypted in metadata.metadataKeys {
                 
-                guard let publicKeyEncryptedData : NSData = NSData(base64Encoded: metadataKeys.value, options: NSData.Base64DecodingOptions(rawValue: 0)) else {
+                guard let metadataKeyEncryptedData : NSData = NSData(base64Encoded: metadataKeyDictionaryEncrypted.value, options: NSData.Base64DecodingOptions(rawValue: 0)) else {
                     return false
                 }
                 
-                guard let publicKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(publicKeyEncryptedData as Data!, privateKey: privateKey) else {
+                guard let metadataKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeyEncryptedData as Data!, privateKey: privateKey) else {
                     return false
                 }
                 
                 // Initialize a `Data` from a Base-64 encoded String
-                let publicKeyBase64Data = Data(base64Encoded: publicKeyBase64, options: NSData.Base64DecodingOptions(rawValue: 0))!
-                let publicKey = String(data: publicKeyBase64Data, encoding: .utf8)
+                let metadataKeyBase64Data = Data(base64Encoded: metadataKeyBase64, options: NSData.Base64DecodingOptions(rawValue: 0))!
+                let metadataKey = String(data: metadataKeyBase64Data, encoding: .utf8)
                 
-                publicKeys[metadataKeys.key] = publicKey
+                metadataKeysDictionary[metadataKeyDictionaryEncrypted.key] = metadataKey
             }
             
             for file in files {
@@ -166,7 +166,7 @@ class NCEndToEndMetadata : NSObject  {
                 let filesCodable = file.value as e2eMetadata.filesCodable
                 
                 let encrypted = filesCodable.encrypted
-                let key = publicKeys["\(filesCodable.metadataKey)"]
+                let key = metadataKeysDictionary["\(filesCodable.metadataKey)"]
                 
                 guard let encryptedFileAttributesJson = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: key) else {
                     return false
