@@ -51,7 +51,7 @@ class NCEndToEndMetadata : NSObject  {
             let initializationVector: String
             let authenticationTag: String
             let metadataKey: Int
-            let encrypted: String // encryptedFile
+            let encrypted: String // encryptedFileAttributes
         }
         
         let files: [String: filesCodable]
@@ -68,11 +68,14 @@ class NCEndToEndMetadata : NSObject  {
     // MARK: Encode / Decode JSON Metadata
     // --------------------------------------------------------------------------------------------
     
-    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], publicKey: String) -> String? {
+    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], publicKey: String, privateKey: String) -> String? {
         
         let jsonEncoder = JSONEncoder.init()
         var files = [String: e2eMetadata.filesCodable]()
         var version = 1
+        
+        // Create publicKey encrypted
+        //NCEndToEndEncryption.sharedManager().encryptAsymmetricString(<#T##plain: String!##String!#>, publicKey: <#T##String!#>)
         
         // Create "files"
         for recordE2eEncryption in recordsE2eEncryption {
