@@ -75,7 +75,10 @@ class NCEndToEndMetadata : NSObject  {
         var version = 1
         
         // Create publicKey encrypted
-        //NCEndToEndEncryption.sharedManager().encryptAsymmetricString(<#T##plain: String!##String!#>, publicKey: <#T##String!#>)
+        guard let publicKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(publicKey, publicKey: nil, privateKey: privateKey) else {
+            return nil
+        }
+        let publicKeyBase64 = publicKeyEncryptedData.base64EncodedString()
         
         // Create "files"
         for recordE2eEncryption in recordsE2eEncryption {
@@ -87,6 +90,9 @@ class NCEndToEndMetadata : NSObject  {
                 // Create "encrypted"
                 let encryptedJsonData = try jsonEncoder.encode(encrypted)
                 let encryptedJsonString = String(data: encryptedJsonData, encoding: .utf8)
+                
+                //NCEndToEndEncryption.sharedManager().decryptmetadata
+                
                 
                 guard let encryptedEncryptionData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(encryptedJsonString, publicKey: nil, privateKey: privateKey) else {
                     print("Serious internal error in encoding metadata")
@@ -108,7 +114,7 @@ class NCEndToEndMetadata : NSObject  {
         }
         
         // Create "metadataKey" with encrypted publicKey
-        let e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: ["0":"dcccecfvdfvfvsfdvefvefvefvefvefv"], version: version)
+        let e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: ["0":publicKeyBase64], version: version)
         
         // Create final Json e2emetadata
         let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey, sharing: nil)
@@ -167,7 +173,7 @@ class NCEndToEndMetadata : NSObject  {
                 let encrypted = filesCodable.encrypted
                 let key = publicKeys["\(filesCodable.metadataKey)"]
                 
-                guard let encryptedFileAttributesJson = NCEndToEndEncryption.sharedManager().decryptMetadata(encrypted, key: key) else {
+                guard let encryptedFileAttributesJson = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: key) else {
                     return false
                 }
                 

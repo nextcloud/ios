@@ -446,10 +446,37 @@ cleanup:
 
 
 #
-#pragma mark - Encrypt / Decrypt Metadata
+#pragma mark - Encrypt / Decrypt Encrypted Json
 #
 
-- (NSString *)decryptMetadata:(NSString *)encrypted key:(NSString *)key
+- (NSString *)encryptEncryptedJson:(NSString *)encrypted key:(NSString *)key
+{
+    NSMutableData *cipherData;
+    NSData *tagData;
+    
+    NSData *plainData = [[NSData alloc] initWithBase64EncodedString:encrypted options:0];
+
+    // Key
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
+
+    //IV
+    NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
+    
+    BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
+    
+    if (cipherData != nil && result) {
+        
+        /* ENCODE 64                                                     */
+        NSString *metadata = [cipherData base64EncodedStringWithOptions:0];
+        /* --------------------------------------------------------------*/
+        
+        return metadata;
+    }
+    
+    return nil;
+}
+
+- (NSString *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key
 {
     NSMutableData *plainData;
     NSRange range = [encrypted rangeOfString:IV_DELIMITER_ENCODED];
@@ -473,16 +500,14 @@ cleanup:
     
     if (plainData != nil && result) {
         
-        /* DENCODE 64 privateKey JAVA compatibility */
+        /* DENCODE 64 JAVA compatibility            */
         NSString *plain = [self base64DecodeData:plainData];
         /* ---------------------------------------- */
     
         return plain;
-        
-    } else {
-        
-        return nil;
     }
+        
+    return nil;
 }
 
 #
