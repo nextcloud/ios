@@ -231,6 +231,9 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSError *returnError= nil;
 
+    // Encode metadata
+    metadata = [CCUtility URLEncodeStringFromString:metadata];
+    
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
@@ -257,6 +260,9 @@
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     __block NSError *returnError= nil;
     
+    // Encode metadata
+    metadata = [CCUtility URLEncodeStringFromString:metadata];
+
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
