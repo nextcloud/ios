@@ -455,7 +455,9 @@ cleanup:
     NSData *tagData;
     
     // Plain
-    NSData *plainData = [[NSData alloc] initWithBase64EncodedString:encrypted options:0];
+    //NSData *plainData = [[NSData alloc] initWithBase64EncodedString:encrypted options:0];
+    NSData *plainData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
+
 
     // Key
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
