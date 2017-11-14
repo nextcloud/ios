@@ -1119,7 +1119,7 @@
             
             NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
             
-            e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption publicKey:[CCUtility getEndToEndPublicKey:_activeAccount] privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount]];
+            e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount]];
             
             if (!e2eMetadataJSON) {
                 [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error to encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
