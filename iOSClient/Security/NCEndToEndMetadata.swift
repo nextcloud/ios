@@ -74,11 +74,12 @@ class NCEndToEndMetadata : NSObject  {
         var files = [String: e2eMetadata.filesCodable]()
         var version = 1
         
-        // Create publicKey encrypted
-        guard let publicKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(publicKey, publicKey: nil, privateKey: privateKey) else {
+        // Generate Key
+        let key = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString()
+        guard let metadataKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) else {
             return nil
         }
-        let publicKeyBase64 = publicKeyEncryptedData.base64EncodedString()
+        let metadataKeyBase64 = metadataKeyEncryptedData.base64EncodedString()
         
         // Create "files"
         for recordE2eEncryption in recordsE2eEncryption {
@@ -91,7 +92,7 @@ class NCEndToEndMetadata : NSObject  {
                 let encryptedJsonData = try jsonEncoder.encode(encrypted)
                 let encryptedJsonString = String(data: encryptedJsonData, encoding: .utf8)
                 
-                guard let encryptedEncryptedJson = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedJsonString, key: publicKeyBase64) else {
+                guard let encryptedEncryptedJson = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedJsonString, key: metadataKeyBase64) else {
                     print("Serious internal error in encoding metadata")
                     return nil
                 }
@@ -109,7 +110,7 @@ class NCEndToEndMetadata : NSObject  {
         }
         
         // Create "metadataKey" with encrypted publicKey
-        let e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: ["0":publicKeyBase64], version: version)
+        let e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: ["0":metadataKeyBase64], version: version)
         
         // Create final Json e2emetadata
         let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey, sharing: nil)
