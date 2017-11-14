@@ -577,7 +577,7 @@ cleanup:
 
 - (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey
 {
-    ENGINE *eng = NULL;
+    ENGINE *eng = ENGINE_get_default_RSA();
     EVP_PKEY *key = NULL;
     int status = 0;
     
