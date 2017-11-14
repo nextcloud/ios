@@ -91,17 +91,12 @@ class NCEndToEndMetadata : NSObject  {
                 let encryptedJsonData = try jsonEncoder.encode(encrypted)
                 let encryptedJsonString = String(data: encryptedJsonData, encoding: .utf8)
                 
-                //NCEndToEndEncryption.sharedManager().decryptmetadata
-                
-                
-                guard let encryptedEncryptionData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(encryptedJsonString, publicKey: nil, privateKey: privateKey) else {
+                guard let encryptedEncryptedJson = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedJsonString, key: publicKeyBase64) else {
                     print("Serious internal error in encoding metadata")
                     return nil
                 }
                 
-                let encryptedEncryptionBase64 = encryptedEncryptionData.base64EncodedString()
-                
-                let e2eMetadataFilesKey = e2eMetadata.filesCodable(initializationVector: recordE2eEncryption.initializationVector, authenticationTag: recordE2eEncryption.authenticationTag, metadataKey: 0, encrypted: encryptedEncryptionBase64)
+                let e2eMetadataFilesKey = e2eMetadata.filesCodable(initializationVector: recordE2eEncryption.initializationVector, authenticationTag: recordE2eEncryption.authenticationTag, metadataKey: 0, encrypted: encryptedEncryptedJson)
                 
                 files.updateValue(e2eMetadataFilesKey, forKey: recordE2eEncryption.fileNameIdentifier)
                 

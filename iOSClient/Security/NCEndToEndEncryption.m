@@ -454,6 +454,7 @@ cleanup:
     NSMutableData *cipherData;
     NSData *tagData;
     
+    // Plain
     NSData *plainData = [[NSData alloc] initWithBase64EncodedString:encrypted options:0];
 
     // Key
@@ -466,11 +467,10 @@ cleanup:
     
     if (cipherData != nil && result) {
         
-        /* ENCODE 64                                                     */
-        NSString *metadata = [cipherData base64EncodedStringWithOptions:0];
-        /* --------------------------------------------------------------*/
+        NSString *cipherBase64 = [cipherData base64EncodedStringWithOptions:0];
+        NSString *ivBase64 = [ivData base64EncodedStringWithOptions:0];
         
-        return metadata;
+        return [NSString stringWithFormat:@"%@%@%@", cipherBase64, IV_DELIMITER_ENCODED, ivBase64];
     }
     
     return nil;
