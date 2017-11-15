@@ -455,14 +455,12 @@ cleanup:
     NSData *tagData;
     
     // Plain
-    //NSData *plainData = [[NSData alloc] initWithBase64EncodedString:encrypted options:0];
     NSData *plainData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
-
-
+    
     // Key
-    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
+    NSData *keyData = [self base64DecodeString:key];
 
-    //IV
+    // IV
     NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
     
     BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
@@ -963,7 +961,8 @@ cleanup:
     return [NSString stringWithString:hexString];
 }
 
-- (NSString *)base64Encode:(NSData *)input
+/*
+- (NSData *)base64Encode:(NSData *)input
 {
     void *bytes;
 
@@ -977,8 +976,9 @@ cleanup:
     
     BIO_free_all(buffer);
     
-    return string;
+    return [string dataUsingEncoding:NSUTF8StringEncoding];
 }
+*/
 
 - (NSString *)base64DecodeData:(NSData *)input
 {

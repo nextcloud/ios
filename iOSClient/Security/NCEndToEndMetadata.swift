@@ -75,11 +75,11 @@ class NCEndToEndMetadata : NSObject  {
         var version = 1
         
         // Generate Key
-        //let key = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString() // AES_KEY_128_LENGTH
-        var key = "LPOJLSgnHTuI9yKQVpaqSA=="
+        //let keyGenerated = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString() // AES_KEY_128_LENGTH
+        let keyGenerated = "LPOJLSgnHTuI9yKQVpaqSA=="
         
-        // Double Encode64 for Android compatibility
-        key = (key.data(using: .utf8)?.base64EncodedString())!
+        // Double Encode64 for Android compatibility OMG
+        let key = (keyGenerated.data(using: .utf8)?.base64EncodedString())!
         
         guard let metadataKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) else {
             return nil
@@ -97,7 +97,7 @@ class NCEndToEndMetadata : NSObject  {
                 let encryptedJsonData = try jsonEncoder.encode(encrypted)
                 let encryptedJsonString = String(data: encryptedJsonData, encoding: .utf8)
                 
-                guard let encryptedEncryptedJson = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedJsonString, key: metadataKeyBase64) else {
+                guard let encryptedEncryptedJson = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedJsonString, key: key) else {
                     print("Serious internal error in encoding metadata")
                     return nil
                 }
