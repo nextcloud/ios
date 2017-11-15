@@ -644,10 +644,11 @@
             
             cell.status.image = [UIImage imageNamed:@"statuserror"];
             
-            if ([metadata.sessionError length] == 0)
+            if ([metadata.sessionError length] == 0) {
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_downloaded_",nil)];
-            else
-                cell.labelInfoFile.text = [CCError manageErrorKCF:[metadata.sessionError integerValue] withNumberError:NO];
+            } else {
+                cell.labelInfoFile.text = metadata.sessionError;
+            }
         }
     }
     
@@ -704,10 +705,11 @@
             cell.labelTitle.enabled = NO;
             cell.status.image = [UIImage imageNamed:@"statuserror"];
             
-            if ([metadata.sessionError length] == 0)
+            if ([metadata.sessionError length] == 0) {
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];
-            else
-                cell.labelInfoFile.text = [CCError manageErrorKCF:[metadata.sessionError integerValue] withNumberError:NO];
+            } else {
+                cell.labelInfoFile.text = metadata.sessionError;
+            }
         }
     }
     
