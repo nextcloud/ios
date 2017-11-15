@@ -125,9 +125,7 @@ class NCEndToEndMetadata : NSObject  {
             let jsonData = try jsonEncoder.encode(e2emetadata)
             let jsonString = String(data: jsonData, encoding: .utf8)
             print("JSON String : " + jsonString!)
-            
-            _ = decoderMetadata(jsonString!, privateKey: privateKey, serverUrl: "", account: "", url: "")
-            
+                        
             return jsonString
             
         } catch let error {
