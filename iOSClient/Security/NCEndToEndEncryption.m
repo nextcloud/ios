@@ -365,13 +365,9 @@ cleanup:
     
     if (result && privateKeyCipherData) {
         
-        NSString *privateKeyCipherBase64;
-        NSString *initVectorBase64;
-        NSString *privateKeyCipherWithInitVectorBase64;
-
-        privateKeyCipherBase64 = [privateKeyCipherData base64EncodedStringWithOptions:0];
-        initVectorBase64 = [ivData base64EncodedStringWithOptions:0];
-        privateKeyCipherWithInitVectorBase64 = [NSString stringWithFormat:@"%@%@%@", privateKeyCipherBase64, IV_DELIMITER_ENCODED, initVectorBase64];
+        NSString *privateKeyCipherBase64 = [privateKeyCipherData base64EncodedStringWithOptions:0];
+        NSString *initVectorBase64 = [ivData base64EncodedStringWithOptions:0];
+        NSString *privateKeyCipherWithInitVectorBase64 = [NSString stringWithFormat:@"%@%@%@", privateKeyCipherBase64, IV_DELIMITER_ENCODED, initVectorBase64];
         
         *privateKey = [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
         return privateKeyCipherWithInitVectorBase64;
@@ -451,13 +447,13 @@ cleanup:
 - (NSString *)encryptEncryptedJson:(NSString *)encrypted key:(NSString *)key
 {
     NSMutableData *cipherData;
-    NSData *tagData;
+    NSData *tagData = [NSData new];
     
     // Plain
     NSData *plainData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
     
     // Key
-    NSData *keyData = [self base64DecodeString:key];
+    NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
 
     // IV
     NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
@@ -468,8 +464,9 @@ cleanup:
         
         NSString *cipherBase64 = [cipherData base64EncodedStringWithOptions:0];
         NSString *ivBase64 = [ivData base64EncodedStringWithOptions:0];
+        NSString *encryptedJson = [NSString stringWithFormat:@"%@%@%@", cipherBase64, IV_DELIMITER_ENCODED, ivBase64];
         
-        return [NSString stringWithFormat:@"%@%@%@", cipherBase64, IV_DELIMITER_ENCODED, ivBase64];
+        return encryptedJson;
     }
     
     return nil;
