@@ -449,8 +449,11 @@ cleanup:
     NSMutableData *cipherData;
     NSData *tagData = [NSData new];
     
-    // Plain
-    NSData *plainData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
+    // ENCODE 64 encrypted JAVA compatibility */
+    NSData *encryptedData = [encrypted dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *encryptedDataBase64 = [encryptedData base64EncodedStringWithOptions:0];
+    NSData *encryptedData64Data = [encryptedDataBase64 dataUsingEncoding:NSUTF8StringEncoding];
+    /* --------------------------------------- */
     
     // Key
     NSData *keyData = [[NSData alloc] initWithBase64EncodedString:key options:0];
@@ -458,7 +461,7 @@ cleanup:
     // IV
     NSData *ivData = [self generateIV:AES_IVEC_LENGTH];
     
-    BOOL result = [self encryptData:plainData cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
+    BOOL result = [self encryptData:encryptedData64Data cipherData:&cipherData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:&tagData];
     
     if (cipherData != nil && result) {
         
