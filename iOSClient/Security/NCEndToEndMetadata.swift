@@ -75,7 +75,9 @@ class NCEndToEndMetadata : NSObject  {
         var version = 1
         
         // Generate Key
-        let key = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString() // AES_KEY_128_LENGTH
+        //let key = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString() // AES_KEY_128_LENGTH
+        let key = "LPOJLSgnHTuI9yKQVpaqSA=="
+        
         guard let metadataKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) else {
             return nil
         }
@@ -120,6 +122,8 @@ class NCEndToEndMetadata : NSObject  {
             let jsonData = try jsonEncoder.encode(e2emetadata)
             let jsonString = String(data: jsonData, encoding: .utf8)
             print("JSON String : " + jsonString!)
+            
+            _ = decoderMetadata(jsonString!, privateKey: privateKey, serverUrl: "", account: "", url: "")
             
             return jsonString
             
