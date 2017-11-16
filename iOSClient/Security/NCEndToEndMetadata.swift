@@ -68,15 +68,19 @@ class NCEndToEndMetadata : NSObject  {
     // MARK: Encode / Decode JSON Metadata
     // --------------------------------------------------------------------------------------------
     
-    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String) -> String? {
+    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String, key: String?) -> String? {
         
         let jsonEncoder = JSONEncoder.init()
         var files = [String: e2eMetadata.filesCodable]()
         var version = 1
+        var keyGenerated = ""
         
         // Generate Key
-        //let keyGenerated = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString() // AES_KEY_128_LENGTH
-        let keyGenerated = "LPOJLSgnHTuI9yKQVpaqSA=="
+        if (key == nil) {
+            keyGenerated = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString() // AES_KEY_128_LENGTH
+        } else {
+            keyGenerated = key!
+        }
         
         // Double Encode64 for Android compatibility OMG
         let key = (keyGenerated.data(using: .utf8)?.base64EncodedString())!
@@ -201,7 +205,7 @@ class NCEndToEndMetadata : NSObject  {
                     }
                     
                     // Write e2eMetaDataJSON on DB
-                    if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataJSON(serverUrl: serverUrl, metadata: e2eMetaDataJSON) == false {
+                    if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataKey(serverUrl: serverUrl, metadataKey: key!) == false {
                         return false
                     }
                     

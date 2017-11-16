@@ -100,7 +100,7 @@ class tableDirectory: Object {
     @objc dynamic var dateReadDirectory: NSDate? = nil
     @objc dynamic var directoryID = ""
     @objc dynamic var e2eEncrypted: Bool = false
-    @objc dynamic var e2eMetadataJSON = ""
+    @objc dynamic var e2eMetadataKey = ""
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""

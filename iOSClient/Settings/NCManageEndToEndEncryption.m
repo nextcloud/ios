@@ -143,7 +143,6 @@
         [section addFormRow:row];   
     }
     
-/*
 #ifdef DEBUG
     // Section DELETE KEYS -------------------------------------------------
     
@@ -167,7 +166,6 @@
     [section addFormRow:row];
     
 #endif
-*/
     
     self.form = form;
 }

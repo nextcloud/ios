@@ -1041,7 +1041,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectoryE2EMetadataJSON(serverUrl: String, metadata: String) -> Bool {
+    @objc func setDirectoryE2EMetadataKey(serverUrl: String, metadataKey: String) -> Bool {
         
         guard let tableAccount = self.getAccountActive() else {
             return false
@@ -1056,7 +1056,7 @@ class NCManageDatabase: NSObject {
             return false
         }
         
-        result.e2eMetadataJSON = metadata
+        result.e2eMetadataKey = metadataKey
         
         do {
             try realm.commitWrite()
