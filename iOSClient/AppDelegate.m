@@ -217,7 +217,7 @@
     
     // Start Timer
     self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
-    
+    self.timerUnlockEncryptedFolder = [NSTimer scheduledTimerWithTimeInterval:k_timerUnlockEncryptedFolder target:self selector:@selector(unlockEncryptedFolder) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Registration Push Notification
@@ -1548,7 +1548,65 @@
     }
     
     // Start Timer
-    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:app selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
+    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
+}
+
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== E2E Encryption verify unlock < k_timerUnlockEncryptedFolder seconds > =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)unlockEncryptedFolder
+{
+    // Test
+    if (self.maintenanceMode || self.activeAccount.length == 0)
+        return;
+    
+    // Stop Timer
+    [_timerUnlockEncryptedFolder invalidate];
+    
+    BOOL endStartTimer = true;
+    
+    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eTokenLock != ''", self.activeAccount] sorted:@"serverUrl" ascending:false];
+    for (tableDirectory *directory in directories) {
+        
+        endStartTimer = false;
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, k_timerUnlockEncryptedFolder * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            
+            // Is locked ?
+            tableDirectory *directoryLock= [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eTokenLock = %@", self.activeAccount, directory.e2eTokenLock]];
+            if (directoryLock.e2eTokenLock.length > 0) {
+                
+                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+                
+                metadataNet.action = actionUnlockEndToEndFolderEncrypted;
+                metadataNet.fileID = directoryLock.fileID;
+                metadataNet.serverUrl = directory.serverUrl;
+                metadataNet.token = directoryLock.e2eTokenLock;
+                
+                [self addNetworkingOperationQueue:self.netQueue delegate:self metadataNet:metadataNet];
+            }
+            
+            // Start Timer
+            if(_timerUnlockEncryptedFolder.isValid == NO)
+               _timerUnlockEncryptedFolder = [NSTimer scheduledTimerWithTimeInterval:k_timerUnlockEncryptedFolder target:self selector:@selector(unlockEncryptedFolder) userInfo:nil repeats:YES];
+        });
+    }
+        
+    // Start Timer
+    if(endStartTimer)
+        _timerUnlockEncryptedFolder = [NSTimer scheduledTimerWithTimeInterval:k_timerUnlockEncryptedFolder target:self selector:@selector(unlockEncryptedFolder) userInfo:nil repeats:YES];
+}
+
+- (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
+{
+    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:metadataNet.serverUrl token:metadataNet.token];
+}
+
+- (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    
 }
 
 #pragma --------------------------------------------------------------------------------------------
