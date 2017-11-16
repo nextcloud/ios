@@ -1012,7 +1012,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func setDirectoryE2ETokenLock(serverUrl: String, token: String) {
+    @objc func setDirectoryE2ETokenLock(serverUrl: String, token: String?) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -1027,8 +1027,12 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        result.e2eTokenLock = token
-        
+        if (token == nil) {
+            result.e2eTokenLock = ""
+        } else {
+            result.e2eTokenLock = token!
+        }
+    
         do {
             try realm.commitWrite()
         } catch let error {

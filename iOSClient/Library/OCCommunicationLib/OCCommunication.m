@@ -2391,7 +2391,10 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request unlockEndToEndFolderEncrypted:serverPath token:token onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    // Add token on HEADER
+    [(OCWebDAVClient *)request setDefaultHeader:@"token" value:token];
+    
+    [request unlockEndToEndFolderEncrypted:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         //Return success
         successRequest(response, request.redirectedServer);

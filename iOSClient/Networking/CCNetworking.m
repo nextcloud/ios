@@ -1633,32 +1633,22 @@
 {
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     
-    NSString *e2eTokenLock = directory.e2eTokenLock;
+    //NSString *e2eTokenLock = directory.e2eTokenLock;
+    NSString *e2eTokenLock;
     NSError *error;
-    
-    error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&e2eTokenLock];
-    if (error) {
-        return false;
-    }
     
     [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:e2eTokenLock];
     
     if (directory.e2eMetadataJSON.length > 0) {
-        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata];
+        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata token:&e2eTokenLock];
     } else {
-        error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata];
+        error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata token:&e2eTokenLock];
     }
     if (error) {
+        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:e2eTokenLock];
         return false;
     }
     
-    error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:e2eTokenLock];
-    if (error) {
-        return false;
-    }
-    
-    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
-
     return true;
 }
 

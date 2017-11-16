@@ -101,6 +101,11 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 
 
 /**
+ Add Header
+*/
+- (void)setDefaultHeader:(NSString *)header value:(NSString *)value;
+
+/**
  Enqueues an operation to move the object at a path to another path using a `MOVE` request.
  
  @param source The path to move.
@@ -624,7 +629,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 
 - (void)lockEndToEndFolderEncrypted:(NSString * _Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
-- (void)unlockEndToEndFolderEncrypted:(NSString * _Nonnull)serverPath token:(NSString * _Nonnull)token onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
+- (void)unlockEndToEndFolderEncrypted:(NSString * _Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
 
 - (void)storeEndToEndMetadata:(NSString * _Nonnull)serverPath encryptedMetadata:(NSString * _Nonnull)encryptedMetadata onCommunication:(OCCommunication * _Nonnull)sharedOCComunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;

@@ -319,64 +319,32 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     
     @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, serverUrl: String) -> Bool {
         
-        var token =  NCManageDatabase.sharedInstance.getDirectoryE2ETokenLock(serverUrl: serverUrl) as NSString?
+        var token: NSString?
+        
+        if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: &token) as NSError? {
+            
+            appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
 
-        if let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: &token) as NSError? {
-            
-            appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
-            
+            NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: token as String?)
+
             return false
         }
-        
-        NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: token! as String)
-        
-        if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
-            
-            appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
-            
-            return false
-        }
-        
-        if let error = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token! as String) as NSError? {
-            
-            appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
-            
-            return false
-        }
-        
-        NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: "")
         
         return true
     }
     
     @objc func deletemarkEndToEndFolderEncrypted(_ url: String, fileID: String, serverUrl: String) -> Bool {
         
-        var token =  NCManageDatabase.sharedInstance.getDirectoryE2ETokenLock(serverUrl: serverUrl) as NSString?
-        
-        if let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url , fileID: fileID, token: &token) as NSError? {
+        var token: NSString?
+
+        if let error = NCNetworkingSync.sharedManager().deletemarkEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: &token) as NSError? {
             
             appDelegate.messageNotification("E2E Remove mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
+            NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: token as String?)
+
             return false
         }
-        
-        NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: token! as String)
-        
-        if let error = NCNetworkingSync.sharedManager().deletemarkEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID) as NSError? {
-            
-            appDelegate.messageNotification("E2E Remove mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
-            
-            return false
-        }
-        
-        if let error = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: token! as String) as NSError? {
-            
-            appDelegate.messageNotification("E2E Remove mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
-            
-            return false
-        }
-        
-        NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(serverUrl: serverUrl, token: "")
         
         return true
     }
