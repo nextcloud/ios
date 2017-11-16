@@ -1117,27 +1117,30 @@
         
     } else {
         
-        __block NSString *e2eMetadataJSON = nil;
-        
-        // *** IS ENCRYPTED ---> CREATE METADATA ***
-        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
-            
-            NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-            tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-
-            e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] key:tableDirectory.e2eMetadataKey];
-            
-            if (!e2eMetadataJSON) {
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error to encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-                [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Serious internal error to encoding metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                
-                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-                [uploadTask cancel];
-                return;
-            }
-        }
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+
+            NSString *e2eMetadataJSON = nil;
+        
+            // *** IS ENCRYPTED ---> CREATE METADATA ***
+            if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
+            
+                NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+                tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+
+                e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl metadataKey:tableDirectory.e2eMetadataKey];
+            
+                if (!e2eMetadataJSON) {
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error to encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+                        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Serious internal error to encoding metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+                        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+                        [uploadTask cancel];
+                    });
+
+                    return;
+                }
+            }
 
             // *** IS e2eMetadataJSON ---> SEND METADATA ***
             if (e2eMetadataJSON) {
@@ -1645,10 +1648,16 @@
 {
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     
-    NSString *e2eTokenLock = @"";
+    NSString *e2eTokenLock;
+    NSString *getMetadata;
     NSError *error;
     
-    if (directory.e2eMetadataKey.length > 0) {
+    error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:&getMetadata];
+    if (error) {
+        return false;
+    }
+    
+    if (getMetadata.length > 0) {
         error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata token:&e2eTokenLock];
     } else {
         error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata token:&e2eTokenLock];

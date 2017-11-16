@@ -68,7 +68,7 @@ class NCEndToEndMetadata : NSObject  {
     // MARK: Encode / Decode JSON Metadata
     // --------------------------------------------------------------------------------------------
     
-    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String, key: String?) -> String? {
+    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String, serverUrl: String, metadataKey: String) -> String? {
         
         let jsonEncoder = JSONEncoder.init()
         var files = [String: e2eMetadata.filesCodable]()
@@ -76,10 +76,10 @@ class NCEndToEndMetadata : NSObject  {
         var keyGenerated = ""
         
         // Generate Key
-        if (key == nil) {
+        if (metadataKey == "") {
             keyGenerated = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString() // AES_KEY_128_LENGTH
         } else {
-            keyGenerated = key!
+            keyGenerated = metadataKey
         }
         
         // Double Encode64 for Android compatibility OMG
@@ -125,6 +125,11 @@ class NCEndToEndMetadata : NSObject  {
         let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey, sharing: nil)
         
         do {
+            
+            // Write metadataKey on DB
+            if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataKey(serverUrl: serverUrl, metadataKey: keyGenerated) == false {
+                return nil
+            }
             
             let jsonData = try jsonEncoder.encode(e2emetadata)
             let jsonString = String(data: jsonData, encoding: .utf8)
@@ -204,7 +209,7 @@ class NCEndToEndMetadata : NSObject  {
                         return false
                     }
                     
-                    // Write e2eMetaDataJSON on DB
+                    // Write metadataKey on DB
                     if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataKey(serverUrl: serverUrl, metadataKey: key!) == false {
                         return false
                     }
