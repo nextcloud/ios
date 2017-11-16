@@ -2526,9 +2526,9 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
-    serverPath = [NSString stringWithFormat:@"%@&token=%@", serverPath, token];
-    serverPath = [NSString stringWithFormat:@"%@?metaData=%@", serverPath, encryptedMetadata];
-    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
+    serverPath = [NSString stringWithFormat:@"%@&metaData=%@", serverPath, encryptedMetadata];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
