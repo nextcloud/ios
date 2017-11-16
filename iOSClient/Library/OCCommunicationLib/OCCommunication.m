@@ -2412,6 +2412,8 @@
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
+    encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
+
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
@@ -2526,6 +2528,8 @@
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
+    encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
+
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     

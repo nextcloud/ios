@@ -1633,10 +1633,8 @@
 {
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     
-    NSString *e2eTokenLock;
+    NSString *e2eTokenLock = @"";
     NSError *error;
-    
-    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:e2eTokenLock];
     
     if (directory.e2eMetadataJSON.length > 0) {
         error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata token:&e2eTokenLock];
