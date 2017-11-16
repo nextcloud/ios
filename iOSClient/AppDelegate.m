@@ -1576,7 +1576,7 @@
             
             // Is locked ?
             tableDirectory *directoryLock= [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eTokenLock = %@", self.activeAccount, directory.e2eTokenLock]];
-            if (directoryLock.e2eTokenLock.length > 0) {
+            if (directoryLock.e2eTokenLock == directory.e2eTokenLock) {
                 
                 CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
                 
