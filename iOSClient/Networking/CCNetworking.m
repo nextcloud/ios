@@ -1652,11 +1652,13 @@
     NSString *getMetadata;
     NSError *error;
     
+    // exists a metadata on serverUrl ?
     error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:&getMetadata];
     if (error) {
         return false;
     }
     
+    // send Metadata
     if (getMetadata.length > 0) {
         error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata token:&e2eTokenLock];
     } else {
