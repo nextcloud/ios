@@ -388,6 +388,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
             
+        } else if (errorCode == 404) {
+            
+            // Remove all record e2eEncryption
+            NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", appDelegate.activeAccount, metadataNet.serverUrl+"/"+metadataNet.fileName))
+            
         } else if (errorCode != 404) {
             
             appDelegate.messageNotification("E2E Get metadata", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)

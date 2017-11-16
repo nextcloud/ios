@@ -1654,7 +1654,7 @@
     
     // exists a metadata on serverUrl ?
     error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:&getMetadata];
-    if (error) {
+    if (error.code != 404 && error != nil) {
         return false;
     }
     
