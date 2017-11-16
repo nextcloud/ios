@@ -1601,13 +1601,13 @@
 
 - (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
 {
-    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:metadataNet.serverUrl token:@""];
+    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
 }
 
 - (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     if (errorCode == 404)
-         [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:metadataNet.serverUrl token:@""];
+         [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -1012,7 +1012,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func setDirectoryE2ETokenLock(serverUrl: String, token: String?) {
+    @objc func setDirectoryE2ETokenLock(fileID: String, token: String?) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -1022,7 +1022,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
             realm.cancelWrite()
             return
         }
