@@ -1572,7 +1572,7 @@
         
         endStartTimer = false;
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, k_timerUnlockEncryptedFolder * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             
             // Is locked ?
             tableDirectory *directoryLock= [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eTokenLock = %@", self.activeAccount, directory.e2eTokenLock]];
