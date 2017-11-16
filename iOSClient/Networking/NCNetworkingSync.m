@@ -9,6 +9,7 @@
 #import "NCNetworkingSync.h"
 #import "CCUtility.h"
 #import "CCCertificate.h"
+#import "NCBridgeSwift.h"
 
 @implementation NCNetworkingSync
 
