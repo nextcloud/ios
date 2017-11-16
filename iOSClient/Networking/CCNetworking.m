@@ -929,6 +929,7 @@
         }
         
         // Now the fileName is fileNameIdentifier
+        fileName = fileNameIdentifier;
         metadata.fileName = fileNameIdentifier;
         metadata.e2eEncrypted = true;
     }
@@ -1276,10 +1277,20 @@
     metadata.sessionID = @"";
         
     metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
+    
+    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
         
-    // rename file sessionID -> fileID
-    [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
+        // rename file fileNameView (original file) -> fileID
+        [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileNameView]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
+        // remove encrypted file
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID] error:nil];
         
+    } else {
+        
+        // rename file sessionID -> fileID
+        [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
+    }
+    
     // remove temp icon
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] error:nil];
     [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, metadata.fileID] error:nil];
