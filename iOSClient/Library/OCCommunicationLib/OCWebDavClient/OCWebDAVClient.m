@@ -1097,15 +1097,12 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)updateEndToEndMetadata:(NSString*)serverPath encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)updateEndToEndMetadata:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                       failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
     
     _requestMethod = @"PUT";
-    
-    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?metaData=%@", encryptedMetadata]];
-    serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
