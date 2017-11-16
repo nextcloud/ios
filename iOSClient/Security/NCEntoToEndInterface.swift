@@ -325,8 +325,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
 
-            NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(fileID: fileID, token: token as String?)
-
             return false
         }
         
@@ -341,8 +339,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             appDelegate.messageNotification("E2E Remove mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
             
-            NCManageDatabase.sharedInstance.setDirectoryE2ETokenLock(fileID: fileID, token: token as String?)
-
             return false
         }
         

@@ -1665,7 +1665,6 @@
         error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:metadata token:&e2eTokenLock];
     }
     if (error) {
-        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:directory.fileID token:e2eTokenLock];
         return false;
     }
     
