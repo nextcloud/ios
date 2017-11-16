@@ -210,6 +210,7 @@ extern NSString *const dav;
 #define actionGetEndToEndServerPublicKey                @"getEndToEndServerPublicKey"
 #define actionGetEndToEndMetadata                       @"getEndToEndMetadata"
 #define actionDeleteEndToEndMetadata                    @"deleteEndToEndMetadata"
+#define actionUnlockEndToEndFolderEncrypted             @"unlockEndToEndFolderEncrypted"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"

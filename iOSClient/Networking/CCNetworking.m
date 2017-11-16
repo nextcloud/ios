@@ -1633,7 +1633,6 @@
 {
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     
-    //NSString *e2eTokenLock = directory.e2eTokenLock;
     NSString *e2eTokenLock;
     NSError *error;
     
