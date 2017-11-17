@@ -761,7 +761,6 @@
     if (_metadataNet.directory && _metadataNet.e2eEncrypted) {
         
         [self.delegate deleteFileOrFolderFailure:_metadataNet message:NSLocalizedString(@"_e2e_delete_folder_not_permitted_", nil) errorCode:0];
-        
         [self complete];
         
         return;
