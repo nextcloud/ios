@@ -1286,7 +1286,7 @@
     tableE2eEncryption *e2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier = %@ AND serverUrl = %@", metadata.fileName, serverUrl]];
     if (e2eEncryption) {
         metadata.e2eEncrypted = true;
-        metadata.fileName = e2eEncryption.fileName;
+        metadata.fileNameView = e2eEncryption.fileName;
         [CCUtility insertTypeFileIconName:metadata.fileName metadata:metadata];
     }
     
