@@ -103,7 +103,9 @@ class CCActions: NSObject {
         
         metadataNet.action = actionDeleteFileDirectory
         metadataNet.delegate = delegate
+        metadataNet.directory = metadata.directory
         metadataNet.directoryID = metadata.directoryID
+        metadataNet.e2eEncrypted = metadata.e2eEncrypted
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = metadata.fileName
         metadataNet.fileNameView = metadata.fileNameView

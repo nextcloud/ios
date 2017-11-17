@@ -1743,6 +1743,7 @@
     [metadataNet setDirectory: self.directory];
     [metadataNet setDirectoryID: self.directoryID];
     [metadataNet setDirectoryIDTo: self.directoryIDTo];
+    [metadataNet setE2eEncrypted: self.e2eEncrypted];
     [metadataNet setEncryptedMetadata: self.encryptedMetadata];
     [metadataNet setErrorCode: self.errorCode];
     [metadataNet setErrorRetry: self.errorRetry];
