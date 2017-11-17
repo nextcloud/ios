@@ -148,6 +148,9 @@ class NCEndToEndMetadata : NSObject  {
         let jsonDecoder = JSONDecoder.init()
         let data = e2eMetaDataJSON.data(using: .utf8)
         
+        // Remove all records e2eMetadata
+        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl))
+        
         do {
             
             let decode = try jsonDecoder.decode(e2eMetadata.self, from: data!)
