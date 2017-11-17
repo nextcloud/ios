@@ -1023,7 +1023,6 @@ cleanup:
     return data;
 }
 
-
 - (NSString *)derToPemPrivateKey:(NSString *)input
 {
     NSInteger substringLength = 65;
