@@ -115,6 +115,37 @@
     return returnError;
 }
 
+- (NSError *)readFolder:(NSString *)serverUrl user:(NSString *)user userID:(NSString *)userID password:(NSString *)password items:(NSArray  **)items
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+
+    __block NSError *returnError = nil;
+    __block NSArray *returnItems = nil;
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    
+    [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication readFolder:serverUrl depth:0 withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+        
+        returnItems = items;
+        dispatch_semaphore_signal(semaphore);
+
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
+
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+        dispatch_semaphore_signal(semaphore);
+
+    }];
+    
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
+    
+    *items = returnItems;
+    return returnError;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== End-to-End Encryption =====
 #pragma --------------------------------------------------------------------------------------------
