@@ -1435,7 +1435,8 @@
     
     NSInteger counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
     NSInteger counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
-    
+    NSInteger counterUploadInLock = [[[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND lock = true", self.activeAccount]] count];
+
     NSInteger counterNewUpload = 0;
     
     // ------------------------- <selector Auto Download> -------------------------
@@ -1509,30 +1510,15 @@
     
     // ------------------------- <selector Upload File> -------------------------
     
-    while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
-        
-        // For encrypted ONLY 1 LOCK
-        NSArray *recordsUploadInLock = [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND lock = true", self.activeAccount]];
-        for (tableQueueUpload *upload in recordsUploadInLock) {
-            if ([CCUtility isFolderEncrypted:upload.serverUrl account:self.activeAccount]) {
-                break;
-        }
+    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
         metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile];
         if (metadataNet) {
             
-            // Priority Error only in Foreground
-            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
-                continue;
-                
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
-                
-            counterNewUpload++;
             
-        } else
-            break;
-        
-        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
+            counterNewUpload++;
+        }
     }
     
     // Verify Lock

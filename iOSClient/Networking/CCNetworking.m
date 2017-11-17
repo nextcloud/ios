@@ -1140,20 +1140,19 @@
                         
                         [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
                         
-                        // OOOOOOKKKK remove record on Table Auto Upload
+                        // OOOOOOKKKK remove record on Table Auto Upload and next
                         [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+#ifndef EXTENSION
+                        [app loadAutoDownloadUpload:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload]];
+#endif
                         
                         // Manage uploadTask cancel,suspend,resume
                         if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
                         else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
                         else if (taskStatus == k_taskStatusResume) [uploadTask resume];
                         
+
                         NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
-                        
-#ifndef EXTENSION
-                        // Force Next
-                        [app loadAutoDownloadUpload:[NSNumber numberWithInt:10]];
-#endif
 
                     } else {
                         dispatch_async(dispatch_get_main_queue(), ^{
@@ -1172,13 +1171,18 @@
              
              [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
              
-             // OOOOOOKKKK remove record on Table Auto Upload
+             // OOOOOOKKKK remove record on Table Auto Upload and next
              [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+#ifndef EXTENSION
+             [app loadAutoDownloadUpload:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload]];
+#endif
              
              // Manage uploadTask cancel,suspend,resume
              if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
              else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
              else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+             
+
              
              NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
          }
