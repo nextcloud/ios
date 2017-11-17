@@ -60,8 +60,8 @@ class NCManageDatabase: NSObject {
             schemaVersion: 12,
             
             // 10 : Version 2.18.0
-            // 11 : Add object tableE2eEncryption
-            // 12 : Change primary key of tableE2eEncryption
+            // 11 : Version 2.18.2
+            // 12 : Version ...
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -2023,7 +2023,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getQueueUploadLock(selector: String) -> CCMetadataNet? {
+    @objc func getQueueUploadLock(selector: String, priority: Int) -> CCMetadataNet? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -2033,7 +2033,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).sorted(byKeyPath: "priority", ascending: false).first else {
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false AND priority >= %lu", tableAccount.account, selector, priority).sorted(byKeyPath: "priority", ascending: false).first else {
             realm.cancelWrite()
             return nil
         }
