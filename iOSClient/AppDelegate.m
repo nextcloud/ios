@@ -1461,7 +1461,7 @@
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
+    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
         metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUpload priority:priority];
         if (metadataNet) {
@@ -1469,9 +1469,7 @@
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             
             counterNewUpload++;
-            
-        } else
-            break;
+        }
         
         counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     }
@@ -1489,17 +1487,15 @@
         
     } else {
         
-        while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
+        if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
             
-            metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUploadAll priority:priority];
+            metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUploadAll priority:priority];
             if (metadataNet) {
                 
                 [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
                 
                 counterNewUpload++;
-                
-            } else
-                break;
+            }
             
             counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
         }
@@ -1516,6 +1512,8 @@
             
             counterNewUpload++;
         }
+        
+        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     }
     
     // Verify Lock
