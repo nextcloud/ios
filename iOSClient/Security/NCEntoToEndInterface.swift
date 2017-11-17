@@ -320,13 +320,11 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, serverUrl: String) -> Bool {
         
         var token: NSString?
-        
-        // Is the directory empty ?
-        
+                
         // Remove all records e2eMetadata
         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", appDelegate.activeAccount, serverUrl))
         
-        if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, token: &token) as NSError? {
+        if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, serverUrl: serverUrl,token: &token) as NSError? {
             
             appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
 
@@ -339,8 +337,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     @objc func deletemarkEndToEndFolderEncrypted(_ url: String, fileID: String, serverUrl: String) -> Bool {
         
         var token: NSString?
-
-        // Is the directory empty ?
 
         // Remove all records e2eMetadata
         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", appDelegate.activeAccount, serverUrl))
