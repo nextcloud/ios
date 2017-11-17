@@ -381,16 +381,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         // Clear all date directory and reload data source
         NCManageDatabase.sharedInstance.setClearAllDateReadDirectory()
         main.reloadDatasource(serverUrl)
-        
-        // Clear tableE2eEncryption
-        guard let objectsE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryptions(predicate:  NSPredicate(format: "account = %@ AND serverUrl = %@", appDelegate.activeAccount, metadataNet.serverUrl+"/"+metadataNet.fileName)) else {
-            return
-        }
-        for object in objectsE2eEncryption {
-            if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@", appDelegate.activeAccount, object.fileNameIdentifier)) == nil {
-                NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND fileNameIdentifier = %@", appDelegate.activeAccount, object.fileNameIdentifier))
-            }
-        }
     }
     
     func getEndToEndMetadataFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {

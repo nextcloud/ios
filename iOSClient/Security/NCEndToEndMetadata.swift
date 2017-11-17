@@ -158,6 +158,7 @@ class NCEndToEndMetadata : NSObject  {
             let files = decode.files
             let metadata = decode.metadata
             //let sharing = decode.sharing ---> V 2.0
+            var lastMetadataKeysNum = -1
             
             var metadataKeysDictionary = [String:String]()
             
@@ -176,6 +177,17 @@ class NCEndToEndMetadata : NSObject  {
                 let metadataKey = String(data: metadataKeyBase64Data, encoding: .utf8)
                 
                 metadataKeysDictionary[metadataKeyDictionaryEncrypted.key] = metadataKey
+                
+                // Store last metadataKey on DB
+                if Int(metadataKeyDictionaryEncrypted.key)! > lastMetadataKeysNum {
+                    
+                    lastMetadataKeysNum = Int(metadataKeyDictionaryEncrypted.key)!
+                    
+                    // Write metadataKey on DB
+                    if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataKey(serverUrl: serverUrl, metadataKey: metadataKey!) == false {
+                        return false
+                    }
+                }
             }
             
             for file in files {
@@ -194,27 +206,25 @@ class NCEndToEndMetadata : NSObject  {
                     
                     let encryptedFileAttributes = try jsonDecoder.decode(e2eMetadata.encryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
                     
-                    let object = tableE2eEncryption()
+                    if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@", account, fileNameIdentifier)) != nil {
                     
-                    object.account = account
-                    object.authenticationTag = filesCodable.authenticationTag
-                    object.fileName = encryptedFileAttributes.filename
-                    object.fileNameIdentifier = fileNameIdentifier
-                    object.fileNameIdentifierPath = serverUrl + "/" + fileNameIdentifier
-                    object.key = encryptedFileAttributes.key
-                    object.initializationVector = filesCodable.initializationVector
-                    object.mimeType = encryptedFileAttributes.mimetype
-                    object.serverUrl = serverUrl
-                    object.version = encryptedFileAttributes.version
+                        let object = tableE2eEncryption()
                     
-                    // Write file parameter for decrypted on DB
-                    if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
-                        return false
-                    }
+                        object.account = account
+                        object.authenticationTag = filesCodable.authenticationTag
+                        object.fileName = encryptedFileAttributes.filename
+                        object.fileNameIdentifier = fileNameIdentifier
+                        object.fileNameIdentifierPath = serverUrl + "/" + fileNameIdentifier
+                        object.key = encryptedFileAttributes.key
+                        object.initializationVector = filesCodable.initializationVector
+                        object.mimeType = encryptedFileAttributes.mimetype
+                        object.serverUrl = serverUrl
+                        object.version = encryptedFileAttributes.version
                     
-                    // Write metadataKey on DB
-                    if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataKey(serverUrl: serverUrl, metadataKey: key!) == false {
-                        return false
+                        // Write file parameter for decrypted on DB
+                        if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
+                            return false
+                        }
                     }
                     
                 } catch let error {
