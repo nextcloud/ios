@@ -757,6 +757,16 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
+    // Delete only directory NOT encrypted
+    if (_metadataNet.directory && _metadataNet.e2eEncrypted) {
+        
+        [self.delegate deleteFileOrFolderFailure:_metadataNet message:NSLocalizedString(@"_e2e_delete_folder_not_permitted_", nil) errorCode:0];
+        
+        [self complete];
+        
+        return;
+    }
+    
     [communication deleteFileOrFolder:serverFileUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         if ([_metadataNet.selector rangeOfString:selectorDelete].location != NSNotFound && [self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccess:)])
