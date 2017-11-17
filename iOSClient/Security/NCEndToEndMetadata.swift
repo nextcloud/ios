@@ -68,30 +68,27 @@ class NCEndToEndMetadata : NSObject  {
     // MARK: Encode / Decode JSON Metadata
     // --------------------------------------------------------------------------------------------
     
-    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String, serverUrl: String, metadataKey: String) -> String? {
+    @objc func encoderMetadata(_ recordsE2eEncryption: [tableE2eEncryption], privateKey: String, serverUrl: String) -> String? {
         
         let jsonEncoder = JSONEncoder.init()
         var files = [String: e2eMetadata.filesCodable]()
         var version = 1
-        var keyGenerated = ""
-        
-        // Generate Key
-        if (metadataKey == "") {
-            keyGenerated = NCEndToEndEncryption.sharedManager().generateKey(16).base64EncodedString() // AES_KEY_128_LENGTH
-        } else {
-            keyGenerated = metadataKey
-        }
-        
-        // Double Encode64 for Android compatibility OMG
-        let key = (keyGenerated.data(using: .utf8)?.base64EncodedString())!
-        
-        guard let metadataKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(key, publicKey: nil, privateKey: privateKey) else {
-            return nil
-        }
-        let metadataKeyBase64 = metadataKeyEncryptedData.base64EncodedString()
+        var e2eMetadataKey: e2eMetadata.metadataKeyCodable?
         
         // Create "files"
         for recordE2eEncryption in recordsE2eEncryption {
+            
+            //
+            // Double Encode64 for Android compatibility
+            let metadatakey = (recordE2eEncryption.metadataKey.data(using: .utf8)?.base64EncodedString())!
+            guard let metadataKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(metadatakey, publicKey: nil, privateKey: privateKey) else {
+                return nil
+            }
+            let metadataKeyEncryptedBase64 = metadataKeyEncryptedData.base64EncodedString()
+
+            // Create "metadataKey" with encrypted maetadatakey
+            // Required a Modify
+            e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: ["0":metadataKeyEncryptedBase64], version: version)
             
             let encrypted = e2eMetadata.encryptedFileAttributes(key: recordE2eEncryption.key, filename: recordE2eEncryption.fileName, mimetype: recordE2eEncryption.mimeType, version: recordE2eEncryption.version)
             
@@ -101,7 +98,7 @@ class NCEndToEndMetadata : NSObject  {
                 let encryptedJsonData = try jsonEncoder.encode(encrypted)
                 let encryptedJsonString = String(data: encryptedJsonData, encoding: .utf8)
                 
-                guard let encryptedEncryptedJson = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedJsonString, key: keyGenerated) else {
+                guard let encryptedEncryptedJson = NCEndToEndEncryption.sharedManager().encryptEncryptedJson(encryptedJsonString, key: recordE2eEncryption.metadataKey) else {
                     print("Serious internal error in encoding metadata")
                     return nil
                 }
@@ -118,18 +115,10 @@ class NCEndToEndMetadata : NSObject  {
             version = recordE2eEncryption.version
         }
         
-        // Create "metadataKey" with encrypted maetadatakey
-        let e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: ["0":metadataKeyBase64], version: version)
-        
         // Create final Json e2emetadata
-        let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey, sharing: nil)
+        let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey!, sharing: nil)
         
         do {
-            
-            // Write metadataKey on DB
-            if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataKey(serverUrl: serverUrl, metadataKey: keyGenerated) == false {
-                return nil
-            }
             
             let jsonData = try jsonEncoder.encode(e2emetadata)
             let jsonString = String(data: jsonData, encoding: .utf8)
@@ -158,7 +147,6 @@ class NCEndToEndMetadata : NSObject  {
             let files = decode.files
             let metadata = decode.metadata
             //let sharing = decode.sharing ---> V 2.0
-            var lastMetadataKeysNum = -1
             
             var metadataKeysDictionary = [String:String]()
             
@@ -177,17 +165,6 @@ class NCEndToEndMetadata : NSObject  {
                 let metadataKey = String(data: metadataKeyBase64Data, encoding: .utf8)
                 
                 metadataKeysDictionary[metadataKeyDictionaryEncrypted.key] = metadataKey
-                
-                // Store last metadataKey on DB
-                if Int(metadataKeyDictionaryEncrypted.key)! > lastMetadataKeysNum {
-                    
-                    lastMetadataKeysNum = Int(metadataKeyDictionaryEncrypted.key)!
-                    
-                    // Write metadataKey on DB
-                    if NCManageDatabase.sharedInstance.setDirectoryE2EMetadataKey(serverUrl: serverUrl, metadataKey: metadataKey!) == false {
-                        return false
-                    }
-                }
             }
             
             for file in files {
@@ -196,9 +173,9 @@ class NCEndToEndMetadata : NSObject  {
                 let filesCodable = file.value as e2eMetadata.filesCodable
                 
                 let encrypted = filesCodable.encrypted
-                let key = metadataKeysDictionary["\(filesCodable.metadataKey)"]
+                let metadataKey = metadataKeysDictionary["\(filesCodable.metadataKey)"]
                 
-                guard let encryptedFileAttributesJson = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: key) else {
+                guard let encryptedFileAttributesJson = NCEndToEndEncryption.sharedManager().decryptEncryptedJson(encrypted, key: metadataKey) else {
                     return false
                 }
                 
@@ -217,6 +194,8 @@ class NCEndToEndMetadata : NSObject  {
                         object.fileNameIdentifierPath = serverUrl + "/" + fileNameIdentifier
                         object.key = encryptedFileAttributes.key
                         object.initializationVector = filesCodable.initializationVector
+                        object.metadataKey = metadataKey!
+                        object.metadataKeyIndex = filesCodable.metadataKey
                         object.mimeType = encryptedFileAttributes.mimetype
                         object.serverUrl = serverUrl
                         object.version = encryptedFileAttributes.version

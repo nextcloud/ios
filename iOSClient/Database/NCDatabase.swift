@@ -100,7 +100,6 @@ class tableDirectory: Object {
     @objc dynamic var dateReadDirectory: NSDate? = nil
     @objc dynamic var directoryID = ""
     @objc dynamic var e2eEncrypted: Bool = false
-    @objc dynamic var e2eMetadataKey = ""
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
@@ -123,6 +122,8 @@ class tableE2eEncryption: Object {
     @objc dynamic var fileNameIdentifierPath = ""
     @objc dynamic var key = ""
     @objc dynamic var initializationVector = ""
+    @objc dynamic var metadataKey = ""
+    @objc dynamic var metadataKeyIndex: Int = 0
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var version: Int = 1

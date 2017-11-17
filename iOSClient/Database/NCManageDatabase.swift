@@ -1041,33 +1041,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectoryE2EMetadataKey(serverUrl: String, metadataKey: String) -> Bool {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return false
-        }
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
-            realm.cancelWrite()
-            return false
-        }
-        
-        result.e2eMetadataKey = metadataKey
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return false
-        }
-        
-        return true
-    }
-    
     //MARK: -
     //MARK: Table e2e Encryption
     
@@ -1119,7 +1092,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).first else {
+        guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).sorted(byKeyPath: "metadataKeyIndex", ascending: false).first else {
             return nil
         }
         

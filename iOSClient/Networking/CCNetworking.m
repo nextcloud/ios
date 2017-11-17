@@ -1121,9 +1121,8 @@
         if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
             
             NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-            tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
             
-            NSString *e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl metadataKey:tableDirectory.e2eMetadataKey];
+            NSString *e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl];
 
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
@@ -1627,11 +1626,22 @@
     NSString *key;
     NSString *initializationVector;
     NSString *authenticationTag;
+    NSString *metadataKey;
+    NSInteger metadataKeyIndex;
     
     BOOL result = [[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:fileNameIdentifier directoryUser: _directoryUser key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag];
     
     // Write to DB
     if (result) {
+        
+        tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+        if (object) {
+            metadataKey = object.metadataKey;
+            metadataKeyIndex = object.metadataKeyIndex;
+        } else {
+            metadataKey = [[[NCEndToEndEncryption sharedManager] generateKey:16] base64EncodedStringWithOptions:0]; // AES_KEY_128_LENGTH
+            metadataKeyIndex = 0;
+        }
         
         tableE2eEncryption *addObject = [tableE2eEncryption new];
         
@@ -1642,6 +1652,8 @@
         addObject.fileNameIdentifierPath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileNameIdentifier];
         addObject.key = key;
         addObject.initializationVector = initializationVector;
+        addObject.metadataKey = metadataKey;
+        addObject.metadataKeyIndex = metadataKeyIndex;
         
         CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[fileName pathExtension], NULL);
         CFStringRef mimeTypeRef = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);

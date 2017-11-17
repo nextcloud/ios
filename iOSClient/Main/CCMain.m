@@ -1287,7 +1287,7 @@
     if (e2eEncryption) {
         metadata.e2eEncrypted = true;
         metadata.fileNameView = e2eEncryption.fileName;
-        [CCUtility insertTypeFileIconName:metadata.fileName metadata:metadata];
+        [CCUtility insertTypeFileIconName:e2eEncryption.fileName metadata:metadata];
     }
     
     // Download
