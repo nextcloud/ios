@@ -1125,45 +1125,45 @@
             
             NSString *e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl metadataKey:tableDirectory.e2eMetadataKey];
 
-            if (!e2eMetadataJSON) {
-                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error to encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-                [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Serious internal error to encoding metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-                [uploadTask cancel];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
-            } else {
+                if (e2eMetadataJSON) {
                 
-                // Send Metadata
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                    
+                    // Send Metadata
                     if ([self SendEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl]) {
                         
                         [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                        
-                        // OOOOOOKKKK remove record on Table Auto Upload and next
-                        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-#ifndef EXTENSION
-                        [app loadAutoDownloadUpload:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload]];
-#endif
                         
                         // Manage uploadTask cancel,suspend,resume
                         if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
                         else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
                         else if (taskStatus == k_taskStatusResume) [uploadTask resume];
-                        
 
                         NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
 
                     } else {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Error to send metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-                            [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Error to send metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-                            [uploadTask cancel];
-                        });
+                        
+                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Error to send metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+                        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Error to send metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+                            
+                        [uploadTask cancel];
                     }
-                });
-            }
+                    
+                } else {
+                
+                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error to encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+                    [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Serious internal error to encoding metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+                
+                    [uploadTask cancel];
+                }
+                
+                // OK remove record on tableQueueUpload
+                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+#ifndef EXTENSION
+                // Next tableQueueUpload
+                [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+#endif
+            });
             
          } else {
     
@@ -1171,10 +1171,11 @@
              
              [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
              
-             // OOOOOOKKKK remove record on Table Auto Upload and next
+             // OK remove record on tableQueueUpload
              [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
 #ifndef EXTENSION
-             [app loadAutoDownloadUpload:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload]];
+             // Next tableQueueUpload
+             [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
 #endif
              
              // Manage uploadTask cancel,suspend,resume
