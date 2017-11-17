@@ -1623,7 +1623,7 @@
         addObject.authenticationTag = authenticationTag;
         addObject.fileName = fileName;
         addObject.fileNameIdentifier = fileNameIdentifier;
-        addObject.fileNamePath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+        addObject.fileNameIdentifierPath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileNameIdentifier];
         addObject.key = key;
         addObject.initializationVector = initializationVector;
         
