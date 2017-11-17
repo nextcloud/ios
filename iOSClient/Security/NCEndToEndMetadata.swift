@@ -73,23 +73,25 @@ class NCEndToEndMetadata : NSObject  {
         let jsonEncoder = JSONEncoder.init()
         var files = [String: e2eMetadata.filesCodable]()
         var version = 1
-        var e2eMetadataKey: e2eMetadata.metadataKeyCodable?
+        //var e2eMetadataKey: e2eMetadata.metadataKeyCodable?
+        var metadataKeysDictionary = [String:String]()
         
-        // Create "files"
         for recordE2eEncryption in recordsE2eEncryption {
             
-            //
+            // *** metadataKey ***
+            
             // Double Encode64 for Android compatibility
             let metadatakey = (recordE2eEncryption.metadataKey.data(using: .utf8)?.base64EncodedString())!
+            
             guard let metadataKeyEncryptedData = NCEndToEndEncryption.sharedManager().encryptAsymmetricString(metadatakey, publicKey: nil, privateKey: privateKey) else {
                 return nil
             }
-            let metadataKeyEncryptedBase64 = metadataKeyEncryptedData.base64EncodedString()
-
-            // Create "metadataKey" with encrypted maetadatakey
-            // Required a Modify
-            e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: ["0":metadataKeyEncryptedBase64], version: version)
             
+            let metadataKeyEncryptedBase64 = metadataKeyEncryptedData.base64EncodedString()
+            
+            metadataKeysDictionary["\(recordE2eEncryption.metadataKeyIndex)"] = metadataKeyEncryptedBase64
+            
+            // *** File ***
             let encrypted = e2eMetadata.encryptedFileAttributes(key: recordE2eEncryption.key, filename: recordE2eEncryption.fileName, mimetype: recordE2eEncryption.mimeType, version: recordE2eEncryption.version)
             
             do {
@@ -114,9 +116,13 @@ class NCEndToEndMetadata : NSObject  {
             
             version = recordE2eEncryption.version
         }
+
+        // Create Json metadataKeys
+        //e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: ["0":metadataKeyEncryptedBase64], version: version)
+        let e2eMetadataKey = e2eMetadata.metadataKeyCodable(metadataKeys: metadataKeysDictionary, version: version)
         
         // Create final Json e2emetadata
-        let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey!, sharing: nil)
+        let e2emetadata = e2eMetadata(files: files, metadata: e2eMetadataKey, sharing: nil)
         
         do {
             
@@ -142,12 +148,13 @@ class NCEndToEndMetadata : NSObject  {
         
         do {
             
+            // *** metadataKey ***
+            
             let decode = try jsonDecoder.decode(e2eMetadata.self, from: data!)
             
             let files = decode.files
             let metadata = decode.metadata
             //let sharing = decode.sharing ---> V 2.0
-            
             var metadataKeysDictionary = [String:String]()
             
             for metadataKeyDictionaryEncrypted in metadata.metadataKeys {
@@ -166,6 +173,8 @@ class NCEndToEndMetadata : NSObject  {
                 
                 metadataKeysDictionary[metadataKeyDictionaryEncrypted.key] = metadataKey
             }
+            
+            // *** File ***
             
             for file in files {
                 
