@@ -929,9 +929,9 @@ typedef enum {
 - (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath fileID:(NSString *)fileID token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 
-- (void)storeEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
-
 - (void)getEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
+
+- (void)storeEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
 - (void)updateEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 

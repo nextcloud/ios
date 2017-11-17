@@ -2071,7 +2071,8 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/server-key"];
-    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
@@ -2125,8 +2126,6 @@
 
 - (void)signEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey,NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    publicKey = [publicKey encodeString:NSUTF8StringEncoding];
-
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?csr=%@",publicKey]];
@@ -2185,8 +2184,6 @@
 
 - (void)storeEndToEndPrivateKeyCipher:(NSString*)serverPath privateKeyChiper:(NSString *)privateKeyChiper onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    privateKeyChiper = [privateKeyChiper encodeString:NSUTF8StringEncoding];
-
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/private-key"];
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?privateKey=%@",privateKeyChiper]];
@@ -2413,66 +2410,6 @@
     }];
 }
 
-- (void)storeEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
-    
-    encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
-
-    serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
-    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?metaData=%@", encryptedMetadata]];
-    serverPath = [serverPath stringByAppendingString:@"&format=json"];
-    
-    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
-    request = [self getRequestWithCredentials:request];
-    
-    [request storeEndToEndMetadata:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
-        
-        NSData *responseData = (NSData*) responseObject;
-        NSString *encryptedMetadata;
-        
-        //Parse
-        NSError *error;
-        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] E2E Store Metadata : %@",jsongParsed);
-        
-        if (jsongParsed.allKeys > 0) {
-            
-            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
-            NSDictionary *meta = [ocs valueForKey:@"meta"];
-            NSDictionary *data = [ocs valueForKey:@"data"];
-            
-            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
-            
-            if (statusCode == kOCUserProfileAPISuccessful) {
-                
-                if ([data valueForKey:@"encrypted-meta-data"] && ![[data valueForKey:@"encrypted-meta-data"] isKindOfClass:[NSNull class]]) {
-                    
-                    encryptedMetadata = [data valueForKey:@"encrypted-meta-data"];
-                }
-                
-            } else {
-                
-                NSString *message = (NSString*)[meta objectForKey:@"message"];
-                
-                if ([message isKindOfClass:[NSNull class]]) {
-                    message = @"";
-                }
-                
-                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
-                failureRequest(response, error, request.redirectedServer);
-            }
-        }
-        
-        //Return success
-        successRequest(response, encryptedMetadata, request.redirectedServer);
-        
-    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
-        
-        //Return error
-        failureRequest(response, error, request.redirectedServer);
-    }];
-}
-
 - (void)getEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
@@ -2530,8 +2467,70 @@
     }];
 }
 
+- (void)storeEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
+    
+    serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
+    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?metaData=%@", encryptedMetadata]];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request storeEndToEndMetadata:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        NSData *responseData = (NSData*) responseObject;
+        NSString *encryptedMetadata;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] E2E Store Metadata : %@",jsongParsed);
+        
+        if (jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"encrypted-meta-data"] && ![[data valueForKey:@"encrypted-meta-data"] isKindOfClass:[NSNull class]]) {
+                    
+                    encryptedMetadata = [data valueForKey:@"encrypted-meta-data"];
+                }
+                
+            } else {
+                
+                NSString *message = (NSString*)[meta objectForKey:@"message"];
+                
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = @"";
+                }
+                
+                NSError *error = [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message];
+                failureRequest(response, error, request.redirectedServer);
+            }
+        }
+        
+        //Return success
+        successRequest(response, encryptedMetadata, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        //Return error
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
 - (void)updateEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata token:(NSString *)token onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
+    encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
+
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
     serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
