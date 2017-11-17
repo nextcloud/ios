@@ -1117,60 +1117,71 @@
         
     } else {
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-
-            NSString *e2eMetadataJSON = nil;
-        
-            // *** IS ENCRYPTED ---> CREATE METADATA ***
-            if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
+        // *** IS ENCRYPTED ---> CREATE METADATA ***
+        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
             
-                NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-                tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-
-                e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl metadataKey:tableDirectory.e2eMetadataKey];
+            NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+            tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
             
-                if (!e2eMetadataJSON) {
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error to encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-                        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Serious internal error to encoding metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-                        [uploadTask cancel];
-                    });
+            NSString *e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl metadataKey:tableDirectory.e2eMetadataKey];
 
-                    return;
-                }
-            }
-
-            // *** IS e2eMetadataJSON ---> SEND METADATA ***
-            if (e2eMetadataJSON) {
-                if ([self SendEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl] == false) {
-                    
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Error to send metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-                        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Error to send metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-                        [uploadTask cancel];
-                    });
-                
-                    return;
-                }
-            }
-        
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-        
-                // OOOOOOKKKK remove record on Table Auto Upload
+            if (!e2eMetadataJSON) {
+                [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Serious internal error to encoding metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+                [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Serious internal error to encoding metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
                 [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-        
-                // Manage uploadTask cancel,suspend,resume
-                if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
-                else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
-                else if (taskStatus == k_taskStatusResume) [uploadTask resume];
-        
-                NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
-            });
-        });
+                [uploadTask cancel];
+                
+            } else {
+                
+                // Send Metadata
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                    
+                    if ([self SendEndToEndMetadata:e2eMetadataJSON serverUrl:serverUrl]) {
+                        
+                        [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+                        
+                        // OOOOOOKKKK remove record on Table Auto Upload
+                        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+                        
+                        // Manage uploadTask cancel,suspend,resume
+                        if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
+                        else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
+                        else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+                        
+                        NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
+                        
+#ifndef EXTENSION
+                        // Force Next
+                        [app loadAutoDownloadUpload:[NSNumber numberWithInt:10]];
+#endif
+
+                    } else {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Error to send metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+                            [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Error to send metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+                            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+                            [uploadTask cancel];
+                        });
+                    }
+                });
+            }
+            
+         } else {
+    
+             // *** PLAIN ***
+             
+             [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+             
+             // OOOOOOKKKK remove record on Table Auto Upload
+             [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+             
+             // Manage uploadTask cancel,suspend,resume
+             if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
+             else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
+             else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+             
+             NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
+         }
     }
 
     // refresh main

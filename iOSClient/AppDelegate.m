@@ -1457,7 +1457,7 @@
     
     while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUpload];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUpload];
         if (metadataNet) {
             
             // Priority Error only in Foreground
@@ -1489,7 +1489,7 @@
         
         while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
             
-            metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUploadAll];
+            metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUploadAll];
             if (metadataNet) {
                 
                 // Priority Error only in Foreground
@@ -1511,15 +1511,23 @@
     
     while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadFile];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile];
         if (metadataNet) {
             
+            // Encrypted ONLY 1 LOCK
+            if ([CCUtility isFolderEncrypted:metadataNet.serverUrl account:metadataNet.account]) {
+                
+                NSArray *recordUploadInLock = [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND lock = true", self.activeAccount]];
+                if (recordUploadInLock.count >= 1)
+                    break;
+            }
+                
             // Priority Error only in Foreground
             if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
                 continue;
-            
+                
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
-            
+                
             counterNewUpload++;
             
         } else

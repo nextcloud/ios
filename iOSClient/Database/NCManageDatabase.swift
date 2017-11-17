@@ -1840,52 +1840,6 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Queue Download
     
-    /*
-    @objc func addQueueDownload(fileID: String, encrypted: Bool, selector: String, selectorPost: String?, serverUrl: String, session: String) -> Bool {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return false
-        }
-        
-        let realm = try! Realm()
-        
-        if realm.isInWriteTransaction {
-            
-            print("[LOG] Could not write to database, addQueueDownload is already in write transaction")
-            return false
-            
-        } else {
-            
-            do {
-                try realm.write {
-                    
-                    // Add new
-                    let addObject = tableQueueDownload()
-                        
-                    addObject.account = tableAccount.account
-                    addObject.encrypted = encrypted
-                    addObject.fileID = fileID
-                    addObject.selector = selector
-                        
-                    if let selectorPost = selectorPost {
-                        addObject.selectorPost = selectorPost
-                    }
-                    
-                    addObject.serverUrl = serverUrl
-                    addObject.session = session
-                    
-                    realm.add(addObject, update: true)
-                }
-            } catch let error {
-                print("[LOG] Could not write to database: ", error)
-                return false
-            }
-        }
-        
-        return true
-    }
-    */
-    
     @objc func addQueueDownload(metadatasNet: [CCMetadataNet]) {
         
         guard let tableAccount = self.getAccountActive() else {
@@ -2069,7 +2023,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getQueueUpload(selector: String) -> CCMetadataNet? {
+    @objc func getQueueUploadLock(selector: String) -> CCMetadataNet? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -2118,6 +2072,19 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         let results = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock = true", tableAccount.account)
+        
+        return Array(results.map { tableQueueUpload.init(value:$0) })
+    }
+    
+    @objc func getQueueUpload(predicate: NSPredicate) -> [tableQueueUpload]? {
+        
+        guard self.getAccountActive() != nil else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableQueueUpload.self).filter(predicate)
         
         return Array(results.map { tableQueueUpload.init(value:$0) })
     }
