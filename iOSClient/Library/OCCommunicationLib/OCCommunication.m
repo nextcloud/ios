@@ -1958,7 +1958,7 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
@@ -2016,8 +2016,8 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/private-key"];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
@@ -2071,7 +2071,6 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/server-key"];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
@@ -2126,14 +2125,17 @@
 
 - (void)signEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey,NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
+    publicKey = [publicKey encodeString:NSUTF8StringEncoding];
+
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?csr=%@",publicKey]];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request signEndToEndPublicKey:serverPath publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request signEndToEndPublicKey:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSString *publicKey;
@@ -2183,14 +2185,17 @@
 
 - (void)storeEndToEndPrivateKeyCipher:(NSString*)serverPath privateKeyChiper:(NSString *)privateKeyChiper onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *privateKey, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
+    privateKeyChiper = [privateKeyChiper encodeString:NSUTF8StringEncoding];
+
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/private-key"];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?privateKey=%@",privateKeyChiper]];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request storeEndToEndPrivateKeyCipher:serverPath privateKeyChiper:privateKeyChiper onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request storeEndToEndPrivateKeyCipher:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSString *privateKey;
@@ -2242,7 +2247,7 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
@@ -2263,8 +2268,8 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/private-key"];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
@@ -2284,8 +2289,8 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/encrypted/%@", serverPath, fileID];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
@@ -2305,8 +2310,8 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/encrypted/%@", serverPath, fileID];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
@@ -2328,9 +2333,11 @@
     serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileID];
     if (token) {
         serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
+        serverPath = [serverPath stringByAppendingString:@"&format=json"];
+    } else {
+        serverPath = [serverPath stringByAppendingString:@"?format=json"];
     }
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
+
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
@@ -2386,8 +2393,8 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/lock/%@", serverPath, fileID];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
+
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
@@ -2408,16 +2415,17 @@
 
 - (void)storeEndToEndMetadata:(NSString*)serverPath fileID:(NSString *)fileID encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
-    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
     encryptedMetadata = [encryptedMetadata encodeString:NSUTF8StringEncoding];
 
+    serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
+    serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?metaData=%@", encryptedMetadata]];
+    serverPath = [serverPath stringByAppendingString:@"&format=json"];
+    
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request storeEndToEndMetadata:serverPath encryptedMetadata:encryptedMetadata onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request storeEndToEndMetadata:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSString *encryptedMetadata;
@@ -2469,8 +2477,8 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
@@ -2529,7 +2537,6 @@
     serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
     serverPath = [NSString stringWithFormat:@"%@&metaData=%@", serverPath, encryptedMetadata];
     serverPath = [serverPath stringByAppendingString:@"&format=json"];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
@@ -2586,8 +2593,8 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
-    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
