@@ -321,6 +321,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         var token: NSString?
         
+        // Is the directory empty ?
+        
         // Remove all records e2eMetadata
         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", appDelegate.activeAccount, serverUrl))
         
@@ -337,6 +339,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
     @objc func deletemarkEndToEndFolderEncrypted(_ url: String, fileID: String, serverUrl: String) -> Bool {
         
         var token: NSString?
+
+        // Is the directory empty ?
 
         // Remove all records e2eMetadata
         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", appDelegate.activeAccount, serverUrl))
