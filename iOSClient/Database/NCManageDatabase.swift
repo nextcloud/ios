@@ -1093,19 +1093,19 @@ class NCManageDatabase: NSObject {
     
     @objc func deleteE2eEncryption(predicate: NSPredicate) {
         
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).first else {
-            realm.cancelWrite()
+        guard self.getAccountActive() != nil else {
             return
         }
         
-        realm.delete(result)
+        let realm = try! Realm()
         
         do {
-            try realm.commitWrite()
+            try realm.write {
+                
+                let results = realm.objects(tableE2eEncryption.self).filter(predicate)
+                
+                realm.delete(results)
+            }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
