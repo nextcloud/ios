@@ -1622,10 +1622,13 @@
             
                 [alertController addAction:cancelAction];
                 [alertController addAction:overwriteAction];
-
-                [self presentViewController:alertController animated:YES completion:nil];
            
-            
+                UIWindow *alertWindow = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+                alertWindow.rootViewController = [[UIViewController alloc]init];
+                alertWindow.windowLevel = UIWindowLevelAlert + 1;
+                [alertWindow makeKeyAndVisible];
+                [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+                
             } else {
             
                 // Send to Upload Queue
