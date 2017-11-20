@@ -1568,74 +1568,71 @@
         if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
             return;
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-
-        for (PHAsset *asset in assets) {
+    for (PHAsset *asset in assets) {
         
-            NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType];
+        NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType];
         
-            NSDate *assetDate = asset.creationDate;
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        NSDate *assetDate = asset.creationDate;
+        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
         
-            // Create serverUrl if use sub folder
-            if (useSubFolder) {
+        // Create serverUrl if use sub folder
+        if (useSubFolder) {
             
-                [formatter setDateFormat:@"yyyy"];
-                NSString *yearString = [formatter stringFromDate:assetDate];
+            [formatter setDateFormat:@"yyyy"];
+            NSString *yearString = [formatter stringFromDate:assetDate];
         
-                [formatter setDateFormat:@"MM"];
-                NSString *monthString = [formatter stringFromDate:assetDate];
+            [formatter setDateFormat:@"MM"];
+            NSString *monthString = [formatter stringFromDate:assetDate];
             
-                serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
-            }
+            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
+        }
         
-            // Check if is in upload
-            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", app.activeAccount, directoryID, fileName];
-            NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
-            if ([isRecordInSessions count] > 0)
-                continue;
+        // Check if is in upload
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", app.activeAccount, directoryID, fileName];
+        NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
+        if ([isRecordInSessions count] > 0)
+            continue;
         
-            // Prepare record metadataNet
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+        // Prepare record metadataNet
+        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
         
-            metadataNet.assetLocalIdentifier = asset.localIdentifier;
-            metadataNet.fileName = fileName;
-            metadataNet.session = session;
-            metadataNet.selector = selectorUploadFile;
-            metadataNet.selectorPost = nil;
-            metadataNet.serverUrl = serverUrl;
-            metadataNet.taskStatus = k_taskStatusResume;
+        metadataNet.assetLocalIdentifier = asset.localIdentifier;
+        metadataNet.fileName = fileName;
+        metadataNet.session = session;
+        metadataNet.selector = selectorUploadFile;
+        metadataNet.selectorPost = nil;
+        metadataNet.serverUrl = serverUrl;
+        metadataNet.taskStatus = k_taskStatusResume;
         
-            // Check il file already exists
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", app.activeAccount, directoryID, fileName]];
-            if (metadata) {
+        // Check il file already exists
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", app.activeAccount, directoryID, fileName]];
+        if (metadata) {
             
-                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileName message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileName message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
             
-                UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                    // NO OVERWITE
-                }];
-                UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                    // Send to Upload Queue
-                    (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
-                }];
-            
-                [alertController addAction:cancelAction];
-                [alertController addAction:overwriteAction];
-           
-                UIWindow *alertWindow = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
-                alertWindow.rootViewController = [[UIViewController alloc]init];
-                alertWindow.windowLevel = UIWindowLevelAlert + 1;
-                [alertWindow makeKeyAndVisible];
-                [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
-                
-            } else {
-            
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                // NO OVERWITE
+            }];
+            UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 // Send to Upload Queue
                 (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
-            }
+            }];
+            
+            [alertController addAction:cancelAction];
+            [alertController addAction:overwriteAction];
+           
+            UIWindow *alertWindow = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+            alertWindow.rootViewController = [[UIViewController alloc]init];
+            alertWindow.windowLevel = UIWindowLevelAlert + 1;
+            [alertWindow makeKeyAndVisible];
+            [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+                
+        } else {
+            
+            // Send to Upload Queue
+            (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
         }
-    });
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
