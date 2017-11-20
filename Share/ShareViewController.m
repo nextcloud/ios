@@ -173,6 +173,11 @@
 
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
 {
+    // DENIED e2e
+    if ([CCUtility isFolderEncrypted:serverUrlTo account:self.activeAccount]) {
+        return;
+    }
+    
     if (serverUrlTo)
         _serverUrl = serverUrlTo;
     

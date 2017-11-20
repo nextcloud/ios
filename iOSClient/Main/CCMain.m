@@ -2233,7 +2233,7 @@
 {
     [_queueSelector removeAllObjects];
     
-    // Verify
+    // DENIED e2e
     if ([CCUtility isFolderEncrypted:serverUrlTo account:app.activeAccount]) {
         
         [app messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
