@@ -103,6 +103,18 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
+    // Format Compatibility
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_format_compatibility_footer_", nil);
+
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"formatCompatibility" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_format_compatibility_", nil)];
+    if ([CCUtility getFormatCompatibility]) row.value = @"1";
+    else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+    
     // Section CLEAR CACHE -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -190,6 +202,11 @@
         
         // force reload
         [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
+    }
+    
+    if ([rowDescriptor.tag isEqualToString:@"formatCompatibility"]) {
+        
+        [CCUtility setFormatCompatibility:[[rowDescriptor.value valueData] boolValue]];
     }
 }
 

@@ -91,6 +91,8 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
++ (void)setFormatCompatibility:(BOOL)set;
+
 + (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
 + (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
@@ -141,6 +143,8 @@
 + (BOOL)getActivityVerboseHigh;
 
 + (BOOL)getShowHiddenFiles;
+
++ (BOOL)getFormatCompatibility;
 
 + (NSString *)getEndToEndPublicKey:(NSString *)account;
 + (NSString *)getEndToEndPrivateKey:(NSString *)account;

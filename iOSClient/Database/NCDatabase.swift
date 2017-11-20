@@ -38,7 +38,6 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    @objc dynamic var autoUploadFormatCompatibility: Bool = false
     @objc dynamic var displayName = ""
     @objc dynamic var email = ""
     @objc dynamic var enabled: Bool = false

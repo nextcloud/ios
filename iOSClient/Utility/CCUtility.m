@@ -231,6 +231,12 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
++ (void)setFormatCompatibility:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"formatCompatibility" service:k_serviceShareKeyChain];
+}
+
 + (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
 {
     NSString *key = [E2E_PublicKey stringByAppendingString:account];
@@ -457,6 +463,11 @@
 + (BOOL)getShowHiddenFiles
 {
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (BOOL)getFormatCompatibility
+{
+    return [[UICKeyChainStore stringForKey:@"formatCompatibility" service:k_serviceShareKeyChain] boolValue];
 }
 
 + (NSString *)getEndToEndPublicKey:(NSString *)account
