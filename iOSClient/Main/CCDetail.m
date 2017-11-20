@@ -540,7 +540,6 @@
                     }
                 }
             }
-            
         }
         
         // energy saving memory
