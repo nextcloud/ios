@@ -900,7 +900,7 @@
         [_delegates setObject:delegate forKey:uploadID];
     
     // create Metadata
-    __block tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName fileNamePlain:fileNamePlain directory:_directoryUser activeAccount:_activeAccount];
+    tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName fileNamePlain:fileNamePlain directory:_directoryUser activeAccount:_activeAccount];
     
     metadata.date = [NSDate new];
     metadata.fileID = uploadID;
@@ -931,7 +931,6 @@
         // Now the fileName is fileNameIdentifier
         fileName = fileNameIdentifier;
         metadata.fileName = fileNameIdentifier;
-        metadata.e2eEncrypted = true;
     }
     
     [CCGraphics createNewImageFrom:fileNamePlain directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[fileNamePlain pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];

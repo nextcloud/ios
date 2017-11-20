@@ -1934,6 +1934,7 @@ class NCManageDatabase: NSObject {
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.fileName = metadataNet.fileName
+                        addObject.fileNameView = metadataNet.fileNameView
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -1977,6 +1978,7 @@ class NCManageDatabase: NSObject {
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.fileName = metadataNet.fileName
+                        addObject.fileNameView = metadataNet.fileNameView
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -2016,6 +2018,7 @@ class NCManageDatabase: NSObject {
         metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
         metadataNet.fileName = result.fileName
+        metadataNet.fileNameView = result.fileNameView
         metadataNet.priority = result.priority
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost
