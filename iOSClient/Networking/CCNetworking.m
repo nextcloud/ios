@@ -888,7 +888,6 @@
 
 - (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    NSString *fileNamePlain = fileName;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
     
@@ -899,8 +898,8 @@
     if (delegate)
         [_delegates setObject:delegate forKey:uploadID];
     
-    // create Metadata
-    tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName fileNamePlain:fileNamePlain directory:_directoryUser activeAccount:_activeAccount];
+    // create Metadata for Upload
+    tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName fileNameView:fileName directory:_directoryUser activeAccount:_activeAccount];
     
     metadata.date = [NSDate new];
     metadata.fileID = uploadID;
@@ -916,8 +915,15 @@
     // *** IS ENCRYPTED ---> ENCRYPTED FILE ***
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
         
-        // Create encrypted file
-        NSString *fileNameIdentifier = [CCUtility generateRandomIdentifier];
+        NSString *fileNameIdentifier;
+        
+        // id exists overwrite file else create a new encrypted filename
+        tableMetadata *overwriteMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", _activeAccount, directoryID, fileName]];
+        if (overwriteMetadata)
+            fileNameIdentifier = overwriteMetadata.fileName;
+        else
+            fileNameIdentifier = [CCUtility generateRandomIdentifier];
+            
         BOOL result = [self newEndToEndFile:fileName fileNameIdentifier:fileNameIdentifier serverUrl:serverUrl];
         if (result == false) {
             
@@ -929,16 +935,15 @@
         }
         
         // Now the fileName is fileNameIdentifier
-        fileName = fileNameIdentifier;
         metadata.fileName = fileNameIdentifier;
     }
     
-    [CCGraphics createNewImageFrom:fileNamePlain directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[fileNamePlain pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
+    [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
 
     metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
     if (metadata)
-        [self uploadURLSession:fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
+        [self uploadURLSession:metadata.fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
 }
 
 - (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus

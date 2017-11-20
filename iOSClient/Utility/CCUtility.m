@@ -1061,7 +1061,7 @@
     }
 }
 
-+ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNamePlain:(NSString *)fileNamePlain directory:(NSString *)directory activeAccount:(NSString *)activeAccount
++ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNameView:(NSString *)fileNameView directory:(NSString *)directory activeAccount:(NSString *)activeAccount
 {
     tableMetadata *metadata = [[tableMetadata alloc] init];
     
@@ -1083,7 +1083,7 @@
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
     
-    [self insertTypeFileIconName:fileNamePlain metadata:metadata];
+    [self insertTypeFileIconName:fileNameView metadata:metadata];
     
     return metadata;
 }
