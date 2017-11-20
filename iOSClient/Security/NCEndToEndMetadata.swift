@@ -192,8 +192,9 @@ class NCEndToEndMetadata : NSObject  {
                 do {
                     
                     let encryptedFileAttributes = try jsonDecoder.decode(e2eMetadata.encryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
+                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@", account, fileNameIdentifier))
                     
-                    if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@", account, fileNameIdentifier)) != nil {
+                    if  metadata != nil {
                     
                         let object = tableE2eEncryption()
                     
@@ -214,6 +215,11 @@ class NCEndToEndMetadata : NSObject  {
                         if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
                             return false
                         }
+                        
+                        // Update metadata on tableMetadata
+                        metadata?.fileNameView = encryptedFileAttributes.filename
+                        CCUtility.insertTypeFileIconName(encryptedFileAttributes.filename, metadata: metadata)
+                        let _ = NCManageDatabase.sharedInstance.addMetadata(metadata!)
                     }
                     
                 } catch let error {

@@ -1548,26 +1548,25 @@
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-        [self performSelectorOnMainThread:@selector(uploadFileAssetBridge:) withObject:@[assets, serverUrl, [NSNumber numberWithBool:useSubFolder], session] waitUntilDone:NO];
+        
+        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+
+        // if request create the folder for Photos &  the subfolders
+        if ([autoUploadPath isEqualToString:serverUrl])
+            if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
+                return;
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self uploadFileAssetBridge:assets serverUrl:serverUrl useSubFolder:useSubFolder session:session];
+        });
     });
 }
 
-- (void)uploadFileAssetBridge:(NSArray *)arguments
+- (void)uploadFileAssetBridge:(NSArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
-    NSArray *assets = [arguments objectAtIndex:0];
-    NSString *serverUrl = [arguments objectAtIndex:1];
-    BOOL useSubFolder = [[arguments objectAtIndex:2] boolValue];
-    NSString *session = [arguments objectAtIndex:3];
-    
-    
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
-    
-    // if request create the folder for Photos &  the subfolders
-    if ([autoUploadPath isEqualToString:serverUrl])
-        if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
-            return;
     
     NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);
     
@@ -1589,6 +1588,10 @@
             
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         }
+        
+        // Check il file already exists
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", app.activeAccount, directoryID, fileName]];
+
         
         // Check if is in upload 
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", app.activeAccount, directoryID, fileName];
