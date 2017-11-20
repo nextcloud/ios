@@ -921,7 +921,8 @@
     for (tableMetadata *metadata in metadatas) {
         
         NSString *serverUrlEncrypted = [NSString stringWithFormat:@"%@/%@", [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID], metadata.fileName];
-        if ([serverUrl containsString:serverUrlEncrypted])
+        //if ([serverUrl containsString:serverUrlEncrypted])
+        if ([serverUrl isEqualToString:serverUrlEncrypted])
             return true;
     }
     
