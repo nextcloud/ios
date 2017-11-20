@@ -2233,6 +2233,13 @@
 {
     [_queueSelector removeAllObjects];
     
+    // Verify
+    if ([CCUtility isFolderEncrypted:serverUrlTo account:app.activeAccount]) {
+        
+        [app messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        return;
+    }
+    
     if ([_selectedFileIDsMetadatas count] > 0) {
             
         _numSelectedFileIDsMetadatas = [_selectedFileIDsMetadatas count];
