@@ -47,7 +47,7 @@
     } failureRequest:^(NSURLResponse *response, NSString *redirectedServer, NSError *error) {
         
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:httpResponse.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Upload file error %lu", httpResponse.statusCode] forKey:NSLocalizedDescriptionKey]];
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:httpResponse.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Upload file error %lu", (unsigned long)httpResponse.statusCode] forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
 
     } failureBeforeRequest:^(NSError *error) {
@@ -79,7 +79,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Check server error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Check server error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
     }];
     
@@ -108,7 +108,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read file error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read file error %lu", (long) response.statusCode] forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
     }];
     
@@ -138,7 +138,7 @@
 
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
 
-        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
 
     }];
@@ -186,7 +186,7 @@
             [communication deleteEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
                 NSLog(@"Found metadata and delete");
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-                NSLog(@"%@", [NSString stringWithFormat:@"Remove metadata error %lu", response.statusCode]);
+                NSLog(@"%@", [NSString stringWithFormat:@"Remove metadata error %lu", (unsigned long)response.statusCode]);
             }];
         
             // MARK
@@ -201,25 +201,25 @@
                 
                 } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
                 
-                    returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unlock folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+                    returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unlock folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
                     dispatch_semaphore_signal(semaphore);
                 }];
             
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
-                returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Mark folder as encrypted error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+                returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Mark folder as encrypted error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
                 dispatch_semaphore_signal(semaphore);
             }];
         
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Lock folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Lock folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
             dispatch_semaphore_signal(semaphore);
         }];
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
-        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
         
     }];
@@ -263,7 +263,7 @@
             [communication deleteEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
                 NSLog(@"Found metadata and delete");
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-                NSLog(@"%@", [NSString stringWithFormat:@"Remove metadata error %lu", response.statusCode]);
+                NSLog(@"%@", [NSString stringWithFormat:@"Remove metadata error %lu", (unsigned long)response.statusCode]);
             }];
         
             // DELETE MARK
@@ -278,26 +278,26 @@
                 
                 } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
                 
-                    returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unlock folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+                    returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unlock folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
                     dispatch_semaphore_signal(semaphore);
                 }];
             
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
-                returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Delete mark folder as encrypted error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+                returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Delete mark folder as encrypted error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
                 dispatch_semaphore_signal(semaphore);
             }];
         
         
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Lock folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Lock folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
             dispatch_semaphore_signal(semaphore);
         }];
     
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
     
-        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
     
     }];
@@ -328,7 +328,7 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Get metadata error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Get metadata error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
     }];
     
@@ -369,19 +369,19 @@
                 
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
                 
-                returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unlock folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+                returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unlock folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
                 dispatch_semaphore_signal(semaphore);
             }];
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
-            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Store metadata error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Store metadata error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
             dispatch_semaphore_signal(semaphore);
         }];
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Lock folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Lock folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
     }];
     
@@ -422,19 +422,19 @@
                 
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
                 
-                returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unlock folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+                returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unlock folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
                 dispatch_semaphore_signal(semaphore);
             }];
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
-            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Update metadata error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Update metadata error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
             dispatch_semaphore_signal(semaphore);
         }];
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Lock folder error %lu", response.statusCode] forKey:NSLocalizedDescriptionKey]];
+        returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Lock folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
         dispatch_semaphore_signal(semaphore);
     }];
     
