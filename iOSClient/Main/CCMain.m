@@ -4012,7 +4012,7 @@
                                     }];
         }
         
-        if ([CCUtility isEndToEndEnabled:app.activeAccount] && !_metadata.e2eEncrypted) {
+        if ([CCUtility isEndToEndEnabled:app.activeAccount] && !_metadata.e2eEncrypted && !([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
