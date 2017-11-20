@@ -1548,64 +1548,56 @@
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-        
-        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
-
-        // if request create the folder for Photos &  the subfolders
-        if ([autoUploadPath isEqualToString:serverUrl])
-            if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
-                return;
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self uploadFileAssetBridge:assets serverUrl:serverUrl useSubFolder:useSubFolder session:session];
-        });
+        [self performSelectorOnMainThread:@selector(uploadFileAssetBridge:) withObject:@[assets, serverUrl, [NSNumber numberWithBool:useSubFolder], session] waitUntilDone:NO];
     });
 }
 
-- (void)uploadFileAssetBridge:(NSArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session
+- (void)uploadFileAssetBridge:(NSArray *)arguments
 {
+    NSArray *assets = [arguments objectAtIndex:0];
+    __block NSString *serverUrl = [arguments objectAtIndex:1];
+    BOOL useSubFolder = [[arguments objectAtIndex:2] boolValue];
+    NSString *session = [arguments objectAtIndex:3];
+
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
     
-    NSLog(@"[LOG] Asset N. %lu", (unsigned long)[assets count]);
+    // if request create the folder for Photos &  the subfolders
+    if ([autoUploadPath isEqualToString:serverUrl])
+        if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
+            return;
     
-    for (PHAsset *asset in assets) {
-        
-        NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType];
-        
-        NSDate *assetDate = asset.creationDate;
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        
-        // Create serverUrl if use sub folder
-        if (useSubFolder) {
-            
-            [formatter setDateFormat:@"yyyy"];
-            NSString *yearString = [formatter stringFromDate:assetDate];
-        
-            [formatter setDateFormat:@"MM"];
-            NSString *monthString = [formatter stringFromDate:assetDate];
-            
-            serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
-        }
-        
-        // Check il file already exists
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", app.activeAccount, directoryID, fileName]];
+    dispatch_async(dispatch_get_main_queue(), ^{
 
+        for (PHAsset *asset in assets) {
         
-        // Check if is in upload 
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", app.activeAccount, directoryID, fileName];
-        NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
-
-        if ([isRecordInSessions count] > 0) {
+            NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType];
+        
+            NSDate *assetDate = asset.creationDate;
+            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+        
+            // Create serverUrl if use sub folder
+            if (useSubFolder) {
             
-            // next upload
-            continue;
+                [formatter setDateFormat:@"yyyy"];
+                NSString *yearString = [formatter stringFromDate:assetDate];
+        
+                [formatter setDateFormat:@"MM"];
+                NSString *monthString = [formatter stringFromDate:assetDate];
             
-        } else {
-            
+                serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
+            }
+        
+            // Check if is in upload
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", app.activeAccount, directoryID, fileName];
+            NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
+            if ([isRecordInSessions count] > 0)
+                continue;
+        
+            // Prepare record metadataNet
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-            
+        
             metadataNet.assetLocalIdentifier = asset.localIdentifier;
             metadataNet.fileName = fileName;
             metadataNet.session = session;
@@ -1613,10 +1605,34 @@
             metadataNet.selectorPost = nil;
             metadataNet.serverUrl = serverUrl;
             metadataNet.taskStatus = k_taskStatusResume;
+        
+            // Check il file already exists
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", app.activeAccount, directoryID, fileName]];
+            if (metadata) {
+            
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileName message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+            
+                UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                    // NO OVERWITE
+                }];
+                UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                    // Send to Upload Queue
+                    (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
+                }];
+            
+                [alertController addAction:cancelAction];
+                [alertController addAction:overwriteAction];
 
-            (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
+                [self presentViewController:alertController animated:YES completion:nil];
+           
+            
+            } else {
+            
+                // Send to Upload Queue
+                (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
+            }
         }
-    }
+    });
 }
 
 #pragma --------------------------------------------------------------------------------------------
