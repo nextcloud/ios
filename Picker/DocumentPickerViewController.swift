@@ -61,6 +61,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var passcodeIsPush: Bool = false
     var serverUrlPush: String = ""
     
+    var autoUploadFileName = ""
+    var autoUploadDirectory = ""
     
     lazy var networkingOperationQueue: OperationQueue = {
         
@@ -264,6 +266,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         predicate = NSPredicate(format: "account = %@ AND directoryID = %@", activeAccount, metadataNet.directoryID!)
         recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sorted: "fileName", ascending: true)
+        
+        autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
+        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(activeUrl)
+        
+        if (CCUtility.isEnd(toEndEnabled: activeAccount)) {
+        }
         
         tableView.reloadData()
         
@@ -625,10 +633,12 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
         cell.separatorInset = UIEdgeInsetsMake(0, 60, 0, 0)
         
-        let metadata = recordsTableMetadata?[(indexPath as NSIndexPath).row]
+        guard let metadata = recordsTableMetadata?[(indexPath as NSIndexPath).row] else {
+            return cell
+        }
         
         // File Image View
-        let fileNamePath = "\(directoryUser)/\(metadata!.fileID)).ico"
+        let fileNamePath = "\(directoryUser)/\(metadata.fileID)).ico"
         
         if FileManager.default.fileExists(atPath: fileNamePath) {
             
@@ -636,30 +646,36 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
         } else {
             
-            if metadata!.directory {
+            if metadata.directory {
                 
-                cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: metadata!.iconName), color: NCBrandColor.sharedInstance.brand)
+                if (metadata.e2eEncrypted) {
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderEncrypted"), color: NCBrandColor.sharedInstance.brand)
+                } else if (metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory) {
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderphotocamera"), color: NCBrandColor.sharedInstance.brand)
+                } else {
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), color: NCBrandColor.sharedInstance.brand)
+                }
                 
             } else {
                 
-                cell.fileImageView.image = UIImage(named: (metadata?.iconName)!)
-                if (metadata?.thumbnailExists)! {
+                cell.fileImageView.image = UIImage(named: (metadata.iconName))
+                if (metadata.thumbnailExists) {
                     
-                    downloadThumbnail(metadata!)
-                    thumbnailInLoading[metadata!.fileID] = indexPath
+                    downloadThumbnail(metadata)
+                    thumbnailInLoading[metadata.fileID] = indexPath
                 }
             }
         }
         
         // File Name
-        cell.fileName.text = metadata!.fileName
+        cell.fileName.text = metadata.fileNameView
         
         // Status Image View
-        let lockServerUrl = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: metadata!.fileName)
+        let lockServerUrl = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: metadata.fileName)
                 
         let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account = %@ AND serverUrl = %@", activeAccount, lockServerUrl!))
         if tableDirectory != nil {
-            if metadata!.directory &&  (tableDirectory?.lock)! && (CCUtility.getBlockCode() != nil) {
+            if metadata.directory &&  (tableDirectory?.lock)! && (CCUtility.getBlockCode() != nil) {
                 cell.StatusImageView.image = UIImage(named: "passcode")
             } else {
                 cell.StatusImageView.image = nil
@@ -694,16 +710,21 @@ extension DocumentPickerViewController: UITableViewDataSource {
             hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
             
         } else {
-                        
+            
+            // e2e DENIED
+            if (metadata?.e2eEncrypted == true) {
+                return
+            }
+        
             serverUrlPush = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: recordMetadata.fileName)
 
             var passcode: String? = CCUtility.getBlockCode()
             if passcode == nil {
                 passcode = ""
             }
-            
+        
             let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account = %@ AND serverUrl = %@", activeAccount, serverUrlPush))
-
+            
             if tableDirectory != nil {
                 
                 if (tableDirectory?.lock)! && (passcode?.count)! > 0 {
