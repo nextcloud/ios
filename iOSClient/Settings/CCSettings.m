@@ -106,8 +106,6 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"onlylockdir" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_lock_protection_no_screen_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
-
-#ifdef DEBUG
     
     // Section : E2EEncryption --------------------------------------------------------------
 
@@ -121,9 +119,6 @@
     [row.cellConfig setObject:[UIImage imageNamed:@"settingsE2EEncryption"] forKey:@"imageView.image"];
     row.action.viewControllerClass = [NCManageEndToEndEncryption class];
     [section addFormRow:row];
-    
-#endif
-
     
     // Section Advanced -------------------------------------------------
     
