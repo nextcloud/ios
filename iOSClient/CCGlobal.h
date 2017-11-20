@@ -155,7 +155,6 @@ extern NSString *const dav;
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenWindowShare                         @"openWindowShare"
 #define selectorReadFile                                @"readFile"
-#define selectorReadFileUploadFile                      @"readFileUploadFile"
 #define selectorReadFileVerifyUpload                    @"readFileVerifyUpload"
 #define selectorReadFileWithDownload                    @"readFileWithDownload"
 #define selectorReadFileReloadFolder                    @"readFileReloadFolder"

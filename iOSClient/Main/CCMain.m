@@ -1603,14 +1603,15 @@
             
             CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
             
-            metadataNet.action = actionReadFile;
             metadataNet.assetLocalIdentifier = asset.localIdentifier;
             metadataNet.fileName = fileName;
             metadataNet.session = session;
-            metadataNet.selector = selectorReadFileUploadFile;
+            metadataNet.selector = selectorUploadFile;
+            metadataNet.selectorPost = nil;
             metadataNet.serverUrl = serverUrl;
-                
-            [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+            metadataNet.taskStatus = k_taskStatusResume;
+
+            (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
         }
     }
 }
@@ -1624,35 +1625,6 @@
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [app openLoginView:self loginType:loginModifyPasswordUser];
-    
-    // UploadFile
-    if ([metadataNet.selector isEqualToString:selectorReadFileUploadFile]) {
-        
-        // File not exists
-        if (errorCode == 404) {
-            
-            metadataNet.errorCode = 0;
-            metadataNet.selector = selectorUploadFile;
-            metadataNet.selectorPost = nil;
-            metadataNet.taskStatus = k_taskStatusResume;
-                        
-            (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
-            
-        } else {
-            
-            // error ho many retry befor notification and go to on next asses
-            if (metadataNet.errorRetry < 3) {
-                
-                // Retry read file
-                [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-                
-            } else {
-                
-                // STOP check file, view message error
-                [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            }
-        }
-    }
 }
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
@@ -1665,17 +1637,6 @@
         if ([metadata.etag isEqualToString:directory.etag] == NO) {
             [self readFolder:metadataNet.serverUrl];
         }
-    }
-    
-    // UploadFile
-    if ([metadataNet.selector isEqualToString:selectorReadFileUploadFile]) {
-        
-        metadataNet.errorCode = 403;                // File exists 403 Forbidden
-        metadataNet.selector = selectorUploadFile;
-        metadataNet.selectorPost = nil;
-        metadataNet.taskStatus = k_taskStatusResume;
-        
-        (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
     }
 }
 
