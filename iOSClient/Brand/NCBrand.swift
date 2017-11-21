@@ -97,6 +97,7 @@ class NCBrandColor: NSObject {
     @objc public let disable_request_login_url:       Bool = false
     @objc public let disable_multiaccount:            Bool = false
     @objc public let disable_manage_account:          Bool = false
+    @objc public let disable_more_external_site:      Bool = false
     
     override init() {
         
