@@ -117,11 +117,13 @@
         }
         
         // -2-
+        /*
         else if ([CCUtility getIntroMessage:k_Intro_no_cryptocloud] == NO) {
             
             _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
             [_intro show];
         }
+        */
         
         // NO INTRO
         else {
@@ -138,18 +140,19 @@
         
         [CCUtility setIntroMessage:k_Intro set:YES];
         // next
-        _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
-        [_intro show];
+        //_intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
+        //[_intro show];
         //
-        return;
+        //return;
     }
     
     // -2-
+    /*
     if ([type isEqualToString:k_Intro_no_cryptocloud]) {
         
         [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
     }
-    
+    */
     // check account
     [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 }
