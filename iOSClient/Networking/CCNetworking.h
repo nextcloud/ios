@@ -70,6 +70,9 @@
 - (void)verifyUploadInProgress;
 - (void)verifyUploadInErrorOrWait;
 
+// E2E Encryption
+- (BOOL)SendEndToEndMetadata:(NSString *)metadata serverUrl:(NSString *)serverUrl;
+
 @end
 
 @protocol CCNetworkingDelegate <NSObject>

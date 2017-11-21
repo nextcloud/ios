@@ -1117,6 +1117,37 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) -> Bool {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return false
+        }
+        
+        let realm = try! Realm()
+        
+        var update = false
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", tableAccount.account, serverUrl, fileNameIdentifier).first else {
+                    realm.cancelWrite()
+                    return
+                }
+                
+                result.fileName = newFileName
+                result.fileNamePath = newFileNamePath
+                
+                update = true
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return false
+        }
+        
+        return update
+    }
+    
     //MARK: -
     //MARK: Table External Sites
     
