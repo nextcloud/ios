@@ -1849,14 +1849,17 @@
 {
     if (enabled) {
         
-        self.definesPresentationContext = YES;
-        self.searchController.searchResultsUpdater = self;
-        self.searchController.dimsBackgroundDuringPresentation = NO;
-        self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].seperator;
-        [self.searchController.searchBar sizeToFit];
-        self.searchController.searchBar.delegate = self;
-    
         if (@available(iOS 11, *)) {
+            
+            if (self.navigationItem.searchController != nil)
+                return;
+            
+            self.definesPresentationContext = YES;
+            self.searchController.searchResultsUpdater = self;
+            self.searchController.dimsBackgroundDuringPresentation = NO;
+            self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].seperator;
+            [self.searchController.searchBar sizeToFit];
+            self.searchController.searchBar.delegate = self;
             
             self.navigationItem.searchController = self.searchController;
             self.navigationItem.hidesSearchBarWhenScrolling = true;
@@ -1872,6 +1875,16 @@
             backgroundView.clipsToBounds = YES;
             
         } else {
+            
+            if (self.tableView.tableHeaderView != nil)
+                return;
+            
+            self.definesPresentationContext = YES;
+            self.searchController.searchResultsUpdater = self;
+            self.searchController.dimsBackgroundDuringPresentation = NO;
+            self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].seperator;
+            [self.searchController.searchBar sizeToFit];
+            self.searchController.searchBar.delegate = self;
             
             self.tableView.tableHeaderView = self.searchController.searchBar;
             [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
