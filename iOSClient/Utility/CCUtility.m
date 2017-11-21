@@ -625,7 +625,7 @@
     else numberFileName = [CCUtility getIncrementalNumber];
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
+    [formatter setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
     NSString *fileNameDate = [formatter stringFromDate:fileDate];
     
     NSString *fileNameType = @"";
