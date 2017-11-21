@@ -2388,10 +2388,14 @@
     
     if ([self indexPathIsValid:indexPath]) {
         
-        tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+        tableMetadata *metadataSection = [self getMetadataFromSectionDataSource:indexPath];
         
-        if (metadata)
-            [self reloadTaskButton:metadata];
+        if (metadataSection) {
+            
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataSection.fileID]];
+            if (metadata)
+                [self reloadTaskButton:metadata];
+        }
     }
 }
 
@@ -2454,10 +2458,14 @@
     
     if ([self indexPathIsValid:indexPath]) {
         
-        tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+        tableMetadata *metadataSection = [self getMetadataFromSectionDataSource:indexPath];
         
-        if (metadata)
-            [self cancelTaskButton:metadata reloadTable:YES];
+        if (metadataSection) {
+            
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataSection.fileID]];
+            if (metadata)
+                [self cancelTaskButton:metadata reloadTable:YES];
+        }
     }
 }
 
@@ -2520,10 +2528,14 @@
     
     if ([self indexPathIsValid:indexPath]) {
         
-        tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+        tableMetadata *metadataSection = [self getMetadataFromSectionDataSource:indexPath];
         
-        if (metadata)
-            [self stopTaskButton:metadata];
+        if (metadataSection) {
+            
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataSection.fileID]];
+            if (metadata)
+                [self stopTaskButton:metadata];
+        }
     }
 }
 

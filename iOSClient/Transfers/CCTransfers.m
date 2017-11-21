@@ -182,7 +182,7 @@
     if (indexPath) {
         
         NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         if (metadata)
             [app.activeMain reloadTaskButton:metadata];
@@ -217,7 +217,7 @@
     if (indexPath) {
         
         NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         if (metadata)
             [app.activeMain cancelTaskButton:metadata reloadTable:YES];
@@ -257,7 +257,7 @@
     if (indexPath) {
         
         NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         if (metadata)
             [app.activeMain stopTaskButton:metadata];
