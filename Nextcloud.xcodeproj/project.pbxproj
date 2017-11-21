@@ -1515,7 +1515,6 @@
 		F7FCFFDE1D707B83000E6E29 /* CCPeekPop.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPeekPop.m; sourceTree = "<group>"; };
 		F7FE125C1BAC03FB0041924B /* CCBKPasscode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBKPasscode.h; sourceTree = "<group>"; };
 		F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCBKPasscode.m; sourceTree = "<group>"; };
-		F7FFEACD1F82BB1C005E5C17 /* CCCellMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CCCellMain.h; path = Main/CCCellMain.h; sourceTree = "<group>"; };
 		F7FFEACE1F82BB23005E5C17 /* CCCellMain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCCellMain.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2898,7 +2897,6 @@
 				F70022561EC4C9100080073F /* OCCommunicationLib */,
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
-				F7FFEACD1F82BB1C005E5C17 /* CCCellMain.h */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
 				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
