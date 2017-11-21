@@ -2106,7 +2106,6 @@
             return;
         }
         
-        // Prima rinominare nella tabella tableE2eEncryption
         if ([[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:fileName newFileNamePath:[CCUtility returnFileNamePathFromFileName:fileName serverUrl:self.serverUrl activeUrl:app.activeUrl]]) {
             
             NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, self.serverUrl]];
@@ -2117,9 +2116,8 @@
                 
                     BOOL result = [[CCNetworking sharedNetworking] SendEndToEndMetadata:e2eMetadataJSON serverUrl:self.serverUrl];
                     if (!result) {
-                        // Restore preview fileName on DB
+                        // Restore previuos fileName on DB
                         (void)[[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:metadata.fileNameView newFileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileNameView serverUrl:self.serverUrl activeUrl:app.activeUrl]];
-                        
                         [app messageNotification:@"_error_" description:@"Error to send metadata" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
                     }
                 });
