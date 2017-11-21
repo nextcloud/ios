@@ -625,7 +625,7 @@
     else numberFileName = [CCUtility getIncrementalNumber];
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
+    [formatter setDateFormat:@"yyyy-MM-dd HH-mm-ss"];
     NSString *fileNameDate = [formatter stringFromDate:fileDate];
     
     NSString *fileNameType = @"";
@@ -693,17 +693,17 @@
         } else {
             
             if (addFileNameType)
-                fileName = [NSString stringWithFormat:@"%@%@%@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+                fileName = [NSString stringWithFormat:@"%@_%@_%@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
             else
-                fileName = [NSString stringWithFormat:@"%@%@.%@", fileNameDate, numberFileName, fileNameExt];
+                fileName = [NSString stringWithFormat:@"%@_%@.%@", fileNameDate, numberFileName, fileNameExt];
         }
         
     } else {
         
         if (addFileNameType)
-            fileName = [NSString stringWithFormat:@"%@%@%@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+            fileName = [NSString stringWithFormat:@"%@_%@_%@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
         else
-            fileName = [NSString stringWithFormat:@"%@%@.%@", fileNameDate, numberFileName, fileNameExt];
+            fileName = [NSString stringWithFormat:@"%@_%@.%@", fileNameDate, numberFileName, fileNameExt];
 
     }
     
