@@ -2097,7 +2097,14 @@
     tableMetadata* metadata = [arguments objectAtIndex:0];
     NSString *fileName = [arguments objectAtIndex:1];
     
-    [[CCActions sharedInstance] renameFileOrFolder:metadata fileName:fileName delegate:self];
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount]) {
+        
+        
+        
+    } else  {
+        
+        [[CCActions sharedInstance] renameFileOrFolder:metadata fileName:fileName delegate:self];
+    }
 }
 
 - (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -3951,7 +3958,7 @@
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !_metadata.e2eEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brand]
