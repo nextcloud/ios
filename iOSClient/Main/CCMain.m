@@ -2099,6 +2099,13 @@
     
     if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount]) {
         
+        // Verify if exists new fileName
+        if ([[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileName = %@", app.activeAccount, self.serverUrl, fileName]]) {
+            [app messageNotification:@"_error_" description:@"_file_already_exists_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+
+            return;
+        }
+        
         // Prima rinominare nella tabella tableE2eEncryption
         if ([[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:fileName newFileNamePath:[CCUtility returnFileNamePathFromFileName:fileName serverUrl:self.serverUrl activeUrl:app.activeUrl]]) {
             
