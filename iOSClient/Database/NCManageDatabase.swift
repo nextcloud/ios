@@ -1125,27 +1125,30 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        var update = false
+        realm.beginWrite()
+
+        guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", tableAccount.account, serverUrl, fileNameIdentifier).first else {
+            realm.cancelWrite()
+            return false
+        }
         
+        let object = tableE2eEncryption.init(value: result)
+        
+        realm.delete(result)
+
+        object.fileName = newFileName
+        object.fileNamePath = newFileNamePath
+
+        realm.add(object)
+
         do {
-            try realm.write {
-                
-                guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", tableAccount.account, serverUrl, fileNameIdentifier).first else {
-                    realm.cancelWrite()
-                    return
-                }
-                
-                result.fileName = newFileName
-                result.fileNamePath = newFileNamePath
-                
-                update = true
-            }
+            try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             return false
         }
         
-        return update
+        return true
     }
     
     //MARK: -
@@ -1572,6 +1575,38 @@ class NCManageDatabase: NSObject {
             return
         }
         
+        if let directoryID = directoryID {
+            // Update Date Read Directory
+            self.setDateReadDirectory(directoryID: directoryID)
+        }
+    }
+    
+    @objc func setMetadataFileNameView(directoryID: String, fileName: String, newFileNameView: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+
+        guard let result = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@ AND fileName = %@", tableAccount.account, directoryID, fileName).first else {
+            realm.cancelWrite()
+            return
+        }
+                
+        result.fileNameView = newFileNameView
+        
+        let directoryID : String? = result.directoryID
+    
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
+    
         if let directoryID = directoryID {
             // Update Date Read Directory
             self.setDateReadDirectory(directoryID: directoryID)
