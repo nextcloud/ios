@@ -2571,9 +2571,10 @@
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
 				F710E80C1EF95C9C00DC2427 /* Intro */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
+				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F755D43C1FC44E7B00801AE4 /* CustomSwift.h */,
-				F76F23331ED4603700C40023 /* LaunchScreen.xib */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
+				F76F23331ED4603700C40023 /* LaunchScreen.xib */,
 			);
 			path = Brand;
 			sourceTree = "<group>";
@@ -2900,7 +2901,6 @@
 				F7FFEACD1F82BB1C005E5C17 /* CCCellMain.h */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
 				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
-				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
