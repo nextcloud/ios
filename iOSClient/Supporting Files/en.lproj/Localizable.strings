@@ -206,7 +206,7 @@
 
 "_optimized_photos_"            = "Optimized photo resolution";
 "_upload_del_photos_"           = "Remove files after upload";
-"_optimized_photos_how_"        = "If your iPhone is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Nextcloud.";
+"_optimized_photos_how_"        = "If your device is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Nextcloud.";
 "_upload_del_photos_how_"       = "Files will be removed from device memory after they’ve been uploaded to your cloud. They will remain in the camera roll. Just download the files to see them.";
 "_show_hidden_files_"           = "Show hidden files";
 
