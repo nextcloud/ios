@@ -92,7 +92,7 @@
     
     BOOL _loadingFolder;
     
-    // e2e
+    // E2E
     BOOL _folderEncrypted;
 }
 @end
@@ -1283,13 +1283,6 @@
     if (metadata == nil)
         return;
     
-    tableE2eEncryption *e2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier = %@ AND serverUrl = %@", metadata.fileName, serverUrl]];
-    if (e2eEncryption) {
-        metadata.e2eEncrypted = true;
-        metadata.fileNameView = e2eEncryption.fileName;
-        [CCUtility insertTypeFileIconName:e2eEncryption.fileName metadata:metadata];
-    }
-    
     // Download
     if ([selector isEqualToString:selectorDownloadFile]) {
         [self reloadDatasource:serverUrl];
@@ -1787,7 +1780,7 @@
         [self tableViewReloadData];
     }
     
-    // Is encrypted folder get metadata
+    // E2E Is encrypted folder get metadata
     if (metadataFolder.e2eEncrypted == true) {
         
         if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
@@ -2097,9 +2090,10 @@
     tableMetadata* metadata = [arguments objectAtIndex:0];
     NSString *fileName = [arguments objectAtIndex:1];
     
+    // E2E
     if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount]) {
         
-        // Verify if exists the new fileName
+        // verify if exists the new fileName
         if ([[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileName = %@", app.activeAccount, self.serverUrl, fileName]]) {
             [app messageNotification:@"_error_" description:@"_file_already_exists_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             return;
@@ -2276,7 +2270,7 @@
 {
     [_queueSelector removeAllObjects];
     
-    // DENIED e2e
+    // E2E DENIED
     if ([CCUtility isFolderEncrypted:serverUrlTo account:app.activeAccount]) {
         
         [app messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
@@ -4318,7 +4312,6 @@
         if (directoryID) {
         
             NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND status = %i", app.activeAccount, directoryID, k_metadataStatusNormal] sorted:sorted ascending:[CCUtility getAscendingSettings]];
-            
             NSArray *recordsTableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, serverUrl]];
                                                   
             _sectionDataSource = [CCSectionDataSourceMetadata new];
@@ -4750,7 +4743,7 @@
         cell.status.image = [UIImage imageNamed:@"passcode"];
     
     // ----------------------------------------------------------------------------------------------------------
-    // Image Status Encrypted
+    // E2E Image Status Encrypted
     // ----------------------------------------------------------------------------------------------------------
     
     if (_folderEncrypted && !metadata.directory) {

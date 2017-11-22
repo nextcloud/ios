@@ -721,7 +721,7 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
 
-        // Decrypted
+        // E2E Decrypted
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier = %@ AND serverUrl = %@", fileName, serverUrl]];
         if (object) {
             BOOL result = [[NCEndToEndEncryption sharedManager] decryptFileID:fileID directoryUser:_directoryUser key:object.key initializationVector:object.initializationVector authenticationTag:object.authenticationTag];
@@ -911,7 +911,7 @@
     metadata.sessionSelector = selector;
     metadata.sessionSelectorPost = selectorPost;
     
-    // *** IS ENCRYPTED ---> ENCRYPTED FILE ***
+    // E2E *** IS ENCRYPTED ---> ENCRYPTED FILE ***
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
         
         NSString *fileNameIdentifier;
@@ -1542,6 +1542,7 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  End To End Encryption =====
 #pragma --------------------------------------------------------------------------------------------
+// E2E
 
 - (BOOL)newEndToEndFile:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier serverUrl:(NSString *)serverUrl
 {

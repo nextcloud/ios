@@ -1544,6 +1544,7 @@
 #pragma mark ===== E2E Encryption verify unlock < k_timerUnlockEncryptedFolder seconds > =====
 #pragma --------------------------------------------------------------------------------------------
 
+// E2E
 - (void)unlockEncryptedFolder
 {
     // Test

@@ -601,6 +601,14 @@
             if (metadata.thumbnailExists)
                 [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
         }
+        
+        // ----------------------------------------------------------------------------------------------------------
+        // E2E Image Status Encrypted
+        // ----------------------------------------------------------------------------------------------------------
+        
+        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileNameIdentifier = %@", app.activeAccount, metadata.fileName]];
+        if (tableE2eEncryption)
+            cell.status.image = [UIImage imageNamed:@"encrypted"];
     }
     
     // text and length

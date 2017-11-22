@@ -953,11 +953,20 @@
     return metadata;
 }
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser isFolderEncrypted:(BOOL)isFolderEncrypted
 {
     tableMetadata *metadata = [tableMetadata new];
+    NSString *fileNameView;
     
     fileName = [CCUtility removeForbiddenCharactersServer:fileName];
+    fileNameView = fileName;
+    
+    // E2E find the fileName for fileNameView
+    if (isFolderEncrypted) {
+        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", activeAccount, serverUrl, fileName]];
+        if (tableE2eEncryption)
+            fileNameView = tableE2eEncryption.fileName;
+    }
     
     metadata.account = activeAccount;
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
@@ -967,7 +976,7 @@
     metadata.fileID = itemDto.ocId;
     metadata.directoryID = directoryID;
     metadata.fileName = fileName;
-    metadata.fileNameView = fileName;
+    metadata.fileNameView = fileNameView;
     metadata.iconName = @"";
     metadata.permissions = itemDto.permissions;
     metadata.etag = itemDto.etag;
@@ -975,8 +984,8 @@
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
     metadata.typeFile = @"";
     
-    [self insertTypeFileIconName:fileName metadata:metadata];
-    
+    [self insertTypeFileIconName:fileNameView metadata:metadata];
+ 
     return metadata;
 }
 

@@ -223,6 +223,7 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
         
         // Check items > 0
         if ([items count] == 0) {
@@ -268,7 +269,7 @@
                 serverUrlFolder = @"..";
                 directoryIDFolder = @"00000000-0000-0000-0000-000000000000";
             
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
                 
             } else {
             
@@ -281,7 +282,7 @@
                             [self.delegate readFolderSuccess:_metadataNet metadataFolder:metadataFolder metadatas:metadatas];
                     });
                 }
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
             }
         
             NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
@@ -319,7 +320,7 @@
                 }
                 // ------------------------
                 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -385,7 +386,8 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
+
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
@@ -436,7 +438,7 @@
 
                 NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
     
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -532,7 +534,8 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
+
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
 
@@ -596,7 +599,7 @@
 
             NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
             
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
         }
         
         if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccess:metadatas:)])
@@ -757,7 +760,7 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    // Delete only directory NOT encrypted
+    // E2E Delete only directory NOT encrypted
     if (_metadataNet.directory && _metadataNet.e2eEncrypted) {
         
         [self.delegate deleteFileOrFolderFailure:_metadataNet message:NSLocalizedString(@"_e2e_delete_folder_not_permitted_", nil) errorCode:0];
@@ -872,10 +875,12 @@
     
     NSString *fileName;
     
-    if (_metadataNet.fileName)
+    if (_metadataNet.fileName) {
         fileName = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
-    else
+    } else {
+        _metadataNet.fileName = @".";
         fileName = _metadataNet.serverUrl;
+    }
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -883,7 +888,8 @@
     [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
+
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
             
             tableMetadata *metadata = [tableMetadata new];
@@ -898,7 +904,7 @@
 
                 NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
-                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
                         
                 if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
                     [self.delegate readFileSuccess:_metadataNet metadata:metadata];
