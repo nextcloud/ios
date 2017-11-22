@@ -153,6 +153,7 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== End-to-End Encryption =====
 #pragma --------------------------------------------------------------------------------------------
+// E2E
 
 - (NSError *)markEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl token:(NSString  **)token
 {
