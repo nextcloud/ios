@@ -569,7 +569,33 @@
             
         } else {
         
-            self.navigationItem.title = _titleMain;
+            if (_metadataFolder.e2eEncrypted) {
+                
+                UIView *navView = [UIView new];
+                
+            
+                UILabel *label = [UILabel new];
+                label.text = _titleMain;
+                [label sizeToFit];
+                label.center = navView.center;
+                label.textColor = [UIColor whiteColor];
+                label.textAlignment = NSTextAlignmentCenter;
+            
+                CGFloat correct = 6;
+                UIImageView *image = [UIImageView new];
+                image.image = [UIImage imageNamed:@"titleEncrypted"];
+                CGFloat imageAspect = image.image.size.width/image.image.size.height;
+                image.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
+                image.contentMode = UIViewContentModeScaleAspectFit;
+            
+                [navView addSubview:label];
+                [navView addSubview:image];
+            
+                self.navigationItem.titleView = navView;
+                [navView sizeToFit];
+            } else {
+                self.navigationItem.title = _titleMain;
+            }
         }
     }
 }
@@ -1799,6 +1825,9 @@
             [app messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         }
     }
+    
+    // rewrite title
+    [self setTitle];
 }
 
 - (void)readFolder:(NSString *)serverUrl
