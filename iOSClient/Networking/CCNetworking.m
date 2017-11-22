@@ -826,6 +826,56 @@
     if (assetMediaType == PHAssetMediaTypeVideo) {
         
         __block PHAsset *asset = result[0];
+
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.version = PHVideoRequestOptionsVersionOriginal;
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+            
+                if ([asset isKindOfClass:[AVURLAsset class]]) {
+                
+                    NSError *error = nil;
+                    NSData *data = [[NSData alloc] initWithContentsOfURL:[(AVURLAsset *)asset URL] options:0 error:&error];
+                
+                    if (error || data.length == 0) {
+                    
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video export failed [%@]", error.description] errorCode:error.code];
+                        });
+                    
+                    } else {
+                    
+                        NSError *error = nil;
+                        [data writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
+                        
+                        if (error) {
+                        
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
+                                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video export failed [%@]", error.description] errorCode:error.code];
+                            });
+                        
+                        } else {
+                            
+                            dispatch_async(dispatch_get_main_queue(), ^{
+                                [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                            });
+                        }
+                    }
+                }
+            }];
+        });
+    }
+
+    
+    // VIDEO
+    /*
+    if (assetMediaType == PHAssetMediaTypeVideo) {
+        
+        __block PHAsset *asset = result[0];
         
         PHVideoRequestOptions *options = [PHVideoRequestOptions new];
         options.networkAccessAllowed = YES; // iCloud
@@ -878,6 +928,7 @@
             }
         }];
     }
+    */
 }
 
 - (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
