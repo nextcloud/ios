@@ -183,7 +183,18 @@
 {
     [self deselectFormRow:sender];
 
-    [app.endToEndInterface initEndToEndEncryption];
+    if ([[CCUtility getBlockCode] length]) {
+        
+        [app.endToEndInterface initEndToEndEncryption];
+        
+    } else {
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_info_", nil) message:NSLocalizedString(@"_e2e_settings_lock_not_active_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"OK action") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        }];
+        [alertController addAction:okAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
 }
 
 - (void)readPassphrase:(XLFormRowDescriptor *)sender
