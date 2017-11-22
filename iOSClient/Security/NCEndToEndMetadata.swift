@@ -73,7 +73,6 @@ class NCEndToEndMetadata : NSObject  {
         let jsonEncoder = JSONEncoder.init()
         var files = [String: e2eMetadata.filesCodable]()
         var version = 1
-        //var e2eMetadataKey: e2eMetadata.metadataKeyCodable?
         var metadataKeysDictionary = [String:String]()
         
         for recordE2eEncryption in recordsE2eEncryption {
@@ -203,7 +202,7 @@ class NCEndToEndMetadata : NSObject  {
                         object.fileName = encryptedFileAttributes.filename
                         object.fileNameIdentifier = fileNameIdentifier
                         object.fileNamePath = CCUtility.returnFileNamePath(fromFileName: encryptedFileAttributes.filename, serverUrl: serverUrl, activeUrl: url)
-                                                object.key = encryptedFileAttributes.key
+                        object.key = encryptedFileAttributes.key
                         object.initializationVector = filesCodable.initializationVector
                         object.metadataKey = metadataKey!
                         object.metadataKeyIndex = filesCodable.metadataKey
