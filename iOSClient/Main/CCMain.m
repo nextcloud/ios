@@ -90,10 +90,9 @@
     NSString *_autoUploadFileName;
     NSString *_autoUploadDirectory;
     
+    // Folder
     BOOL _loadingFolder;
-    
-    // E2E
-    BOOL _folderEncrypted;
+    tableMetadata *_metadataFolder;
 }
 @end
 
@@ -226,7 +225,7 @@
     // Plus Button
     [app plusButtonVisibile:true];
     
-    //
+    // Search Bar
     if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount]) {
         [self searchEnabled:NO];
     } else {
@@ -1648,6 +1647,11 @@
         
         if ([metadata.etag isEqualToString:directory.etag] == NO) {
             [self readFolder:metadataNet.serverUrl];
+        } else {
+            
+            // E2E Is encrypted folder get metadata
+            if (_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:app.activeAccount])
+                [app.endToEndInterface getEndToEndMetadata:_metadataFolder.fileName fileID:_metadataFolder.fileID serverUrl:self.serverUrl];
         }
     }
 }
@@ -1703,6 +1707,9 @@
 
     if (![record.account isEqualToString:metadataNet.account])
         return;
+    
+    // save metadataFolder
+    _metadataFolder = metadataFolder;
     
     // save father e update permission
     if(!_isSearchMode && metadataFolder)
@@ -1781,11 +1788,11 @@
     }
     
     // E2E Is encrypted folder get metadata
-    if (metadataFolder.e2eEncrypted == true) {
+    if (_metadataFolder.e2eEncrypted) {
         
         if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
             
-            [app.endToEndInterface getEndToEndMetadata:metadataFolder];
+            [app.endToEndInterface getEndToEndMetadata:_metadataFolder.fileName fileID:_metadataFolder.fileID serverUrl:self.serverUrl];
             
         } else {
             
@@ -4290,10 +4297,15 @@
     if ([CCUtility isFolderEncrypted:self.serverUrl account:app.activeAccount])
         _dateReadDataSource = nil;
     
+    // current directoryID
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+
     // Controllo data lettura Data Source
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, serverUrl]];
+    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", app.activeAccount, serverUrl]];
+    // Get MetadataFolder
+    _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", app.activeAccount, tableDirectory.fileID]];
     
-    NSDate *dateDateRecordDirectory = directory.dateReadDirectory;
+    NSDate *dateDateRecordDirectory = tableDirectory.dateReadDirectory;
     
     if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
         
@@ -4306,8 +4318,6 @@
         NSString *sorted = _directoryOrder;
         if ([sorted isEqualToString:@"fileName"])
             sorted = @"fileName";
-    
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
         
         if (directoryID) {
         
@@ -4326,9 +4336,6 @@
         
          NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
     }
-    
-    // is This a Folder Encrypted ?
-    _folderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:app.activeAccount];
     
     [self tableViewReloadData];
 }
@@ -4746,7 +4753,7 @@
     // E2E Image Status Encrypted
     // ----------------------------------------------------------------------------------------------------------
     
-    if (_folderEncrypted && !metadata.directory) {
+    if (_metadataFolder.e2eEncrypted && !metadata.directory) {
         tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileNameIdentifier = %@", app.activeAccount, metadata.fileName]];
         if (tableE2eEncryption)
             cell.status.image = [UIImage imageNamed:@"encrypted"];

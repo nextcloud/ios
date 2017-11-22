@@ -369,17 +369,15 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             return
         }
         
-        let serverUrl = metadataNet.serverUrl + "/" + metadataNet.fileName
-        
         // Decode metadata JSON
-        if NCEndToEndMetadata.sharedInstance.decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) == false {
+        if NCEndToEndMetadata.sharedInstance.decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: metadataNet.serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) == false {
         
             appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
             return
         }
         
         // Reload data source
-        main.reloadDatasource(serverUrl)
+        main.reloadDatasource(metadataNet.serverUrl)
     }
     
     func getEndToEndMetadataFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
@@ -400,19 +398,13 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         }
     }
     
-    @objc func getEndToEndMetadata(_ metadata: tableMetadata) {
+    @objc func getEndToEndMetadata(_ fileName: String, fileID: String, serverUrl: String) {
         
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
-        metadataNet.action = actionGetEndToEndMetadata;
-        metadataNet.fileID = metadata.fileID;
-        metadataNet.fileName = metadata.fileName;
-        
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            
-            appDelegate.messageNotification("E2E Get metadata", description: "Serious internal error: ServerURL not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            return
-        }
+        metadataNet.action = actionGetEndToEndMetadata
+        metadataNet.fileID = fileID
+        metadataNet.fileName = fileName
         metadataNet.serverUrl = serverUrl
         
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
