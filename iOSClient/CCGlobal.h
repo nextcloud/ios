@@ -259,12 +259,6 @@ extern NSString *const dav;
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
 
-// Priority Auto Upload
-#define k_priorityAutoUploadImage                       0
-#define k_priorityAutoUploadVideo                       -1
-#define k_priorityAutoUploadError                       -2
-#define k_priorityAutoUploadStop                        -4
-
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

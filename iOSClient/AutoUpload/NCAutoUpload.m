@@ -440,11 +440,6 @@
             metadataNet.selectorPost = nil;
         }
         
-        if (assetMediaType == PHAssetMediaTypeImage)
-            metadataNet.priority = k_priorityAutoUploadImage;
-        else
-            metadataNet.priority = k_priorityAutoUploadVideo;
-
         metadataNet.fileName = fileName;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;

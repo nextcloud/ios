@@ -1427,7 +1427,6 @@
 - (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent
 {
     CCMetadataNet *metadataNet;
-    NSUInteger priority = 0; // All 
     
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
@@ -1439,10 +1438,6 @@
     NSInteger counterUploadInLock = [[[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND lock = true", self.activeAccount]] count];
 
     NSInteger counterNewUpload = 0;
-    
-    // Priority
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground)
-        priority = k_priorityAutoUploadError;
     
     // ------------------------- <selector Auto Download> -------------------------
     
@@ -1463,7 +1458,7 @@
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUpload priority:priority];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUpload];
         if (metadataNet) {
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
@@ -1489,7 +1484,7 @@
         
         if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
             
-            metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUploadAll priority:priority];
+            metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUploadAll];
             if (metadataNet) {
                 
                 [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
@@ -1505,7 +1500,7 @@
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile priority:priority];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile];
         if (metadataNet) {
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];

@@ -57,11 +57,12 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 12,
+            schemaVersion: 13,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
-            // 12 : Version ...
+            // 12 : Version 2.19.0.5
+            // 13 : ...
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -2008,7 +2009,6 @@ class NCManageDatabase: NSObject {
                         
                         addObject.serverUrl = metadataNet.serverUrl
                         addObject.session = metadataNet.session
-                        addObject.priority = metadataNet.priority
                         
                         realm.add(addObject)
                     }
@@ -2051,7 +2051,6 @@ class NCManageDatabase: NSObject {
                         
                         addObject.serverUrl = metadataNet.serverUrl
                         addObject.session = metadataNet.session
-                        addObject.priority = metadataNet.priority
                         
                         realm.add(addObject)
                     }
@@ -2062,7 +2061,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getQueueUploadLock(selector: String, priority: Int) -> CCMetadataNet? {
+    @objc func getQueueUploadLock(selector: String) -> CCMetadataNet? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -2072,7 +2071,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false AND priority >= %lu", tableAccount.account, selector, priority).sorted(byKeyPath: "priority", ascending: false).first else {
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).first else {
             realm.cancelWrite()
             return nil
         }
@@ -2082,7 +2081,6 @@ class NCManageDatabase: NSObject {
         metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
         metadataNet.fileName = result.fileName
-        metadataNet.priority = result.priority
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost
         metadataNet.serverUrl = result.serverUrl
@@ -2151,53 +2149,6 @@ class NCManageDatabase: NSObject {
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
-    }
-    
-    @objc func getPriorityQueueUpload(assetLocalIdentifier: String) -> NSInteger {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return 0
-        }
-        
-        let realm = try! Realm()
-        
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
-            return 0
-        }
-        
-        return result.priority
-    }
-
-    @objc func setPriorityQueueUpload(assetLocalIdentifier: String, priority: NSInteger) -> Bool {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return false
-        }
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
-            realm.cancelWrite()
-            return false
-        }
-        
-        // priority
-        if (result.priority <= Int(k_priorityAutoUploadError)) {
-            result.priority = result.priority - 1            
-        } else {
-            result.priority = priority
-        }
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return false
-        }
-        
-        return true
     }
     
     @objc func deleteQueueUpload(assetLocalIdentifier: String, selector: String) {

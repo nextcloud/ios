@@ -1489,28 +1489,13 @@
     // Auto Download Upload
     if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
                 
-        if ([[NCManageDatabase sharedInstance] getPriorityQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier] > k_priorityAutoUploadStop) {
+        // Unlock record on Table Auto Upload
+        [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
         
-            // Change priority Auto Upload
-            if ([[NCManageDatabase sharedInstance] setPriorityQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier priority:k_priorityAutoUploadError]) {
+        // Activity
+        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
             
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
-            }
-            
-            if (errorCode != kCFURLErrorCancelled)
-                [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            
-        } else {
-            
-            // Delete record on Table Auto Upload
-            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier selector:selector];
-            
-            // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Too many error, file deleted" type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
-            
-            [app messageNotification:@"_upload_file_" description:@"Too many error, file deleted, see Activity for more info" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        }
+        [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
     } else {
     
