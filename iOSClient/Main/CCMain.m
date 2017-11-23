@@ -1489,8 +1489,8 @@
     // Auto Download Upload
     if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
                 
-        // Unlock record on Table Auto Upload
-        [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier];
+        // Delete record on Table Auto Upload
+        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier selector:selector];
         
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
