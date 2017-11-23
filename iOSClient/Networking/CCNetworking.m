@@ -776,14 +776,11 @@
         return;
     }
     
-    PHAsset *assetResult = result[0];
-    PHAssetMediaType assetMediaType = assetResult.mediaType;
+    PHAsset *asset= result[0];
     
     // IMAGE
-    if (assetMediaType == PHAssetMediaTypeImage) {
+    if (asset.mediaType == PHAssetMediaTypeImage) {
         
-        __block PHAsset *asset = result[0];
-            
         PHImageRequestOptions *options = [PHImageRequestOptions new];
         options.networkAccessAllowed = YES; // iCloud
             
@@ -823,10 +820,8 @@
     }
     
     // VIDEO
-    if (assetMediaType == PHAssetMediaTypeVideo) {
+    if (asset.mediaType == PHAssetMediaTypeVideo) {
         
-        __block PHAsset *asset = result[0];
-
         PHVideoRequestOptions *options = [PHVideoRequestOptions new];
         options.version = PHVideoRequestOptionsVersionOriginal;
         
