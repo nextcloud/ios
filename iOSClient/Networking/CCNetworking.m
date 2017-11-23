@@ -836,34 +836,24 @@
             
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
                 
+                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName]];
                     NSError *error = nil;
-                    NSData *data = [[NSData alloc] initWithContentsOfURL:[(AVURLAsset *)asset URL] options:0 error:&error];
-                
-                    if (error || data.length == 0) {
+
+                    [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
+                    [[NSFileManager defaultManager] copyItemAtURL:[(AVURLAsset *)asset URL] toURL:fileURL error:&error];
+                    
+                    if (error) {
                     
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video export failed [%@]", error.description] errorCode:error.code];
+                                [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video request failed [%@]", error.description] errorCode:error.code];
                         });
                     
                     } else {
-                    
-                        NSError *error = nil;
-                        [data writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadataNet.fileName] options:NSDataWritingAtomic error:&error];
                         
-                        if (error) {
-                        
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                                    [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video export failed [%@]", error.description] errorCode:error.code];
-                            });
-                        
-                        } else {
-                            
-                            dispatch_async(dispatch_get_main_queue(), ^{
-                                [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
-                            });
-                        }
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                        });
                     }
                 }
             }];
