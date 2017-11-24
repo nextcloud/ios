@@ -1,10 +1,21 @@
-#### Expected behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+### Expected behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 
-#### Actual behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+### Actual behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 
-#### Steps to reproduce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+### Steps to reproduce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
 
-#### iOS version
+### iOS version
 
-#### App version
+### App version
 
+### Server configuration
+
+**Operating system**:
+
+**Web server:**
+
+**Database:**
+
+**PHP version:**
+
+**Nextcloud version:** (see Nextcloud admin page)
