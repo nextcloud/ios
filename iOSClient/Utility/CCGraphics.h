@@ -48,6 +48,8 @@
 
 + (BOOL)isLight:(UIColor *)color;
 
++ (UIImage *)generateSinglePixelImageWithColor:(UIColor *)color;
+
 @end
 
 @interface CCAvatar : UIImageView

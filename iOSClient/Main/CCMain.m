@@ -162,6 +162,9 @@
     // Pull-to-Refresh
     [self createRefreshControl];
     
+    // Remove iOS 11 navigation bar bottom line
+    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
+    
     // Register for 3D Touch Previewing if available
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable))
     {
@@ -318,6 +321,9 @@
     
     // color searchbar
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
+    
+    // Remove iOS 11 navigation bar bottom line
+    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     
     // Reload Table View
     [self tableViewReloadData];

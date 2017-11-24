@@ -387,6 +387,28 @@ Color difference is determined by the following formula:
     
     return grayscaled;
 }
+
++ (UIImage *)generateSinglePixelImageWithColor:(UIColor *)color
+{
+    CGSize imageSize = CGSizeMake(1.0f, 1.0f);
+    UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0.0f);
+    
+    CGContextRef theContext = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(theContext, color.CGColor);
+    CGContextFillRect(theContext, CGRectMake(0.0f, 0.0f, imageSize.width, imageSize.height));
+    
+    CGImageRef theCGImage = CGBitmapContextCreateImage(theContext);
+    UIImage *theImage;
+    if ([[UIImage class] respondsToSelector:@selector(imageWithCGImage:scale:orientation:)]) {
+        theImage = [UIImage imageWithCGImage:theCGImage scale:[UIScreen mainScreen].scale orientation:UIImageOrientationUp];
+    } else {
+        theImage = [UIImage imageWithCGImage:theCGImage];
+    }
+    CGImageRelease(theCGImage);
+    
+    return theImage;
+}
+
 @end
 
 // ------------------------------------------------------------------------------------------------------
