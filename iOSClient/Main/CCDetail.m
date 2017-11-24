@@ -45,7 +45,7 @@
     NSInteger _indexNowVisible;
     NSString *_fileIDNowVisible;
 
-    BOOL _reload;
+    BOOL _forceReload;
     
     NSMutableOrderedSet *_dataSourceDirectoryID;
     NSString *_fileNameExtension;
@@ -338,7 +338,7 @@
 - (void)viewImageVideoAudio
 {
     self.photoBrowser = [[MWPhotoBrowser alloc] initWithDelegate:self];
-    _reload = NO;
+    _forceReload = NO;
     _indexNowVisible = -1;
     _fileIDNowVisible = nil;
     
@@ -426,10 +426,10 @@
     if (metadata)
         self.title = metadata.fileNameView;
     
-    if (_reload) {
+    if (_forceReload) {
         
         [self.photoBrowser performSelector:@selector(reloadData) withObject:nil];
-        _reload = NO;
+        _forceReload = NO;
     }
 }
 
@@ -564,30 +564,6 @@
     return nil;
 }
 
-- (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser thumbPhotoAtIndex:(NSUInteger)index
-{
-    tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
-    
-    if (index < self.thumbs.count) {
-        
-        if (metadata.fileID) {
-            
-            NSString *fileImage = [NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID];
-            UIImage *image = [UIImage animatedImageWithAnimatedGIFURL:[NSURL fileURLWithPath:fileImage]];
-            
-            if (image) {
-                
-                MWPhoto *thumb = [MWPhoto photoWithImage:image];
-                if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) thumb.isVideo = YES;
-                [self.thumbs replaceObjectAtIndex:index withObject:thumb];
-            }
-        }
-        return [self.thumbs objectAtIndex:index];
-    }
-    
-    return nil;
-}
-
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser actionButtonPressedForPhotoAtIndex:(NSUInteger)index
 {
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
@@ -649,52 +625,46 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    //NSDictionary *dict = notification.userInfo;
-    //float progress = [[dict valueForKey:@"progress"] floatValue];
+    NSDictionary *dict = notification.userInfo;
+    NSString *fileID = [dict valueForKey:@"fileID"];
+    NSString *serverUrl = [dict valueForKey:@"serverUrl"];
+    float progress = [[dict valueForKey:@"progress"] floatValue];
 }
 
-- (void)downloadPhotoBrowserFailure:(NSInteger)errorCode
+- (void)downloadPhotoBrowserSuccessFailure:(tableMetadata *)metadata selector:(NSString *)selector errorCode:(NSInteger)errorCode
 {
-    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-
-    [self.photoBrowser reloadData];
-}
-
-- (void)downloadPhotoBrowserSuccess:(tableMetadata *)metadataVar selector:(NSString *)selector
-{
-    NSUInteger index = 0;
-    
     // if a message for a directory of these
-    if (![_dataSourceDirectoryID containsObject:metadataVar.directoryID])
+    if (![_dataSourceDirectoryID containsObject:metadata.directoryID])
         return;
     
-    for (NSUInteger i=0; i < [self.dataSourceImagesVideos count]; i++ ) {
-        
-        tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:i];
-        
-        // search index
-        if ([metadataVar.fileID isEqualToString:metadata.fileID]) {
-
-            index = i;
-            break;
-        }
-    }
-    
-    if ([metadataVar.fileID isEqualToString:_fileIDNowVisible]) {
-        
-        [self.photoBrowser reloadData];
-        
-        _reload = NO;
-            
+    if (errorCode == 0) {
+        // verifico se esiste l'icona e se la posso creare
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]] == NO)
+            [CCGraphics createNewImageFrom:metadata.fileID directoryUser:app.directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
     } else {
         
-        _reload = YES;
+        NSUInteger index = 0;
+
+        for (NSUInteger i=0; i < [self.dataSourceImagesVideos count]; i++ ) {
+            
+            tableMetadata *metadataDataSource = [self.dataSourceImagesVideos objectAtIndex:i];
+            
+            // search index
+            if ([metadataDataSource.fileID isEqualToString:metadata.fileID]) {
+                
+                index = i;
+                break;
+            }
+        }
+
+        [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
     
-    // verifico se esiste l'icona e se la posso creare
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataVar.fileID]] == NO) {
-        
-        [CCGraphics createNewImageFrom:metadataVar.fileID directoryUser:app.directoryUser fileNameTo:metadataVar.fileID extension:[metadataVar.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadataVar.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+    if ([metadata.fileID isEqualToString:_fileIDNowVisible]) {
+        [self.photoBrowser reloadData];
+        _forceReload = NO;
+    } else {
+        _forceReload = YES;
     }
 }
 

@@ -61,8 +61,7 @@
 
 - (void)changeToDisplayMode;
 
-- (void)downloadPhotoBrowserFailure:(NSInteger)errorCode;
-- (void)downloadPhotoBrowserSuccess:(tableMetadata *)metadataVar selector:(NSString *)selector;
+- (void)downloadPhotoBrowserSuccessFailure:(tableMetadata *)metadata selector:(NSString *)selector errorCode:(NSInteger)errorCode;
 
 @end
 

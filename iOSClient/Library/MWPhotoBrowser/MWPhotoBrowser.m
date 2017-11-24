@@ -602,21 +602,6 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     return photo;
 }
 
-- (id<MWPhoto>)thumbPhotoAtIndex:(NSUInteger)index {
-    id <MWPhoto> photo = nil;
-    if (index < _thumbPhotos.count) {
-        if ([_thumbPhotos objectAtIndex:index] == [NSNull null]) {
-            if ([_delegate respondsToSelector:@selector(photoBrowser:thumbPhotoAtIndex:)]) {
-                photo = [_delegate photoBrowser:self thumbPhotoAtIndex:index];
-            }
-            if (photo) [_thumbPhotos replaceObjectAtIndex:index withObject:photo];
-        } else {
-            photo = [_thumbPhotos objectAtIndex:index];
-        }
-    }
-    return photo;
-}
-
 - (MWCaptionView *)captionViewForPhotoAtIndex:(NSUInteger)index {
     MWCaptionView *captionView = nil;
     if ([_delegate respondsToSelector:@selector(photoBrowser:captionViewForPhotoAtIndex:)]) {

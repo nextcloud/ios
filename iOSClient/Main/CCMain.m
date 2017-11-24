@@ -1368,7 +1368,7 @@
             
             // Detail
             if (app.activeDetail)
-                [app.activeDetail downloadPhotoBrowserSuccess:metadata selector:selector];
+                [app.activeDetail downloadPhotoBrowserSuccessFailure:metadata selector:selector errorCode:0];
             
             // Photos
             if (app.activePhotos)
@@ -1418,7 +1418,7 @@
                 
                 // Updating Detail
                 if (app.activeDetail)
-                    [app.activeDetail downloadPhotoBrowserFailure:errorCode];
+                    [app.activeDetail downloadPhotoBrowserSuccessFailure:metadata selector:selector errorCode:errorCode];
                 
                 // Updating Photos
                 if (app.activePhotos)
