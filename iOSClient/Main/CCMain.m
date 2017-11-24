@@ -1484,66 +1484,68 @@
 #pragma mark ===== Upload new Photos/Videos =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
-    // Auto Download Upload
-    if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
-                
-        // Delete record on Table Auto Upload
-        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadataNet.assetLocalIdentifier selector:selector];
+    if (errorCode == 0) {
         
-        // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
-        
-        if (errorCode != -999)
-            [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        
-    } else {
-    
-        // Read File test do not exists
-        if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
-       
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-        
-            // reUpload
-            if (metadata)
-                [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
-        }
-    
-        // Print error
-        else if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized) {
-        
-            [app messageNotification:@"_upload_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        }
-    }
-    
-    [self reloadDatasource:serverUrl];
-}
-
-- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
-{
-    // Auto Download Upload
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        
-        // ONLY BACKGROUND
-        [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
-        
-    } else {
-        
-        // ONLY FOREFROUND
-        [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
-    }
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
+        // Auto Download Upload
+        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
             
-            [self readFolder:serverUrl];
+            // ONLY BACKGROUND
+            [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
             
         } else {
-    
-            [self reloadDatasource:serverUrl];
+            
+            // ONLY FOREFROUND
+            [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
         }
-    });
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+            if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
+                
+                [self readFolder:serverUrl];
+                
+            } else {
+                
+                [self reloadDatasource:serverUrl];
+            }
+        });
+        
+    } else {
+        
+        // Auto Download Upload
+        if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
+            
+            // Delete record on Table Auto Upload
+            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+            
+            // Activity
+            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:errorMessage type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:app.activeUrl];
+            
+            if (errorCode != -999)
+                [app messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            
+        } else {
+            
+            // Read File test do not exists
+            if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
+                
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+                
+                // reUpload
+                if (metadata)
+                    [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
+            }
+            
+            // Print error
+            else if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized) {
+                
+                [app messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            }
+        }
+        
+        [self reloadDatasource:serverUrl];
+    }
 }
 
 //

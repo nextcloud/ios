@@ -483,12 +483,9 @@
                 [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
             
         } else {
-            
             NSLog(@"[LOG] Remove record ? : metadata not found %@", url);
-
             dispatch_async(dispatch_get_main_queue(), ^{
-                if ([self.delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                    [self.delegate uploadFileFailure:nil fileID:@"" serverUrl:serverUrl selector:@"" message:@"" errorCode:k_CCErrorInternalError];
+                [self.delegate uploadFileSuccessFailure:fileName fileID:@"" assetLocalIdentifier:@"" serverUrl:serverUrl selector:@"" selectorPost:@"" errorMessage:@"" errorCode:k_CCErrorInternalError];
             });
         }
     }
@@ -764,10 +761,7 @@
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
     
     if (!result.count) {
-        
-        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-            [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:@"Error photo/video not found, remove from upload" errorCode: k_CCErrorInternalError];
-        
+        [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:@"Error photo/video not found, remove from upload" errorCode:k_CCErrorInternalError];
         return;
     }
     
@@ -798,14 +792,10 @@
             }
                 
             if (error) {
-                
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                        [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
+                    [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
                 });
-                
             } else {
-                    
                 dispatch_async(dispatch_get_main_queue(), ^{
                     // OOOOOK
                     [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
@@ -831,14 +821,10 @@
                 [[NSFileManager defaultManager] copyItemAtURL:[(AVURLAsset *)asset URL] toURL:fileURL error:&error];
                     
                 if (error) {
-                    
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        if ([delegate respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                            [delegate uploadFileFailure:metadataNet fileID:nil serverUrl:metadataNet.serverUrl selector:metadataNet.selector message:[NSString stringWithFormat:@"Video request failed [%@]", error.description] errorCode:error.code];
+                        [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Video request failed [%@]", error.description] errorCode:error.code];
                     });
-                    
                 } else {
-                        
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
                     });
@@ -893,11 +879,8 @@
             
         BOOL result = [self newEndToEndFile:fileName fileNameIdentifier:fileNameIdentifier serverUrl:serverUrl];
         if (result == false) {
-            
             // Error for uploadFileFailure
-            if ([[self getDelegate:uploadID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:uploadID] uploadFileFailure:nil fileID:nil serverUrl:serverUrl selector:selector message:@"E2E Error to create encrypted file" errorCode:0];
-            
+            [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:@"E2E Error to create encrypted file" errorCode:k_CCErrorInternalError];
             return;
         }
         
@@ -986,8 +969,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             // Error for uploadFileFailure
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:sessionID] uploadFileFailure:nil fileID:sessionID serverUrl:serverUrl selector:selector message:NSLocalizedString(@"_file_not_present_", nil) errorCode:404];
+            [[self getDelegate:sessionID] uploadFileSuccessFailure:fileName fileID:@"" assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:NSLocalizedString(@"_file_not_present_", nil) errorCode:404];
         });
         
         return;
@@ -1136,8 +1118,7 @@
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:sessionID] uploadFileFailure:nil fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector message:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
+            [[self getDelegate:sessionID] uploadFileSuccessFailure:fileName fileID:fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
         });
         
         return;
@@ -1157,10 +1138,8 @@
         
     if (!metadata) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileFailure:fileID:serverUrl:selector:message:errorCode:)])
-                [[self getDelegate:sessionID] uploadFileFailure:nil fileID:fileID serverUrl:serverUrl selector:@"" message:[NSString stringWithFormat:@"Serious error internal upload : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
+            [[self getDelegate:sessionID] uploadFileSuccessFailure:fileName fileID:fileID assetLocalIdentifier:@"" serverUrl:serverUrl selector:@"" selectorPost:@"" errorMessage:[NSString stringWithFormat:@"Serious error internal upload : metadata not found %@", fileName]  errorCode:k_CCErrorInternalError];
         });
-
         return;
     }
         
@@ -1232,8 +1211,7 @@
     [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
         
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadFileSuccess:fileID:serverUrl:selector:selectorPost:)])
-            [[self getDelegate:sessionID] uploadFileSuccess:nil fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost];
+        [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:@"" errorCode:0];
     });
 }
 

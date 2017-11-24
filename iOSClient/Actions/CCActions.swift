@@ -33,9 +33,6 @@ import Foundation
 
     func renameSuccess(_ metadataNet: CCMetadataNet)
     func renameMoveFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
-    
-    func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String)
-    func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger)
 }
 
 @objc protocol CCActionsSearchDelegate {
@@ -243,16 +240,6 @@ class CCActions: NSObject {
         }
         
         metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message as NSString, errorCode: errorCode)
-    }
-    
-    @objc func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String) {
-        
-        metadataNet.delegate?.uploadFileSuccess(metadataNet, fileID:fileID, serverUrl: serverUrl, selector: selector, selectorPost: selectorPost)
-    }
-    
-    @objc func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger) {
-        
-        metadataNet.delegate?.uploadFileFailure(metadataNet, fileID:fileID, serverUrl: serverUrl, selector: selector, message: message, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------

@@ -391,31 +391,31 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
  
     //  MARK: - Upload
     
-    func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger){
+    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         hud.hideHud()
         
-        // remove file
-        let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID)
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: nil)
-        
-        if errorCode != -999 {
+        if (errorCode == 0) {
             
-            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-                //self.dismissGrantingAccess(to: nil)
-                NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
-            })
+            dismissGrantingAccess(to: self.destinationURL)
             
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-    
-    func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String) {
-        
-        hud.hideHud()
+        } else {
+           
+            // remove file
+            let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID)
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: nil)
+            
+            if errorCode != -999 {
                 
-        dismissGrantingAccess(to: self.destinationURL)
+                let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorMessage, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+                    //self.dismissGrantingAccess(to: nil)
+                    NSLog("[LOG] Download Error \(fileID) \(errorMessage) (error \(errorCode))");
+                })
+                
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
     }
 }
 
