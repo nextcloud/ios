@@ -321,6 +321,7 @@
     
     // color searchbar
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
+    self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
     
     // Remove iOS 11 navigation bar bottom line
     self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
@@ -1873,6 +1874,7 @@
         self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
         [self.searchController.searchBar sizeToFit];
         self.searchController.searchBar.delegate = self;
+        self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
         
         self.tableView.tableHeaderView = self.searchController.searchBar;
         [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
