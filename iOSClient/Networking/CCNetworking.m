@@ -869,8 +869,7 @@
         else
             fileNameIdentifier = [CCUtility generateRandomIdentifier];
             
-        BOOL result = [self newEndToEndFile:fileName fileNameIdentifier:fileNameIdentifier serverUrl:serverUrl];
-        if (result == false) {
+        if ([self newEndToEndFile:fileName fileNameIdentifier:fileNameIdentifier serverUrl:serverUrl] == false) {
             // Error for uploadFileFailure
             [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:@"E2E Error to create encrypted file" errorCode:k_CCErrorInternalError];
             return;
