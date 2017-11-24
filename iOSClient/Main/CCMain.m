@@ -508,15 +508,11 @@
 - (void)createRefreshControl
 {
     _refreshControl = [UIRefreshControl new];
+   
+    _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
+    _refreshControl.backgroundColor = [UIColor whiteColor];
+    [self setRefreshControl:_refreshControl];
     
-    if (@available(iOS 11, *)) {
-        [self.tableView setRefreshControl:_refreshControl];
-        _refreshControl.tintColor = [UIColor whiteColor];
-    } else {
-        _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
-        _refreshControl.backgroundColor = [UIColor colorWithRed:235.0/255.0 green:235.0/255.0 blue:235.0/255.0 alpha:1.0];
-        [self setRefreshControl:_refreshControl];
-    }
     [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
 }
 
