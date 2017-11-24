@@ -37,9 +37,6 @@
     NSString *_activeUserID;
     NSString *_activePassword;
     NSString *_activeUrl;
-    
-    NSURLSessionDownloadTask *_downloadTask;
-    NSURLSessionUploadTask *_uploadTask;
 }
 @end
 
@@ -102,12 +99,6 @@
 {
     if (_isExecuting) {
         
-        if (_downloadTask)
-            [_downloadTask cancel];
-    
-        if (_uploadTask)
-            [_uploadTask cancel];
-    
         [self complete];
     }
     

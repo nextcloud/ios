@@ -908,7 +908,7 @@
                 NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
                 
                 if (serverUrl)
-                    [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl selector:selectorSave selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
+                    [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorSave selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
             }
         }
         
@@ -1259,184 +1259,179 @@
 #pragma mark ==== Download ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-    
-    // File do not exists on server, remove in local
-    if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
-        
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, fileID] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID] error:nil];
-
-        if (metadata.directory && serverUrl) {
-            
-            NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-            
-            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete];
-        }
-
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID] clearDateReadDirectoryID:nil];
-        [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-    }
-    
-    if ([selector isEqualToString:selectorLoadViewImage]) {
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-
-            // Updating Detail
-            if (app.activeDetail)
-                [app.activeDetail downloadPhotoBrowserFailure:errorCode];
-            
-            // Updating Photos
-            if (app.activePhotos)
-                [app.activePhotos downloadFileFailure:errorCode];
-        });
-        
-    } else {
-        
-        if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized)
-            [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-    }
-
-    [self reloadDatasource:serverUrl];
-}
-
-- (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
+- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     if (metadata == nil)
         return;
     
-    // Download
-    if ([selector isEqualToString:selectorDownloadFile]) {
-        [self reloadDatasource:serverUrl];
-    }
-    
-    // Synchronized
-    if ([selector isEqualToString:selectorDownloadSynchronize]) {
-        [self reloadDatasource:serverUrl];
-    }
-    
-    // add Favorite
-    if ([selector isEqualToString:selectorAddFavorite]) {
-        [[CCActions sharedInstance] settingFavorite:metadata favorite:YES delegate:self];
-    }
-    
-    // open View File
-    if ([selector isEqualToString:selectorLoadFileView] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
+    if (errorCode == 0) {
         
-        [self reloadDatasource:serverUrl];
-        
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
-            
-            selector = selectorOpenIn;
-            //[self performSelector:@selector(unZipFile:) withObject:metadata.fileID];
-            
-        } else if ([metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
-            
-            selector = selectorOpenIn;
-           
-        } else {
-            
-            _metadata = metadata;
-    
-            if ([self shouldPerformSegue])
-                [self performSegueWithIdentifier:@"segueDetail" sender:self];
-        }
-    }
-    
-    // Open with...
-    if ([selector isEqualToString:selectorOpenIn] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-        
-        [self reloadDatasource:serverUrl];
-        
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
-        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView]];
-        
-        _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
-        _docController.delegate = self;
-        
-        [_docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
-    }
-    
-    // Save to Photo Album
-    if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-        
-        NSString *file = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
-        PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
-        
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] && status == PHAuthorizationStatusAuthorized) {
-            
-            UIImage *image = [UIImage imageWithContentsOfFile:file];
-            
-            if (image)
-                UIImageWriteToSavedPhotosAlbum(image, self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
-            else
-                [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+        // Synchronized
+        if ([selector isEqualToString:selectorDownloadSynchronize]) {
+            [self reloadDatasource:serverUrl];
         }
         
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] && status == PHAuthorizationStatusAuthorized) {
-                        
-            [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
+        // add Favorite
+        if ([selector isEqualToString:selectorAddFavorite]) {
+            [[CCActions sharedInstance] settingFavorite:metadata favorite:YES delegate:self];
+        }
+        
+        // open View File
+        if ([selector isEqualToString:selectorLoadFileView] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView])) {
+            [self reloadDatasource:serverUrl];
+            
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
                 
-                UISaveVideoAtPathToSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView], self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
+                selector = selectorOpenIn;
+                //[self performSelector:@selector(unZipFile:) withObject:metadata.fileID];
+                
+            } else if ([metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
+                
+                selector = selectorOpenIn;
+                
             } else {
-                [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                
+                _metadata = metadata;
+                
+                if ([self shouldPerformSegue])
+                    [self performSegueWithIdentifier:@"segueDetail" sender:self];
             }
         }
         
-        if (status != PHAuthorizationStatusAuthorized) {
+        // Open with...
+        if ([selector isEqualToString:selectorOpenIn] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            [self reloadDatasource:serverUrl];
             
-            [alertController addAction:okAction];
-            [self presentViewController:alertController animated:YES completion:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
+            [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
+            NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView]];
+            
+            _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+            _docController.delegate = self;
+            
+            [_docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
         }
         
-        [self reloadDatasource:serverUrl];
-    }
-    
-    // Copy File
-    if ([selector isEqualToString:selectorLoadCopy]) {
-        
-        [self reloadDatasource:serverUrl];
-        
-        [self copyFileToPasteboard:metadata];
-    }
-    
-    //selectorLoadViewImage
-    if ([selector isEqualToString:selectorLoadViewImage]) {
-        
-        // Detail
-        if (app.activeDetail)
-            [app.activeDetail downloadPhotoBrowserSuccess:metadata selector:selector];
+        // Save to Photo Album
+        if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-        // Photos
-        if (app.activePhotos)
-            [app.activePhotos downloadFileSuccess:metadata];
-
-        [self reloadDatasource:serverUrl];
-    }
-    
-    // if exists postselector call self with selectorPost
-    if ([selectorPost length] > 0)
-        [self downloadFileSuccess:fileID serverUrl:serverUrl selector:selectorPost selectorPost:nil];
-    
-    // Auto Download Upload
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+            NSString *file = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
+            PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+            
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] && status == PHAuthorizationStatusAuthorized) {
+                
+                UIImage *image = [UIImage imageWithContentsOfFile:file];
+                
+                if (image)
+                    UIImageWriteToSavedPhotosAlbum(image, self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
+                else
+                    [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+            }
+            
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] && status == PHAuthorizationStatusAuthorized) {
+                
+                [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
+                
+                if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView])) {
+                    
+                    UISaveVideoAtPathToSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView], self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
+                } else {
+                    [app messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                }
+            }
+            
+            if (status != PHAuthorizationStatusAuthorized) {
+                
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_access_photo_not_enabled_", nil) message:NSLocalizedString(@"_access_photo_not_enabled_msg_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                
+                [alertController addAction:okAction];
+                [self presentViewController:alertController animated:YES completion:nil];
+            }
+            
+            [self reloadDatasource:serverUrl];
+        }
         
-        // ONLY BACKGROUND
-        [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+        // Copy File
+        if ([selector isEqualToString:selectorLoadCopy]) {
+            
+            [self reloadDatasource:serverUrl];
+            
+            [self copyFileToPasteboard:metadata];
+        }
+        
+        //selectorLoadViewImage
+        if ([selector isEqualToString:selectorLoadViewImage]) {
+            
+            // Detail
+            if (app.activeDetail)
+                [app.activeDetail downloadPhotoBrowserSuccess:metadata selector:selector];
+            
+            // Photos
+            if (app.activePhotos)
+                [app.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:errorCode];
+            
+            [self reloadDatasource:serverUrl];
+        }
+        
+        // if exists postselector call self with selectorPost
+        if ([selectorPost length] > 0)
+            [self downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selectorPost selectorPost:nil errorMessage:@"" errorCode:0];
+        
+        // Auto Download Upload
+        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+            
+            // ONLY BACKGROUND
+            [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+            
+        } else {
+            
+            // ONLY FOREFROUND
+            [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+        }
         
     } else {
         
-        // ONLY FOREFROUND
-        [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+        // File do not exists on server, remove in local
+        if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
+            
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, fileID] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID] error:nil];
+            
+            if (metadata.directory && serverUrl) {
+                
+                NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
+                
+                [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete];
+            }
+            
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID] clearDateReadDirectoryID:nil];
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        }
+        
+        if ([selector isEqualToString:selectorLoadViewImage]) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                // Updating Detail
+                if (app.activeDetail)
+                    [app.activeDetail downloadPhotoBrowserFailure:errorCode];
+                
+                // Updating Photos
+                if (app.activePhotos)
+                    [app.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:errorCode];
+            });
+            
+        } else {
+            
+            if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized)
+                [app messageNotification:@"_download_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+        
+        [self reloadDatasource:serverUrl];
     }
 }
 
@@ -2918,7 +2913,7 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         
         if (serverUrl)
-            [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     }
 }
 
@@ -2936,7 +2931,7 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (!serverUrl) return;
 
-    [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+    [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if ([self indexPathIsValid:indexPath])
@@ -3595,7 +3590,7 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         
         if (serverUrl)
-            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
     }
 }
 
@@ -3618,7 +3613,7 @@
             NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
 
             if (serverUrl)
-                [[CCNetworking sharedNetworking] downloadFile:metadata.fileID serverUrl:serverUrl selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+                [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
         }
     }
     
@@ -5095,7 +5090,7 @@
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
             
-            [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
+            [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
             
         } else {
             
@@ -5105,7 +5100,7 @@
                 
             } else {
             
-                [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+                [[CCNetworking sharedNetworking] downloadFile:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
             
                 NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
                 if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];

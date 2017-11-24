@@ -371,34 +371,36 @@
 #pragma mark ===== Download =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)downloadFileFailure:(NSInteger)errorCode
+- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
-    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-}
-
-- (void)downloadFileSuccess:(tableMetadata *)metadata
-{
-    NSIndexPath *indexPath;
-    BOOL existsIcon = NO;
-    
-    if (metadata.fileID) {
-        existsIcon = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-        indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    }
-    
-    if ([self indexPathIsValid:indexPath] && existsIcon) {
+    if (errorCode == 0) {
         
-        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+        NSIndexPath *indexPath;
+        BOOL existsIcon = NO;
         
-        if (cell) {
-            UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
-            UIVisualEffectView *effect = [cell viewWithTag:200];
-            UIImageView *checked = [cell viewWithTag:300];
-            
-            imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-            effect.hidden = YES;
-            checked.hidden = YES;            
+        if (fileID) {
+            existsIcon = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID]];
+            indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:fileID];
         }
+        
+        if ([self indexPathIsValid:indexPath] && existsIcon) {
+            
+            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+            
+            if (cell) {
+                UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
+                UIVisualEffectView *effect = [cell viewWithTag:200];
+                UIImageView *checked = [cell viewWithTag:300];
+                
+                imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID]];
+                effect.hidden = YES;
+                checked.hidden = YES;
+            }
+        }
+        
+    } else {
+        
+        [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
 }
 

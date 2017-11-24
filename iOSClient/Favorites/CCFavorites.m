@@ -289,29 +289,31 @@
 #pragma mark ==== Download <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
-    if (errorCode != k_CCErrorFileAlreadyInDownload)
-        [app messageNotification:@"_download_file_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-}
-
-- (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
-{
-    _metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-    
-    if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
+    if (errorCode == 0) {
         
-        //[self performSelector:@selector(unZipFile:) withObject:_metadata.fileID];
-        [self openWith:_metadata];
+        _metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
-    } else if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
-        
-        [self openWith:_metadata];
+        if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
+            
+            //[self performSelector:@selector(unZipFile:) withObject:_metadata.fileID];
+            [self openWith:_metadata];
+            
+        } else if ([_metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
+            
+            [self openWith:_metadata];
+            
+        } else {
+            
+            if ([self shouldPerformSegue])
+                [self performSegueWithIdentifier:@"segueDetail" sender:self];
+        }
         
     } else {
         
-        if ([self shouldPerformSegue])
-            [self performSegueWithIdentifier:@"segueDetail" sender:self];
+        if (errorCode != k_CCErrorFileAlreadyInDownload)
+            [app messageNotification:@"_download_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
 }
 
@@ -681,11 +683,11 @@
         if (serverUrl) {
             if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
             
-                [self downloadFileSuccess:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil];
-            
+                [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
+                            
             } else {
             
-                [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+                [[CCNetworking sharedNetworking] downloadFile:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
             }
         }
     }

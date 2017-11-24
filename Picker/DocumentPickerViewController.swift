@@ -326,66 +326,66 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     //  MARK: - Download
 
-    func downloadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
+    func downloadFileSuccessFailure(_ fileName: String!, fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         hud.hideHud()
         
-        if selector == selectorLoadFileView && errorCode != -999 {
+        if (errorCode == 0) {
             
-            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-                NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
-            })
-            
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-
-    func downloadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
-        
-        hud.hideHud()
-    
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID!)) else {
-            self.dismissGrantingAccess(to: nil)
-            return
-        }
-        
-        recordMetadata = metadata
-        
-        // Save for PickerFileProvide
-        CCUtility.setFileNameExt(metadata.fileName)
-        CCUtility.setServerUrlExt(serverUrl)
-        
-        switch selector {
-            
-        case selectorLoadFileView :
-            
-            let sourceFileNamePath = "\(directoryUser)/\(fileID!)"
-            let destinationFileNameUrl : URL! = appGroupContainerURL()?.appendingPathComponent(recordMetadata.fileName)
-            let destinationFileNamePath = destinationFileNameUrl.path
-            
-            // Destination Provider
-
-            do {
-                try FileManager.default.removeItem(at: destinationFileNameUrl)
-            } catch _ {
-                print("file do not exists")
-            }
-
-            do {
-                try FileManager.default.copyItem(atPath: sourceFileNamePath, toPath: destinationFileNamePath)
-            } catch let error as NSError {
-                print(error)
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID!)) else {
+                self.dismissGrantingAccess(to: nil)
+                return
             }
             
-            // Dismiss
+            recordMetadata = metadata
             
-            self.dismissGrantingAccess(to: destinationFileNameUrl)
+            // Save for PickerFileProvide
+            CCUtility.setFileNameExt(metadata.fileName)
+            CCUtility.setServerUrlExt(serverUrl)
             
-        default :
+            switch selector {
+                
+            case selectorLoadFileView :
+                
+                let sourceFileNamePath = "\(directoryUser)/\(fileID!)"
+                let destinationFileNameUrl : URL! = appGroupContainerURL()?.appendingPathComponent(recordMetadata.fileName)
+                let destinationFileNamePath = destinationFileNameUrl.path
+                
+                // Destination Provider
+                
+                do {
+                    try FileManager.default.removeItem(at: destinationFileNameUrl)
+                } catch _ {
+                    print("file do not exists")
+                }
+                
+                do {
+                    try FileManager.default.copyItem(atPath: sourceFileNamePath, toPath: destinationFileNamePath)
+                } catch let error as NSError {
+                    print(error)
+                }
+                
+                // Dismiss
+                
+                self.dismissGrantingAccess(to: destinationFileNameUrl)
+                
+            default :
+                
+                print("selector : \(selector!)")
+                tableView.reloadData()
+            }
             
-            print("selector : \(selector!)")
-            tableView.reloadData()
+        } else {
+            
+            if selector == selectorLoadFileView && errorCode != -999 {
+                
+                let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorMessage, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+                    NSLog("[LOG] Download Error \(fileID) \(errorMessage) (error \(errorCode))");
+                })
+                
+                self.present(alert, animated: true, completion: nil)
+            }
         }
     }
  
@@ -705,7 +705,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             } catch {
             }
             
-            CCNetworking.shared().downloadFile(metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
+            CCNetworking.shared().downloadFile(metadata?.fileName, fileID: metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
 
             hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
             

@@ -143,7 +143,6 @@ extern NSString *const dav;
 #define selectorAddFavorite                             @"addFavorite"
 #define selectorCreateFolder                            @"createFolder"
 #define selectorDelete                                  @"delete"
-#define selectorDownloadFile                            @"downloadFile"
 #define selectorDownloadThumbnail                       @"downloadThumbnail"
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorGetUserAndGroup                         @"getUserAndGroup"
