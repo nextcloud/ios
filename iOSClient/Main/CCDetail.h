@@ -46,7 +46,6 @@
 
 @property (nonatomic, strong) MWPhotoBrowser *photoBrowser;
 @property (nonatomic, strong) NSMutableArray *photos;
-@property (nonatomic, strong) NSMutableArray *thumbs;
 
 // PDF
 @property (nonatomic, strong) ReaderViewController *readerPDFViewController;

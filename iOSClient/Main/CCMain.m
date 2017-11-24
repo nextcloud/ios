@@ -68,7 +68,6 @@
     UIDocumentInteractionController *_docController;
 
     CCHud *_hud;
-    CCHud *_hudDeterminate;
     
     // Datasource
     CCSectionDataSourceMetadata *_sectionDataSource;
@@ -130,7 +129,6 @@
     // init object
     _metadata = [tableMetadata new];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
-    _hudDeterminate = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _selectedFileIDsMetadatas = [NSMutableDictionary new];
     _statusSwipeCell = [NSMutableDictionary new];
     _queueSelector = [NSMutableArray new];

@@ -29,9 +29,7 @@
 @interface NCShares ()
 {
     AppDelegate *appDelegate;
-    NSArray *_dataSource;
-    
-    CCHud *_hudDeterminate;
+    NSArray *_dataSource;    
 }
 @end
 

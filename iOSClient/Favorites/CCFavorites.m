@@ -31,8 +31,6 @@
 {
     NSArray *_dataSource;
     BOOL _reloadDataSource;
-    
-    CCHud *_hudDeterminate;
 }
 @end
 
