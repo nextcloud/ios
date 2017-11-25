@@ -516,7 +516,7 @@
 {
     _refreshControl = [UIRefreshControl new];
    
-    _refreshControl.tintColor = [UIColor whiteColor];
+    _refreshControl.tintColor = [NCBrandColor sharedInstance].text;
     _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
     [self setRefreshControl:_refreshControl];
     
@@ -582,7 +582,7 @@
                 label.text = _titleMain;
                 [label sizeToFit];
                 label.center = navView.center;
-                label.textColor = [UIColor whiteColor];
+                label.textColor = [NCBrandColor sharedInstance].text;
                 label.textAlignment = NSTextAlignmentCenter;
             
                 CGFloat correct = 6;
@@ -1876,10 +1876,8 @@
         self.searchController.searchBar.delegate = self;
         self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
         self.searchController.searchBar.backgroundImage = [UIImage new];
-        
         // Color Text "Cancel"
-        [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[UIColor whiteColor]];
-
+        [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[NCBrandColor sharedInstance].text];
         
         self.tableView.tableHeaderView = self.searchController.searchBar;
         [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
