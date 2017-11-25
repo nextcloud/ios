@@ -93,6 +93,9 @@
 
     self.imageBackground.image = [UIImage imageNamed:@"backgroundDetail"];
     
+    // Change bar bottom line shadow
+    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
+    
     if ([self.metadataDetail.fileNameView length] > 0 || [self.metadataDetail.directoryID length] > 0 || [self.metadataDetail.fileID length] > 0) {
     
         // open view
@@ -219,6 +222,9 @@
         _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
         _toolbar.tintColor = [NCBrandColor sharedInstance].brand;
     }
+    
+    // Change bar bottom line shadow
+    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
 }
 
 #pragma --------------------------------------------------------------------------------------------
