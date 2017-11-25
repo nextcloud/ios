@@ -1875,6 +1875,7 @@
         [self.searchController.searchBar sizeToFit];
         self.searchController.searchBar.delegate = self;
         self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
+        self.searchController.searchBar.backgroundImage = [UIImage new];
         
         // Color Text "Cancel"
         [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[UIColor whiteColor]];
