@@ -317,8 +317,8 @@
         [app changeTheming:self];
     
     // Refresh control
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
-    
+    _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
+
     // color searchbar
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
@@ -516,8 +516,8 @@
 {
     _refreshControl = [UIRefreshControl new];
    
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].brand;
-    _refreshControl.backgroundColor = [UIColor whiteColor];
+    _refreshControl.tintColor = [UIColor whiteColor];
+    _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
     [self setRefreshControl:_refreshControl];
     
     [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
@@ -1875,6 +1875,10 @@
         [self.searchController.searchBar sizeToFit];
         self.searchController.searchBar.delegate = self;
         self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
+        
+        // Color Text "Cancel"
+        [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[UIColor whiteColor]];
+
         
         self.tableView.tableHeaderView = self.searchController.searchBar;
         [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
