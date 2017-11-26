@@ -919,6 +919,8 @@
     nav.barTintColor = [NCBrandColor sharedInstance].brand;
     nav.tintColor = [NCBrandColor sharedInstance].navigationBarText;
     [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
+    // Change bar bottom line shadow
+    nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     
     if (!online)
         [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].connectionNo}];
@@ -1077,6 +1079,8 @@
     // Change Navigation & TabBar color
     vc.navigationController.navigationBar.barTintColor = color;
     vc.tabBarController.tabBar.tintColor = color;
+    // Change bar bottom line shadow
+    vc.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     
     // Change button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;

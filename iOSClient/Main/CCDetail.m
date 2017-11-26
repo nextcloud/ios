@@ -221,10 +221,7 @@
     if (_toolbar) {
         _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
         _toolbar.tintColor = [NCBrandColor sharedInstance].brand;
-    }
-    
-    // Change bar bottom line shadow
-    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
+    }    
 }
 
 #pragma --------------------------------------------------------------------------------------------

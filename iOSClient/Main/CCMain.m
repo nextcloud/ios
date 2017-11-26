@@ -162,9 +162,6 @@
     // Pull-to-Refresh
     [self createRefreshControl];
     
-    // Change bar bottom line shadow
-    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
-    
     // Register for 3D Touch Previewing if available
     if ([self.traitCollection respondsToSelector:@selector(forceTouchCapability)] && (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable))
     {
@@ -322,9 +319,6 @@
     // color searchbar
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
-    
-    // Change bar bottom line shadow
-    self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     
     // Reload Table View
     [self tableViewReloadData];
