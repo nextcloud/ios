@@ -3221,7 +3221,7 @@
     app.reMainMenu.separatorHeight = 0.5;
     app.reMainMenu.separatorColor = [NCBrandColor sharedInstance].seperator;
     
-    app.reMainMenu.backgroundColor = [NCBrandColor sharedInstance].menuBackground;
+    app.reMainMenu.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     app.reMainMenu.textColor = [UIColor blackColor];
     app.reMainMenu.textAlignment = NSTextAlignmentLeft;
     app.reMainMenu.textShadowColor = nil;
@@ -3317,7 +3317,7 @@
     app.reSelectMenu.separatorHeight = 0.5;
     app.reSelectMenu.separatorColor = [NCBrandColor sharedInstance].seperator;
     
-    app.reSelectMenu.backgroundColor = [NCBrandColor sharedInstance].menuBackground;
+    app.reSelectMenu.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     app.reSelectMenu.textColor = [UIColor blackColor];
     app.reSelectMenu.textAlignment = NSTextAlignmentLeft;
     app.reSelectMenu.textShadowColor = nil;

@@ -72,7 +72,7 @@
     _tableView.emptyDataSetSource = self;
     
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    _tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    _tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     self.title = NSLocalizedString(@"_transfers_", nil);
     

@@ -38,12 +38,10 @@ class NCBrandColor: NSObject {
 
     @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     @objc public var encrypted:             UIColor = .red
-    @objc public var menuBackground:        UIColor = .white
-    @objc public var moreNormal:            UIColor = .black
-    @objc public var moreSettings:          UIColor = .black
+    @objc public var backgroundView:        UIColor = .white
+    @objc public var textView:              UIColor = .black
     @objc public var seperator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public var tabBar:                UIColor = .white
-    @objc public var tableBackground:       UIColor = .white
     @objc public var transferBackground:    UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
 
