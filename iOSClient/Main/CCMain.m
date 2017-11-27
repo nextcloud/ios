@@ -575,6 +575,10 @@
             
                 [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titlePhotos"] navigationItem:self.navigationItem];
                 
+            } else if ([_metadataFolder.permissions containsString:k_permission_shared] || [_metadataFolder.permissions containsString:k_permission_mounted]) {
+                
+                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titleShare"] navigationItem:self.navigationItem];
+                
             } else {
                 
                 self.navigationItem.title = _titleMain;
