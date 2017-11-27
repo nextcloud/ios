@@ -47,7 +47,6 @@
 #define IV_DELIMITER_ENCODED        @"fA==" // "|" base64 encoded
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
-#define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
 
 #define ASYMMETRIC_STRING_TEST      @"Nextcloud a safe home for all your data"
 
@@ -336,7 +335,7 @@ cleanup:
     return csr;
 }
 
-- (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey
+- (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey salt:(NSString **)salt
 {
     NSMutableData *privateKeyCipherData = [NSMutableData new];
 
@@ -346,7 +345,9 @@ cleanup:
     }
     
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
-    NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
+    
+    *salt = @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$";
+    NSData *saltData = [*salt dataUsingEncoding:NSUTF8StringEncoding];
     
     // Remove all whitespaces from passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
@@ -382,14 +383,14 @@ cleanup:
 #pragma mark - Decrypt Private Key
 #
 
-- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey
+- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey salt:(NSString *)salt
 {
     NSMutableData *privateKeyData = [NSMutableData new];
     NSString *privateKey;
     
     // Key (data)
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
-    NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *saltData = [salt dataUsingEncoding:NSUTF8StringEncoding];
     
     // Remove all whitespaces from passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
