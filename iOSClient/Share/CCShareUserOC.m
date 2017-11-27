@@ -38,6 +38,8 @@
     self = [super initWithCoder:coder];
     if (self) {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         self.directUser = @"";
         
         [self initializeForm];
@@ -95,8 +97,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     self.selectedItems = [[NSMutableArray alloc] init];
     

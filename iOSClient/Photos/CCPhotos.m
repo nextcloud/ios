@@ -70,6 +70,8 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     
     if (self) {
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     
     return self;

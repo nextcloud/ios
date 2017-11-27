@@ -30,7 +30,6 @@
 @interface CCPeekPop ()
 {
     AppDelegate *appDelegate;
-
 }
 @end
 

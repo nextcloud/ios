@@ -41,7 +41,9 @@
 
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if (self = [super initWithCoder:aDecoder])  {        
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     
     return self;
@@ -50,8 +52,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
     [self inizialize];    
 }

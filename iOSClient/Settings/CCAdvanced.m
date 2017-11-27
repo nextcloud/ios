@@ -40,6 +40,8 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_advanced_", nil)];
@@ -152,8 +154,6 @@
 {
     [super viewDidLoad];
     
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
 }
 

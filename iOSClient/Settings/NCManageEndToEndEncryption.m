@@ -42,6 +42,7 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
+        
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];
@@ -54,6 +55,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
+        
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];

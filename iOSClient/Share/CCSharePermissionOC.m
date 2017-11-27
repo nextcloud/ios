@@ -39,6 +39,7 @@
     self = [super initWithCoder:coder];
     if (self) {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -147,8 +148,6 @@
 {
     [super viewDidLoad];
     
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
     self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];

@@ -153,9 +153,7 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)reloadData
-{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
+{    
     // bugfix
     if (!self.serverUrl || !self.metadata) {
         

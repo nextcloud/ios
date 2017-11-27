@@ -107,6 +107,8 @@
 {    
     if (self = [super initWithCoder:aDecoder])  {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         _directoryOrder = [CCUtility getOrderSettings];
         _directoryGroupBy = [CCUtility getGroupBySettings];
         
@@ -127,8 +129,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // init object
     _metadata = [tableMetadata new];
@@ -334,8 +334,6 @@
 
 - (void)initializeMain:(NSNotification *)notification
 {
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
     _directoryGroupBy = nil;
     _directoryOrder = nil;
     _dateReadDataSource = nil;
@@ -1012,8 +1010,6 @@
 
 - (void)getNotificationServerSuccess:(NSArray *)listOfNotifications
 {
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         // Order by date
@@ -2604,8 +2600,6 @@
 {
     [_hud hideHud];
     
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    
     // change account ?
     tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
     if([record.account isEqualToString:metadataNet.account] == NO)
@@ -2686,8 +2680,6 @@
 {
     [_hud hideHud];
     
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
     // rimuoviamo la condivisione da db
     NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup];
     

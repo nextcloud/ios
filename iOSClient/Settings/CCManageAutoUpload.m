@@ -39,6 +39,8 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         [self initializeForm];
     }
     
@@ -52,6 +54,8 @@
     
     if (self) {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         UIBarButtonItem *doneButton = [[UIBarButtonItem alloc ] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(done:)];
         self.navigationItem.rightBarButtonItem = doneButton;
         
@@ -67,7 +71,6 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
  
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];

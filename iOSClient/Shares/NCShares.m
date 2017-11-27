@@ -43,6 +43,8 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
@@ -54,8 +56,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // Custom Cell
     [self.tableView registerNib:[UINib nibWithNibName:@"NCSharesCell" bundle:nil] forCellReuseIdentifier:@"Cell"];

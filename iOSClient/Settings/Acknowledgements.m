@@ -32,15 +32,6 @@
 
 @implementation Acknowledgements
 
--  (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if (self = [super initWithCoder:aDecoder])  {
-        
-    }
-    
-    return self;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];

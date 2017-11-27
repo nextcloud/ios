@@ -220,7 +220,9 @@
         if ([items count] == 0) {
             
 #ifndef EXTENSION
-            [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError  errorCode:0];
+            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+            [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError  errorCode:0];
 #endif
 
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -305,7 +307,9 @@
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                    [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+                    [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                     continue;
                 }
@@ -402,7 +406,9 @@
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                    [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+                    [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                     continue;
                 }
@@ -562,7 +568,9 @@
             // ----- BUG #942 ---------
             if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+                [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                 continue;
             }
@@ -870,7 +878,9 @@
         if ([items count] == 0) {
        
 #ifndef EXTENSION
-            [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+            [appDelegate messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
             if([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)])
                 [self.delegate readFileFailure:_metadataNet message:@"Read File WebDAV : [items NULL] please fix" errorCode:0];
@@ -1051,7 +1061,9 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
 #ifndef EXTENSION
-        [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+        [appDelegate messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
 #endif
         
         NSInteger errorCode = response.statusCode;

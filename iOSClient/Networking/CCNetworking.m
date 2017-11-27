@@ -990,7 +990,9 @@
                 [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
 #ifndef EXTENSION
                 // Next tableQueueUpload
-                [(AppDelegate *)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
 #endif
             });
             
@@ -1004,7 +1006,9 @@
              [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
 #ifndef EXTENSION
              // Next tableQueueUpload
-             [(AppDelegate *)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+             AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
 #endif
              
              // Manage uploadTask cancel,suspend,resume

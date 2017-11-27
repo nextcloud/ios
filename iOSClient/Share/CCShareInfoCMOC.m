@@ -50,7 +50,8 @@ const PERMISSION_ALL = 31;
 {
     self = [super initWithCoder:coder];
     if (self) {
-                
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -116,8 +117,6 @@ const PERMISSION_ALL = 31;
 {
     [super viewDidLoad];
     
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
     self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
