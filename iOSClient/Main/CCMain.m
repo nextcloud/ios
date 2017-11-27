@@ -39,6 +39,8 @@
 
 @interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
+    AppDelegate *appDelegate;
+    
     tableMetadata *_metadata;
     
     BOOL _isRoot;
@@ -125,6 +127,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // init object
     _metadata = [tableMetadata new];
@@ -567,6 +571,13 @@
             
         } else {
         
+            NSString *shareLink, *shareUserAndGroup;
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataFolder.directoryID];
+            if (serverUrl) {
+                shareLink = [app.sharesLink objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
+                shareUserAndGroup = [app.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
+            }
+            
             if (_metadataFolder.e2eEncrypted) {
                 
                 [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titleEncrypted"] navigationItem:self.navigationItem];
@@ -575,7 +586,7 @@
             
                 [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titlePhotos"] navigationItem:self.navigationItem];
                 
-            } else if ([_metadataFolder.permissions containsString:k_permission_shared] || [_metadataFolder.permissions containsString:k_permission_mounted]) {
+            } else if ([_metadataFolder.permissions containsString:k_permission_shared] || [_metadataFolder.permissions containsString:k_permission_mounted] || shareLink.length > 0 || shareUserAndGroup.length > 0) {
                 
                 [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titleShare"] navigationItem:self.navigationItem];
                 
