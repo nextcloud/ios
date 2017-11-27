@@ -106,15 +106,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         item.url = "segueShares"
         functionMenu.append(item)
         
-        /*
-        // ITEM : Local storage
-        item = OCExternalSites.init()
-        item.name = "_local_storage_"
-        item.icon = "moreLocalStorage"
-        item.url = "segueLocalStorage"
-        functionMenu.append(item)
-        */
-        
         // ITEM : External
         
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {
