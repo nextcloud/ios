@@ -1861,6 +1861,7 @@
         self.definesPresentationContext = YES;
         self.searchController.searchResultsUpdater = self;
         self.searchController.dimsBackgroundDuringPresentation = NO;
+        self.searchController.searchBar.translucent = NO;
         self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
         [self.searchController.searchBar sizeToFit];
         self.searchController.searchBar.delegate = self;
@@ -1868,6 +1869,7 @@
         self.searchController.searchBar.backgroundImage = [UIImage new];
         // Color Text "Cancel"
         [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[NCBrandColor sharedInstance].brandText];
+        
         
         self.tableView.tableHeaderView = self.searchController.searchBar;
         [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
