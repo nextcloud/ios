@@ -34,6 +34,12 @@
 #define alertViewEsci 1
 #define alertViewAzzeraCache 2
 
+@interface CCSettings ()
+{
+    AppDelegate *appDelegate;
+}
+@end
+
 @implementation CCSettings
 
 - (id)initWithCoder:(NSCoder *)aDecoder
@@ -42,11 +48,13 @@
     
     if (self) {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         [self initializeForm];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
-        app.activeSettings = self;
+        appDelegate.activeSettings = self;
     }
     
     return self;
@@ -170,8 +178,8 @@
     self.tableView.showsVerticalScrollIndicator = NO;
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self reloadForm];
 }
@@ -179,7 +187,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+        [appDelegate changeTheming:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -373,7 +381,7 @@
 
 - (void)synchronizeFavorites
 {    
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount]  sorted:nil ascending:NO];
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", appDelegate.activeAccount]  sorted:nil ascending:NO];
     
     for (tableMetadata *metadata in metadatas) {
         
@@ -389,14 +397,14 @@
             if (![serverUrl hasSuffix:@"/"])
                 serverUrlBeginWith = [serverUrl stringByAppendingString:@"/"];
 
-            NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (serverUrl = %@ OR serverUrl BEGINSWITH %@)", app.activeAccount, serverUrl, serverUrlBeginWith] sorted:@"serverUrl" ascending:true];
+            NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (serverUrl = %@ OR serverUrl BEGINSWITH %@)", appDelegate.activeAccount, serverUrl, serverUrlBeginWith] sorted:@"serverUrl" ascending:true];
             
             for (tableDirectory *directory in directories)
                 [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:nil directoryID:directory.directoryID];
         } 
     }
     
-    [app.activeFavorites readListingFavorites];
+    [appDelegate.activeFavorites readListingFavorites];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -444,17 +452,17 @@
     switch (result)
     {
         case MFMailComposeResultCancelled:
-            [app messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
+            [appDelegate messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
             break;
         case MFMailComposeResultSaved:
-            [app messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
+            [appDelegate messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
             break;
         case MFMailComposeResultSent:
-            [app messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
+            [appDelegate messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:error.code];
             break;
         case MFMailComposeResultFailed: {
             NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"_mail_failure_", nil), [error localizedDescription]];
-            [app messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+            [appDelegate messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
         }
             break;
         default:
@@ -514,7 +522,7 @@
                 
                 [CCUtility setBlockCode:@""];
                 [[NCManageDatabase sharedInstance] setAllDirectoryUnLock];
-                [app.activeMain.tableView reloadData];
+                [appDelegate.activeMain.tableView reloadData];
             }
             
             // change simply
@@ -523,7 +531,7 @@
                 // disable passcode
                 [CCUtility setBlockCode:@""];
                 [[NCManageDatabase sharedInstance] setAllDirectoryUnLock];
-                [app.activeMain.tableView reloadData];
+                [appDelegate.activeMain.tableView reloadData];
                 
                 [CCUtility setSimplyBlockCode:![CCUtility getSimplyBlockCode]];
                 

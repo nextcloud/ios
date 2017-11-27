@@ -26,7 +26,9 @@
 #import "NCBridgeSwift.h"
 
 @interface CCShareOC ()
-
+{
+    AppDelegate *appDelegate;
+}
 @end
 
 @implementation CCShareOC
@@ -36,6 +38,8 @@
     self = [super initWithCoder:coder];
     if (self) {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         self.itemsShareWith = [[NSMutableArray alloc] init];
         
         [self initializeForm];
@@ -120,9 +124,9 @@
     
     [self reloadData];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, self.metadata.fileID]]) {
         
-        self.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadata.fileID]];
+        self.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, self.metadata.fileID]];
         
     } else {
         
@@ -231,7 +235,7 @@
     
         for (NSString *idRemoteShared in self.itemsUserAndGroupLink) {
             
-            OCSharedDto *item = [app.sharesID objectForKey:idRemoteShared];
+            OCSharedDto *item = [appDelegate.sharesID objectForKey:idRemoteShared];
             
             XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:idRemoteShared rowType:XLFormRowDescriptorTypeButton];
 
@@ -281,7 +285,7 @@
         
     } else {
 
-        url = [NSString stringWithFormat:@"%@/%@%@", app.activeUrl, k_share_link_middle_part_url_after_version_8, sharedLink];
+        url = [NSString stringWithFormat:@"%@/%@%@", appDelegate.activeUrl, k_share_link_middle_part_url_after_version_8, sharedLink];
 
     }
 
@@ -335,7 +339,7 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    OCSharedDto *shareDto = [app.sharesID objectForKey:self.shareLink];
+    OCSharedDto *shareDto = [appDelegate.sharesID objectForKey:self.shareLink];
     
     if ([rowDescriptor.tag isEqualToString:@"shareLinkSwitch"]) {
         
@@ -400,7 +404,7 @@
 {
     [super endEditing:rowDescriptor];
     
-    OCSharedDto *shareDto = [app.sharesID objectForKey:self.shareLink];
+    OCSharedDto *shareDto = [appDelegate.sharesID objectForKey:self.shareLink];
     
     if ([rowDescriptor.tag isEqualToString:@"expirationDate"]) {
         
