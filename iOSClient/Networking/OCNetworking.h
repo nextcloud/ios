@@ -42,8 +42,6 @@
 @property (nonatomic, assign) BOOL isExecuting;
 @property (nonatomic, assign) BOOL isFinished;
 
-- (NSError *)readFileSync:(NSString *)filePathName;
-
 @end
 
 @protocol OCNetworkingDelegate <NSObject>

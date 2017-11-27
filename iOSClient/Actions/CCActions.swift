@@ -164,35 +164,41 @@ class CCActions: NSObject {
             return
         }
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl);
-
-        // Verify if exists the fileName TO
-        guard (ocNetworking?.readFileSync("\(String(describing: serverUrl))/\(fileName)")) != nil else {
-                
-            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
-                
-            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-                (result : UIAlertAction) -> Void in
-            }
-                
-            alertController.addAction(okAction)
-                
-            delegate.present(alertController, animated: true, completion: nil)
-                
-            return;
-        }
+        DispatchQueue.global(qos: .userInitiated).async {
         
-        metadataNet.action = actionMoveFileOrFolder
-        metadataNet.delegate = delegate
-        metadataNet.fileID = metadata.fileID
-        metadataNet.fileName = metadata.fileName
-        metadataNet.fileNameTo = fileName
-        metadataNet.fileNameView = metadata.fileNameView
-        metadataNet.selector = selectorRename
-        metadataNet.serverUrl = serverUrl
-        metadataNet.serverUrlTo = serverUrl
+            // Verify if exists the fileName TO
+            var items: NSArray?
+        
+            guard NCNetworkingSync.sharedManager().readFile("\(String(describing: serverUrl))/\(fileName)", user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, items: &items) != nil else {
+                
+                DispatchQueue.main.async {
+                    
+                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
+                
+                    let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                        (result : UIAlertAction) -> Void in
+                    }
+                
+                    alertController.addAction(okAction)
+                
+                    delegate.present(alertController, animated: true, completion: nil)
+                }
+                
+                return;
+            }
+        
+            metadataNet.action = actionMoveFileOrFolder
+            metadataNet.delegate = delegate
+            metadataNet.fileID = metadata.fileID
+            metadataNet.fileName = metadata.fileName
+            metadataNet.fileNameTo = fileName
+            metadataNet.fileNameView = metadata.fileNameView
+            metadataNet.selector = selectorRename
+            metadataNet.serverUrl = serverUrl
+            metadataNet.serverUrlTo = serverUrl
             
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+            self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        }
     }
     
     @objc func renameSuccess(_ metadataNet: CCMetadataNet) {

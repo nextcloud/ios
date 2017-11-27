@@ -2197,50 +2197,55 @@
     NSString *directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
     if (!directoryIDTo) return;
     
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:app.activeUser withUserID:app.activeUserID withPassword:app.activePassword withUrl:app.activeUrl];
-            
-    NSError *error = [ocNetworking readFileSync:[NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName]];
-            
-    if(!error) {
-                
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    
-            UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-            }];
-            [alert addAction:ok];
-            [self presentViewController:alert animated:YES completion:nil];
-        });
-            
-        // End Select Table View
-        [self tableViewSelect:NO];
-            
-        // reload Datasource
-        [self readFileReloadFolder];
-            
-        return;
-    }
-            
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
-    metadataNet.action = actionMoveFileOrFolder;
-    metadataNet.directory = metadata.directory;
-    metadataNet.fileID = metadata.fileID;
-    metadataNet.directoryID = metadata.directoryID;
-    metadataNet.directoryIDTo = directoryIDTo;
-    metadataNet.fileName = metadata.fileName;
-    metadataNet.fileNameView = metadata.fileNameView;
-    metadataNet.fileNameTo = metadata.fileName;
-    metadataNet.etag = metadata.etag;
-    metadataNet.selector = selectorMove;
-    metadataNet.serverUrl = serverUrl;
-    metadataNet.serverUrlTo = serverUrlTo;
-            
-    [_queueSelector addObject:metadataNet.selector];
-            
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        NSArray *items;
+
+        NSError *error = [[NCNetworkingSync sharedManager] readFile:[NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName] user:app.activeUser userID:app.activeUserID password:app.activePassword items:&items];
     
-    [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+        if(!error) {
+                
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                    
+                UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+                }];
+                [alert addAction:ok];
+                [self presentViewController:alert animated:YES completion:nil];
+            
+                // End Select Table View
+                [self tableViewSelect:NO];
+            
+                // reload Datasource
+                [self readFileReloadFolder];
+            });
+            
+            return;
+        }
+            
+        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+        
+        metadataNet.action = actionMoveFileOrFolder;
+        metadataNet.directory = metadata.directory;
+        metadataNet.fileID = metadata.fileID;
+        metadataNet.directoryID = metadata.directoryID;
+        metadataNet.directoryIDTo = directoryIDTo;
+        metadataNet.fileName = metadata.fileName;
+        metadataNet.fileNameView = metadata.fileNameView;
+        metadataNet.fileNameTo = metadata.fileName;
+        metadataNet.etag = metadata.etag;
+        metadataNet.selector = selectorMove;
+        metadataNet.serverUrl = serverUrl;
+        metadataNet.serverUrlTo = serverUrlTo;
+            
+        [_queueSelector addObject:metadataNet.selector];
+            
+        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+        });
+    });
 }
 
 // DELEGATE : Move
