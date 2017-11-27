@@ -263,13 +263,15 @@
     
     [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:app.activeAccount];
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
     
     // Clear active user

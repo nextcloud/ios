@@ -332,8 +332,8 @@
     
     [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
     
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
     [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
     
     [app.netQueue cancelAllOperations];
     
@@ -352,6 +352,7 @@
         [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
         [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:app.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:app.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
         
         [[NCAutoUpload sharedInstance] alignPhotoLibrary];
