@@ -917,8 +917,8 @@
 {
     nav.translucent = NO;
     nav.barTintColor = [NCBrandColor sharedInstance].brand;
-    nav.tintColor = [NCBrandColor sharedInstance].navigationBarText;
-    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
+    nav.tintColor = [NCBrandColor sharedInstance].brandText;
+    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].brandText}];
     // Change bar bottom line shadow
     nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     

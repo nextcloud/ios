@@ -127,8 +127,8 @@ class NCManageAutoUploadFileName: XLFormViewController {
         
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         

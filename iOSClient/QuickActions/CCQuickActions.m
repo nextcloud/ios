@@ -160,9 +160,9 @@
     
     _move.move.title = NSLocalizedString(@"_upload_file_", nil);
     _move.delegate = self;
-    _move.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    _move.tintColor = [NCBrandColor sharedInstance].brandText;
     _move.barTintColor = [NCBrandColor sharedInstance].brand;
-    _move.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
+    _move.tintColorTitle = [NCBrandColor sharedInstance].brandText;
     _move.networkingOperationQueue = app.netQueue;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];

@@ -151,7 +151,7 @@
             [NCBrandColor sharedInstance].brand = newColor;
     }
     self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
-    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].brandText;
     
     self.toolBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
     self.toolBar.tintColor = [NCBrandColor sharedInstance].brand;

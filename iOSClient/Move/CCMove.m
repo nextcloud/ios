@@ -85,7 +85,7 @@
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
         label.text = self.passMetadata.fileNameView;
         
-        label.textColor = NCBrandColor.sharedInstance.navigationBarText;
+        label.textColor = NCBrandColor.sharedInstance.brandText;
         
         label.backgroundColor =[UIColor clearColor];
         label.textAlignment = NSTextAlignmentCenter;
@@ -108,7 +108,7 @@
     [super viewWillAppear:animated];
     
     self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
     self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brand;

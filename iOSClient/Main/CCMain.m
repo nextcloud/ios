@@ -510,7 +510,7 @@
 {
     _refreshControl = [UIRefreshControl new];
    
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].text;
+    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
     _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
     [self setRefreshControl:_refreshControl];
     
@@ -576,7 +576,7 @@
                 label.text = _titleMain;
                 [label sizeToFit];
                 label.center = navView.center;
-                label.textColor = [NCBrandColor sharedInstance].text;
+                label.textColor = [NCBrandColor sharedInstance].brandText;
                 label.textAlignment = NSTextAlignmentCenter;
             
                 CGFloat correct = 6;
@@ -615,7 +615,7 @@
     if ([app.listOfNotifications count] > 0) {
         
         buttonNotification = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"notification"] style:UIBarButtonItemStylePlain target:self action:@selector(viewNotification)];
-        buttonNotification.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+        buttonNotification.tintColor = [NCBrandColor sharedInstance].brandText;
         buttonNotification.enabled = true;
     }
     
@@ -1871,7 +1871,7 @@
         self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
         self.searchController.searchBar.backgroundImage = [UIImage new];
         // Color Text "Cancel"
-        [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[NCBrandColor sharedInstance].text];
+        [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[NCBrandColor sharedInstance].brandText];
         
         self.tableView.tableHeaderView = self.searchController.searchBar;
         [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
@@ -2292,9 +2292,9 @@
 
     viewController.delegate = self;
     viewController.move.title = NSLocalizedString(@"_move_", nil);
-    viewController.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    viewController.tintColor = [NCBrandColor sharedInstance].brandText;
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
-    viewController.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
+    viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
     viewController.networkingOperationQueue = app.netQueue;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];

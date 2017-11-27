@@ -134,8 +134,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         // COLOR
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
         self.navigationController?.navigationBar.isTranslucent = false
         
         self.tableView.separatorColor = NCBrandColor.sharedInstance.seperator
