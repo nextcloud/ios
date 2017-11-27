@@ -163,8 +163,7 @@
 
 - (void)changeTheming
 {
-    if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+    [app changeTheming:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -188,8 +187,9 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    if (loginType == loginAddForced)
+    if (loginType == loginAddForced) {
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+    }
 }
 
 - (void)loginDisappear
