@@ -938,7 +938,7 @@
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    if (metadata.thumbnailExists) {
+    if (metadata.thumbnailExists && _metadataFolder.e2eEncrypted == NO) {
         CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
         
         if (cell) {
