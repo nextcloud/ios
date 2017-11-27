@@ -409,6 +409,31 @@ Color difference is determined by the following formula:
     return theImage;
 }
 
++ (void)addImageToTile:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle navigationItem:(UINavigationItem *)navigationItem
+{
+    UIView *navView = [UIView new];
+    
+    UILabel *label = [UILabel new];
+    label.text = title;
+    [label sizeToFit];
+    label.center = navView.center;
+    label.textColor = colorTitle;
+    label.textAlignment = NSTextAlignmentCenter;
+    
+    CGFloat correct = 6;
+    UIImageView *image = [UIImageView new];
+    image.image = imageTitle;
+    CGFloat imageAspect = image.image.size.width/image.image.size.height;
+    image.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
+    image.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [navView addSubview:label];
+    [navView addSubview:image];
+    
+    navigationItem.titleView = navView;
+    [navView sizeToFit];
+}
+
 @end
 
 // ------------------------------------------------------------------------------------------------------

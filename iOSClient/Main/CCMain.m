@@ -569,29 +569,14 @@
         
             if (_metadataFolder.e2eEncrypted) {
                 
-                UIView *navView = [UIView new];
+                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titleEncrypted"] navigationItem:self.navigationItem];
                 
+            } else if ([[[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl] isEqualToString:self.serverUrl]) {
             
-                UILabel *label = [UILabel new];
-                label.text = _titleMain;
-                [label sizeToFit];
-                label.center = navView.center;
-                label.textColor = [NCBrandColor sharedInstance].brandText;
-                label.textAlignment = NSTextAlignmentCenter;
-            
-                CGFloat correct = 6;
-                UIImageView *image = [UIImageView new];
-                image.image = [UIImage imageNamed:@"titleEncrypted"];
-                CGFloat imageAspect = image.image.size.width/image.image.size.height;
-                image.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
-                image.contentMode = UIViewContentModeScaleAspectFit;
-            
-                [navView addSubview:label];
-                [navView addSubview:image];
-            
-                self.navigationItem.titleView = navView;
-                [navView sizeToFit];
+                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titlePhotos"] navigationItem:self.navigationItem];
+                
             } else {
+                
                 self.navigationItem.title = _titleMain;
             }
         }
