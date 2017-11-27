@@ -319,7 +319,7 @@ cleanup:
 }
 
 #
-#pragma mark - Create CSR & Encrypt Private Key
+#pragma mark - Create CSR & Encrypt/Decrypt Private Key
 #
 
 - (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser
@@ -378,10 +378,6 @@ cleanup:
         return nil;
     }
 }
-
-#
-#pragma mark - Decrypt Private Key
-#
 
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey salt:(NSString *)salt
 {
