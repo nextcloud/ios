@@ -625,7 +625,7 @@
     else numberFileName = [CCUtility getIncrementalNumber];
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"yy-MM-dd HH-mm-ss"];
+    [formatter setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
     NSString *fileNameDate = [formatter stringFromDate:fileDate];
     
     NSString *fileNameType = @"";
@@ -686,24 +686,24 @@
             fileName = [fileName stringByReplacingOccurrencesOfString:@"ampm" withString:ampm];
 
             if (addFileNameType)
-                fileName = [NSString stringWithFormat:@"%@ %@-%@.%@", fileNameType, fileName, numberFileName, fileNameExt];
+                fileName = [NSString stringWithFormat:@"%@%@%@.%@", fileNameType, fileName, numberFileName, fileNameExt];
             else
-                fileName = [NSString stringWithFormat:@"%@-%@.%@", fileName, numberFileName, fileNameExt];
+                fileName = [NSString stringWithFormat:@"%@%@.%@", fileName, numberFileName, fileNameExt];
             
         } else {
             
             if (addFileNameType)
-                fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+                fileName = [NSString stringWithFormat:@"%@_%@_%@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
             else
-                fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+                fileName = [NSString stringWithFormat:@"%@_%@.%@", fileNameDate, numberFileName, fileNameExt];
         }
         
     } else {
         
         if (addFileNameType)
-            fileName = [NSString stringWithFormat:@"%@ %@ %@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
+            fileName = [NSString stringWithFormat:@"%@_%@_%@.%@", fileNameType, fileNameDate, numberFileName, fileNameExt];
         else
-            fileName = [NSString stringWithFormat:@"%@ %@.%@", fileNameDate, numberFileName, fileNameExt];
+            fileName = [NSString stringWithFormat:@"%@_%@.%@", fileNameDate, numberFileName, fileNameExt];
 
     }
     
