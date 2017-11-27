@@ -43,7 +43,6 @@
 @property (nonatomic, assign) BOOL isFinished;
 
 - (NSError *)readFileSync:(NSString *)filePathName;
-- (BOOL)automaticCreateFolderSync:(NSString *)folderPathName;
 
 @end
 

@@ -334,10 +334,13 @@
      if (!app.activeAccount || app.maintenanceMode)
          return;
     
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-    
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    BOOL useSubFolder = tableAccount.autoUploadCreateSubfolder;
+    NSMutableArray *metadataNetFull = [NSMutableArray new];
+    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+
     // Check Asset : NEW or FULL
-    PHFetchResult *newAssetToUpload = [self getCameraRollAssets:account assetsFull:assetsFull alignPhotoLibrary:NO];
+    PHFetchResult *newAssetToUpload = [self getCameraRollAssets:tableAccount assetsFull:assetsFull alignPhotoLibrary:NO];
     
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if ([newAssetToUpload count] == 0) {
@@ -352,7 +355,6 @@
     
     dispatch_async(dispatch_get_main_queue(), ^{
         if (assetsFull) {
-        
             if (!_hud)
                 _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
         
@@ -360,38 +362,12 @@
         }
     });
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        if (assetsFull)
-            [self performSelectorOnMainThread:@selector(uploadFullAssetsToNetwork:) withObject:newAssetToUpload waitUntilDone:NO];
-        else
-            [self performSelectorOnMainThread:@selector(uploadNewAssetsToNetwork:) withObject:newAssetToUpload waitUntilDone:NO];
-    });
-}
-
-- (void)uploadNewAssetsToNetwork:(PHFetchResult *)newAssetToUpload
-{
-    [self uploadAssetsToNetwork:newAssetToUpload assetsFull:NO];
-}
-
-- (void)uploadFullAssetsToNetwork:(PHFetchResult *)newAssetToUpload
-{
-    [self uploadAssetsToNetwork:newAssetToUpload assetsFull:YES];
-}
-
-- (void)uploadAssetsToNetwork:(PHFetchResult *)newAssetToUpload assetsFull:(BOOL)assetsFull
-{
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    NSMutableArray *metadataNetFull = [NSMutableArray new];
-  
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
-    BOOL useSubFolder = tableAccount.autoUploadCreateSubfolder;
-    
     // Create the folder for Photos & if request the subfolders
     if(![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:newAssetToUpload selector:selectorUploadAutoUploadAll]) {
-        
-        // end loading
-        [_hud hideHud];
-        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // end loading
+            [_hud hideHud];
+        });
         return;
     }
     
@@ -458,11 +434,15 @@
         [[NCManageDatabase sharedInstance] addQueueUploadWithMetadatasNet:metadataNetFull];
         
         // Update icon badge number
-        [app updateApplicationIconBadgeNumber];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [app updateApplicationIconBadgeNumber];
+        });
     }
     
     // end loading
-    [_hud hideHud];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_hud hideHud];
+    });
 }
 
 - (void)addQueueUploadAndPhotoLibrary:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset
@@ -498,9 +478,11 @@
 
 - (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:app.activeUser withUserID:app.activeUserID withPassword:app.activePassword withUrl:app.activeUrl];
+    NSError *error;
     
-    if ([ocNetworking automaticCreateFolderSync:folderPhotos]) {
+    error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPhotos user:app.activeUser userID:app.activeUserID password:app.activePassword];
+    
+    if (error == nil) {
         
         (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:folderPhotos permissions:nil encrypted:false];
         
@@ -520,7 +502,9 @@
         
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
             
-            if ([ocNetworking automaticCreateFolderSync:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder]]) {
+            error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] user:app.activeUser userID:app.activeUserID password:app.activePassword];
+            
+            if ( error == nil) {
                 
                 (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] permissions:nil encrypted:false];
                 

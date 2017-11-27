@@ -150,6 +150,46 @@
     return returnError;
 }
 
+- (NSError *)createFolderAutomaticUpload:(NSString *)folderPathName user:(NSString *)user userID:(NSString *)userID password:(NSString *)password
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    __block NSError *returnError = nil;
+
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    
+    [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication readFile:folderPathName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
+        
+        dispatch_semaphore_signal(semaphore);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+            
+            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
+            dispatch_semaphore_signal(semaphore);
+            
+        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+            
+            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
+            dispatch_semaphore_signal(semaphore);
+            
+        } errorBeforeRequest:^(NSError *error) {
+            
+            returnError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:response.statusCode userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Read folder error %lu", (unsigned long)response.statusCode] forKey:NSLocalizedDescriptionKey]];
+            dispatch_semaphore_signal(semaphore);
+
+        }];
+    }];
+    
+    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
+        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
+    
+    return returnError;
+}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== End-to-End Encryption =====
 #pragma --------------------------------------------------------------------------------------------
