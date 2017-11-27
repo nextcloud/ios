@@ -335,7 +335,6 @@
          return;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    BOOL useSubFolder = tableAccount.autoUploadCreateSubfolder;
     NSMutableArray *metadataNetFull = [NSMutableArray new];
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
 
@@ -363,7 +362,7 @@
     });
     
     // Create the folder for Photos & if request the subfolders
-    if(![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:newAssetToUpload selector:selectorUploadAutoUploadAll]) {
+    if(![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selectorUploadAutoUploadAll]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // end loading
             [_hud hideHud];
@@ -394,7 +393,7 @@
         [formatter setDateFormat:@"MM"];
         NSString *monthString = [formatter stringFromDate:assetDate];
         
-        if (useSubFolder)
+        if (tableAccount.autoUploadCreateSubfolder)
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         else
             serverUrl = autoUploadPath;
