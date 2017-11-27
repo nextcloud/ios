@@ -29,6 +29,8 @@
 
 @interface CCLogin ()
 {
+    AppDelegate *appDelegate;
+
     UIView *rootView;
 }
 @end
@@ -39,6 +41,8 @@
 {
     [super viewDidLoad];
     
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     self.imageBrand.image = [UIImage imageNamed:@"loginLogo"];
     self.login.backgroundColor = [NCBrandColor sharedInstance].customer;
     
@@ -100,10 +104,10 @@
     
     if (_loginType == loginModifyPasswordUser) {
         
-        _baseUrl.text = app.activeUrl;
+        _baseUrl.text = appDelegate.activeUrl;
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
-        _user.text = app.activeUser;
+        _user.text = appDelegate.activeUser;
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }
@@ -270,8 +274,8 @@
                 // Change Password
                 tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
             
-                // Setting App active account
-                [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
+                // Setting appDelegate active account
+                [appDelegate settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
 
                 // Dismiss
                 if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
@@ -287,7 +291,7 @@
                 // Read User Profile
                 CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
                 metadataNet.action = actionGetUserProfile;
-                [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text]];
+                [appDelegate.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text]];
             }
         
         } else {
@@ -358,8 +362,8 @@
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
         if (account) {
         
-            // Setting App active account
-            [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
+            // Setting appDelegate active account
+            [appDelegate settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
     
             // Ok ! Dismiss
             if ([self.delegate respondsToSelector:@selector(loginSuccess:)])

@@ -29,6 +29,8 @@
 
 @interface NCManageEndToEndEncryption ()
 {
+    AppDelegate *appDelegate;
+
     NSUInteger _failedAttempts;
     NSDate *_lockUntilDate;
 }
@@ -40,6 +42,8 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];
         [self initializeForm];
     }
@@ -50,6 +54,8 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];
         [self initializeForm];
     }
@@ -85,7 +91,7 @@
         return;
     }
     
-    if ([CCUtility isEndToEndEnabled:app.activeAccount]) {
+    if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
         
         // Section SERVICE ACTIVATED -------------------------------------------------
         
@@ -185,7 +191,7 @@
 
     if ([[CCUtility getBlockCode] length]) {
         
-        [app.endToEndInterface initEndToEndEncryption];
+        [appDelegate.endToEndInterface initEndToEndEncryption];
         
     } else {
         
@@ -282,20 +288,20 @@
 {
     [self deselectFormRow:sender];
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionDeleteEndToEndPublicKey;
-    [app addNetworkingOperationQueue:app.netQueue delegate:app.endToEndInterface metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:appDelegate.endToEndInterface metadataNet:metadataNet];
 }
 
 - (void)deletePrivateKey:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionDeleteEndToEndPrivateKey;
-    [app addNetworkingOperationQueue:app.netQueue delegate:app.endToEndInterface metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:appDelegate.endToEndInterface metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -333,7 +339,7 @@
     
     if (aViewController.fromType == CCBKPasscodeFromCheckPassphrase) {
     
-        NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:app.activeAccount];
+        NSString *e2ePassphrase = [CCUtility getEndToEndPassphrase:appDelegate.activeAccount];
         NSLog(@"[LOG] Passphrase: %@", e2ePassphrase);
     
         NSString *message = [NSString stringWithFormat:@"\n%@\n\n\n%@", NSLocalizedString(@"_e2e_settings_the_passphrase_is_", nil), e2ePassphrase];
@@ -350,7 +356,7 @@
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_e2e_settings_remove_", nil) message:NSLocalizedString(@"_e2e_settings_remove_message_", nil) preferredStyle:UIAlertControllerStyleAlert];
         
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [CCUtility clearAllKeysEndToEnd:app.activeAccount];
+            [CCUtility clearAllKeysEndToEnd:appDelegate.activeAccount];
             [self initializeForm];
         }];
         

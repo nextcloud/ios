@@ -27,6 +27,7 @@
 
 @interface CCSharePermissionOC ()
 {
+    AppDelegate *appDelegate;
     OCSharedDto *shareDto;
 }
 @end
@@ -146,6 +147,8 @@
 {
     [super viewDidLoad];
     
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
@@ -153,7 +156,7 @@
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
-    shareDto = [app.sharesID objectForKey:self.idRemoteShared];
+    shareDto = [appDelegate.sharesID objectForKey:self.idRemoteShared];
         
     [self initializeForm];    
 }

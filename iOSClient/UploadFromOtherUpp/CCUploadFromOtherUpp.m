@@ -27,6 +27,8 @@
 
 @interface CCUploadFromOtherUpp()
 {
+    AppDelegate *appDelegate;
+
     NSString *serverUrlLocal;
     NSString *destinationTitle;
 }
@@ -38,15 +40,17 @@
 {
     [super viewDidLoad];
     
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     self.navigationItem.rightBarButtonItem.title = NSLocalizedString(@"_cancel_", nil);
     self.title = NSLocalizedString(@"_upload_", nil);
     
-    serverUrlLocal= [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
+    serverUrlLocal= [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     destinationTitle = NSLocalizedString(@"_home_", nil);
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
 }
 
 - (void)didReceiveMemoryWarning
@@ -90,9 +94,9 @@
         case 0:
             if (row == 0) {
                                 
-                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, app.fileNameUpload] error:nil];
+                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, appDelegate.fileNameUpload] error:nil];
                 NSString *fileSize = [CCUtility transformedSize:[[fileAttributes objectForKey:NSFileSize] longValue]];
-                nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = [NSString stringWithFormat:@"%@ - %@", app.fileNameUpload, fileSize];
+                nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = [NSString stringWithFormat:@"%@ - %@", appDelegate.fileNameUpload, fileSize];
             }
             break;
         case 2:
@@ -160,14 +164,14 @@
     viewController.tintColor = [NCBrandColor sharedInstance].brandText;
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
-    viewController.networkingOperationQueue = app.netQueue;
+    viewController.networkingOperationQueue = appDelegate.netQueue;
 
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 -(void)upload
 {
-    [[CCNetworking sharedNetworking] uploadFile:app.fileNameUpload serverUrl:serverUrlLocal session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+    [[CCNetworking sharedNetworking] uploadFile:appDelegate.fileNameUpload serverUrl:serverUrlLocal session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

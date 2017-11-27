@@ -26,6 +26,12 @@
 #import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
+@interface CCManageAutoUpload ()
+{
+    AppDelegate *appDelegate;
+}
+@end
+
 @implementation CCManageAutoUpload
 
 //  From Settings
@@ -60,7 +66,8 @@
     XLFormDescriptor *form ;
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
-    
+ 
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
@@ -181,8 +188,8 @@
     self.tableView.showsVerticalScrollIndicator = NO;
 
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Request permission for camera roll access
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
@@ -204,7 +211,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+        [appDelegate changeTheming:self];
 }
 
 -(void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue
@@ -221,7 +228,7 @@
             
             // Default
             [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:nil];
-            [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:nil activeUrl:app.activeUrl];
+            [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:nil activeUrl:appDelegate.activeUrl];
             
             // verifichiamo che almeno uno dei servizi (foto video) siano attivi, in caso contrario attiviamo le foto
             if (account.autoUploadImage == NO && account.autoUploadVideo == NO) {
@@ -239,7 +246,7 @@
             [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadFull" state:NO];
 
             // remove
-            [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:appDelegate.activeAccount];
         }
         
         [self reloadForm];
@@ -284,9 +291,9 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:appDelegate.activeAccount];
             
-            [[CCNetworking sharedNetworking] settingSessionsDownload:NO upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+            [[CCNetworking sharedNetworking] settingSessionsDownload:NO upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
             
             [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadFull" state:NO];
         }

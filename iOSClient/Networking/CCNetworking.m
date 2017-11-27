@@ -589,7 +589,7 @@
         [_delegate reloadDatasource:serverUrl];
         
 #ifndef EXTENSION
-        [app updateApplicationIconBadgeNumber];
+        [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateApplicationIconBadgeNumber];
 #endif
 }
 
@@ -654,7 +654,8 @@
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID etag:(NSString *)etag date:(NSDate *)date serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode
 {
 #ifndef EXTENSION
-    [app.listProgressMetadata removeObjectForKey:fileID];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [appDelegate.listProgressMetadata removeObjectForKey:fileID];
 #endif
     
     // Progress Task
@@ -989,7 +990,7 @@
                 [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
 #ifndef EXTENSION
                 // Next tableQueueUpload
-                [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+                [(AppDelegate *)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
 #endif
             });
             
@@ -1003,7 +1004,7 @@
              [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
 #ifndef EXTENSION
              // Next tableQueueUpload
-             [app performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+             [(AppDelegate *)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
 #endif
              
              // Manage uploadTask cancel,suspend,resume
@@ -1020,7 +1021,7 @@
         [self.delegate reloadDatasource:serverUrl];
         
 #ifndef EXTENSION
-    [app updateApplicationIconBadgeNumber];
+    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateApplicationIconBadgeNumber];
 #endif
     
 }
@@ -1071,7 +1072,8 @@
     if (errorCode != 0) {
         
 #ifndef EXTENSION
-        [app.listProgressMetadata removeObjectForKey:sessionID];
+        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        [appDelegate.listProgressMetadata removeObjectForKey:sessionID];
 #endif
         
         // Mark error only if not Cancelled Task
@@ -1106,7 +1108,8 @@
     [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID] clearDateReadDirectoryID:nil];
     
 #ifndef EXTENSION
-    [app.listProgressMetadata removeObjectForKey:sessionID];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    [appDelegate.listProgressMetadata removeObjectForKey:sessionID];
 #endif
         
     NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, metadata.fileID);
@@ -1325,6 +1328,8 @@
 - (void)readFileVerifyUpload:(NSString *)fileName serverUrl:(NSString *)serverUrl
 {
 #ifndef EXTENSION
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:_activeAccount];
     
     metadataNet.action = actionReadFile;
@@ -1332,7 +1337,7 @@
     metadataNet.serverUrl = serverUrl;
     metadataNet.selector = selectorReadFileVerifyUpload;
 
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 #else
     NSLog(@"[LOG] Function not available for extension.");
 #endif

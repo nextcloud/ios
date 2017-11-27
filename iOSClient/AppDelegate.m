@@ -192,7 +192,7 @@
 
     navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
     splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
-    [app aspectNavigationControllerBar:navigationController.navigationBar online:YES hidden:NO];
+    [self aspectNavigationControllerBar:navigationController.navigationBar online:YES hidden:NO];
     
     // Settings TabBar
     [self createTabBarController];
@@ -854,7 +854,7 @@
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
     }
     
-    [app aspectTabBar:tabBarController.tabBar hidden:NO];
+    [self aspectTabBar:tabBarController.tabBar hidden:NO];
     
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
