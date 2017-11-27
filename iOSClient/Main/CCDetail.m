@@ -74,7 +74,7 @@
         _indexNowVisible = -1;
         _fileIDNowVisible = nil;
 
-        app.activeDetail = self;
+        appDelegate.activeDetail = self;
     }
     return self;
 }
@@ -115,7 +115,7 @@
     }
     
     if (self.splitViewController.isCollapsed)
-        [app plusButtonVisibile:false];
+        [appDelegate plusButtonVisibile:false];
 }
 
 // E' scomparso
@@ -216,7 +216,7 @@
 
 - (void)changeTheming
 {
-    [app changeTheming:self];
+    [appDelegate changeTheming:self];
     
     if (_toolbar) {
         _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
@@ -231,9 +231,9 @@
 - (void)viewFile
 {
     // verifico se esiste l'icona e se la posso creare
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, self.metadataDetail.fileID]] == NO) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, self.metadataDetail.fileID]] == NO) {
         
-        [CCGraphics createNewImageFrom:self.metadataDetail.fileID directoryUser:app.directoryUser fileNameTo:self.metadataDetail.fileID extension:[self.metadataDetail.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:self.metadataDetail.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+        [CCGraphics createNewImageFrom:self.metadataDetail.fileID directoryUser:appDelegate.directoryUser fileNameTo:self.metadataDetail.fileID extension:[self.metadataDetail.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:self.metadataDetail.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
     }
     
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] || [self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_audio]) {
@@ -251,14 +251,14 @@
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewPDF:@""];
             [self createToolbar];
-            [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
+            [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
 
         } else {
 
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self viewDocument];
             [self createToolbar];
-            [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
+            [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
         }
     }
 }
@@ -279,7 +279,7 @@
     fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNameView];
         
     [[NSFileManager defaultManager] removeItemAtPath:fileName error:nil];
-    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
+    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileName] == NO) {
         
@@ -414,7 +414,7 @@
         
         tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
 
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO && [metadataDB.session length] == 0)
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID]] == NO && [metadataDB.session length] == 0)
             [self downloadPhotoBrowser:metadata];
     }
     
@@ -435,7 +435,7 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
-                NSString *fileImage = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
+                NSString *fileImage = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID];
                 NSString *ext = [CCUtility getExtension:metadata.fileNameView];
                 
                 if ([ext isEqualToString:@"GIF"]) image = [UIImage animatedImageWithAnimatedGIFURL:[NSURL fileURLWithPath:fileImage]];
@@ -461,13 +461,13 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                 
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]]) {
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID]]) {
                     
                     // remove and make the simbolic link in temp
                     NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView];
                     
                     [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
-                    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:toPath error:nil];
+                    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] toPath:toPath error:nil];
                     NSURL *url = [NSURL fileURLWithPath:toPath];
                     
                     MWPhoto *video = [MWPhoto photoWithImage:[CCGraphics thumbnailImageForVideo:url atTime:1.0]];
@@ -486,7 +486,7 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) {
                 
-                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]]) {
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID]]) {
                     
                     MWPhoto *audio;
                     UIImage *audioImage;
@@ -495,11 +495,11 @@
                     NSString *toPath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView];
                     
                     [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
-                    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:toPath error:nil];
+                    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] toPath:toPath error:nil];
                     NSURL *url = [NSURL fileURLWithPath:toPath];
                     
-                    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
-                        audioImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]]) {
+                        audioImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]];
                     } else {
                         audioImage = [UIImage imageNamed:@"notaMusic"]; //[CCGraphics scaleImage:[UIImage imageNamed:@"notaMusic"] toSize:CGSizeMake(200, 200) isAspectRation:YES];
                     }
@@ -545,10 +545,10 @@
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     if (metadata == nil) return;
     
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileNameView];
+    NSString *filePath = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileNameView];
         
     [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:filePath error:nil];
+    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] toPath:filePath error:nil];
     
     self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
     
@@ -564,15 +564,15 @@
 {
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
-    [app.activeMain openWindowShare:metadata];
+    [appDelegate.activeMain openWindowShare:metadata];
 }
 
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
-    if (metadata == nil || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]] == NO) {
+    if (metadata == nil || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID]] == NO) {
         
-        [app messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        [appDelegate messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         
         return;
     }
@@ -620,11 +620,11 @@
     
     if (errorCode == 0) {
         // verifico se esiste l'icona e se la posso creare
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]] == NO)
-            [CCGraphics createNewImageFrom:metadata.fileID directoryUser:app.directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]] == NO)
+            [CCGraphics createNewImageFrom:metadata.fileID directoryUser:appDelegate.directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
     } else {
         
-        [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        [appDelegate messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
     
     [self.photoBrowser reloadData];
@@ -635,7 +635,7 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
     if (serverUrl) {
-        [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorLoadViewImage selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:app.activeMain];
+        [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorLoadViewImage selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:appDelegate.activeMain];
     
         [_hud visibleHudTitle:@"" mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brand];
     }
@@ -677,7 +677,7 @@
             
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
             if (metadata) {
-                [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:app.directoryUser activeAccount:app.activeAccount];
+                [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:appDelegate.directoryUser activeAccount:appDelegate.activeAccount];
             }
         }
         
@@ -717,7 +717,7 @@
     NSString *fileName = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNameView];
         
     [[NSFileManager defaultManager] removeItemAtPath:fileName error:nil];
-    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
+    [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, self.metadataDetail.fileID] toPath:fileName error:nil];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileName isDirectory:nil] == NO) {
         
@@ -855,7 +855,7 @@
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
     // reload Main
-    [app.activeMain reloadDatasource];
+    [appDelegate.activeMain reloadDatasource];
     
     // If removed document (web) or PDF close
     if (_webView || _readerPDFViewController)
@@ -945,7 +945,7 @@
 
 - (void)shareButtonPressed:(UIBarButtonItem *)sender
 {
-    [app.activeMain openWindowShare:self.metadataDetail];
+    [appDelegate.activeMain openWindowShare:self.metadataDetail];
 }
 
 - (void)deleteButtonPressed:(UIBarButtonItem *)sender

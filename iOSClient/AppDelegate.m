@@ -1011,17 +1011,17 @@
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
 
-    NSString *serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
+    NSString *serverUrl = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl];
     NSInteger index = tabBarController.selectedIndex;
     
     // select active serverUrl
     if (index == k_tabBarApplicationIndexFile) {
-        serverUrl = app.activeMain.serverUrl;
+        serverUrl = self.activeMain.serverUrl;
     } else if (index == k_tabBarApplicationIndexFavorite) {
-        if (app.activeFavorites.serverUrl)
-            serverUrl = app.activeFavorites.serverUrl;
+        if (self.activeFavorites.serverUrl)
+            serverUrl = self.activeFavorites.serverUrl;
     } else if (index == k_tabBarApplicationIndexPhotos) {
-        serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+        serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
     }
     
     return serverUrl;
@@ -1376,8 +1376,8 @@
         
         // remove the file
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, fileID] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", self.directoryUser, fileID] error:nil];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID] clearDateReadDirectoryID:nil];
     }
@@ -1450,7 +1450,7 @@
         metadataNet = [[NCManageDatabase sharedInstance] getQueueDownload];
         if (metadataNet) {
             
-            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileName fileID:metadataNet.fileID serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:app.activeMain];
+            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileName fileID:metadataNet.fileID serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:self.activeMain];
             
         } else
             break;
@@ -1566,7 +1566,7 @@
             tableDirectory *directoryLock= [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eTokenLock = %@", self.activeAccount, directory.e2eTokenLock]];
             if ([directoryLock.e2eTokenLock  isEqualToString:directory.e2eTokenLock]) {
                 
-                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:self.activeAccount];
                 
                 metadataNet.action = actionUnlockEndToEndFolderEncrypted;
                 metadataNet.fileID = directoryLock.fileID;

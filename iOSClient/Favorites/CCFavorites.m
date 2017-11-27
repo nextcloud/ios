@@ -29,6 +29,8 @@
 
 @interface CCFavorites () <CCActionsDeleteDelegate, CCActionsSettingFavoriteDelegate>
 {
+    AppDelegate *appDelegate;
+
     NSArray *_dataSource;
     BOOL _reloadDataSource;
 }
@@ -44,10 +46,12 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
-        app.activeFavorites = self;
+        appDelegate.activeFavorites = self;
     }
     return self;
 }
@@ -88,11 +92,11 @@
     [super viewWillAppear:animated];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
-    [app plusButtonVisibile:true];
+    [appDelegate plusButtonVisibile:true];
     
     [self reloadDatasource];
 }
@@ -103,13 +107,13 @@
     [super viewDidAppear:animated];
     
     // Active Main
-    app.activeFavorites = self;
+    appDelegate.activeFavorites = self;
 }
 
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+        [appDelegate changeTheming:self];
     
     // Reload Table View
     [self.tableView reloadData];
@@ -190,7 +194,7 @@
 - (void)readListingFavorites
 {
     // test
-    if (app.activeAccount.length == 0)
+    if (appDelegate.activeAccount.length == 0)
         return;
 
     [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
@@ -202,7 +206,7 @@
     if (!directoryID) return;
     
     NSString *selector;
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionReadFolder;
     metadataNet.depth = @"1";
@@ -216,7 +220,7 @@
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:[CCSynchronize sharedSynchronize] metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:[CCSynchronize sharedSynchronize] metadataNet:metadataNet];
 }
 
 - (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
@@ -260,7 +264,7 @@
     }
     
     // Verify remove favorite
-    NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount] sorted:nil ascending:NO];
+    NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", appDelegate.activeAccount] sorted:nil ascending:NO];
     
     for (tableMetadata *metadata in allRecordFavorite)
         if (![filesEtag containsObject:metadata.fileID])
@@ -311,13 +315,13 @@
     } else {
         
         if (errorCode != k_CCErrorFileAlreadyInDownload)
-            [app messageNotification:@"_download_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [appDelegate messageNotification:@"_download_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
 }
 
 - (void)openWith:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
         
@@ -381,9 +385,9 @@
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]]) {
         
-        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+        iconHeader = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]];
         
     } else {
         
@@ -399,7 +403,7 @@
     // Share
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brand] backgroundColor:[UIColor whiteColor] height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
                                     
-            [app.activeMain openWindowShare:metadata];
+            [appDelegate.activeMain openWindowShare:metadata];
     }];
 
     // NO Directory
@@ -422,7 +426,7 @@
     tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
 
     if (metadata)
-        [app.activeMain openWindowShare:metadata];
+        [appDelegate.activeMain openWindowShare:metadata];
 }
 
 
@@ -488,17 +492,17 @@
         
     if (!_serverUrl) {
         
-        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", app.activeAccount] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", appDelegate.activeAccount] sorted:sorted ascending:[CCUtility getAscendingSettings]];
             
     } else {
         
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];        
         
         if (directoryID)
-            recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", app.activeAccount, directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+            recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", appDelegate.activeAccount, directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
     }
         
-    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil e2eEncryptions:nil groupByField:nil activeAccount:app.activeAccount];
+    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil e2eEncryptions:nil groupByField:nil activeAccount:appDelegate.activeAccount];
         
     NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
     for (NSString *fileID in fileIDs)
@@ -563,8 +567,8 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (!serverUrl)
         return cell;
-    NSString *shareLink = [app.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
-    NSString *shareUserAndGroup = [app.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+    NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+    NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
 
     // Immage
     if (metadata.directory) {
@@ -592,7 +596,7 @@
             [cell.shared addGestureRecognizer:tap];
         }
         
-        cell.file.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+        cell.file.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]];
         
         if (cell.file.image == nil) {
             
@@ -606,7 +610,7 @@
         // E2E Image Status Encrypted
         // ----------------------------------------------------------------------------------------------------------
         
-        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileNameIdentifier = %@", app.activeAccount, metadata.fileName]];
+        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileNameIdentifier = %@", appDelegate.activeAccount, metadata.fileName]];
         if (tableE2eEncryption)
             cell.status.image = [UIImage imageNamed:@"encrypted"];
     }
@@ -622,7 +626,7 @@
         
         NSString *date = [CCUtility dateDiff:metadata.date];
         NSString *length = [CCUtility transformedSize:metadata.size];
-        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID]];
+        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID]];
             
         if (fileExists)
             cell.local.image = [UIImage imageNamed:@"local"];
@@ -679,7 +683,7 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
 
         if (serverUrl) {
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, _metadata.fileID]]) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, _metadata.fileID]]) {
             
                 [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
                             

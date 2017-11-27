@@ -29,6 +29,7 @@
 
 @interface NCAutoUpload ()
 {
+    AppDelegate *appDelegate;
     CCHud *_hud;
 }
 @end
@@ -44,6 +45,7 @@
         if (!sharedInstance) {
             
             sharedInstance = [NCAutoUpload new];
+            sharedInstance->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         }
         return sharedInstance;
     }
@@ -331,12 +333,12 @@
 
 - (void)uploadAssetsNewAndFull:(BOOL)assetsFull
 {
-     if (!app.activeAccount || app.maintenanceMode)
+     if (!appDelegate.activeAccount || appDelegate.maintenanceMode)
          return;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
     NSMutableArray *metadataNetFull = [NSMutableArray new];
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
 
     // Check Asset : NEW or FULL
     PHFetchResult *newAssetToUpload = [self getCameraRollAssets:tableAccount assetsFull:assetsFull alignPhotoLibrary:NO];
@@ -398,7 +400,7 @@
         else
             serverUrl = autoUploadPath;
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
         
         metadataNet.assetLocalIdentifier = asset.localIdentifier;
         if (assetsFull) {
@@ -434,7 +436,7 @@
         
         // Update icon badge number
         dispatch_async(dispatch_get_main_queue(), ^{
-            [app updateApplicationIconBadgeNumber];
+            [appDelegate updateApplicationIconBadgeNumber];
         });
     }
     
@@ -450,23 +452,23 @@
         
         if ([[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet]) {
         
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
         
         } else {
     
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, asset already present or db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, asset already present or db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
         }
     
         // Add asset in table Photo Library
         if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload]) {
             if (![[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]]) {
-                [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Photo Library, db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:app.activeUrl];
+                [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileName fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Photo Library, db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
             }
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
             // Update icon badge number
-            [app updateApplicationIconBadgeNumber];
+            [appDelegate updateApplicationIconBadgeNumber];
         });
     }
 }
@@ -479,7 +481,7 @@
 {
     NSError *error;
     
-    error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPhotos user:app.activeUser userID:app.activeUserID password:app.activePassword];
+    error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPhotos user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword];
     
     if (error == nil) {
         
@@ -488,10 +490,10 @@
     } else {
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:folderPhotos fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:folderPhotos fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
         
         if ([selector isEqualToString:selectorUploadAutoUploadAll])
-            [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+            [appDelegate messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 
         return false;
     }
@@ -501,7 +503,7 @@
         
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
             
-            error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] user:app.activeUser userID:app.activeUserID password:app.activePassword];
+            error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword];
             
             if ( error == nil) {
                 
@@ -510,7 +512,7 @@
             } else {
                 
                 // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:app.activeUrl];
+                [[NCManageDatabase sharedInstance] addActivityClient:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedString(@"_error_createsubfolders_upload_",nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
                 
                 if ([selector isEqualToString:selectorUploadAutoUploadAll])
                     [app messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
@@ -604,7 +606,7 @@
 
     PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES alignPhotoLibrary:YES];
         
-    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
     (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
 
     NSLog(@"[LOG] Align Photo Library %lu", (unsigned long)[assets count]);

@@ -29,6 +29,7 @@
 
 @interface CCSplit () <CCLoginDelegate, CCLoginDelegateWeb>
 {
+    AppDelegate *appDelegate;
 }
 @end
 
@@ -48,9 +49,11 @@
 
 - (void)viewDidLoad
 {
-    [self inizialize];
-    
     [super viewDidLoad];
+
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    [self inizialize];    
 }
 
 // Apparirà
@@ -168,7 +171,7 @@
 
 - (void)loginDisappear
 {
-    app.activeLogin = nil;
+    appDelegate.activeLogin = nil;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -178,9 +181,9 @@
 
 - (void)newAccount
 {
-    if (app.activeAccount.length == 0) {
+    if (appDelegate.activeAccount.length == 0) {
     
-        [app openLoginView:self loginType:loginAddForced];
+        [appDelegate openLoginView:self loginType:loginAddForced];
     }
 }
 
