@@ -1520,9 +1520,8 @@
     } else {
         error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
     }
-    if (error) {
+    if (error)
         return false;
-    }
     
     return true;
 }
@@ -1543,9 +1542,8 @@
         return false;
     
     error = [[NCNetworkingSync sharedManager] rebuildEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
-    if (error) {
+    if (error)
         return false;
-    }
     
     return true;
 }
