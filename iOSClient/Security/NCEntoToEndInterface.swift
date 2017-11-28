@@ -390,8 +390,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
         } else if (errorCode == 404) {
             
-            // Remove all record e2eEncryption
-            NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", appDelegate.activeAccount, metadataNet.serverUrl+"/"+metadataNet.fileName))
+            print("No metadata found: "+metadataNet.serverUrl+"/"+metadataNet.fileName)
             
         } else if (errorCode != 404) {
             

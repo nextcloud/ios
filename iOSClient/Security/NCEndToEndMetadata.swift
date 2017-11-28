@@ -142,10 +142,7 @@ class NCEndToEndMetadata : NSObject  {
         
         let jsonDecoder = JSONDecoder.init()
         let data = e2eMetaDataJSON.data(using: .utf8)
-        
-        // Remove all records e2eMetadata
-        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl))
-        
+                
         do {
             
             // *** metadataKey ***
@@ -210,6 +207,9 @@ class NCEndToEndMetadata : NSObject  {
                         object.serverUrl = serverUrl
                         object.version = encryptedFileAttributes.version
                     
+                        // If exists remove records
+                        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND fileNamePath = %@", object.account, object.fileNamePath))
+                        
                         // Write file parameter for decrypted on DB
                         if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
                             return false
