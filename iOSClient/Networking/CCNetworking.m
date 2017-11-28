@@ -1527,6 +1527,29 @@
     return true;
 }
 
+- (BOOL)rebuildEndToEndMetadataOnServerUrl:(NSString *)serverUrl
+{
+    NSString *e2eTokenLock;
+    NSError *error;
+
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+
+    NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+    if (!tableE2eEncryption)
+        return false;
+    
+    NSString *e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl];
+    if (!e2eMetadataJSON)
+        return false;
+    
+    error = [[NCNetworkingSync sharedManager] rebuildEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
+    if (error) {
+        return false;
+    }
+    
+    return true;
+}
+
 @end
 
 #pragma --------------------------------------------------------------------------------------------
