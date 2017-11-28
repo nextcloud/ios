@@ -1055,7 +1055,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)storeEndToEndMetadata:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)storeEndToEndMetadata:(NSString*)serverPath metadata:(NSString *)metadata onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                               failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
@@ -1064,6 +1064,9 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    
+    _postStringMetadata = [NSString stringWithFormat: @"metaData=%@",metadata];
+    [request setHTTPBody:[_postStringMetadata dataUsingEncoding:NSUTF8StringEncoding]];
 
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
@@ -1071,7 +1074,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)updateEndToEndMetadata:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)updateEndToEndMetadata:(NSString*)serverPath metadata:(NSString *)metadata onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                       failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
@@ -1080,6 +1083,9 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
+    _postStringMetadata = [NSString stringWithFormat: @"metaData=%@",metadata];
+    [request setHTTPBody:[_postStringMetadata dataUsingEncoding:NSUTF8StringEncoding]];
 
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];

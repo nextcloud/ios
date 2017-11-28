@@ -2470,13 +2470,12 @@
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
-    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?metaData=%@", encryptedMetadata]];
-    serverPath = [serverPath stringByAppendingString:@"&format=json"];
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request storeEndToEndMetadata:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request storeEndToEndMetadata:serverPath metadata:encryptedMetadata onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSString *encryptedMetadata;
@@ -2531,13 +2530,12 @@
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [NSString stringWithFormat:@"%@/meta-data/%@", serverPath, fileID];
     serverPath = [NSString stringWithFormat:@"%@?token=%@", serverPath, token];
-    serverPath = [NSString stringWithFormat:@"%@&metaData=%@", serverPath, encryptedMetadata];
     serverPath = [serverPath stringByAppendingString:@"&format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
     request = [self getRequestWithCredentials:request];
     
-    [request updateEndToEndMetadata:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request updateEndToEndMetadata:serverPath metadata:encryptedMetadata onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         NSString *encryptedMetadata;
