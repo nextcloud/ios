@@ -967,7 +967,8 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
                 // Send Metadata
-                if ([self SendEndToEndMetadataOnServerUrl:serverUrl]) {
+                NSError *error = [self SendEndToEndMetadataOnServerUrl:serverUrl];
+                if (error == nil) {
                         
                     [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
                         
@@ -979,9 +980,9 @@
                     NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
 
                 } else {
-                        
-                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:@"Error to send metadata" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-                    [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"Error to send metadata" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+                    NSString *message = [NSString stringWithFormat:@"Error to send metadata %lu", error.code];
+                    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+                    [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:message sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
                             
                     [uploadTask cancel];
                 }
@@ -1492,7 +1493,7 @@
     return result;
 }
 
-- (BOOL)SendEndToEndMetadataOnServerUrl:(NSString *)serverUrl
+- (NSError *)SendEndToEndMetadataOnServerUrl:(NSString *)serverUrl
 {
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     
@@ -1503,16 +1504,16 @@
     // exists a metadata on serverUrl ?
     error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:&getMetadata];
     if (error.code != 404 && error != nil) {
-        return false;
+        return error;
     }
     
     NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     if (!tableE2eEncryption)
-        return false;
+         return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serius internal error tableE2eEncryption, records not found" forKey:NSLocalizedDescriptionKey]];
     
     NSString *e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl];
     if (!e2eMetadataJSON)
-        return false;
+        return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serious internal error in encoding metadata" forKey:NSLocalizedDescriptionKey]];
     
     // send Metadata
     if (getMetadata.length > 0) {
@@ -1520,10 +1521,8 @@
     } else {
         error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
     }
-    if (error)
-        return false;
     
-    return true;
+    return error;
 }
 
 - (BOOL)rebuildEndToEndMetadataOnServerUrl:(NSString *)serverUrl

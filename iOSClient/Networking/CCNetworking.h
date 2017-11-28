@@ -71,8 +71,7 @@
 - (void)verifyUploadInErrorOrWait;
 
 // E2E Encryption
-- (BOOL)SendEndToEndMetadataOnServerUrl:(NSString *)serverUrl;
-- (BOOL)rebuildEndToEndMetadataOnServerUrl:(NSString *)serverUrl;
+- (NSError *)SendEndToEndMetadataOnServerUrl:(NSString *)serverUrl;
 
 @end
 
