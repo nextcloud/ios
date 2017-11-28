@@ -4,7 +4,7 @@ host = https://www.transifex.com
 [nextcloud.ios-bkpasscodeview]
 file_filter = Supporting Files/<lang>.lproj/BKPasscodeView.strings
 source_file = Supporting Files/en.lproj/BKPasscodeView.strings
-source_lang = enCZ
+source_lang = en
 type = STRINGS
 lang_map = pt_BR: pt-BR, zh_CN: zh-Hans, fi_FI: fi-FI, es_MX: es-MX, nb_NO: nb-NO, cs_CZ: cs-CZ, en_GB: en-GB, es_AR: es-AR, sk_SK: sk-SK, hu_HU: hu, ka_GE: ka-GE
 
