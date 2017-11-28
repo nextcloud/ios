@@ -193,7 +193,29 @@
 
     if ([[CCUtility getBlockCode] length]) {
         
-        [appDelegate.endToEndInterface initEndToEndEncryption];
+        CCBKPasscode *viewController = [[CCBKPasscode alloc] initWithNibName:nil bundle:nil];
+        viewController.delegate = self;
+        viewController.fromType = CCBKPasscodeFromStartEncryption;
+        viewController.type = BKPasscodeViewControllerCheckPasscodeType;
+        
+        if ([CCUtility getSimplyBlockCode]) {
+            viewController.passcodeStyle = BKPasscodeInputViewNumericPasscodeStyle;
+            viewController.passcodeInputView.maximumLength = 6;
+        } else {
+            viewController.passcodeStyle = BKPasscodeInputViewNormalPasscodeStyle;
+            viewController.passcodeInputView.maximumLength = 64;
+        }
+        
+        BKTouchIDManager *touchIDManager = [[BKTouchIDManager alloc] initWithKeychainServiceName:k_serviceShareKeyChain];
+        touchIDManager.promptText = NSLocalizedString(@"_scan_fingerprint_", nil);
+        viewController.touchIDManager = touchIDManager;
+        
+        viewController.title = NSLocalizedString(@"_e2e_settings_start_", nil);
+        viewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(passcodeViewCloseButtonPressed:)];
+        viewController.navigationItem.leftBarButtonItem.tintColor = [UIColor blackColor];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        [self presentViewController:navigationController animated:YES completion:nil];
         
     } else {
         
@@ -244,7 +266,6 @@
         [self presentViewController:alertController animated:YES completion:nil];
     }
 }
-
 
 - (void)removeLocallyEncryption:(XLFormRowDescriptor *)sender
 {
@@ -338,6 +359,11 @@
 - (void)passcodeViewController:(CCBKPasscode *)aViewController didFinishWithPasscode:(NSString *)aPasscode
 {
     [aViewController dismissViewControllerAnimated:YES completion:nil];
+    
+    if (aViewController.fromType == CCBKPasscodeFromStartEncryption) {
+        
+        [appDelegate.endToEndInterface initEndToEndEncryption];
+    }
     
     if (aViewController.fromType == CCBKPasscodeFromCheckPassphrase) {
     
