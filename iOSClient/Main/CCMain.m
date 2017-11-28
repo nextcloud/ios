@@ -1421,7 +1421,7 @@
             
         } else {
             
-            if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized)
+            if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized && errorCode != k_CCErrorFileAlreadyInDownload)
                 [appDelegate messageNotification:@"_download_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
@@ -1463,10 +1463,6 @@
     });
     
     [self tableViewSelect:NO];
-}
-
-- (void)downloadPlist:(NSString *)directoryID serverUrl:(NSString *)serverUrl
-{
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1758,10 +1754,6 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        // read plist
-        if (!_isSearchMode)
-            [self downloadPlist:metadataNet.directoryID serverUrl:metadataNet.serverUrl];
-
         // File is changed ??
         if (!_isSearchMode && metadatasToInsertInDB)
             [[CCSynchronize sharedSynchronize] verifyChangeMedatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl account:appDelegate.activeAccount withDownload:NO];
