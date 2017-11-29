@@ -2010,6 +2010,12 @@
             
         } else {
             
+            // E2E
+            if (_metadataFolder.e2eEncrypted)
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    [[CCNetworking sharedNetworking] rebuildEndToEndMetadataOnServerUrl:self.serverUrl];
+                });
+            
             // End Select Table View
             [self tableViewSelect:NO];
             

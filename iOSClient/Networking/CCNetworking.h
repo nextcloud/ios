@@ -72,6 +72,7 @@
 
 // E2E Encryption
 - (NSError *)SendEndToEndMetadataOnServerUrl:(NSString *)serverUrl;
+- (BOOL)rebuildEndToEndMetadataOnServerUrl:(NSString *)serverUrl;
 
 @end
 

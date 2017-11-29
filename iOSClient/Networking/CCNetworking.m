@@ -1529,16 +1529,17 @@
 {
     NSString *e2eTokenLock;
     NSError *error;
+    NSString *e2eMetadataJSON;
 
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
 
     NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-    if (!tableE2eEncryption)
-        return false;
+    if (tableE2eEncryption) {
     
-    NSString *e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl];
-    if (!e2eMetadataJSON)
-        return false;
+        e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl];
+        if (!e2eMetadataJSON)
+            return false;
+    }
     
     error = [[NCNetworkingSync sharedManager] rebuildEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
     if (error)
