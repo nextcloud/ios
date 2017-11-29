@@ -4704,7 +4704,7 @@
         } else {
             cell.file.image = [UIImage imageNamed:metadata.iconName];
         }
-        if (metadata.thumbnailExists)
+        if (metadata.thumbnailExists && _metadataFolder.e2eEncrypted == NO)
             [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
     }
     
