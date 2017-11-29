@@ -2087,7 +2087,7 @@
                 } else {
                     // Restore previuos fileName on DB
                     (void)[[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:metadata.fileNameView newFileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileNameView serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl]];
-                    [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error to send metadata %lu", error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error to send metadata %lu", (unsigned long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
                 }
             });
         } else {
