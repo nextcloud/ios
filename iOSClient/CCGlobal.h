@@ -119,7 +119,6 @@ extern NSString *const dav;
 #define k_timerVerifySession                            10
 #define k_timerProcessAutoDownloadUpload                5
 #define k_timerUpdateApplicationIconBadgeNumber         3
-#define k_timerUnlockEncryptedFolder                    5
 
 #define k_maxConcurrentOperation                         10
 #define k_maxConcurrentOperationDownloadUpload           10

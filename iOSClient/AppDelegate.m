@@ -217,7 +217,6 @@
     
     // Start Timer
     self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
-    self.timerUnlockEncryptedFolder = [NSTimer scheduledTimerWithTimeInterval:k_timerUnlockEncryptedFolder target:self selector:@selector(unlockEncryptedFolder) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Registration Push Notification
@@ -1538,11 +1537,11 @@
     _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
 }
 
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encryption verify unlock < k_timerUnlockEncryptedFolder seconds > =====
 #pragma --------------------------------------------------------------------------------------------
 
+/*
 // E2E
 - (void)unlockEncryptedFolder
 {
@@ -1560,7 +1559,7 @@
         
         endStartTimer = false;
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, k_timerUnlockEncryptedFolder/2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             
             // Is locked ?
             tableDirectory *directoryLock= [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eTokenLock = %@", self.activeAccount, directory.e2eTokenLock]];
@@ -1597,6 +1596,7 @@
     if (errorCode == 404)
          [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Open CCUploadFromOtherUpp  =====
