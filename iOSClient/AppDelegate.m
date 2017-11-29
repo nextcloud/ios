@@ -1538,67 +1538,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== E2E Encryption verify unlock < k_timerUnlockEncryptedFolder seconds > =====
-#pragma --------------------------------------------------------------------------------------------
-
-/*
-// E2E
-- (void)unlockEncryptedFolder
-{
-    // Test
-    if (self.maintenanceMode || self.activeAccount.length == 0)
-        return;
-    
-    // Stop Timer
-    [_timerUnlockEncryptedFolder invalidate];
-    
-    BOOL endStartTimer = true;
-    
-    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eTokenLock != ''", self.activeAccount] sorted:@"serverUrl" ascending:false];
-    for (tableDirectory *directory in directories) {
-        
-        endStartTimer = false;
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, k_timerUnlockEncryptedFolder/2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            
-            // Is locked ?
-            tableDirectory *directoryLock= [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eTokenLock = %@", self.activeAccount, directory.e2eTokenLock]];
-            if ([directoryLock.e2eTokenLock  isEqualToString:directory.e2eTokenLock]) {
-                
-                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:self.activeAccount];
-                
-                metadataNet.action = actionUnlockEndToEndFolderEncrypted;
-                metadataNet.fileID = directoryLock.fileID;
-                metadataNet.serverUrl = directory.serverUrl;
-                metadataNet.token = directoryLock.e2eTokenLock;
-                
-                [self addNetworkingOperationQueue:self.netQueue delegate:self metadataNet:metadataNet];
-            }
-            
-            // Start Timer
-            if(_timerUnlockEncryptedFolder.isValid == NO)
-               _timerUnlockEncryptedFolder = [NSTimer scheduledTimerWithTimeInterval:k_timerUnlockEncryptedFolder target:self selector:@selector(unlockEncryptedFolder) userInfo:nil repeats:YES];
-        });
-    }
-        
-    // Start Timer
-    if(endStartTimer)
-        _timerUnlockEncryptedFolder = [NSTimer scheduledTimerWithTimeInterval:k_timerUnlockEncryptedFolder target:self selector:@selector(unlockEncryptedFolder) userInfo:nil repeats:YES];
-}
-
-- (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
-{
-    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
-}
-
-- (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    if (errorCode == 404)
-         [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
-}
-*/
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Open CCUploadFromOtherUpp  =====
 #pragma --------------------------------------------------------------------------------------------
 
