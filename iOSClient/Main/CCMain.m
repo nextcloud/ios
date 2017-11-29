@@ -1785,12 +1785,10 @@
     // E2E Is encrypted folder get metadata
     if (_metadataFolder.e2eEncrypted) {
         
+        // Read Metadata
         if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
-            
             [appDelegate.endToEndInterface getEndToEndMetadata:_metadataFolder.fileName fileID:_metadataFolder.fileID serverUrl:self.serverUrl];
-            
         } else {
-            
             [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         }
     }
@@ -2884,6 +2882,25 @@
 - (void)removeFavorite:(tableMetadata *)metadata
 {
     [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== E2E Encryption =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
+{
+    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
+    
+    [appDelegate messageNotification:@"_success_" description:@"_e2e_remove_folder_lock_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+}
+
+- (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    if (errorCode == 404)
+        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
+    
+    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4090,6 +4107,26 @@
                                             }
                                             
                                         });
+                                    }];
+        }
+        
+        if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount] && directory.e2eTokenLock.length > 0) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_lock_", nil)
+                                      image:[UIImage imageNamed:@"encrypted_empty"]
+                            backgroundColor:[UIColor whiteColor]
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeEncrypted
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+                                        
+                                        metadataNet.action = actionUnlockEndToEndFolderEncrypted;
+                                        metadataNet.fileID = _metadata.fileID;
+                                        metadataNet.serverUrl = directory.serverUrl;
+                                        metadataNet.token = directory.e2eTokenLock;
+                                        
+                                        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
                                     }];
         }
         
