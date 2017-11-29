@@ -978,7 +978,7 @@
 
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSString *error = [NSString stringWithFormat:@"Get external site failure error %lu, %@", (long)errorCode, message];
+    NSString *error = [NSString stringWithFormat:@"Get external site failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get External Sites Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
@@ -998,7 +998,7 @@
 
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSString *error = [NSString stringWithFormat:@"Get Activity Server failure error %lu, %@", (long)errorCode, message];
+    NSString *error = [NSString stringWithFormat:@"Get Activity Server failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Activity Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
@@ -1046,7 +1046,7 @@
 
 - (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSString *error = [NSString stringWithFormat:@"Get Notification Server failure error %lu, %@", (long)errorCode, message];
+    NSString *error = [NSString stringWithFormat:@"Get Notification Server failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Notification Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
@@ -1074,7 +1074,7 @@
 
 - (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSString *error = [NSString stringWithFormat:@"Get user profile failure error %lu, %@", (long)errorCode, message];
+    NSString *error = [NSString stringWithFormat:@"Get user profile failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get user profile Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
@@ -1116,7 +1116,7 @@
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
 
-    NSString *error = [NSString stringWithFormat:@"Get Capabilities failure error %lu, %@", (long)errorCode, message];
+    NSString *error = [NSString stringWithFormat:@"Get Capabilities failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
     [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Capabilities of Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
@@ -1235,7 +1235,7 @@
 
 - (void)downloadThumbnailFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Download Thumbnail Failure error %lu, %@", (long)errorCode, message);
+    NSLog(@"[LOG] Download Thumbnail Failure error %d, %@", (int)errorCode, message);
 }
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
@@ -1985,7 +1985,7 @@
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
 
-    NSLog(@"[LOG] Delete File failure error %lu, %@", (long)errorCode, message);
+    NSLog(@"[LOG] Delete File failure error %d, %@", (int)errorCode, message);
 
     [self deleteFileOrFolderSuccess:metadataNet];
 }
@@ -2090,7 +2090,7 @@
                 } else {
                     // Restore previuos fileName on DB
                     (void)[[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:metadata.fileNameView newFileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileNameView serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl]];
-                    [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error to send metadata %lu", (unsigned long)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error to send metadata %d", (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
                 }
             });
         } else {
@@ -2861,7 +2861,7 @@
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
 
-    NSLog(@"[LOG] Setting Favorite failure error %lu, %@", (long)errorCode, message);
+    NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
 }
 
 - (void)addFavorite:(tableMetadata *)metadata

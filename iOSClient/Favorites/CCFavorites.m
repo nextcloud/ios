@@ -167,7 +167,7 @@
 
 - (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] DeleteFileOrFolder failure error %lu, %@", (long)errorCode, message);
+    NSLog(@"[LOG] DeleteFileOrFolder failure error %d, %@", (int)errorCode, message);
 }
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
@@ -185,7 +185,7 @@
 
 - (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Setting Favorite failure error %lu, %@", (long)errorCode, message);
+    NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
 }
 
 - (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
@@ -279,7 +279,7 @@
 
 - (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Listing Favorites failure error %lu, %@", (long)errorCode, message);
+    NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -154,7 +154,7 @@
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Read file failure error %lu, %@", (long)errorCode, message);
+    NSLog(@"[LOG] Read file failure error %d, %@", (int)errorCode, message);
 }
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
