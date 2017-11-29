@@ -980,7 +980,7 @@
                     NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
 
                 } else {
-                    NSString *message = [NSString stringWithFormat:@"Error to send metadata %lu", (unsigned long)error.code];
+                    NSString *message = [NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code];
                     [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
                     [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:message sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
                             
@@ -1500,6 +1500,10 @@
     NSString *e2eTokenLock;
     NSString *getMetadata;
     NSError *error;
+    
+    // Enabled E2E
+    if ([CCUtility isEndToEndEnabled:_activeAccount] == NO)
+        return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serius internal error E2E Encryption not enabled" forKey:NSLocalizedDescriptionKey]];
     
     // exists a metadata on serverUrl ?
     error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:&getMetadata];
