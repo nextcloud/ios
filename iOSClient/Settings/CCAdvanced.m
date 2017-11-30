@@ -27,7 +27,9 @@
 #import "NCBridgeSwift.h"
 
 @interface CCAdvanced ()
-
+{
+    AppDelegate *appDelegate;
+}
 @end
 
 @implementation CCAdvanced
@@ -38,6 +40,8 @@
     XLFormSectionDescriptor *section;
     XLFormRowDescriptor *row;
     
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     
     form = [XLFormDescriptor formDescriptorWithTitle:NSLocalizedString(@"_advanced_", nil)];
@@ -103,6 +107,18 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
+    // Format Compatibility
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_format_compatibility_footer_", nil);
+
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"formatCompatibility" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_format_compatibility_", nil)];
+    if ([CCUtility getFormatCompatibility]) row.value = @"1";
+    else row.value = @"0";
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [section addFormRow:row];
+    
     // Section CLEAR CACHE -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -146,12 +162,12 @@
 {
     [super viewWillAppear:animated];
     
-    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     self.tableView.showsVerticalScrollIndicator = NO;
 
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     [self recalculateSize];
 }
@@ -159,7 +175,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+        [appDelegate changeTheming:self];
 }
 
 - (void)formRowDescriptorValueHasChanged:(XLFormRowDescriptor *)rowDescriptor oldValue:(id)oldValue newValue:(id)newValue
@@ -171,7 +187,7 @@
         [CCUtility setActivityVerboseHigh:[[rowDescriptor.value valueData] boolValue]];
         
         // Clear Date read Activity for force reload datasource
-        app.activeActivity.storeDateFirstActivity = nil;
+        appDelegate.activeActivity.storeDateFirstActivity = nil;
     }
     
     if ([rowDescriptor.tag isEqualToString:@"optimizedphoto"]) {
@@ -191,6 +207,11 @@
         // force reload
         [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
     }
+    
+    if ([rowDescriptor.tag isEqualToString:@"formatCompatibility"]) {
+        
+        [CCUtility setFormatCompatibility:[[rowDescriptor.value valueData] boolValue]];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -202,17 +223,17 @@
     switch (result)
     {
         case MFMailComposeResultCancelled:
-            [app messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode: error.code];
+            [appDelegate messageNotification:@"_info_" description:@"_mail_deleted_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode: error.code];
             break;
         case MFMailComposeResultSaved:
-            [app messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode: error.code];
+            [appDelegate messageNotification:@"_info_" description:@"_mail_saved_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode: error.code];
             break;
         case MFMailComposeResultSent:
-            [app messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode: error.code];
+            [appDelegate messageNotification:@"_info_" description:@"_mail_sent_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode: error.code];
             break;
         case MFMailComposeResultFailed: {
             NSString *msg = [NSString stringWithFormat:NSLocalizedString(@"_mail_failure_", nil), [error localizedDescription]];
-            [app messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode: error.code];
+            [appDelegate messageNotification:@"_error_" description:msg visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode: error.code];
         }
             break;
         default:
@@ -236,11 +257,11 @@
     // Email Recipents
     NSArray *toRecipents;
     
-    NSArray *activities = [[NCManageDatabase sharedInstance] getActivityWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", app.activeAccount]];
+    NSArray *activities = [[NCManageDatabase sharedInstance] getActivityWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", appDelegate.activeAccount]];
     
     if ([activities count] == 0) {
         
-        [app messageNotification:@"_info_" description:@"No activity found" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        [appDelegate messageNotification:@"_info_" description:@"No activity found" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         return;
     }
     
@@ -288,7 +309,7 @@
         
     } else {
         
-        [app messageNotification:@"_error_" description:@"Impossible create file body" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+        [appDelegate messageNotification:@"_error_" description:@"Impossible create file body" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
     }
 }
 
@@ -300,9 +321,9 @@
 {
     [self deselectFormRow:sender];
     
-    [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:appDelegate.activeAccount];
         
-    [app.activeActivity reloadDatasource];
+    [appDelegate.activeActivity reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -311,34 +332,36 @@
 
 - (void)removeAllFiles:(BOOL)removeIco
 {
-    [app maintenanceMode:YES];
+    [appDelegate maintenanceMode:YES];
     
     [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
     
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:app.activeAccount];
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:app.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:appDelegate.activeAccount];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:appDelegate.activeAccount];
     
-    [app.netQueue cancelAllOperations];
+    [appDelegate.netQueue cancelAllOperations];
     
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         [[NSURLCache sharedURLCache] setMemoryCapacity:0];
         [[NSURLCache sharedURLCache] setDiskCapacity:0];
         
-        [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:app.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:app.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:app.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:appDelegate.activeAccount];
         [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
-        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:app.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:app.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:app.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
+        [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:appDelegate.activeAccount];
         
         [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         
-        [self emptyUserDirectoryUser:app.activeUser url:app.activeUrl removeIco:removeIco];
+        [self emptyUserDirectoryUser:appDelegate.activeUser url:appDelegate.activeUrl removeIco:removeIco];
         
         [self emptyLocalDirectory];
         
@@ -348,7 +371,7 @@
         
         [self recalculateSize];
         
-        [app maintenanceMode:NO];
+        [appDelegate maintenanceMode:NO];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             // Close HUD
@@ -443,8 +466,8 @@
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
             
-            [app.netQueue cancelAllOperations];
-            [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:app.activeAccount activeUser:app.activeUser activeUrl:app.activeUrl];
+            [appDelegate.netQueue cancelAllOperations];
+            [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
             
             [[NSURLCache sharedURLCache] setMemoryCapacity:0];
             [[NSURLCache sharedURLCache] setDiskCapacity:0];
@@ -565,7 +588,7 @@
 
 - (NSNumber *)getUserDirectorySize
 {
-    NSString *directoryUser = [CCUtility getDirectoryActiveUser:app.activeUser activeUrl:app.activeUrl];
+    NSString *directoryUser = [CCUtility getDirectoryActiveUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
     NSURL *directoryURL = [NSURL fileURLWithPath:directoryUser];
     unsigned long long count = 0;
     NSNumber *value = nil;

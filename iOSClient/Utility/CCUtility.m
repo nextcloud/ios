@@ -34,7 +34,7 @@
 #define INTRO_MessageType       @"MessageType_"
 
 #define E2E_PublicKey           @"EndToEndPublicKey_"
-#define E2E_PrivateKeyCipher    @"EndToEndPrivateKeyCipher_"
+#define E2E_PrivateKey          @"EndToEndPrivateKey_"
 #define E2E_Passphrase          @"EndToEndPassphrase_"
 #define E2E_PublicKeyServer     @"EndToEndPublicKeyServer_"
 
@@ -231,16 +231,22 @@
     [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
 }
 
++ (void)setFormatCompatibility:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"formatCompatibility" service:k_serviceShareKeyChain];
+}
+
 + (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
 {
     NSString *key = [E2E_PublicKey stringByAppendingString:account];
     [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher
++ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
 {
-    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
-    [UICKeyChainStore setString:privateKeyCipher forKey:key service:k_serviceShareKeyChain];
+    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
+    [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
 }
 
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase
@@ -258,7 +264,7 @@
 + (void)clearAllKeysEndToEnd:(NSString *)account
 {
     [self setEndToEndPublicKey:account publicKey:nil];
-    [self setEndToEndPrivateKeyCipher:account privateKeyCipher:nil];
+    [self setEndToEndPrivateKey:account privateKey:nil];
     [self setEndToEndPassphrase:account passphrase:nil];
     [self setEndToEndPublicKeyServer:account publicKey:nil];
 }
@@ -459,15 +465,20 @@
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
 }
 
++ (BOOL)getFormatCompatibility
+{
+    return [[UICKeyChainStore stringForKey:@"formatCompatibility" service:k_serviceShareKeyChain] boolValue];
+}
+
 + (NSString *)getEndToEndPublicKey:(NSString *)account
 {
     NSString *key = [E2E_PublicKey stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getEndToEndPrivateKeyCipher:(NSString *)account
++ (NSString *)getEndToEndPrivateKey:(NSString *)account
 {
-    NSString *key = [E2E_PrivateKeyCipher stringByAppendingString:account];
+    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
@@ -486,7 +497,7 @@
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
     NSString *publicKey = [self getEndToEndPublicKey:account];
-    NSString *privateKey = [self getEndToEndPrivateKeyCipher:account];
+    NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
     NSString *publicKeyServer = [self getEndToEndPublicKeyServer:account];
     
@@ -893,6 +904,32 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== E2E Encrypted =====
+#pragma --------------------------------------------------------------------------------------------
+
++ (NSString *)generateRandomIdentifier
+{
+    NSString *UUID = [[NSUUID UUID] UUIDString];
+    
+    return [[UUID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
+}
+
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account
+{
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directory = 1 AND e2eEncrypted = 1", account] sorted:@"directoryID" ascending:false];
+    
+    for (tableMetadata *metadata in metadatas) {
+        
+        NSString *serverUrlEncrypted = [NSString stringWithFormat:@"%@/%@", [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID], metadata.fileName];
+        //if ([serverUrl containsString:serverUrlEncrypted])
+        if ([serverUrl isEqualToString:serverUrlEncrypted])
+            return true;
+    }
+    
+    return false;
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== CCMetadata =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -907,32 +944,39 @@
     metadata.etag = etag;
     metadata.fileID = fileID;
     metadata.fileName = fileName;
+    metadata.fileNameView = fileName;
     metadata.size = size;
     metadata.status = status;
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:directoryID];
-    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:serverUrl];
-    
-    [self insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    [self insertTypeFileIconName:fileName metadata:metadata];
     
     return metadata;
 }
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser isFolderEncrypted:(BOOL)isFolderEncrypted
 {
     tableMetadata *metadata = [tableMetadata new];
+    NSString *fileNameView;
     
     fileName = [CCUtility removeForbiddenCharactersServer:fileName];
+    fileNameView = fileName;
+    
+    // E2E find the fileName for fileNameView
+    if (isFolderEncrypted) {
+        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", activeAccount, serverUrl, fileName]];
+        if (tableE2eEncryption)
+            fileNameView = tableE2eEncryption.fileName;
+    }
     
     metadata.account = activeAccount;
     metadata.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
-    metadata.encrypted = itemDto.isEncrypted;
+    metadata.e2eEncrypted = itemDto.isEncrypted;
     metadata.directory = itemDto.isDirectory;
     metadata.favorite = itemDto.isFavorite;
     metadata.fileID = itemDto.ocId;
     metadata.directoryID = directoryID;
     metadata.fileName = fileName;
+    metadata.fileNameView = fileNameView;
     metadata.iconName = @"";
     metadata.permissions = itemDto.permissions;
     metadata.etag = itemDto.etag;
@@ -940,28 +984,32 @@
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
     metadata.typeFile = @"";
     
-    [self insertTypeFileIconName:metadata serverUrl:serverUrl autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
-    
+    [self insertTypeFileIconName:fileNameView metadata:metadata];
+ 
     return metadata;
 }
 
-+ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory
++ (void)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
 {
-    if ([metadata.fileName isEqualToString:@"."]) {
+    if ([fileNameView isEqualToString:@"."]) {
         
         metadata.typeFile = k_metadataTypeFile_unknown;
         metadata.iconName = @"file";
         
-    } else if (!metadata.directory) {
+    } else if (metadata.directory) {
         
-        CFStringRef fileExtension = (__bridge CFStringRef)[metadata.fileName pathExtension];
+        metadata.typeFile = k_metadataTypeFile_directory;
+        
+    } else {
+        
+        CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
         CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
         
         // thumbnailExists
             
-        if([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
+        if (([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"]) && metadata.e2eEncrypted == NO)
             metadata.thumbnailExists = YES;
         else
             metadata.thumbnailExists = NO;
@@ -988,7 +1036,6 @@
         }
         // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") [MD]
         else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
-            
             metadata.typeFile = k_metadataTypeFile_document;
             metadata.iconName = @"document";
             
@@ -1032,21 +1079,10 @@
         
         if (fileUTI)
             CFRelease(fileUTI);
-        
-    } else {
-        // icon directory
-        metadata.typeFile = k_metadataTypeFile_directory;
-        
-        metadata.iconName = @"folder";
-        
-        if([metadata.fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory])
-            metadata.iconName = @"folderphotocamera";
     }
-    
-    return metadata;
 }
 
-+ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory
++ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNameView:(NSString *)fileNameView directory:(NSString *)directory activeAccount:(NSString *)activeAccount
 {
     tableMetadata *metadata = [[tableMetadata alloc] init];
     
@@ -1064,10 +1100,11 @@
     metadata.fileID = fileName;
     metadata.directoryID = directory;
     metadata.fileName = fileName;
+    metadata.fileNameView = fileName;
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
     
-    [self insertTypeFileIconName:metadata serverUrl:directory autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory];
+    [self insertTypeFileIconName:fileNameView metadata:metadata];
     
     return metadata;
 }

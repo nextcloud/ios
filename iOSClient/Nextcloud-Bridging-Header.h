@@ -20,3 +20,4 @@
 #import "OCSharedDto.h"
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
+#import "NCNetworkingSync.h"

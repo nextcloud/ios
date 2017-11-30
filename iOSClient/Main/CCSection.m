@@ -54,7 +54,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata e2eEncryptions:(NSArray *)e2eEncryptions groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     long counterSessionDownload = 0;
@@ -74,10 +74,12 @@
     for (tableMetadata* metadata in records) {
         
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
+            
             [copyRecords insertObject:metadata atIndex:0];
+            
         } else {
             
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_directory] && directoryOnTop) {
+            if (metadata.directory && directoryOnTop) {
                 [copyRecords insertObject:metadata atIndex:numDirectory++];
             } else {
                 [copyRecords addObject:metadata];
@@ -113,7 +115,7 @@
         }
         else if ([groupByField isEqualToString:@"none"]) dataSection = @"_none_";
         else if ([groupByField isEqualToString:@"date"]) dataSection = [CCUtility datetimeWithOutTime:metadata.date];
-        else if ([groupByField isEqualToString:@"alphabetic"]) dataSection = [[metadata.fileName substringToIndex:1] uppercaseString];
+        else if ([groupByField isEqualToString:@"alphabetic"]) dataSection = [[metadata.fileNameView substringToIndex:1] uppercaseString];
         else if ([groupByField isEqualToString:@"typefile"]) dataSection = metadata.typeFile;
         if (!dataSection) dataSection = @"_none_";
         

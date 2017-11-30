@@ -28,6 +28,8 @@
 
 @interface CCPhotos () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
 {
+    AppDelegate *appDelegate;
+
     tableMetadata *_metadata;
 
     BOOL _cellEditing;
@@ -52,10 +54,24 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
-        app.activePhotos = self;
+        appDelegate.activePhotos = self;
+    }
+    
+    return self;
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    
+    if (self) {
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     
     return self;
@@ -84,11 +100,11 @@
     [super viewWillAppear:animated];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
-    [app plusButtonVisibile:true];
+    [appDelegate plusButtonVisibile:true];
 
     
     [self reloadDatasource];
@@ -104,7 +120,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+        [appDelegate changeTheming:self];
     
     [self.collectionView reloadData];
 }
@@ -135,7 +151,7 @@
 
 - (void)setUINavigationBarDefault
 {
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     
     // select
     UIImage *icon = [UIImage imageNamed:@"seleziona"];
@@ -314,7 +330,7 @@
     
         NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
         
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] toPath:fileNamePath error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] toPath:fileNamePath error:nil];
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
             
@@ -361,34 +377,36 @@
 #pragma mark ===== Download =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)downloadFileFailure:(NSInteger)errorCode
+- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
-    [app messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-}
-
-- (void)downloadFileSuccess:(tableMetadata *)metadata
-{
-    NSIndexPath *indexPath;
-    BOOL existsIcon = NO;
-    
-    if (metadata.fileID) {
-        existsIcon = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-        indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    }
-    
-    if ([self indexPathIsValid:indexPath] && existsIcon) {
+    if (errorCode == 0) {
         
-        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+        NSIndexPath *indexPath;
+        BOOL existsIcon = NO;
         
-        if (cell) {
-            UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
-            UIVisualEffectView *effect = [cell viewWithTag:200];
-            UIImageView *checked = [cell viewWithTag:300];
-            
-            imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
-            effect.hidden = YES;
-            checked.hidden = YES;            
+        if (fileID) {
+            existsIcon = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, fileID]];
+            indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:fileID];
         }
+        
+        if ([self indexPathIsValid:indexPath] && existsIcon) {
+            
+            UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+            
+            if (cell) {
+                UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
+                UIVisualEffectView *effect = [cell viewWithTag:200];
+                UIImageView *checked = [cell viewWithTag:300];
+                
+                imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, fileID]];
+                effect.hidden = YES;
+                checked.hidden = YES;
+            }
+        }
+        
+    } else {
+        
+        [appDelegate messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
 }
 
@@ -479,7 +497,7 @@
     
     if ([self indexPathIsValid:indexPath]) {
     
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadataNet.fileID]])
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadataNet.fileID]])
             [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
     }
 }
@@ -504,13 +522,13 @@
 - (void)reloadDatasource
 {    
     // test
-    if (app.activeAccount.length == 0)
+    if (appDelegate.activeAccount.length == 0)
         return;
     
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+    _directoryStartDatasource = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
     NSDate *dateDateRecordDirectory = nil;
     
-    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl BEGINSWITH %@", app.activeAccount, autoUploadPath] sorted:@"dateReadDirectory" ascending:false];
+    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl BEGINSWITH %@", appDelegate.activeAccount, _directoryStartDatasource] sorted:@"dateReadDirectory" ascending:false];
     if ([directories count] > 0) {
         tableDirectory *directory = [directories objectAtIndex:0];
         dateDateRecordDirectory = directory.dateReadDirectory;
@@ -518,11 +536,11 @@
     
     if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
 
-        NSLog(@"[LOG] Photos rebuild Data Source serverUrl : %@", autoUploadPath);
+        NSLog(@"[LOG] Photos rebuild Data Source serverUrl : %@", _directoryStartDatasource);
 
         _dateReadDataSource = [NSDate date];
-        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:autoUploadPath];
-        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:app.activeAccount];
+        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:_directoryStartDatasource];
+        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil e2eEncryptions:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
         
         [self reloadCollection];
     }
@@ -612,10 +630,10 @@
         tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
         // Image
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]]) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]]) {
         
             // insert Image
-            imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID]];
+            imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]];
         
         } else {
         

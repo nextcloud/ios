@@ -30,6 +30,7 @@
 
 @interface CCShareInfoCMOC ()
 {
+    AppDelegate *appDelegate;
     CCHud *_hud;
 }
 @end
@@ -49,7 +50,8 @@ const PERMISSION_ALL = 31;
 {
     self = [super initWithCoder:coder];
     if (self) {
-                
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -115,21 +117,21 @@ const PERMISSION_ALL = 31;
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
     self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
     
-    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     [_hud visibleHudTitle:@"" mode:MBProgressHUDModeIndeterminate color:nil];
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     metadataNet.action = actionGetSharePermissionsFile;
     metadataNet.fileName = _metadata.fileName;
     metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 
     [self initializeForm];
 }
@@ -181,7 +183,7 @@ const PERMISSION_ALL = 31;
 {
     [_hud hideHud];
 
-    [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

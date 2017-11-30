@@ -26,7 +26,9 @@
 #import "NCBridgeSwift.h"
 
 @interface CCShareUserOC ()
-
+{
+    AppDelegate *appDelegate;
+}
 @end
 
 @implementation CCShareUserOC
@@ -36,6 +38,8 @@
     self = [super initWithCoder:coder];
     if (self) {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         self.directUser = @"";
         
         [self initializeForm];
@@ -96,12 +100,12 @@
     
     self.selectedItems = [[NSMutableArray alloc] init];
     
-    self.view.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
     self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
     
-    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -129,7 +133,7 @@
     // start share with a user if not be i 
     if ([self.directUser isEqual:[NSNull null]] == NO) {
     
-        if ([self.directUser length] > 0 && [self.directUser isEqualToString:app.activeUser] == NO) {
+        if ([self.directUser length] > 0 && [self.directUser isEqualToString:appDelegate.activeUser] == NO) {
         
             // User/Group/Federate
             [self.delegate shareUserAndGroup:self.directUser shareeType:self.shareType permission:permission];
@@ -201,7 +205,7 @@
             if ([item.shareWith isEqualToString:user.name] && ((item.shareType == shareTypeGroup && user.shareeType == 1) || (item.shareType != shareTypeGroup && user.shareeType == 0)))
                 [self.users removeObject:user];
         
-        if ([self.itemsShareWith containsObject:user.name] || [user.name isEqualToString:app.activeUser])
+        if ([self.itemsShareWith containsObject:user.name] || [user.name isEqualToString:appDelegate.activeUser])
             [self.users removeObject:user];
     }
     

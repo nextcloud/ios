@@ -24,22 +24,21 @@
 #import "Acknowledgements.h"
 #import "AppDelegate.h"
 
-@implementation Acknowledgements
-
--  (id)initWithCoder:(NSCoder *)aDecoder
+@interface Acknowledgements ()
 {
-    if (self = [super initWithCoder:aDecoder])  {
-        
-    }
-    
-    return self;
+    AppDelegate *appDelegate;
 }
+@end
+
+@implementation Acknowledgements
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     self.navigationController.navigationBar.translucent = false;
     
     NSURL *rtfPath;
@@ -65,7 +64,7 @@
     [super viewDidAppear:animated];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     
     [self.txtTermini setContentOffset:CGPointZero animated:NO];
     self.txtTermini.hidden = false;

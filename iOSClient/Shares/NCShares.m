@@ -29,9 +29,7 @@
 @interface NCShares ()
 {
     AppDelegate *appDelegate;
-    NSArray *_dataSource;
-    
-    CCHud *_hudDeterminate;
+    NSArray *_dataSource;    
 }
 @end
 
@@ -45,6 +43,8 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
         
@@ -56,8 +56,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     // Custom Cell
     [self.tableView registerNib:[UINib nibWithNibName:@"NCSharesCell" bundle:nil] forCellReuseIdentifier:@"Cell"];
@@ -81,11 +79,11 @@
     [super viewWillAppear:animated];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
-    [app plusButtonVisibile:true];
+    [appDelegate plusButtonVisibile:true];
     
     [self reloadDatasource];
 }
@@ -93,7 +91,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+        [appDelegate changeTheming:self];
     
     // Reload Table View
     [self.tableView reloadData];
@@ -156,7 +154,7 @@
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Read file failure error %lu, %@", (long)errorCode, message);
+    NSLog(@"[LOG] Read file failure error %d, %@", (int)errorCode, message);
 }
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
@@ -182,7 +180,7 @@
 
 - (void)removeShares:(tableMetadata *)metadata tableShare:(tableShare *)tableShare
 {
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
  
     metadataNet.action = actionUnShare;
     metadataNet.fileID = metadata.fileID;
@@ -194,7 +192,7 @@
     if (tableShare.shareLink.length > 0) {
    
         metadataNet.share = tableShare.shareLink;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
     }
     
     // Unshare User&Group
@@ -202,7 +200,7 @@
     for (NSString *share in shareUserAndGroup) {
         
         metadataNet.share = [share stringByReplacingOccurrencesOfString:@" " withString:@""];
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
     }
 }
 
@@ -314,7 +312,7 @@
         
         if (metadata.directory) {
             
-            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand];
         
         } else {
             

@@ -13,6 +13,7 @@
 #import "BKPasscodeViewController.h"
 #import "CCBKPasscode.h"
 #import "CCUtility.h"
+#import "NCEndToEndEncryption.h"
 
 #import "OCActivity.h"
 #import "OCUserProfile.h"

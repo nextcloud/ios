@@ -245,8 +245,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
         row.height = 180
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.tableBackground, forKey: "backgroundColor" as NSCopying)
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.tableBackground, forKey: "textView.backgroundColor" as NSCopying)
+        row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "backgroundColor" as NSCopying)
+        row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "textView.backgroundColor" as NSCopying)
 
         row.disabled = true
         section.addFormRow(row)
@@ -327,12 +327,12 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.tableBackground
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.reloadForm()
     }
@@ -380,7 +380,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         case 3:
             return "    " + NSLocalizedString("_rename_filename_", comment: "")
         case 4:
-            return NSLocalizedString("_preview_filename_", comment: "")
+            return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm")
         default:
             return ""
         }
@@ -473,7 +473,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
         }
         
-        return NSLocalizedString("_preview_filename_", comment: "") + ":" + "\n\n" + returnString
+        return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm") + ":" + "\n\n" + returnString
     }
     
     @objc func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
@@ -485,9 +485,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         let viewController : CCMove = navigationController.topViewController as! CCMove
         
         viewController.delegate = self;
-        viewController.tintColor = NCBrandColor.sharedInstance.navigationBarText
+        viewController.tintColor = NCBrandColor.sharedInstance.brandText
         viewController.barTintColor = NCBrandColor.sharedInstance.brand
-        viewController.tintColorTitle = NCBrandColor.sharedInstance.navigationBarText
+        viewController.tintColorTitle = NCBrandColor.sharedInstance.brandText
         viewController.move.title = NSLocalizedString("_select_", comment: "");
         viewController.networkingOperationQueue =  appDelegate.netQueue
         
@@ -586,11 +586,11 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.tableBackground
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         self.reloadForm()
     }
@@ -675,9 +675,9 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         let viewController : CCMove = navigationController.topViewController as! CCMove
         
         viewController.delegate = self;
-        viewController.tintColor = NCBrandColor.sharedInstance.navigationBarText
+        viewController.tintColor = NCBrandColor.sharedInstance.brandText
         viewController.barTintColor = NCBrandColor.sharedInstance.brand
-        viewController.tintColorTitle = NCBrandColor.sharedInstance.navigationBarText
+        viewController.tintColorTitle = NCBrandColor.sharedInstance.brandText
         viewController.move.title = NSLocalizedString("_select_", comment: "");
         viewController.networkingOperationQueue =  appDelegate.netQueue
         

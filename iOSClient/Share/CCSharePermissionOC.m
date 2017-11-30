@@ -27,6 +27,7 @@
 
 @interface CCSharePermissionOC ()
 {
+    AppDelegate *appDelegate;
     OCSharedDto *shareDto;
 }
 @end
@@ -38,6 +39,7 @@
     self = [super initWithCoder:coder];
     if (self) {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -105,7 +107,7 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sharepath" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_share_permission_path_", nil)];
-    row.value = self.metadata.fileName;
+    row.value = self.metadata.fileNameView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
@@ -146,14 +148,14 @@
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
     self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
     
-    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
-    shareDto = [app.sharesID objectForKey:self.idRemoteShared];
+    shareDto = [appDelegate.sharesID objectForKey:self.idRemoteShared];
         
     [self initializeForm];    
 }

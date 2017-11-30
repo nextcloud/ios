@@ -33,7 +33,7 @@ extern NSString *const dav;
 #ifndef EXTENSION
 
 //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-#define app ((AppDelegate *)[[UIApplication sharedApplication] delegate])
+//#define app ((AppDelegate *)[[UIApplication sharedApplication] delegate])
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
 
 #endif
@@ -142,20 +142,17 @@ extern NSString *const dav;
 #define selectorAddFavorite                             @"addFavorite"
 #define selectorCreateFolder                            @"createFolder"
 #define selectorDelete                                  @"delete"
-#define selectorDownloadFile                            @"downloadFile"
 #define selectorDownloadThumbnail                       @"downloadThumbnail"
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorGetUserAndGroup                         @"getUserAndGroup"
 #define selectorLoadFileView                            @"loadFileView"
 #define selectorLoadModelView                           @"loadModelView"
-#define selectorLoadPlist                               @"loadPlist"
 #define selectorLoadViewImage                           @"loadViewImage"
 #define selectorLoadCopy                                @"loadCopy"
 #define selectorMove                                    @"move"
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenWindowShare                         @"openWindowShare"
 #define selectorReadFile                                @"readFile"
-#define selectorReadFileUploadFile                      @"readFileUploadFile"
 #define selectorReadFileVerifyUpload                    @"readFileVerifyUpload"
 #define selectorReadFileWithDownload                    @"readFileWithDownload"
 #define selectorReadFileReloadFolder                    @"readFileReloadFolder"
@@ -209,14 +206,9 @@ extern NSString *const dav;
 #define actionDeleteEndToEndPublicKey                   @"deleteEndToEndPublicKey"
 #define actionDeleteEndToEndPrivateKey                  @"deleteEndToEndPrivateKey"
 #define actionGetEndToEndServerPublicKey                @"getEndToEndServerPublicKey"
-#define actionMarkEndToEndFolderEncrypted               @"markEndToEndFolderEncrypted"
-#define actionDeletemarkEndToEndFolderEncrypted         @"deletemarkEndToEndFolderEncrypted"
-#define actionLockEndToEndFolderEncrypted               @"lockEndToEndFolderEncrypted"
-#define actionUnlockEndToEndFolderEncrypted             @"unlockEndToEndFolderEncrypted"
-#define actionStoreEndToEndMetadata                     @"storeEndToEndMetadata"
 #define actionGetEndToEndMetadata                       @"getEndToEndMetadata"
-#define actionUpdateEndToEndMetadata                    @"updateEndToEndMetadata"
 #define actionDeleteEndToEndMetadata                    @"deleteEndToEndMetadata"
+#define actionUnlockEndToEndFolderEncrypted             @"unlockEndToEndFolderEncrypted"
 
 // Metadata : FileType
 #define k_metadataTypeFile_audio                        @"audio"
@@ -265,11 +257,8 @@ extern NSString *const dav;
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
 
-// Priority Auto Upload
-#define k_priorityAutoUploadImage                       0
-#define k_priorityAutoUploadVideo                       -1
-#define k_priorityAutoUploadError                       -2
-#define k_priorityAutoUploadStop                        -4
+// E2E
+#define k_max_filesize_E2E                              524288000   // 500 MB
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -29,17 +29,20 @@
 
 + (instancetype)sharedManager;
 
-- (void)encryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
-- (void)decryptMetadata:(tableMetadata *)metadata activeUrl:(NSString *)activeUrl;
-
 - (NSString *)createCSR:(NSString *)userID directoryUser:(NSString *)directoryUser;
-- (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase;
-- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
+- (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey salt:(NSString **)salt;
+- (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey salt:(NSString *)salt;
 
-- (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey;
-- (NSString *)decryptAsymmetricData:(NSData *)chiperData privateKey:(NSString *)privateKey;
+- (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey;
+- (NSString *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
+- (NSString *)encryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
+- (NSString *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
 
+- (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directoryUser:(NSString *)directoryUser key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
+- (BOOL)decryptFileID:(NSString *)fileID directoryUser:(NSString *)directoryUser key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
+
+- (NSData *)generateKey:(int)length;
 - (NSString *)createSHA512:(NSString *)string;
 
 @end

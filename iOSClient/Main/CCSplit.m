@@ -29,6 +29,7 @@
 
 @interface CCSplit () <CCLoginDelegate, CCLoginDelegateWeb>
 {
+    AppDelegate *appDelegate;
 }
 @end
 
@@ -40,7 +41,9 @@
 
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if (self = [super initWithCoder:aDecoder])  {        
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     
     return self;
@@ -48,9 +51,9 @@
 
 - (void)viewDidLoad
 {
-    [self inizialize];
-    
     [super viewDidLoad];
+
+    [self inizialize];    
 }
 
 // Apparirà
@@ -117,11 +120,13 @@
         }
         
         // -2-
+        /*
         else if ([CCUtility getIntroMessage:k_Intro_no_cryptocloud] == NO) {
             
             _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
             [_intro show];
         }
+        */
         
         // NO INTRO
         else {
@@ -138,18 +143,19 @@
         
         [CCUtility setIntroMessage:k_Intro set:YES];
         // next
-        _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
-        [_intro show];
+        //_intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
+        //[_intro show];
         //
-        return;
+        //return;
     }
     
     // -2-
+    /*
     if ([type isEqualToString:k_Intro_no_cryptocloud]) {
         
         [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
     }
-    
+    */
     // check account
     [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 }
@@ -165,7 +171,7 @@
 
 - (void)loginDisappear
 {
-    app.activeLogin = nil;
+    appDelegate.activeLogin = nil;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -175,9 +181,9 @@
 
 - (void)newAccount
 {
-    if (app.activeAccount.length == 0) {
+    if (appDelegate.activeAccount.length == 0) {
     
-        [app openLoginView:self loginType:loginAddForced];
+        [appDelegate openLoginView:self loginType:loginAddForced];
     }
 }
 
@@ -204,7 +210,7 @@
     UINavigationController *secondaryNC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCDetailNC"];
     
     // Color
-    [app aspectNavigationControllerBar:secondaryNC.navigationBar online:YES hidden:NO];
+    [appDelegate aspectNavigationControllerBar:secondaryNC.navigationBar online:YES hidden:NO];
     
     // Ensure back button is enabled
     UIViewController *detailViewController = [secondaryNC visibleViewController];

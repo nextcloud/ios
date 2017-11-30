@@ -54,7 +54,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         tableView.separatorColor = NCBrandColor.sharedInstance.seperator
         
-        if #available(iOS 11.0, *) {
+        if #available(iOS 11, *) {
             //tableView.contentInsetAdjustmentBehavior = .never
         }
         
@@ -106,36 +106,31 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         item.url = "segueShares"
         functionMenu.append(item)
         
-        /*
-        // ITEM : Local storage
-        item = OCExternalSites.init()
-        item.name = "_local_storage_"
-        item.icon = "moreLocalStorage"
-        item.url = "segueLocalStorage"
-        functionMenu.append(item)
-        */
-        
         // ITEM : External
-        menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites(predicate: NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
         
-        for table in menuExternalSite! {
+        if NCBrandOptions.sharedInstance.disable_more_external_site == false {
+        
+            menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites(predicate: NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
+        
+            for table in menuExternalSite! {
             
-            item = OCExternalSites.init()
+                item = OCExternalSites.init()
             
-            item.name = table.name
-            item.url = table.url
-            item.icon = table.icon
+                item.name = table.name
+                item.url = table.url
+                item.icon = table.icon
             
-            if (table.type == "link") {
-                item.icon = "moreExternalSite"
-                functionMenu.append(item)
-            }
-            if (table.type == "settings") {
-                item.icon = "moreSettingsExternalSite"
-                settingsMenu.append(item)
-            }
-            if (table.type == "quota") {
-                quotaMenu.append(item)
+                if (table.type == "link") {
+                    item.icon = "moreExternalSite"
+                    functionMenu.append(item)
+                }
+                if (table.type == "settings") {
+                    item.icon = "moreSettingsExternalSite"
+                    settingsMenu.append(item)
+                }
+                if (table.type == "quota") {
+                    quotaMenu.append(item)
+                }
             }
         }
         
@@ -272,7 +267,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.sharedInstance.moreNormal
+            cell.labelText.textColor = NCBrandColor.sharedInstance.textView
 
         }
         
@@ -283,7 +278,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.sharedInstance.moreSettings
+            cell.labelText.textColor = NCBrandColor.sharedInstance.textView
         }
         
         return cell

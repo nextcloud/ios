@@ -109,7 +109,7 @@
 "_lock_active_"             = "Lock: On";
 "_lock_not_active_"         = "Lock: Off";
 "_lock_protection_no_screen_"        = "Do not ask at startup";
-"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for protected folders only or for reading the encryption passphrase";
+"_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for protected folders only or for the encryption option";
 "_url_"                     = "URL";
 "_username_"                = "Username";
 "_change_credentials_"      = "Change your credentials";
@@ -190,8 +190,7 @@
 "_autoupload_create_subfolder_footer_" = "Store in subfolders based on year and month";
 "_autoupload_filenamemask_"         = "Change filename mask";
 "_autoupload_filenamemask_footer_"  = "Change the automatic filename mask";
-"_autoupload_format_compatibility_" = "Most Compatible";
-"_autoupload_format_compatibility_footer_" = "\"Most compatible\" will always save photos as JPEG";
+
 
 // Manage Help
 
@@ -209,6 +208,8 @@
 "_optimized_photos_how_"        = "If your device is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Nextcloud.";
 "_upload_del_photos_how_"       = "Files will be removed from device memory after they’ve been uploaded to your cloud. They will remain in the camera roll. Just download the files to see them.";
 "_show_hidden_files_"           = "Show hidden files";
+"_format_compatibility_"        = "Most Compatible";
+"_format_compatibility_footer_" = "\"Most compatible\" will always save photos as JPEG";
 
 // Login
 
@@ -242,11 +243,11 @@
 "_today_"                                   = "Today";
 "_time_"                                    = "Time: %@\n\n%@";
 "_location_not_enabled_"                    = "Location Services not enabled";
-"_location_not_enabled_msg_"                = "Please go to \"Settings\" and turn on \"Location Services\" to allow automatic photo/video uploads.";
+"_location_not_enabled_msg_"                = "Please go to \"Settings\" and turn on \"Location Services\"";
 "_access_photo_not_enabled_"                = "Access to Photos not enabled";
-"_access_photo_not_enabled_msg_"            = "Please go to \"Settings\" and turn on \"Photo Access\" to allow automatic photo/video uploads.";
+"_access_photo_not_enabled_msg_"            = "Please go to \"Settings\" and turn on \"Photo Access\"";
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
-"_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\" to allow automatic photo/video uploads.";
+"_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\"";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
 "_create_full_upload_"                      = "Creating archive… May take a long time, please wait.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
@@ -463,7 +464,7 @@
 "_use_folder_photos_"               = "Use the Photos folder as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
-"_preview_filename_"                = "Example preview of filename. You can use the mask MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm for date/time";
+"_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";
 "_forbidden_characters_"            = "Invalid character in filename";
 "_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
@@ -504,3 +505,9 @@
 "_e2e_passphrase_request_message_"  = "Insert the 12 words";
 "_e2e_settings_remove_"             = "Remove the encryption locally";
 "_e2e_settings_remove_message_"     = "Confirm removing encryption along with the passphrase.";
+"_e2e_set_folder_encrypted_"        = "Set as encrypted";
+"_e2e_remove_folder_encrypted_"     = "Remove as encrypted";
+"_e2e_goto_settings_for_enable_"    = "You are in a encrypted directory, go to on \"Settings\" and enable the End-To-End Encryption";
+"_e2e_delete_folder_not_permitted_" = "Deletion of the directory marked as 'encrypted' is not allowed";
+"_e2e_remove_folder_lock_"          = "Forced remove folder lock";
+

@@ -38,7 +38,7 @@ public class CCLoginWeb: UIViewController {
             doneButtonVisible = true
         }
         
-        let webVC = SwiftModalWebVC(urlString: NCBrandOptions.sharedInstance.loginBaseUrl, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.navigationBarText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
+        let webVC = SwiftModalWebVC(urlString: NCBrandOptions.sharedInstance.loginBaseUrl, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.brandText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
@@ -76,7 +76,9 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     NCManageDatabase.sharedInstance.deleteAccount(account)
                     NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password)
                                     
-                    let tableAccount : tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account)
+                    guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+                        return
+                    }
                 
                     if (tableAccount.account == account) {
                     

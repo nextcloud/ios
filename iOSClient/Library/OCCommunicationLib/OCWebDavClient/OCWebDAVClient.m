@@ -724,8 +724,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                          failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -760,8 +759,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
 
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -837,11 +835,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    //NSString *startParamater = [NSString stringWithFormat:@"&start=%@", start];
-
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    //serverPath = [serverPath stringByAppendingString:startParamater];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -857,8 +851,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];    
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
     
@@ -874,13 +867,12 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     _requestMethod = @"GET";
     
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
@@ -890,14 +882,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
@@ -905,14 +896,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                       failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
@@ -920,56 +910,49 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"GET";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
-- (void)signEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)signEndToEndPublicKey:(NSString*)serverPath key:(NSString *)key onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
     
     _requestMethod = @"POST";
     
-    publicKey = [NSString stringWithFormat:@"?csr=%@",publicKey];
-    serverPath = [serverPath stringByAppendingString:publicKey];
-    serverPath = [serverPath stringByAppendingString:@"&format=json"];
-    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
+    _postStringKey = [NSString stringWithFormat: @"csr=%@",key];
+    [request setHTTPBody:[_postStringKey dataUsingEncoding:NSUTF8StringEncoding]];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
-    
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     
     [operation resume];
 }
 
-- (void)storeEndToEndPrivateKeyCipher:(NSString*)serverPath privateKeyChiper:(NSString *)privateKeyChiper onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)storeEndToEndPrivateKeyCipher:(NSString*)serverPath key:(NSString *)key onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                        failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
     
     _requestMethod = @"POST";
     
-    privateKeyChiper = [NSString stringWithFormat:@"?privateKey=%@",privateKeyChiper];
-    serverPath = [serverPath stringByAppendingString:privateKeyChiper];
-    serverPath = [serverPath stringByAppendingString:@"&format=json"];
-    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
+    _postStringKey = [NSString stringWithFormat: @"privateKey=%@",key];
+    [request setHTTPBody:[_postStringKey dataUsingEncoding:NSUTF8StringEncoding]];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
-    
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     
     [operation resume];
@@ -979,14 +962,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"DELETE";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
@@ -994,14 +976,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                          failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"DELETE";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
@@ -1009,14 +990,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                          failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"PUT";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
@@ -1024,14 +1004,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                             failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"DELETE";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
@@ -1039,92 +1018,82 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                             failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"POST";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
-- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)unlockEndToEndFolderEncrypted:(NSString*)serverPath token:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                                   failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     _requestMethod = @"DELETE";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
     
+    // Add token
+    [request setValue:token forHTTPHeaderField:@"token"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+
     [operation resume];
 }
 
-- (void)storeEndToEndMetadata:(NSString*)serverPath encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)getEndToEndMetadata:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+                    failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
+    
+    NSParameterAssert(success);
+    
+    _requestMethod = @"GET";
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    
+    [operation resume];
+}
+
+- (void)storeEndToEndMetadata:(NSString*)serverPath metadata:(NSString *)metadata onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                               failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
     
     _requestMethod = @"POST";
     
-    encryptedMetadata = [NSString stringWithFormat:@"?metaData=%@", encryptedMetadata];
-    serverPath = [serverPath stringByAppendingString:encryptedMetadata];
-    serverPath = [serverPath stringByAppendingString:@"&format=json"];
-    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
     
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    
+    _postStringMetadata = [NSString stringWithFormat: @"metaData=%@",metadata];
+    [request setHTTPBody:[_postStringMetadata dataUsingEncoding:NSUTF8StringEncoding]];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
-    
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     
     [operation resume];
 }
 
-- (void)getEndToEndMetadata:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
-                      failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
-    
-    NSParameterAssert(success);
-    
-    _requestMethod = @"GET";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
-    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    
-    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
-    
-    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
-    
-    [operation resume];
-}
-
-- (void)updateEndToEndMetadata:(NSString*)serverPath encryptedMetadata:(NSString *)encryptedMetadata onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
+- (void)updateEndToEndMetadata:(NSString*)serverPath metadata:(NSString *)metadata onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success
                       failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     
     NSParameterAssert(success);
     
     _requestMethod = @"PUT";
     
-    encryptedMetadata = [NSString stringWithFormat:@"?metaData=%@", encryptedMetadata];
-    serverPath = [serverPath stringByAppendingString:encryptedMetadata];
-    serverPath = [serverPath stringByAppendingString:@"&format=json"];
-    
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
+    _postStringMetadata = [NSString stringWithFormat: @"metaData=%@",metadata];
+    [request setHTTPBody:[_postStringMetadata dataUsingEncoding:NSUTF8StringEncoding]];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
-    
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     
     [operation resume];
@@ -1136,16 +1105,11 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSParameterAssert(success);
     
     _requestMethod = @"DELETE";
-    
-    NSString *jsonQuery = [NSString stringWithFormat:@"?format=json"];
-    serverPath = [serverPath stringByAppendingString:jsonQuery];
-    
+        
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil];
-    
-    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
-    
+    [request setValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
-    
     [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
     
     [operation resume];

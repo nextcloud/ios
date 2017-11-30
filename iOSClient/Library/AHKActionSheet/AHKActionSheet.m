@@ -93,7 +93,6 @@ static const CGFloat maxWidth = 414.0f;
         if (@available(iOS 11, *)) {
             _bottomPadding = view.safeAreaInsets.bottom;
         }
-        [_view setFrame:CGRectMake(_view.frame.origin.x, _view.frame.origin.y+_bottomPadding, _view.frame.size.width, _view.frame.size.height-_bottomPadding)];
     }
     
     return self;
@@ -349,7 +348,7 @@ static const CGFloat maxWidth = 414.0f;
         CGFloat width = CGRectGetWidth(self.view.bounds);
         if (width > maxWidth) width = maxWidth;
         
-        self.cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.view.bounds)/2 - width/2), CGRectGetMaxY(self.view.bounds) - self.cancelButtonHeight, width - 20, self.cancelButtonHeight - kSpaceDivide);
+        self.cancelButton.frame = CGRectMake(10 + (CGRectGetWidth(self.view.bounds)/2 - width/2), CGRectGetMaxY(self.view.bounds) - self.cancelButtonHeight - _bottomPadding, width - 20, self.cancelButtonHeight - kSpaceDivide);
     
         // Corner Radius
         self.cancelButton.layer.cornerRadius = 10;
@@ -445,7 +444,7 @@ static const CGFloat maxWidth = 414.0f;
         // animate sliding down tableView and cancelButton.
         [UIView animateWithDuration:duration animations:^{
             self.blurredBackgroundView.alpha = 0.0f;
-            self.cancelButton.transform = CGAffineTransformTranslate(self.cancelButton.transform, 0, self.cancelButtonHeight - kSpaceDivide);
+            self.cancelButton.transform = CGAffineTransformTranslate(self.cancelButton.transform, 0, self.cancelButtonHeight - kSpaceDivide + _bottomPadding);
 
             // Shortest shift of position sufficient to hide all tableView contents below the bottom margin.
             // contentInset isn't used here (unlike in -show) because it caused weird problems with animations in some cases.
@@ -523,7 +522,7 @@ static const CGFloat maxWidth = 414.0f;
     CGRect statusBarViewRect = [self convertRect:[UIApplication sharedApplication].statusBarFrame fromView:nil];
     CGFloat statusBarHeight = CGRectGetHeight(statusBarViewRect);
     
-    CGRect frame = CGRectMake((CGRectGetWidth(self.view.bounds)/2 - width/2), statusBarHeight, width, CGRectGetHeight(self.view.bounds) - statusBarHeight - self.cancelButtonHeight - self.separatorHeight);
+    CGRect frame = CGRectMake((CGRectGetWidth(self.view.bounds)/2 - width/2), statusBarHeight, width, CGRectGetHeight(self.view.bounds) - statusBarHeight - self.cancelButtonHeight - self.separatorHeight - _bottomPadding);
 
     UITableView *tableView = [[UITableView alloc] initWithFrame:frame];
     

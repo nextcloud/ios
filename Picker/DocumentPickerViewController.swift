@@ -61,6 +61,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     var passcodeIsPush: Bool = false
     var serverUrlPush: String = ""
     
+    var autoUploadFileName = ""
+    var autoUploadDirectory = ""
     
     lazy var networkingOperationQueue: OperationQueue = {
         
@@ -132,8 +134,8 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         // COLOR
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.navigationBarText]
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
         self.navigationController?.navigationBar.isTranslucent = false
         
         self.tableView.separatorColor = NCBrandColor.sharedInstance.seperator
@@ -265,6 +267,12 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         predicate = NSPredicate(format: "account = %@ AND directoryID = %@", activeAccount, metadataNet.directoryID!)
         recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sorted: "fileName", ascending: true)
         
+        autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
+        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(activeUrl)
+        
+        if (CCUtility.isEnd(toEndEnabled: activeAccount)) {
+        }
+        
         tableView.reloadData()
         
         hud.hideHud()
@@ -318,96 +326,96 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     //  MARK: - Download
 
-    func downloadFileFailure(_ fileID: String!, serverUrl: String!, selector: String!, message: String!, errorCode: Int) {
+    func downloadFileSuccessFailure(_ fileName: String!, fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         hud.hideHud()
         
-        if selector == selectorLoadFileView && errorCode != -999 {
+        if (errorCode == 0) {
             
-            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-                NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
-            })
-            
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-
-    func downloadFileSuccess(_ fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!) {
-        
-        hud.hideHud()
-    
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID!)) else {
-            self.dismissGrantingAccess(to: nil)
-            return
-        }
-        
-        recordMetadata = metadata
-        
-        // Save for PickerFileProvide
-        CCUtility.setFileNameExt(metadata.fileName)
-        CCUtility.setServerUrlExt(serverUrl)
-        
-        switch selector {
-            
-        case selectorLoadFileView :
-            
-            let sourceFileNamePath = "\(directoryUser)/\(fileID!)"
-            let destinationFileNameUrl : URL! = appGroupContainerURL()?.appendingPathComponent(recordMetadata.fileName)
-            let destinationFileNamePath = destinationFileNameUrl.path
-            
-            // Destination Provider
-
-            do {
-                try FileManager.default.removeItem(at: destinationFileNameUrl)
-            } catch _ {
-                print("file do not exists")
-            }
-
-            do {
-                try FileManager.default.copyItem(atPath: sourceFileNamePath, toPath: destinationFileNamePath)
-            } catch let error as NSError {
-                print(error)
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID!)) else {
+                self.dismissGrantingAccess(to: nil)
+                return
             }
             
-            // Dismiss
+            recordMetadata = metadata
             
-            self.dismissGrantingAccess(to: destinationFileNameUrl)
+            // Save for PickerFileProvide
+            CCUtility.setFileNameExt(metadata.fileName)
+            CCUtility.setServerUrlExt(serverUrl)
             
-        default :
+            switch selector {
+                
+            case selectorLoadFileView :
+                
+                let sourceFileNamePath = "\(directoryUser)/\(fileID!)"
+                let destinationFileNameUrl : URL! = appGroupContainerURL()?.appendingPathComponent(recordMetadata.fileName)
+                let destinationFileNamePath = destinationFileNameUrl.path
+                
+                // Destination Provider
+                
+                do {
+                    try FileManager.default.removeItem(at: destinationFileNameUrl)
+                } catch _ {
+                    print("file do not exists")
+                }
+                
+                do {
+                    try FileManager.default.copyItem(atPath: sourceFileNamePath, toPath: destinationFileNamePath)
+                } catch let error as NSError {
+                    print(error)
+                }
+                
+                // Dismiss
+                
+                self.dismissGrantingAccess(to: destinationFileNameUrl)
+                
+            default :
+                
+                print("selector : \(selector!)")
+                tableView.reloadData()
+            }
             
-            print("selector : \(selector!)")
-            tableView.reloadData()
+        } else {
+            
+            if selector == selectorLoadFileView && errorCode != -999 {
+                
+                let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorMessage, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+                    NSLog("[LOG] Download Error \(fileID) \(errorMessage) (error \(errorCode))");
+                })
+                
+                self.present(alert, animated: true, completion: nil)
+            }
         }
     }
  
-    //  MARK: - Upload
+    //  MARK: - Upload 
     
-    func uploadFileFailure(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, message: String, errorCode: NSInteger){
+    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         hud.hideHud()
         
-        // remove file
-        let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID)
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: nil)
-        
-        if errorCode != -999 {
+        if (errorCode == 0) {
             
-            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-                //self.dismissGrantingAccess(to: nil)
-                NSLog("[LOG] Download Error \(fileID) \(message) (error \(errorCode))");
-            })
+            dismissGrantingAccess(to: self.destinationURL)
             
-            self.present(alert, animated: true, completion: nil)
-        }
-    }
-    
-    func uploadFileSuccess(_ metadataNet: CCMetadataNet, fileID: String, serverUrl: String, selector: String, selectorPost: String) {
-        
-        hud.hideHud()
+        } else {
+           
+            // remove file
+            let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID)
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: nil)
+            
+            if errorCode != -999 {
                 
-        dismissGrantingAccess(to: self.destinationURL)
+                let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: errorMessage, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+                    //self.dismissGrantingAccess(to: nil)
+                    NSLog("[LOG] Download Error \(fileID) \(errorMessage) (error \(errorCode))");
+                })
+                
+                self.present(alert, animated: true, completion: nil)
+            }
+        }
     }
 }
 
@@ -625,10 +633,12 @@ extension DocumentPickerViewController: UITableViewDataSource {
         
         cell.separatorInset = UIEdgeInsetsMake(0, 60, 0, 0)
         
-        let metadata = recordsTableMetadata?[(indexPath as NSIndexPath).row]
+        guard let metadata = recordsTableMetadata?[(indexPath as NSIndexPath).row] else {
+            return cell
+        }
         
         // File Image View
-        let fileNamePath = "\(directoryUser)/\(metadata!.fileID)).ico"
+        let fileNamePath = "\(directoryUser)/\(metadata.fileID)).ico"
         
         if FileManager.default.fileExists(atPath: fileNamePath) {
             
@@ -636,30 +646,36 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
         } else {
             
-            if metadata!.directory {
+            if metadata.directory {
                 
-                cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: metadata!.iconName), color: NCBrandColor.sharedInstance.brand)
+                if (metadata.e2eEncrypted) {
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderEncrypted"), color: NCBrandColor.sharedInstance.brand)
+                } else if (metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory) {
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderphotocamera"), color: NCBrandColor.sharedInstance.brand)
+                } else {
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), color: NCBrandColor.sharedInstance.brand)
+                }
                 
             } else {
                 
-                cell.fileImageView.image = UIImage(named: (metadata?.iconName)!)
-                if (metadata?.thumbnailExists)! {
+                cell.fileImageView.image = UIImage(named: (metadata.iconName))
+                if (metadata.thumbnailExists) {
                     
-                    downloadThumbnail(metadata!)
-                    thumbnailInLoading[metadata!.fileID] = indexPath
+                    downloadThumbnail(metadata)
+                    thumbnailInLoading[metadata.fileID] = indexPath
                 }
             }
         }
         
         // File Name
-        cell.fileName.text = metadata!.fileName
+        cell.fileName.text = metadata.fileNameView
         
         // Status Image View
-        let lockServerUrl = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: metadata!.fileName)
+        let lockServerUrl = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: metadata.fileName)
                 
         let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account = %@ AND serverUrl = %@", activeAccount, lockServerUrl!))
         if tableDirectory != nil {
-            if metadata!.directory &&  (tableDirectory?.lock)! && (CCUtility.getBlockCode() != nil) {
+            if metadata.directory &&  (tableDirectory?.lock)! && (CCUtility.getBlockCode() != nil) {
                 cell.StatusImageView.image = UIImage(named: "passcode")
             } else {
                 cell.StatusImageView.image = nil
@@ -689,21 +705,26 @@ extension DocumentPickerViewController: UITableViewDataSource {
             } catch {
             }
             
-            CCNetworking.shared().downloadFile(metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
+            CCNetworking.shared().downloadFile(metadata?.fileName, fileID: metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
 
             hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
             
         } else {
-                        
+            
+            // e2e DENIED
+            if (metadata?.e2eEncrypted == true) {
+                return
+            }
+        
             serverUrlPush = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: recordMetadata.fileName)
 
             var passcode: String? = CCUtility.getBlockCode()
             if passcode == nil {
                 passcode = ""
             }
-            
+        
             let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account = %@ AND serverUrl = %@", activeAccount, serverUrlPush))
-
+            
             if tableDirectory != nil {
                 
                 if (tableDirectory?.lock)! && (passcode?.count)! > 0 {

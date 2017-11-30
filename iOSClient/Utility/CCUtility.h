@@ -91,8 +91,10 @@
 
 + (void)setShowHiddenFiles:(BOOL)show;
 
++ (void)setFormatCompatibility:(BOOL)set;
+
 + (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
-+ (void)setEndToEndPrivateKeyCipher:(NSString *)account privateKeyCipher:(NSString *)privateKeyCipher;
++ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
 + (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
 + (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey;
 + (void)clearAllKeysEndToEnd:(NSString *)account;
@@ -142,8 +144,10 @@
 
 + (BOOL)getShowHiddenFiles;
 
++ (BOOL)getFormatCompatibility;
+
 + (NSString *)getEndToEndPublicKey:(NSString *)account;
-+ (NSString *)getEndToEndPrivateKeyCipher:(NSString *)account;
++ (NSString *)getEndToEndPrivateKey:(NSString *)account;
 + (NSString *)getEndToEndPassphrase:(NSString *)account;
 + (NSString *)getEndToEndPublicKeyServer:(NSString *)account;
 + (BOOL)isEndToEndEnabled:(NSString *)account;
@@ -181,16 +185,20 @@
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
+// ===== E2E Encrypted =====
+
++ (NSString *)generateRandomIdentifier;
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account;
+
 // ===== CCMetadata =====
 
 + (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status;
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser;
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser isFolderEncrypted:(BOOL)isFolderEncrypted;
 
++ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNameView:(NSString *)fileNameView directory:(NSString *)directory activeAccount:(NSString *)activeAccount;
 
-+ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName directory:(NSString *)directory activeAccount:(NSString *)activeAccount autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
-
-+ (tableMetadata *)insertTypeFileIconName:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory;
++ (void)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata;
 
 // ===== Third parts =====
 

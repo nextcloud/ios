@@ -28,7 +28,7 @@
 
 @interface CCSynchronize () 
 {
-    // local
+    AppDelegate *appDelegate;
 }
 @end
 
@@ -43,8 +43,9 @@
         if (!sharedSynchronize) {
             
             sharedSynchronize = [CCSynchronize new];
-            
             sharedSynchronize.foldersInSynchronized = [NSMutableOrderedSet new];
+            sharedSynchronize->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
         }
         return sharedSynchronize;
     }
@@ -61,7 +62,7 @@
 
 - (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector
 {
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionReadFolder;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
@@ -73,7 +74,7 @@
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
     
     NSLog(@"[LOG] %@ directory : %@", selector, serverUrl);
 }
@@ -87,7 +88,7 @@
     if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
         
         [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl];
-        [app.activeMain reloadDatasource:metadataNet.serverUrl];
+        [appDelegate.activeMain reloadDatasource:metadataNet.serverUrl];
     }
 }
 
@@ -100,7 +101,7 @@
     
     // Add metadata and update etag Directory
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag];
+    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
@@ -112,13 +113,13 @@
         if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
             return;
 
-        NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
+        NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", appDelegate.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
         // ----- Test : (DELETE) -----
         
         NSMutableArray *metadatasNotPresents = [NSMutableArray new];
         
-        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", app.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
+        NSArray *tableMetadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session = ''", appDelegate.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
         for (tableMetadata *record in tableMetadatas) {
             
@@ -139,8 +140,8 @@
         // delete metadata not present
         for (tableMetadata *metadata in metadatasNotPresents) {
         
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID] error:nil];
             
             if (metadata.directory && metadataNet.serverUrl) {
                 
@@ -155,7 +156,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([metadatasNotPresents count] > 0)
-                [app.activeMain reloadDatasource:metadataNet.serverUrl];
+                [appDelegate.activeMain reloadDatasource:metadataNet.serverUrl];
         });
         
         // ----- Test : (MODIFY) -----
@@ -227,7 +228,7 @@
 
 - (void)readFileForFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
 {
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionReadFile;
     metadataNet.fileName = fileName;
@@ -235,7 +236,7 @@
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (void)readFile:(tableMetadata *)metadata selector:(NSString *)selector
@@ -243,7 +244,7 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (!serverUrl) return;
         
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
         
     metadataNet.action = actionReadFile;
     metadataNet.fileID = metadata.fileID;
@@ -252,7 +253,7 @@
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -271,7 +272,7 @@
         
             NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
             if (serverUrl)
-                [app.activeMain reloadDatasource:serverUrl];
+                [appDelegate.activeMain reloadDatasource:serverUrl];
         }
     }
 }
@@ -292,7 +293,7 @@
             tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
             if (addMetadata)
-                [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:metadataNet.serverUrl account:app.activeAccount withDownload:withDownload];
+                [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:metadataNet.serverUrl account:appDelegate.activeAccount withDownload:withDownload];
         }
         
         // Selector : selectorReadFileReloadFolder, selectorReadFileFolderWithDownload
@@ -301,7 +302,7 @@
             NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
             
             // Add Directory
-            (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:metadataNet.account permissions:nil];
+            (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:metadataNet.account permissions:nil encrypted:false];
             tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
             
             // Verify changed etag
@@ -353,8 +354,8 @@
         if (changeRev) {
             
             // remove file and ico
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, metadata.fileID] error:nil];
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, metadata.fileID] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID] error:nil];
             
             [metadatas addObject:metadata];
         }
@@ -402,7 +403,7 @@
     [[NCManageDatabase sharedInstance] addQueueDownloadWithMetadatasNet:metadataNetToAdd];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [app.activeMain reloadDatasource:serverUrl];
+        [appDelegate.activeMain reloadDatasource:serverUrl];
     });
 }
 

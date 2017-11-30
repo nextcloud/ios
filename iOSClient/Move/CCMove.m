@@ -34,6 +34,10 @@
     NSString *directoryUser;
     
     BOOL _loadingFolder;
+    
+    // Automatic Upload Folder
+    NSString *_autoUploadFileName;
+    NSString *_autoUploadDirectory;
 }
 @end
 
@@ -79,9 +83,9 @@
     } else {
         
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
-        label.text = self.passMetadata.fileName;
+        label.text = self.passMetadata.fileNameView;
         
-        label.textColor = NCBrandColor.sharedInstance.navigationBarText;
+        label.textColor = NCBrandColor.sharedInstance.brandText;
         
         label.backgroundColor =[UIColor clearColor];
         label.textAlignment = NSTextAlignmentCenter;
@@ -104,7 +108,7 @@
     [super viewWillAppear:animated];
     
     self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
     self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brand;
@@ -164,7 +168,7 @@
     if ([self.delegate respondsToSelector:@selector(dismissMove)])
         [self.delegate dismissMove];
     
-    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileName];
+    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNameView];
         
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -259,18 +263,6 @@
     [_networkingOperationQueue addOperation:operation];
 }
 
-// MARK: - Download File
-
-- (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
-{
-
-}
-
-- (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    self.move.enabled = NO;
-}
-
 // MARK: - Read Folder
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -325,7 +317,7 @@
     NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
  
     // Update directory etag
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag];
+    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
     
     for (tableMetadata *metadata in metadatas) {
         
@@ -336,7 +328,12 @@
     // insert in Database
     metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
 
+    // get auto upload folder
+    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
+    
     _loadingFolder = NO;
+    
     [self.tableView reloadData];
 }
 
@@ -371,7 +368,7 @@
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:nil];
+    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:nil encrypted:false];
     
     // Load Folder or the Datasource
     [self readFolder];
@@ -441,8 +438,15 @@
     cell.textLabel.textColor = [UIColor blackColor];
     
     cell.detailTextLabel.text = @"";
-    cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
-    cell.textLabel.text = metadata.fileName;
+    
+    if (metadata.e2eEncrypted)
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brand];
+    else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand];
+    else
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand];
+    
+    cell.textLabel.text = metadata.fileNameView;
     
     return cell;
 }

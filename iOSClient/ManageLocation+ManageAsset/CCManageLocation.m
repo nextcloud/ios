@@ -63,12 +63,13 @@
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
 {
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     CLLocation* location = [locations lastObject];
     
     NSLog(@"[LOG] update locationManager : latitude %+.6f, longitude %+.6f",location.coordinate.latitude, location.coordinate.longitude);
     
-    app.currentLatitude = location.coordinate.latitude;
-    app.currentLongitude = location.coordinate.longitude;
+    appDelegate.currentLatitude = location.coordinate.latitude;
+    appDelegate.currentLongitude = location.coordinate.longitude;
     
     [self.delegate changedLocation];
 }

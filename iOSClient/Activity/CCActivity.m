@@ -32,6 +32,7 @@
 
 @interface CCActivity ()
 {
+    AppDelegate *appDelegate;
     BOOL _verbose;
 
     // Datasource
@@ -49,17 +50,19 @@
 {
     if (self = [super initWithCoder:aDecoder])  {
         
-        app.activeActivity = self;
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+        appDelegate.activeActivity = self;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
     }
     return self;
 }
 
-- (void)viewDidLoad {
-    
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    
+ 
     self.collectionView.emptyDataSetSource = self;
     self.collectionView.emptyDataSetDelegate = self;
     self.collectionView.delegate = self;
@@ -81,11 +84,11 @@
     _verbose = [CCUtility getActivityVerboseHigh];
     
     // Color
-    [app aspectNavigationControllerBar:self.navigationController.navigationBar online:[app.reachability isReachable] hidden:NO];
-    [app aspectTabBar:self.tabBarController.tabBar hidden:NO];
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+    [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
     // Plus Button
-    [app plusButtonVisibile:true];
+    [appDelegate plusButtonVisibile:true];
 }
 
 // E' arrivato
@@ -99,7 +102,7 @@
 - (void)changeTheming
 {
     if (self.isViewLoaded && self.view.window)
-        [app changeTheming:self];
+        [appDelegate changeTheming:self];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -145,7 +148,7 @@
 - (void)reloadDatasource
 {
     // test
-    if (app.activeAccount.length == 0)
+    if (appDelegate.activeAccount.length == 0)
         return;
     
     NSPredicate *predicate;
@@ -153,9 +156,9 @@
     NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-k_daysOfActivity toDate:[NSDate date] options:0];
         
     if (_verbose)
-        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND date > %@", app.activeAccount, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND date > %@", appDelegate.activeAccount, sixDaysAgo];
     else
-        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND verbose = %lu AND date > %@", app.activeAccount, k_activityVerboseDefault, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND verbose = %lu AND date > %@", appDelegate.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
     _sectionDataSource = [[NCManageDatabase sharedInstance] getActivityWithPredicate:predicate];
         
@@ -326,9 +329,9 @@
         
         if (metadata && ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload])) {
             
-             if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]]) {
+             if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, activity.fileID]]) {
              
-                 imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]];
+                 imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, activity.fileID]];
                  
              } else {
                  
@@ -348,21 +351,21 @@
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
     
-    BOOL existsFile = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, activity.fileID]];
+    BOOL existsFile = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, activity.fileID]];
     
     if (metadata && existsFile) {
         
-        if (!self.splitViewController.isCollapsed && app.activeMain.detailViewController.isViewLoaded && app.activeMain.detailViewController.view.window)
-            [app.activeMain.navigationController popToRootViewControllerAnimated:NO];
+        if (!self.splitViewController.isCollapsed && appDelegate.activeMain.detailViewController.isViewLoaded && appDelegate.activeMain.detailViewController.view.window)
+            [appDelegate.activeMain.navigationController popToRootViewControllerAnimated:NO];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             
-            [app.activeMain performSegueWithIdentifier:@"segueDetail" sender:metadata];            
+            [appDelegate.activeMain performSegueWithIdentifier:@"segueDetail" sender:metadata];
         });
         
     } else {
         
-        [app messageNotification:@"_info_" description:@"_activity_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        [appDelegate messageNotification:@"_info_" description:@"_activity_file_not_present_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
     }
 }
 
