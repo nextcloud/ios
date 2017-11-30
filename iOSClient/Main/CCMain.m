@@ -4659,6 +4659,9 @@
     selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
     cell.selectedBackgroundView = selectionColor;
     
+    // for checkmark color in editing mode
+    cell.tintColor = [NCBrandColor sharedInstance].brandElement;
+    
     if ([typeCell isEqualToString:@"CellMain"]) cell.backgroundColor = [UIColor whiteColor];
     if ([typeCell isEqualToString:@"CellMainTransfer"]) cell.backgroundColor = [NCBrandColor sharedInstance].transferBackground;
     

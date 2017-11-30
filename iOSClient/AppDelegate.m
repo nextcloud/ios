@@ -754,7 +754,7 @@
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = [NCBrandColor sharedInstance].brandElement;
+            backgroundColor = [NCBrandColor sharedInstance].brand;
             break;
         default:
             break;
@@ -1100,7 +1100,7 @@
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
     // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:[NCBrandColor sharedInstance].brand];
+    [self.window setTintColor:[NCBrandColor sharedInstance].textView];
 }
 
 #pragma --------------------------------------------------------------------------------------------
