@@ -25,6 +25,7 @@
 
 #import "CCUtility.h"
 #import "NSString+TruncateToWidth.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCGraphics
 
@@ -432,6 +433,40 @@ Color difference is determined by the following formula:
     
     navigationItem.titleView = navView;
     [navView sizeToFit];
+}
+
++ (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText
+{
+    UIColor *newColor, *newColorElement, *newColorText;
+    
+    // COLOR
+    if (themingColor.length == 7) {
+        newColor = [CCGraphics colorFromHexString:themingColor];
+    } else {
+        newColor = [NCBrandColor sharedInstance].customer;
+    }
+            
+    // COLOR TEXT
+    if (themingColorText.length == 7) {
+        newColorText = [CCGraphics colorFromHexString:themingColorText];
+    } else {
+        newColorText = [NCBrandColor sharedInstance].customerText;
+    }
+            
+    // COLOR ELEMENT
+    if (themingColorElement.length == 7) {
+        newColorElement = [CCGraphics colorFromHexString:themingColorElement];
+    } else {
+        if ([themingColorText isEqualToString:@"#000000"])
+            newColorElement = [UIColor blackColor];
+        else
+            newColorElement = newColor;
+    }
+            
+    
+    [NCBrandColor sharedInstance].brand = newColor;
+    [NCBrandColor sharedInstance].brandElement = newColorElement;
+    [NCBrandColor sharedInstance].brandText = newColorText;
 }
 
 @end

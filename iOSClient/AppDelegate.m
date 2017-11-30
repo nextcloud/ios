@@ -1028,56 +1028,22 @@
 
 - (void)settingThemingColorBrand
 {
-    UIColor *newColor, *newColorElement, *newColorText;
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
     
-    if (self.activeAccount.length > 0) {
-    
+    if ([NCBrandOptions sharedInstance].use_themingColor) {
+        
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
-    
-        if ([NCBrandOptions sharedInstance].use_themingColor) {
-        
-            // COLOR
-            if (capabilities.themingColor.length == 7) {
-                newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-            } else {
-                newColor = [NCBrandColor sharedInstance].customer;
-            }
+
+        [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
             
-            // COLOR TEXT
-            if (capabilities.themingColorText.length == 7) {
-                newColorText = [CCGraphics colorFromHexString:capabilities.themingColorText];
-            } else {
-                newColorText = [NCBrandColor sharedInstance].customerText;
-            }
-            
-            // COLOR ELEMENT
-            if (capabilities.themingColorElement.length == 7) {
-                newColorElement = [CCGraphics colorFromHexString:capabilities.themingColorElement];
-            } else {
-                if ([capabilities.themingColorText isEqualToString:@"#000000"])
-                    newColorElement = [UIColor blackColor];
-                else
-                    newColorElement = newColor;
-            }
-            
-        } else {
-            
-            newColor = [NCBrandColor sharedInstance].customer;
-            newColorElement = [NCBrandColor sharedInstance].customer;
-            newColorText = [NCBrandColor sharedInstance].customerText;
-        }
-        
     } else {
-        
-        newColor = [NCBrandColor sharedInstance].customer;
-        newColorElement = [NCBrandColor sharedInstance].customer;
-        newColorText = [NCBrandColor sharedInstance].customerText;
+    
+        [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
+        [NCBrandColor sharedInstance].brandElement = [NCBrandColor sharedInstance].customer;
+        [NCBrandColor sharedInstance].brandText = [NCBrandColor sharedInstance].customerText;
     }
     
-    [NCBrandColor sharedInstance].brand = newColor;
-    [NCBrandColor sharedInstance].brandElement = newColorElement;
-    [NCBrandColor sharedInstance].brandText = newColorText;
-
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
