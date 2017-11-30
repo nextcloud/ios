@@ -53,7 +53,7 @@
 "_destination_"             = "Destination";
 "_ok_"                      = "OK";
 "_beta_version_"            = "Beta version";
-"_function_in_testing_"     = "Function in testing. Please send information to us about any problems or malfunctions.";
+"_function_in_testing_"     = "Function in testing, please send information about any problems you run into.";
 "_done_"                    = "Done";
 "_passcode_too_short_"      = "Passcode too short, at least 4 characters required";
 "_selected_"                = "Selected";
@@ -86,13 +86,13 @@
 // App
 
 "_network_available_"       = "Network available";
-"_network_not_available_"   = "Network not available";
+"_network_not_available_"   = "Network unavailable";
 
 // Networking
 
 "_no_reuploadfile_"         = "Could not find nor resend file. Delete the upload and reload the file to upload it.";
-"_file_already_exists_"     = "Unable to complete the operation, there is a file with the same name";
-"_read_file_error_"         = "Read file error";
+"_file_already_exists_"     = "Unable to complete the operation, a file with the same name exists";
+"_read_file_error_"         = "Could not read the file";
 
 // More
 
@@ -106,8 +106,8 @@
 "_settings_"                = "Settings";
 "_passcode_"                = "Password";
 "_lock_"                    = "Lock";
-"_lock_active_"             = "Lock: Active";
-"_lock_not_active_"         = "Lock: Not Active";
+"_lock_active_"             = "Lock: On";
+"_lock_not_active_"         = "Lock: Off";
 "_lock_protection_no_screen_"        = "Do not ask at startup";
 "_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for protected folders only or for the encryption option";
 "_url_"                     = "URL";
@@ -122,19 +122,19 @@
 "_clear_cache_no_size_"     = "Clear cache";
 "_exit_"                    = "Exit";
 "_funct_not_enabled_"       = "Functionality not enabled";
-"_passcode_activate_"       = "Password lock activated";
-"_disabling_passcode_"      = "Disabling password lock";
-"_want_exit_"               = "Attention!  Will be reset to initial state. Continue?";
+"_passcode_activate_"       = "Password lock on";
+"_disabling_passcode_"      = "Removing password lock";
+"_want_exit_"               = "Attention! Will be reset to initial state. Continue?";
 "_proceed_"                 = "Proceed";
 "_delete_cache_"            = "Delete cache";
-"_want_delete_cache_"       = "Do you want to delete cache?";
+"_want_delete_cache_"       = "Do you want to delete the cache?";
 "_want_delete_thumbnails_"  = "Do you want to delete all thumbnails too?";
 "_mail_deleted_"            = "Email deleted";
 "_mail_saved_"              = "Email saved";
 "_mail_sent_"               = "Email sent";
-"_mail_failure_"            = "Failed to send email: %@";
+"_mail_failure_"            = "Could not send email: %@";
 "_information_req_"         = "Information request";
-"_write_in_english_"        = "Please, write us in English";
+"_write_in_english_"        = "Kindly write to us in English";
 "_credentials_"             = "Credentials";
 "_manage_account_"          = "Manage account";
 "_change_password_"         = "Change password";
@@ -205,7 +205,7 @@
 
 "_optimized_photos_"            = "Optimized photo resolution";
 "_upload_del_photos_"           = "Remove files after upload";
-"_optimized_photos_how_"        = "If your iPhone is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your cloud.";
+"_optimized_photos_how_"        = "If your device is low on space, full-resolution photos are automatically replaced with optimized versions. The full-resolution versions are stored in your Nextcloud.";
 "_upload_del_photos_how_"       = "Files will be removed from device memory after they’ve been uploaded to your cloud. They will remain in the camera roll. Just download the files to see them.";
 "_show_hidden_files_"           = "Show hidden files";
 "_format_compatibility_"        = "Most Compatible";
@@ -237,7 +237,7 @@
 // Auto Upload
 
 "_pull_down_"                               = "Pull down to refresh";
-"_no_photo_load_"                           = "No Photo or Video";
+"_no_photo_load_"                           = "No photo or video";
 "_tutorial_autoupload_view_"                = "You can enable auto uploads from \"Settings\"";
 "_no_date_"                                 = "No date";
 "_today_"                                   = "Today";
