@@ -32,10 +32,12 @@ class NCBrandColor: NSObject {
 
     // Color
     @objc public let customer:              UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    @objc public var customerElement:       UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
     @objc public var customerText:          UIColor = .white
     
-    @objc public var brand:                 UIColor
-    @objc public var brandText:             UIColor
+    @objc public var brand:                 UIColor                                                                                 // don't touch me
+    @objc public var brandElement:          UIColor                                                                                 // don't touch me
+    @objc public var brandText:             UIColor                                                                                 // don't touch me
 
     @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
     @objc public var encrypted:             UIColor = .red
@@ -48,6 +50,7 @@ class NCBrandColor: NSObject {
 
     override init() {
         self.brand = self.customer
+        self.brandElement = self.customerElement
         self.brandText = self.customerText
     }
     

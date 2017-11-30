@@ -57,12 +57,13 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 13,
+            schemaVersion: 14,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
             // 12 : Version 2.19.0.5
-            // 13 : ...
+            // 13 : Version 2.19.0.14
+            // 14 : ...
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -562,6 +563,8 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.account = tableAccount.account
                 resultCapabilities.themingBackground = capabilities.themingBackground
                 resultCapabilities.themingColor = capabilities.themingColor
+                resultCapabilities.themingColorElement = capabilities.themingColorElement
+                resultCapabilities.themingColorText = capabilities.themingColorText
                 resultCapabilities.themingLogo = capabilities.themingLogo
                 resultCapabilities.themingName = capabilities.themingName
                 resultCapabilities.themingSlogan = capabilities.themingSlogan

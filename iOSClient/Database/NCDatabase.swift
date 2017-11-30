@@ -76,6 +76,8 @@ class tableCapabilities: Object {
     @objc dynamic var account = ""
     @objc dynamic var themingBackground = ""
     @objc dynamic var themingColor = ""
+    @objc dynamic var themingColorElement = ""
+    @objc dynamic var themingColorText = ""
     @objc dynamic var themingLogo = ""
     @objc dynamic var themingName = ""
     @objc dynamic var themingSlogan = ""

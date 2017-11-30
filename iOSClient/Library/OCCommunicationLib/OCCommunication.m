@@ -1416,6 +1416,12 @@
                     if ([theming valueForKey:@"color"] && ![[theming valueForKey:@"color"] isEqual:[NSNull null]])
                         capabilities.themingColor = [theming valueForKey:@"color"];
                 
+                    if ([theming valueForKey:@"color-element"] && ![[theming valueForKey:@"color-element"] isEqual:[NSNull null]])
+                        capabilities.themingColorElement = [theming valueForKey:@"color-element"];
+                    
+                    if ([theming valueForKey:@"color-text"] && ![[theming valueForKey:@"color-text"] isEqual:[NSNull null]])
+                        capabilities.themingColorText = [theming valueForKey:@"color-text"];
+                    
                     if ([theming valueForKey:@"logo"] && ![[theming valueForKey:@"logo"] isEqual:[NSNull null]])
                         capabilities.themingLogo = [theming valueForKey:@"logo"];
                 
