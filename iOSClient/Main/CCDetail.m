@@ -297,7 +297,7 @@
     self.webView = [[WKWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom)) configuration:wkConfig];
     self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-    [self.webView setBackgroundColor:[UIColor whiteColor]];
+    [self.webView setBackgroundColor:[NCBrandColor sharedInstance].backgroundView];
     [self.webView setOpaque:NO];
     
     if ( [_fileNameExtension isEqualToString:@"CSS"] || [_fileNameExtension isEqualToString:@"PY"] || [_fileNameExtension isEqualToString:@"XML"] || [_fileNameExtension isEqualToString:@"JS"] ) {

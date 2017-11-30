@@ -422,7 +422,7 @@
 
 - (UIColor *)backgroundColorForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIColor whiteColor];
+    return [NCBrandColor sharedInstance].backgroundView;
 }
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
@@ -3974,7 +3974,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brandElement]
-                            backgroundColor:[UIColor whiteColor]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -3987,7 +3987,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
-                            backgroundColor:[UIColor whiteColor]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -4025,7 +4025,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brandElement]
-                            backgroundColor:[UIColor whiteColor]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -4038,7 +4038,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brandElement]
-                            backgroundColor:[UIColor whiteColor]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -4067,7 +4067,7 @@
             
             [actionSheet addButtonWithTitle:titoloLock
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] color:[NCBrandColor sharedInstance].brandElement]
-                            backgroundColor:[UIColor whiteColor]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
@@ -4080,7 +4080,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
-                            backgroundColor:[UIColor whiteColor]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
@@ -4101,7 +4101,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
-                            backgroundColor:[UIColor whiteColor]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
@@ -4122,7 +4122,7 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_lock_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
-                            backgroundColor:[UIColor whiteColor]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
@@ -4167,7 +4167,7 @@
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"]color:[NCBrandColor sharedInstance].brandElement]
-                                backgroundColor:[UIColor whiteColor]
+                                backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
                                         handler:^(AHKActionSheet *as) {
@@ -4178,7 +4178,7 @@
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetOpenIn"] color:[NCBrandColor sharedInstance].brandElement]
-                        backgroundColor:[UIColor whiteColor]
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
@@ -4188,7 +4188,7 @@
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
-                        backgroundColor:[UIColor whiteColor]
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
@@ -4223,8 +4223,8 @@
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brandElement]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                     
@@ -4236,8 +4236,8 @@
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_remove_local_file_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRemoveLocal"] color:[NCBrandColor sharedInstance].brandElement]
-                            backgroundColor:[UIColor whiteColor]
-                                     height: 50.0
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                     height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
@@ -4662,7 +4662,7 @@
     // for checkmark color in editing mode
     cell.tintColor = [NCBrandColor sharedInstance].brandElement;
     
-    if ([typeCell isEqualToString:@"CellMain"]) cell.backgroundColor = [UIColor whiteColor];
+    if ([typeCell isEqualToString:@"CellMain"]) cell.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     if ([typeCell isEqualToString:@"CellMainTransfer"]) cell.backgroundColor = [NCBrandColor sharedInstance].transferBackground;
     
     // ----------------------------------------------------------------------------------------------------------

@@ -65,19 +65,19 @@ class CreateMenuAdd: NSObject {
         
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "menuUploadPhoto"), color: colorGray), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "menuUploadPhoto"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFotoVideoPlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "menuUploadFile"), color: colorGray), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "menuUploadFile"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFilePlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_text_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), color: colorGray), backgroundColor: UIColor.white, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_text_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFileText))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), color: colorIcon), backgroundColor: UIColor.white, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), color: colorIcon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFolderPlain))
         })
         
