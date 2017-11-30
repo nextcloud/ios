@@ -558,7 +558,7 @@
             if ([appDelegate.reachability isReachable] == NO)
                 _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navigationLogoOffline"]];
             else
-                _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navigationLogo"]];
+                _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[NCBrandColor sharedInstance].brandText]];
             
             [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
             UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuLogo:)];
@@ -578,15 +578,15 @@
             
             if (_metadataFolder.e2eEncrypted) {
                 
-                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titleEncrypted"] navigationItem:self.navigationItem];
+                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleEncrypted"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
                 
             } else if ([[[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl] isEqualToString:self.serverUrl]) {
             
-                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titlePhotos"] navigationItem:self.navigationItem];
+                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titlePhotos"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
                 
             } else if ([_metadataFolder.permissions containsString:k_permission_shared] || [_metadataFolder.permissions containsString:k_permission_mounted] || shareLink.length > 0 || shareUserAndGroup.length > 0) {
                 
-                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[UIImage imageNamed:@"titleShare"] navigationItem:self.navigationItem];
+                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleShare"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
                 
             } else {
                 
