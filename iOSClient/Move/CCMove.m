@@ -75,8 +75,16 @@
 
     if (![_serverUrl length]) {
         
+        UIImageView *image;
+        
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
-        UIImageView *image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[NCBrandColor sharedInstance].brandText]];
+        
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+        if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
+            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor blackColor]]];
+        else
+            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor whiteColor]]];
+
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
         

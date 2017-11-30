@@ -318,6 +318,7 @@
         [appDelegate changeTheming:self];
     
     // Refresh control
+    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandElement;
     _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
 
     // color searchbar
