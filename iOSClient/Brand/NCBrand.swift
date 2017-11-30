@@ -32,7 +32,6 @@ class NCBrandColor: NSObject {
 
     // Color
     @objc public let customer:              UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
-    @objc public var customerElement:       UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
     @objc public var customerText:          UIColor = .white
     
     @objc public var brand:                 UIColor                                                                                 // don't touch me
@@ -50,7 +49,7 @@ class NCBrandColor: NSObject {
 
     override init() {
         self.brand = self.customer
-        self.brandElement = self.customerElement
+        self.brandElement = self.customer
         self.brandText = self.customerText
     }
     

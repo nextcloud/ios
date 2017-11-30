@@ -324,6 +324,9 @@
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
     
+    // Title
+    [self setTitle];
+    
     // Reload Table View
     [self tableViewReloadData];
 }
@@ -555,10 +558,15 @@
             
             self.navigationItem.title = nil;
             
-            if ([appDelegate.reachability isReachable] == NO)
+            if ([appDelegate.reachability isReachable] == NO) {
                 _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navigationLogoOffline"]];
-            else
-                _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[NCBrandColor sharedInstance].brandText]];
+            } else {
+                tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+                if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
+                    _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor blackColor]]];
+                else
+                    _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor whiteColor]]];
+            }
             
             [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
             UITapGestureRecognizer *singleTap =  [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(menuLogo:)];

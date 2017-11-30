@@ -1028,44 +1028,64 @@
 
 - (void)settingThemingColorBrand
 {
-    UIColor *newColor, *newColorText;
+    UIColor *newColor, *newColorElement, *newColorText;
     
     if (self.activeAccount.length > 0) {
     
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
     
-        if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length == 7) {
+        if ([NCBrandOptions sharedInstance].use_themingColor) {
         
-            newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-            newColorText = [CCGraphics colorFromHexString:capabilities.themingColorText];
+            // COLOR
+            if (capabilities.themingColor.length == 7) {
+                newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
+            } else {
+                newColor = [NCBrandColor sharedInstance].customer;
+            }
+            
+            // COLOR TEXT
+            if (capabilities.themingColorText.length == 7) {
+                newColorText = [CCGraphics colorFromHexString:capabilities.themingColorText];
+            } else {
+                newColorText = [NCBrandColor sharedInstance].customerText;
+            }
+            
+            // COLOR ELEMENT
+            if (capabilities.themingColorElement.length == 7) {
+                newColorElement = [CCGraphics colorFromHexString:capabilities.themingColorElement];
+            } else {
+                if ([capabilities.themingColorText isEqualToString:@"#000000"])
+                    newColorElement = [UIColor blackColor];
+                else
+                    newColorElement = newColor;
+            }
             
         } else {
             
             newColor = [NCBrandColor sharedInstance].customer;
+            newColorElement = [NCBrandColor sharedInstance].customer;
             newColorText = [NCBrandColor sharedInstance].customerText;
         }
         
     } else {
         
         newColor = [NCBrandColor sharedInstance].customer;
+        newColorElement = [NCBrandColor sharedInstance].customer;
         newColorText = [NCBrandColor sharedInstance].customerText;
     }
     
-    if (self.activeAccount.length > 0 && ![newColor isEqual:[NCBrandColor sharedInstance].brand] && newColor) {
-        
-        [NCBrandColor sharedInstance].brand = newColor;
-        [NCBrandColor sharedInstance].brandText = newColorText;
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
-    }
+    [NCBrandColor sharedInstance].brand = newColor;
+    [NCBrandColor sharedInstance].brandElement = newColorElement;
+    [NCBrandColor sharedInstance].brandText = newColorText;
+
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
 - (void)changeTheming:(UIViewController *)vc
 {
-    UIColor *color = [NCBrandColor sharedInstance].brand;
-    
     // Change Navigation & TabBar color
-    vc.navigationController.navigationBar.barTintColor = color;
-    vc.tabBarController.tabBar.tintColor = color;
+    vc.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
+    vc.tabBarController.tabBar.tintColor = [NCBrandColor sharedInstance].brandElement;
     // Change bar bottom line shadow
     vc.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     
@@ -1074,7 +1094,7 @@
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     UIButton *button = [tabBarController.view viewWithTag:99];
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:color];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brandElement];
     
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
