@@ -839,8 +839,20 @@
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
         
         NSString *fileNameIdentifier;
+        NSError *error;
         
-        // id exists overwrite file else create a new encrypted filename
+        // Verify File Size
+        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] error:&error];
+        NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+        long long fileSize = [fileSizeNumber longLongValue];
+        
+        if (fileSize > k_max_filesize_E2E) {
+            // Error for uploadFileFailure
+            [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:@"E2E Error file too big" errorCode:k_CCErrorInternalError];
+            return;
+        }
+        
+        // if exists overwrite file else create a new encrypted filename
         tableMetadata *overwriteMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", _activeAccount, directoryID, fileName]];
         if (overwriteMetadata)
             fileNameIdentifier = overwriteMetadata.fileName;

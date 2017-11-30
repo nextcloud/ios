@@ -257,6 +257,9 @@ extern NSString *const dav;
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
 
+// E2E
+#define k_max_filesize_E2E                              524288000   // 500 MB
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 
