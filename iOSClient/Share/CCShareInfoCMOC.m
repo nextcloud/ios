@@ -120,7 +120,7 @@ const PERMISSION_ALL = 31;
     self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [NCBrandColor sharedInstance].brandText;
+    self.endButton.tintColor = [UIColor blackColor];
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
