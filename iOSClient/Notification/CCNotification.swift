@@ -167,7 +167,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             if let image = image {
                 cell.icon.image = image
             } else {
-                cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), color: NCBrandColor.sharedInstance.brand)
+                cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), color: NCBrandColor.sharedInstance.brandElement)
             }
             
             //

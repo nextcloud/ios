@@ -117,7 +117,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"transfersNoRecord"] color:[NCBrandColor sharedInstance].brand];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"transfersNoRecord"] color:[NCBrandColor sharedInstance].brandElement];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView

@@ -754,7 +754,7 @@
             backgroundColor = [UIColor colorWithRed:0.588 green:0.797 blue:0.000 alpha:0.90];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = [NCBrandColor sharedInstance].brand;
+            backgroundColor = [NCBrandColor sharedInstance].brandElement;
             break;
         default:
             break;
@@ -886,7 +886,7 @@
     item.selectedImage = [UIImage imageNamed:@"tabBarMore"];
     
     // Plus Button
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brandElement];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
@@ -933,7 +933,7 @@
 {
     tab.translucent = NO;
     tab.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    tab.tintColor = [NCBrandColor sharedInstance].brand;
+    tab.tintColor = [NCBrandColor sharedInstance].brandElement;
     
     tab.hidden = hidden;
     
@@ -947,7 +947,7 @@
     
     UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
     
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brandElement];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
@@ -972,12 +972,8 @@
     
     UIView *view = [[(UIButton *)sender superview] superview];
     
-    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brand];
-    
-    if ([CCUtility getCreateMenuEncrypted])
-        [menuAdd createMenuEncryptedWithView:view];
-    else
-        [menuAdd createMenuPlainWithView:view];
+    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brandElement];
+    [menuAdd createMenuWithView:view];
 }
 
 - (void)selectedTabBarController:(NSInteger)index
@@ -1032,7 +1028,7 @@
 
 - (void)settingThemingColorBrand
 {
-    UIColor* newColor;
+    UIColor *newColor, *newColorText;
     
     if (self.activeAccount.length > 0) {
     
@@ -1040,33 +1036,25 @@
     
         if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length == 7) {
         
-            BOOL isLight = [CCGraphics isLight:[CCGraphics colorFromHexString:capabilities.themingColor]];
-            
-            if (isLight) {
-                
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Server Theming" note:NSLocalizedString(@"_theming_is_light_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-                
-                newColor = [NCBrandColor sharedInstance].customer;
-                
-            } else {
-                
-                newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-            }
+            newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
+            newColorText = [CCGraphics colorFromHexString:capabilities.themingColorText];
             
         } else {
             
             newColor = [NCBrandColor sharedInstance].customer;
+            newColorText = [NCBrandColor sharedInstance].customerText;
         }
         
     } else {
         
         newColor = [NCBrandColor sharedInstance].customer;
+        newColorText = [NCBrandColor sharedInstance].customerText;
     }
     
     if (self.activeAccount.length > 0 && ![newColor isEqual:[NCBrandColor sharedInstance].brand] && newColor) {
         
         [NCBrandColor sharedInstance].brand = newColor;
+        [NCBrandColor sharedInstance].brandText = newColorText;
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
     }
 }

@@ -154,7 +154,7 @@
     self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].brandText;
     
     self.toolBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    self.toolBar.tintColor = [NCBrandColor sharedInstance].brand;
+    self.toolBar.tintColor = [NCBrandColor sharedInstance].brandElement;
     
     // Upload
     rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
@@ -218,7 +218,7 @@
         
         [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
         
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brand];
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
     }
     else
         [self closeShareViewController];

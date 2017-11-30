@@ -51,7 +51,7 @@ class NCText: UIViewController, UITextViewDelegate {
         self.navigationController?.navigationBar.isTranslucent = false
 
         self.navigationController?.toolbar.barTintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.toolbar.tintColor = NCBrandColor.sharedInstance.brand
+        self.navigationController?.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement
         
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
         nextButton.title = NSLocalizedString("_next_", comment: "")

@@ -83,8 +83,6 @@
 + (void)setFileNameMask:(NSString *)mask key:(NSString *)key;
 + (void)setFileNameType:(BOOL)prefix key:(NSString *)key;
 
-+ (void)setCreateMenuEncrypted:(BOOL)encrypted;
-
 + (void)setFavoriteOffline:(BOOL)offline;
 
 + (void)setActivityVerboseHigh:(BOOL)debug;
@@ -135,8 +133,6 @@
 
 + (NSString *)getFileNameMask:(NSString *)key;
 + (BOOL)getFileNameType:(NSString *)key;
-
-+ (BOOL)getCreateMenuEncrypted;
 
 + (BOOL)getFavoriteOffline;
 

@@ -211,7 +211,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             progressQuota.progress = 0
         }
 
-        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
+        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
                 
         let quota : String = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
         let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))

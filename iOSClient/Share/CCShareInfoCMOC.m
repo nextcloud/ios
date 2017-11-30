@@ -70,27 +70,27 @@ const PERMISSION_ALL = 31;
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"create" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_create_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"read" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_read_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"change" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_change_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delete" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_delete_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"share" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_share_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     section = [XLFormSectionDescriptor formSection];

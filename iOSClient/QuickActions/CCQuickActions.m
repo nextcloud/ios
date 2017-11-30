@@ -90,7 +90,7 @@
 - (void)openAssetsPickerController
 {
     CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
-    checkmark.tintColor = [NCBrandColor sharedInstance].brand;
+    checkmark.tintColor = [NCBrandColor sharedInstance].brandElement;
     [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
     
     UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];

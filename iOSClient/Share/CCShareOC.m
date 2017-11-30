@@ -120,7 +120,7 @@
     self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
+    self.endButton.tintColor = [NCBrandColor sharedInstance].brandText;
     
     [self reloadData];
     
@@ -131,7 +131,7 @@
     } else {
         
         if (self.metadata.directory)
-            self.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand];
+            self.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
         else
             self.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
 
@@ -239,7 +239,7 @@
 
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
             //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
-            [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"textLabel.textColor"];
+            [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"textLabel.textColor"];
             row.action.formSelector = @selector(sharePermissionButton:);
                 
             if (item.shareType == shareTypeGroup) row.title = [item.shareWithDisplayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];

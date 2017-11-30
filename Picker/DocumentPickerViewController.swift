@@ -478,7 +478,7 @@ extension DocumentPickerViewController {
                     
                         CCNetworking.shared().uploadFile(fileName, serverUrl: self!.serverUrl, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusResume), selector: "", selectorPost: "", errorCode: 0, delegate: self)
                         
-                        self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
+                        self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brandElement)
                     }
                 } catch _ {
                     self?.dismissGrantingAccess(to: self?.destinationURL)
@@ -649,11 +649,11 @@ extension DocumentPickerViewController: UITableViewDataSource {
             if metadata.directory {
                 
                 if (metadata.e2eEncrypted) {
-                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderEncrypted"), color: NCBrandColor.sharedInstance.brand)
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderEncrypted"), color: NCBrandColor.sharedInstance.brandElement)
                 } else if (metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory) {
-                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderphotocamera"), color: NCBrandColor.sharedInstance.brand)
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderphotocamera"), color: NCBrandColor.sharedInstance.brandElement)
                 } else {
-                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), color: NCBrandColor.sharedInstance.brand)
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), color: NCBrandColor.sharedInstance.brandElement)
                 }
                 
             } else {
@@ -707,7 +707,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
             CCNetworking.shared().downloadFile(metadata?.fileName, fileID: metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
 
-            hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brand)
+            hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brandElement)
             
         } else {
             

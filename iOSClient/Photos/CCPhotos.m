@@ -266,7 +266,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photosNoRecord"] color:[NCBrandColor sharedInstance].brand];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photosNoRecord"] color:[NCBrandColor sharedInstance].brandElement];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -302,7 +302,7 @@
             
     if (!account.autoUpload) {
     
-        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button1000x200"] color:[NCBrandColor sharedInstance].brand];
+        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button1000x200"] color:[NCBrandColor sharedInstance].brandElement];
         
         return [CCGraphics drawText:NSLocalizedString(@"_activate_autoupload_", nil) inImage:buttonImage colorText:[UIColor whiteColor] sizeOfFont:26];
         

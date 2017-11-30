@@ -209,7 +209,7 @@
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
     _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    _toolbar.tintColor = [NCBrandColor sharedInstance].brand;
+    _toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
 
     [self.view addSubview:_toolbar];
 }
@@ -220,7 +220,7 @@
     
     if (_toolbar) {
         _toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-        _toolbar.tintColor = [NCBrandColor sharedInstance].brand;
+        _toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
     }    
 }
 
@@ -637,7 +637,7 @@
     if (serverUrl) {
         [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorLoadViewImage selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:appDelegate.activeMain];
     
-        [_hud visibleHudTitle:@"" mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brand];
+        [_hud visibleHudTitle:@"" mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
     }
 }
 

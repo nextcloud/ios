@@ -76,7 +76,7 @@
     if (![_serverUrl length]) {
         
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
-        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"navigationLogo"]];
+        UIImageView *image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[NCBrandColor sharedInstance].brandText]];
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
         
@@ -111,7 +111,7 @@
     self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
-    self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brand;
+    self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -142,7 +142,7 @@
         
         UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         activityView.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
-        activityView.color = [NCBrandColor sharedInstance].brand;
+        activityView.color = [NCBrandColor sharedInstance].brandElement;
         [activityView startAnimating];
         
         return activityView;
@@ -440,11 +440,11 @@
     cell.detailTextLabel.text = @"";
     
     if (metadata.e2eEncrypted)
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brand];
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brandElement];
     else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brand];
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brandElement];
     else
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand];
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
     
     cell.textLabel.text = metadata.fileNameView;
     

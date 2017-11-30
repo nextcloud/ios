@@ -207,12 +207,6 @@
     [UICKeyChainStore setString:sPrefix forKey:key service:k_serviceShareKeyChain];
 }
 
-+ (void)setCreateMenuEncrypted:(BOOL)encrypted
-{
-    NSString *sEncrypted = (encrypted) ? @"true" : @"false";
-    [UICKeyChainStore setString:sEncrypted forKey:@"createMenuEncrypted" service:k_serviceShareKeyChain];
-}
-
 + (void)setFavoriteOffline:(BOOL)offline
 {
     NSString *sFavoriteOffline = (offline) ? @"true" : @"false";
@@ -443,11 +437,6 @@
 + (BOOL)getFileNameType:(NSString *)key
 {
     return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
-}
-
-+ (BOOL)getCreateMenuEncrypted
-{
-    return [[UICKeyChainStore stringForKey:@"createMenuEncrypted" service:k_serviceShareKeyChain] boolValue];
 }
 
 + (BOOL)getFavoriteOffline

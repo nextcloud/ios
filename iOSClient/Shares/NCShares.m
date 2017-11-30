@@ -114,7 +114,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharesNoFiles"] color:[NCBrandColor sharedInstance].brand];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharesNoFiles"] color:[NCBrandColor sharedInstance].brandElement];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -312,7 +312,7 @@
         
         if (metadata.directory) {
             
-            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brand];
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
         
         } else {
             
@@ -329,7 +329,7 @@
         
     } else {
         
-        cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] color:[NCBrandColor sharedInstance].brand];
+        cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] color:[NCBrandColor sharedInstance].brandElement];
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
             

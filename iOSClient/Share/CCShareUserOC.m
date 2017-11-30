@@ -103,7 +103,7 @@
     self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
+    self.endButton.tintColor = [NCBrandColor sharedInstance].brandText;
     
     self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
 }
@@ -223,7 +223,7 @@
         
         XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:[@(num) stringValue] rowType:XLFormRowDescriptorTypeBooleanCheck title:title];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"self.tintColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"self.tintColor"];
         
         [section addFormRow:row];
     }
