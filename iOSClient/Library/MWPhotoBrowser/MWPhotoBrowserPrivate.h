@@ -56,7 +56,6 @@
     BOOL _isVCBasedStatusBarAppearance;
     BOOL _statusBarShouldBeHidden;
     BOOL _displayActionButton;
-    BOOL _leaveStatusBarAlone;
 	BOOL _performingLayout;
 	BOOL _rotating;
     BOOL _viewIsActive; // active as in it's in the view heirarchy

@@ -335,15 +335,6 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 	// Super
 	[super viewWillAppear:animated];
     
-    // Status bar
-    if (!_viewHasAppearedInitially) {
-        _leaveStatusBarAlone = [self presentingViewControllerPrefersStatusBarHidden];
-        // Check if status bar is hidden on first appear, and if so then ignore it
-        if (CGRectEqualToRect([[UIApplication sharedApplication] statusBarFrame], CGRectZero)) {
-            _leaveStatusBarAlone = YES;
-        }
-    }
-    
     // Nav Bar Appearance iPAD
     if (self.traitCollection.horizontalSizeClass != UIUserInterfaceSizeClassCompact) {
         
@@ -1252,30 +1243,6 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
     CGFloat animatonOffset = 20;
     CGFloat animationDuration = (animated ? 0.35 : 0);
     
-    // Status bar
-    if (!_leaveStatusBarAlone) {
-
-        // Hide status bar
-        if (!_isVCBasedStatusBarAppearance) {
-            
-            //TWS Non-view controller based
-            [[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation:animated ? UIStatusBarAnimationSlide : UIStatusBarAnimationNone];
-            
-        } else {
-            
-            // View controller based so animate away
-            
-            _statusBarShouldBeHidden = hidden;
-            
-            //TWS
-            //[UIView animateWithDuration:animationDuration animations:^(void) {
-            //    [self setNeedsStatusBarAppearanceUpdate];
-            //} completion:^(BOOL finished) {}];
-
-        }
-
-    }
-    
     // Toolbar, nav bar and captions
     // Pre-appear animation positions for sliding
     if ([self areControlsHidden] && !hidden && animated) {
@@ -1352,14 +1319,6 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 	// they are visible
 	if (!permanent) [self hideControlsAfterDelay];
 	
-}
-
-- (BOOL)prefersStatusBarHidden {
-    if (!_leaveStatusBarAlone) {
-        return _statusBarShouldBeHidden;
-    } else {
-        return [self presentingViewControllerPrefersStatusBarHidden];
-    }
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
