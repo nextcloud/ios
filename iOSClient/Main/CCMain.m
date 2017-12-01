@@ -1653,13 +1653,9 @@
         
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
         
-        if ([metadata.etag isEqualToString:directory.etag] == NO) {
+        // Change etag or // E2E encrypted folder
+        if ([metadata.etag isEqualToString:directory.etag] == NO || (_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount])) {
             [self readFolder:metadataNet.serverUrl];
-        } else {
-            
-            // E2E Is encrypted folder get metadata
-            if (_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount])
-                [appDelegate.endToEndInterface getEndToEndMetadata:_metadataFolder.fileName fileID:_metadataFolder.fileID serverUrl:self.serverUrl];
         }
     }
 }
