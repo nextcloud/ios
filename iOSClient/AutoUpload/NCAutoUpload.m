@@ -320,18 +320,18 @@
 - (void)uploadNewAssets
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [self uploadAssetsNewAndFull:NO];
+        [self uploadAssetsNewAndFull:selectorUploadAutoUpload];
     });
 }
 
 - (void)uploadFullAssets
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        [self uploadAssetsNewAndFull:YES];
+        [self uploadAssetsNewAndFull:selectorUploadAutoUploadAll];
     });
 }
 
-- (void)uploadAssetsNewAndFull:(BOOL)assetsFull
+- (void)uploadAssetsNewAndFull:(NSString *)selector
 {
      if (!appDelegate.activeAccount || appDelegate.maintenanceMode)
          return;
@@ -341,7 +341,7 @@
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
 
     // Check Asset : NEW or FULL
-    PHFetchResult *newAssetToUpload = [self getCameraRollAssets:tableAccount assetsFull:assetsFull alignPhotoLibrary:NO];
+    PHFetchResult *newAssetToUpload = [self getCameraRollAssets:tableAccount selector:selector alignPhotoLibrary:NO];
     
     // News Assets ? if no verify if blocked Table Auto Upload -> Autostart
     if ([newAssetToUpload count] == 0) {
@@ -355,7 +355,7 @@
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if (assetsFull) {
+        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
             if (!_hud)
                 _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
         
@@ -364,7 +364,7 @@
     });
     
     // Create the folder for Photos & if request the subfolders
-    if(![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selectorUploadAutoUploadAll]) {
+    if(![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // end loading
             [_hud hideHud];
@@ -403,34 +403,31 @@
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
         
         metadataNet.assetLocalIdentifier = asset.localIdentifier;
-        if (assetsFull) {
-            metadataNet.selector = selectorUploadAutoUploadAll;
-            
+        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
             // Option 
             if ([[NCBrandOptions sharedInstance] use_storeLocalAutoUploadAll] == true)
                 metadataNet.selectorPost = nil;
             else
                 metadataNet.selectorPost = selectorUploadRemovePhoto;
-            
         } else {
-            metadataNet.selector = selectorUploadAutoUpload;
             metadataNet.selectorPost = nil;
         }
         
         metadataNet.fileName = fileName;
+        metadataNet.selector = selector;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;
         metadataNet.taskStatus = k_taskStatusResume;
         
         [metadataNetFull addObject:metadataNet];
         
-        // Update database
-        if (!assetsFull)
+        // Update database Auto Upload
+        if ([selector isEqualToString:selectorUploadAutoUpload])
             [self addQueueUploadAndPhotoLibrary:metadataNet asset:asset];
     }
     
     // Insert all assets (Full) in tableQueueUpload
-    if (assetsFull && [metadataNetFull count] > 0) {
+    if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataNetFull count] > 0) {
     
         [[NCManageDatabase sharedInstance] addQueueUploadWithMetadatasNet:metadataNetFull];
         
@@ -529,7 +526,7 @@
 #pragma mark ===== get Camera Roll new Asset ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (PHFetchResult *)getCameraRollAssets:(tableAccount *)account assetsFull:(BOOL)assetsFull alignPhotoLibrary:(BOOL)alignPhotoLibrary
+- (PHFetchResult *)getCameraRollAssets:(tableAccount *)account selector:(NSString *)selector alignPhotoLibrary:(BOOL)alignPhotoLibrary
 {
     @synchronized(self) {
         
@@ -567,7 +564,7 @@
             
             PHFetchResult *assets = [PHAsset fetchAssetsInAssetCollection:collection options:fetchOptions];
             
-            if (assetsFull == NO) {
+            if ([selector isEqualToString:selectorUploadAutoUpload]) {
             
                 NSString *creationDate;
                 NSString *idAsset;
@@ -604,7 +601,7 @@
 {
     tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
 
-    PHFetchResult *assets = [self getCameraRollAssets:account assetsFull:YES alignPhotoLibrary:YES];
+    PHFetchResult *assets = [self getCameraRollAssets:account selector:selectorUploadAutoUploadAll alignPhotoLibrary:YES];
         
     [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
     (void)[[NCManageDatabase sharedInstance] addPhotoLibrary:(NSArray *)assets];
