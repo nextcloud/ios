@@ -411,8 +411,8 @@
     if (!directoryID) return 0;
     NSPredicate *predicate;
     
-    if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
     
     NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
     
@@ -437,8 +437,8 @@
     if (!directoryID)
         return cell;
     
-    if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:indexPath.row];
     
@@ -475,8 +475,8 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return;
     
-    if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID == %@ AND directory = true", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID == %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:index.row];
     
@@ -525,7 +525,7 @@
     CCMove *viewController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMoveVC"];
     
     viewController.delegate = self.delegate;
-    viewController.onlyClearDirectory = self.onlyClearDirectory;
+    viewController.includeDirectoryE2EEncryption = self.includeDirectoryE2EEncryption;
     viewController.move.title = self.move.title;
     viewController.networkingOperationQueue = _networkingOperationQueue;
 

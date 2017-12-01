@@ -203,6 +203,8 @@
     viewController.barTintColor = barTintColor;
     viewController.tintColorTitle = tintColor;
     viewController.networkingOperationQueue = _networkingOperationQueue;
+    // E2E
+    viewController.includeDirectoryE2EEncryption = NO;
 
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:navigationController animated:YES completion:nil];

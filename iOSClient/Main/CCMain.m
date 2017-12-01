@@ -2299,6 +2299,8 @@
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
     viewController.networkingOperationQueue = appDelegate.netQueue;
+    // E2E
+    viewController.includeDirectoryE2EEncryption = NO;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:navigationController animated:YES completion:nil];
