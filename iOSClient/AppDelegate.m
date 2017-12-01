@@ -197,6 +197,10 @@
     // Settings TabBar
     [self createTabBarController];
     
+    // How to hide UINavigationBar 1px bottom line < iOS 11
+    [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
+    
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
     
