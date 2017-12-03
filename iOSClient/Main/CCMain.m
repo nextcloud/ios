@@ -1347,7 +1347,7 @@
         _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
         _docController.delegate = self;
         
-        [_docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+        [_docController presentOptionsMenuFromRect:self.view.frame inView:self.view.superview animated:YES];
     }
     
     // Save to Photo Album
