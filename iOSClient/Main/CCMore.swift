@@ -58,7 +58,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             //tableView.contentInsetAdjustmentBehavior = .never
         }
         
-        themingBackground.image = UIImage.init(named: "themingBackground")
+        themingBackground.image = #imageLiteral(resourceName: "themingBackground")
         
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -177,7 +177,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         if let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png") {
             themingBackground.image = theminBackgroundFile
         } else {
-            themingBackground.image = UIImage.init(named: "themingBackground")
+            themingBackground.image = #imageLiteral(resourceName: "themingBackground")
         }
         
         if (self.isViewLoaded && (self.view.window != nil)) {
