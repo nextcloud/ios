@@ -308,7 +308,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         } else if item.url.contains("open") && !item.url.contains("//") {
             
-            let nameStoryboard = item.url.substring(from: item.url.index(item.url.startIndex, offsetBy: 4))
+            let nameStoryboard = String(item.url[..<item.url.index(item.url.startIndex, offsetBy: 4)])
+            
+            //let nameStoryboard = item.url.substring(from: item.url.index(item.url.startIndex, offsetBy: 4))
             
             let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
             let controller = storyboard.instantiateViewController(withIdentifier: nameStoryboard)

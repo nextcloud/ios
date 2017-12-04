@@ -55,8 +55,6 @@
     NSMutableDictionary *_statusSwipeCell;
     
     UIImageView *_ImageTitleHomeCryptoCloud;
-    UIView *_reMenuBackgroundView;
-    UITapGestureRecognizer *_singleFingerTap;
     
     NSString *_directoryGroupBy;
     NSString *_directoryOrder;
@@ -177,7 +175,7 @@
         self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationLogo"] style:UIBarButtonItemStylePlain target:nil action:nil];
     
     // reMenu Background
-    _reMenuBackgroundView = [[UIView alloc] init];
+    _reMenuBackgroundView = [UIView new];
     _reMenuBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     
     // if this is not Main (the Main uses inizializeMain)
@@ -3269,11 +3267,12 @@
     
     appDelegate.reMainMenu.bounce = NO;
     
+    __weak typeof(self) weakSelf = self;
     [appDelegate.reMainMenu setClosePreparationBlock:^{
         
         // Backgroun reMenu (Gesture)
-        [_reMenuBackgroundView removeFromSuperview];
-        [_reMenuBackgroundView removeGestureRecognizer:_singleFingerTap];
+        [weakSelf.reMenuBackgroundView removeFromSuperview];
+        [weakSelf.reMenuBackgroundView removeGestureRecognizer:weakSelf.singleFingerTap];
     }];
 }
 
@@ -3365,11 +3364,12 @@
 
     appDelegate.reSelectMenu.bounce = NO;
     
+    __weak typeof(self) weakSelf = self;
     [appDelegate.reSelectMenu setClosePreparationBlock:^{
         
         // Backgroun reMenu (Gesture)
-        [_reMenuBackgroundView removeFromSuperview];
-        [_reMenuBackgroundView removeGestureRecognizer:_singleFingerTap];
+        [weakSelf.reMenuBackgroundView removeFromSuperview];
+        [weakSelf.reMenuBackgroundView removeGestureRecognizer:weakSelf.singleFingerTap];
     }];
 }
 
