@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>2.19.0</string>
 	<key>CFBundleVersion</key>
-	<string>00017</string>
+	<string>00018</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionFileProviderDocumentGroup</key>
