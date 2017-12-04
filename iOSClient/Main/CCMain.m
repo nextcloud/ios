@@ -154,10 +154,7 @@
     self.searchController.searchBar.delegate = self;
     
     [CCNetworking sharedNetworking].delegate = self;
-    
-    //
-    //self.edgesForExtendedLayout = UIRectEdgeNone;
-    
+        
     // Custom Cell
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
