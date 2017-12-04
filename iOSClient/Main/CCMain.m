@@ -585,15 +585,15 @@
             
             if (_metadataFolder.e2eEncrypted) {
                 
-                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleEncrypted"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
+                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleEncrypted"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
                 
             } else if ([[[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl] isEqualToString:self.serverUrl]) {
             
-                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titlePhotos"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
+                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titlePhotos"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
                 
             } else if ([_metadataFolder.permissions containsString:k_permission_shared] || [_metadataFolder.permissions containsString:k_permission_mounted] || shareLink.length > 0 || shareUserAndGroup.length > 0) {
                 
-                [CCGraphics addImageToTile:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleShare"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
+                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleShare"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
                 
             } else {
                 

@@ -410,7 +410,7 @@ Color difference is determined by the following formula:
     return theImage;
 }
 
-+ (void)addImageToTile:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle navigationItem:(UINavigationItem *)navigationItem
++ (void)addImageToTitle:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle navigationItem:(UINavigationItem *)navigationItem
 {
     UIView *navView = [UIView new];
     
