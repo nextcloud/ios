@@ -1360,6 +1360,13 @@
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BAADF51ED5A99300B7EAD4 /* Picker-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Picker-Bridging-Header.h"; sourceTree = "<group>"; };
+		F7BB04821FD58ACA00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F7BB04831FD58ACA00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F7BB04841FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F7BB04851FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F7BB04861FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F7BB04871FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F7BB04881FD58ACB00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/Error.strings"; sourceTree = "<group>"; };
 		F7BE6E2B1D2D5C3B00106933 /* CCQuickActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCQuickActions.h; sourceTree = "<group>"; };
 		F7BE6E2C1D2D5C3B00106933 /* CCQuickActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCQuickActions.m; sourceTree = "<group>"; };
 		F7BF1B3F1D51E893000854F6 /* CCLogin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCLogin.h; sourceTree = "<group>"; };
@@ -3327,6 +3334,7 @@
 				"es-PY",
 				"es-SV",
 				"es-UY",
+				"cs-CZ",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -4082,6 +4090,7 @@
 				F77439531FCD6D6100662C46 /* es-PY */,
 				F774395A1FCD6D8200662C46 /* es-SV */,
 				F77439611FCD6D9C00662C46 /* es-UY */,
+				F7BB04841FD58ACB00BBFD2A /* cs-CZ */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -4126,6 +4135,7 @@
 				F77439521FCD6D6100662C46 /* es-PY */,
 				F77439591FCD6D8100662C46 /* es-SV */,
 				F77439601FCD6D9C00662C46 /* es-UY */,
+				F7BB04831FD58ACA00BBFD2A /* cs-CZ */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -4170,6 +4180,7 @@
 				F77439561FCD6D6200662C46 /* es-PY */,
 				F774395D1FCD6D8200662C46 /* es-SV */,
 				F77439641FCD6D9D00662C46 /* es-UY */,
+				F7BB04871FD58ACB00BBFD2A /* cs-CZ */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -4214,6 +4225,7 @@
 				F77439511FCD6D6100662C46 /* es-PY */,
 				F77439581FCD6D8100662C46 /* es-SV */,
 				F774395F1FCD6D9C00662C46 /* es-UY */,
+				F7BB04821FD58ACA00BBFD2A /* cs-CZ */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -4258,6 +4270,7 @@
 				F77439571FCD6D6200662C46 /* es-PY */,
 				F774395E1FCD6D8200662C46 /* es-SV */,
 				F77439651FCD6D9D00662C46 /* es-UY */,
+				F7BB04881FD58ACB00BBFD2A /* cs-CZ */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -4302,6 +4315,7 @@
 				F77439551FCD6D6100662C46 /* es-PY */,
 				F774395C1FCD6D8200662C46 /* es-SV */,
 				F77439631FCD6D9C00662C46 /* es-UY */,
+				F7BB04861FD58ACB00BBFD2A /* cs-CZ */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -4346,6 +4360,7 @@
 				F77439541FCD6D6100662C46 /* es-PY */,
 				F774395B1FCD6D8200662C46 /* es-SV */,
 				F77439621FCD6D9C00662C46 /* es-UY */,
+				F7BB04851FD58ACB00BBFD2A /* cs-CZ */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
