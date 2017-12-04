@@ -462,7 +462,7 @@
         <!--Main-->
         <scene sceneID="OEe-6n-ARk">
             <objects>
-                <tableViewController storyboardIdentifier="CCMainVC" id="YJg-Xa-VYf" customClass="CCMain" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="CCMainVC" extendedLayoutIncludesOpaqueBars="YES" id="YJg-Xa-VYf" customClass="CCMain" sceneMemberID="viewController">
                     <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="7sT-6b-Pnh">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -804,6 +804,6 @@
         <image name="tabBarPlus" width="40" height="40"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="op6-ow-K8v"/>
+        <segue reference="YTW-Kz-l02"/>
     </inferredMetricsTieBreakers>
 </document>
