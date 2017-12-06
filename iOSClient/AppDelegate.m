@@ -186,14 +186,6 @@
     //[[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    //UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
-    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-
-    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
-    splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
-    [self aspectNavigationControllerBar:navigationController.navigationBar online:YES hidden:NO];
-    
     // Settings TabBar
     [self createTabBarController];
     

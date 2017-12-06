@@ -53,6 +53,14 @@
 {
     [super viewDidLoad];
 
+    // Display mode SPLIT
+    self.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
+
+    // Navigation Controller del detail colorato e con le freccette per l'espansione <> displayModeButtonItem
+    UINavigationController *navigationController = [self.viewControllers lastObject];
+    navigationController.topViewController.navigationItem.leftBarButtonItem = self.displayModeButtonItem;
+    [appDelegate aspectNavigationControllerBar:navigationController.navigationBar online:YES hidden:NO];
+    
     [self inizialize];    
 }
 
