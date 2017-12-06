@@ -273,8 +273,7 @@
     [super showDetailViewController:vc sender:sender];
     
     // display icon "\"
-    ncDetail.topViewController.navigationItem.leftBarButtonItem = self.displayModeButtonItem;
-    self.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
+    //ncDetail.topViewController.navigationItem.leftBarButtonItem = self.displayModeButtonItem;
 }
 
 // OK
