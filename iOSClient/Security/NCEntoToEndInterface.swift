@@ -167,7 +167,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             
             let publicKey = CCUtility.getEndToEndPublicKey(self.appDelegate.activeAccount)
 
-            guard let privateKey = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase, publicKey: publicKey, salt: "$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$")) else {
+            guard let privateKey = (NCEndToEndEncryption.sharedManager().decryptPrivateKey(metadataNet.key, passphrase: passphrase, publicKey: publicKey)) else {
                 
                 self.appDelegate.messageNotification("E2E decrypt privateKey", description: "Serious internal error to decrypt Private Key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                 
@@ -215,9 +215,8 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             let OKAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
                 
                 var privateKey: NSString?
-                var salt: NSString?
                 
-                guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.activeUserID, directoryUser: self.appDelegate.directoryUser, passphrase: e2ePassphrase, privateKey: &privateKey, salt: &salt) else {
+                guard let privateKeyChiper = NCEndToEndEncryption.sharedManager().encryptPrivateKey(self.appDelegate.activeUserID, directoryUser: self.appDelegate.directoryUser, passphrase: e2ePassphrase, privateKey: &privateKey) else {
                     
                     self.appDelegate.messageNotification("E2E privateKey", description: "Serious internal error to create PrivateKey chiper", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
                     
