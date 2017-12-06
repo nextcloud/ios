@@ -409,6 +409,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
                 self.form.delegate = self
                 
                 returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType)
+                
             } else {
                 
                 CCUtility.setFileNameMask("", key: k_keyFileNameMask)
