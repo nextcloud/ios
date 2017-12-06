@@ -405,7 +405,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             if valueRenameTrimming.count > 0 {
                 
                 self.form.delegate = nil
-                CCUtility.setFileNameMask(valueRenameTrimming, key: k_keyFileNameMask)
+                CCUtility.setFileNameMask(valueRename, key: k_keyFileNameMask)
                 self.form.delegate = self
                 
                 returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType)

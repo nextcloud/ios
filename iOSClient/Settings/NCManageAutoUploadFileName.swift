@@ -195,7 +195,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
             if valueRenameTrimming.count > 0 {
                 
                 self.form.delegate = nil
-                CCUtility.setFileNameMask(valueRenameTrimming, key: k_keyFileNameAutoUploadMask)
+                CCUtility.setFileNameMask(valueRename, key: k_keyFileNameAutoUploadMask)
                 self.form.delegate = self
                 
                 returnString = CCUtility.createFileName("IMG_0001.JPG", fileDate: dateExample, fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameAutoUploadMask, keyFileNameType: k_keyFileNameAutoUploadType)
