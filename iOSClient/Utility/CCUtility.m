@@ -82,188 +82,18 @@
     [UICKeyChainStore setString:@"0.0" forKey:@"version" service:k_serviceShareKeyChain];
 }
 
-#pragma ------------------------------ SET
+#pragma ------------------------------ GET/SET
 
-+ (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode
++ (NSString *)getUUID
 {
-    [UICKeyChainStore setString:passcode forKey:uuid service:k_serviceShareKeyChain];
+#if TARGET_IPHONE_SIMULATOR
+    NSUUID *deviceId = [[NSUUID alloc]initWithUUIDString:k_UUID_SIM];
+    return [deviceId UUIDString];
+#else
+    NSString *uuid = [[UIDevice currentDevice] identifierForVendor].UUIDString;
+    return uuid;
+#endif
 }
-
-+ (NSString *)setVersion
-{
-    NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
-    
-    [UICKeyChainStore setString:version forKey:@"version" service:k_serviceShareKeyChain];
-    
-    return version;
-}
-
-+ (NSString *)setBuild
-{
-    NSString *build = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
-    
-    [UICKeyChainStore setString:build forKey:@"build" service:k_serviceShareKeyChain];
-    
-    return build;
-}
-
-+ (void)setBlockCode:(NSString *)blockcode
-{
-    [UICKeyChainStore setString:blockcode forKey:@"blockcode" service:k_serviceShareKeyChain];
-}
-
-+ (void)setSimplyBlockCode:(BOOL)simply
-{
-    NSString *sSimply = (simply) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSimply forKey:@"simplyblockcode" service:k_serviceShareKeyChain];
-}
-
-+ (void)setOnlyLockDir:(BOOL)lockDir
-{
-    NSString *sLockDir = (lockDir) ? @"true" : @"false";
-    [UICKeyChainStore setString:sLockDir forKey:@"onlylockdir" service:k_serviceShareKeyChain];
-}
-
-+ (void)setOptimizedPhoto:(BOOL)resize
-{
-    NSString *sOptimizedPhoto = (resize) ? @"true" : @"false";
-    [UICKeyChainStore setString:sOptimizedPhoto forKey:@"optimizedphoto" service:k_serviceShareKeyChain];
-}
-
-+ (void)setUploadAndRemovePhoto:(BOOL)remove
-{
-    NSString *sRemovePhoto = (remove) ? @"true" : @"false";
-    [UICKeyChainStore setString:sRemovePhoto forKey:@"uploadremovephoto" service:k_serviceShareKeyChain];
-}
-
-+ (void)setOrderSettings:(NSString *)order
-{
-    [UICKeyChainStore setString:order forKey:@"order" service:k_serviceShareKeyChain];
-}
-
-+ (void)setAscendingSettings:(BOOL)ascendente
-{
-    NSString *sAscendente = (ascendente) ? @"true" : @"false";
-    [UICKeyChainStore setString:sAscendente forKey:@"ascending" service:k_serviceShareKeyChain];
-}
-
-+ (void)setGroupBySettings:(NSString *)groupby
-{
-    [UICKeyChainStore setString:groupby forKey:@"groupby" service:k_serviceShareKeyChain];
-}
-
-+ (void)setIntroMessage:(NSString *)type set:(BOOL)set
-{
-    NSString *key = [INTRO_MessageType stringByAppendingString:type];
-    NSString *sSet = (set) ? @"true" : @"false";
-
-    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
-}
-
-+ (void)setActiveAccountExt:(NSString *)activeAccount
-{
-    [UICKeyChainStore setString:activeAccount forKey:@"activeAccountExt" service:k_serviceShareKeyChain];
-}
-
-+ (void)setServerUrlExt:(NSString *)serverUrl
-{
-    [UICKeyChainStore setString:serverUrl forKey:@"serverUrlExt" service:k_serviceShareKeyChain];
-}
-
-+ (void)setTitleServerUrlExt:(NSString *)titleServerUrl
-{
-    [UICKeyChainStore setString:titleServerUrl forKey:@"titleServerUrlExt" service:k_serviceShareKeyChain];
-}
-
-+ (void)setFileNameExt:(NSString *)fileName
-{
-    [UICKeyChainStore setString:fileName forKey:@"fileNameExt" service:k_serviceShareKeyChain];
-}
-
-+ (void)setEmail:(NSString *)email
-{
-    [UICKeyChainStore setString:email forKey:@"email" service:k_serviceShareKeyChain];
-}
-
-+ (void)setHint:(NSString *)hint
-{
-    [UICKeyChainStore setString:hint forKey:@"hint" service:k_serviceShareKeyChain];
-}
-
-+ (void)setDirectoryOnTop:(BOOL)directoryOnTop
-{
-    NSString *sDirectoryOnTop = (directoryOnTop) ? @"true" : @"false";
-    [UICKeyChainStore setString:sDirectoryOnTop forKey:@"directoryOnTop" service:k_serviceShareKeyChain];
-}
-
-+ (void)setFileNameMask:(NSString *)mask key:(NSString *)key
-{
-    [UICKeyChainStore setString:mask forKey:key service:k_serviceShareKeyChain];
-}
-
-+ (void)setFileNameType:(BOOL)prefix key:(NSString *)key
-{
-    NSString *sPrefix = (prefix) ? @"true" : @"false";
-    [UICKeyChainStore setString:sPrefix forKey:key service:k_serviceShareKeyChain];
-}
-
-+ (void)setFavoriteOffline:(BOOL)offline
-{
-    NSString *sFavoriteOffline = (offline) ? @"true" : @"false";
-    [UICKeyChainStore setString:sFavoriteOffline forKey:@"favoriteOffline" service:k_serviceShareKeyChain];
-}
-
-+ (void)setActivityVerboseHigh:(BOOL)high
-{
-    NSString *sHigh = (high) ? @"true" : @"false";
-    [UICKeyChainStore setString:sHigh forKey:@"activityVerboseHigh" service:k_serviceShareKeyChain];
-}
-
-+ (void)setShowHiddenFiles:(BOOL)show
-{
-    NSString *sShow = (show) ? @"true" : @"false";
-    [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
-}
-
-+ (void)setFormatCompatibility:(BOOL)set
-{
-    NSString *sSet = (set) ? @"true" : @"false";
-    [UICKeyChainStore setString:sSet forKey:@"formatCompatibility" service:k_serviceShareKeyChain];
-}
-
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
-{
-    NSString *key = [E2E_PublicKey stringByAppendingString:account];
-    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
-}
-
-+ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
-{
-    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
-    [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
-}
-
-+ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase
-{
-    NSString *key = [E2E_Passphrase stringByAppendingString:account];
-    [UICKeyChainStore setString:passphrase forKey:key service:k_serviceShareKeyChain];
-}
-
-+ (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey
-{
-    NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
-    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
-}
-
-+ (void)clearAllKeysEndToEnd:(NSString *)account
-{
-    [self setEndToEndPublicKey:account publicKey:nil];
-    [self setEndToEndPrivateKey:account privateKey:nil];
-    [self setEndToEndPassphrase:account passphrase:nil];
-    [self setEndToEndPublicKeyServer:account publicKey:nil];
-}
-
-#pragma ------------------------------ GET
 
 + (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid
 {
@@ -277,15 +107,9 @@
     return passcode;
 }
 
-+ (NSString *)getUUID
++ (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode
 {
-#if TARGET_IPHONE_SIMULATOR
-    NSUUID *deviceId = [[NSUUID alloc]initWithUUIDString:k_UUID_SIM];
-    return [deviceId UUIDString];
-#else
-    NSString *uuid = [[UIDevice currentDevice] identifierForVendor].UUIDString;
-    return uuid;
-#endif
+    [UICKeyChainStore setString:passcode forKey:uuid service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getVersion
@@ -293,14 +117,37 @@
     return [UICKeyChainStore stringForKey:@"version" service:k_serviceShareKeyChain];
 }
 
++ (NSString *)setVersion
+{
+    NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+    
+    [UICKeyChainStore setString:version forKey:@"version" service:k_serviceShareKeyChain];
+    
+    return version;
+}
+
 + (NSString *)getBuild
 {
     return [UICKeyChainStore stringForKey:@"build" service:k_serviceShareKeyChain];
 }
 
++ (NSString *)setBuild
+{
+    NSString *build = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+    
+    [UICKeyChainStore setString:build forKey:@"build" service:k_serviceShareKeyChain];
+    
+    return build;
+}
+
 + (NSString *)getBlockCode
 {
     return [UICKeyChainStore stringForKey:@"blockcode" service:k_serviceShareKeyChain];
+}
+
++ (void)setBlockCode:(NSString *)blockcode
+{
+    [UICKeyChainStore setString:blockcode forKey:@"blockcode" service:k_serviceShareKeyChain];
 }
 
 + (BOOL)getSimplyBlockCode
@@ -316,9 +163,21 @@
     return [simplyBlockCode boolValue];
 }
 
++ (void)setSimplyBlockCode:(BOOL)simply
+{
+    NSString *sSimply = (simply) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSimply forKey:@"simplyblockcode" service:k_serviceShareKeyChain];
+}
+
 + (BOOL)getOnlyLockDir
 {
     return [[UICKeyChainStore stringForKey:@"onlylockdir" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setOnlyLockDir:(BOOL)lockDir
+{
+    NSString *sLockDir = (lockDir) ? @"true" : @"false";
+    [UICKeyChainStore setString:sLockDir forKey:@"onlylockdir" service:k_serviceShareKeyChain];
 }
 
 + (BOOL)getOptimizedPhoto
@@ -326,9 +185,21 @@
     return [[UICKeyChainStore stringForKey:@"optimizedphoto" service:k_serviceShareKeyChain] boolValue];
 }
 
++ (void)setOptimizedPhoto:(BOOL)resize
+{
+    NSString *sOptimizedPhoto = (resize) ? @"true" : @"false";
+    [UICKeyChainStore setString:sOptimizedPhoto forKey:@"optimizedphoto" service:k_serviceShareKeyChain];
+}
+
 + (BOOL)getUploadAndRemovePhoto
 {
     return [[UICKeyChainStore stringForKey:@"uploadremovephoto" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setUploadAndRemovePhoto:(BOOL)remove
+{
+    NSString *sRemovePhoto = (remove) ? @"true" : @"false";
+    [UICKeyChainStore setString:sRemovePhoto forKey:@"uploadremovephoto" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getOrderSettings
@@ -344,6 +215,11 @@
     return order;
 }
 
++ (void)setOrderSettings:(NSString *)order
+{
+    [UICKeyChainStore setString:order forKey:@"order" service:k_serviceShareKeyChain];
+}
+
 + (BOOL)getAscendingSettings
 {
     NSString *ascending = [UICKeyChainStore stringForKey:@"ascending" service:k_serviceShareKeyChain];
@@ -355,6 +231,12 @@
     }
     
     return [ascending boolValue];
+}
+
++ (void)setAscendingSettings:(BOOL)ascendente
+{
+    NSString *sAscendente = (ascendente) ? @"true" : @"false";
+    [UICKeyChainStore setString:sAscendente forKey:@"ascending" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getGroupBySettings
@@ -370,11 +252,24 @@
     return groupby;
 }
 
++ (void)setGroupBySettings:(NSString *)groupby
+{
+    [UICKeyChainStore setString:groupby forKey:@"groupby" service:k_serviceShareKeyChain];
+}
+
 + (BOOL)getIntroMessage:(NSString *)type
 {
     NSString *key = [INTRO_MessageType stringByAppendingString:type];
     
     return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setIntroMessage:(NSString *)type set:(BOOL)set
+{
+    NSString *key = [INTRO_MessageType stringByAppendingString:type];
+    NSString *sSet = (set) ? @"true" : @"false";
+
+    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getIncrementalNumber
@@ -394,9 +289,19 @@
     return [UICKeyChainStore stringForKey:@"activeAccountExt" service:k_serviceShareKeyChain];
 }
 
++ (void)setActiveAccountExt:(NSString *)activeAccount
+{
+    [UICKeyChainStore setString:activeAccount forKey:@"activeAccountExt" service:k_serviceShareKeyChain];
+}
+
 + (NSString *)getServerUrlExt
 {
     return [UICKeyChainStore stringForKey:@"serverUrlExt" service:k_serviceShareKeyChain];
+}
+
++ (void)setServerUrlExt:(NSString *)serverUrl
+{
+    [UICKeyChainStore setString:serverUrl forKey:@"serverUrlExt" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getTitleServerUrlExt
@@ -404,9 +309,19 @@
     return [UICKeyChainStore stringForKey:@"titleServerUrlExt" service:k_serviceShareKeyChain];
 }
 
++ (void)setTitleServerUrlExt:(NSString *)titleServerUrl
+{
+    [UICKeyChainStore setString:titleServerUrl forKey:@"titleServerUrlExt" service:k_serviceShareKeyChain];
+}
+
 + (NSString *)getFileNameExt
 {
     return [UICKeyChainStore stringForKey:@"fileNameExt" service:k_serviceShareKeyChain];
+}
+
++ (void)setFileNameExt:(NSString *)fileName
+{
+    [UICKeyChainStore setString:fileName forKey:@"fileNameExt" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getEmail
@@ -414,14 +329,30 @@
     return [UICKeyChainStore stringForKey:@"email" service:k_serviceShareKeyChain];
 }
 
++ (void)setEmail:(NSString *)email
+{
+    [UICKeyChainStore setString:email forKey:@"email" service:k_serviceShareKeyChain];
+}
+
 + (NSString *)getHint
 {
     return [UICKeyChainStore stringForKey:@"hint" service:k_serviceShareKeyChain];
 }
 
++ (void)setHint:(NSString *)hint
+{
+    [UICKeyChainStore setString:hint forKey:@"hint" service:k_serviceShareKeyChain];
+}
+
 + (BOOL)getDirectoryOnTop
 {
     return [[UICKeyChainStore stringForKey:@"directoryOnTop" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setDirectoryOnTop:(BOOL)directoryOnTop
+{
+    NSString *sDirectoryOnTop = (directoryOnTop) ? @"true" : @"false";
+    [UICKeyChainStore setString:sDirectoryOnTop forKey:@"directoryOnTop" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getFileNameMask:(NSString *)key
@@ -430,8 +361,13 @@
     
     if (mask == nil)
         mask = @"";
-        
+    
     return mask;
+}
+
++ (void)setFileNameMask:(NSString *)mask key:(NSString *)key
+{
+    [UICKeyChainStore setString:mask forKey:key service:k_serviceShareKeyChain];
 }
 
 + (BOOL)getFileNameType:(NSString *)key
@@ -439,9 +375,21 @@
     return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
 }
 
++ (void)setFileNameType:(BOOL)prefix key:(NSString *)key
+{
+    NSString *sPrefix = (prefix) ? @"true" : @"false";
+    [UICKeyChainStore setString:sPrefix forKey:key service:k_serviceShareKeyChain];
+}
+
 + (BOOL)getFavoriteOffline
 {
     return [[UICKeyChainStore stringForKey:@"favoriteOffline" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setFavoriteOffline:(BOOL)offline
+{
+    NSString *sFavoriteOffline = (offline) ? @"true" : @"false";
+    [UICKeyChainStore setString:sFavoriteOffline forKey:@"favoriteOffline" service:k_serviceShareKeyChain];
 }
 
 + (BOOL)getActivityVerboseHigh
@@ -449,14 +397,32 @@
     return [[UICKeyChainStore stringForKey:@"activityVerboseHigh" service:k_serviceShareKeyChain] boolValue];
 }
 
++ (void)setActivityVerboseHigh:(BOOL)high
+{
+    NSString *sHigh = (high) ? @"true" : @"false";
+    [UICKeyChainStore setString:sHigh forKey:@"activityVerboseHigh" service:k_serviceShareKeyChain];
+}
+
 + (BOOL)getShowHiddenFiles
 {
     return [[UICKeyChainStore stringForKey:@"showHiddenFiles" service:k_serviceShareKeyChain] boolValue];
 }
 
++ (void)setShowHiddenFiles:(BOOL)show
+{
+    NSString *sShow = (show) ? @"true" : @"false";
+    [UICKeyChainStore setString:sShow forKey:@"showHiddenFiles" service:k_serviceShareKeyChain];
+}
+
 + (BOOL)getFormatCompatibility
 {
     return [[UICKeyChainStore stringForKey:@"formatCompatibility" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setFormatCompatibility:(BOOL)set
+{
+    NSString *sSet = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sSet forKey:@"formatCompatibility" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getEndToEndPublicKey:(NSString *)account
@@ -465,10 +431,22 @@
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey
+{
+    NSString *key = [E2E_PublicKey stringByAppendingString:account];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
+}
+
 + (NSString *)getEndToEndPrivateKey:(NSString *)account
 {
     NSString *key = [E2E_PrivateKey stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey
+{
+    NSString *key = [E2E_PrivateKey stringByAppendingString:account];
+    [UICKeyChainStore setString:privateKey forKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getEndToEndPassphrase:(NSString *)account
@@ -477,10 +455,22 @@
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
 }
 
++ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase
+{
+    NSString *key = [E2E_Passphrase stringByAppendingString:account];
+    [UICKeyChainStore setString:passphrase forKey:key service:k_serviceShareKeyChain];
+}
+
 + (NSString *)getEndToEndPublicKeyServer:(NSString *)account
 {
     NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
     return [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
+}
+
++ (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey
+{
+    NSString *key = [E2E_PublicKeyServer stringByAppendingString:account];
+    [UICKeyChainStore setString:publicKey forKey:key service:k_serviceShareKeyChain];
 }
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
@@ -495,10 +485,23 @@
         return YES;
         
     } else {
-                
+        
         return NO;
     }
 }
+
++ (void)clearAllKeysEndToEnd:(NSString *)account
+{
+    [self setEndToEndPublicKey:account publicKey:nil];
+    [self setEndToEndPrivateKey:account privateKey:nil];
+    [self setEndToEndPassphrase:account passphrase:nil];
+    [self setEndToEndPublicKeyServer:account publicKey:nil];
+}
+
+#pragma ------------------------------ GET
+
+
+
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====

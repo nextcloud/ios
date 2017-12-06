@@ -45,108 +45,105 @@
 + (void)adminRemovePasscode;
 + (void)adminRemoveVersion;
 
-// SET
+// GET/SET
 
 + (void)deleteAllChainStore;
-
 + (void)storeAllChainInService;
 
-+ (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode;
-
-+ (NSString *)setVersion;
-+ (NSString *)setBuild;
-
-+ (void)setBlockCode:(NSString *)blockcode;
-+ (void)setSimplyBlockCode:(BOOL)simply;
-+ (void)setOnlyLockDir:(BOOL)lockDir;
-
-+ (void)setOptimizedPhoto:(BOOL)resize;
-+ (void)setUploadAndRemovePhoto:(BOOL)remove;
-
-+ (void)setOrderSettings:(NSString *)order;
-+ (void)setAscendingSettings:(BOOL)ascendente;
-+ (void)setGroupBySettings:(NSString *)groupby;
-
-+ (void)setIntroMessage:(NSString *)type set:(BOOL)set;
-
-+ (void)setActiveAccountExt:(NSString *)activeAccount;
-+ (void)setServerUrlExt:(NSString *)serverUrl;
-+ (void)setTitleServerUrlExt:(NSString *)titleServerUrl;
-+ (void)setFileNameExt:(NSString *)fileName;
-
-+ (void)setEmail:(NSString *)email;
-
-+ (void)setHint:(NSString *)hint;
-
-+ (void)setDirectoryOnTop:(BOOL)directoryOnTop;
-
-+ (void)setFileNameMask:(NSString *)mask key:(NSString *)key;
-+ (void)setFileNameType:(BOOL)prefix key:(NSString *)key;
-
-+ (void)setFavoriteOffline:(BOOL)offline;
-
-+ (void)setActivityVerboseHigh:(BOOL)debug;
-
-+ (void)setShowHiddenFiles:(BOOL)show;
-
-+ (void)setFormatCompatibility:(BOOL)set;
-
-+ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
-+ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
-+ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
-+ (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey;
-+ (void)clearAllKeysEndToEnd:(NSString *)account;
-
-// GET
-
-+ (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
 + (NSString *)getUUID;
 
++ (NSString *)getKeyChainPasscodeForUUID:(NSString *)uuid;
++ (void)setKeyChainPasscodeForUUID:(NSString *)uuid conPasscode:(NSString *)passcode;
+
 + (NSString *)getVersion;
++ (NSString *)setVersion;
+
 + (NSString *)getBuild;
++ (NSString *)setBuild;
 
 + (NSString *)getBlockCode;
++ (void)setBlockCode:(NSString *)blockcode;
+
 + (BOOL)getSimplyBlockCode;
++ (void)setSimplyBlockCode:(BOOL)simply;
+
 + (BOOL)getOnlyLockDir;
++ (void)setOnlyLockDir:(BOOL)lockDir;
 
 + (BOOL)getOptimizedPhoto;
++ (void)setOptimizedPhoto:(BOOL)resize;
+
 + (BOOL)getUploadAndRemovePhoto;
++ (void)setUploadAndRemovePhoto:(BOOL)remove;
 
 + (NSString *)getOrderSettings;
++ (void)setOrderSettings:(NSString *)order;
+
 + (BOOL)getAscendingSettings;
++ (void)setAscendingSettings:(BOOL)ascendente;
+
 + (NSString *)getGroupBySettings;
++ (void)setGroupBySettings:(NSString *)groupby;
 
 + (BOOL)getIntroMessage:(NSString *)type;
++ (void)setIntroMessage:(NSString *)type set:(BOOL)set;
 
 + (NSString *)getIncrementalNumber;
 
 + (NSString *)getActiveAccountExt;
++ (void)setActiveAccountExt:(NSString *)activeAccount;
+
 + (NSString *)getServerUrlExt;
++ (void)setServerUrlExt:(NSString *)serverUrl;
+
 + (NSString *)getTitleServerUrlExt;
++ (void)setTitleServerUrlExt:(NSString *)titleServerUrl;
+
 + (NSString *)getFileNameExt;
++ (void)setFileNameExt:(NSString *)fileName;
 
 + (NSString *)getEmail;
++ (void)setEmail:(NSString *)email;
 
 + (NSString *)getHint;
++ (void)setHint:(NSString *)hint;
 
 + (BOOL)getDirectoryOnTop;
++ (void)setDirectoryOnTop:(BOOL)directoryOnTop;
 
 + (NSString *)getFileNameMask:(NSString *)key;
++ (void)setFileNameMask:(NSString *)mask key:(NSString *)key;
+
 + (BOOL)getFileNameType:(NSString *)key;
++ (void)setFileNameType:(BOOL)prefix key:(NSString *)key;
 
 + (BOOL)getFavoriteOffline;
++ (void)setFavoriteOffline:(BOOL)offline;
 
 + (BOOL)getActivityVerboseHigh;
++ (void)setActivityVerboseHigh:(BOOL)debug;
 
 + (BOOL)getShowHiddenFiles;
++ (void)setShowHiddenFiles:(BOOL)show;
 
 + (BOOL)getFormatCompatibility;
++ (void)setFormatCompatibility:(BOOL)set;
 
 + (NSString *)getEndToEndPublicKey:(NSString *)account;
++ (void)setEndToEndPublicKey:(NSString *)account publicKey:(NSString *)publicKey;
+
 + (NSString *)getEndToEndPrivateKey:(NSString *)account;
++ (void)setEndToEndPrivateKey:(NSString *)account privateKey:(NSString *)privateKey;
+
 + (NSString *)getEndToEndPassphrase:(NSString *)account;
++ (void)setEndToEndPassphrase:(NSString *)account passphrase:(NSString *)passphrase;
+
 + (NSString *)getEndToEndPublicKeyServer:(NSString *)account;
++ (void)setEndToEndPublicKeyServer:(NSString *)account publicKey:(NSString *)publicKey;
+
 + (BOOL)isEndToEndEnabled:(NSString *)account;
+
++ (void)clearAllKeysEndToEnd:(NSString *)account;
 
 // ===== Varius =====
 
