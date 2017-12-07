@@ -870,10 +870,18 @@ cleanup:
 
 - (NSData *)generateIV:(int)length
 {
-    NSMutableData  *ivData = [NSMutableData dataWithLength:length];
+    NSMutableData *ivData = [NSMutableData dataWithLength:length];
     (void)SecRandomCopyBytes(kSecRandomDefault, length, ivData.mutableBytes);
     
     return ivData;
+}
+
+- (NSData *)generateSalt:(int)length
+{
+    NSMutableData *saltData = [NSMutableData dataWithLength:length];
+    (void)SecRandomCopyBytes(kSecRandomDefault, length, saltData.mutableBytes);
+    
+    return saltData;
 }
 
 - (NSData *)generateKey:(int)length
