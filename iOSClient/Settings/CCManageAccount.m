@@ -214,7 +214,7 @@
     [appDelegate openLoginView:self loginType:loginAdd];
 }
 
-- (void)addAccountFoced
+- (void)addAccountForced
 {
     [appDelegate openLoginView:self loginType:loginAddForced];
 }
@@ -254,7 +254,7 @@
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
         if ([listAccount count] > 0) [self ChangeDefaultAccount:listAccount[0]];
         else {
-            [self addAccountFoced];
+            [self addAccountForced];
         }
     }
 }
@@ -336,7 +336,7 @@
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     if (listAccount == nil) {
-        [self addAccountFoced];
+        [self addAccountForced];
         return;
     }
     
