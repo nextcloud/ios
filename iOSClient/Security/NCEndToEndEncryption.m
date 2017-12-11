@@ -60,6 +60,7 @@
 #define AES_KEY_256_LENGTH          32
 #define AES_IVEC_LENGTH             16
 #define AES_GCM_TAG_LENGTH          16
+#define AES_SALT_LENGTH             40
 
 @interface NCEndToEndEncryption ()
 {
@@ -346,7 +347,7 @@ cleanup:
     }
     
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
-    NSData *saltData = [self generateSalt:40];
+    NSData *saltData = [self generateSalt:AES_SALT_LENGTH];
     
     // Remove all whitespaces from passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
