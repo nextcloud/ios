@@ -47,7 +47,7 @@
 #define IV_DELIMITER_ENCODED        @"fA==" // "|" base64 encoded
 #define PBKDF2_INTERACTION_COUNT    1024
 #define PBKDF2_KEY_LENGTH           256
-#define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
+//#define PBKDF2_SALT                 @"$4$YmBjm3hk$Qb74D5IUYwghUmzsMqeNFx5z0/8$"
 
 #define ASYMMETRIC_STRING_TEST      @"Nextcloud a safe home for all your data"
 
@@ -346,7 +346,7 @@ cleanup:
     }
     
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
-    NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *saltData = [self generateSalt:40];
     
     // Remove all whitespaces from passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
@@ -367,7 +367,8 @@ cleanup:
         
         NSString *privateKeyCipherBase64 = [privateKeyCipherData base64EncodedStringWithOptions:0];
         NSString *initVectorBase64 = [ivData base64EncodedStringWithOptions:0];
-        NSString *privateKeyCipherWithInitVectorBase64 = [NSString stringWithFormat:@"%@%@%@", privateKeyCipherBase64, IV_DELIMITER_ENCODED, initVectorBase64];
+        NSString *saltBase64 = [saltData base64EncodedStringWithOptions:0];
+        NSString *privateKeyCipherWithInitVectorBase64 = [NSString stringWithFormat:@"%@%@%@%@%@", privateKeyCipherBase64, IV_DELIMITER_ENCODED, initVectorBase64, IV_DELIMITER_ENCODED, saltBase64];
         
         *privateKey = [[NSString alloc] initWithData:_privateKeyData encoding:NSUTF8StringEncoding];
         return privateKeyCipherWithInitVectorBase64;
@@ -385,27 +386,20 @@ cleanup:
     
     // Key (data)
     NSMutableData *keyData = [NSMutableData dataWithLength:PBKDF2_KEY_LENGTH/8];
-    NSData *saltData = [PBKDF2_SALT dataUsingEncoding:NSUTF8StringEncoding];
+    
+    // Split
+    NSArray *privateKeyCipherArray = [privateKeyCipher componentsSeparatedByString:IV_DELIMITER_ENCODED];
+
+    NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherArray[0] options:0];
+    NSString *tagBase64 = [privateKeyCipher substringWithRange:NSMakeRange([(NSString *)privateKeyCipherArray[0] length] - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
+    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tagBase64 options:0];
+    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherArray[1] options:0];
+    NSData *saltData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherArray[2] options:0];
     
     // Remove all whitespaces from passphrase
     passphrase = [passphrase stringByReplacingOccurrencesOfString:@" " withString:@""];
     
     CCKeyDerivationPBKDF(kCCPBKDF2, passphrase.UTF8String, passphrase.length, saltData.bytes, saltData.length, kCCPRFHmacAlgSHA1, PBKDF2_INTERACTION_COUNT, keyData.mutableBytes, keyData.length);
-    
-    // Find range for IV_DELIMITER_ENCODED
-    NSRange range = [privateKeyCipher rangeOfString:IV_DELIMITER_ENCODED];
-   
-    // Init Vector
-    NSString *ivBase64 = [privateKeyCipher substringFromIndex:(range.location + range.length)];
-    NSData *ivData = [[NSData alloc] initWithBase64EncodedString:ivBase64 options:0];
-    
-    // TAG
-    NSString *tagBase64 = [privateKeyCipher substringWithRange:NSMakeRange(range.location - AES_GCM_TAG_LENGTH, AES_GCM_TAG_LENGTH)];
-    NSData *tagData = [[NSData alloc] initWithBase64EncodedString:tagBase64 options:0];
-    
-    // PrivateKey
-    NSString *privateKeyCipherBase64 = [privateKeyCipher substringToIndex:(range.location)];
-    NSData *privateKeyCipherData = [[NSData alloc] initWithBase64EncodedString:privateKeyCipherBase64 options:0];
     
     BOOL result = [self decryptData:privateKeyCipherData plainData:&privateKeyData keyData:keyData keyLen:AES_KEY_256_LENGTH ivData:ivData tagData:tagData];
     
