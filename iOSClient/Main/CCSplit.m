@@ -75,6 +75,20 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    // iPhone +
+    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact && ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone && UIScreen.mainScreen.nativeBounds.size.height == 2208)) {
+    
+        UITabBarController *tbc = self.viewControllers.firstObject;
+        for (UINavigationController *nvc in tbc.viewControllers) {
+        
+            if ([nvc.topViewController isKindOfClass:[CCDetail class]]) {
+                [nvc popViewControllerAnimated:NO];
+            }
+        }
+    }
+
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
         if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
@@ -86,8 +100,6 @@
             // Landscape
         }
     }];
-    
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 #pragma --------------------------------------------------------------------------------------------
