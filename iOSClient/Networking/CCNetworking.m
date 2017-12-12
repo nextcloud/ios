@@ -973,7 +973,7 @@
         
     } else {
         
-        // E2E *** IS ENCRYPTED ---> CREATE METADATA ***
+        // E2E *** IS ENCRYPTED ---> CREATE SEND METADATA ***
         if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
