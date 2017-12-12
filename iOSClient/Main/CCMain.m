@@ -322,7 +322,7 @@
     // color searchbar
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
     self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
-    
+
     // Title
     [self setTitle];
     
@@ -1860,8 +1860,6 @@
         self.searchController.searchBar.delegate = self;
         self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
         self.searchController.searchBar.backgroundImage = [UIImage new];
-        // Color Text "Cancel"
-        [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[NCBrandColor sharedInstance].brandText];
         
         self.tableView.tableHeaderView = self.searchController.searchBar;
         [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
@@ -1886,7 +1884,8 @@
 
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
-    //[self setNeedsStatusBarAppearanceUpdate];
+    // Color text "Cancel"
+    [[UIBarButtonItem appearanceWhenContainedInInstancesOfClasses:@[[UISearchBar class]]] setTintColor:[NCBrandColor sharedInstance].brandText];
 
     _isSearchMode = YES;
     [self deleteRefreshControl];
