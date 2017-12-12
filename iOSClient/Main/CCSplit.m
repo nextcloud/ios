@@ -77,8 +77,8 @@
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
-    // iPhone +
-    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact && ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone && UIScreen.mainScreen.nativeBounds.size.height == 2208)) {
+    // iPhone + (fallthrough res)
+    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact && [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone && (UIScreen.mainScreen.nativeBounds.size.height == 2208 || UIScreen.mainScreen.nativeBounds.size.height == 1920)) {
     
         UITabBarController *tbc = self.viewControllers.firstObject;
         for (UINavigationController *nvc in tbc.viewControllers) {
