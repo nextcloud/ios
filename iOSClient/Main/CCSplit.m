@@ -303,4 +303,14 @@
     }
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Slide Over - Split View =====
+#pragma --------------------------------------------------------------------------------------------
+
+-(void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+    // simply create a property of 'BOOL' type
+    BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);    
+}
+
 @end
