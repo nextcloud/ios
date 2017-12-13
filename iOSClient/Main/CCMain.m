@@ -3399,9 +3399,8 @@
 {
     if (recognizer.state == UIGestureRecognizerStateBegan) {
         
-        UITableView *tableView = (UITableView*)self.view;
-        CGPoint touchPoint = [recognizer locationInView:self.view];
-        NSIndexPath *indexPath = [tableView indexPathForRowAtPoint:touchPoint];
+        CGPoint touchPoint = [recognizer locationInView:self.tableView];
+        NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
         
         if ([self indexPathIsValid:indexPath])
             _metadata = [self getMetadataFromSectionDataSource:indexPath];
@@ -3423,7 +3422,7 @@
         
         [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, nil]];
         
-        [menuController setTargetRect:CGRectMake(touchPoint.x, touchPoint.y, 0.0f, 0.0f) inView:tableView];
+        [menuController setTargetRect:CGRectMake(touchPoint.x, touchPoint.y, 0.0f, 0.0f) inView:self.tableView];
         [menuController setMenuVisible:YES animated:YES];
     }
 }
