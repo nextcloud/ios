@@ -459,39 +459,6 @@
             </objects>
             <point key="canvasLocation" x="5750" y="2407"/>
         </scene>
-        <!--Main-->
-        <scene sceneID="OEe-6n-ARk">
-            <objects>
-                <tableViewController storyboardIdentifier="CCMainVC" extendedLayoutIncludesOpaqueBars="YES" id="YJg-Xa-VYf" customClass="CCMain" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" rowHeight="60" sectionHeaderHeight="22" sectionFooterHeight="22" id="7sT-6b-Pnh">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <viewLayoutGuide key="safeArea" id="oe1-H9-M7j"/>
-                        <sections/>
-                        <connections>
-                            <outlet property="dataSource" destination="YJg-Xa-VYf" id="sz8-sd-5O4"/>
-                            <outlet property="delegate" destination="YJg-Xa-VYf" id="Pwe-im-Vzk"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" id="TXe-bF-Uwk"/>
-                    <connections>
-                        <outlet property="searchDisplayController" destination="xcf-VI-FqA" id="nZk-CY-UUL"/>
-                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="YTW-Kz-l02"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="q78-1k-pga" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="xcf-VI-FqA">
-                    <connections>
-                        <outlet property="delegate" destination="YJg-Xa-VYf" id="J25-Dg-BOy"/>
-                        <outlet property="searchContentsController" destination="YJg-Xa-VYf" id="f4n-7F-MTp"/>
-                        <outlet property="searchResultsDataSource" destination="YJg-Xa-VYf" id="Omt-3Z-A1J"/>
-                        <outlet property="searchResultsDelegate" destination="YJg-Xa-VYf" id="r6f-t7-MvO"/>
-                    </connections>
-                </searchDisplayController>
-            </objects>
-            <point key="canvasLocation" x="5214" y="1218"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="Xur-XN-mjy">
             <objects>
@@ -508,7 +475,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="1l7-Aj-XxZ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4626" y="2407"/>
+            <point key="canvasLocation" x="4546" y="2407"/>
         </scene>
         <!--File-->
         <scene sceneID="dMv-43-hWy">
@@ -522,7 +489,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="YJg-Xa-VYf" kind="relationship" relationship="rootViewController" id="55n-k6-dDK"/>
+                        <segue destination="Qyv-Eo-LeA" kind="relationship" relationship="rootViewController" id="Y3c-wh-B5R"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="k95-tV-JJx" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -792,6 +759,37 @@
             </objects>
             <point key="canvasLocation" x="11150" y="1218"/>
         </scene>
+        <!--Main-->
+        <scene sceneID="tgH-1R-Pha">
+            <objects>
+                <viewController storyboardIdentifier="CCMain" id="Qyv-Eo-LeA" customClass="CCMain" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="QRE-ju-M4I">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" fixedFrame="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="dC6-NQ-0Td">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" heightSizable="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="Qyv-Eo-LeA" id="8v3-Et-JVZ"/>
+                                    <outlet property="delegate" destination="Qyv-Eo-LeA" id="CeL-Eu-Cur"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <viewLayoutGuide key="safeArea" id="Sqy-z1-MI5"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="2BC-Vb-dXh"/>
+                    <connections>
+                        <outlet property="tableView" destination="dC6-NQ-0Td" id="hew-Gn-bWh"/>
+                        <segue destination="mtc-lf-PRo" kind="showDetail" identifier="segueDetail" id="2Qm-A6-CfB"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="stJ-Yx-rVh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5214" y="1217"/>
+        </scene>
     </scenes>
     <resources>
         <image name="avatar" width="25" height="25"/>
@@ -804,6 +802,6 @@
         <image name="tabBarPlus" width="40" height="40"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="YTW-Kz-l02"/>
+        <segue reference="2Qm-A6-CfB"/>
     </inferredMetricsTieBreakers>
 </document>

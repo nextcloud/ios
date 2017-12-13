@@ -513,10 +513,10 @@
 - (void)createRefreshControl
 {
     _refreshControl = [UIRefreshControl new];
+    _tableView.refreshControl = _refreshControl;
    
     _refreshControl.tintColor = [NCBrandColor sharedInstance].brandElement;
     _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
-    [self setRefreshControl:_refreshControl];
     
     [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
 }
@@ -5264,7 +5264,7 @@
         
         if (!viewController) {
             
-            viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMainVC"];
+            viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMain"];
             
             viewController.serverUrl = serverUrlPush;
             viewController.titleMain = _metadata.fileName;

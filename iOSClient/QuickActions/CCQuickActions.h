@@ -32,7 +32,7 @@
 
 + (instancetype) quickActionsManager;
 
-- (void)startQuickActionsViewController:(UITableViewController *)viewController;
+- (void)startQuickActionsViewController:(UIViewController *)viewController;
 
 - (void)closeAll;
 

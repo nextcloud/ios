@@ -63,7 +63,7 @@
     return self;
 }
 
-- (void)startQuickActionsViewController:(UITableViewController *)viewController
+- (void)startQuickActionsViewController:(UIViewController *)viewController
 {
     _mainVC = (CCMain *)viewController;
     
