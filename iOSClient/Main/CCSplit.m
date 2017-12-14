@@ -30,6 +30,7 @@
 @interface CCSplit () <CCLoginDelegate, CCLoginDelegateWeb>
 {
     AppDelegate *appDelegate;
+    BOOL prevRunningInFullScreen;
 }
 @end
 
@@ -44,6 +45,7 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        prevRunningInFullScreen = YES;
     }
     
     return self;
@@ -80,6 +82,7 @@
     // iPhone + (fallthrough res)
     if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact && [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone && (UIScreen.mainScreen.nativeBounds.size.height == 2208 || UIScreen.mainScreen.nativeBounds.size.height == 1920)) {
     
+        // FIX master-detail
         UITabBarController *tbc = self.viewControllers.firstObject;
         for (UINavigationController *nvc in tbc.viewControllers) {
         
@@ -88,7 +91,7 @@
             }
         }
     }
-
+    
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
         if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
@@ -310,7 +313,21 @@
 -(void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
 {
     // simply create a property of 'BOOL' type
-    BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);    
+    BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);
+    
+    prevRunningInFullScreen = isRunningInFullScreen;
+    
+    if (prevRunningInFullScreen == NO) {
+        
+        // FIX master-detail
+        UITabBarController *tbc = self.viewControllers.firstObject;
+        for (UINavigationController *nvc in tbc.viewControllers) {
+            
+            if ([nvc.topViewController isKindOfClass:[CCDetail class]]) {
+                [nvc popViewControllerAnimated:NO];
+            }
+        }
+    }
 }
 
 @end
