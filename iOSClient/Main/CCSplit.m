@@ -289,6 +289,9 @@
     }
     
     [super showDetailViewController:vc sender:sender];
+    
+    // display icon "<>"
+    ncDetail.topViewController.navigationItem.leftBarButtonItem = self.displayModeButtonItem;
 }
 
 // OK
