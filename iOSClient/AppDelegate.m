@@ -187,7 +187,9 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     // Settings TabBar
-    [self createTabBarController];
+    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
+    [self createTabBarController:tabBarController];
     
     // How to hide UINavigationBar 1px bottom line < iOS 11
     [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
@@ -835,15 +837,12 @@
 #pragma mark ===== TabBarController =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createTabBarController
+- (void)createTabBarController:(UITabBarController *)tabBarController
 {
     UITabBarItem *item;
     NSLayoutConstraint *constraint;
     CGFloat multiplier = 0;
     CGFloat safeAreaBottom = 0;
-    
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     if (@available(iOS 11, *)) {
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
@@ -865,8 +864,8 @@
     
     // (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
-    item.title = nil;
-    item.image = nil;
+    item.title = @"";
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[UIColor clearColor]];
     item.enabled = false;
     
     // Photos
