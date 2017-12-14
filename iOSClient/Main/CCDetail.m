@@ -261,6 +261,9 @@
             [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
         }
     }
+    
+    
+    self.navigationController.topViewController.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
 }
 
 #pragma --------------------------------------------------------------------------------------------
