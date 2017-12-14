@@ -3016,7 +3016,30 @@
         
         item.title = [account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
         item.argument = account;
-        item.image = [UIImage imageNamed:@"menuLogoUser"];
+        
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ ", account]];
+        NSString *directoryUser = [CCUtility getDirectoryActiveUser:tableAccount.user activeUrl:tableAccount.url];
+
+        UIImage *avatar = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", directoryUser]];
+        if (avatar) {
+            
+            avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(25, 25) isAspectRation:YES];
+            
+            CCAvatar *avatarImageView = [[CCAvatar alloc] initWithImage:avatar borderColor:[UIColor lightGrayColor] borderWidth:0.5];
+            
+            CGSize imageSize = avatarImageView.bounds.size;
+            UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0);
+            CGContextRef context = UIGraphicsGetCurrentContext();
+            [avatarImageView.layer renderInContext:context];
+            avatar = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
+            
+        } else {
+            
+            avatar = [UIImage imageNamed:@"menuLogoUser"];
+        }
+        
+        item.image = avatar;
         item.target = self;
         item.action = @selector(changeDefaultAccount:);
         
