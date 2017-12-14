@@ -927,7 +927,15 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [self readFolder:_serverUrl];
+    [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:NO];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        
+        // go to home sweet home
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+        
+        [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+    });
 }
 
 - (void)loginDisappear
@@ -3015,8 +3023,16 @@
         [menuArray addObject:item];
     }
     
-    if ([menuArray count] == 0)
-        return;
+    // Add + new account
+    CCMenuItem *item = [[CCMenuItem alloc] init];
+    
+    item.title = NSLocalizedString(@"_add_account_", nil);
+    item.argument = @"";
+    item.image = [UIImage imageNamed:@"settingsAccountNextcloud"];
+    item.target = self;
+    item.action = @selector(addNewAccount:);
+    
+    [menuArray addObject:item];
     
     OptionalConfiguration options;
     Color textColor, backgroundColor;
@@ -3072,6 +3088,14 @@
             [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
         }
     });
+}
+
+- (void)addNewAccount:(CCMenuItem *)sender
+{
+    [appDelegate.netQueue cancelAllOperations];
+    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
+    
+    [appDelegate openLoginView:self loginType:loginAdd];
 }
 
 #pragma --------------------------------------------------------------------------------------------
