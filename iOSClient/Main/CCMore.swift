@@ -174,7 +174,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     @objc func changeTheming() {
         
-        themingBackground.backgroundColor = NCBrandColor.sharedInstance.brand
+        self.view.backgroundColor = NCBrandColor.sharedInstance.brand
         
         if let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png") {
             themingBackground.image = theminBackgroundFile
