@@ -340,9 +340,7 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         
         // ----- TWS ----- //
         self.navigationItem.hidesBackButton = YES;
-        
         self.navigationController.topViewController.navigationItem.leftBarButtonItem = self.splitViewController.displayModeButtonItem;
-        self.splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
     }
 
     // Update UI
