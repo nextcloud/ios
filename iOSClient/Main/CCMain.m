@@ -513,8 +513,13 @@
 - (void)createRefreshControl
 {
     _refreshControl = [UIRefreshControl new];
-    _tableView.refreshControl = _refreshControl;
-   
+    
+    if (@available(iOS 10, *)) {
+        _tableView.refreshControl = _refreshControl;
+    } else {
+        [_tableView addSubview:_refreshControl];
+    }
+       
     _refreshControl.tintColor = [NCBrandColor sharedInstance].brandElement;
     _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
     
