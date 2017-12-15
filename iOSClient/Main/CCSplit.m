@@ -268,13 +268,12 @@
 - (void)showDetailViewController:(UIViewController *)vc sender:(id)sender
 {
     UINavigationController *ncDetail = (UINavigationController *)vc;
-    
+    UINavigationController *ncMaster = [self.viewControllers.firstObject selectedViewController];
+
     if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
         
-        if ([self.viewControllers[0] isKindOfClass:[UITabBarController class]]) {
-            
-            UINavigationController *ncMaster = [self.viewControllers[0] selectedViewController];
-            
+        if ([self.viewControllers.firstObject isKindOfClass:[UITabBarController class]]) {
+                        
             // Fix : Application tried to present modally an active controller
             if ([ncMaster isBeingPresented]) {
                 // being presented
