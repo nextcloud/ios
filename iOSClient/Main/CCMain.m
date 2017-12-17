@@ -316,7 +316,7 @@
         [appDelegate changeTheming:self];
     
     // Refresh control
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandElement;
+    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
     _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
 
     // color searchbar
@@ -520,7 +520,7 @@
         [_tableView addSubview:_refreshControl];
     }
        
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandElement;
+    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
     _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
     
     [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
