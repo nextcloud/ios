@@ -560,14 +560,15 @@
 
 + (NSString *)transformedSize:(double)value
 {
-    int multiplyFactor = 0;
-    
+    int multiplicationFactor = 0;
     NSArray *tokens = [NSArray arrayWithObjects:@"bytes",@"KB",@"MB",@"GB",@"TB",nil];
-    while (value > 1024) {
+    while (value > 1024 && multiplicationFactor < tokens.count - 1) {
         value /= 1024;
-        multiplyFactor++;
+        multiplicationFactor++;
     }
-    return [NSString stringWithFormat:@"%4.2f %@",value, [tokens objectAtIndex:multiplyFactor]];
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    [formatter setMaximumFractionDigits:2];
+    return [NSString stringWithFormat:@"%@ %@", [formatter stringFromNumber:[NSNumber numberWithDouble:value]], [tokens objectAtIndex:multiplicationFactor]];
 }
 
 // Remove do not forbidden characters for Nextcloud Server
