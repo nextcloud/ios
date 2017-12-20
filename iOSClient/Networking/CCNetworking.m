@@ -992,6 +992,7 @@
                     NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", fileName, (unsigned long)uploadTask.taskIdentifier);
 
                 } else {
+                    
                     NSString *message = [NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code];
                     [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
                     [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:message sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
@@ -999,8 +1000,6 @@
                     [uploadTask cancel];
                 }
                 
-                // OK remove record on tableQueueUpload
-                [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
 #ifndef EXTENSION
                 // Next tableQueueUpload
                 AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -1080,6 +1079,7 @@
 - (void)uploadFileSuccessFailure:(tableMetadata *)metadata fileName:(NSString *)fileName fileID:(NSString *)fileID etag:(NSString *)etag date:(NSDate *)date serverUrl:(NSString *)serverUrl errorCode:(NSInteger)errorCode
 {
     NSString *sessionID = metadata.sessionID;
+    NSString *errorMessage = @"";
     
     // Progress Task
     NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"progress": ([NSNumber numberWithFloat:0.0])};
@@ -1099,93 +1099,110 @@
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", metadata.sessionID, _activeAccount]];
         }
         
-        [[self getDelegate:sessionID] uploadFileSuccessFailure:fileName fileID:fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
-        
-        return;
-    }
-    
-    // copy ico in new fileID
-    [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
-        
-    metadata.fileID = fileID;
-    metadata.etag = etag;
-    metadata.date = date;
-    metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-        
-    // Add new metadata
-    if (metadata)
-        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        
-    if (!metadata) {
-        [[self getDelegate:sessionID] uploadFileSuccessFailure:fileName fileID:fileID assetLocalIdentifier:@"" serverUrl:serverUrl selector:@"" selectorPost:@"" errorMessage:[NSString stringWithFormat:@"Serious error internal upload : metadata not found %@", fileName]  errorCode:k_CCErrorInternalError];
-        return;
-    }
-        
-    // Delete old ID_UPLOAD_XXXXX metadata
-    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID] clearDateReadDirectoryID:nil];
-    
-#ifndef EXTENSION
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate.listProgressMetadata removeObjectForKey:sessionID];
-#endif
-        
-    NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, metadata.fileID);
-        
-    metadata.session = @"";
-    metadata.sessionError = @"";
-    metadata.sessionID = @"";
-        
-    metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
-    
-    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
-        
-        // rename file fileNameView (original file) -> fileID
-        [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileNameView]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
-        // remove encrypted file
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID] error:nil];
+        errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
         
     } else {
+    
+        // copy ico in new fileID
+        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, sessionID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
         
-        // rename file sessionID -> fileID
-        [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
+        // Add new metadata
+        metadata.fileID = fileID;
+        metadata.etag = etag;
+        metadata.date = date;
+        metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+        
+        // Delete old ID_UPLOAD_XXXXX metadata
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", sessionID] clearDateReadDirectoryID:nil];
+    
+#ifndef EXTENSION
+        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        [appDelegate.listProgressMetadata removeObjectForKey:sessionID];
+#endif
+        
+        metadata.session = @"";
+        metadata.sessionError = @"";
+        metadata.sessionID = @"";
+        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
+    
+        NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, metadata.fileID);
+
+        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
+        
+            // rename file fileNameView (original file) -> fileID
+            [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileNameView]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
+            // remove encrypted file
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID] error:nil];
+        
+        } else {
+        
+            // rename file sessionID -> fileID
+            [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
+        }
+    
+        // Local
+        if (metadata.directory == NO)
+            [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+        
+        // EXIF
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
+            [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
+        
+        // Create ICON
+        if (metadata.directory == NO)
+            [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+        
+        // Optimization
+        if ([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto])
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID] error:nil];
+        
+        // Copy photo or video in the photo album for auto upload
+        if ([metadata.assetLocalIdentifier length] > 0 && ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload] || [metadata.sessionSelector isEqualToString:selectorUploadFile])) {
+            
+            PHAsset *asset;
+            PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
+            
+            if(result.count){
+                asset = result[0];
+                
+                [asset saveToAlbum:[NCBrandOptions sharedInstance].brand completionBlock:^(BOOL success) {
+                    if (success) NSLog(@"[LOG] Insert file %@ in %@", metadata.fileName, [NCBrandOptions sharedInstance].brand);
+                    else NSLog(@"[LOG] File %@ do not insert in %@", metadata.fileName, [NCBrandOptions sharedInstance].brand);
+                }];
+            }
+        }
+        
+        // Actvity
+        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
     }
     
-    // Local
-    if (metadata.directory == NO)
-        [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+    // E2E *** IS ENCRYPTED ---> UNLOCK ***
+    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
         
-    // EXIF
-    if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
-        [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
-        
-    // Create ICON
-    if (metadata.directory == NO)
-        [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
-        
-    // Optimization
-    if ([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID] error:nil];
-        
-    // Copy photo or video in the photo album for auto upload
-    if ([metadata.assetLocalIdentifier length] > 0 && ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload] || [metadata.sessionSelector isEqualToString:selectorUploadFile])) {
+        // OK remove record on tableQueueUpload [NEXT UPLOAD]
+        [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier selector:metadata.sessionSelector];
+
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-        PHAsset *asset;
-        PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
-            
-        if(result.count){
-            asset = result[0];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+            if (directory) {
+                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:directory.e2eTokenLock];
+                if (error) {
+#ifndef EXTENSION
+                    NSString *message = [NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code];
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error folder unlock", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
                 
-            [asset saveToAlbum:[NCBrandOptions sharedInstance].brand completionBlock:^(BOOL success) {
-                if (success) NSLog(@"[LOG] Insert file %@ in %@", metadata.fileName, [NCBrandOptions sharedInstance].brand);
-                else NSLog(@"[LOG] File %@ do not insert in %@", metadata.fileName, [NCBrandOptions sharedInstance].brand);
-            }];
-        }
+                    [alertController addAction:okAction];
+                    [[[[[UIApplication sharedApplication] delegate] window] rootViewController] presentViewController:alertController animated:YES completion:nil];
+#endif
+                }
+            }
+        });
     }
         
-    // Actvity
-    [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-        
-    [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:@"" errorCode:0];
+    [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:errorMessage errorCode:errorCode];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1510,19 +1527,28 @@
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     
     NSString *e2eTokenLock;
-    NSString *getMetadata;
-    NSError *error;
+    __block BOOL updateMetadata = false;
+    __block NSError *e2eError;
     
     // Enabled E2E
     if ([CCUtility isEndToEndEnabled:_activeAccount] == NO)
         return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serius internal error E2E Encryption not enabled" forKey:NSLocalizedDescriptionKey]];
     
     // exists a metadata on serverUrl ?
-    error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:&getMetadata];
-    if (error.code != 404 && error != nil) {
-        return error;
+    [[NCNetworkingSync sharedManager] getEndToEndMetadataWithUser:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID success:^(NSString *encryptedMetadata) {
+
+        if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:encryptedMetadata privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl account:_activeAccount url:_activeUrl] == false)
+            e2eError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serious internal error in decoding metadata" forKey:NSLocalizedDescriptionKey]];
+        updateMetadata = YES;
+        
+    } failure:^(NSError *error) {
+        
+        e2eError = error;
+    }];
+    if (e2eError.code != 404 && e2eError != nil) {
+        return e2eError;
     }
-    
+
     NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     if (!tableE2eEncryption)
          return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serius internal error tableE2eEncryption, records not found" forKey:NSLocalizedDescriptionKey]];
@@ -1532,13 +1558,13 @@
         return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serious internal error in encoding metadata" forKey:NSLocalizedDescriptionKey]];
     
     // send Metadata
-    if (getMetadata.length > 0) {
-        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
+    if (updateMetadata) {
+        e2eError = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
     } else {
-        error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
+        e2eError = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
     }
     
-    return error;
+    return e2eError;
 }
 
 - (NSError *)rebuildAndSendEndToEndMetadataOnServerUrl:(NSString *)serverUrl
