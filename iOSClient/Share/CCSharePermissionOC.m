@@ -27,6 +27,7 @@
 
 @interface CCSharePermissionOC ()
 {
+    AppDelegate *appDelegate;
     OCSharedDto *shareDto;
 }
 @end
@@ -38,6 +39,7 @@
     self = [super initWithCoder:coder];
     if (self) {
         
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -58,7 +60,7 @@
     if ([UtilsFramework isAnyPermissionToEdit:shareDto.permissions]) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     if (shareDto.isDirectory) {
@@ -68,7 +70,7 @@
         if ([UtilsFramework isPermissionToCanCreate:shareDto.permissions]) row.value = @1;
         else row.value = @0;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
         [section addFormRow:row];
     
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"change" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_change_", nil)];
@@ -76,7 +78,7 @@
         if ([UtilsFramework isPermissionToCanChange:shareDto.permissions]) row.value = @1;
         else row.value = @0;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
         [section addFormRow:row];
     
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delete" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_delete_", nil)];
@@ -84,7 +86,7 @@
         if ([UtilsFramework isPermissionToCanDelete:shareDto.permissions]) row.value = @1;
         else row.value = @0;
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+        [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
         [section addFormRow:row];
     }
     
@@ -95,7 +97,7 @@
     if ([UtilsFramework isPermissionToCanShare:shareDto.permissions]) row.value = @1;
     else row.value = @0;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     section = [XLFormSectionDescriptor formSection];
@@ -105,7 +107,7 @@
     [form addFormSection:section];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sharepath" rowType:XLFormRowDescriptorTypeInfo title:NSLocalizedString(@"_share_permission_path_", nil)];
-    row.value = self.metadata.fileName;
+    row.value = self.metadata.fileNameView;
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"detailTextLabel.font"];
     [section addFormRow:row];
@@ -146,14 +148,14 @@
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
+    self.endButton.tintColor = [UIColor blackColor];
     
-    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
-    shareDto = [app.sharesID objectForKey:self.idRemoteShared];
+    shareDto = [appDelegate.sharesID objectForKey:self.idRemoteShared];
         
     [self initializeForm];    
 }

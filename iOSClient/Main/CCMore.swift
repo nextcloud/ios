@@ -58,7 +58,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             //tableView.contentInsetAdjustmentBehavior = .never
         }
         
-        themingBackground.image = UIImage.init(named: "themingBackground")
+        themingBackground.image = #imageLiteral(resourceName: "themingBackground")
         
         // create tap gesture recognizer
         let tapQuota = UITapGestureRecognizer(target: self, action: #selector(tapLabelQuotaExternalSite))
@@ -106,36 +106,31 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         item.url = "segueShares"
         functionMenu.append(item)
         
-        /*
-        // ITEM : Local storage
-        item = OCExternalSites.init()
-        item.name = "_local_storage_"
-        item.icon = "moreLocalStorage"
-        item.url = "segueLocalStorage"
-        functionMenu.append(item)
-        */
-        
         // ITEM : External
-        menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites(predicate: NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
         
-        for table in menuExternalSite! {
+        if NCBrandOptions.sharedInstance.disable_more_external_site == false {
+        
+            menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites(predicate: NSPredicate(format: "(account == '\(appDelegate.activeAccount!)')"))
+        
+            for table in menuExternalSite! {
             
-            item = OCExternalSites.init()
+                item = OCExternalSites.init()
             
-            item.name = table.name
-            item.url = table.url
-            item.icon = table.icon
+                item.name = table.name
+                item.url = table.url
+                item.icon = table.icon
             
-            if (table.type == "link") {
-                item.icon = "moreExternalSite"
-                functionMenu.append(item)
-            }
-            if (table.type == "settings") {
-                item.icon = "moreSettingsExternalSite"
-                settingsMenu.append(item)
-            }
-            if (table.type == "quota") {
-                quotaMenu.append(item)
+                if (table.type == "link") {
+                    item.icon = "moreExternalSite"
+                    functionMenu.append(item)
+                }
+                if (table.type == "settings") {
+                    item.icon = "moreSettingsExternalSite"
+                    settingsMenu.append(item)
+                }
+                if (table.type == "quota") {
+                    quotaMenu.append(item)
+                }
             }
         }
         
@@ -179,10 +174,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     @objc func changeTheming() {
         
+        self.view.backgroundColor = NCBrandColor.sharedInstance.brand
+        
         if let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png") {
             themingBackground.image = theminBackgroundFile
         } else {
-            themingBackground.image = UIImage.init(named: "themingBackground")
+            themingBackground.image = #imageLiteral(resourceName: "themingBackground")
         }
         
         if (self.isViewLoaded && (self.view.window != nil)) {
@@ -216,7 +213,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             progressQuota.progress = 0
         }
 
-        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brand
+        progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
                 
         let quota : String = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
         let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
@@ -272,7 +269,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.sharedInstance.moreNormal
+            cell.labelText.textColor = NCBrandColor.sharedInstance.textView
 
         }
         
@@ -283,7 +280,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             cell.imageIcon?.image = UIImage.init(named: item.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.sharedInstance.moreSettings
+            cell.labelText.textColor = NCBrandColor.sharedInstance.textView
         }
         
         return cell
@@ -313,7 +310,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         } else if item.url.contains("open") && !item.url.contains("//") {
             
-            let nameStoryboard = item.url.substring(from: item.url.index(item.url.startIndex, offsetBy: 4))
+            let nameStoryboard = String(item.url[..<item.url.index(item.url.startIndex, offsetBy: 4)])
+            
+            //let nameStoryboard = item.url.substring(from: item.url.index(item.url.startIndex, offsetBy: 4))
             
             let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
             let controller = storyboard.instantiateViewController(withIdentifier: nameStoryboard)

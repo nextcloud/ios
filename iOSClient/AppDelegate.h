@@ -145,6 +145,7 @@
 - (void)updateApplicationIconBadgeNumber;
 
 // TabBarController
+- (void)createTabBarController:(UITabBarController *)tabBarController;
 - (void)aspectNavigationControllerBar:(UINavigationBar *)nav online:(BOOL)online hidden:(BOOL)hidden;
 - (void)aspectTabBar:(UITabBar *)tab hidden:(BOOL)hidden;
 - (void)plusButtonVisibile:(BOOL)visible;

@@ -34,6 +34,10 @@
     NSString *directoryUser;
     
     BOOL _loadingFolder;
+    
+    // Automatic Upload Folder
+    NSString *_autoUploadFileName;
+    NSString *_autoUploadDirectory;
 }
 @end
 
@@ -71,17 +75,25 @@
 
     if (![_serverUrl length]) {
         
+        UIImageView *image;
+        
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:activeUrl];
-        UIImageView *image = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"navigationLogo"]];
+        
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+        if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
+            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor blackColor]]];
+        else
+            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor whiteColor]]];
+
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
         
     } else {
         
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(0,0, self.navigationItem.titleView.frame.size.width, 40)];
-        label.text = self.passMetadata.fileName;
+        label.text = self.passMetadata.fileNameView;
         
-        label.textColor = NCBrandColor.sharedInstance.navigationBarText;
+        label.textColor = NCBrandColor.sharedInstance.brandText;
         
         label.backgroundColor =[UIColor clearColor];
         label.textAlignment = NSTextAlignmentCenter;
@@ -104,10 +116,10 @@
     [super viewWillAppear:animated];
     
     self.navigationController.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand;
-    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.navigationBarText;
+    self.navigationController.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText;
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
-    self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brand;
+    self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -138,7 +150,7 @@
         
         UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         activityView.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
-        activityView.color = [NCBrandColor sharedInstance].brand;
+        activityView.color = [NCBrandColor sharedInstance].brandElement;
         [activityView startAnimating];
         
         return activityView;
@@ -164,7 +176,7 @@
     if ([self.delegate respondsToSelector:@selector(dismissMove)])
         [self.delegate dismissMove];
     
-    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileName];
+    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNameView];
         
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -259,18 +271,6 @@
     [_networkingOperationQueue addOperation:operation];
 }
 
-// MARK: - Download File
-
-- (void)downloadFileSuccess:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
-{
-
-}
-
-- (void)downloadFileFailure:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    self.move.enabled = NO;
-}
-
 // MARK: - Read Folder
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
@@ -325,7 +325,7 @@
     NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
  
     // Update directory etag
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID];
+    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
     
     for (tableMetadata *metadata in metadatas) {
         
@@ -336,7 +336,12 @@
     // insert in Database
     metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
 
+    // get auto upload folder
+    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
+    
     _loadingFolder = NO;
+    
     [self.tableView reloadData];
 }
 
@@ -371,7 +376,7 @@
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:nil];
+    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:[NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName] permissions:nil encrypted:false];
     
     // Load Folder or the Datasource
     [self readFolder];
@@ -406,8 +411,8 @@
     if (!directoryID) return 0;
     NSPredicate *predicate;
     
-    if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
     
     NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
     
@@ -432,8 +437,8 @@
     if (!directoryID)
         return cell;
     
-    if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:indexPath.row];
     
@@ -441,8 +446,15 @@
     cell.textLabel.textColor = [UIColor blackColor];
     
     cell.detailTextLabel.text = @"";
-    cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:metadata.iconName] color:[NCBrandColor sharedInstance].brand];
-    cell.textLabel.text = metadata.fileName;
+    
+    if (metadata.e2eEncrypted)
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brandElement];
+    else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brandElement];
+    else
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
+    
+    cell.textLabel.text = metadata.fileNameView;
     
     return cell;
 }
@@ -463,8 +475,8 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return;
     
-    if (self.onlyClearDirectory) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID == %@ AND directory = true", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID == %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:index.row];
     
@@ -513,7 +525,7 @@
     CCMove *viewController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMoveVC"];
     
     viewController.delegate = self.delegate;
-    viewController.onlyClearDirectory = self.onlyClearDirectory;
+    viewController.includeDirectoryE2EEncryption = self.includeDirectoryE2EEncryption;
     viewController.move.title = self.move.title;
     viewController.networkingOperationQueue = _networkingOperationQueue;
 

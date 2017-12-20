@@ -444,7 +444,7 @@ static const CGFloat maxWidth = 414.0f;
         // animate sliding down tableView and cancelButton.
         [UIView animateWithDuration:duration animations:^{
             self.blurredBackgroundView.alpha = 0.0f;
-            self.cancelButton.transform = CGAffineTransformTranslate(self.cancelButton.transform, 0, self.cancelButtonHeight - kSpaceDivide);
+            self.cancelButton.transform = CGAffineTransformTranslate(self.cancelButton.transform, 0, self.cancelButtonHeight - kSpaceDivide + _bottomPadding);
 
             // Shortest shift of position sufficient to hide all tableView contents below the bottom margin.
             // contentInset isn't used here (unlike in -show) because it caused weird problems with animations in some cases.

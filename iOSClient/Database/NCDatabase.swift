@@ -38,7 +38,6 @@ class tableAccount: Object {
     @objc dynamic var autoUploadVideo: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
-    @objc dynamic var autoUploadFormatCompatibility: Bool = false
     @objc dynamic var displayName = ""
     @objc dynamic var email = ""
     @objc dynamic var enabled: Bool = false
@@ -77,6 +76,8 @@ class tableCapabilities: Object {
     @objc dynamic var account = ""
     @objc dynamic var themingBackground = ""
     @objc dynamic var themingColor = ""
+    @objc dynamic var themingColorElement = ""
+    @objc dynamic var themingColorText = ""
     @objc dynamic var themingLogo = ""
     @objc dynamic var themingName = ""
     @objc dynamic var themingSlogan = ""
@@ -99,10 +100,12 @@ class tableDirectory: Object {
     @objc dynamic var account = ""
     @objc dynamic var dateReadDirectory: NSDate? = nil
     @objc dynamic var directoryID = ""
+    @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var lock: Bool = false
+    @objc dynamic var e2eTokenLock = ""
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     
@@ -117,16 +120,17 @@ class tableE2eEncryption: Object {
     @objc dynamic var authenticationTag = ""
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameIdentifier = ""
+    @objc dynamic var fileNamePath = ""
     @objc dynamic var key = ""
     @objc dynamic var initializationVector = ""
-    @objc dynamic var metadataKey: Int = 0
+    @objc dynamic var metadataKey = ""
+    @objc dynamic var metadataKeyIndex: Int = 0
     @objc dynamic var mimeType = ""
     @objc dynamic var serverUrl = ""
-    @objc dynamic var tokenLock = ""
-    @objc dynamic var version: Int = 0
+    @objc dynamic var version: Int = 1
     
     override static func primaryKey() -> String {
-        return "fileName"
+        return "fileNamePath"
     }
 }
 
@@ -178,11 +182,12 @@ class tableMetadata: Object {
     @objc dynamic var date = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var directoryID = ""
-    @objc dynamic var encrypted: Bool = false
+    @objc dynamic var e2eEncrypted: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
+    @objc dynamic var fileNameView = ""
     @objc dynamic var iconName = ""
     @objc dynamic var permissions = ""
     @objc dynamic var session = ""
@@ -240,7 +245,6 @@ class tableQueueUpload: Object {
     @objc dynamic var date = NSDate()
     @objc dynamic var fileName = ""
     @objc dynamic var lock: Bool = false
-    @objc dynamic var priority: Int = 0
     @objc dynamic var selector = ""
     @objc dynamic var selectorPost = ""
     @objc dynamic var serverUrl = ""

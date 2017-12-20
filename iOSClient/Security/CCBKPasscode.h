@@ -30,6 +30,7 @@ typedef enum : NSUInteger {
     CCBKPasscodeFromInit,
     CCBKPasscodeFromLockDirectory,
     CCBKPasscodeFromDisactivateDirectory,
+    CCBKPasscodeFromStartEncryption,
     CCBKPasscodeFromCheckPassphrase,
     CCBKPasscodeFromRemoveEncryption,
     CCBKPasscodeFromSettingsPasscode,

@@ -37,9 +37,6 @@
     NSString *_activeUserID;
     NSString *_activePassword;
     NSString *_activeUrl;
-    
-    NSURLSessionDownloadTask *_downloadTask;
-    NSURLSessionUploadTask *_uploadTask;
 }
 @end
 
@@ -102,12 +99,6 @@
 {
     if (_isExecuting) {
         
-        if (_downloadTask)
-            [_downloadTask cancel];
-    
-        if (_uploadTask)
-            [_uploadTask cancel];
-    
         [self complete];
     }
     
@@ -223,12 +214,15 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
         
         // Check items > 0
         if ([items count] == 0) {
             
 #ifndef EXTENSION
-            [app messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError  errorCode:0];
+            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+            [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError  errorCode:0];
 #endif
 
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -248,7 +242,7 @@
             OCFileDto *itemDtoFolder = [items objectAtIndex:0];
             //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:itemDtoFolder.permissions];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:itemDtoFolder.permissions encrypted:itemDtoFolder.isEncrypted];
             _metadataNet.directoryID = directoryID;
 
             NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -268,7 +262,7 @@
                 serverUrlFolder = @"..";
                 directoryIDFolder = @"00000000-0000-0000-0000-000000000000";
             
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:@"." serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
                 
             } else {
             
@@ -281,7 +275,7 @@
                             [self.delegate readFolderSuccess:_metadataNet metadataFolder:metadataFolder metadatas:metadatas];
                     });
                 }
-                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
             }
         
             NSArray *itemsSortedArray = [items sortedArrayUsingComparator:^NSComparisonResult(id a, id b) {
@@ -307,19 +301,21 @@
                     fileName = [fileName substringToIndex:[fileName length] - 1];
                     serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
                         
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDtoFolder.permissions];
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDtoFolder.permissions encrypted:itemDto.isEncrypted];
                 }
                 
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                    [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+                    [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                     continue;
                 }
                 // ------------------------
                 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -385,7 +381,8 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
+
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
         NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
@@ -409,7 +406,9 @@
                 // ----- BUG #942 ---------
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                    [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+                    [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                     continue;
                 }
@@ -434,9 +433,9 @@
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
                 serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
-                NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
+                NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
 
-                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
     
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -532,7 +531,8 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
+
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
 
@@ -568,7 +568,9 @@
             // ----- BUG #942 ---------
             if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                [app messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+                [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
                 continue;
             }
@@ -594,9 +596,9 @@
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
             
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser]];
+            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
         }
         
         if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccess:metadatas:)])
@@ -703,47 +705,6 @@
     }];
 }
 
-- (BOOL)automaticCreateFolderSync:(NSString *)folderPathName
-{
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    __block BOOL noError = YES;
-    
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication readFile:folderPathName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
-        
-        dispatch_semaphore_signal(semaphore);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-            
-            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
-            
-            dispatch_semaphore_signal(semaphore);
-            
-        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-            
-            noError = NO;
-            
-            dispatch_semaphore_signal(semaphore);
-            
-        } errorBeforeRequest:^(NSError *error) {
-            
-            noError = NO;
-            dispatch_semaphore_signal(semaphore);
-        }];
-    }];
-    
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
-    
-    return noError;
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  Delete =====
 #pragma --------------------------------------------------------------------------------------------
@@ -756,6 +717,15 @@
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    // E2E Delete only directory NOT encrypted
+    if (_metadataNet.directory && _metadataNet.e2eEncrypted) {
+        
+        [self.delegate deleteFileOrFolderFailure:_metadataNet message:NSLocalizedString(@"_e2e_delete_folder_not_permitted_", nil) errorCode:0];
+        [self complete];
+        
+        return;
+    }
     
     [communication deleteFileOrFolder:serverFileUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -863,10 +833,12 @@
     
     NSString *fileName;
     
-    if (_metadataNet.fileName)
+    if (_metadataNet.fileName) {
         fileName = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
-    else
+    } else {
+        _metadataNet.fileName = @".";
         fileName = _metadataNet.serverUrl;
+    }
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -874,7 +846,8 @@
     [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
+
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
             
             tableMetadata *metadata = [tableMetadata new];
@@ -889,7 +862,7 @@
 
                 NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
         
-                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser];
+                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
                         
                 if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
                     [self.delegate readFileSuccess:_metadataNet metadata:metadata];
@@ -905,7 +878,9 @@
         if ([items count] == 0) {
        
 #ifndef EXTENSION
-            [app messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+            [appDelegate messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
             if([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)])
                 [self.delegate readFileFailure:_metadataNet message:@"Read File WebDAV : [items NULL] please fix" errorCode:0];
@@ -940,37 +915,6 @@
     }];
 }
 
-- (NSError *)readFileSync:(NSString *)filePathName
-{
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    __block NSError *returnError;
-    
-    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication readFile:filePathName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
-        
-        returnError = nil;
-        dispatch_semaphore_signal(semaphore);
-
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        returnError = error;
-        dispatch_semaphore_signal(semaphore);
-    }];
-    
-    while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW))
-        [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
-    
-    return returnError;
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Shared =====
 #pragma --------------------------------------------------------------------------------------------
@@ -978,6 +922,7 @@
 - (void)readShareServer
 {
 #ifndef EXTENSION
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
@@ -987,14 +932,14 @@
         
         BOOL openWindow = NO;
         
-        [app.sharesID removeAllObjects];
+        [appDelegate.sharesID removeAllObjects];
         
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account]) {
         
             for (OCSharedDto *item in items)
-                [app.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
+                [appDelegate.sharesID setObject:item forKey:[@(item.idRemoteShared) stringValue]];
             
             if ([_metadataNet.selector isEqual:selectorOpenWindowShare]) openWindow = YES;
             
@@ -1004,7 +949,7 @@
         }
         
         if([self.delegate respondsToSelector:@selector(readSharedSuccess:items:openWindow:)])
-            [self.delegate readSharedSuccess:_metadataNet items:app.sharesID openWindow:openWindow];
+            [self.delegate readSharedSuccess:_metadataNet items:appDelegate.sharesID openWindow:openWindow];
         
         [self complete];
         
@@ -1116,7 +1061,9 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
 #ifndef EXTENSION
-        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
+        [appDelegate messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
 #endif
         
         NSInteger errorCode = response.statusCode;
@@ -1157,7 +1104,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
 #ifndef EXTENSION
-        [app messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+        [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_error_" description:[CCError manageErrorOC:response.statusCode error:error] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
 #endif
         
         NSInteger errorCode = response.statusCode;
@@ -1873,40 +1820,6 @@
     }];
 }
 
-- (void)storeEndToEndMetadata
-{
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication storeEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID encryptedMetadata:_metadataNet.encryptedMetadata onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
-        
-        _metadataNet.encryptedMetadata = encryptedMetadata;
-        
-        if ([self.delegate respondsToSelector:@selector(storeEndToEndMetadataSuccess:)])
-        [self.delegate storeEndToEndMetadataSuccess:_metadataNet];
-        
-        [self complete];
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
-        errorCode = error.code;
-        
-        // Error
-        if ([self.delegate respondsToSelector:@selector(storeEndToEndMetadataFailure:message:errorCode:)])
-        [self.delegate storeEndToEndMetadataFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        [self complete];
-    }];
-}
-
 - (void)getEndToEndMetadata
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
@@ -1932,40 +1845,6 @@
         // Error
         if ([self.delegate respondsToSelector:@selector(getEndToEndMetadataFailure:message:errorCode:)])
         [self.delegate getEndToEndMetadataFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        [self complete];
-    }];
-}
-
-- (void)updateEndToEndMetadata
-{
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication updateEndToEndMetadata:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID encryptedMetadata:_metadataNet.encryptedMetadata onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
-        
-        _metadataNet.encryptedMetadata = encryptedMetadata;
-        
-        if ([self.delegate respondsToSelector:@selector(updateEndToEndMetadataSuccess:)])
-        [self.delegate updateEndToEndMetadataSuccess:_metadataNet];
-        
-        [self complete];
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
-        errorCode = error.code;
-        
-        // Error
-        if ([self.delegate respondsToSelector:@selector(updateEndToEndMetadataFailure:message:errorCode:)])
-        [self.delegate updateEndToEndMetadataFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -2002,6 +1881,40 @@
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
         [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        [self complete];
+    }];
+}
+
+- (void)unlockEndToEndFolderEncrypted
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication unlockEndToEndFolderEncrypted:[_activeUrl stringByAppendingString:@"/"] fileID:_metadataNet.fileID token:_metadataNet.token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        // 200 ok: file unlocked successful
+        
+        if ([self.delegate respondsToSelector:@selector(unlockEndToEndFolderEncryptedSuccess:)])
+            [self.delegate unlockEndToEndFolderEncryptedSuccess:_metadataNet];
+        
+        [self complete];
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0)
+            errorCode = error.code;
+        
+        // Error
+        if ([self.delegate respondsToSelector:@selector(unlockEndToEndFolderEncryptedFailure:message:errorCode:)])
+            [self.delegate unlockEndToEndFolderEncryptedFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
     }];

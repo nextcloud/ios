@@ -28,8 +28,9 @@
 #import "NCBridgeSwift.h"
 
 @interface CCPeekPop ()
-
-
+{
+    AppDelegate *appDelegate;
+}
 @end
 
 @implementation CCPeekPop
@@ -43,6 +44,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     self.preferredContentSize = CGSizeMake(640, 640);
     //detailVC?.preferredContentSize = CGSize(width: 0, height: 380)
@@ -77,7 +80,7 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         
         if (serverUrl)
-            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileID serverUrl:serverUrl selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self.delegate];
+            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self.delegate];
     }];
     
     return @[previewAction1];
@@ -89,7 +92,7 @@
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
-    UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw",app.directoryUser, _metadata.fileID]];
+    UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw",appDelegate.directoryUser, _metadata.fileID]];
     
     _imagePreview.image = image;
     
@@ -100,16 +103,16 @@
 
 - (void)downloadThumbnailFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {    
-    [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)downloadThumbnail:(tableMetadata *)metadata
 {
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
-    NSString *serverUrl = app.activeMain.serverUrl;
+    NSString *serverUrl = appDelegate.activeMain.serverUrl;
     
     metadataNet.action = actionDownloadThumbnail;
     metadataNet.fileID = metadata.fileID;
@@ -119,12 +122,12 @@
     metadataNet.selector = selectorDownloadThumbnail;
     metadataNet.serverUrl = serverUrl;
     
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl
 {
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:app.activeUrl] withString:@""], metadataFileName];
+    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""], metadataFileName];
     
     if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
     

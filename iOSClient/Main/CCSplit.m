@@ -29,6 +29,8 @@
 
 @interface CCSplit () <CCLoginDelegate, CCLoginDelegateWeb>
 {
+    AppDelegate *appDelegate;
+    BOOL prevRunningInFullScreen;
 }
 @end
 
@@ -40,7 +42,10 @@
 
 -  (id)initWithCoder:(NSCoder *)aDecoder
 {
-    if (self = [super initWithCoder:aDecoder])  {        
+    if (self = [super initWithCoder:aDecoder])  {
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+        prevRunningInFullScreen = YES;
     }
     
     return self;
@@ -48,9 +53,21 @@
 
 - (void)viewDidLoad
 {
-    [self inizialize];
-    
     [super viewDidLoad];
+
+    // Display mode SPLIT
+    self.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
+    //self.maximumPrimaryColumnWidth = 400;
+    
+    // Settings TabBar
+    UITabBarController *tabBarController = [self.viewControllers firstObject];
+    [appDelegate createTabBarController:tabBarController];
+    
+    // Settings Navigation Controller
+    UINavigationController *navigationController = [self.viewControllers lastObject];
+    [appDelegate aspectNavigationControllerBar:navigationController.navigationBar online:YES hidden:NO];
+    
+    [self inizialize];    
 }
 
 // Apparirà
@@ -63,6 +80,21 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+
+    // iPhone + (fallthrough res)
+    if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact && [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone && (UIScreen.mainScreen.nativeBounds.size.height == 2208 || UIScreen.mainScreen.nativeBounds.size.height == 1920)) {
+    
+        // FIX master-detail
+        UITabBarController *tbc = self.viewControllers.firstObject;
+        for (UINavigationController *nvc in tbc.viewControllers) {
+        
+            if ([nvc.topViewController isKindOfClass:[CCDetail class]]) {
+                [nvc popViewControllerAnimated:NO];
+            }
+        }
+    }
+    
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
         if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
@@ -74,8 +106,6 @@
             // Landscape
         }
     }];
-    
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -117,11 +147,13 @@
         }
         
         // -2-
+        /*
         else if ([CCUtility getIntroMessage:k_Intro_no_cryptocloud] == NO) {
             
             _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
             [_intro show];
         }
+        */
         
         // NO INTRO
         else {
@@ -138,18 +170,19 @@
         
         [CCUtility setIntroMessage:k_Intro set:YES];
         // next
-        _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
-        [_intro show];
+        //_intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
+        //[_intro show];
         //
-        return;
+        //return;
     }
     
     // -2-
+    /*
     if ([type isEqualToString:k_Intro_no_cryptocloud]) {
         
         [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
     }
-    
+    */
     // check account
     [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 }
@@ -165,19 +198,18 @@
 
 - (void)loginDisappear
 {
-    app.activeLogin = nil;
+    appDelegate.activeLogin = nil;
 }
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== newAccount =====
 #pragma --------------------------------------------------------------------------------------------
 
-
 - (void)newAccount
 {
-    if (app.activeAccount.length == 0) {
+    if (appDelegate.activeAccount.length == 0) {
     
-        [app openLoginView:self loginType:loginAddForced];
+        [appDelegate openLoginView:self loginType:loginAddForced];
     }
 }
 
@@ -204,7 +236,7 @@
     UINavigationController *secondaryNC = [[UIStoryboard storyboardWithName:@"Main" bundle:nil] instantiateViewControllerWithIdentifier:@"CCDetailNC"];
     
     // Color
-    [app aspectNavigationControllerBar:secondaryNC.navigationBar online:YES hidden:NO];
+    [appDelegate aspectNavigationControllerBar:secondaryNC.navigationBar online:YES hidden:NO];
     
     // Ensure back button is enabled
     UIViewController *detailViewController = [secondaryNC visibleViewController];
@@ -236,13 +268,12 @@
 - (void)showDetailViewController:(UIViewController *)vc sender:(id)sender
 {
     UINavigationController *ncDetail = (UINavigationController *)vc;
-    
+    UINavigationController *ncMaster = [self.viewControllers.firstObject selectedViewController];
+
     if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
         
-        if ([self.viewControllers[0] isKindOfClass:[UITabBarController class]]) {
-            
-            UINavigationController *ncMaster = [self.viewControllers[0] selectedViewController];
-            
+        if ([self.viewControllers.firstObject isKindOfClass:[UITabBarController class]]) {
+                        
             // Fix : Application tried to present modally an active controller
             if ([ncMaster isBeingPresented]) {
                 // being presented
@@ -258,9 +289,8 @@
     
     [super showDetailViewController:vc sender:sender];
     
-    // display icon "\"
+    // display icon "<>"
     ncDetail.topViewController.navigationItem.leftBarButtonItem = self.displayModeButtonItem;
-    self.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
 }
 
 // OK
@@ -277,6 +307,30 @@
         if ([detail isKindOfClass:[CCDetail class]]) {
             
             [(CCDetail *)detail performSelector:@selector(changeToDisplayMode) withObject:nil afterDelay:0.05];
+        }
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Slide Over - Split View =====
+#pragma --------------------------------------------------------------------------------------------
+
+-(void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+    // simply create a property of 'BOOL' type
+    BOOL isRunningInFullScreen = CGRectEqualToRect([UIApplication sharedApplication].delegate.window.frame, [UIApplication sharedApplication].delegate.window.screen.bounds);
+    
+    prevRunningInFullScreen = isRunningInFullScreen;
+    
+    if (prevRunningInFullScreen == NO) {
+        
+        // FIX master-detail
+        UITabBarController *tbc = self.viewControllers.firstObject;
+        for (UINavigationController *nvc in tbc.viewControllers) {
+            
+            if ([nvc.topViewController isKindOfClass:[CCDetail class]]) {
+                [nvc popViewControllerAnimated:NO];
+            }
         }
     }
 }

@@ -33,13 +33,16 @@
 - (NSString *)encryptPrivateKey:(NSString *)userID directoryUser: (NSString *)directoryUser passphrase:(NSString *)passphrase privateKey:(NSString **)privateKey;
 - (NSString *)decryptPrivateKey:(NSString *)privateKeyCipher passphrase:(NSString *)passphrase publicKey:(NSString *)publicKey;
 
-- (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey;
+- (NSData *)encryptAsymmetricString:(NSString *)plain publicKey:(NSString *)publicKey privateKey:(NSString *)privateKey;
 - (NSString *)decryptAsymmetricData:(NSData *)cipherData privateKey:(NSString *)privateKey;
 
-- (NSString *)decryptMetadata:(NSString *)encrypted key:(NSString *)key;
+- (NSString *)encryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
+- (NSString *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
 
 - (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directoryUser:(NSString *)directoryUser key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
+- (BOOL)decryptFileID:(NSString *)fileID directoryUser:(NSString *)directoryUser key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
 
+- (NSData *)generateKey:(int)length;
 - (NSString *)createSHA512:(NSString *)string;
 
 @end

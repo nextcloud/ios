@@ -60,6 +60,8 @@
 // Theming
 @property (nonatomic, strong) NSString *themingBackground;
 @property (nonatomic, strong) NSString *themingColor;
+@property (nonatomic, strong) NSString *themingColorElement;
+@property (nonatomic, strong) NSString *themingColorText;
 @property (nonatomic, strong) NSString *themingLogo;
 @property (nonatomic, strong) NSString *themingName;
 @property (nonatomic, strong) NSString *themingSlogan;

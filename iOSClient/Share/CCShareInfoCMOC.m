@@ -30,6 +30,7 @@
 
 @interface CCShareInfoCMOC ()
 {
+    AppDelegate *appDelegate;
     CCHud *_hud;
 }
 @end
@@ -49,7 +50,8 @@ const PERMISSION_ALL = 31;
 {
     self = [super initWithCoder:coder];
     if (self) {
-                
+        
+        appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     }
     return self;
 }
@@ -68,27 +70,27 @@ const PERMISSION_ALL = 31;
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"create" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_create_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"read" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_read_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"change" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_change_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delete" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_delete_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"share" rowType:XLFormRowDescriptorTypeBooleanCheck title:NSLocalizedString(@"_share_permission_share_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[NCBrandColor sharedInstance].brand forKey:@"tintColor"];
+    [row.cellConfig setObject:[NCBrandColor sharedInstance].brandElement forKey:@"tintColor"];
     [section addFormRow:row];
     
     section = [XLFormSectionDescriptor formSection];
@@ -115,21 +117,21 @@ const PERMISSION_ALL = 31;
 {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.view.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     [self.endButton setTitle:NSLocalizedString(@"_done_", nil) forState:UIControlStateNormal];
-    self.endButton.tintColor = [NCBrandColor sharedInstance].brand;
+    self.endButton.tintColor = [UIColor blackColor];
     
-    self.tableView.backgroundColor = [NCBrandColor sharedInstance].tableBackground;
+    self.tableView.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
     
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     [_hud visibleHudTitle:@"" mode:MBProgressHUDModeIndeterminate color:nil];
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     metadataNet.action = actionGetSharePermissionsFile;
     metadataNet.fileName = _metadata.fileName;
     metadataNet.serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-    [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 
     [self initializeForm];
 }
@@ -181,7 +183,7 @@ const PERMISSION_ALL = 31;
 {
     [_hud hideHud];
 
-    [app messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

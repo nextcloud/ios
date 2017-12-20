@@ -25,6 +25,7 @@
 
 #import "CCUtility.h"
 #import "NSString+TruncateToWidth.h"
+#import "NCBridgeSwift.h"
 
 @implementation CCGraphics
 
@@ -387,6 +388,87 @@ Color difference is determined by the following formula:
     
     return grayscaled;
 }
+
++ (UIImage *)generateSinglePixelImageWithColor:(UIColor *)color
+{
+    CGSize imageSize = CGSizeMake(1.0f, 1.0f);
+    UIGraphicsBeginImageContextWithOptions(imageSize, NO, 0.0f);
+    
+    CGContextRef theContext = UIGraphicsGetCurrentContext();
+    CGContextSetFillColorWithColor(theContext, color.CGColor);
+    CGContextFillRect(theContext, CGRectMake(0.0f, 0.0f, imageSize.width, imageSize.height));
+    
+    CGImageRef theCGImage = CGBitmapContextCreateImage(theContext);
+    UIImage *theImage;
+    if ([[UIImage class] respondsToSelector:@selector(imageWithCGImage:scale:orientation:)]) {
+        theImage = [UIImage imageWithCGImage:theCGImage scale:[UIScreen mainScreen].scale orientation:UIImageOrientationUp];
+    } else {
+        theImage = [UIImage imageWithCGImage:theCGImage];
+    }
+    CGImageRelease(theCGImage);
+    
+    return theImage;
+}
+
++ (void)addImageToTitle:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle navigationItem:(UINavigationItem *)navigationItem
+{
+    UIView *navView = [UIView new];
+    
+    UILabel *label = [UILabel new];
+    label.text = title;
+    [label sizeToFit];
+    label.center = navView.center;
+    label.textColor = colorTitle;
+    label.textAlignment = NSTextAlignmentCenter;
+    
+    CGFloat correct = 6;
+    UIImageView *image = [UIImageView new];
+    image.image = imageTitle;
+    CGFloat imageAspect = image.image.size.width/image.image.size.height;
+    image.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
+    image.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [navView addSubview:label];
+    [navView addSubview:image];
+    
+    navigationItem.titleView = navView;
+    [navView sizeToFit];
+}
+
++ (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText
+{
+    UIColor *newColor, *newColorElement, *newColorText;
+    
+    // COLOR
+    if (themingColor.length == 7) {
+        newColor = [CCGraphics colorFromHexString:themingColor];
+    } else {
+        newColor = [NCBrandColor sharedInstance].customer;
+    }
+            
+    // COLOR TEXT
+    if (themingColorText.length == 7) {
+        newColorText = [CCGraphics colorFromHexString:themingColorText];
+    } else {
+        newColorText = [NCBrandColor sharedInstance].customerText;
+    }
+            
+    // COLOR ELEMENT
+    if (themingColorElement.length == 7) {
+        newColorElement = [CCGraphics colorFromHexString:themingColorElement];
+    } else {
+        if ([themingColorText isEqualToString:@"#000000"])
+            newColorElement = [UIColor blackColor];
+        else
+            newColorElement = newColor;
+    }
+            
+    
+    [NCBrandColor sharedInstance].brand = newColor;
+    [NCBrandColor sharedInstance].brandElement = newColorElement;
+    [NCBrandColor sharedInstance].brandText = newColorText;
+}
+
 @end
 
 // ------------------------------------------------------------------------------------------------------

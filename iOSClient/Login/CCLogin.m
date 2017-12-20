@@ -29,6 +29,8 @@
 
 @interface CCLogin ()
 {
+    AppDelegate *appDelegate;
+
     UIView *rootView;
 }
 @end
@@ -39,6 +41,8 @@
 {
     [super viewDidLoad];
     
+    appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+
     self.imageBrand.image = [UIImage imageNamed:@"loginLogo"];
     self.login.backgroundColor = [NCBrandColor sharedInstance].customer;
     
@@ -100,10 +104,10 @@
     
     if (_loginType == loginModifyPasswordUser) {
         
-        _baseUrl.text = app.activeUrl;
+        _baseUrl.text = appDelegate.activeUrl;
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
-        _user.text = app.activeUser;
+        _user.text = appDelegate.activeUser;
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }
@@ -190,36 +194,32 @@
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
+            
             self.login.enabled = YES;
             self.loadingBaseUrl.hidden = YES;
-        });
-
-        if (error != nil) {
+        
+            if (error != nil) {
             
-            NSLog(@"[LOG] Error: %ld - %@",(long)[error code] , [error localizedDescription]);
+                NSLog(@"[LOG] Error: %ld - %@",(long)[error code] , [error localizedDescription]);
             
-            // self signed certificate
-            if ([error code] == NSURLErrorServerCertificateUntrusted) {
+                // self signed certificate
+                if ([error code] == NSURLErrorServerCertificateUntrusted) {
                 
-                NSLog(@"[LOG] Error NSURLErrorServerCertificateUntrusted");
+                    NSLog(@"[LOG] Error NSURLErrorServerCertificateUntrusted");
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
                     [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
-                });
-            
-            } else {
                 
-                dispatch_async(dispatch_get_main_queue(), ^{
+                } else {
                     
                     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
                     UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
                     
                     [alertController addAction:okAction];
                     [self presentViewController:alertController animated:YES completion:nil];
-                });
+                }
             }
-            
-        }
+        });
+        
     }];
     
     [task resume];
@@ -253,62 +253,65 @@
 
 - (void)loginCloud
 {
-    self.login.enabled = NO;
-    self.loadingBaseUrl.hidden = NO;
-
     // remove last char if /
     if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
     NSError *error = [[NCNetworkingSync sharedManager] checkServer:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV] user:self.user.text userID:self.user.text password:self.password.text];
 
-    if (!error) {
-        
-        // account
-        NSString *account = [NSString stringWithFormat:@"%@ %@", self.user.text, self.baseUrl.text];
-        
-        if (_loginType == loginModifyPasswordUser) {
-            
-            // Change Password
-            tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
-            
-            // Setting App active account
-            [app settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
+    dispatch_async(dispatch_get_main_queue(), ^{
 
-            // Dismiss
-            if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
-                [self.delegate loginSuccess:_loginType];
+        self.login.enabled = NO;
+        self.loadingBaseUrl.hidden = NO;
+        
+        if (!error) {
+        
+            // account
+            NSString *account = [NSString stringWithFormat:@"%@ %@", self.user.text, self.baseUrl.text];
+        
+            if (_loginType == loginModifyPasswordUser) {
             
-            [self dismissViewControllerAnimated:YES completion:nil];
+                // Change Password
+                tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
             
+                // Setting appDelegate active account
+                [appDelegate settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
+
+                // Dismiss
+                if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
+                    [self.delegate loginSuccess:_loginType];
+            
+                [self dismissViewControllerAnimated:YES completion:nil];
+            
+            } else {
+
+                [[NCManageDatabase sharedInstance] deleteAccount:account];
+                [[NCManageDatabase sharedInstance] addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
+            
+                // Read User Profile
+                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
+                metadataNet.action = actionGetUserProfile;
+                [appDelegate.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text]];
+            }
+        
         } else {
-
-            [[NCManageDatabase sharedInstance] deleteAccount:account];
-            [[NCManageDatabase sharedInstance] addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
+        
+            if ([error code] != NSURLErrorServerCertificateUntrusted) {
             
-            // Read User Profile
-            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
-            metadataNet.action = actionGetUserProfile;
-            [app.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text]];
+                NSString *description = [error.userInfo objectForKey:@"NSLocalizedDescription"];
+                NSString *message = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil), description];
+            
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            
+                [alertController addAction:okAction];
+                [self presentViewController:alertController animated:YES completion:nil];
+            }
         }
         
-    } else {
-        
-        if ([error code] != NSURLErrorServerCertificateUntrusted) {
-            
-            NSString *description = [error.userInfo objectForKey:@"NSLocalizedDescription"];
-            NSString *message = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil), description];
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-            
-            [alertController addAction:okAction];
-            [self presentViewController:alertController animated:YES completion:nil];
-        }
-    }
-        
-    self.login.enabled = YES;
-    self.loadingBaseUrl.hidden = YES;
+        self.login.enabled = YES;
+        self.loadingBaseUrl.hidden = YES;
+    });
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -359,8 +362,8 @@
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
         if (account) {
         
-            // Setting App active account
-            [app settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
+            // Setting appDelegate active account
+            [appDelegate settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
     
             // Ok ! Dismiss
             if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
@@ -410,8 +413,11 @@
 
 - (IBAction)handleButtonLogin:(id)sender
 {
-    if ([self.baseUrl.text length] > 0 && [self.user.text length] && [self.password.text length])
-        [self performSelector:@selector(loginCloud) withObject:nil];
+    if ([self.baseUrl.text length] > 0 && [self.user.text length] && [self.password.text length]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            [self loginCloud];
+        });
+    }
 }
 
 - (IBAction)handleAnnulla:(id)sender

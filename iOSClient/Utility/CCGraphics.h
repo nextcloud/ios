@@ -48,6 +48,12 @@
 
 + (BOOL)isLight:(UIColor *)color;
 
++ (UIImage *)generateSinglePixelImageWithColor:(UIColor *)color;
+
++ (void)addImageToTitle:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle navigationItem:(UINavigationItem *)navigationItem;
+
++ (void)settingThemingColor:(NSString *)themingColor themingColorElement:(NSString *)themingColorElement themingColorText:(NSString *)themingColorText;
+
 @end
 
 @interface CCAvatar : UIImageView

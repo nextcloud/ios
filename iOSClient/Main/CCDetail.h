@@ -46,7 +46,6 @@
 
 @property (nonatomic, strong) MWPhotoBrowser *photoBrowser;
 @property (nonatomic, strong) NSMutableArray *photos;
-@property (nonatomic, strong) NSMutableArray *thumbs;
 
 // PDF
 @property (nonatomic, strong) ReaderViewController *readerPDFViewController;
@@ -61,8 +60,7 @@
 
 - (void)changeToDisplayMode;
 
-- (void)downloadPhotoBrowserFailure:(NSInteger)errorCode;
-- (void)downloadPhotoBrowserSuccess:(tableMetadata *)metadataVar selector:(NSString *)selector;
+- (void)downloadPhotoBrowserSuccessFailure:(tableMetadata *)metadata selector:(NSString *)selector errorCode:(NSInteger)errorCode;
 
 @end
 

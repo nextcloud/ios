@@ -6,46 +6,46 @@ file_filter = Supporting Files/<lang>.lproj/BKPasscodeView.strings
 source_file = Supporting Files/en.lproj/BKPasscodeView.strings
 source_lang = en
 type = STRINGS
-lang_map = pt_BR: pt-BR, zh_CN: zh-Hans, fi_FI: fi-FI, es_MX: es-MX, nb_NO: nb-NO, cs_CZ: cs-CZ, en_GB: en-GB, es_AR: es-AR, sk_SK: sk-SK
+lang_map = pt_BR:pt-BR,zh_CN:zh-Hans,fi_FI:fi-FI,es_MX:es-MX,nb_NO:nb-NO,cs_CZ:cs-CZ,en_GB:en-GB,es_AR:es-AR,sk_SK:sk-SK,hu_HU:hu,ka_GE:ka-GE,zh_TW:zh-Hant-TW,es_CL:es-CL,es_CO:es-CO,es_CR:es-CR,es_DO:es-DO,es_EC:es-EC,es_GT:es-GT,es_HN:es-HN,es_NI:es-NI,es_PA:es-PA,es_PE:es-PE,es_PR:es-PR,es_PY:es-PY,es_SV:es-SV,es_UY:es-UY
 
 [nextcloud.ios-assetspicker]
 file_filter = Supporting Files/<lang>.lproj/CTAssetsPicker.strings
 source_file = Supporting Files/en.lproj/CTAssetsPicker.strings
 source_lang = en
 type = STRINGS
-lang_map = pt_BR: pt-BR, zh_CN: zh-Hans, fi_FI: fi-FI, es_MX: es-MX, nb_NO: nb-NO, cs_CZ: cs-CZ, en_GB: en-GB, es_AR: es-AR, sk_SK: sk-SK
+lang_map = pt_BR:pt-BR,zh_CN:zh-Hans,fi_FI:fi-FI,es_MX:es-MX,nb_NO:nb-NO,cs_CZ:cs-CZ,en_GB:en-GB,es_AR:es-AR,sk_SK:sk-SK,hu_HU:hu,ka_GE:ka-GE,zh_TW:zh-Hant-TW,es_CL:es-CL,es_CO:es-CO,es_CR:es-CR,es_DO:es-DO,es_EC:es-EC,es_GT:es-GT,es_HN:es-HN,es_NI:es-NI,es_PA:es-PA,es_PE:es-PE,es_PR:es-PR,es_PY:es-PY,es_SV:es-SV,es_UY:es-UY
 
 [nextcloud.ios-error]
 file_filter = Supporting Files/<lang>.lproj/Error.strings
 source_file = Supporting Files/en.lproj/Error.strings
 source_lang = en
 type = STRINGS
-lang_map = pt_BR: pt-BR, zh_CN: zh-Hans, fi_FI: fi-FI, es_MX: es-MX, nb_NO: nb-NO, cs_CZ: cs-CZ, en_GB: en-GB, es_AR: es-AR, sk_SK: sk-SK
+lang_map = pt_BR:pt-BR,zh_CN:zh-Hans,fi_FI:fi-FI,es_MX:es-MX,nb_NO:nb-NO,cs_CZ:cs-CZ,en_GB:en-GB,es_AR:es-AR,sk_SK:sk-SK,hu_HU:hu,ka_GE:ka-GE,zh_TW:zh-Hant-TW,es_CL:es-CL,es_CO:es-CO,es_CR:es-CR,es_DO:es-DO,es_EC:es-EC,es_GT:es-GT,es_HN:es-HN,es_NI:es-NI,es_PA:es-PA,es_PE:es-PE,es_PR:es-PR,es_PY:es-PY,es_SV:es-SV,es_UY:es-UY
 
 [nextcloud.ios-infoplist]
 file_filter = Supporting Files/<lang>.lproj/InfoPlist.strings
 source_file = Supporting Files/en.lproj/InfoPlist.strings
 source_lang = en
 type = STRINGS
-lang_map = pt_BR: pt-BR, zh_CN: zh-Hans, fi_FI: fi-FI, es_MX: es-MX, nb_NO: nb-NO, cs_CZ: cs-CZ, en_GB: en-GB, es_AR: es-AR, sk_SK: sk-SK
+lang_map = pt_BR:pt-BR,zh_CN:zh-Hans,fi_FI:fi-FI,es_MX:es-MX,nb_NO:nb-NO,cs_CZ:cs-CZ,en_GB:en-GB,es_AR:es-AR,sk_SK:sk-SK,hu_HU:hu,ka_GE:ka-GE,zh_TW:zh-Hant-TW,es_CL:es-CL,es_CO:es-CO,es_CR:es-CR,es_DO:es-DO,es_EC:es-EC,es_GT:es-GT,es_HN:es-HN,es_NI:es-NI,es_PA:es-PA,es_PE:es-PE,es_PR:es-PR,es_PY:es-PY,es_SV:es-SV,es_UY:es-UY
 
 [nextcloud.ios-intro]
 file_filter = Supporting Files/<lang>.lproj/Intro.strings
 source_file = Supporting Files/en.lproj/Intro.strings
 source_lang = en
 type = STRINGS
-lang_map = pt_BR: pt-BR, zh_CN: zh-Hans, fi_FI: fi-FI, es_MX: es-MX, nb_NO: nb-NO, cs_CZ: cs-CZ, en_GB: en-GB, es_AR: es-AR, sk_SK: sk-SK
+lang_map = pt_BR:pt-BR,zh_CN:zh-Hans,fi_FI:fi-FI,es_MX:es-MX,nb_NO:nb-NO,cs_CZ:cs-CZ,en_GB:en-GB,es_AR:es-AR,sk_SK:sk-SK,hu_HU:hu,ka_GE:ka-GE,zh_TW:zh-Hant-TW,es_CL:es-CL,es_CO:es-CO,es_CR:es-CR,es_DO:es-DO,es_EC:es-EC,es_GT:es-GT,es_HN:es-HN,es_NI:es-NI,es_PA:es-PA,es_PE:es-PE,es_PR:es-PR,es_PY:es-PY,es_SV:es-SV,es_UY:es-UY
 
 [nextcloud.ios-localizable]
 file_filter = Supporting Files/<lang>.lproj/Localizable.strings
 source_file = Supporting Files/en.lproj/Localizable.strings
 source_lang = en
 type = STRINGS
-lang_map = pt_BR: pt-BR, zh_CN: zh-Hans, fi_FI: fi-FI, es_MX: es-MX, nb_NO: nb-NO, cs_CZ: cs-CZ, en_GB: en-GB, es_AR: es-AR, sk_SK: sk-SK
+lang_map = pt_BR:pt-BR,zh_CN:zh-Hans,fi_FI:fi-FI,es_MX:es-MX,nb_NO:nb-NO,cs_CZ:cs-CZ,en_GB:en-GB,es_AR:es-AR,sk_SK:sk-SK,hu_HU:hu,ka_GE:ka-GE,zh_TW:zh-Hant-TW,es_CL:es-CL,es_CO:es-CO,es_CR:es-CR,es_DO:es-DO,es_EC:es-EC,es_GT:es-GT,es_HN:es-HN,es_NI:es-NI,es_PA:es-PA,es_PE:es-PE,es_PR:es-PR,es_PY:es-PY,es_SV:es-SV,es_UY:es-UY
 
 [nextcloud.ios-swiftwebvc]
 file_filter = Supporting Files/<lang>.lproj/SwiftWebVC.strings
 source_file = Supporting Files/en.lproj/SwiftWebVC.strings
 source_lang = en
 type = STRINGS
-lang_map = pt_BR: pt-BR, zh_CN: zh-Hans, fi_FI: fi-FI, es_MX: es-MX, nb_NO: nb-NO, cs_CZ: cs-CZ, en_GB: en-GB, es_AR: es-AR, sk_SK: sk-SK
+lang_map = pt_BR:pt-BR,zh_CN:zh-Hans,fi_FI:fi-FI,es_MX:es-MX,nb_NO:nb-NO,cs_CZ:cs-CZ,en_GB:en-GB,es_AR:es-AR,sk_SK:sk-SK,hu_HU:hu,ka_GE:ka-GE,zh_TW:zh-Hant-TW,es_CL:es-CL,es_CO:es-CO,es_CR:es-CR,es_DO:es-DO,es_EC:es-EC,es_GT:es-GT,es_HN:es-HN,es_NI:es-NI,es_PA:es-PA,es_PE:es-PE,es_PR:es-PR,es_PY:es-PY,es_SV:es-SV,es_UY:es-UY

@@ -144,17 +144,15 @@
     UIBarButtonItem *rightButtonUpload, *leftButtonCancel;
 
     // Theming
-    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
-    if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length > 0) {
-        UIColor *newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-        if (newColor)
-            [NCBrandColor sharedInstance].brand = newColor;
+    if ([NCBrandOptions sharedInstance].use_themingColor) {
+        tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+        [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
     }
     self.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
-    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    self.navigationController.navigationBar.tintColor = [NCBrandColor sharedInstance].brandText;
     
     self.toolBar.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    self.toolBar.tintColor = [NCBrandColor sharedInstance].brand;
+    self.toolBar.tintColor = [NCBrandColor sharedInstance].brandElement;
     
     // Upload
     rightButtonUpload = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_save_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(selectPost)];
@@ -173,6 +171,11 @@
 
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
 {
+    // DENIED e2e
+    if ([CCUtility isFolderEncrypted:serverUrlTo account:self.activeAccount]) {
+        return;
+    }
+    
     if (serverUrlTo)
         _serverUrl = serverUrlTo;
     
@@ -200,6 +203,8 @@
     viewController.barTintColor = barTintColor;
     viewController.tintColorTitle = tintColor;
     viewController.networkingOperationQueue = _networkingOperationQueue;
+    // E2E
+    viewController.includeDirectoryE2EEncryption = NO;
 
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:navigationController animated:YES completion:nil];
@@ -213,7 +218,7 @@
         
         [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
         
-        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brand];
+        [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
     }
     else
         [self closeShareViewController];
@@ -243,42 +248,42 @@
     [self.hud progress:progress];
 }
 
-- (void)uploadFileFailure:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     [self.hud hideHud];
-    
-    // remove file
-    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID] clearDateReadDirectoryID:nil];
-    
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileID] error:nil];
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID] error:nil];
 
-    // message error
-    if (errorCode != kCFURLErrorCancelled) {
+    if (errorCode == 0) {
         
-        UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction * action) {
-                                                       [alert dismissViewControllerAnimated:YES completion:nil];
-                                                       [self closeShareViewController];
-                                                   }];
-        [alert addAction:ok];
-        [self presentViewController:alert animated:YES completion:nil];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        
+        [self.filesName removeObject:metadata.fileName];
+        [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
+        
+        [self performSelector:@selector(selectPost) withObject:nil afterDelay:0.1];
+        
+    } else {
+        
+        // remove file
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID] clearDateReadDirectoryID:nil];
+        
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID] error:nil];
+        
+        // message error
+        if (errorCode != kCFURLErrorCancelled) {
+            
+            UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:errorMessage preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction * action) {
+                                                           [alert dismissViewControllerAnimated:YES completion:nil];
+                                                           [self closeShareViewController];
+                                                       }];
+            [alert addAction:ok];
+            [self presentViewController:alert animated:YES completion:nil];
+        }
+        else
+            [self closeShareViewController];
     }
-    else
-        [self closeShareViewController];
-}
-
-- (void)uploadFileSuccess:(CCMetadataNet *)metadataNet fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost
-{
-    [self.hud hideHud];
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-    
-    [self.filesName removeObject:metadata.fileName];
-    [self.shareTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:NO];
-    
-    [self performSelector:@selector(selectPost) withObject:nil afterDelay:0.1];
 }
 
 - (void)addNetworkingQueue:(CCMetadataNet *)metadataNet

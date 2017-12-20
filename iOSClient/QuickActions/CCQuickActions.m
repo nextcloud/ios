@@ -30,6 +30,8 @@
 
 @interface CCQuickActions ()
 {
+    AppDelegate *appDelegate;
+
     CTAssetsPickerController *_picker;
     CCMove *_move;
     CCMain *_mainVC;
@@ -46,6 +48,7 @@
     
     dispatch_once(&once, ^{
         __quickActionsManager = [[CCQuickActions alloc] init];
+        __quickActionsManager->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     });
     
     return __quickActionsManager;
@@ -60,7 +63,7 @@
     return self;
 }
 
-- (void)startQuickActionsViewController:(UITableViewController *)viewController
+- (void)startQuickActionsViewController:(UIViewController *)viewController
 {
     _mainVC = (CCMain *)viewController;
     
@@ -87,11 +90,11 @@
 - (void)openAssetsPickerController
 {
     CTAssetCheckmark *checkmark = [CTAssetCheckmark appearance];
-    checkmark.tintColor = [NCBrandColor sharedInstance].brand;
+    checkmark.tintColor = [NCBrandColor sharedInstance].brandElement;
     [checkmark setMargin:0.0 forVerticalEdge:NSLayoutAttributeRight horizontalEdge:NSLayoutAttributeTop];
     
     UINavigationBar *navBar = [UINavigationBar appearanceWhenContainedIn:[CTAssetsPickerController class], nil];
-    [app aspectNavigationControllerBar:navBar online:YES hidden:NO];
+    [appDelegate aspectNavigationControllerBar:navBar online:YES hidden:NO];
     
     [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -119,7 +122,7 @@
 {
     if (picker.selectedAssets.count > k_pickerControllerMax) {
         
-        [app messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+        [appDelegate messageNotification:@"_info_" description:@"_limited_dimension_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         
         return NO;
     }
@@ -160,10 +163,12 @@
     
     _move.move.title = NSLocalizedString(@"_upload_file_", nil);
     _move.delegate = self;
-    _move.tintColor = [NCBrandColor sharedInstance].navigationBarText;
+    _move.tintColor = [NCBrandColor sharedInstance].brandText;
     _move.barTintColor = [NCBrandColor sharedInstance].brand;
-    _move.tintColorTitle = [NCBrandColor sharedInstance].navigationBarText;
-    _move.networkingOperationQueue = app.netQueue;
+    _move.tintColorTitle = [NCBrandColor sharedInstance].brandText;
+    _move.networkingOperationQueue = appDelegate.netQueue;
+    // E2E
+    _move.includeDirectoryE2EEncryption = NO;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     

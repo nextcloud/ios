@@ -31,24 +31,26 @@ class NCBrandColor: NSObject {
     }()
 
     // Color
-    @objc public let customer:                UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
-
-    @objc public var brand:                   UIColor
-    @objc public var connectionNo:            UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
-    @objc public var encrypted:               UIColor = .red
-    @objc public var navigationBarProgress:   UIColor = .white
-    @objc public var navigationBarText:       UIColor = .white
-    @objc public var menuBackground:          UIColor = .white
-    @objc public var moreNormal:              UIColor = .black
-    @objc public var moreSettings:            UIColor = .black
-    @objc public var seperator:               UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
-    @objc public var tabBar:                  UIColor = .white
-    @objc public var tableBackground:         UIColor = .white
-    @objc public var transferBackground:      UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
-    @objc public let nextcloud:               UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
+    @objc public let customer:              UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)    // BLU NC : #0082c9
+    @objc public var customerText:          UIColor = .white
     
+    @objc public var brand:                 UIColor                                                                                 // don't touch me
+    @objc public var brandElement:          UIColor                                                                                 // don't touch me
+    @objc public var brandText:             UIColor                                                                                 // don't touch me
+
+    @objc public var connectionNo:          UIColor = UIColor(red: 204.0/255.0, green: 204.0/255.0, blue: 204.0/255.0, alpha: 1.0)
+    @objc public var encrypted:             UIColor = .red
+    @objc public var backgroundView:        UIColor = .white
+    @objc public var textView:              UIColor = .black
+    @objc public var seperator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
+    @objc public var tabBar:                UIColor = .white
+    @objc public var transferBackground:    UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
+    @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
+
     override init() {
         self.brand = self.customer
+        self.brandElement = self.customer
+        self.brandText = self.customerText
     }
     
     // Color modify
@@ -73,9 +75,10 @@ class NCBrandColor: NSObject {
     @objc public let linkLoginProvider:               String = "https://nextcloud.com/providers"
     @objc public let textLoginProvider:               String = "_login_bottom_label_"
     @objc public let middlewarePingUrl:               String = ""
-    @objc public let webLoginAutenticationProtocol:   String = ""
-    @objc public let webCloseViewProtocol:            String = ""
-    @objc public let folderBrandAutoUpload:           String = ""
+    @objc public let webLoginAutenticationProtocol:   String = ""                                               // example "abc://"
+    @objc public let webCloseViewProtocol:            String = ""                                               // example "abc://change/plan"
+    @objc public let folderBrandAutoUpload:           String = ""                                               // example "_auto_upload_folder_"
+    @objc public let ncFlowEndpoint:                  String = "/index.php/login/flow"
 
     // Auto Upload default folder
     @objc public var folderDefaultAutoUpload:         String = "Photos"
@@ -85,6 +88,7 @@ class NCBrandColor: NSObject {
     
     // Options
     @objc public let use_login_web:                   Bool = false
+    @objc public let use_login_web_flow:              Bool = false
     @objc public let use_firebase:                    Bool = false
     @objc public let use_default_auto_upload:         Bool = false
     @objc public let use_themingColor:                Bool = true
@@ -97,6 +101,7 @@ class NCBrandColor: NSObject {
     @objc public let disable_request_login_url:       Bool = false
     @objc public let disable_multiaccount:            Bool = false
     @objc public let disable_manage_account:          Bool = false
+    @objc public let disable_more_external_site:      Bool = false
     
     override init() {
         

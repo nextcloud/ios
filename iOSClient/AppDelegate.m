@@ -186,16 +186,9 @@
     //[[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    //UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
-    UINavigationController *navigationController = [splitViewController.viewControllers lastObject];
-
-    navigationController.topViewController.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem;
-    splitViewController.preferredDisplayMode = UISplitViewControllerDisplayModeAllVisible;
-    [app aspectNavigationControllerBar:navigationController.navigationBar online:YES hidden:NO];
-    
-    // Settings TabBar
-    [self createTabBarController];
+    // How to hide UINavigationBar 1px bottom line < iOS 11
+    [[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarPosition:UIBarPositionAny barMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
     
     // passcode
     [[BKPasscodeLockScreenManager sharedManager] setDelegate:self];
@@ -217,7 +210,6 @@
     
     // Start Timer
     self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
-    
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Registration Push Notification
@@ -840,21 +832,18 @@
 #pragma mark ===== TabBarController =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createTabBarController
+- (void)createTabBarController:(UITabBarController *)tabBarController
 {
     UITabBarItem *item;
     NSLayoutConstraint *constraint;
     CGFloat multiplier = 0;
     CGFloat safeAreaBottom = 0;
     
-    UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-    UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
-    
     if (@available(iOS 11, *)) {
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
     }
     
-    [app aspectTabBar:tabBarController.tabBar hidden:NO];
+    [self aspectTabBar:tabBarController.tabBar hidden:NO];
     
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
@@ -870,8 +859,8 @@
     
     // (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
-    item.title = nil;
-    item.image = nil;
+    item.title = @"";
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[UIColor clearColor]];
     item.enabled = false;
     
     // Photos
@@ -887,7 +876,7 @@
     item.selectedImage = [UIImage imageNamed:@"tabBarMore"];
     
     // Plus Button
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brandElement];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
@@ -917,8 +906,10 @@
 {
     nav.translucent = NO;
     nav.barTintColor = [NCBrandColor sharedInstance].brand;
-    nav.tintColor = [NCBrandColor sharedInstance].navigationBarText;
-    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].navigationBarText}];
+    nav.tintColor = [NCBrandColor sharedInstance].brandText;
+    [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].brandText}];
+    // Change bar bottom line shadow
+    nav.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     
     if (!online)
         [nav setTitleTextAttributes:@{NSForegroundColorAttributeName : [NCBrandColor sharedInstance].connectionNo}];
@@ -932,7 +923,7 @@
 {
     tab.translucent = NO;
     tab.barTintColor = [NCBrandColor sharedInstance].tabBar;
-    tab.tintColor = [NCBrandColor sharedInstance].brand;
+    tab.tintColor = [NCBrandColor sharedInstance].brandElement;
     
     tab.hidden = hidden;
     
@@ -946,7 +937,7 @@
     
     UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
     
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brand];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brandElement];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
@@ -971,12 +962,8 @@
     
     UIView *view = [[(UIButton *)sender superview] superview];
     
-    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brand];
-    
-    if ([CCUtility getCreateMenuEncrypted])
-        [menuAdd createMenuEncryptedWithView:view];
-    else
-        [menuAdd createMenuPlainWithView:view];
+    CreateMenuAdd *menuAdd = [[CreateMenuAdd alloc] initWithThemingColor:[NCBrandColor sharedInstance].brandElement];
+    [menuAdd createMenuWithView:view];
 }
 
 - (void)selectedTabBarController:(NSInteger)index
@@ -1009,17 +996,17 @@
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
 
-    NSString *serverUrl = [CCUtility getHomeServerUrlActiveUrl:app.activeUrl];
+    NSString *serverUrl = [CCUtility getHomeServerUrlActiveUrl:self.activeUrl];
     NSInteger index = tabBarController.selectedIndex;
     
     // select active serverUrl
     if (index == k_tabBarApplicationIndexFile) {
-        serverUrl = app.activeMain.serverUrl;
+        serverUrl = self.activeMain.serverUrl;
     } else if (index == k_tabBarApplicationIndexFavorite) {
-        if (app.activeFavorites.serverUrl)
-            serverUrl = app.activeFavorites.serverUrl;
+        if (self.activeFavorites.serverUrl)
+            serverUrl = self.activeFavorites.serverUrl;
     } else if (index == k_tabBarApplicationIndexPhotos) {
-        serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:app.activeUrl];
+        serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
     }
     
     return serverUrl;
@@ -1031,65 +1018,45 @@
 
 - (void)settingThemingColorBrand
 {
-    UIColor* newColor;
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
     
-    if (self.activeAccount.length > 0) {
-    
+    if ([NCBrandOptions sharedInstance].use_themingColor) {
+        
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
-    
-        if ([NCBrandOptions sharedInstance].use_themingColor && capabilities.themingColor.length == 7) {
-        
-            BOOL isLight = [CCGraphics isLight:[CCGraphics colorFromHexString:capabilities.themingColor]];
+
+        [CCGraphics settingThemingColor:capabilities.themingColor themingColorElement:capabilities.themingColorElement themingColorText:capabilities.themingColorText];
             
-            if (isLight) {
-                
-                // Activity
-                [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Server Theming" note:NSLocalizedString(@"_theming_is_light_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
-                
-                newColor = [NCBrandColor sharedInstance].customer;
-                
-            } else {
-                
-                newColor = [CCGraphics colorFromHexString:capabilities.themingColor];
-            }
-            
-        } else {
-            
-            newColor = [NCBrandColor sharedInstance].customer;
-        }
-        
     } else {
-        
-        newColor = [NCBrandColor sharedInstance].customer;
+    
+        [NCBrandColor sharedInstance].brand = [NCBrandColor sharedInstance].customer;
+        [NCBrandColor sharedInstance].brandElement = [NCBrandColor sharedInstance].customer;
+        [NCBrandColor sharedInstance].brandText = [NCBrandColor sharedInstance].customerText;
     }
     
-    if (self.activeAccount.length > 0 && ![newColor isEqual:[NCBrandColor sharedInstance].brand] && newColor) {
-        
-        [NCBrandColor sharedInstance].brand = newColor;
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeTheming" object:nil];
 }
 
 - (void)changeTheming:(UIViewController *)vc
 {
-    UIColor *color = [NCBrandColor sharedInstance].brand;
-    
     // Change Navigation & TabBar color
-    vc.navigationController.navigationBar.barTintColor = color;
-    vc.tabBarController.tabBar.tintColor = color;
+    vc.navigationController.navigationBar.barTintColor = [NCBrandColor sharedInstance].brand;
+    vc.tabBarController.tabBar.tintColor = [NCBrandColor sharedInstance].brandElement;
+    // Change bar bottom line shadow
+    vc.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     
     // Change button Plus
     UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     UIButton *button = [tabBarController.view viewWithTag:99];
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:color];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brandElement];
     
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
     // Tint Color GLOBAL WINDOW
-    [self.window setTintColor:[NCBrandColor sharedInstance].brand];
+    [self.window setTintColor:[NCBrandColor sharedInstance].textView];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1365,15 +1332,15 @@
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] downloadFile:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
+            [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
         });
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
         
         // remove the file
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", app.directoryUser, fileID] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", self.directoryUser, fileID] error:nil];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID] clearDateReadDirectoryID:nil];
     }
@@ -1435,7 +1402,8 @@
     
     NSInteger counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
     NSInteger counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
-    
+    NSInteger counterUploadInLock = [[[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND lock = true", self.activeAccount]] count];
+
     NSInteger counterNewUpload = 0;
     
     // ------------------------- <selector Auto Download> -------------------------
@@ -1445,7 +1413,7 @@
         metadataNet = [[NCManageDatabase sharedInstance] getQueueDownload];
         if (metadataNet) {
             
-            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileID serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:app.activeMain];
+            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileName fileID:metadataNet.fileID serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:self.activeMain];
             
         } else
             break;
@@ -1455,21 +1423,15 @@
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
+    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUpload];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUpload];
         if (metadataNet) {
-            
-            // Priority Error only in Foreground
-            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
-                continue;
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             
             counterNewUpload++;
-            
-        } else
-            break;
+        }
         
         counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     }
@@ -1487,21 +1449,15 @@
         
     } else {
         
-        while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
+        if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
             
-            metadataNet =  [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadAutoUploadAll];
+            metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUploadAll];
             if (metadataNet) {
-                
-                // Priority Error only in Foreground
-                if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
-                    continue;
                 
                 [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
                 
                 counterNewUpload++;
-                
-            } else
-                break;
+            }
             
             counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
         }
@@ -1509,21 +1465,15 @@
     
     // ------------------------- <selector Upload File> -------------------------
     
-    while (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload) {
+    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithSelector:selectorUploadFile];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile];
         if (metadataNet) {
-            
-            // Priority Error only in Foreground
-            if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && metadataNet.priority <= k_priorityAutoUploadError)
-                continue;
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             
             counterNewUpload++;
-            
-        } else
-            break;
+        }
         
         counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     }
@@ -1548,7 +1498,7 @@
     }
     
     // Start Timer
-    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:app selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
+    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
