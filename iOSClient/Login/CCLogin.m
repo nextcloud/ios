@@ -251,13 +251,9 @@
 #pragma mark == Login ==
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)loginCloud
+- (void)loginCloudUrl:(NSString *)url user:(NSString *)user password:(NSString *)password
 {
-    // remove last char if /
-    if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
-        self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
-    
-    NSError *error = [[NCNetworkingSync sharedManager] checkServer:[NSString stringWithFormat:@"%@%@", self.baseUrl.text, webDAV] user:self.user.text userID:self.user.text password:self.password.text];
+    NSError *error = [[NCNetworkingSync sharedManager] checkServer:[NSString stringWithFormat:@"%@%@", url, webDAV] user:user userID:user password:password];
 
     dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -267,12 +263,12 @@
         if (!error) {
         
             // account
-            NSString *account = [NSString stringWithFormat:@"%@ %@", self.user.text, self.baseUrl.text];
+            NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
         
             if (_loginType == loginModifyPasswordUser) {
             
                 // Change Password
-                tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:self.password.text];
+                tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:password];
             
                 // Setting appDelegate active account
                 [appDelegate settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
@@ -286,12 +282,12 @@
             } else {
 
                 [[NCManageDatabase sharedInstance] deleteAccount:account];
-                [[NCManageDatabase sharedInstance] addAccount:account url:self.baseUrl.text user:self.user.text password:self.password.text];
+                [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password];
             
                 // Read User Profile
                 CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
                 metadataNet.action = actionGetUserProfile;
-                [appDelegate.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:self.user.text withUserID:self.user.text withPassword:self.password.text withUrl:self.baseUrl.text]];
+                [appDelegate.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:user withUserID:user withPassword:password withUrl:url]];
             }
         
         } else {
@@ -414,8 +410,17 @@
 - (IBAction)handleButtonLogin:(id)sender
 {
     if ([self.baseUrl.text length] > 0 && [self.user.text length] && [self.password.text length]) {
+        
+        // remove last char if /
+        if ([[self.baseUrl.text substringFromIndex:[self.baseUrl.text length] - 1] isEqualToString:@"/"])
+            self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
+        
+        NSString *url = self.baseUrl.text;
+        NSString *user = self.user.text;
+        NSString *password = self.password.text;
+        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            [self loginCloud];
+            [self loginCloudUrl:url user:user password:password];
         });
     }
 }
