@@ -4234,38 +4234,40 @@
                                     [self performSelector:@selector(openIn:) withObject:_metadata];
                                 }];
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
-                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
+        if (isFolderEncrypted == NO || (isFolderEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount])) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
                                     
-                                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                     
-                                    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                             textField.text = _metadata.fileNameView;
                                             [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                    }];
+                                        }];
                                     
-                                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                        NSLog(@"[LOG] Cancel action");
-                                    }];
+                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                            NSLog(@"[LOG] Cancel action");
+                                        }];
                                     
-                                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                            UITextField *fileName = alertController.textFields.firstObject;
                                         
-                                        UITextField *fileName = alertController.textFields.firstObject;
-                                        
-                                        [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                            [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                        }];
+                                    
+                                        okAction.enabled = NO;
+                                    
+                                        [alertController addAction:cancelAction];
+                                        [alertController addAction:okAction];
+                                    
+                                        [self presentViewController:alertController animated:YES completion:nil];
                                     }];
-                                    
-                                    okAction.enabled = NO;
-                                    
-                                    [alertController addAction:cancelAction];
-                                    [alertController addAction:okAction];
-                                    
-                                    [self presentViewController:alertController animated:YES completion:nil];
-        }];
+        }
         
         if (!isFolderEncrypted) {
 
