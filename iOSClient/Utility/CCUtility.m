@@ -562,7 +562,7 @@
 {
     int multiplyFactor = 0;
     
-    NSArray *tokens = [NSArray arrayWithObjects:@"bytes",@"KB",@"MB",@"GB",@"TB",nil];
+    NSArray *tokens = [NSArray arrayWithObjects:@"bytes",@"KB",@"MB",@"GB",@"TB",@"PB",@"EB",@"ZB",@"YB",nil];
     while (value > 1024) {
         value /= 1024;
         multiplyFactor++;
