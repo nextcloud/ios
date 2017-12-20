@@ -1595,8 +1595,8 @@
     // VERSION < 2.19.1
     
     if (([actualVersion compare:@"2.19.1" options:NSNumericSearch] == NSOrderedAscending)) {
-        
-        // Remove All old Photo Library
+
+        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
         [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
     }
     
