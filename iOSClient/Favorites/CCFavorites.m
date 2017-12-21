@@ -173,7 +173,7 @@
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[CCNetworking sharedNetworking] rebuildAndSendEndToEndMetadataOnServerUrl:metadataNet.serverUrl];
+        [[NCNetworkingSync sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:metadataNet.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
     });
     
     [self reloadDatasource];

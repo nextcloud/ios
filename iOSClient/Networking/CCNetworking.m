@@ -980,7 +980,7 @@
                 
                 // Send Metadata
                 NSString *token;
-                NSError *error = [self SendEndToEndMetadataOnServerUrl:serverUrl token:&token];
+                NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl token:&token];
                 if (error == nil) {
                         
                     [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
@@ -1521,75 +1521,6 @@
     }
     
     return result;
-}
-
-- (NSError *)SendEndToEndMetadataOnServerUrl:(NSString *)serverUrl token:(NSString **)token
-{
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-    
-    NSString *e2eTokenLock;
-    __block BOOL updateMetadata = false;
-    __block NSError *e2eError;
-    
-    // Enabled E2E
-    if ([CCUtility isEndToEndEnabled:_activeAccount] == NO)
-        return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serius internal error E2E Encryption not enabled" forKey:NSLocalizedDescriptionKey]];
-    
-    // exists a metadata on serverUrl ?
-    [[NCNetworkingSync sharedManager] getEndToEndMetadataWithUser:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID success:^(NSString *encryptedMetadata) {
-
-        if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:encryptedMetadata privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl account:_activeAccount url:_activeUrl] == false)
-            e2eError = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serious internal error in decoding metadata" forKey:NSLocalizedDescriptionKey]];
-        updateMetadata = YES;
-        
-    } failure:^(NSError *error) {
-        
-        e2eError = error;
-    }];
-    if (e2eError.code != 404 && e2eError != nil) {
-        return e2eError;
-    }
-
-    NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-    if (!tableE2eEncryption)
-         return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serius internal error tableE2eEncryption, records not found" forKey:NSLocalizedDescriptionKey]];
-    
-    NSString *e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl];
-    if (!e2eMetadataJSON)
-        return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serious internal error in encoding metadata" forKey:NSLocalizedDescriptionKey]];
-    
-    // send Metadata
-    if (updateMetadata) {
-        e2eError = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
-    } else {
-        e2eError = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
-    }
-    
-    *token = e2eTokenLock;
-    return e2eError;
-}
-
-- (NSError *)rebuildAndSendEndToEndMetadataOnServerUrl:(NSString *)serverUrl
-{
-    NSString *e2eTokenLock;
-    NSError *error;
-    NSString *e2eMetadataJSON;
-
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-    if (directory.e2eEncrypted == NO)
-        return nil;
-    
-    NSArray *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-    if (tableE2eEncryption) {
-
-        e2eMetadataJSON = [[NCEndToEndMetadata sharedInstance] encoderMetadata:tableE2eEncryption privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl];
-        if (!e2eMetadataJSON)
-            return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serious internal error in encoding metadata" forKey:NSLocalizedDescriptionKey]];
-    }
-    
-    error = [[NCNetworkingSync sharedManager] rebuildEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
-    
-    return error;
 }
 
 @end
