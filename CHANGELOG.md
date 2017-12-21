@@ -5,7 +5,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### [2.19.1] - 2017-xx-xx
 ### [2.18.3] - 2017-xx-xx
+
+## [2.19.0] - 2017-12-21
+### Added
+- End-to-end encryption is now supported
+- iPad : support for multitask Slide Over
+
+### Fixed
+- Folders on top #408
+- Theming 2.0 now works with light colors (only for Nextcloud 13) #427
+- Search bar is showing again like expected #413
+- Different „Blue“-tone in Status and search bar on iPhone X #418
+- Fix Upload Video
+- Fix UI for iOS 11 and iPhone X
+
+### Changed
+- UI for setting up multiple accounts has been improved #420
+- Settings : “Most Compatible” option move from “Auto Upload” to “Advanced”
 
 ## [2.18.2] - 2017-11-07
 ### Fixed
