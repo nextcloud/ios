@@ -999,13 +999,6 @@
                             
                     [uploadTask cancel];
                 }
-                
-#ifndef EXTENSION
-                // Next tableQueueUpload
-                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
-#endif
             });
             
          } else {
@@ -1016,11 +1009,10 @@
              
              // OK remove record on tableQueueUpload
              [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+             
 #ifndef EXTENSION
              // Next tableQueueUpload
-             AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+             [(AppDelegate *)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
 #endif
              
              // Manage uploadTask cancel,suspend,resume
