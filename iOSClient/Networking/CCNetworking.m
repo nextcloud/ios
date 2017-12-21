@@ -955,6 +955,10 @@
     
     NSURLSession *sessionUpload;
     
+    // E2E *** FORCED FOREGROUND ***
+    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount])
+        session = k_upload_session_foreground;
+    
     // NSURLSession
     if ([session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
     else if ([session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
