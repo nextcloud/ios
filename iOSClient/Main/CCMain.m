@@ -2090,25 +2090,33 @@
             return;
         }
         
-        if ([[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:fileName newFileNamePath:[CCUtility returnFileNamePathFromFileName:fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl]]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                
-                NSError *error = [[CCNetworking sharedNetworking] SendEndToEndMetadataOnServerUrl:self.serverUrl];
-                if (error == nil) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [[NCManageDatabase sharedInstance] setMetadataFileNameViewWithDirectoryID:metadata.directoryID fileName:metadata.fileName newFileNameView:fileName];
-                        [self reloadDatasource];
-                    });
-                } else {
-                    // Restore previuos fileName on DB
-                    (void)[[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:metadata.fileNameView newFileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileNameView serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl]];
+            NSString *token;
+            
+            // Rename on DB E2E (TEMP)
+            [[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:fileName newFileNamePath:[CCUtility returnFileNamePathFromFileName:fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl]];
+            
+            NSError *error = [[CCNetworking sharedNetworking] SendEndToEndMetadataOnServerUrl:self.serverUrl token:&token];
+            if (error != nil) {
+                dispatch_async(dispatch_get_main_queue(), ^{
                     [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error to send metadata %d", (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                });
+            }
+                
+            // Unlock
+            if (token) {
+                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadataFolder.fileID token:token];
+                if (error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    });
                 }
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self readFolder:self.serverUrl];
             });
-        } else {
-            [appDelegate messageNotification:@"_error_" description:@"Error file not found" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-        }
+        });
         
     } else  {
         
@@ -3878,9 +3886,14 @@
     
     if (metadata == nil || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
         return NO;
-    else
-        return YES;
+    
+    // E2E
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount] && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO)
+        return NO;
+    
+    return YES;
 }
+
 
 -(void)swipeTableCell:(nonnull MGSwipeTableCell *)cell didChangeSwipeState:(MGSwipeState)state gestureIsActive:(BOOL)gestureIsActive
 {
@@ -4123,7 +4136,8 @@
                                     }];
         }
         
-        if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount] && !_metadata.e2eEncrypted && !([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
+        if (!_metadata.e2eEncrypted && !([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
+
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
@@ -4144,7 +4158,7 @@
                                     }];
         }
         
-        if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount] && _metadata.e2eEncrypted) {
+        if (_metadata.e2eEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
@@ -4165,7 +4179,7 @@
                                     }];
         }
         
-        if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount] && directory.e2eTokenLock.length > 0) {
+        if (directory.e2eTokenLock.length > 0) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_lock_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
@@ -4233,40 +4247,37 @@
                                     [self performSelector:@selector(openIn:) withObject:_metadata];
                                 }];
         
-        if (isFolderEncrypted == NO || (isFolderEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount])) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
                                     
-                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                     
-                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                            textField.text = _metadata.fileNameView;
-                                            [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                        }];
-                                    
-                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                            NSLog(@"[LOG] Cancel action");
-                                        }];
-                                    
-                                            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                                            UITextField *fileName = alertController.textFields.firstObject;
-                                        
-                                            [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
-                                        }];
-                                    
-                                        okAction.enabled = NO;
-                                    
-                                        [alertController addAction:cancelAction];
-                                        [alertController addAction:okAction];
-                                    
-                                        [self presentViewController:alertController animated:YES completion:nil];
+                                    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                        textField.text = _metadata.fileNameView;
+                                        [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                     }];
-        }
+                                    
+                                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                        NSLog(@"[LOG] Cancel action");
+                                    }];
+                                    
+                                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                        UITextField *fileName = alertController.textFields.firstObject;
+                                        [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                    }];
+                                    
+                                    okAction.enabled = NO;
+                                    
+                                    [alertController addAction:cancelAction];
+                                    [alertController addAction:okAction];
+                                    
+                                    [self presentViewController:alertController animated:YES completion:nil];
+                                }];
         
         if (!isFolderEncrypted) {
 

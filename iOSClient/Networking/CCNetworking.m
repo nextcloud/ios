@@ -836,7 +836,7 @@
     metadata.sessionSelectorPost = selectorPost;
     
     // E2E *** IS ENCRYPTED ---> ENCRYPTED FILE ***
-    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
+    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
         NSString *fileNameIdentifier;
         NSError *error;
@@ -974,12 +974,13 @@
     } else {
         
         // E2E *** IS ENCRYPTED ---> CREATE SEND METADATA ***
-        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
+        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
                 // Send Metadata
-                NSError *error = [self SendEndToEndMetadataOnServerUrl:serverUrl];
+                NSString *token;
+                NSError *error = [self SendEndToEndMetadataOnServerUrl:serverUrl token:&token];
                 if (error == nil) {
                         
                     [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
@@ -1178,7 +1179,7 @@
     }
     
     // E2E *** IS ENCRYPTED ---> UNLOCK ***
-    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
+    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
         // OK remove record on tableQueueUpload [NEXT UPLOAD]
         [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier selector:metadata.sessionSelector];
@@ -1522,7 +1523,7 @@
     return result;
 }
 
-- (NSError *)SendEndToEndMetadataOnServerUrl:(NSString *)serverUrl
+- (NSError *)SendEndToEndMetadataOnServerUrl:(NSString *)serverUrl token:(NSString **)token
 {
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
     
@@ -1564,6 +1565,7 @@
         e2eError = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
     }
     
+    *token = e2eTokenLock;
     return e2eError;
 }
 

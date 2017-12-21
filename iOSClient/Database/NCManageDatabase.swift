@@ -1121,10 +1121,10 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) -> Bool {
+    @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
         
         guard let tableAccount = self.getAccountActive() else {
-            return false
+            return
         }
         
         let realm = try! Realm()
@@ -1133,7 +1133,7 @@ class NCManageDatabase: NSObject {
 
         guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", tableAccount.account, serverUrl, fileNameIdentifier).first else {
             realm.cancelWrite()
-            return false
+            return 
         }
         
         let object = tableE2eEncryption.init(value: result)
@@ -1149,10 +1149,10 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return false
+            return
         }
         
-        return true
+        return
     }
     
     //MARK: -
