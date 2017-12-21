@@ -840,8 +840,7 @@
         
         NSString *fileNameIdentifier;
         NSError *error;
-        NSString *e2eTokenLock;
-
+        
         // Verify File Size
         NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] error:&error];
         NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
@@ -860,15 +859,6 @@
         else
             fileNameIdentifier = [CCUtility generateRandomIdentifier];
         
-        // LOCK FOLDER
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-        error = [[NCNetworkingSync sharedManager] lockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:&e2eTokenLock];
-        if (error) {
-            // Error Lock folder
-            [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:@"E2E Error to lock folder" errorCode:k_CCErrorInternalError];
-            return;
-        }
-        
         if ([self newEndToEndFile:fileName fileNameIdentifier:fileNameIdentifier serverUrl:serverUrl] == false) {
             // Error for uploadFileFailure
             [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:@"E2E Error to create encrypted file" errorCode:k_CCErrorInternalError];
@@ -880,9 +870,9 @@
     }
     
     [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
-
+    
     metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-            
+    
     if (metadata)
         [self uploadURLSession:metadata.fileName serverUrl:serverUrl sessionID:uploadID session:metadata.session taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
 }
@@ -924,7 +914,6 @@
     NSURL *url;
     NSMutableURLRequest *request;
     PHAsset *asset;
-
     
     NSString *fileNamePath = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] encodeString:NSUTF8StringEncoding];
         
