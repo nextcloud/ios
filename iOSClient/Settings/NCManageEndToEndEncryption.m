@@ -176,6 +176,14 @@
     self.form = form;
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    // E2E
+    self.endToEndInitialize = [NCEndToEndInitialize new];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Action ===
 #pragma --------------------------------------------------------------------------------------------
