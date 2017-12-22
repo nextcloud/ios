@@ -27,7 +27,7 @@
 
 #import "NCBridgeSwift.h"
 
-@interface NCManageEndToEndEncryption ()
+@interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate>
 {
     AppDelegate *appDelegate;
 
@@ -45,7 +45,6 @@
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];
         [self initializeForm];
     }
     return self;
@@ -58,7 +57,6 @@
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];
         [self initializeForm];
     }
     return self;
@@ -176,11 +174,6 @@
 #endif
     
     self.form = form;
-}
-
--(void)reloadForm
-{
-    [self initializeForm];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -325,6 +318,38 @@
     
     metadataNet.action = actionDeleteEndToEndPrivateKey;
     [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Delegate ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)endToEndInitializeSuccess
+{
+    // Reload All Datasource
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
+
+    [self initializeForm];
+}
+
+- (void)deleteEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
+{
+    [appDelegate messageNotification:@"E2E delete privateKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+}
+
+- (void)deleteEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [appDelegate messageNotification:@"E2E delete privateKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+}
+
+- (void)deleteEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
+{
+    [appDelegate messageNotification:@"E2E delete publicKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+}
+
+- (void)deleteEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [appDelegate messageNotification:@"E2E delete publicKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 }
 
 #pragma --------------------------------------------------------------------------------------------
