@@ -300,11 +300,3 @@ class NCEndToEndInitialize : NSObject, OCNetworkingDelegate  {
         }
     }
 }
-
-
-
-
-
-
-
-
