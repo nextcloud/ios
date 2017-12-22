@@ -182,6 +182,7 @@
     
     // E2E
     self.endToEndInitialize = [NCEndToEndInitialize new];
+    self.endToEndInitialize.delegate = self;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -395,7 +396,7 @@
     
     if (aViewController.fromType == CCBKPasscodeFromStartEncryption) {
         
-        //[appDelegate.endToEndInterface initEndToEndEncryption];
+        [self.endToEndInitialize initEndToEndEncryption];        
     }
     
     if (aViewController.fromType == CCBKPasscodeFromCheckPassphrase) {
