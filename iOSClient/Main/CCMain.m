@@ -1558,26 +1558,25 @@
 //
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void){
-        [self performSelectorOnMainThread:@selector(uploadFileAssetBridge:) withObject:@[assets, serverUrl, [NSNumber numberWithBool:useSubFolder], session] waitUntilDone:NO];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+ 
+        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
+
+        // if request create the folder for Photos &  the subfolders
+        if ([autoUploadPath isEqualToString:serverUrl])
+            if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
+                return;
+    
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self uploadFileAsset:assets serverUrl:serverUrl autoUploadPath:autoUploadPath useSubFolder:useSubFolder session:session];
+        });
     });
 }
 
-- (void)uploadFileAssetBridge:(NSArray *)arguments
+- (void)uploadFileAsset:(NSArray *)assets serverUrl:(NSString *)serverUrl autoUploadPath:(NSString *)autoUploadPath useSubFolder:(BOOL)useSubFolder session:(NSString *)session
 {
-    NSArray *assets = [arguments objectAtIndex:0];
-    __block NSString *serverUrl = [arguments objectAtIndex:1];
-    BOOL useSubFolder = [[arguments objectAtIndex:2] boolValue];
-    NSString *session = [arguments objectAtIndex:3];
-
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
-    
-    // if request create the folder for Photos &  the subfolders
-    if ([autoUploadPath isEqualToString:serverUrl])
-        if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
-            return;
     
     for (PHAsset *asset in assets) {
         
@@ -4234,38 +4233,40 @@
                                     [self performSelector:@selector(openIn:) withObject:_metadata];
                                 }];
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
-                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
+        if (isFolderEncrypted == NO || (isFolderEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount])) {
+            
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
                                     
-                                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                     
-                                    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
                                             textField.text = _metadata.fileNameView;
                                             [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                    }];
+                                        }];
                                     
-                                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                        NSLog(@"[LOG] Cancel action");
-                                    }];
+                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                            NSLog(@"[LOG] Cancel action");
+                                        }];
                                     
-                                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                            UITextField *fileName = alertController.textFields.firstObject;
                                         
-                                        UITextField *fileName = alertController.textFields.firstObject;
-                                        
-                                        [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                            [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                        }];
+                                    
+                                        okAction.enabled = NO;
+                                    
+                                        [alertController addAction:cancelAction];
+                                        [alertController addAction:okAction];
+                                    
+                                        [self presentViewController:alertController animated:YES completion:nil];
                                     }];
-                                    
-                                    okAction.enabled = NO;
-                                    
-                                    [alertController addAction:cancelAction];
-                                    [alertController addAction:okAction];
-                                    
-                                    [self presentViewController:alertController animated:YES completion:nil];
-        }];
+        }
         
         if (!isFolderEncrypted) {
 
@@ -5033,9 +5034,9 @@
     // ======== MGSwipe ========
     
     if (metadata.favorite)
-        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_unfavorite_", nil)] icon:[UIImage imageNamed:@"swipeUnfavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeUnfavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000] padding:25]];
     else
-        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_favorite_", nil)] icon:[UIImage imageNamed:@"swipeFavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeFavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000] padding:25]];
         
     cell.leftExpansion.buttonIndex = 0;
     cell.leftExpansion.fillOnTrigger = NO;
@@ -5045,7 +5046,7 @@
     [favoriteButton centerIconOverText];
     
     //Right
-    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_delete_", nil)] icon:[UIImage imageNamed:@"swipeDelete"] backgroundColor:[UIColor redColor]], [MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_more_", nil)] icon:[UIImage imageNamed:@"swipeMore"] backgroundColor:[UIColor lightGrayColor]]];
+    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeDelete"] backgroundColor:[UIColor redColor]], [MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeMore"] backgroundColor:[UIColor lightGrayColor] padding:25]];
     cell.rightSwipeSettings.transition = MGSwipeTransitionBorder;
     
     //centerIconOverText
