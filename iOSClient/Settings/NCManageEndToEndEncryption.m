@@ -314,7 +314,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionDeleteEndToEndPublicKey;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:appDelegate.endToEndInterface metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (void)deletePrivateKey:(XLFormRowDescriptor *)sender
@@ -324,7 +324,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionDeleteEndToEndPrivateKey;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:appDelegate.endToEndInterface metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -362,7 +362,7 @@
     
     if (aViewController.fromType == CCBKPasscodeFromStartEncryption) {
         
-        [appDelegate.endToEndInterface initEndToEndEncryption];
+        //[appDelegate.endToEndInterface initEndToEndEncryption];
     }
     
     if (aViewController.fromType == CCBKPasscodeFromCheckPassphrase) {

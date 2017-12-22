@@ -217,9 +217,6 @@
     UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
     [application registerUserNotificationSettings:notificationSettings];
     
-    // E2E Encryption
-    self.endToEndInterface = [NCEntoToEndInterface new];
-    
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
     [self logUser];

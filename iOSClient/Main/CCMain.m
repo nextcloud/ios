@@ -4160,13 +4160,16 @@
                                     handler:^(AHKActionSheet *as) {
                                         
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                            
-                                            if ([appDelegate.endToEndInterface markEndToEndFolderEncrypted:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]) {
-                                               dispatch_async(dispatch_get_main_queue(), ^{
-                                                   [self readFolder:self.serverUrl];
-                                               });
-                                            }
-                                            
+                                            NSString *token;
+                                            NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName] token:&token];
+                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                if (error) {
+                                                    [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                                                } else {
+                                                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]];
+                                                    [self readFolder:self.serverUrl];
+                                                }
+                                            });
                                         });
                                     }];
         }
@@ -4181,13 +4184,16 @@
                                     handler:^(AHKActionSheet *as) {
                                         
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                            
-                                            if ([appDelegate.endToEndInterface deletemarkEndToEndFolderEncrypted:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]) {
-                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                            NSString *token;
+                                            NSError *error = [[NCNetworkingSync sharedManager] deletemarkEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName] token:&token];
+                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                if (error) {
+                                                    [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                                                } else {
+                                                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]];
                                                     [self readFolder:self.serverUrl];
-                                                });
-                                            }
-                                            
+                                                }
+                                            });
                                         });
                                     }];
         }
