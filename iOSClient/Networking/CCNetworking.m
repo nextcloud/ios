@@ -1186,12 +1186,9 @@
                 NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:directory.e2eTokenLock];
                 if (error) {
 #ifndef EXTENSION
-                    NSString *message = [NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code];
-                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error folder unlock", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                
-                    [alertController addAction:okAction];
-                    [[[[[UIApplication sharedApplication] delegate] window] rootViewController] presentViewController:alertController animated:YES completion:nil];
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_error_" description:[NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                    });
 #endif
                 }
             }

@@ -350,65 +350,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         
         return true
     }
-    
-    // --------------------------------------------------------------------------------------------
-    // MARK: Manage Metadata
-    // --------------------------------------------------------------------------------------------
-    
-    func getEndToEndMetadataSuccess(_ metadataNet: CCMetadataNet!) {
-        
-        guard let privateKey = CCUtility.getEndToEndPrivateKey(appDelegate.activeAccount) else {
-            
-            appDelegate.messageNotification("E2E Get Metadata", description: "Serious internal error: PrivareKey not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            return
-        }
-
-        guard let main = appDelegate.listMainVC[metadataNet.serverUrl] as? CCMain else {
-            
-            appDelegate.messageNotification("E2E Get Metadata", description: "Serious internal error: Main not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            return
-        }
-        
-        // Decode metadata JSON
-        if NCEndToEndMetadata.sharedInstance.decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: metadataNet.serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) == false {
-        
-            appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            return
-        }
-        
-        // Reload data source
-        main.reloadDatasource(metadataNet.serverUrl)
-    }
-    
-    func getEndToEndMetadataFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized) {
-            
-            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
-            
-        } else if (errorCode == 404) {
-            
-            print("No metadata found: "+metadataNet.serverUrl+"/"+metadataNet.fileName)
-            
-        } else if (errorCode != 404) {
-            
-            appDelegate.messageNotification("E2E Get metadata", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-        }
-    }
-    
-    @objc func getEndToEndMetadata(_ fileName: String, fileID: String, serverUrl: String) {
-        
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        
-        metadataNet.action = actionGetEndToEndMetadata
-        metadataNet.fileID = fileID
-        metadataNet.fileName = fileName
-        metadataNet.serverUrl = serverUrl
-        
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-
 }
 
 

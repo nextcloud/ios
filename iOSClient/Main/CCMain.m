@@ -1802,7 +1802,21 @@
         
         // Read Metadata
         if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
-            [appDelegate.endToEndInterface getEndToEndMetadata:_metadataFolder.fileName fileID:_metadataFolder.fileID serverUrl:self.serverUrl];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{                
+                NSString *metadata;
+                NSError *error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:metadataFolder.fileID metadata:&metadata];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (error) {
+                        if (error.code != 404)
+                            [appDelegate messageNotification:@"_error_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                    } else {
+                        if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:appDelegate.activeAccount] serverUrl:self.serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl] == false)
+                            [appDelegate messageNotification:@"_error_" description:@"Serious internal error in decoding metadata" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                        else
+                            [self reloadDatasource];
+                    }
+                });
+            });
         } else {
             [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         }
@@ -4187,14 +4201,15 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-                                        
-                                        metadataNet.action = actionUnlockEndToEndFolderEncrypted;
-                                        metadataNet.fileID = _metadata.fileID;
-                                        metadataNet.serverUrl = directory.serverUrl;
-                                        metadataNet.token = directory.e2eTokenLock;
-                                        
-                                        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+
+                                            NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID token:directory.e2eTokenLock];
+                                            if (error) {
+                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                    [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                                                });
+                                            }
+                                        });
                                     }];
         }
         
