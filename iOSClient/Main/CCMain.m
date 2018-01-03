@@ -2036,11 +2036,6 @@
             
         } else {
             
-            // E2E
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [[NCNetworkingSync sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:self.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-            });
-            
             // End Select Table View
             [self tableViewSelect:NO];
             
@@ -2063,9 +2058,7 @@
         
     }
     
-    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
-        
-    [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:_hud hudTitled:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile]];        
 }
 
 - (void)deleteFile

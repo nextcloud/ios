@@ -582,7 +582,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
+                                                           [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:nil hudTitled:nil];
                                                        }]];
 
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
@@ -854,11 +854,6 @@
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    // E2E
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[NCNetworkingSync sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:metadataNet.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-    });
-    
     // reload Main
     [appDelegate.activeMain reloadDatasource];
     
@@ -962,7 +957,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [[CCActions sharedInstance] deleteFileOrFolder:self.metadataDetail delegate:self];
+                                                           [[CCActions sharedInstance] deleteFileOrFolder:self.metadataDetail delegate:self hud:nil hudTitled:nil];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)

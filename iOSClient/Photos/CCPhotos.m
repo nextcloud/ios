@@ -451,9 +451,7 @@
 {
     [_queueMetadatas addObject:selectorDelete];
     
-    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
-
-    [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:_hud hudTitled:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile]];
 }
 
 - (void)deleteSelectedFiles
