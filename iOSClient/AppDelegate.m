@@ -1374,16 +1374,22 @@
         return;
     
     // BACKGROND & FOREGROUND
-    NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
-    
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         
-        // ONLY BACKGROUND
-        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+        // E2E
+        NSString *serverUrlAutoUpload = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, serverUrlAutoUpload]];
+        
+        // ONLY BACKGROUND NOT E2E
+        if (directory == nil) {
+            NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
+            [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+        }
         
     } else {
         
         // ONLY FOREFROUND
+        NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
         [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
     }
 }
