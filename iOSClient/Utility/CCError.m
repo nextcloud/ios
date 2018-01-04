@@ -63,7 +63,7 @@
             return NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
             break;
         case 400:                                       // 400
-            return NSLocalizedStringFromTable(@"Bad request", @"Error", nil);
+            return NSLocalizedStringFromTable(@"_bad_request_", @"Error", nil);
             break;
         case 403:                                       // 403
             return NSLocalizedStringFromTable(@"_error_not_permission_", @"Error", nil);
@@ -72,7 +72,7 @@
             return NSLocalizedStringFromTable(@"_error_path_", @"Error", nil);
             break;
         case 423:                                       // 423 WebDAV Locked : The resource that is being accessed is locked
-            return NSLocalizedStringFromTable(@"WebDAV Locked : The resource that is being accessed is locked", @"Error", nil);
+            return NSLocalizedStringFromTable(@"_webdav_locked_", @"Error", nil);
             break;
         case 500:
             return NSLocalizedStringFromTable(@"_internal_server_", @"Error", nil);
