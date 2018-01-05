@@ -111,8 +111,6 @@ class CCActions: NSObject {
                         self.appDelegate.messageNotification("_delete_", description: error!.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
                     }
                     return;
-                } else {
-                    metadataNet.token = token! as String
                 }
             }
         
@@ -120,7 +118,6 @@ class CCActions: NSObject {
             metadataNet.delegate = delegate
             metadataNet.directory = metadata.directory
             metadataNet.directoryID = metadata.directoryID
-            metadataNet.e2eEncrypted = metadata.e2eEncrypted
             metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNameView = metadata.fileNameView
@@ -145,32 +142,31 @@ class CCActions: NSObject {
             self.deleteFile(metadata: metadata, serverUrl: metadataNet.serverUrl)
         }
         
-        let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", self.appDelegate.activeAccount, metadataNet.serverUrl))
+        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", self.appDelegate.activeAccount, metadataNet.serverUrl)) else {
+            self.deleteFileOrFolderFailure(metadataNet, message: "Internal error, tableDirectory not found", errorCode: 0)
+            return
+        }
         
         // E2E Rebuild and send Metadata
-        if metadataNet.token.count > 0 {
+        if tableDirectory.e2eEncrypted {
             
             DispatchQueue.global().async {
                 
-                var token = metadataNet.token as NSString?
+                var token = tableDirectory.e2eTokenLock as NSString?
                 
                 // Send Metadata
                 let errorRebuild = NCNetworkingSync.sharedManager().rebuildAndSendEndToEndMetadata(onServerUrl: metadataNet.serverUrl, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, token: &token) as NSError?
                 if (errorRebuild != nil) {
                     DispatchQueue.main.async {
-                        self.appDelegate.messageNotification("_delete_", description: errorRebuild!.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-                        self.deleteFileOrFolderFailure(metadataNet, message: "\(errorRebuild!.localizedDescription) \(errorRebuild!.code)" as NSString, errorCode: errorRebuild!.code)
+                        self.deleteFileOrFolderFailure(metadataNet, message: errorRebuild!.localizedDescription as NSString, errorCode: errorRebuild!.code)
                     }
                 }
                 
                 // Unlock
-                let errorUnlock = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, fileID: tableDirectory!.fileID, token: token! as String) as NSError?
-                if (errorUnlock != nil) {
+                let errorUnlock = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, fileID: tableDirectory.fileID, token: token! as String) as NSError?
+                if (errorUnlock != nil && errorRebuild == nil) {
                     DispatchQueue.main.async {
-                        self.appDelegate.messageNotification("_delete_", description: "\(errorUnlock!.localizedDescription) \(errorUnlock!.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-                        if (errorRebuild == nil) {
-                            self.deleteFileOrFolderFailure(metadataNet, message: errorUnlock!.localizedDescription as NSString, errorCode: errorUnlock!.code)
-                        }
+                        self.deleteFileOrFolderFailure(metadataNet, message: errorUnlock!.localizedDescription as NSString, errorCode: errorUnlock!.code)
                     }
                 }
                 
