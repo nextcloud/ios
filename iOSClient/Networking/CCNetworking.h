@@ -98,7 +98,6 @@
 @property BOOL directory;
 @property (nonatomic, strong) NSString *directoryID;
 @property (nonatomic, strong) NSString *directoryIDTo;
-@property BOOL e2eEncrypted;
 @property (nonatomic, strong) NSString *encryptedMetadata;
 @property NSInteger errorCode;
 @property NSInteger errorRetry;
