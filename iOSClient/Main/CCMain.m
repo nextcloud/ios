@@ -4051,7 +4051,6 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        
                                         [self openWindowShare:_metadata];
                                     }];
         }
@@ -4102,7 +4101,6 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        
                                         [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
                                     }];
         }
@@ -4144,7 +4142,6 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        
                                         [self performSelector:@selector(comandoLockPassword) withObject:nil];
                                     }];
         }
@@ -4252,9 +4249,8 @@
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
                                         handler:^(AHKActionSheet *as) {
-                                        
                                             [self openWindowShare:_metadata];
-            }];
+                                        }];
         }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
@@ -4263,7 +4259,6 @@
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
-                                    
                                     [self performSelector:@selector(openIn:) withObject:_metadata];
                                 }];
         
@@ -4307,9 +4302,8 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                    
                                         [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
-            }];
+                                    }];
         }
         
         if (localFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, _metadata.fileID]]) {
@@ -4320,7 +4314,6 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        
                                         [self performSelector:@selector(removeLocalFile:) withObject:_metadata];
                                     }];
         }
