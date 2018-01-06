@@ -599,6 +599,12 @@
     [self.parentViewController presentViewController:alertController animated:YES completion:NULL];
 }
 
+- (void)photoBrowserDidFinishPresentation:(MWPhotoBrowser *)photoBrowser
+{
+    [self removeAllView];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 - (void)triggerProgressTask:(NSNotification *)notification
 {
     NSDictionary *dict = notification.userInfo;
