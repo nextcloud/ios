@@ -379,6 +379,10 @@
 	doubleTapTwo.numberOfTouchesRequired = 2; doubleTapTwo.numberOfTapsRequired = 2; doubleTapTwo.delegate = self;
 	[self.view addGestureRecognizer:doubleTapTwo];
     
+    UISwipeGestureRecognizer *swipeUpDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeUpDown:)];
+    swipeUpDown.direction = UISwipeGestureRecognizerDirectionDown | UISwipeGestureRecognizerDirectionUp;
+    [self.view addGestureRecognizer:swipeUpDown];
+
     // TWS Long Press
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongTap:)];
     [self.view addGestureRecognizer:longPressRecognizer];
@@ -706,6 +710,13 @@
     //TWS
     if ([self.delegate respondsToSelector:@selector(handleLongTappReader)])
         [self.delegate handleLongTappReader];
+}
+
+- (void)handleSwipeUpDown:(UITapGestureRecognizer *)recognizer
+{
+    //TWS
+    if ([self.delegate respondsToSelector:@selector(handleSwipeUpDown)])
+        [self.delegate handleSwipeUpDown];
 }
 
 #pragma mark - ReaderContentViewDelegate methods

@@ -854,6 +854,12 @@
     [self actionButtonPressed:nil];
 }
 
+- (void)handleSwipeUpDown
+{
+    [self removeAllView];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Delete =====
 #pragma --------------------------------------------------------------------------------------------
