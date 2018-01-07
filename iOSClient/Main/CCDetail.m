@@ -849,6 +849,11 @@
     [self.readerPDFViewController updateContentViews];
 }
 
+- (void)handleLongTappReader
+{
+    [self actionButtonPressed:nil];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Delete =====
 #pragma --------------------------------------------------------------------------------------------

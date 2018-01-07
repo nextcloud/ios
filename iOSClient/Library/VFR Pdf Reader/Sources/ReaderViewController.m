@@ -378,6 +378,10 @@
 	UITapGestureRecognizer *doubleTapTwo = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
 	doubleTapTwo.numberOfTouchesRequired = 2; doubleTapTwo.numberOfTapsRequired = 2; doubleTapTwo.delegate = self;
 	[self.view addGestureRecognizer:doubleTapTwo];
+    
+    // TWS Long Press
+    UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongTap:)];
+    [self.view addGestureRecognizer:longPressRecognizer];
 
 	[singleTapOne requireGestureRecognizerToFail:doubleTapOne]; // Single tap requires double tap to fail
 
@@ -695,6 +699,13 @@
 			[self decrementPageNumber]; return;
 		}
 	}
+}
+
+- (void)handleLongTap:(UITapGestureRecognizer *)recognizer
+{
+    //TWS
+    if ([self.delegate respondsToSelector:@selector(handleLongTappReader)])
+        [self.delegate handleLongTappReader];
 }
 
 #pragma mark - ReaderContentViewDelegate methods
