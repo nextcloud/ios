@@ -217,7 +217,15 @@
 
                 } else {
                     
-                    
+                    [self dismissViewControllerAnimated:YES completion: ^{
+                        
+                        appDelegate.activeLoginWeb = [CCLoginWeb new];
+                        appDelegate.activeLoginWeb.loginType = _loginType;
+                        appDelegate.activeLoginWeb.delegate = self.delegate;
+                        appDelegate.activeLoginWeb.url = url;
+                        
+                        [appDelegate.activeLoginWeb presentModalWithDefaultTheme:(UIViewController *)self.delegate];
+                    }];
                 }
                 
             });
@@ -446,8 +454,8 @@
 
 - (IBAction)handlebaseUrlchange:(id)sender
 {
-    if ([self.baseUrl.text length] > 0)
-        [self performSelector:@selector(testUrl) withObject:nil];
+    //if ([self.baseUrl.text length] > 0)
+    //    [self performSelector:@selector(testUrl) withObject:nil];
 }
 
 - (IBAction)handleButtonLogin:(id)sender

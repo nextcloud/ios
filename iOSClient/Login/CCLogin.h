@@ -27,6 +27,8 @@
 #import "CCCertificate.h"
 #import "OCNetworking.h"
 
+@class CCLoginWeb;
+
 @protocol CCLoginDelegate <NSObject>
 
 - (void) loginSuccess:(NSInteger)loginType;

@@ -81,10 +81,6 @@
     NSString *_noFilesSearchDescription;
     NSTimer *_timerWaitInput;
 
-    // Login
-    CCLoginWeb *_loginWeb;
-    CCLogin *_loginVC;
-    
     // Automatic Upload Folder
     NSString *_autoUploadFileName;
     NSString *_autoUploadDirectory;

@@ -101,6 +101,7 @@ public class SwiftWebVC: UIViewController {
     public convenience init(aRequest: URLRequest, hideToolbar: Bool) {
         self.init()
         self.request = aRequest
+        self.request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         self.hideToolbar = hideToolbar
     }
     
@@ -108,12 +109,8 @@ public class SwiftWebVC: UIViewController {
         
         let userAgent : String = CCUtility.getUserAgent()
         
-        if #available(iOS 9.0, *) {
-            webView.customUserAgent = userAgent
-        } else {
-            // Fallback on earlier versions
-            UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
-        }
+        webView.customUserAgent = userAgent
+       
         webView.load(request)
     }
     
