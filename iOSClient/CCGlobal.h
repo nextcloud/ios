@@ -30,6 +30,8 @@ extern NSString *const appCertificates;
 extern NSString *const webDAV;
 extern NSString *const dav;
 
+extern NSString *const flowEndpoint;
+
 #ifndef EXTENSION
 
 //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];

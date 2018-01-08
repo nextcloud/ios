@@ -31,3 +31,7 @@ NSString *const appCertificates = @"Library/Application Support/Certificates";
 // webDAV & DAV
 NSString *const webDAV = @"/remote.php/webdav";
 NSString *const dav = @"/remote.php/dav";
+
+// Login Flow
+NSString *const flowEndpoint = @"/index.php/login/flow";
+

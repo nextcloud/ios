@@ -75,10 +75,9 @@ class NCBrandColor: NSObject {
     @objc public let linkLoginProvider:               String = "https://nextcloud.com/providers"
     @objc public let textLoginProvider:               String = "_login_bottom_label_"
     @objc public let middlewarePingUrl:               String = ""
-    @objc public let webLoginAutenticationProtocol:   String = ""                                               // example "abc://"
+    @objc public let webLoginAutenticationProtocol:   String = "nc://"                                          // example "abc://"
     @objc public let webCloseViewProtocol:            String = ""                                               // example "abc://change/plan"
     @objc public let folderBrandAutoUpload:           String = ""                                               // example "_auto_upload_folder_"
-    @objc public let ncFlowEndpoint:                  String = "/index.php/login/flow"
 
     // Auto Upload default folder
     @objc public var folderDefaultAutoUpload:         String = "Photos"
