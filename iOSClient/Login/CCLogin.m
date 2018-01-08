@@ -105,10 +105,16 @@
     
     if (_loginType == loginAddForced) {
         _annulla.hidden = YES;
+        // Login Flow ?
+        if ([NCBrandOptions sharedInstance].use_login_web_flow) {
+            _imageUser.hidden = YES;
+            _user.hidden = YES;
+            _imagePassword.hidden = YES;
+            _password.hidden = YES;
+        }
     }
     
     if (_loginType == loginModifyPasswordUser) {
-        
         _baseUrl.text = appDelegate.activeUrl;
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
@@ -223,7 +229,18 @@
                 
                 if (error) {
                     
-                    NSLog(@"[LOG] Error: %ld - %@",(long)[error code] , [error localizedDescription]);
+                    if ([error code] == NSURLErrorServerCertificateUntrusted) {
+                        
+                        NSLog(@"[LOG] Error NSURLErrorServerCertificateUntrusted");
+                        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
+                        
+                    } else {
+                        
+                        _imageUser.hidden = NO;
+                        _user.hidden = NO;
+                        _imagePassword.hidden = NO;
+                        _password.hidden = NO;
+                    }
 
                 } else {
                     
@@ -237,7 +254,6 @@
                         [appDelegate.activeLoginWeb presentModalWithDefaultTheme:(UIViewController *)self.delegate];
                     }];
                 }
-                
             });
         }];
         
@@ -279,7 +295,6 @@
                     }
                 }
             });
-        
         }];
     
         [task resume];
