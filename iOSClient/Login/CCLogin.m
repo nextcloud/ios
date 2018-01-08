@@ -231,7 +231,7 @@
                         
                         appDelegate.activeLoginWeb = [CCLoginWeb new];
                         appDelegate.activeLoginWeb.loginType = _loginType;
-                        appDelegate.activeLoginWeb.delegate = self.delegate;
+                        appDelegate.activeLoginWeb.delegate = (id<CCLoginDelegateWeb>)self.delegate;
                         appDelegate.activeLoginWeb.url = url;
                         
                         [appDelegate.activeLoginWeb presentModalWithDefaultTheme:(UIViewController *)self.delegate];
