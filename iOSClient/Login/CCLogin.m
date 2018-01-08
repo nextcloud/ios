@@ -211,14 +211,14 @@
     // Test Login Flow
     if ([self.baseUrl.text length] > 0 && _user.hidden && _password.hidden) {
         
-        NSString *url = self.baseUrl.text;
+        NSString *urlBase = self.baseUrl.text;
         // Remove trailing slash
         if ([self.baseUrl.text hasSuffix:@"/"])
-            url = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
+            urlBase = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
         // Add end point flow
-        url = [url stringByAppendingString:flowEndpoint];
+        urlBase = [urlBase stringByAppendingString:flowEndpoint];
         
-        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:0 timeoutInterval:20.0];
+        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlBase] cachePolicy:0 timeoutInterval:20.0];
         [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
         [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
 
@@ -255,7 +255,7 @@
                         appDelegate.activeLoginWeb = [CCLoginWeb new];
                         appDelegate.activeLoginWeb.loginType = _loginType;
                         appDelegate.activeLoginWeb.delegate = (id<CCLoginDelegateWeb>)self.delegate;
-                        appDelegate.activeLoginWeb.url = url;
+                        appDelegate.activeLoginWeb.urlBase = urlBase;
                         
                         [appDelegate.activeLoginWeb presentModalWithDefaultTheme:(UIViewController *)self.delegate];
                     }];
@@ -360,7 +360,7 @@
             } else {
 
                 [[NCManageDatabase sharedInstance] deleteAccount:account];
-                [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password];
+                [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password loginFlow:false];
             
                 // Read User Profile
                 CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];

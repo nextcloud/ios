@@ -25,7 +25,7 @@ public class CCLoginWeb: UIViewController {
     
     @objc weak var delegate: CCLoginDelegateWeb?
     @objc var loginType = loginAdd
-    @objc var url = NCBrandOptions.sharedInstance.loginBaseUrl
+    @objc var urlBase = NCBrandOptions.sharedInstance.loginBaseUrl
     
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -39,10 +39,11 @@ public class CCLoginWeb: UIViewController {
             doneButtonVisible = true
         }
         
-        let webVC = SwiftModalWebVC(urlString: url, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.brandText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
+        let webVC = SwiftModalWebVC(urlString: urlBase, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.brandText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
+        
     }
 }
 
@@ -65,6 +66,16 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     var serverUrl : String = keyValue[0].replacingOccurrences(of: "/server:", with: "")
                     
+                    // Login Flow
+                    if NCBrandOptions.sharedInstance.use_login_web_flow == true {
+                        
+                        if (self.urlBase.hasPrefix("http://")) {
+                            serverUrl = "http://" + serverUrl;
+                        } else if (self.urlBase.hasPrefix("https://")) {
+                            serverUrl = "https://" + serverUrl;
+                        }
+                    }
+                    
                     if (serverUrl.last == "/") {
                         serverUrl = String(serverUrl.dropLast())
                     }
@@ -75,8 +86,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     let account : String = "\(username) \(serverUrl)"
                 
                     NCManageDatabase.sharedInstance.deleteAccount(account)
-                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password)
-                                    
+                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)
+                    
                     guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
                         return
                     }

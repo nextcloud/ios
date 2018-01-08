@@ -144,7 +144,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Account
     
-    @objc func addAccount(_ account: String, url: String, user: String, password: String) {
+    @objc func addAccount(_ account: String, url: String, user: String, password: String, loginFlow: Bool) {
 
         let realm = try! Realm()
         
@@ -153,6 +153,7 @@ class NCManageDatabase: NSObject {
         let addObject = tableAccount()
             
         addObject.account = account
+        addObject.loginFlow = loginFlow
             
         // Brand
         if NCBrandOptions.sharedInstance.use_default_auto_upload {
