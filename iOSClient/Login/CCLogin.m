@@ -231,7 +231,6 @@
                     
                     if ([error code] == NSURLErrorServerCertificateUntrusted) {
                         
-                        NSLog(@"[LOG] Error NSURLErrorServerCertificateUntrusted");
                         [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
                         
                     } else {
@@ -275,14 +274,10 @@
                 self.loadingBaseUrl.hidden = YES;
         
                 if (error != nil) {
-            
-                    NSLog(@"[LOG] Error: %ld - %@",(long)[error code] , [error localizedDescription]);
-            
+        
                     // self signed certificate
                     if ([error code] == NSURLErrorServerCertificateUntrusted) {
-                
-                        NSLog(@"[LOG] Error NSURLErrorServerCertificateUntrusted");
-                
+                        
                         [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
                 
                     } else {
