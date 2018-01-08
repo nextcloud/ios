@@ -87,7 +87,7 @@ class NCBrandColor: NSObject {
     
     // Options
     @objc public let use_login_web:                   Bool = false
-    @objc public let use_login_web_flow:              Bool = false
+    @objc public let use_login_web_flow:              Bool = true
     @objc public let use_firebase:                    Bool = false
     @objc public let use_default_auto_upload:         Bool = false
     @objc public let use_themingColor:                Bool = true

@@ -88,14 +88,19 @@
     
     // Brand
     if ([NCBrandOptions sharedInstance].disable_request_login_url) {
-        
         _baseUrl.text = [NCBrandOptions sharedInstance].loginBaseUrl;
         _imageBaseUrl.hidden = YES;
         _baseUrl.hidden = YES;
     }
 
     if (_loginType == loginAdd) {
-        
+        // Login Flow ?
+        if ([NCBrandOptions sharedInstance].use_login_web_flow) {
+            _imageUser.hidden = YES;
+            _user.hidden = YES;
+            _imagePassword.hidden = YES;
+            _password.hidden = YES;
+        }
     }
     
     if (_loginType == loginAddForced) {
@@ -185,44 +190,82 @@
     if(![self.baseUrl.text hasPrefix:@"https"] && ![self.baseUrl.text hasPrefix:@"http"]) {
       self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];
     }
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.baseUrl.text] cachePolicy:0 timeoutInterval:20.0];
-    [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
     
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-    
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+    // Test Login Flow
+    if ([self.baseUrl.text length] > 0 && _user.hidden == YES && _password.hidden == YES) {
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
-            self.login.enabled = YES;
-            self.loadingBaseUrl.hidden = YES;
+        NSString *url = self.baseUrl.text;
+        if ([url hasSuffix:@"/"]) url = [url substringToIndex:[url length] - 1];
+        url = [url stringByAppendingString:flowEndpoint];
         
-            if (error != nil) {
+        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:0 timeoutInterval:20.0];
+        
+        [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+        
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
             
-                NSLog(@"[LOG] Error: %ld - %@",(long)[error code] , [error localizedDescription]);
-            
-                // self signed certificate
-                if ([error code] == NSURLErrorServerCertificateUntrusted) {
+            dispatch_async(dispatch_get_main_queue(), ^{
                 
-                    NSLog(@"[LOG] Error NSURLErrorServerCertificateUntrusted");
+                self.login.enabled = YES;
+                self.loadingBaseUrl.hidden = YES;
                 
-                    [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
-                
+                if (error) {
+                    
+                    NSLog(@"[LOG] Error: %ld - %@",(long)[error code] , [error localizedDescription]);
+
                 } else {
                     
-                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
                     
-                    [alertController addAction:okAction];
-                    [self presentViewController:alertController animated:YES completion:nil];
                 }
-            }
-        });
+                
+            });
+        }];
         
-    }];
+        [task resume];
+        
+    } else {
     
-    [task resume];
+        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.baseUrl.text] cachePolicy:0 timeoutInterval:20.0];
+        [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+    
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    
+        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+            dispatch_async(dispatch_get_main_queue(), ^{
+            
+                self.login.enabled = YES;
+                self.loadingBaseUrl.hidden = YES;
+        
+                if (error != nil) {
+            
+                    NSLog(@"[LOG] Error: %ld - %@",(long)[error code] , [error localizedDescription]);
+            
+                    // self signed certificate
+                    if ([error code] == NSURLErrorServerCertificateUntrusted) {
+                
+                        NSLog(@"[LOG] Error NSURLErrorServerCertificateUntrusted");
+                
+                        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
+                
+                    } else {
+                    
+                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
+                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                    
+                        [alertController addAction:okAction];
+                        [self presentViewController:alertController animated:YES completion:nil];
+                    }
+                }
+            });
+        
+        }];
+    
+        [task resume];
+    }
 }
 
 - (void)trustedCerticateAccepted
@@ -409,6 +452,11 @@
 
 - (IBAction)handleButtonLogin:(id)sender
 {
+    if ([self.baseUrl.text length] > 0 && _user.hidden == YES && _password.hidden == YES) {
+        [self testUrl];
+        return;
+    }
+    
     if ([self.baseUrl.text length] > 0 && [self.user.text length] && [self.password.text length]) {
         
         // remove last char if /

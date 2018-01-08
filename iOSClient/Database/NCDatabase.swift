@@ -41,6 +41,7 @@ class tableAccount: Object {
     @objc dynamic var displayName = ""
     @objc dynamic var email = ""
     @objc dynamic var enabled: Bool = false
+    @objc dynamic var loginFlow: Bool = false
     @objc dynamic var optimization = NSDate()
     @objc dynamic var password = ""
     @objc dynamic var phone = ""
