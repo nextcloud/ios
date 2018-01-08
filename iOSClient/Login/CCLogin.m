@@ -63,6 +63,7 @@
         
             // Landscape
             self.bottomLabel.hidden = YES;
+
         }
     }
     
@@ -83,7 +84,7 @@
     self.imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] color:[NCBrandColor sharedInstance].customer];
     self.imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] color:[NCBrandColor sharedInstance].customer];
 
-    self.loadingBaseUrl.image = [UIImage animatedImageWithAnimatedGIFURL:[[NSBundle mainBundle] URLForResource: @"loading" withExtension:@"gif"]];
+    self.loadingBaseUrl.image = [UIImage animatedImageWithAnimatedGIFURL:[[NSBundle mainBundle] URLForResource: @"loading@2x" withExtension:@"gif"]];
     self.loadingBaseUrl.hidden = YES;
     
     // Brand
@@ -128,7 +129,10 @@
     self.password.placeholder = NSLocalizedString(@"_password_", nil);
     
     [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
-    [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];    
+    [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];
+    
+    [self.traditionalLogin setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
+    [self.traditionalLogin setTitleColor:[NCBrandColor sharedInstance].customer forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -205,7 +209,7 @@
     }
     
     // Test Login Flow
-    if ([self.baseUrl.text length] > 0 && _user.hidden == YES && _password.hidden == YES) {
+    if ([self.baseUrl.text length] > 0 && _user.hidden && _password.hidden) {
         
         NSString *url = self.baseUrl.text;
         // Remove trailing slash
@@ -215,8 +219,9 @@
         url = [url stringByAppendingString:flowEndpoint];
         
         NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:0 timeoutInterval:20.0];
-        
         [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+        [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
         
@@ -235,6 +240,8 @@
                         
                     } else {
                         
+                        _traditionalLogin.hidden = true;
+
                         _imageUser.hidden = NO;
                         _user.hidden = NO;
                         _imagePassword.hidden = NO;
@@ -474,13 +481,13 @@
 
 - (IBAction)handlebaseUrlchange:(id)sender
 {
-    //if ([self.baseUrl.text length] > 0)
-    //    [self performSelector:@selector(testUrl) withObject:nil];
+    if ([self.baseUrl.text length] > 0 && !_user.hidden && !_password.hidden)
+        [self performSelector:@selector(testUrl) withObject:nil];
 }
 
 - (IBAction)handleButtonLogin:(id)sender
 {
-    if ([self.baseUrl.text length] > 0 && _user.hidden == YES && _password.hidden == YES) {
+    if ([self.baseUrl.text length] > 0 && _user.hidden && _password.hidden) {
         [self testUrl];
         return;
     }
@@ -515,6 +522,16 @@
     self.password.text = @"";
     self.password.text = currentPassword;
     self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName: [UIColor darkGrayColor]};
+}
+
+- (IBAction)handleTraditionalLogin:(id)sender
+{
+    _traditionalLogin.hidden = true;
+    
+    _imageUser.hidden = NO;
+    _user.hidden = NO;
+    _imagePassword.hidden = NO;
+    _password.hidden = NO;
 }
 
 @end

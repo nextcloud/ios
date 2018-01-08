@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -122,7 +122,7 @@
                                     <constraint firstAttribute="width" constant="229" id="xwH-mh-yDU"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Don't have a server yet? Choose one of the providers." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uJf-zK-g43">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Don't have a server yet? Choose one of the providers." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uJf-zK-g43" userLabel="choseProvider">
                                 <rect key="frame" x="0.0" y="611" width="375" height="51"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="51" id="h7p-oO-gAz"/>
@@ -131,6 +131,16 @@
                                 <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="owR-PS-F32" userLabel="traditionalLogin">
+                                <rect key="frame" x="0.0" y="573" width="375" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="PaU-7J-gkn"/>
+                                </constraints>
+                                <state key="normal" title="Traditional Login"/>
+                                <connections>
+                                    <action selector="handleTraditionalLogin:" destination="yj9-jo-WIn" eventType="touchUpInside" id="WNJ-Uh-C4z"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -138,6 +148,7 @@
                             <constraint firstItem="fhk-o9-J0l" firstAttribute="leading" secondItem="oF7-f3-D2I" secondAttribute="leading" id="11w-VB-cde"/>
                             <constraint firstItem="fhk-o9-J0l" firstAttribute="top" secondItem="7q8-rl-x2M" secondAttribute="top" id="1oU-Kw-Rqv"/>
                             <constraint firstItem="1Gf-Bw-Nim" firstAttribute="leading" secondItem="Bv6-g3-l0M" secondAttribute="leadingMargin" constant="34" id="6Be-V2-eJc"/>
+                            <constraint firstItem="owR-PS-F32" firstAttribute="leading" secondItem="Bv6-g3-l0M" secondAttribute="leading" id="7f1-2g-eiu"/>
                             <constraint firstItem="szn-G7-5sK" firstAttribute="centerY" secondItem="s9o-RX-XeS" secondAttribute="centerY" constant="-0.5" id="BR2-Vt-TiK"/>
                             <constraint firstItem="BpI-xK-1SU" firstAttribute="top" secondItem="Bv6-g3-l0M" secondAttribute="top" constant="30" id="CRD-sA-WM7"/>
                             <constraint firstItem="1Gf-Bw-Nim" firstAttribute="top" secondItem="szn-G7-5sK" secondAttribute="bottom" id="GgI-rV-AyE"/>
@@ -160,8 +171,10 @@
                             <constraint firstItem="szn-G7-5sK" firstAttribute="leading" secondItem="Bv6-g3-l0M" secondAttribute="leadingMargin" constant="34" id="fG7-68-kpN"/>
                             <constraint firstItem="jU7-Iw-XfU" firstAttribute="top" secondItem="1Gf-Bw-Nim" secondAttribute="bottom" id="iHp-sz-2Uh"/>
                             <constraint firstAttribute="trailingMargin" secondItem="oF7-f3-D2I" secondAttribute="trailing" constant="-4" id="kTO-mX-qTR"/>
+                            <constraint firstAttribute="trailing" secondItem="owR-PS-F32" secondAttribute="trailing" id="kgS-yD-ZfV"/>
                             <constraint firstItem="BpI-xK-1SU" firstAttribute="leading" secondItem="Bv6-g3-l0M" secondAttribute="leadingMargin" constant="209" id="oc7-ts-Gh2"/>
                             <constraint firstItem="szn-G7-5sK" firstAttribute="top" secondItem="3IQ-ds-9vR" secondAttribute="bottom" constant="136" id="sMw-IZ-nIE"/>
+                            <constraint firstItem="uJf-zK-g43" firstAttribute="top" secondItem="owR-PS-F32" secondAttribute="bottom" constant="8" id="uIE-dm-6V1"/>
                             <constraint firstItem="olW-Hc-7Im" firstAttribute="top" secondItem="uJf-zK-g43" secondAttribute="bottom" constant="5" id="uvx-nF-rgG"/>
                             <constraint firstItem="bSU-bn-DlO" firstAttribute="trailing" secondItem="Bv6-g3-l0M" secondAttribute="trailingMargin" constant="4" id="vFz-xR-4yV"/>
                         </constraints>
@@ -183,6 +196,7 @@
                         <outlet property="login" destination="HQd-pF-3cE" id="dpI-ns-Ivh"/>
                         <outlet property="password" destination="jU7-Iw-XfU" id="OWi-V0-Eij"/>
                         <outlet property="toggleVisiblePassword" destination="fhk-o9-J0l" id="aco-hl-Ban"/>
+                        <outlet property="traditionalLogin" destination="owR-PS-F32" id="Q2a-nJ-0hu"/>
                         <outlet property="user" destination="1Gf-Bw-Nim" id="BUW-sz-I3f"/>
                     </connections>
                 </viewController>

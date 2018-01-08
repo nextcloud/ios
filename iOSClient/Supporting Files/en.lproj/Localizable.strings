@@ -220,6 +220,7 @@
 "_login_bottom_label_"          = "Don't have a server yet?\nChoose one of the providers.";
 "_error_multidomain_"           = "Address not allowed, only the following domains are valid:";
 "_account_already_exists_"      = "The account %@ already exists";
+"_traditional_login_"           = "Revert to old login method";
 
 // Favorite
 
