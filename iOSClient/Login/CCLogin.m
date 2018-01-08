@@ -191,11 +191,21 @@
       self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];
     }
     
+    // Remove stored cookies
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie *cookie in [storage cookies])
+    {
+        [storage deleteCookie:cookie];
+    }
+    
     // Test Login Flow
     if ([self.baseUrl.text length] > 0 && _user.hidden == YES && _password.hidden == YES) {
         
         NSString *url = self.baseUrl.text;
-        if ([url hasSuffix:@"/"]) url = [url substringToIndex:[url length] - 1];
+        // Remove trailing slash
+        if ([self.baseUrl.text hasSuffix:@"/"])
+            url = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
+        // Add end point flow
         url = [url stringByAppendingString:flowEndpoint];
         
         NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url] cachePolicy:0 timeoutInterval:20.0];
