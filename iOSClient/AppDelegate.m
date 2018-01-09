@@ -350,6 +350,7 @@
         if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
             
             if (_activeLoginWeb == nil) {
+                
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;
                 _activeLoginWeb.loginType = loginType;
