@@ -39,7 +39,7 @@ public class CCLoginWeb: UIViewController {
             doneButtonVisible = true
         }
         
-        let webVC = SwiftModalWebVC(urlString: urlBase, theme: .custom, color: NCBrandColor.sharedInstance.brand, colorText: NCBrandColor.sharedInstance.brandText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
+        let webVC = SwiftModalWebVC(urlString: urlBase, theme: .custom, color: NCBrandColor.sharedInstance.customer, colorText: NCBrandColor.sharedInstance.customerText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
@@ -65,20 +65,15 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     var serverUrl : String = keyValue[0].replacingOccurrences(of: "/server:", with: "")
                     
-                    // Login Flow
-                    if (NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
-                        
-                        if (self.urlBase.hasPrefix("http://")) {
-                            serverUrl = "http://" + serverUrl;
-                        } else if (self.urlBase.hasPrefix("https://")) {
-                            serverUrl = "https://" + serverUrl;
-                        }
+                    // Login Flow NC 12
+                    if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && serverUrl.hasPrefix("http://") == false && serverUrl.hasPrefix("https://") == false) {
+                        serverUrl = urlBase.replacingOccurrences(of: flowEndpoint, with: "")
                     }
                     
                     if (serverUrl.last == "/") {
                         serverUrl = String(serverUrl.dropLast())
                     }
-                
+            
                     let username : String = keyValue[1].replacingOccurrences(of: "user:", with: "")
                     let password : String = keyValue[2].replacingOccurrences(of: "password:", with: "")
                 
