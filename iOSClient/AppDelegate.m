@@ -342,34 +342,48 @@
 
 - (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType
 {
+    BOOL loginWeb = NO;
+    
     @synchronized (self) {
 
-        if ([NCBrandOptions sharedInstance].use_login_web) {
-        
+        // Band : LoginWeb
+        if ([NCBrandOptions sharedInstance].use_login_web)
+            loginWeb = YES;
+            
+        // Login flow : LoginWeb
+        if (loginType == loginModifyPasswordUser && [NCBrandOptions sharedInstance].use_login_web_flow) {
+            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+            if (account.loginFlow)
+                loginWeb = YES;
+        }
+            
+        if (loginWeb) {
+            
             if (!_activeLoginWeb.view.window) {
-        
+                
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;
                 _activeLoginWeb.loginType = loginType;
-        
+                
                 dispatch_async(dispatch_get_main_queue(), ^ {
                     [_activeLoginWeb presentModalWithDefaultTheme:delegate];
                 });
             }
-        
+            
         } else {
-        
+            
             if (_activeLogin == nil) {
-
+                
                 _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
                 _activeLogin.delegate = delegate;
                 _activeLogin.loginType = loginType;
-        
+                
                 dispatch_async(dispatch_get_main_queue(), ^ {
                     [delegate presentViewController:_activeLogin animated:YES completion:nil];
                 });
             }
         }
+        
     }
 }
 
