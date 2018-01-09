@@ -52,21 +52,20 @@
     
     if ([NCBrandOptions sharedInstance].disable_linkLoginProvider) {
         self.bottomLabel.hidden = YES;
-    } else {
+    }
     
-        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
+    if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
         
-            // Portrait
+        // Portrait
+        if ([NCBrandOptions sharedInstance].disable_linkLoginProvider == NO)
             self.bottomLabel.hidden = NO;
-            self.loginTypeView.hidden = NO;
+        self.loginTypeView.hidden = NO;
         
-        } else {
+    } else {
         
-            // Landscape
-            self.bottomLabel.hidden = YES;
-            self.loginTypeView.hidden = YES;
-
-        }
+        // Landscape
+        self.bottomLabel.hidden = YES;
+        self.loginTypeView.hidden = YES;
     }
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tabBottomLabel)];
@@ -171,18 +170,18 @@
 {
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         
-        if (![NCBrandOptions sharedInstance].disable_linkLoginProvider) {
-        
-            if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
+        if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
             
-                // Portrait
+            // Portrait
+            if ([NCBrandOptions sharedInstance].disable_linkLoginProvider == NO)
                 self.bottomLabel.hidden = NO;
+            self.loginTypeView.hidden = NO;
             
-            } else {
+        } else {
             
-                // Landscape
-                self.bottomLabel.hidden = YES;
-            }
+            // Landscape
+            self.bottomLabel.hidden = YES;
+            self.loginTypeView.hidden = YES;
         }
     }];
     
