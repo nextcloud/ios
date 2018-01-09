@@ -393,7 +393,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     }
     
     func loginDisappear() {
-        
+        appDelegate.activeLogin = nil
+        appDelegate.activeLoginWeb = nil
     }
 }
 

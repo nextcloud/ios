@@ -43,7 +43,6 @@ public class CCLoginWeb: UIViewController {
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
-        
     }
 }
 
@@ -108,9 +107,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
         print("Finished loading. Success: \(success).")
     }
     
-    public override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
+    public func loginDisappear() {
         self.delegate?.loginDisappear()
     }
 }

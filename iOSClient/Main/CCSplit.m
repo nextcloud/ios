@@ -199,6 +199,7 @@
 - (void)loginDisappear
 {
     appDelegate.activeLogin = nil;
+    appDelegate.activeLoginWeb = nil;
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -359,7 +359,7 @@
             
         if (loginWeb) {
             
-            if (!_activeLoginWeb.view.window) {
+            if (_activeLoginWeb == nil) {
                 
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;

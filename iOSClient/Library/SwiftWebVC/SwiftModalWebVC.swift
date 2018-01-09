@@ -12,6 +12,7 @@ public protocol SwiftModalWebVCDelegate: class {
     func didStartLoading()
     func didReceiveServerRedirectForProvisionalNavigation(url: URL)
     func didFinishLoading(success: Bool, url: URL)
+    func loginDisappear()
 }
 
 public class SwiftModalWebVC: UINavigationController {
@@ -93,8 +94,6 @@ public class SwiftModalWebVC: UINavigationController {
             }
         }
         webViewController.delegate = self
-        
-        
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -107,6 +106,11 @@ public class SwiftModalWebVC: UINavigationController {
     
     override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(false)
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.delegateWeb?.loginDisappear()
     }
 }
 
