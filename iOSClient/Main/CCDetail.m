@@ -849,11 +849,6 @@
     [self.readerPDFViewController updateContentViews];
 }
 
-- (void)handleLongTappReader
-{
-    [self actionButtonPressed:nil];
-}
-
 - (void)handleSwipeUpDown
 {
     [self removeAllView];

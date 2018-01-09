@@ -383,10 +383,6 @@
     swipeUpDown.direction = UISwipeGestureRecognizerDirectionDown | UISwipeGestureRecognizerDirectionUp;
     [self.view addGestureRecognizer:swipeUpDown];
 
-    // TWS Long Press
-    UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongTap:)];
-    [self.view addGestureRecognizer:longPressRecognizer];
-
 	[singleTapOne requireGestureRecognizerToFail:doubleTapOne]; // Single tap requires double tap to fail
 
 	contentViews = [NSMutableDictionary new]; lastHideTime = [NSDate date];
@@ -703,13 +699,6 @@
 			[self decrementPageNumber]; return;
 		}
 	}
-}
-
-- (void)handleLongTap:(UITapGestureRecognizer *)recognizer
-{
-    //TWS
-    if ([self.delegate respondsToSelector:@selector(handleLongTappReader)])
-        [self.delegate handleLongTappReader];
 }
 
 - (void)handleSwipeUpDown:(UITapGestureRecognizer *)recognizer

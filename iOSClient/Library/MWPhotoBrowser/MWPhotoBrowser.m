@@ -191,10 +191,6 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [self.view addGestureRecognizer:swipeGesture];
     }
     
-    // Long Press
-    UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(actionButtonPressed:)];
-    [self.view addGestureRecognizer:longPressRecognizer];
-    
 	// Super
     [super viewDidLoad];
 }

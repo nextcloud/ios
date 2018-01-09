@@ -37,7 +37,6 @@
 
 //TWS
 - (void)handleSingleTapReader;
-- (void)handleLongTappReader;
 - (void)handleSwipeUpDown;
 
 @end
