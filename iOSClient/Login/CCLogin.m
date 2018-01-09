@@ -237,12 +237,11 @@
                         
                     } else {
                         
-                        _imageUser.hidden = NO;
-                        _user.hidden = NO;
-                        _imagePassword.hidden = NO;
-                        _password.hidden = NO;
+                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
+                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
                         
-                        [self.loginTypeView setTitle:NSLocalizedString(@"_web_login_", nil) forState:UIControlStateNormal];
+                        [alertController addAction:okAction];
+                        [self presentViewController:alertController animated:YES completion:nil];
                     }
 
                 } else {
