@@ -250,13 +250,12 @@
 
                 } else {
                     
+                    appDelegate.activeLoginWeb = [CCLoginWeb new];
+                    appDelegate.activeLoginWeb.loginType = _loginType;
+                    appDelegate.activeLoginWeb.delegate = (id<CCLoginDelegateWeb>)self.delegate;
+                    appDelegate.activeLoginWeb.urlBase = urlBase;
+                    
                     [self dismissViewControllerAnimated:YES completion: ^{
-                        
-                        appDelegate.activeLoginWeb = [CCLoginWeb new];
-                        appDelegate.activeLoginWeb.loginType = _loginType;
-                        appDelegate.activeLoginWeb.delegate = (id<CCLoginDelegateWeb>)self.delegate;
-                        appDelegate.activeLoginWeb.urlBase = urlBase;
-                        
                         [appDelegate.activeLoginWeb presentModalWithDefaultTheme:(UIViewController *)self.delegate];
                     }];
                 }
