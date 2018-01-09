@@ -25,7 +25,7 @@ public class CCLoginWeb: UIViewController {
     
     @objc weak var delegate: CCLoginDelegateWeb?
     @objc var loginType = loginAdd
-    @objc var urlBase = NCBrandOptions.sharedInstance.loginBaseUrl
+    @objc var urlBase = ""
     
     var viewController : UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -33,13 +33,18 @@ public class CCLoginWeb: UIViewController {
     
     @objc func presentModalWithDefaultTheme(_ vc: UIViewController) {
         
+        var urlString = urlBase
         self.viewController = vc
         
         if (loginType == loginAdd || loginType == loginModifyPasswordUser) {
             doneButtonVisible = true
         }
         
-        let webVC = SwiftModalWebVC(urlString: urlBase, theme: .custom, color: NCBrandColor.sharedInstance.customer, colorText: NCBrandColor.sharedInstance.customerText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
+        if (NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
+            urlString =  urlBase+flowEndpoint
+        }
+        
+        let webVC = SwiftModalWebVC(urlString: urlString, theme: .custom, color: NCBrandColor.sharedInstance.customer, colorText: NCBrandColor.sharedInstance.customerText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
@@ -67,7 +72,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     
                     // Login Flow NC 12
                     if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && serverUrl.hasPrefix("http://") == false && serverUrl.hasPrefix("https://") == false) {
-                        serverUrl = urlBase.replacingOccurrences(of: flowEndpoint, with: "")
+                        serverUrl = urlBase
                     }
                     
                     if (serverUrl.last == "/") {

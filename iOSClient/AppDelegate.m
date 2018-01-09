@@ -346,7 +346,7 @@
     
     @synchronized (self) {
 
-        // only for personalized LoginWeb
+        // only for personalized LoginWeb [customer]
         if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
             
             if (_activeLoginWeb == nil) {
@@ -354,6 +354,7 @@
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;
                 _activeLoginWeb.loginType = loginType;
+                _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
                     [_activeLoginWeb presentModalWithDefaultTheme:delegate];
@@ -379,7 +380,7 @@
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;
                 _activeLoginWeb.loginType = loginType;
-                _activeLoginWeb.urlBase = [self.activeUrl stringByAppendingString:flowEndpoint];
+                _activeLoginWeb.urlBase = self.activeUrl;
 
                 dispatch_async(dispatch_get_main_queue(), ^ {
                     [_activeLoginWeb presentModalWithDefaultTheme:delegate];

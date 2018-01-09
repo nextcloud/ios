@@ -212,8 +212,6 @@
         // Remove trailing slash
         if ([self.baseUrl.text hasSuffix:@"/"])
             urlBase = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
-        // Add end point flow
-        urlBase = [urlBase stringByAppendingString:flowEndpoint];
         
         NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlBase] cachePolicy:0 timeoutInterval:20.0];
         [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
