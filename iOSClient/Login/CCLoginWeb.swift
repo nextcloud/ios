@@ -56,7 +56,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
         let urlString: String = url.absoluteString.lowercased()
         
-        if (urlString.contains(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) == true && urlString.contains("login") == true && (loginType == loginAdd || loginType == loginAddForced)) {
+        if (urlString.hasPrefix(NCBrandOptions.sharedInstance.webLoginAutenticationProtocol) == true && urlString.contains("login") == true) {
             
             let keyValue = url.path.components(separatedBy: "&")
             if (keyValue.count == 3) {
@@ -84,18 +84,36 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     let account : String = "\(username) \(serverUrl)"
                 
-                    NCManageDatabase.sharedInstance.deleteAccount(account)
-                    NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)
-                    
-                    guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
-                        return
-                    }
-                
-                    if (tableAccount.account == account) {
-                    
-                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                    if (loginType == loginModifyPasswordUser && NCBrandOptions.sharedInstance.use_login_web_flow) {
+                        
+                        // Change Password
+                        guard let tableAccount = NCManageDatabase.sharedInstance.setAccountPassword(account, password: password) else {
+                            return
+                        }
+                        
+                        if (tableAccount.account == account) {
+                            appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                        }
+                        
                         self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
-                
+                        self.viewController?.dismiss(animated: true, completion: nil)
+                    }
+                    
+                    if (loginType == loginAdd || loginType == loginAddForced) {
+                        
+                        // Add new account
+                        NCManageDatabase.sharedInstance.deleteAccount(account)
+                        NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)
+                        
+                        guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+                            return
+                        }
+                        
+                        if (tableAccount.account == account) {
+                            appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                        }
+                        
+                        self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
                 }
