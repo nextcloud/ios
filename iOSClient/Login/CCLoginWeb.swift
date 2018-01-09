@@ -86,16 +86,25 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     if (loginType == loginModifyPasswordUser && NCBrandOptions.sharedInstance.use_login_web_flow) {
                         
-                        // Change Password
-                        guard let tableAccount = NCManageDatabase.sharedInstance.setAccountPassword(account, password: password) else {
+                        // Verify if change the active account
+                        guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
+                            self.viewController?.dismiss(animated: true, completion: nil)
+                            return
+                        }
+                        if (activeAccount.account != account) {
+                            self.viewController?.dismiss(animated: true, completion: nil)
                             return
                         }
                         
-                        if (tableAccount.account == account) {
-                            appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                        // Change Password
+                        guard let tableAccount = NCManageDatabase.sharedInstance.setAccountPassword(account, password: password) else {
+                            self.viewController?.dismiss(animated: true, completion: nil)
+                            return
                         }
                         
+                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
+                        
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
                     
@@ -106,14 +115,13 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)
                         
                         guard let tableAccount = NCManageDatabase.sharedInstance.setAccountActive(account) else {
+                            self.viewController?.dismiss(animated: true, completion: nil)
                             return
                         }
                         
-                        if (tableAccount.account == account) {
-                            appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
-                        }
-                        
+                        appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
+                        
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
                 }
