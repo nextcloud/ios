@@ -346,16 +346,18 @@
     
     @synchronized (self) {
 
-        // only for Band : LoginWeb
-        if ([NCBrandOptions sharedInstance].use_login_web && _activeLoginWeb == nil) {
+        // only for personalized LoginWeb
+        if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
             
-            _activeLoginWeb = [CCLoginWeb new];
-            _activeLoginWeb.delegate = delegate;
-            _activeLoginWeb.loginType = loginType;
+            if (_activeLoginWeb == nil) {
+                _activeLoginWeb = [CCLoginWeb new];
+                _activeLoginWeb.delegate = delegate;
+                _activeLoginWeb.loginType = loginType;
                 
-            dispatch_async(dispatch_get_main_queue(), ^ {
-                [_activeLoginWeb presentModalWithDefaultTheme:delegate];
-            });
+                dispatch_async(dispatch_get_main_queue(), ^ {
+                    [_activeLoginWeb presentModalWithDefaultTheme:delegate];
+                });
+            }
             return;
         }
         
@@ -363,7 +365,7 @@
         //
         
         // Login flow : LoginWeb
-        if (loginType == loginModifyPasswordUser && [NCBrandOptions sharedInstance].use_login_web_flow) {
+        if (loginType == loginModifyPasswordUser) {
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             if (account.loginFlow)
                 loginWeb = YES;

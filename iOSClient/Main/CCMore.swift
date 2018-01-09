@@ -409,7 +409,7 @@ extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
         let urlString: String = url.absoluteString.lowercased()
         
         // Protocol close webVC
-        if (urlString.contains(NCBrandOptions.sharedInstance.webCloseViewProtocol) == true) {
+        if (urlString.contains(NCBrandOptions.sharedInstance.webCloseViewProtocolPersonalized) == true) {
             
             if (self.presentingViewController != nil) {
                 self.dismiss(animated: true, completion: nil)

@@ -66,7 +66,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     var serverUrl : String = keyValue[0].replacingOccurrences(of: "/server:", with: "")
                     
                     // Login Flow
-                    if NCBrandOptions.sharedInstance.use_login_web_flow == true {
+                    if (NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
                         
                         if (self.urlBase.hasPrefix("http://")) {
                             serverUrl = "http://" + serverUrl;
@@ -84,7 +84,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                 
                     let account : String = "\(username) \(serverUrl)"
                 
-                    if (loginType == loginModifyPasswordUser && NCBrandOptions.sharedInstance.use_login_web_flow) {
+                    // Login Flow
+                    if (loginType == loginModifyPasswordUser && NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
                         
                         // Verify if change the active account
                         guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {

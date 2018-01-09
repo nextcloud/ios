@@ -97,23 +97,19 @@
 
     if (_loginType == loginAdd) {
         // Login Flow ?
-        if ([NCBrandOptions sharedInstance].use_login_web_flow) {
-            _imageUser.hidden = YES;
-            _user.hidden = YES;
-            _imagePassword.hidden = YES;
-            _password.hidden = YES;
-        }
+        _imageUser.hidden = YES;
+        _user.hidden = YES;
+        _imagePassword.hidden = YES;
+        _password.hidden = YES;
     }
     
     if (_loginType == loginAddForced) {
         _annulla.hidden = YES;
         // Login Flow ?
-        if ([NCBrandOptions sharedInstance].use_login_web_flow) {
-            _imageUser.hidden = YES;
-            _user.hidden = YES;
-            _imagePassword.hidden = YES;
-            _password.hidden = YES;
-        }
+        _imageUser.hidden = YES;
+        _user.hidden = YES;
+        _imagePassword.hidden = YES;
+        _password.hidden = YES;
     }
     
     if (_loginType == loginModifyPasswordUser) {
