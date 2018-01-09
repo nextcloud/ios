@@ -221,6 +221,7 @@
 "_error_multidomain_"           = "Address not allowed, only the following domains are valid:";
 "_account_already_exists_"      = "The account %@ already exists";
 "_traditional_login_"           = "Revert to old login method";
+"_web_login_"                   = "Revert to web login method";
 
 // Favorite
 

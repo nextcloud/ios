@@ -131,14 +131,14 @@
                                 <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="owR-PS-F32" userLabel="traditionalLogin">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="owR-PS-F32" userLabel="loginTypeView">
                                 <rect key="frame" x="0.0" y="573" width="375" height="30"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="PaU-7J-gkn"/>
                                 </constraints>
-                                <state key="normal" title="Traditional Login"/>
+                                <state key="normal" title="Login type view"/>
                                 <connections>
-                                    <action selector="handleTraditionalLogin:" destination="yj9-jo-WIn" eventType="touchUpInside" id="WNJ-Uh-C4z"/>
+                                    <action selector="handleLoginTypeView:" destination="yj9-jo-WIn" eventType="touchUpInside" id="V2I-Nr-nOu"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -194,9 +194,9 @@
                         <outlet property="imageUser" destination="4OF-5u-Hd1" id="MJa-4H-w7m"/>
                         <outlet property="loadingBaseUrl" destination="oF7-f3-D2I" id="uel-s3-cAX"/>
                         <outlet property="login" destination="HQd-pF-3cE" id="dpI-ns-Ivh"/>
+                        <outlet property="loginTypeView" destination="owR-PS-F32" id="Rdw-tW-R0G"/>
                         <outlet property="password" destination="jU7-Iw-XfU" id="OWi-V0-Eij"/>
                         <outlet property="toggleVisiblePassword" destination="fhk-o9-J0l" id="aco-hl-Ban"/>
-                        <outlet property="traditionalLogin" destination="owR-PS-F32" id="Q2a-nJ-0hu"/>
                         <outlet property="user" destination="1Gf-Bw-Nim" id="BUW-sz-I3f"/>
                     </connections>
                 </viewController>

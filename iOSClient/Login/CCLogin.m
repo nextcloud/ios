@@ -58,11 +58,13 @@
         
             // Portrait
             self.bottomLabel.hidden = NO;
+            self.loginTypeView.hidden = NO;
         
         } else {
         
             // Landscape
             self.bottomLabel.hidden = YES;
+            self.loginTypeView.hidden = YES;
 
         }
     }
@@ -131,8 +133,8 @@
     [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
     [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];
     
-    [self.traditionalLogin setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
-    [self.traditionalLogin setTitleColor:[NCBrandColor sharedInstance].customer forState:UIControlStateNormal];
+    [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
+    [self.loginTypeView setTitleColor:[NCBrandColor sharedInstance].customer forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -240,22 +242,23 @@
                         
                     } else {
                         
-                        _traditionalLogin.hidden = true;
-
                         _imageUser.hidden = NO;
                         _user.hidden = NO;
                         _imagePassword.hidden = NO;
                         _password.hidden = NO;
+                        
+                        [self.loginTypeView setTitle:NSLocalizedString(@"_web_login_", nil) forState:UIControlStateNormal];
                     }
 
                 } else {
                     
-                    appDelegate.activeLoginWeb = [CCLoginWeb new];
-                    appDelegate.activeLoginWeb.loginType = _loginType;
-                    appDelegate.activeLoginWeb.delegate = (id<CCLoginDelegateWeb>)self.delegate;
-                    appDelegate.activeLoginWeb.urlBase = urlBase;
-                    
                     [self dismissViewControllerAnimated:YES completion: ^{
+                        
+                        appDelegate.activeLoginWeb = [CCLoginWeb new];
+                        appDelegate.activeLoginWeb.loginType = _loginType;
+                        appDelegate.activeLoginWeb.delegate = (id<CCLoginDelegateWeb>)self.delegate;
+                        appDelegate.activeLoginWeb.urlBase = urlBase;
+                    
                         [appDelegate.activeLoginWeb presentModalWithDefaultTheme:(UIViewController *)self.delegate];
                     }];
                 }
@@ -523,14 +526,26 @@
     self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName: [UIColor darkGrayColor]};
 }
 
-- (IBAction)handleTraditionalLogin:(id)sender
+- (IBAction)handleLoginTypeView:(id)sender
 {
-    _traditionalLogin.hidden = true;
-    
-    _imageUser.hidden = NO;
-    _user.hidden = NO;
-    _imagePassword.hidden = NO;
-    _password.hidden = NO;
+    if (_user.hidden && _password.hidden) {
+        
+        _imageUser.hidden = NO;
+        _user.hidden = NO;
+        _imagePassword.hidden = NO;
+        _password.hidden = NO;
+        
+        [self.loginTypeView setTitle:NSLocalizedString(@"_web_login_", nil) forState:UIControlStateNormal];
+        
+    } else {
+        
+        _imageUser.hidden = YES;
+        _user.hidden = YES;
+        _imagePassword.hidden = YES;
+        _password.hidden = YES;
+        
+        [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
+    }
 }
 
 @end
