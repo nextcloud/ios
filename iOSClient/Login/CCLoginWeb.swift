@@ -10,7 +10,7 @@ import UIKit
 
 @objc protocol CCLoginDelegateWeb: class {
     func loginSuccess(_: NSInteger)
-    func loginClose()
+    func loginWebClose()
 }
 
 public class CCLoginWeb: UIViewController {
@@ -104,6 +104,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         }
                         
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                        
                         self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
                         
                         self.viewController?.dismiss(animated: true, completion: nil)
@@ -121,6 +122,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         }
                         
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
+                        
                         self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
                         
                         self.viewController?.dismiss(animated: true, completion: nil)
@@ -134,8 +136,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
         print("Finished loading. Success: \(success).")
     }
     
-    public func loginClose() {
-        self.delegate?.loginClose()
+    public func loginWebClose() {
+        self.delegate?.loginWebClose()
     }
 }
 

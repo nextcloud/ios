@@ -199,6 +199,10 @@
 - (void)loginClose
 {
     appDelegate.activeLogin = nil;
+}
+
+- (void)loginWebClose
+{
     appDelegate.activeLoginWeb = nil;
 }
 

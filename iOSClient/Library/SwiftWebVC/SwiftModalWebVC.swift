@@ -12,7 +12,7 @@ public protocol SwiftModalWebVCDelegate: class {
     func didStartLoading()
     func didReceiveServerRedirectForProvisionalNavigation(url: URL)
     func didFinishLoading(success: Bool, url: URL)
-    func loginClose()
+    func loginWebClose()
 }
 
 public class SwiftModalWebVC: UINavigationController {
@@ -108,9 +108,12 @@ public class SwiftModalWebVC: UINavigationController {
         super.viewWillAppear(false)
     }
     
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
+
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        self.delegateWeb?.loginClose()
     }
 }
 
@@ -130,5 +133,9 @@ extension SwiftModalWebVC: SwiftWebVCDelegate {
     
     public func didFinishLoading(success: Bool, url: URL) {
         self.delegateWeb?.didFinishLoading(success: success, url: url)
+    }
+    
+    public func loginWebClose() {
+        self.delegateWeb?.loginWebClose()
     }
 }

@@ -27,10 +27,9 @@
 #import "NCBridgeSwift.h"
 #import "NCNetworkingSync.h"
 
-@interface CCLogin ()
+@interface CCLogin () <CCLoginDelegateWeb>
 {
     AppDelegate *appDelegate;
-
     UIView *rootView;
 }
 @end
@@ -151,9 +150,6 @@
 - (void)viewDidDisappear:(BOOL)animated
 {
     [super viewDidDisappear:animated];
-    
-    if ([self.delegate respondsToSelector:@selector(loginClose)])
-        [self.delegate loginClose];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
@@ -182,6 +178,13 @@
     }];
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
+- (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion
+{
+    [super dismissViewControllerAnimated:flag completion:completion];
+    
+    [self.delegate loginClose];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -244,15 +247,12 @@
 
                 } else {
                     
-                    [self dismissViewControllerAnimated:YES completion: ^{
-                        
-                        appDelegate.activeLoginWeb = [CCLoginWeb new];
-                        appDelegate.activeLoginWeb.loginType = _loginType;
-                        appDelegate.activeLoginWeb.delegate = (id<CCLoginDelegateWeb>)self.delegate;
-                        appDelegate.activeLoginWeb.urlBase = urlBase;
+                    appDelegate.activeLoginWeb = [CCLoginWeb new];
+                    appDelegate.activeLoginWeb.loginType = _loginType;
+                    appDelegate.activeLoginWeb.delegate = self;
+                    appDelegate.activeLoginWeb.urlBase = urlBase;
                     
-                        [appDelegate.activeLoginWeb presentModalWithDefaultTheme:(UIViewController *)self.delegate];
-                    }];
+                    [appDelegate.activeLoginWeb presentModalWithDefaultTheme:self];
                 }
             });
         }];
@@ -345,9 +345,7 @@
                 // Setting appDelegate active account
                 [appDelegate settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
 
-                // Dismiss
-                if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
-                    [self.delegate loginSuccess:_loginType];
+                [self.delegate loginSuccess:_loginType];
             
                 [self dismissViewControllerAnimated:YES completion:nil];
             
@@ -433,9 +431,7 @@
             // Setting appDelegate active account
             [appDelegate settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
     
-            // Ok ! Dismiss
-            if ([self.delegate respondsToSelector:@selector(loginSuccess:)])
-                [self.delegate loginSuccess:_loginType];
+            [self.delegate loginSuccess:_loginType];
         
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 [self dismissViewControllerAnimated:YES completion:nil];
@@ -462,6 +458,22 @@
         self.toggleVisiblePassword.hidden = YES;
         self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName: [UIColor darkGrayColor]};
     }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === CCLoginDelegateWeb ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)loginSuccess:(NSInteger)loginType
+{
+    [self.delegate loginSuccess:_loginType];
+}
+
+- (void)loginWebClose
+{
+    appDelegate.activeLoginWeb = nil;
+   
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

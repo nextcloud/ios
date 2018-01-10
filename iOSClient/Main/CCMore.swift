@@ -394,6 +394,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     func loginClose() {
         appDelegate.activeLogin = nil
+    }
+    
+    func loginWebClose() {
         appDelegate.activeLoginWeb = nil
     }
 }
