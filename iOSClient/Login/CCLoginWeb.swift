@@ -106,7 +106,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         
                         self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
-                        
+                        self.delegate?.loginWebClose()
+
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
                     
@@ -124,7 +125,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         
                         self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
-                        
+                        self.delegate?.loginWebClose()
+
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
                 }
