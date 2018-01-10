@@ -42,16 +42,59 @@
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
 
-    self.imageBrand.image = [UIImage imageNamed:@"loginLogo"];
-    self.login.backgroundColor = [NCBrandColor sharedInstance].customer;
+    // Background color
+    self.view.backgroundColor = [NCBrandColor sharedInstance].customer;
     
+    // Image Brand
+    self.imageBrand.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginLogo"] color:[NCBrandColor sharedInstance].customerText];
+    
+    // Annulla
+    [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
+    self.annulla.tintColor = [NCBrandColor sharedInstance].customerText;
+    
+    // Base URL
+    _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] color:[NCBrandColor sharedInstance].customerText];
+    _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
+    _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
+    [self.baseUrl setFont:[UIFont systemFontOfSize:13]];
+    [self.baseUrl setDelegate:self];
+
+    // Loading Base Utl GIF
+    self.loadingBaseUrl.image = [UIImage animatedImageWithAnimatedGIFURL:[[NSBundle mainBundle] URLForResource: @"loading@2x" withExtension:@"gif"]];
+    self.loadingBaseUrl.hidden = YES;
+    
+    // User
+    _imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] color:[NCBrandColor sharedInstance].customerText];
+    _user.textColor = [NCBrandColor sharedInstance].customerText;
+    _user.placeholder = NSLocalizedString(@"_username_", nil);
+    [self.user setFont:[UIFont systemFontOfSize:13]];
+    [self.user setDelegate:self];
+
+    // Password
+    _imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] color:[NCBrandColor sharedInstance].customerText];
+    _password.textColor = [NCBrandColor sharedInstance].customerText;
+    _password.placeholder = NSLocalizedString(@"_password_", nil);
+    [self.password setFont:[UIFont systemFontOfSize:13]];
+    [self.password setDelegate:self];
+
+    // Login
+    [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];
+    self.login.backgroundColor = [NCBrandColor sharedInstance].customerText;
+    self.login.tintColor = [NCBrandColor sharedInstance].customer;
+    
+    // Type view
+    [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
+    [self.loginTypeView setTitleColor:[NCBrandColor sharedInstance].customerText forState:UIControlStateNormal];
+
     // Bottom label
     self.bottomLabel.text = NSLocalizedString([NCBrandOptions sharedInstance].textLoginProvider, nil);
     self.bottomLabel.userInteractionEnabled = YES;
-    
     if ([NCBrandOptions sharedInstance].disable_linkLoginProvider) {
         self.bottomLabel.hidden = YES;
     }
+    
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tabBottomLabel)];
+    [self.bottomLabel addGestureRecognizer:tapGesture];
     
     if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
         
@@ -66,26 +109,6 @@
         self.bottomLabel.hidden = YES;
         self.loginTypeView.hidden = YES;
     }
-    
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tabBottomLabel)];
-    [self.bottomLabel addGestureRecognizer:tapGesture];
-    
-    self.annulla.tintColor = [NCBrandColor sharedInstance].customer;
-    
-    [self.baseUrl setDelegate:self];
-    [self.password setDelegate:self];
-    [self.user setDelegate:self];
-    
-    [self.baseUrl setFont:[UIFont systemFontOfSize:13]];
-    [self.user setFont:[UIFont systemFontOfSize:13]];
-    [self.password setFont:[UIFont systemFontOfSize:13]];
-    
-    self.imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] color:[NCBrandColor sharedInstance].customer];
-    self.imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] color:[NCBrandColor sharedInstance].customer];
-    self.imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] color:[NCBrandColor sharedInstance].customer];
-
-    self.loadingBaseUrl.image = [UIImage animatedImageWithAnimatedGIFURL:[[NSBundle mainBundle] URLForResource: @"loading@2x" withExtension:@"gif"]];
-    self.loadingBaseUrl.hidden = YES;
     
     // Brand
     if ([NCBrandOptions sharedInstance].disable_request_login_url) {
@@ -119,16 +142,6 @@
         _user.userInteractionEnabled = NO;
         _user.textColor = [UIColor lightGrayColor];
     }
-    
-    self.baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
-    self.user.placeholder = NSLocalizedString(@"_username_", nil);
-    self.password.placeholder = NSLocalizedString(@"_password_", nil);
-    
-    [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
-    [self.login setTitle:NSLocalizedString(@"_login_", nil) forState:UIControlStateNormal];
-    
-    [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
-    [self.loginTypeView setTitleColor:[NCBrandColor sharedInstance].customer forState:UIControlStateNormal];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -448,7 +461,7 @@
 {
     if (textField == self.password) {
         self.toggleVisiblePassword.hidden = NO;
-        self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName: [UIColor darkGrayColor]};
+        self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].customerText};
     }
 }
 
@@ -456,7 +469,7 @@
 {
     if (textField == self.password) {
         self.toggleVisiblePassword.hidden = YES;
-        self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName: [UIColor darkGrayColor]};
+        self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName:[NCBrandColor sharedInstance].customerText};
     }
 }
 
@@ -527,7 +540,7 @@
     
     self.password.text = @"";
     self.password.text = currentPassword;
-    self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName: [UIColor darkGrayColor]};
+    self.password.defaultTextAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0f], NSForegroundColorAttributeName: [NCBrandColor sharedInstance].customerText};
 }
 
 - (IBAction)handleLoginTypeView:(id)sender
