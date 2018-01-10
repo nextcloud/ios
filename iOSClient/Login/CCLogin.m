@@ -55,6 +55,7 @@
     // Base URL
     _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] color:[NCBrandColor sharedInstance].customerText];
     _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
+    _baseUrl.tintColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
     [self.baseUrl setFont:[UIFont systemFontOfSize:13]];
     [self.baseUrl setDelegate:self];
@@ -66,6 +67,7 @@
     // User
     _imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] color:[NCBrandColor sharedInstance].customerText];
     _user.textColor = [NCBrandColor sharedInstance].customerText;
+    _user.tintColor = [NCBrandColor sharedInstance].customerText;
     _user.placeholder = NSLocalizedString(@"_username_", nil);
     [self.user setFont:[UIFont systemFontOfSize:13]];
     [self.user setDelegate:self];
@@ -73,6 +75,7 @@
     // Password
     _imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] color:[NCBrandColor sharedInstance].customerText];
     _password.textColor = [NCBrandColor sharedInstance].customerText;
+    _password.tintColor = [NCBrandColor sharedInstance].customerText;
     _password.placeholder = NSLocalizedString(@"_password_", nil);
     [self.password setFont:[UIFont systemFontOfSize:13]];
     [self.password setDelegate:self];
