@@ -199,8 +199,12 @@
 - (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion
 {
     [super dismissViewControllerAnimated:flag completion:completion];
-    
-    [self.delegate loginClose];
+ 
+    NSArray *callStack = [NSThread callStackSymbols];
+    NSString *callParent = [callStack objectAtIndex:1];
+
+    if ([callParent containsString:@"CCLogin"])
+        [self.delegate loginClose];
 }
 
 #pragma --------------------------------------------------------------------------------------------
