@@ -152,8 +152,8 @@
 {
     [super viewDidDisappear:animated];
     
-    if ([self.delegate respondsToSelector:@selector(loginDisappear)])
-        [self.delegate loginDisappear];
+    if ([self.delegate respondsToSelector:@selector(loginClose)])
+        [self.delegate loginClose];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField

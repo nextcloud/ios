@@ -195,7 +195,7 @@
     }
 }
 
-- (void)loginDisappear
+- (void)loginClose
 {
     appDelegate.activeLogin = nil;
     appDelegate.activeLoginWeb = nil;

@@ -392,7 +392,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))
     }
     
-    func loginDisappear() {
+    func loginClose() {
         appDelegate.activeLogin = nil
         appDelegate.activeLoginWeb = nil
     }
