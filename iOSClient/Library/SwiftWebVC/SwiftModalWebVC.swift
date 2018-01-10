@@ -77,7 +77,8 @@ public class SwiftModalWebVC: UINavigationController {
             doneButton.tintColor = colorText
             webViewController.buttonColor = colorText
             webViewController.titleColor = colorText
-            
+            webViewController.view.backgroundColor = color
+
             self.navigationBar.isTranslucent = false
             UINavigationBar.appearance().barTintColor = color
             
