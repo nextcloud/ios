@@ -745,7 +745,16 @@
         
         PHImageRequestOptions *options = [PHImageRequestOptions new];
         options.networkAccessAllowed = YES; // iCloud
+        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+        options.synchronous = YES;
+        options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
             
+            NSLog(@"cacheAsset: %f", progress);
+            
+            if (error)
+                [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description] errorCode:error.code];
+        };
+        
         [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
             NSError *error = nil;
@@ -777,7 +786,15 @@
     if (asset.mediaType == PHAssetMediaTypeVideo) {
         
         PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.networkAccessAllowed = YES;
         options.version = PHVideoRequestOptionsVersionOriginal;
+        options.progressHandler = ^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
+            
+            NSLog(@"cacheAsset: %f", progress);
+            
+            if (error)
+                [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description] errorCode:error.code];
+        };
         
         [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
             
