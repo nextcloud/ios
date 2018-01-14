@@ -71,8 +71,8 @@
         case 404:                                       // 404 Not Found. When for example we try to access a path that now not exist
             return NSLocalizedStringFromTable(@"_error_path_", @"Error", nil);
             break;
-        case 423:                                       // 423 WebDAV Locked : The resource that is being accessed is locked
-            return NSLocalizedStringFromTable(@"WebDAV Locked : The resource that is being accessed is locked", @"Error", nil);
+        case 423:                                       // 423 WebDAV Locked: Trying to access locked resource
+            return NSLocalizedStringFromTable(@"WebDAV Locked: Trying to access locked resource", @"Error", nil);
             break;
         case 500:
             return NSLocalizedStringFromTable(@"_internal_server_", @"Error", nil);
