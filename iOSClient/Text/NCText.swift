@@ -143,28 +143,23 @@ class NCText: UIViewController, UITextViewDelegate {
     
     @IBAction func nextButtonTapped(_ sender: AnyObject) {
         
+        let serverUrl = self.appDelegate.getTabBarControllerActiveServerUrl()
+        
         if let metadata = metadata {
             
             if textView.text != loadText {
             
-                let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
                 let data = textView.text.data(using: .utf8)
-                let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(uploadID)", contents: data, attributes: nil)
+                let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(metadata.fileNameView)", contents: data, attributes: nil)
             
                 if success {
                 
-                    // Prepare for send Metadata
-                    metadata.sessionID = uploadID
-                    metadata.session = k_upload_session
-                    metadata.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
-                    _ = NCManageDatabase.sharedInstance.updateMetadata(metadata)
                     appDelegate.activeMain.clearDateReadDataSource(nil)
                 
                     self.dismiss(animated: true, completion: {
                         
                         // Send file
-                        CCNetworking.shared().verifyUploadInErrorOrWait()
-                        
+                        CCNetworking.shared().uploadFile(metadata.fileNameView, serverUrl: serverUrl, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
                     })
 
@@ -177,8 +172,6 @@ class NCText: UIViewController, UITextViewDelegate {
             }
             
         } else {
-            
-            let serverUrl = self.appDelegate.getTabBarControllerActiveServerUrl()
             
             let formViewController = CreateFormUploadFile.init(serverUrl: serverUrl!, text: self.textView.text, fileName: NSLocalizedString("_untitled_txt_", comment: ""))
             self.navigationController?.pushViewController(formViewController, animated: true)
