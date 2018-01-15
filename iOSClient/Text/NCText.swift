@@ -72,8 +72,7 @@ class NCText: UIViewController, UITextViewDelegate {
                 loadText = try? String(contentsOfFile: path, encoding: encoding)
                 textView.text = loadText
                 nextButton.title = NSLocalizedString("_save_", comment: "")
-                self.navigationController?.navigationBar.topItem?.title = NSLocalizedString(metadata.fileName, comment: "")
-            
+                self.navigationController?.navigationBar.topItem?.title = NSLocalizedString(metadata.fileNameView, comment: "")
             }
                 
         } else {

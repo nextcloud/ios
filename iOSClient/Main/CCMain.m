@@ -5282,7 +5282,7 @@
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     _detailViewController.dateFilterQuery = nil;
     
-    [_detailViewController setTitle:metadata.fileName];
+    [_detailViewController setTitle:metadata.fileNameView];
 }
 
 // can i go to next viewcontroller

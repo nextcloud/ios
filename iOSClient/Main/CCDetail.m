@@ -319,8 +319,10 @@
         [headRequest setHTTPMethod:@"HEAD"];
         
         NSURLSessionDataTask *task = [session dataTaskWithRequest:headRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            NSString *encodingName = [[NCUchardet sharedNUCharDet] encodingStringDetectWithData:data];
-            [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:encodingName baseURL:url];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *encodingName = [[NCUchardet sharedNUCharDet] encodingStringDetectWithData:data];
+                [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:encodingName baseURL:url];
+            });
         }];
         
         [task resume];
