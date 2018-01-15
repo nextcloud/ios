@@ -855,30 +855,11 @@
     // E2E *** IS ENCRYPTED ---> ENCRYPTED FILE ***
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
-        NSString *fileNameIdentifier;
-        NSError *error;
-        
-        // Verify File Size
-        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] error:&error];
-        NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
-        long long fileSize = [fileSizeNumber longLongValue];
-        
-        if (fileSize > k_max_filesize_E2E) {
-            // Error for uploadFileFailure
-            [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:@"E2E Error file too big" errorCode:k_CCErrorInternalError];
-            return;
-        }
-        
-        // if exists overwrite file else create a new encrypted filename
-        tableMetadata *overwriteMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", _activeAccount, directoryID, fileName]];
-        if (overwriteMetadata)
-            fileNameIdentifier = overwriteMetadata.fileName;
-        else
-            fileNameIdentifier = [CCUtility generateRandomIdentifier];
-        
-        if ([self newEndToEndFile:fileName fileNameIdentifier:fileNameIdentifier serverUrl:serverUrl] == false) {
-            // Error for uploadFileFailure
-            [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:@"E2E Error to create encrypted file" errorCode:k_CCErrorInternalError];
+        NSString *errorMessage;
+        NSString *fileNameIdentifier = [self encryptedE2EFile:fileName serverUrl:serverUrl directoryID:directoryID errorMessage:&errorMessage];
+
+        if (fileNameIdentifier == nil) {
+            [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:k_CCErrorInternalError];
             return;
         }
         
@@ -1481,18 +1462,36 @@
 #pragma --------------------------------------------------------------------------------------------
 // E2E
 
-- (BOOL)newEndToEndFile:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier serverUrl:(NSString *)serverUrl
+- (NSString *)encryptedE2EFile:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID errorMessage:(NSString **)errorMessage
 {
+    NSString *fileNameIdentifier;
+    NSError *error;
     NSString *key;
     NSString *initializationVector;
     NSString *authenticationTag;
     NSString *metadataKey;
     NSInteger metadataKeyIndex;
     
-    BOOL result = [[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:fileNameIdentifier directoryUser: _directoryUser key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag];
+    // Verify File Size
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] error:&error];
+    NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+    long long fileSize = [fileSizeNumber longLongValue];
+        
+    if (fileSize > k_max_filesize_E2E) {
+        // Error for uploadFileFailure
+        *errorMessage = @"E2E Error file too big";
+        return nil;
+    }
+        
+    // if exists overwrite file else create a new encrypted filename
+    tableMetadata *overwriteMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", _activeAccount, directoryID, fileName]];
+    if (overwriteMetadata)
+        fileNameIdentifier = overwriteMetadata.fileName;
+    else
+        fileNameIdentifier = [CCUtility generateRandomIdentifier];
     
     // Write to DB
-    if (result) {
+    if ([[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:fileNameIdentifier directoryUser: _directoryUser key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
         
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
         if (object) {
@@ -1526,10 +1525,17 @@
         addObject.serverUrl = serverUrl;
         addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
         
-        result = [[NCManageDatabase sharedInstance] addE2eEncryption:addObject];
+        if([[NCManageDatabase sharedInstance] addE2eEncryption:addObject] == NO) {
+            *errorMessage = @"E2E Error to create encrypted file";
+            return nil;
+        }
+        
+    } else {
+        *errorMessage = @"E2E Error to create encrypted file";
+        return nil;
     }
-    
-    return result;
+
+    return fileNameIdentifier;
 }
 
 @end
