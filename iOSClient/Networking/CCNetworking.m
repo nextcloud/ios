@@ -1530,7 +1530,7 @@
         addObject.serverUrl = serverUrl;
         addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
         
-        // Update
+        // Get the last metadata
         NSString *metadata;
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", account, serverUrl]];
 
@@ -1540,7 +1540,8 @@
                 error = [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serious internal error in decoding metadata" forKey:NSLocalizedDescriptionKey]];
         }
         *e2eMetadata = metadata;
-            
+        
+        // write new record e2ee
         if([[NCManageDatabase sharedInstance] addE2eEncryption:addObject] == NO)
             *errorMessage = @"E2E Error to create encrypted file";
         
