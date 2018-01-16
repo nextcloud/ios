@@ -57,6 +57,8 @@ extern NSString *const flowEndpoint;
 
 #define k_daysOfActivity                                7
 
+#define k_maxErrorAutoUploadAll                         100
+
 #define k_returnCreateFolderPlain                       0
 #define k_returnCreateFotoVideoPlain                    1
 #define k_returnCreateFilePlain                         2
