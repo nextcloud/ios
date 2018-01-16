@@ -4917,10 +4917,10 @@
         
             if (metadata.directory) {
                 
-                if ([shareLink length] > 0)
-                    cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brandElement];
                 if ([shareUserAndGroup length] > 0)
                     cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
+                if ([shareLink length] > 0)
+                    cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brandElement];
                 
                 cell.shared.userInteractionEnabled = NO;
                 
