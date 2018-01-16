@@ -599,6 +599,34 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
                 fileNameSave = (name as! NSString).deletingPathExtension + ".txt"
         }
         
+        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
+            return
+        }
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND fileNameView = %@", appDelegate.activeAccount, directoryID, fileNameSave))
+        
+        if (metadata != nil) {
+            
+            let alertController = UIAlertController(title: fileNameSave, message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
+            
+            let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in
+            }
+            
+            let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
+                self.dismissAndUpload(fileNameSave)
+            }
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(overwriteAction)
+            
+            self.present(alertController, animated: true, completion:nil)
+        } else {
+            
+           dismissAndUpload(fileNameSave)
+        }
+    }
+    
+    func dismissAndUpload(_ fileNameSave: String) {
+        
         self.dismiss(animated: true, completion: {
             
             let data = self.text.data(using: .utf8)
