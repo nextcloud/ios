@@ -2109,7 +2109,7 @@
             
             NSString *token;
                         
-            NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:self.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileNameRename:metadata.fileName fileNameNewRename:fileName decoderMetadata:YES token:&token];
+            NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:self.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileNameRename:metadata.fileName fileNameNewRename:fileName  token:&token];
             if (error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error to send metadata %d", (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
