@@ -566,7 +566,7 @@
     if ([CCUtility isEndToEndEnabled:account] == NO)
         return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:@"Serius internal error E2E Encryption not enabled" forKey:NSLocalizedDescriptionKey]];
     
-    // get Metadata
+    // get Metadata for select updateEndToEndMetadata or storeEndToEndMetadata
     error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID metadata:&metadata];
     if (error.code != 404 && error != nil) {
         return error;
