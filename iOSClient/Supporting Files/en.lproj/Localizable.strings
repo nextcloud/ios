@@ -511,5 +511,5 @@
 "_e2e_remove_folder_encrypted_"     = "Remove as encrypted";
 "_e2e_goto_settings_for_enable_"    = "You are in a encrypted directory, go to \"Settings\" and enable end-to-end encryption";
 "_e2e_delete_folder_not_permitted_" = "Deletion of the directory marked as 'encrypted' is not allowed";
-"_e2e_remove_folder_lock_"          = "Forced remove folder lock";
+"_e2e_remove_folder_lock_"          = "Force remove folder lock";
 
