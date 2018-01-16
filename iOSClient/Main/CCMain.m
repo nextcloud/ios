@@ -1665,7 +1665,7 @@
         
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
         
-        // Change etag or // E2E encrypted folder
+        // Change etag or // E2EE encrypted folder
         if ([metadata.etag isEqualToString:directory.etag] == NO || (_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount])) {
             [self readFolder:metadataNet.serverUrl];
         }
@@ -1799,7 +1799,7 @@
         [self tableViewReloadData];
     }
     
-    // E2E Is encrypted folder get metadata
+    // E2EE Is encrypted folder get metadata
     if (_metadataFolder.e2eEncrypted) {
         
         // Read Metadata
@@ -2053,7 +2053,7 @@
 {
     [_queueSelector addObject:selectorDelete];
     
-    // E2E LOCK
+    // E2EE LOCK
     tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileNameIdentifier = %@", appDelegate.activeAccount, metadata.fileName]];
     if (tableE2eEncryption) {
         
@@ -2096,7 +2096,7 @@
     tableMetadata* metadata = [arguments objectAtIndex:0];
     NSString *fileName = [arguments objectAtIndex:1];
     
-    // E2E
+    // E2EE
     if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
         
         // verify if exists the new fileName
@@ -2290,7 +2290,7 @@
 {
     [_queueSelector removeAllObjects];
     
-    // E2E DENIED
+    // E2EE DENIED
     if ([CCUtility isFolderEncrypted:serverUrlTo account:appDelegate.activeAccount]) {
         
         [appDelegate messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
@@ -2326,7 +2326,7 @@
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
     viewController.networkingOperationQueue = appDelegate.netQueue;
-    // E2E
+    // E2EE
     viewController.includeDirectoryE2EEncryption = NO;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
@@ -3901,7 +3901,7 @@
     if (metadata == nil || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
         return NO;
     
-    // E2E
+    // E2EE
     if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount] && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO)
         return NO;
     
@@ -4848,7 +4848,7 @@
         cell.status.image = [UIImage imageNamed:@"passcode"];
     
     // ----------------------------------------------------------------------------------------------------------
-    // E2E Image Status Encrypted
+    // E2EE Image Status Encrypted
     // ----------------------------------------------------------------------------------------------------------
     
     if (_metadataFolder.e2eEncrypted && !metadata.directory) {

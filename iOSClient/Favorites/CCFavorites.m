@@ -607,7 +607,7 @@
         }
         
         // ----------------------------------------------------------------------------------------------------------
-        // E2E Image Status Encrypted
+        // E2EE Image Status Encrypted
         // ----------------------------------------------------------------------------------------------------------
         
         tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileNameIdentifier = %@", appDelegate.activeAccount, metadata.fileName]];

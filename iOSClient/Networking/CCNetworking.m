@@ -697,7 +697,7 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
 
-        // E2E Decrypted
+        // E2EE Decrypted
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier = %@ AND serverUrl = %@", fileName, serverUrl]];
         if (object) {
             BOOL result = [[NCEndToEndEncryption sharedManager] decryptFileID:fileID directoryUser:_directoryUser key:object.key initializationVector:object.initializationVector authenticationTag:object.authenticationTag];
@@ -852,7 +852,7 @@
     metadata.sessionSelector = selector;
     metadata.sessionSelectorPost = selectorPost;
     
-    // E2E *** IS ENCRYPTED ---> ENCRYPTED FILE ***
+    // E2EE *** IS ENCRYPTED ---> ENCRYPTED FILE ***
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -979,7 +979,7 @@
         
     } else {
         
-        // E2E *** IS ENCRYPTED ---> CREATE SEND METADATA ***
+        // E2EE *** IS ENCRYPTED ---> CREATE SEND METADATA ***
         if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -1177,7 +1177,7 @@
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
     }
     
-    // E2E *** IS ENCRYPTED ---> UNLOCK ***
+    // E2EE *** IS ENCRYPTED ---> UNLOCK ***
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
         // OK remove record on tableQueueUpload [NEXT UPLOAD]
@@ -1464,9 +1464,9 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  End To End Encryption =====
+#pragma mark ===== E2EE End To End Encryption =====
 #pragma --------------------------------------------------------------------------------------------
-// E2E
+// E2EE
 
 - (void)encryptedE2EFile:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url errorMessage:(NSString * __autoreleasing *)errorMessage fileNameIdentifier:(NSString **)fileNameIdentifier e2eMetadata:(NSString * __autoreleasing *)e2eMetadata
 {

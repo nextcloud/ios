@@ -102,7 +102,7 @@ class CCActions: NSObject {
         
         DispatchQueue.global().async {
         
-            // E2E LOCK
+            // E2EE LOCK
             let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account = %@ AND fileNameIdentifier = %@", self.appDelegate.activeAccount, metadata.fileName))
             if tableE2eEncryption != nil {
                 let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, fileID: tableDirectory.fileID, token: &token)
@@ -147,7 +147,7 @@ class CCActions: NSObject {
             return
         }
         
-        // E2E Rebuild and send Metadata
+        // E2EE Rebuild and send Metadata
         if tableDirectory.e2eEncrypted {
             
             DispatchQueue.global().async {
@@ -465,7 +465,7 @@ class CCActions: NSObject {
         
         NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
-        // E2E (if exists the record)
+        // E2EE (if exists the record)
         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", metadata.account, serverUrl, metadata.fileName))
     }
 }

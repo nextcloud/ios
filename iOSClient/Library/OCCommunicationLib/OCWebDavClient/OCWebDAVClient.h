@@ -67,9 +67,9 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 @property (nonatomic, strong) NSString * _Nullable originalUrlServer;
 
 @property (nonatomic, strong) NSString * _Nullable postStringForShare;
-// E2E Metadata 
+// E2EE Metadata
 @property (nonatomic, strong) NSString * _Nullable postStringMetadata;
-// E2E privateKey, publicKey
+// E2EE privateKey, publicKey
 @property (nonatomic, strong) NSString * _Nullable postStringKey;
 
 /**

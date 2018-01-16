@@ -167,7 +167,7 @@
     _move.barTintColor = [NCBrandColor sharedInstance].brand;
     _move.tintColorTitle = [NCBrandColor sharedInstance].brandText;
     _move.networkingOperationQueue = appDelegate.netQueue;
-    // E2E
+    // E2EE
     _move.includeDirectoryE2EEncryption = NO;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];

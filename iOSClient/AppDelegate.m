@@ -1407,7 +1407,7 @@
     // BACKGROND & FOREGROUND
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         
-        // E2E
+        // E2EE
         NSString *serverUrlAutoUpload = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, serverUrlAutoUpload]];
         

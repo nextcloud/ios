@@ -711,7 +711,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             
         } else {
             
-            // e2e DENIED
+            // E2EE DENIED
             if (metadata?.e2eEncrypted == true) {
                 return
             }

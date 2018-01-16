@@ -949,7 +949,7 @@
     fileName = [CCUtility removeForbiddenCharactersServer:fileName];
     fileNameView = fileName;
     
-    // E2E find the fileName for fileNameView
+    // E2EE find the fileName for fileNameView
     if (isFolderEncrypted) {
         tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", activeAccount, serverUrl, fileName]];
         if (tableE2eEncryption)

@@ -191,9 +191,9 @@
     return returnError;
 }
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== End-to-End Encryption =====
+#pragma mark ===== E2EE End-to-End Encryption =====
 #pragma --------------------------------------------------------------------------------------------
-// E2E
+// E2EE
 
 - (NSError *)markEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl token:(NSString  **)token
 {

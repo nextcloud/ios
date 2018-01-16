@@ -180,7 +180,7 @@
 {
     [super viewDidLoad];
     
-    // E2E
+    // E2EE
     self.endToEndInitialize = [NCEndToEndInitialize new];
     self.endToEndInitialize.delegate = self;
 }

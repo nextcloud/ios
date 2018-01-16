@@ -439,7 +439,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         viewController.tintColorTitle = NCBrandColor.sharedInstance.brandText
         viewController.move.title = NSLocalizedString("_select_", comment: "");
         viewController.networkingOperationQueue =  appDelegate.netQueue
-        // E2E
+        // E2EE
         viewController.includeDirectoryE2EEncryption = true;
         
         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
@@ -659,7 +659,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         viewController.tintColorTitle = NCBrandColor.sharedInstance.brandText
         viewController.move.title = NSLocalizedString("_select_", comment: "");
         viewController.networkingOperationQueue =  appDelegate.netQueue
-        // E2E
+        // E2EE
         viewController.includeDirectoryE2EEncryption = true;
         
         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet

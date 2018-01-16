@@ -165,7 +165,7 @@
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
     viewController.networkingOperationQueue = appDelegate.netQueue;
-    // E2E
+    // E2EE
     viewController.includeDirectoryE2EEncryption = NO;
     
     [self presentViewController:navigationController animated:YES completion:nil];
