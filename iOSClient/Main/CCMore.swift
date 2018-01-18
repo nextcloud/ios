@@ -207,6 +207,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             labelUsername.text = tabAccount.displayName
         }
         
+        // Shadow labelUsername
+        //labelUsername.shadowColor = UIColor(red:0.0, green:0.0, blue:0.0, alpha:0.4)
+        //labelUsername.shadowOffset = CGSize(width: 2, height: 2)
+        
         if (tabAccount.quotaRelative > 0) {
             progressQuota.progress = Float(tabAccount.quotaRelative) / 100
         } else {
