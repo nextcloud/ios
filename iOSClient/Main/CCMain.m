@@ -4899,6 +4899,7 @@
             if (metadata.directory) {
                 
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_external"] color:[NCBrandColor sharedInstance].brandElement];
+                cell.imageTitleSegue = [UIImage imageNamed:@"titleExternal"];
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
                 

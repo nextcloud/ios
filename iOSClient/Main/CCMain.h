@@ -66,7 +66,6 @@
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 @property (nonatomic, strong) UIImage *imageTitle;
 
-
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
 
