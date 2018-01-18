@@ -88,6 +88,9 @@
     // Folder
     BOOL _loadingFolder;
     tableMetadata *_metadataFolder;
+    
+    // Image Title Segue
+    UIImage *imageTitleSegue;
 }
 @end
 
@@ -584,20 +587,10 @@
                 shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
             }
             
-            if (_metadataFolder.e2eEncrypted) {
-                
-                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleEncrypted"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
-                
-            } else if ([[[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl] isEqualToString:self.serverUrl]) {
-            
-                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titlePhotos"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
-                
-            } else if ([_metadataFolder.permissions containsString:k_permission_shared] || [_metadataFolder.permissions containsString:k_permission_mounted] || shareLink.length > 0 || shareUserAndGroup.length > 0) {
-                
-                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleShare"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
-                
+            if (self.imageTitle) {
+                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:self.imageTitle color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
             } else {
-                
+                self.navigationItem.titleView = nil;
                 self.navigationItem.title = _titleMain;
             }
         }
@@ -4749,6 +4742,8 @@
     cell.shared.image = nil;
     cell.local.image = nil;
     
+    cell.imageTitleSegue = nil;
+    
     cell.labelTitle.enabled = YES;
     cell.labelTitle.text = @"";
     cell.labelInfoFile.enabled = YES;
@@ -4821,11 +4816,13 @@
         
         if (metadata.directory) {
             
-            if (metadata.e2eEncrypted)
+            if (metadata.e2eEncrypted) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brandElement];
-            else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
+                cell.imageTitleSegue = [UIImage imageNamed:@"titleEncrypted"];
+            } else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory]) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brandElement];
-            else
+                cell.imageTitleSegue = [UIImage imageNamed:@"titlePhotos"];
+            } else
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
             
         } else {
@@ -4884,6 +4881,7 @@
             if (metadata.directory) {
                 
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
+                cell.imageTitleSegue = [UIImage imageNamed:@"titleShared_with_me"];
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
             
@@ -4917,19 +4915,23 @@
         
             if (metadata.directory) {
                 
-                if ([shareUserAndGroup length] > 0)
+                if ([shareUserAndGroup length] > 0) {
                     cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
-                if ([shareLink length] > 0)
+                    cell.imageTitleSegue = [UIImage imageNamed:@"titleShared_with_me"];
+                } if ([shareLink length] > 0) {
                     cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brandElement];
+                    cell.imageTitleSegue = [UIImage imageNamed:@"titlePublic"];
+                }
                 
                 cell.shared.userInteractionEnabled = NO;
                 
             } else {
                 
-                if ([shareLink length] > 0)
+                if ([shareLink length] > 0) {
                     cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareLink"] color:[NCBrandColor sharedInstance].brandElement];
-                if ([shareUserAndGroup length] > 0)
+                } if ([shareUserAndGroup length] > 0) {
                     cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brandElement];
+                }
                 
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
                 [tap setNumberOfTapsRequired:1];
@@ -5144,7 +5146,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {    
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    CCCellMain *cell = [tableView cellForRowAtIndexPath:indexPath];
     
     // settiamo il record file.
     _metadata = [self getMetadataFromSectionDataSource:indexPath];
@@ -5194,7 +5196,11 @@
         }
     }
     
-    if (_metadata.directory) [self performSegueDirectoryWithControlPasscode:true];
+    if (_metadata.directory) {
+        
+        imageTitleSegue = cell.imageTitleSegue;
+        [self performSegueDirectoryWithControlPasscode:true];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath
@@ -5346,6 +5352,7 @@
             viewController.serverUrl = serverUrlPush;
             viewController.titleMain = _metadata.fileName;
             viewController.textBackButton = _titleMain;
+            viewController.imageTitle = imageTitleSegue;
             
             // save self
             [appDelegate.listMainVC setObject:viewController forKey:serverUrlPush];
@@ -5355,6 +5362,9 @@
         } else {
            
             if (viewController.isViewLoaded) {
+                
+                // Icon Title
+                viewController.imageTitle = imageTitleSegue;
                 
                 // Fix : Application tried to present modally an active controller
                 if ([self.navigationController isBeingPresented]) {

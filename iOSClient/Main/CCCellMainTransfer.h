@@ -40,6 +40,8 @@
 @property(nonatomic, weak) IBOutlet UIButton *reloadTaskButton;
 @property(nonatomic, weak) IBOutlet UIButton *stopTaskButton;
 
+@property(nonatomic, strong) UIImage *imageTitleSegue;
+
 //Last position of the scroll of the swipe
 @property (nonatomic, assign) CGFloat lastContentOffset;
 
