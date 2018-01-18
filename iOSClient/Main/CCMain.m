@@ -1658,8 +1658,8 @@
         
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
         
-        // Change etag or // E2EE encrypted folder
-        if ([metadata.etag isEqualToString:directory.etag] == NO || (_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount])) {
+        // Change etag, read folder
+        if ([metadata.etag isEqualToString:directory.etag] == NO) {
             [self readFolder:metadataNet.serverUrl];
         }
     }
