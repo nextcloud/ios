@@ -1806,7 +1806,7 @@
                             [appDelegate messageNotification:@"_error_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
                     } else {
                         if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:appDelegate.activeAccount] serverUrl:self.serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl] == false)
-                            [appDelegate messageNotification:@"_error_" description:@"Serious internal error in decoding metadata" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
+                            [appDelegate messageNotification:@"_error_" description:@"Serious internal error in decoding metadata" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
                         else
                             [self reloadDatasource];
                     }
