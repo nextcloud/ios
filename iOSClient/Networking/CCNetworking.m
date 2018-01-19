@@ -1177,7 +1177,7 @@
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
     }
     
-    // E2EE *** IS ENCRYPTED ---> UNLOCK ***
+    // E2EE : UNLOCK
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
         // OK remove record on tableQueueUpload [NEXT UPLOAD]
