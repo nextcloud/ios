@@ -852,7 +852,7 @@
     metadata.sessionSelector = selector;
     metadata.sessionSelectorPost = selectorPost;
     
-    // E2EE *** IS ENCRYPTED ---> ENCRYPTED FILE ***
+    // E2EE : ENCRYPTED FILE
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -979,7 +979,7 @@
         
     } else {
         
-        // E2EE *** IS ENCRYPTED ---> CREATE SEND METADATA ***
+        // E2EE : CREATE AND SEND METADATA
         if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
