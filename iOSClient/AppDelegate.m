@@ -1407,15 +1407,9 @@
     // BACKGROND & FOREGROUND
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         
-        // E2EE
-        NSString *serverUrlAutoUpload = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, serverUrlAutoUpload]];
-        
-        // ONLY BACKGROUND NOT E2E
-        if (directory == nil) {
-            NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
-            [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
-        }
+        // ONLY BACKGROUND
+        NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
+        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
         
     } else {
         
@@ -1428,6 +1422,15 @@
 - (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent
 {
     CCMetadataNet *metadataNet;
+    
+    // E2EE : not in background
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
+        NSString *serverUrlAutoUpload = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, serverUrlAutoUpload]];
+        if (directory != nil)
+            return;
+    }
+    
     
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
