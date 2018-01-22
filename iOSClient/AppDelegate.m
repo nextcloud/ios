@@ -1425,12 +1425,13 @@
     
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        NSString *serverUrlAutoUpload = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, serverUrlAutoUpload]];
-        if (directory != nil)
-            return;
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLock];
+        if (metadataNet) {
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, metadataNet.serverUrl]];
+            if (directory != nil)
+                return;
+        }
     }
-    
     
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];

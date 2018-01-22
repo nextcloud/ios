@@ -2105,6 +2105,32 @@ class NCManageDatabase: NSObject {
         return metadataNet
     }
     
+    @objc func getQueueUploadLock() -> CCMetadataNet? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first else {
+            return nil
+        }
+        
+        let metadataNet = CCMetadataNet()
+        
+        metadataNet.account = result.account
+        metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
+        metadataNet.fileName = result.fileName
+        metadataNet.selector = result.selector
+        metadataNet.selectorPost = result.selectorPost
+        metadataNet.serverUrl = result.serverUrl
+        metadataNet.session = result.session
+        metadataNet.taskStatus = Int(k_taskStatusResume)
+        
+        return metadataNet
+    }
+    
     @objc func getLockQueueUpload() -> [tableQueueUpload]? {
         
         guard let tableAccount = self.getAccountActive() else {
