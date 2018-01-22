@@ -482,7 +482,9 @@
     
     if (error == nil) {
         
-        (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:folderPhotos permissions:nil encrypted:false];
+        tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, folderPhotos]];
+        if (!tableDirectory)
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:folderPhotos permissions:nil encrypted:false];
         
     } else {
         

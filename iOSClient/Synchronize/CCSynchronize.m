@@ -299,11 +299,16 @@
         // Selector : selectorReadFileReloadFolder, selectorReadFileFolderWithDownload
         if ([metadataNet.selector isEqualToString:selectorReadFileFolder] || [metadataNet.selector isEqualToString:selectorReadFileFolderWithDownload]) {
             
+            tableDirectory *tableDirectory;
             NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
             
-            // Add Directory
-            (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:metadataNet.account permissions:nil encrypted:false];
-            tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+            // Add Directory if do not exists
+            tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+            
+            if (!tableDirectory) {
+                (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:nil encrypted:false];
+                tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+            }
             
             // Verify changed etag
             if (![tableDirectory.etag isEqualToString:metadata.etag]) {
