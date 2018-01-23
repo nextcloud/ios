@@ -100,8 +100,9 @@ extern NSString *const flowEndpoint;
 #define k_download_session_foreground                   @"it.twsweb.Crypto-Cloud.download.sessionforeground"
 #define k_download_session_wwan                         @"it.twsweb.Crypto-Cloud.download.sessionwwan"
 #define k_upload_session                                @"it.twsweb.Crypto-Cloud.upload.session"
-#define k_upload_session_foreground                     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
 #define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
+#define k_upload_session_foreground                     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
+#define k_upload_session_wwanforeground                 @"it.twsweb.Crypto-Cloud.upload.sessionwwanforeground"
 
 // OperationQueue
 #define k_queue                                         @"it.twsweb.Crypto-Cloud.queue"

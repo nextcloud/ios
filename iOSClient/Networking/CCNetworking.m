@@ -69,8 +69,9 @@
     [self sessionWWanDownload];
 
     [self sessionUpload];
-    [self sessionUploadForeground];
     [self sessionWWanUpload];
+    [self sessionUploadForeground];
+    [self sessionWWanUploadForeground];
     
     [self sharedOCCommunication];
     
@@ -174,6 +175,26 @@
     return sessionUpload;
 }
 
+- (NSURLSession *)sessionWWanUpload
+{
+    static NSURLSession *sessionWWanUpload = nil;
+    
+    if (sessionWWanUpload == nil) {
+        
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session_wwan];
+        
+        configuration.allowsCellularAccess = NO;
+        configuration.sessionSendsLaunchEvents = YES;
+        configuration.discretionary = NO;
+        configuration.HTTPMaximumConnectionsPerHost = 1;
+        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        
+        sessionWWanUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+        sessionWWanUpload.sessionDescription = k_upload_session_wwan;
+    }
+    return sessionWWanUpload;
+}
+
 - (NSURLSession *)sessionUploadForeground
 {
     static NSURLSession *sessionUploadForeground;
@@ -193,24 +214,23 @@
     return sessionUploadForeground;
 }
 
-- (NSURLSession *)sessionWWanUpload
+- (NSURLSession *)sessionWWanUploadForeground
 {
-    static NSURLSession *sessionWWanUpload = nil;
+    static NSURLSession *sessionWWanUploadForeground = nil;
     
-    if (sessionWWanUpload == nil) {
+    if (sessionWWanUploadForeground == nil) {
         
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_upload_session_wwan];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         
         configuration.allowsCellularAccess = NO;
-        configuration.sessionSendsLaunchEvents = YES;
         configuration.discretionary = NO;
         configuration.HTTPMaximumConnectionsPerHost = 1;
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
-        sessionWWanUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionWWanUpload.sessionDescription = k_upload_session_wwan;
+        sessionWWanUploadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+        sessionWWanUploadForeground.sessionDescription = k_upload_session_wwanforeground;
     }
-    return sessionWWanUpload;
+    return sessionWWanUploadForeground;
 }
 
 - (OCCommunication *)sharedOCCommunication
@@ -243,9 +263,10 @@
     if ([sessionDescription isEqualToString:k_download_session_wwan]) return [self sessionWWanDownload];
     
     if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
-    if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
     if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
-    
+    if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
+    if ([sessionDescription isEqualToString:k_upload_session_wwanforeground]) return [self sessionWWanUploadForeground];
+
     return nil;
 }
 
@@ -256,8 +277,9 @@
     [[self sessionWWanDownload] invalidateAndCancel];
     
     [[self sessionUpload] invalidateAndCancel];
+    [[self sessionWWanUpload] invalidateAndCancel];
     [[self sessionUploadForeground] invalidateAndCancel];
-    [[self sessionWWanUpload] invalidateAndCancel];    
+    [[self sessionWWanUploadForeground] invalidateAndCancel];
 }
 
 - (void)settingSessionsDownload:(BOOL)download upload:(BOOL)upload taskStatus:(NSInteger)taskStatus activeAccount:(NSString *)activeAccount activeUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
@@ -295,6 +317,13 @@
                 else if (taskStatus == k_taskStatusResume) [task resume];
         }];
         
+        [[self sessionWWanUpload] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+            for (NSURLSessionTask *task in uploadTasks)
+                if (taskStatus == k_taskStatusCancel) [task cancel];
+                else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                else if (taskStatus == k_taskStatusResume) [task resume];
+        }];
+        
         [[self sessionUploadForeground] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in uploadTasks)
                 if (taskStatus == k_taskStatusCancel) [task cancel];
@@ -302,7 +331,7 @@
                 else if (taskStatus == k_taskStatusResume) [task resume];
         }];
         
-        [[self sessionWWanUpload] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+        [[self sessionWWanUploadForeground] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in uploadTasks)
                 if (taskStatus == k_taskStatusCancel) [task cancel];
                 else if (taskStatus == k_taskStatusSuspend) [task suspend];
@@ -965,10 +994,10 @@
     NSURLSession *sessionUpload;
     
     // NSURLSession
-    if (metadata.e2eEncrypted == true) sessionUpload = [self sessionUploadForeground];
-    else if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
-    else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
+    if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
     else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
+    else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
+    else if ([metadata.session isEqualToString:k_upload_session_wwanforeground]) sessionUpload = [self sessionWWanUploadForeground];
 
     NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameForUpload]]];
     
