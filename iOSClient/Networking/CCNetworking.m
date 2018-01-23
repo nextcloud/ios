@@ -842,6 +842,7 @@
     tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName fileNameView:fileName directory:_directoryUser activeAccount:_activeAccount];
     
     metadata.date = [NSDate new];
+    metadata.e2eEncrypted = NO;
     metadata.fileID = uploadID;
     metadata.directoryID = directoryID;
     metadata.fileName = fileName;
@@ -868,8 +869,9 @@
                 return;
             }
         
-            // Now the fileName is fileNameIdentifier
+            // Now the fileName is fileNameIdentifier && flag e2eEncrypted
             metadata.fileName = fileNameIdentifier;
+            metadata.e2eEncrypted = YES;
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
@@ -963,7 +965,8 @@
     NSURLSession *sessionUpload;
     
     // NSURLSession
-    if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
+    if (metadata.e2eEncrypted == true) sessionUpload = [self sessionUploadForeground];
+    else if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
     else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
     else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
 
@@ -1110,6 +1113,7 @@
         metadata.fileID = fileID;
         metadata.etag = etag;
         metadata.date = date;
+        metadata.e2eEncrypted = false;
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
