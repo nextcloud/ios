@@ -44,6 +44,7 @@
 "_save_"                    = "Save";
 "_warning_"                 = "Warning";
 "_error_"                   = "Error";
+"_error_e2ee_"              = "Error E2EE";
 "_no_"                      = "No";
 "_yes_"                     = "Yes";
 "_select_"                  = "Select";
@@ -512,4 +513,20 @@
 "_e2e_goto_settings_for_enable_"    = "You are in a encrypted directory, go to \"Settings\" and enable end-to-end encryption";
 "_e2e_delete_folder_not_permitted_" = "Deletion of the directory marked as 'encrypted' is not allowed";
 "_e2e_remove_folder_lock_"          = "Forced remove folder lock";
+"_e2e_error_encode_metadata_"       = "Serious internal error in encoding metadata";
+"_e2e_error_decode_metadata_"       = "Serious internal error in decoding metadata";
+"_e2e_error_create_encrypted_"      = "Error to create encrypted file";
+"_e2e_error_update_metadata_"       = "Update metadata error";
+"_e2e_error_store_metadata_"        = "Store metadata error";
+"_e2e_error_send_metadata_"         = "Error to send metadata";
+"_e2e_error_delete_metadata_"       = "Delete metadata error";
+"_e2e_error_get_metadata_"          = "Get metadata error";
+"_e2e_error_not_enabled_"           = "Serious internal error E2EEncryption not enabled";
+"_e2e_error_record_not_found_"      = "Serius internal error records not found";
+"_e2e_error_unlock_"                = "Unlock folder error";
+"_e2e_error_lock_"                  = "Lock folder error";
+"_e2e_error_delete_mark_folder_"    = "Delete mark folder as encrypted";
+"_e2e_error_mark_folder_"           = "Mark folder as encrypted";
+"_e2e_error_directory_not_empty_"   = "The directory is not empty";
+
 

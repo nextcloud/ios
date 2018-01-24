@@ -1198,7 +1198,7 @@
                 if (error) {
 #ifndef EXTENSION
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_error_" description:[NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                     });
 #endif
                 }
@@ -1544,7 +1544,7 @@
         error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID metadata:&metadata];
         if (error == nil) {
             if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:serverUrl account:account url:url] == false) {
-                *errorMessage = @"Serious internal error in decoding metadata";
+                *errorMessage = @"_e2e_error_decode_metadata_";
                 return;
             }
         }
@@ -1552,10 +1552,10 @@
         
         // write new record e2ee
         if([[NCManageDatabase sharedInstance] addE2eEncryption:addObject] == NO)
-            *errorMessage = @"E2E Error to create encrypted file";
+            *errorMessage = @"_e2e_error_create_encrypted_";
         
     } else {
-        *errorMessage = @"E2E Error to create encrypted file";
+        *errorMessage = @"_e2e_error_create_encrypted_";
     }
 }
 
