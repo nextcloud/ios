@@ -990,25 +990,29 @@
                 NSString *token;
                
                 NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileNameRename:nil fileNameNewRename:nil token:&token];
-                if (error == nil) {
-                        
-                    [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                        
-                    // Manage uploadTask cancel,suspend,resume
-                    if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
-                    else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
-                    else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
 
-                    NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
-
-                } else {
+                    if (error == nil) {
                     
-                    NSString *message = [NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code];
-                    [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-                    [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:message sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+                        [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
+                        
+                        // Manage uploadTask cancel,suspend,resume
+                        if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
+                        else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
+                        else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+
+                        NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
+
+                    } else {
+                    
+                        NSString *message = [NSString stringWithFormat:@"%@ %d", error.localizedDescription, (int)error.code];
+                        [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:message type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+                        [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:message sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
                             
-                    [uploadTask cancel];
-                }
+                        [uploadTask cancel];
+                    }
+                });
             });
             
          } else {
