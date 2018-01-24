@@ -71,7 +71,6 @@
     [self sessionUpload];
     [self sessionWWanUpload];
     [self sessionUploadForeground];
-    [self sessionWWanUploadForeground];
     
     [self sharedOCCommunication];
     
@@ -214,25 +213,6 @@
     return sessionUploadForeground;
 }
 
-- (NSURLSession *)sessionWWanUploadForeground
-{
-    static NSURLSession *sessionWWanUploadForeground = nil;
-    
-    if (sessionWWanUploadForeground == nil) {
-        
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        
-        configuration.allowsCellularAccess = NO;
-        configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = 1;
-        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        
-        sessionWWanUploadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionWWanUploadForeground.sessionDescription = k_upload_session_wwanforeground;
-    }
-    return sessionWWanUploadForeground;
-}
-
 - (OCCommunication *)sharedOCCommunication
 {
     static OCCommunication* sharedOCCommunication = nil;
@@ -265,7 +245,6 @@
     if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
     if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
     if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
-    if ([sessionDescription isEqualToString:k_upload_session_wwanforeground]) return [self sessionWWanUploadForeground];
 
     return nil;
 }
@@ -279,7 +258,6 @@
     [[self sessionUpload] invalidateAndCancel];
     [[self sessionWWanUpload] invalidateAndCancel];
     [[self sessionUploadForeground] invalidateAndCancel];
-    [[self sessionWWanUploadForeground] invalidateAndCancel];
 }
 
 - (void)settingSessionsDownload:(BOOL)download upload:(BOOL)upload taskStatus:(NSInteger)taskStatus activeAccount:(NSString *)activeAccount activeUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
@@ -325,13 +303,6 @@
         }];
         
         [[self sessionUploadForeground] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            for (NSURLSessionTask *task in uploadTasks)
-                if (taskStatus == k_taskStatusCancel) [task cancel];
-                else if (taskStatus == k_taskStatusSuspend) [task suspend];
-                else if (taskStatus == k_taskStatusResume) [task resume];
-        }];
-        
-        [[self sessionWWanUploadForeground] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in uploadTasks)
                 if (taskStatus == k_taskStatusCancel) [task cancel];
                 else if (taskStatus == k_taskStatusSuspend) [task suspend];
@@ -902,11 +873,6 @@
             metadata.fileName = fileNameIdentifier;
             metadata.e2eEncrypted = YES;
             
-            // Forced session on Foreground
-            metadata.session = k_upload_session_foreground;
-            if ([metadata.session isEqualToString:k_upload_session_wwan])
-                metadata.session = k_upload_session_wwanforeground;
-            
             dispatch_async(dispatch_get_main_queue(), ^{
                 [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
                 [self uploadURLSessionMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadata] serverUrl:serverUrl sessionID:uploadID taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
@@ -1002,7 +968,6 @@
     if ([metadata.session isEqualToString:k_upload_session]) sessionUpload = [self sessionUpload];
     else if ([metadata.session isEqualToString:k_upload_session_wwan]) sessionUpload = [self sessionWWanUpload];
     else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
-    else if ([metadata.session isEqualToString:k_upload_session_wwanforeground]) sessionUpload = [self sessionWWanUploadForeground];
 
     NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileNameForUpload]]];
     

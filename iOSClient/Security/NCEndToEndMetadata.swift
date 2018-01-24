@@ -188,8 +188,8 @@ class NCEndToEndMetadata : NSObject  {
                 do {
                     
                     let encryptedFileAttributes = try jsonDecoder.decode(e2eMetadata.encryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
-                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@", account, fileNameIdentifier))
                     
+                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@", account, fileNameIdentifier))
                     if  metadata != nil {
                     
                         let object = tableE2eEncryption()
@@ -224,7 +224,6 @@ class NCEndToEndMetadata : NSObject  {
                     
                 } catch let error {
                     print("Serious internal error in decoding metadata ("+error.localizedDescription+")")
-                    return false
                 }
             }
             
