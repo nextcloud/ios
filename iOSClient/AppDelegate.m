@@ -1529,6 +1529,7 @@
     }
     
     // Verify Lock
+    /*
     NSInteger counterUploadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
     NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getLockQueueUpload];
     
@@ -1541,7 +1542,7 @@
                 [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
         }
     }
-    
+    */
     // In background verify Upload in error
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         [[CCNetworking sharedNetworking] verifyUploadInErrorOrWait];
