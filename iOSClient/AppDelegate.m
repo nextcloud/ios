@@ -255,6 +255,15 @@
 }
 
 //
+// L' applicazione entrerà in primo piano (attivo sempre)
+//
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+    // Verify lock
+    [self verifyLockOnLoadAutoUpload];
+}
+
+//
 // L' applicazione è entrata nello sfondo
 //
 - (void)applicationDidEnterBackground:(UIApplication *)application
@@ -1528,21 +1537,6 @@
         counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
     }
     
-    // Verify Lock
-    /*
-    NSInteger counterUploadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
-    NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getLockQueueUpload];
-    
-    if (counterNewUpload == 0 && counterUploadInSession == 0 && [tableMetadatasInLock count] > 0) {
-        
-        // Unlock
-        for (tableMetadata *metadata in tableMetadatasInLock) {
-            
-            if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
-                [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
-        }
-    }
-    */
     // In background verify Upload in error
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         [[CCNetworking sharedNetworking] verifyUploadInErrorOrWait];
@@ -1550,6 +1544,26 @@
     
     // Start Timer
     _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
+}
+
+- (void)verifyLockOnLoadAutoUpload
+{
+    // Test Maintenance
+    if (self.maintenanceMode || self.activeAccount.length == 0)
+        return;
+    
+    NSInteger counterUploadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
+    NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getLockQueueUpload];
+     
+     if (counterUploadInSession == 0 && [tableMetadatasInLock count] > 0) {
+     
+         // Unlock
+         for (tableMetadata *metadata in tableMetadatasInLock) {
+     
+             if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
+                 [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
+         }
+     }
 }
 
 #pragma --------------------------------------------------------------------------------------------
