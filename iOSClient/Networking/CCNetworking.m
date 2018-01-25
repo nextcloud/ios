@@ -1193,7 +1193,7 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
-            if (directory) {
+            if (directory.e2eTokenLock.length > 0 && directory.e2eTokenLock) {
                 NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:directory.e2eTokenLock];
                 if (error) {
 #ifndef EXTENSION
