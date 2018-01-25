@@ -1002,6 +1002,7 @@
                         
                     } else {
                     
+                        // *** E2EE ***
                         [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
                         
                         // Manage uploadTask cancel,suspend,resume
@@ -1010,7 +1011,6 @@
                         else if (taskStatus == k_taskStatusResume) [uploadTask resume];
                         
                         NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
-                       
                     }
                 });
             });
