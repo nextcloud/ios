@@ -2015,6 +2015,11 @@ class NCManageDatabase: NSObject {
                         addObject.serverUrl = metadataNet.serverUrl
                         addObject.session = metadataNet.session
                         
+                        // E2EE forced session : k_upload_session_foreground
+                        if CCUtility.isFolderEncrypted(metadataNet.serverUrl, account: tableAccount.account) == true && CCUtility.isEnd(toEndEnabled: tableAccount.account) == true {
+                            addObject.session = k_upload_session_foreground
+                        }
+                        
                         realm.add(addObject)
                     }
                 }
@@ -2037,6 +2042,9 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.write {
+        
+                var serverUrl = ""
+                var e2eeFolder = false
                 
                 for metadataNet in metadatasNet {
                     
@@ -2056,6 +2064,15 @@ class NCManageDatabase: NSObject {
                         
                         addObject.serverUrl = metadataNet.serverUrl
                         addObject.session = metadataNet.session
+                        
+                        // E2EE forced session : k_upload_session_foreground
+                        if (serverUrl != metadataNet.serverUrl) {
+                            serverUrl = metadataNet.serverUrl
+                            e2eeFolder = CCUtility.isFolderEncrypted(serverUrl, account: tableAccount.account) == true && CCUtility.isEnd(toEndEnabled: tableAccount.account) == true
+                        }
+                        if e2eeFolder == true {
+                            addObject.session = k_upload_session_foreground
+                        }
                         
                         realm.add(addObject)
                     }
