@@ -521,8 +521,8 @@
 "_e2e_error_send_metadata_"         = "Error to send metadata";
 "_e2e_error_delete_metadata_"       = "Delete metadata error";
 "_e2e_error_get_metadata_"          = "Get metadata error";
-"_e2e_error_not_enabled_"           = "Serious internal error E2EEncryption not enabled";
-"_e2e_error_record_not_found_"      = "Serius internal error records not found";
+"_e2e_error_not_enabled_"           = "Serious internal error. E2EEncryption not enabled";
+"_e2e_error_record_not_found_"      = "Serious internal error. Records not found";
 "_e2e_error_unlock_"                = "Unlock folder error";
 "_e2e_error_lock_"                  = "Lock folder error";
 "_e2e_error_delete_mark_folder_"    = "Delete mark folder as encrypted";
