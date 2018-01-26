@@ -1503,8 +1503,6 @@
             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
         }
         
-        
-        
     } else {
         
         // Activity
