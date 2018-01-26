@@ -138,7 +138,6 @@ extern NSString *const flowEndpoint;
 // Error
 #define k_CCErrorTaskNil                                -9999
 #define k_CCErrorTaskDownloadNotFound                   -9998
-#define k_CCErrorFileUploadNotFound                     -9997
 #define k_CCErrorInternalError                          -9996
 #define k_CCErrorNetworkNowAvailable                    -9995
 #define k_CCErrorFileAlreadyInDownload                  -9994
@@ -164,7 +163,6 @@ extern NSString *const flowEndpoint;
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenWindowShare                         @"openWindowShare"
 #define selectorReadFile                                @"readFile"
-#define selectorReadFileVerifyUpload                    @"readFileVerifyUpload"
 #define selectorReadFileWithDownload                    @"readFileWithDownload"
 #define selectorReadFileReloadFolder                    @"readFileReloadFolder"
 #define selectorReadFileFolder                          @"readFileFolder"

@@ -259,8 +259,7 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // Verify lock
-    [self verifyLockOnLoadAutoUpload];
+   
 }
 
 //
@@ -318,13 +317,10 @@
     // Execute : after 1 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
     
-        // verify Download
-        [[CCNetworking sharedNetworking] verifyDownloadInProgress];
-        if (_activeMain)
-            [[CCNetworking sharedNetworking] verifyDownloadInError:self.activeMain];
+        // Verify lock
+        [self verifyLockOnLoadAutoUpload];
         
         // verify Upload
-        [[CCNetworking sharedNetworking] verifyUploadInProgress];
         [[CCNetworking sharedNetworking] verifyUploadInErrorOrWait];
 
         if (_activeMain) {

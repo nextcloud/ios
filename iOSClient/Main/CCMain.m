@@ -1503,47 +1503,23 @@
             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
         }
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-            if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
-                
-                [self readFolder:serverUrl];
-                
-            } else {
-                
-                [self reloadDatasource:serverUrl];
-            }
-        });
+        
         
     } else {
         
-        // Auto Download Upload
-        if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
-            
-            // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:errorMessage type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:appDelegate.activeUrl];
-            
-            if (errorCode != -999)
-                [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            
-        } else {
-            
-            // Read File test do not exists
-            if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
-                
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-                
-                // reUpload
-                if (metadata)
-                    [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
-            }
-            
-            // Print error
-            else if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized) {
-                
-                [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            }
-        }
+        // Activity
+        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:errorMessage type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:appDelegate.activeUrl];
         
+        if (errorCode != -999 && errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized)
+            [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    }
+    
+    if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
+            
+        [self readFolder:serverUrl];
+            
+    } else {
+            
         [self reloadDatasource:serverUrl];
     }
 }
