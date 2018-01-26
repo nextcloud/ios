@@ -1206,34 +1206,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Upload Verify =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)verifyUploadInErrorOrWait
-{
-    NSMutableSet *directoryIDs = [NSMutableSet new];
-    
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'upload' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifier = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierWaitStart] sorted:nil ascending:NO];
-    
-    NSLog(@"[LOG] Verify re upload in error n. %lu", (unsigned long)[metadatas count]);
-    
-    for (tableMetadata *metadata in metadatas) {
-        
-        [self uploadFileMetadata:metadata taskStatus: k_taskStatusResume];
-        
-        [directoryIDs addObject:metadata.directoryID];
-        
-        NSLog(@"[LOG] Re upload file : %@", metadata.fileName);
-    }
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        for (NSString *directoryID in directoryIDs)
-            if ([self.delegate respondsToSelector:@selector(reloadDatasource:)])
-                [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:directoryID]];
-    });
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  Utility =====
 #pragma --------------------------------------------------------------------------------------------
 

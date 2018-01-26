@@ -321,7 +321,7 @@
         [self verifyLockOnLoadAutoUpload];
         
         // verify Upload
-        [[CCNetworking sharedNetworking] verifyUploadInErrorOrWait];
+        [self verifyUploadInErrorOrWait];
 
         if (_activeMain) {
             NSLog(@"[LOG] Request Server Capabilities");
@@ -1535,12 +1535,16 @@
     
     // In background verify Upload in error
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        [[CCNetworking sharedNetworking] verifyUploadInErrorOrWait];
+        [self verifyUploadInErrorOrWait];
     }
     
     // Start Timer
     _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
 }
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Process Verify =====
+#pragma --------------------------------------------------------------------------------------------
 
 - (void)verifyLockOnLoadAutoUpload
 {
@@ -1562,6 +1566,23 @@
      }
 }
 
+- (void)verifyUploadInErrorOrWait
+{
+    NSMutableSet *directoryIDs = [NSMutableSet new];
+    
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'upload' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifier = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierWaitStart] sorted:nil ascending:NO];
+    
+    NSLog(@"[LOG] Verify re upload in error n. %lu", (unsigned long)[metadatas count]);
+    
+    for (tableMetadata *metadata in metadatas) {
+        
+        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus: k_taskStatusResume];
+        
+        [directoryIDs addObject:metadata.directoryID];
+        
+        NSLog(@"[LOG] Re upload file : %@", metadata.fileName);
+    }
+}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Open CCUploadFromOtherUpp  =====
 #pragma --------------------------------------------------------------------------------------------
