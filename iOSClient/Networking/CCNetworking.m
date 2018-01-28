@@ -1314,7 +1314,7 @@
         error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID metadata:&metadata];
         if (error == nil) {
             if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:serverUrl account:account url:url] == false) {
-                *errorMessage = @"_e2e_error_decode_metadata_";
+                *errorMessage = NSLocalizedString(@"_e2e_error_decode_metadata_", nil);
                 return;
             }
         }
@@ -1322,10 +1322,10 @@
         
         // write new record e2ee
         if([[NCManageDatabase sharedInstance] addE2eEncryption:addObject] == NO)
-            *errorMessage = @"_e2e_error_create_encrypted_";
+            *errorMessage = NSLocalizedString(@"_e2e_error_create_encrypted_", nil);
         
     } else {
-        *errorMessage = @"_e2e_error_create_encrypted_";
+        *errorMessage = NSLocalizedString(@"_e2e_error_create_encrypted_", nil);
     }
 }
 

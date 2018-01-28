@@ -4963,7 +4963,7 @@
             if ([metadata.sessionError length] == 0) {
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_downloaded_",nil)];
             } else {
-                cell.labelInfoFile.text = NSLocalizedString(metadata.sessionError, nil);
+                cell.labelInfoFile.text = metadata.sessionError;
             }
         }
     }    
@@ -5024,7 +5024,7 @@
             if ([metadata.sessionError length] == 0) {
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];
             } else {
-                cell.labelInfoFile.text = NSLocalizedString(metadata.sessionError, nil);
+                cell.labelInfoFile.text = metadata.sessionError;
             }
         }
     }
