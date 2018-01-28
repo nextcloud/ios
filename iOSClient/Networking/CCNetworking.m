@@ -1011,6 +1011,10 @@
                         else if (taskStatus == k_taskStatusResume) [uploadTask resume];
                         
                         NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
+                        
+                        // refresh main
+                        if ([self.delegate respondsToSelector:@selector(reloadDatasource:)])
+                            [self.delegate reloadDatasource:serverUrl];
                     }
                 });
             });
@@ -1034,17 +1038,16 @@
              else if (taskStatus == k_taskStatusResume) [uploadTask resume];
              
              NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
+             
+             // refresh main
+             if ([self.delegate respondsToSelector:@selector(reloadDatasource:)])
+                 [self.delegate reloadDatasource:serverUrl];
          }
     }
 
-    // refresh main
-    if ([self.delegate respondsToSelector:@selector(reloadDatasource:)])
-        [self.delegate reloadDatasource:serverUrl];
-        
 #ifndef EXTENSION
     [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateApplicationIconBadgeNumber];
 #endif
-    
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
