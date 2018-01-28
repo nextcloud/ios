@@ -208,6 +208,9 @@
             [self handleShortCutItem:shortcutItem];
     }
     
+    // Verify Lock
+    [self verifyLockOnLoadAutoUpload];
+    
     // Start Timer
     self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
@@ -316,9 +319,6 @@
     
     // Execute : after 1 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-    
-        // Verify lock
-        [self verifyLockOnLoadAutoUpload];
         
         // verify Upload
         [self verifyUploadInErrorOrWait];
