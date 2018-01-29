@@ -225,10 +225,8 @@
 
 - (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
-    // verify active user
-    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
-    
-    if (![record.account isEqualToString:metadataNet.account])
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
     NSString *father = @"";
@@ -275,6 +273,10 @@
 
 - (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
 }
 

@@ -2663,9 +2663,8 @@
 {
     [_hud hideHud];
     
-    // change account ?
-    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
-    if([record.account isEqualToString:metadataNet.account] == NO)
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
     NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items activeUrl:appDelegate.activeUrl];
@@ -2709,11 +2708,14 @@
 {
     [_hud hideHud];
 
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-
-    if (errorCode != kOCErrorServerUnauthorized)
+    else
         [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 
     if (_shareOC)
@@ -2742,6 +2744,10 @@
 - (void)unShareSuccess:(CCMetadataNet *)metadataNet
 {
     [_hud hideHud];
+    
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
     
     // rimuoviamo la condivisione da db
     NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup];
@@ -2796,6 +2802,10 @@
 {
     [_hud hideHud];
     
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     if (_shareOC)
         [_shareOC reloadUserAndGroup:items];
 }
@@ -2804,11 +2814,14 @@
 {
     [_hud hideHud];
     
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-
-    if (errorCode != kOCErrorServerUnauthorized)
+    else
         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
@@ -2899,6 +2912,10 @@
 
 - (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     _dateReadDataSource = nil;
     
     [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
