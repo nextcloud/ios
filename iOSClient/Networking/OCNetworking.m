@@ -1208,8 +1208,8 @@
     
     [communication getActivityServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
         
-        if ([self.delegate respondsToSelector:@selector(getActivityServerSuccess:)])
-            [self.delegate getActivityServerSuccess:listOfActivity];
+        if ([self.delegate respondsToSelector:@selector(getActivityServerSuccess:listOfActivity:)])
+            [self.delegate getActivityServerSuccess:_metadataNet listOfActivity:listOfActivity];
         
         [self complete];
         
@@ -1249,8 +1249,8 @@
     
     [communication getExternalSitesServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
         
-        if ([self.delegate respondsToSelector:@selector(getExternalSitesServerSuccess:)])
-            [self.delegate getExternalSitesServerSuccess:listOfExternalSites];
+        if ([self.delegate respondsToSelector:@selector(getExternalSitesServerSuccess:listOfExternalSites:)])
+            [self.delegate getExternalSitesServerSuccess:_metadataNet listOfExternalSites:listOfExternalSites];
         
         [self complete];
         
@@ -1331,8 +1331,8 @@
     
     [communication getNotificationServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
         
-        if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccess:)])
-            [self.delegate getNotificationServerSuccess:listOfNotifications];
+        if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccess:listOfNotifications:)])
+            [self.delegate getNotificationServerSuccess:_metadataNet listOfNotifications:listOfNotifications];
         
         [self complete];
         
@@ -1535,11 +1535,9 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication getCapabilitiesOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
-        
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        
-        if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccess:)] && [recordAccount.account isEqualToString:_metadataNet.account])
-            [self.delegate getCapabilitiesOfServerSuccess:capabilities];
+                
+        if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccess:capabilities:)])
+            [self.delegate getCapabilitiesOfServerSuccess:_metadataNet capabilities:capabilities];
         
         [self complete];
         

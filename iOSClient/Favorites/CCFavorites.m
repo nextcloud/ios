@@ -284,6 +284,10 @@
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     [self reloadDatasource];
 }
 

@@ -983,8 +983,12 @@
 #pragma mark ==== External Sites ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getExternalSitesServerSuccess:(NSArray *)listOfExternalSites
+- (void)getExternalSitesServerSuccess:(CCMetadataNet *)metadataNet listOfExternalSites:(NSArray *)listOfExternalSites
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     [[NCManageDatabase sharedInstance] deleteExternalSites];
     
     for (OCExternalSites *tableExternalSites in listOfExternalSites)
@@ -993,6 +997,10 @@
 
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSString *error = [NSString stringWithFormat:@"Get external site failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
@@ -1003,8 +1011,12 @@
 #pragma mark ==== Activity ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getActivityServerSuccess:(NSArray *)listOfActivity
+- (void)getActivityServerSuccess:(CCMetadataNet *)metadataNet listOfActivity:(NSArray *)listOfActivity
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity];
     
     // Reload Activity Data Source
@@ -1013,6 +1025,10 @@
 
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSString *error = [NSString stringWithFormat:@"Get Activity Server failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
@@ -1023,8 +1039,12 @@
 #pragma mark ==== Notification  ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getNotificationServerSuccess:(NSArray *)listOfNotifications
+- (void)getNotificationServerSuccess:(CCMetadataNet *)metadataNet listOfNotifications:(NSArray *)listOfNotifications
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         // Order by date
@@ -1061,6 +1081,10 @@
 
 - (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSString *error = [NSString stringWithFormat:@"Get Notification Server failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
@@ -1089,6 +1113,10 @@
 
 - (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSString *error = [NSString stringWithFormat:@"Get user profile failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
@@ -1097,15 +1125,13 @@
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Update User (+ userProfile.id)
     [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
-    
-    // Get Account Active
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-    
-    // Setting appDelegate active account
-    [appDelegate settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
-    
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/128", appDelegate.activeUrl, appDelegate.activeUser];
@@ -1127,6 +1153,10 @@
 
 - (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
@@ -1140,8 +1170,12 @@
     [appDelegate settingThemingColorBrand];
 }
 
-- (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
+- (void)getCapabilitiesOfServerSuccess:(CCMetadataNet *)metadataNet capabilities:(OCCapabilities *)capabilities
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Update capabilities db
     [[NCManageDatabase sharedInstance] addCapabilities:capabilities];
     
@@ -1178,7 +1212,7 @@
     
     // ------ GET SERVICE SERVER ------------------------------------------------------------
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+    //CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
 
     // Read External Sites
     if (capabilities.isExternalSitesServerEnabled) {
@@ -1250,11 +1284,19 @@
 
 - (void)downloadThumbnailFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSLog(@"[LOG] Download Thumbnail Failure error %d, %@", (int)errorCode, message);
 }
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
     
     if ([self indexPathIsValid:indexPath]) {
