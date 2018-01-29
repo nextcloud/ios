@@ -225,9 +225,9 @@
 
             // REMOVE METADATA
             [communication deleteEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-                NSLog(@"Found metadata and delete");
+                NSLog(@"[LOG] Found metadata and delete");
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-                NSLog(@"%@", [NSString stringWithFormat:@"Remove metadata error %d", (int)response.statusCode]);
+                NSLog(@"[LOG] %@", [NSString stringWithFormat:@"Remove metadata error %d", (int)response.statusCode]);
             }];
         
             // MARK
@@ -302,9 +302,9 @@
         
             // DELETE METADATA
             [communication deleteEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-                NSLog(@"Found metadata and delete");
+                NSLog(@"[LOG] Found metadata and delete");
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-                NSLog(@"%@", [NSString stringWithFormat:@"Remove metadata error %d", (int)response.statusCode]);
+                NSLog(@"[LOG] %@", [NSString stringWithFormat:@"Remove metadata error %d", (int)response.statusCode]);
             }];
         
             // DELETE MARK
