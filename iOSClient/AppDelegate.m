@@ -1258,6 +1258,9 @@
 {
     NSLog(@"[LOG] Start perform Fetch With Completion Handler");
     
+    // verify Upload
+    [self verifyUploadInErrorOrWait];
+    
     // Verify new photo
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
     
@@ -1531,11 +1534,6 @@
         }
         
         counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getLockQueueUpload] count];
-    }
-    
-    // In background verify Upload in error
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        [self verifyUploadInErrorOrWait];
     }
     
     // Start Timer
