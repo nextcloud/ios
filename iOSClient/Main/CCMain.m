@@ -1993,7 +1993,7 @@
     
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];    
+        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
     else
         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
@@ -3064,6 +3064,7 @@
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
     
+    /*
     NSUInteger numInSession = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", appDelegate.activeAccount] sorted:nil ascending:NO] count];
     NSUInteger numInQueue = [appDelegate.netQueue operationCount];
     
@@ -3072,6 +3073,7 @@
         [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];        
         return;
     }
+    */
     
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
@@ -3167,19 +3169,19 @@
 {
     [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:NO];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
-        if (tableAccount) {
-            
-            [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+    [appDelegate.netQueue cancelAllOperations];
+    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
     
-            // go to home sweet home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
+    if (tableAccount) {
+            
+        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+    
+        // go to home sweet home
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
         
-            [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
-        }
-    });
+        [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+    }
 }
 
 - (void)addNewAccount:(CCMenuItem *)sender

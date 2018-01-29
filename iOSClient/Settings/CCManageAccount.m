@@ -306,6 +306,7 @@
 
 - (void)ChangeDefaultAccount:(NSString *)account
 {
+    /*
     NSUInteger numInSession = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", appDelegate.activeAccount] sorted:nil ascending:NO] count];
     NSUInteger numInQueue = [appDelegate.netQueue operationCount];
     
@@ -315,7 +316,8 @@
         [self UpdateForm];
         return;
     }
-
+    */
+    
     [appDelegate.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
     
