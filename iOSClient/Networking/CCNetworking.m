@@ -865,18 +865,20 @@
             [self encryptedE2EFile:fileName serverUrl:serverUrl directoryID:directoryID account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl errorMessage:&errorMessage fileNameIdentifier:&fileNameIdentifier e2eMetadata:&e2eMetadata];
 
             if (errorMessage != nil || fileNameIdentifier == nil) {
+                
                 [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:k_CCErrorInternalError];
-                return;
-            }
+                
+            } else {
         
-            // Now the fileName is fileNameIdentifier && flag e2eEncrypted
-            metadata.fileName = fileNameIdentifier;
-            metadata.e2eEncrypted = YES;
+                // Now the fileName is fileNameIdentifier && flag e2eEncrypted
+                metadata.fileName = fileNameIdentifier;
+                metadata.e2eEncrypted = YES;
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
-                [self uploadURLSessionMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadata] serverUrl:serverUrl sessionID:uploadID taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
-            });
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
+                    [self uploadURLSessionMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadata] serverUrl:serverUrl sessionID:uploadID taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
+                });
+            }
         });
         
     } else {
