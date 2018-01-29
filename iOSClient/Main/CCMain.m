@@ -1662,6 +1662,10 @@
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
@@ -1669,6 +1673,10 @@
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Read Folder
     if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
         
@@ -1705,21 +1713,25 @@
     // stoprefresh
     [_refreshControl endRefreshing];
     
+    _loadingFolder = NO;
+
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
+    if (errorCode == kOCErrorServerUnauthorized) {
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
     
-    _loadingFolder = NO;
-    [self tableViewReloadData];
+    } else {
+        [self tableViewReloadData];
         
-    [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+        [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     
-    // verify active user
-    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
-    if (message && [record.account isEqualToString:metadataNet.account])
         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
-    [self reloadDatasource:metadataNet.serverUrl];
+        [self reloadDatasource:metadataNet.serverUrl];
+    }
 }
 
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
@@ -1727,10 +1739,8 @@
     // stoprefresh
     [_refreshControl endRefreshing];
     
-    // verify active user
-    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
-
-    if (![record.account isEqualToString:metadataNet.account])
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:metadataNet.account])
         return;
     
     // save metadataFolder
@@ -1977,6 +1987,10 @@
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
@@ -1989,6 +2003,10 @@
 
 - (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
     
     [self readFolderSuccess:metadataNet metadataFolder:nil metadatas:metadatas];
