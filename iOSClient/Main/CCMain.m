@@ -1993,9 +1993,8 @@
     
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-    
-    if (message && errorCode != kOCErrorServerUnauthorized)
+        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];    
+    else
         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     _searchFileName = @"";
