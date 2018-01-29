@@ -915,7 +915,6 @@
         
         [alertController addAction:okAction];
         [[[[[UIApplication sharedApplication] delegate] window] rootViewController] presentViewController:alertController animated:YES completion:nil];
-        return;
 #endif
     }
 }
