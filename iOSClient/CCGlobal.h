@@ -122,7 +122,6 @@ extern NSString *const flowEndpoint;
 #define k_taskIdentifierNULL                            99999
 
 // TaskStatus
-#define k_taskStatusNone                                0
 #define k_taskStatusCancel                              -1
 #define k_taskStatusResume                              -2
 #define k_taskStatusSuspend                             -3
