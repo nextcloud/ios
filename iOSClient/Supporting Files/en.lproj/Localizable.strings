@@ -506,10 +506,10 @@
 "_e2e_settings_the_passphrase_is_"  = "The passphrase is:";
 "_e2e_passphrase_request_title_"    = "Request passphrase";
 "_e2e_passphrase_request_message_"  = "Insert the 12 words";
-"_e2e_settings_remove_"             = "Unencrypt locally";
+"_e2e_settings_remove_"             = "Decrypt locally";
 "_e2e_settings_remove_message_"     = "Confirm removal of encryption along with the passphrase.";
 "_e2e_set_folder_encrypted_"        = "Encrypt";
-"_e2e_remove_folder_encrypted_"     = "Unencrypt";
+"_e2e_remove_folder_encrypted_"     = "Decrypt";
 "_e2e_goto_settings_for_enable_"    = "You are in an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
 "_e2e_delete_folder_not_permitted_" = "Deletion of the directory marked as 'encrypted' is not allowed";
 "_e2e_remove_folder_lock_"          = "Force remove folder lock";
@@ -525,7 +525,7 @@
 "_e2e_error_record_not_found_"      = "Serious internal error. Records not found";
 "_e2e_error_unlock_"                = "Could not unlock folder";
 "_e2e_error_lock_"                  = "Could not lock folder";
-"_e2e_error_delete_mark_folder_"    = "Unencrypt marked folder";
+"_e2e_error_delete_mark_folder_"    = "Decrypt marked folder";
 "_e2e_error_mark_folder_"           = "Encrypt folder";
 "_e2e_error_directory_not_empty_"   = "The directory is not empty";
 
