@@ -24,11 +24,7 @@
 // Nextcloud App
 #if !defined(EXTENSION)
 
-    #if defined(CUSTOM_BUILD)
-        #import "CustomSwift.h"
-    #else
-        #import "Nextcloud-Swift.h"
-    #endif
+    #import "Nextcloud-Swift.h"
 
 #endif
 
