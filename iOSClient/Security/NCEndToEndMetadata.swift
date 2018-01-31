@@ -219,7 +219,9 @@ class NCEndToEndMetadata : NSObject  {
                         // Update metadata on tableMetadata
                         metadata?.fileNameView = encryptedFileAttributes.filename
                         CCUtility.insertTypeFileIconName(encryptedFileAttributes.filename, metadata: metadata)
-                        let _ = NCManageDatabase.sharedInstance.addMetadata(metadata!)
+                        DispatchQueue.main.async {
+                            _ = NCManageDatabase.sharedInstance.addMetadata(metadata!)
+                        }
                     }
                     
                 } catch let error {

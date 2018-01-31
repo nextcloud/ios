@@ -1373,7 +1373,7 @@ class NCManageDatabase: NSObject {
     //MARK: Table Metadata
     
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
-        
+            
         guard self.getAccountActive() != nil else {
             return nil
         }
