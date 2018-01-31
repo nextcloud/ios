@@ -1396,6 +1396,10 @@ class NCManageDatabase: NSObject {
         
         self.setDateReadDirectory(directoryID: directoryID)
         
+        if metadata.isInvalidated {
+            return nil
+        }
+        
         return tableMetadata.init(value: metadata)
     }
     
