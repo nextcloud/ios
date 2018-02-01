@@ -218,8 +218,17 @@
         
         NSString *title;
         
-        if (item.shareeType == 1) title = [item.name stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
-        else title = item.name;
+        if (item.shareeType == 1) {
+            if (item.displayName)
+                title = [item.displayName stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
+            else
+                title = [item.name stringByAppendingString:NSLocalizedString(@"_user_is_group_", nil)];
+        } else {
+            if (item.displayName)
+                title = item.displayName;
+            else
+                title = item.name;
+        }
         
         XLFormRowDescriptor *row = [XLFormRowDescriptor formRowDescriptorWithTag:[@(num) stringValue] rowType:XLFormRowDescriptorTypeBooleanCheck title:title];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
