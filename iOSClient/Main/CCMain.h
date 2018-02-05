@@ -54,8 +54,6 @@
 
 @interface CCMain : UIViewController <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate, UIGestureRecognizerDelegate, UIDocumentInteractionControllerDelegate, UIViewControllerPreviewingDelegate, CCMoveDelegate, CTAssetsPickerControllerDelegate, BKPasscodeViewControllerDelegate, UISplitViewControllerDelegate, UIPopoverControllerDelegate, CCNetworkingDelegate, CCShareOCDelegate, CCPeekPopDelegate, UIDocumentMenuDelegate, UIDocumentPickerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, UIScrollViewDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
-@property BOOL isFolderEncrypted;
-
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) NSString *serverUrl;
@@ -66,7 +64,7 @@
 @property (nonatomic, strong) UISearchController *searchController;
 @property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
-
+@property (nonatomic, strong) UIImage *imageTitle;
 
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;

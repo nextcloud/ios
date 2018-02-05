@@ -172,10 +172,6 @@
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[CCNetworking sharedNetworking] rebuildAndSendEndToEndMetadataOnServerUrl:metadataNet.serverUrl];
-    });
-    
     [self reloadDatasource];
 }
 
@@ -229,10 +225,8 @@
 
 - (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
-    // verify active user
-    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
-    
-    if (![record.account isEqualToString:metadataNet.account])
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
     NSString *father = @"";
@@ -279,6 +273,10 @@
 
 - (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
 }
 
@@ -288,6 +286,10 @@
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     [self reloadDatasource];
 }
 
@@ -347,7 +349,7 @@
         
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
-        [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
+        [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:nil hudTitled:nil];
         [self reloadDatasource];
     }]];
         
@@ -611,7 +613,7 @@
         }
         
         // ----------------------------------------------------------------------------------------------------------
-        // E2E Image Status Encrypted
+        // E2EE Image Status Encrypted
         // ----------------------------------------------------------------------------------------------------------
         
         tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileNameIdentifier = %@", appDelegate.activeAccount, metadata.fileName]];

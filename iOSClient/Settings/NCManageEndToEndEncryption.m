@@ -27,7 +27,7 @@
 
 #import "NCBridgeSwift.h"
 
-@interface NCManageEndToEndEncryption ()
+@interface NCManageEndToEndEncryption () <NCEndToEndInitializeDelegate>
 {
     AppDelegate *appDelegate;
 
@@ -45,7 +45,6 @@
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];
         [self initializeForm];
     }
     return self;
@@ -58,7 +57,6 @@
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadForm) name:@"reloadManageEndToEndEncryption" object:nil];
         [self initializeForm];
     }
     return self;
@@ -178,9 +176,13 @@
     self.form = form;
 }
 
--(void)reloadForm
+- (void)viewDidLoad
 {
-    [self initializeForm];
+    [super viewDidLoad];
+    
+    // E2EE
+    self.endToEndInitialize = [NCEndToEndInitialize new];
+    self.endToEndInitialize.delegate = self;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -314,7 +316,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionDeleteEndToEndPublicKey;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:appDelegate.endToEndInterface metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
 - (void)deletePrivateKey:(XLFormRowDescriptor *)sender
@@ -324,7 +326,39 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionDeleteEndToEndPrivateKey;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:appDelegate.endToEndInterface metadataNet:metadataNet];
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark === Delegate ===
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)endToEndInitializeSuccess
+{
+    // Reload All Datasource
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
+
+    [self initializeForm];
+}
+
+- (void)deleteEndToEndPrivateKeySuccess:(CCMetadataNet *)metadataNet
+{
+    [appDelegate messageNotification:@"E2E delete privateKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+}
+
+- (void)deleteEndToEndPrivateKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [appDelegate messageNotification:@"E2E delete privateKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+}
+
+- (void)deleteEndToEndPublicKeySuccess:(CCMetadataNet *)metadataNet
+{
+    [appDelegate messageNotification:@"E2E delete publicKey" description:@"Success" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
+}
+
+- (void)deleteEndToEndPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    [appDelegate messageNotification:@"E2E delete publicKey" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -362,7 +396,7 @@
     
     if (aViewController.fromType == CCBKPasscodeFromStartEncryption) {
         
-        [appDelegate.endToEndInterface initEndToEndEncryption];
+        [self.endToEndInitialize initEndToEndEncryption];        
     }
     
     if (aViewController.fromType == CCBKPasscodeFromCheckPassphrase) {

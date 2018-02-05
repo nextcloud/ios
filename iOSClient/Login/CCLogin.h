@@ -27,10 +27,12 @@
 #import "CCCertificate.h"
 #import "OCNetworking.h"
 
+@class CCLoginWeb;
+
 @protocol CCLoginDelegate <NSObject>
 
 - (void) loginSuccess:(NSInteger)loginType;
-- (void) loginDisappear;
+- (void) loginClose;
 
 @end
 
@@ -61,6 +63,8 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *login;
 @property (nonatomic, weak) IBOutlet UIButton *annulla;
 @property (nonatomic, weak) IBOutlet UIButton *toggleVisiblePassword;
+@property (nonatomic, weak) IBOutlet UIButton *loginTypeView;
+
 
 @property enumLoginType loginType;
 

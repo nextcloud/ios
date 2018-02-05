@@ -80,7 +80,9 @@ class CCActions: NSObject {
     // MARK: Delete File or Folder
     // --------------------------------------------------------------------------------------------
 
-    @objc func deleteFileOrFolder(_ metadata: tableMetadata, delegate: AnyObject) {
+    @objc func deleteFileOrFolder(_ metadata: tableMetadata,delegate: AnyObject, hud: CCHud?, hudTitled: String?) {
+        
+        var token: NSString?
         
         guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
             return
@@ -90,26 +92,46 @@ class CCActions: NSObject {
 
         // fix CCActions.swift line 88 2.17.2 (00005)
         if (serverUrl == "") {
-            
-            print("[LOG] Server URL not found \(metadata.directoryID)")
-            
             appDelegate.messageNotification("_delete_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            
             return
         }
         
-        metadataNet.action = actionDeleteFileDirectory
-        metadataNet.delegate = delegate
-        metadataNet.directory = metadata.directory
-        metadataNet.directoryID = metadata.directoryID
-        metadataNet.e2eEncrypted = metadata.e2eEncrypted
-        metadataNet.fileID = metadata.fileID
-        metadataNet.fileName = metadata.fileName
-        metadataNet.fileNameView = metadata.fileNameView
-        metadataNet.selector = selectorDelete
-        metadataNet.serverUrl = serverUrl
-
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", self.appDelegate.activeAccount, serverUrl)) else {
+            return
+        }
+        
+        DispatchQueue.global().async {
+        
+            // E2EE LOCK
+            let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account = %@ AND fileNameIdentifier = %@", self.appDelegate.activeAccount, metadata.fileName))
+            if tableE2eEncryption != nil {
+                let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, fileID: tableDirectory.fileID, token: &token)
+                if error != nil {
+                    DispatchQueue.main.async {
+                        self.appDelegate.messageNotification("_delete_", description: error!.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                    }
+                    return;
+                }
+            }
+        
+            metadataNet.action = actionDeleteFileDirectory
+            metadataNet.delegate = delegate
+            metadataNet.directory = metadata.directory
+            metadataNet.directoryID = metadata.directoryID
+            metadataNet.fileID = metadata.fileID
+            metadataNet.fileName = metadata.fileName
+            metadataNet.fileNameView = metadata.fileNameView
+            metadataNet.selector = selectorDelete
+            metadataNet.serverUrl = serverUrl
+        
+            self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+            
+            if hud != nil  {
+                DispatchQueue.main.async {
+                    hud?.visibleHudTitle(hudTitled, mode: MBProgressHUDMode.indeterminate, color: nil)
+                }
+            }
+        }
     }
     
     @objc func deleteFileOrFolderSuccess(_ metadataNet: CCMetadataNet) {
@@ -120,7 +142,44 @@ class CCActions: NSObject {
             self.deleteFile(metadata: metadata, serverUrl: metadataNet.serverUrl)
         }
         
-        metadataNet.delegate?.deleteFileOrFolderSuccess(metadataNet)
+        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", self.appDelegate.activeAccount, metadataNet.serverUrl)) else {
+            self.deleteFileOrFolderFailure(metadataNet, message: "Internal error, tableDirectory not found", errorCode: 0)
+            return
+        }
+        
+        // E2EE Rebuild and send Metadata
+        if tableDirectory.e2eEncrypted {
+            
+            DispatchQueue.global().async {
+                
+                var token = tableDirectory.e2eTokenLock as NSString?
+                
+                // Send Metadata
+                let errorRebuild = NCNetworkingSync.sharedManager().rebuildAndSendEndToEndMetadata(onServerUrl: metadataNet.serverUrl, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, token: &token) as NSError?
+                if (errorRebuild != nil) {
+                    DispatchQueue.main.async {
+                        self.deleteFileOrFolderFailure(metadataNet, message: errorRebuild!.localizedDescription as NSString, errorCode: errorRebuild!.code)
+                    }
+                }
+                
+                // Unlock
+                let errorUnlock = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, fileID: tableDirectory.fileID, token: token! as String) as NSError?
+                if (errorUnlock != nil && errorRebuild == nil) {
+                    DispatchQueue.main.async {
+                        self.deleteFileOrFolderFailure(metadataNet, message: errorUnlock!.localizedDescription as NSString, errorCode: errorUnlock!.code)
+                    }
+                }
+                
+                if (errorRebuild == nil && errorUnlock == nil) {
+                    DispatchQueue.main.async {
+                        metadataNet.delegate?.deleteFileOrFolderSuccess(metadataNet)
+                    }
+                }
+            }
+            
+        } else {
+            metadataNet.delegate?.deleteFileOrFolderSuccess(metadataNet)
+        }
     }
     
     @objc func deleteFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
@@ -406,7 +465,7 @@ class CCActions: NSObject {
         
         NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
-        // E2E (if exists the record)
+        // E2EE (if exists the record)
         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", metadata.account, serverUrl, metadata.fileName))
     }
 }

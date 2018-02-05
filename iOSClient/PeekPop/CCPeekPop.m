@@ -92,6 +92,10 @@
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw",appDelegate.directoryUser, _metadata.fileID]];
     
     _imagePreview.image = image;
@@ -102,7 +106,11 @@
 }
 
 - (void)downloadThumbnailFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{    
+{
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     [self dismissViewControllerAnimated:YES completion:nil];

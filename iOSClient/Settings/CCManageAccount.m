@@ -195,9 +195,14 @@
     }
 }
 
-- (void)loginDisappear
+- (void)loginClose
 {
     appDelegate.activeLogin = nil;
+}
+
+- (void)loginWebClose
+{
+    appDelegate.activeLoginWeb = nil;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -208,10 +213,17 @@
 {
     [self deselectFormRow:sender];
     
-    [appDelegate.netQueue cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
+    // Verify session in progress
+    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
+        return;
+    }
     
-    [appDelegate openLoginView:self loginType:loginAdd];
+    [appDelegate.netQueue cancelAllOperations];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [appDelegate openLoginView:self loginType:loginAdd];
+    });
 }
 
 - (void)addAccountForced
@@ -227,12 +239,17 @@
 {    
     [self deselectFormRow:sender];
     
+    // Verify session in progress
+    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
+        return;
+    }
+    
     [appDelegate.netQueue cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
     
-    [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-    
-    [self UpdateForm];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+    });
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -261,24 +278,32 @@
 
 - (void)deleteAccount:(NSString *)account
 {
+    // Verify session in progress
+    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
+        return;
+    }
+    
     [appDelegate.netQueue cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
     
-    [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+
+        [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
     
-    // Clear active user
-    [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
+        // Clear active user
+        [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];        
+    });
 }
 
 - (void)answerDelAccount:(XLFormRowDescriptor *)sender
@@ -301,30 +326,27 @@
 
 - (void)ChangeDefaultAccount:(NSString *)account
 {
-    NSUInteger numInSession = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", appDelegate.activeAccount] sorted:nil ascending:NO] count];
-    NSUInteger numInQueue = [appDelegate.netQueue operationCount];
-    
-    if (numInSession+numInQueue > 0) {
-        
-        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];        
-        [self UpdateForm];
+    // Verify session in progress
+    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
         return;
     }
-
+    
     [appDelegate.netQueue cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
-    
-    // change account
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
-    if (tableAccount) {
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+        if (tableAccount) {
         
-        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+            [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
  
-        // Init home
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
-    }
-    
-    [self UpdateForm];
+            // Init home
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+            
+            [self UpdateForm];
+        }
+    });
 }
 
 #pragma --------------------------------------------------------------------------------------------

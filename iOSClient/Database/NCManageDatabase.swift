@@ -57,13 +57,14 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 14,
+            schemaVersion: 15,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
             // 12 : Version 2.19.0.5
             // 13 : Version 2.19.0.14
-            // 14 : ...
+            // 14 : Version 2.19.0.xx
+            // 15 : Version 2.19.2
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -143,7 +144,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Account
     
-    @objc func addAccount(_ account: String, url: String, user: String, password: String) {
+    @objc func addAccount(_ account: String, url: String, user: String, password: String, loginFlow: Bool) {
 
         let realm = try! Realm()
         
@@ -152,6 +153,7 @@ class NCManageDatabase: NSObject {
         let addObject = tableAccount()
             
         addObject.account = account
+        addObject.loginFlow = loginFlow
             
         // Brand
         if NCBrandOptions.sharedInstance.use_default_auto_upload {
@@ -1121,10 +1123,10 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) -> Bool {
+    @objc func renameFileE2eEncryption(serverUrl: String, fileNameIdentifier: String, newFileName: String, newFileNamePath: String) {
         
         guard let tableAccount = self.getAccountActive() else {
-            return false
+            return
         }
         
         let realm = try! Realm()
@@ -1133,7 +1135,7 @@ class NCManageDatabase: NSObject {
 
         guard let result = realm.objects(tableE2eEncryption.self).filter("account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", tableAccount.account, serverUrl, fileNameIdentifier).first else {
             realm.cancelWrite()
-            return false
+            return 
         }
         
         let object = tableE2eEncryption.init(value: result)
@@ -1149,10 +1151,10 @@ class NCManageDatabase: NSObject {
             try realm.commitWrite()
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return false
+            return
         }
         
-        return true
+        return
     }
     
     //MARK: -
@@ -1371,7 +1373,7 @@ class NCManageDatabase: NSObject {
     //MARK: Table Metadata
     
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
-        
+            
         guard self.getAccountActive() != nil else {
             return nil
         }
@@ -1393,6 +1395,10 @@ class NCManageDatabase: NSObject {
         }
         
         self.setDateReadDirectory(directoryID: directoryID)
+        
+        if metadata.isInvalidated {
+            return nil
+        }
         
         return tableMetadata.init(value: metadata)
     }
@@ -2074,7 +2080,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).first else {
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).sorted(byKeyPath: "date", ascending: true).first else {
             realm.cancelWrite()
             return nil
         }
@@ -2099,6 +2105,32 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
             return nil
         }
+        
+        return metadataNet
+    }
+    
+    @objc func getQueueUploadLock() -> CCMetadataNet? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first else {
+            return nil
+        }
+        
+        let metadataNet = CCMetadataNet()
+        
+        metadataNet.account = result.account
+        metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
+        metadataNet.fileName = result.fileName
+        metadataNet.selector = result.selector
+        metadataNet.selectorPost = result.selectorPost
+        metadataNet.serverUrl = result.serverUrl
+        metadataNet.session = result.session
+        metadataNet.taskStatus = Int(k_taskStatusResume)
         
         return metadataNet
     }

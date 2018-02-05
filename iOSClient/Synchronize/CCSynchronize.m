@@ -81,11 +81,12 @@
 
 - (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // verify active user
-    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
     
     // Folder not present, remove it
-    if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
+    if (errorCode == 404) {
         
         [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl];
         [appDelegate.activeMain reloadDatasource:metadataNet.serverUrl];
@@ -99,20 +100,19 @@
     if (!metadataFolder || !metadatas || [metadatas count] == 0)
         return;
     
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Add metadata and update etag Directory
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
     [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    
         NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
         NSMutableArray *addMetadatas = [NSMutableArray new];
     
-        if ([recordAccount.account isEqualToString:metadataNet.account] == NO)
-            return;
-
         NSArray *recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND session != ''", appDelegate.activeAccount, metadataNet.directoryID] sorted:nil ascending:NO];
         
         // ----- Test : (DELETE) -----
@@ -258,14 +258,15 @@
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // verify active user
-    tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
     
     // Selector : selectorReadFile, selectorReadFileWithDownload
     if ([metadataNet.selector isEqualToString:selectorReadFile] || [metadataNet.selector isEqualToString:selectorReadFileWithDownload]) {
         
         // File not present, remove it
-        if (errorCode == 404 && [recordAccount.account isEqualToString:metadataNet.account]) {
+        if (errorCode == 404) {
         
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.account, metadataNet.fileID] clearDateReadDirectoryID:nil];
@@ -279,6 +280,10 @@
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         // Selector : selectorReadFile, selectorReadFileWithDownload
@@ -299,11 +304,16 @@
         // Selector : selectorReadFileReloadFolder, selectorReadFileFolderWithDownload
         if ([metadataNet.selector isEqualToString:selectorReadFileFolder] || [metadataNet.selector isEqualToString:selectorReadFileFolderWithDownload]) {
             
+            tableDirectory *tableDirectory;
             NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
             
-            // Add Directory
-            (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:metadataNet.account permissions:nil encrypted:false];
-            tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+            // Add Directory if do not exists
+            tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+            
+            if (!tableDirectory) {
+                (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:nil encrypted:false];
+                tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+            }
             
             // Verify changed etag
             if (![tableDirectory.etag isEqualToString:metadata.etag]) {

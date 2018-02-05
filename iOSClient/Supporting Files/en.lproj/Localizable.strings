@@ -44,6 +44,7 @@
 "_save_"                    = "Save";
 "_warning_"                 = "Warning";
 "_error_"                   = "Error";
+"_error_e2ee_"              = "Error E2EE";
 "_no_"                      = "No";
 "_yes_"                     = "Yes";
 "_select_"                  = "Select";
@@ -224,6 +225,8 @@
 "_login_bottom_label_"          = "Don't have a server yet?\nChoose one of the providers.";
 "_error_multidomain_"           = "Address not allowed, only the following domains are valid:";
 "_account_already_exists_"      = "The account %@ already exists";
+"_traditional_login_"           = "Revert to old login method";
+"_web_login_"                   = "Revert to web login method";
 
 // Favorite
 
@@ -501,17 +504,33 @@
 "_e2e_settings_start_"              = "Start end-to-end encryption";
 "_e2e_settings_not_available_"      = "End-to-end encryption not available";
 "_e2e_settings_activated_"          = "End-to-end encryption activated";
-"_e2e_settings_view_passphrase_"    = "This 12 word phrase is a very strong password providing full access to view and use your encrypted files. Please write it down and keep it somewhere safe.";
+"_e2e_settings_view_passphrase_"    = "All 12 words together make a very strong password, letting only you view and make use of your encrypted files. Please write it down and keep it somewhere safe.";
 "_e2e_settings_read_passphrase_"    = "Read passphrase";
 "_e2e_settings_lock_not_active_"    = "Lock not active, go back to \"Settings\" and activate it";
 "_e2e_settings_the_passphrase_is_"  = "The passphrase is:";
 "_e2e_passphrase_request_title_"    = "Request passphrase";
 "_e2e_passphrase_request_message_"  = "Insert the 12 words";
-"_e2e_settings_remove_"             = "Remove the encryption locally";
-"_e2e_settings_remove_message_"     = "Confirm removing encryption along with the passphrase.";
-"_e2e_set_folder_encrypted_"        = "Set as encrypted";
-"_e2e_remove_folder_encrypted_"     = "Remove as encrypted";
-"_e2e_goto_settings_for_enable_"    = "You are in a encrypted directory, go to on \"Settings\" and enable the end-to-end encryption";
+"_e2e_settings_remove_"             = "Decrypt locally";
+"_e2e_settings_remove_message_"     = "Confirm removal of encryption along with the passphrase.";
+"_e2e_set_folder_encrypted_"        = "Encrypt";
+"_e2e_remove_folder_encrypted_"     = "Decrypt";
+"_e2e_goto_settings_for_enable_"    = "You are in an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
 "_e2e_delete_folder_not_permitted_" = "Deletion of the directory marked as 'encrypted' is not allowed";
-"_e2e_remove_folder_lock_"          = "Forced remove folder lock";
+"_e2e_remove_folder_lock_"          = "Force remove folder lock";
+"_e2e_error_encode_metadata_"       = "Serious internal error in encoding metadata";
+"_e2e_error_decode_metadata_"       = "Serious internal error in decoding metadata";
+"_e2e_error_create_encrypted_"      = "Could not create encrypted file";
+"_e2e_error_update_metadata_"       = "Update metadata error";
+"_e2e_error_store_metadata_"        = "Could not save metadata";
+"_e2e_error_send_metadata_"         = "Could not send metadata";
+"_e2e_error_delete_metadata_"       = "Could not delete metadata";
+"_e2e_error_get_metadata_"          = "Could not fetch metadata";
+"_e2e_error_not_enabled_"           = "Serious internal error. End-to-end encryption not enabled";
+"_e2e_error_record_not_found_"      = "Serious internal error. Records not found";
+"_e2e_error_unlock_"                = "Could not unlock folder";
+"_e2e_error_lock_"                  = "Could not lock folder";
+"_e2e_error_delete_mark_folder_"    = "Decrypt marked folder";
+"_e2e_error_mark_folder_"           = "Encrypt folder";
+"_e2e_error_directory_not_empty_"   = "The directory is not empty";
+
 

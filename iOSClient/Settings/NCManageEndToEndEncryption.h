@@ -24,7 +24,12 @@
 #import "XLFormViewController.h"
 #import "XLForm.h"
 #import "BKPasscodeViewController.h"
+#import "OCNetworking.h"
 
-@interface NCManageEndToEndEncryption : XLFormViewController <BKPasscodeViewControllerDelegate>
+@class NCEndToEndInitialize;
+
+@interface NCManageEndToEndEncryption : XLFormViewController <BKPasscodeViewControllerDelegate, OCNetworkingDelegate>
+
+@property (nonatomic, strong) NCEndToEndInitialize *endToEndInitialize;
 
 @end

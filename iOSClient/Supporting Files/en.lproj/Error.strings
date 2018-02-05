@@ -38,7 +38,6 @@
 "_file_directory_locked_"               = "File or directory locked";
 "_ssl_certificate_untrusted_"           = "The certificate for this server is invalid";
 "_internal_server_"                     = "Internal Server Error";
-
 "_file_already_exists_"                 = "Unable to complete the operation, there is a file with the same name";
 "_file_folder_not_exists_"              = "The source file wasn't found at the specified path";
 "_folder_contents_nochanged_"           = "The folder contents have not changed";
@@ -49,5 +48,8 @@
 "_too_many_files_"                      = "Too many files would be involved in this operation to complete successfully";
 "_too_many_request_"                    = "Rate limit reached—too many requests sent";
 "_user_over_quota_"                     = "Storage quota is reached";
-
 "_ssl_connection_error_"                = "Connection SSL error, try again";
+"_bad_request_"                         = "Bad request";
+"_webdav_locked_"                       = "WebDAV Locked : The resource that is being accessed is locked";
+
+

@@ -189,7 +189,7 @@
     if (@available(iOS 11, *)) {
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
-
+    
     _toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom, self.view.bounds.size.width, TOOLBAR_HEIGHT)];
     
     UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
@@ -201,10 +201,17 @@
     _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetShare"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
-    if ([_fileNameExtension isEqualToString:@"TXT"])
-        [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
-    else
-        [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
+    if ([_fileNameExtension isEqualToString:@"TXT"]) {
+        if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
+            [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
+        else
+            [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
+    } else {
+        if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
+            [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
+        else
+            [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
+    }
     
     [_toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
     
@@ -319,8 +326,10 @@
         [headRequest setHTTPMethod:@"HEAD"];
         
         NSURLSessionDataTask *task = [session dataTaskWithRequest:headRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            NSString *encodingName = [[NCUchardet sharedNUCharDet] encodingStringDetectWithData:data];
-            [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:encodingName baseURL:url];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *encodingName = [[NCUchardet sharedNUCharDet] encodingStringDetectWithData:data];
+                [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:encodingName baseURL:url];
+            });
         }];
         
         [task resume];
@@ -366,6 +375,10 @@
     // PhotoBrowser
     self.photoBrowser.displayActionButton = YES;
     self.photoBrowser.displayDeleteButton = YES;
+    if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
+        self.photoBrowser.displayShareButton = NO;
+    else
+        self.photoBrowser.displayShareButton = YES;
     self.photoBrowser.displayNavArrows = YES;
     self.photoBrowser.displaySelectionButtons = NO;
     self.photoBrowser.alwaysShowControls = NO;
@@ -582,7 +595,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
+                                                           [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:nil hudTitled:nil];
                                                        }]];
 
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
@@ -597,6 +610,12 @@
         [alertController.view layoutIfNeeded];
     
     [self.parentViewController presentViewController:alertController animated:YES completion:NULL];
+}
+
+- (void)photoBrowserDidFinishPresentation:(MWPhotoBrowser *)photoBrowser
+{
+    [self removeAllView];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)triggerProgressTask:(NSNotification *)notification
@@ -843,6 +862,12 @@
     [self.readerPDFViewController updateContentViews];
 }
 
+- (void)handleSwipeUpDown
+{
+    [self removeAllView];
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Delete =====
 #pragma --------------------------------------------------------------------------------------------
@@ -854,11 +879,6 @@
 
 - (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    // E2E
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[CCNetworking sharedNetworking] rebuildAndSendEndToEndMetadataOnServerUrl:metadataNet.serverUrl];
-    });
-    
     // reload Main
     [appDelegate.activeMain reloadDatasource];
     
@@ -962,7 +982,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [[CCActions sharedInstance] deleteFileOrFolder:self.metadataDetail delegate:self];
+                                                           [[CCActions sharedInstance] deleteFileOrFolder:self.metadataDetail delegate:self hud:nil hudTitled:nil];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)

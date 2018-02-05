@@ -1373,15 +1373,11 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
 #pragma mark - Misc
 
 - (void)doneButtonPressed:(id)sender {
-    // Only if we're modal and there's a done button
-    if (_doneButton) {    
-        // Dismiss view controller
-        if ([_delegate respondsToSelector:@selector(photoBrowserDidFinishModalPresentation:)]) {
-            // Call delegate method and let them dismiss us
-            [_delegate photoBrowserDidFinishModalPresentation:self];
-        } else  {
-            [self dismissViewControllerAnimated:YES completion:nil];
-        }
+   
+    // Dismiss view controller
+    if ([_delegate respondsToSelector:@selector(photoBrowserDidFinishPresentation:)]) {
+        // Call delegate method and let them dismiss us
+        [_delegate photoBrowserDidFinishPresentation:self];
     }
 }
 

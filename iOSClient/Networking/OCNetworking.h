@@ -78,19 +78,19 @@
 - (void)getSharePermissionsFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Capabilities
-- (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities;
+- (void)getCapabilitiesOfServerSuccess:(CCMetadataNet *)metadataNet capabilities:(OCCapabilities *)capabilities;
 - (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Activity
-- (void)getActivityServerSuccess:(NSArray *)listOfActivity;
+- (void)getActivityServerSuccess:(CCMetadataNet *)metadataNet listOfActivity:(NSArray *)listOfActivity;
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // External Sites
-- (void)getExternalSitesServerSuccess:(NSArray *)listOfExternalSites;
+- (void)getExternalSitesServerSuccess:(CCMetadataNet *)metadataNet listOfExternalSites:(NSArray *)listOfExternalSites;
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Notification
-- (void)getNotificationServerSuccess:(NSArray *)listOfNotifications;
+- (void)getNotificationServerSuccess:(CCMetadataNet *)metadataNet listOfNotifications:(NSArray *)listOfNotifications;
 - (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)setNotificationServerSuccess:(CCMetadataNet *)metadataNet;
@@ -131,15 +131,6 @@
 
 - (void)getEndToEndServerPublicKeySuccess:(CCMetadataNet *)metadataNet;
 - (void)getEndToEndServerPublicKeyFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-- (void)getEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
-- (void)getEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-- (void)deleteEndToEndMetadataSuccess:(CCMetadataNet *)metadataNet;
-- (void)deleteEndToEndMetadataFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
-- (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet;
-- (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 @end
 

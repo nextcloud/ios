@@ -560,14 +560,8 @@
 
 + (NSString *)transformedSize:(double)value
 {
-    int multiplyFactor = 0;
-    
-    NSArray *tokens = [NSArray arrayWithObjects:@"bytes",@"KB",@"MB",@"GB",@"TB",@"PB",@"EB",@"ZB",@"YB",nil];
-    while (value > 1024) {
-        value /= 1024;
-        multiplyFactor++;
-    }
-    return [NSString stringWithFormat:@"%4.2f %@",value, [tokens objectAtIndex:multiplyFactor]];
+    NSString *string = [NSByteCountFormatter stringFromByteCount:value countStyle:NSByteCountFormatterCountStyleBinary];
+    return string;
 }
 
 // Remove do not forbidden characters for Nextcloud Server
@@ -955,7 +949,7 @@
     fileName = [CCUtility removeForbiddenCharactersServer:fileName];
     fileNameView = fileName;
     
-    // E2E find the fileName for fileNameView
+    // E2EE find the fileName for fileNameView
     if (isFolderEncrypted) {
         tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", activeAccount, serverUrl, fileName]];
         if (tableE2eEncryption)
@@ -1003,7 +997,7 @@
         
         // thumbnailExists
             
-        if (([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"]) && metadata.e2eEncrypted == NO)
+        if ([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
             metadata.thumbnailExists = YES;
         else
             metadata.thumbnailExists = NO;

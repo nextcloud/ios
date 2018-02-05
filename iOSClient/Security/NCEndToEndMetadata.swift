@@ -188,8 +188,8 @@ class NCEndToEndMetadata : NSObject  {
                 do {
                     
                     let encryptedFileAttributes = try jsonDecoder.decode(e2eMetadata.encryptedFileAttributes.self, from: encryptedFileAttributesJson.data(using: .utf8)!)
-                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@", account, fileNameIdentifier))
                     
+                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@", account, fileNameIdentifier))
                     if  metadata != nil {
                     
                         let object = tableE2eEncryption()
@@ -209,6 +209,7 @@ class NCEndToEndMetadata : NSObject  {
                     
                         // If exists remove records
                         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND fileNamePath = %@", object.account, object.fileNamePath))
+                        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND fileNameIdentifier = %@", object.account, object.fileNameIdentifier))
                         
                         // Write file parameter for decrypted on DB
                         if NCManageDatabase.sharedInstance.addE2eEncryption(object) == false {
@@ -218,12 +219,13 @@ class NCEndToEndMetadata : NSObject  {
                         // Update metadata on tableMetadata
                         metadata?.fileNameView = encryptedFileAttributes.filename
                         CCUtility.insertTypeFileIconName(encryptedFileAttributes.filename, metadata: metadata)
-                        let _ = NCManageDatabase.sharedInstance.addMetadata(metadata!)
+                        DispatchQueue.main.async {
+                            _ = NCManageDatabase.sharedInstance.addMetadata(metadata!)
+                        }
                     }
                     
                 } catch let error {
                     print("Serious internal error in decoding metadata ("+error.localizedDescription+")")
-                    return false
                 }
             }
             

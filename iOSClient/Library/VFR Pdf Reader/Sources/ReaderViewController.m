@@ -378,6 +378,10 @@
 	UITapGestureRecognizer *doubleTapTwo = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
 	doubleTapTwo.numberOfTouchesRequired = 2; doubleTapTwo.numberOfTapsRequired = 2; doubleTapTwo.delegate = self;
 	[self.view addGestureRecognizer:doubleTapTwo];
+    
+    UISwipeGestureRecognizer *swipeUpDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeUpDown:)];
+    swipeUpDown.direction = UISwipeGestureRecognizerDirectionDown | UISwipeGestureRecognizerDirectionUp;
+    [self.view addGestureRecognizer:swipeUpDown];
 
 	[singleTapOne requireGestureRecognizerToFail:doubleTapOne]; // Single tap requires double tap to fail
 
@@ -695,6 +699,13 @@
 			[self decrementPageNumber]; return;
 		}
 	}
+}
+
+- (void)handleSwipeUpDown:(UITapGestureRecognizer *)recognizer
+{
+    //TWS
+    if ([self.delegate respondsToSelector:@selector(handleSwipeUpDown)])
+        [self.delegate handleSwipeUpDown];
 }
 
 #pragma mark - ReaderContentViewDelegate methods

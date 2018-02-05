@@ -207,6 +207,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             labelUsername.text = tabAccount.displayName
         }
         
+        // Shadow labelUsername TEST BLUR
+        /*
+        labelUsername.layer.shadowColor = UIColor.black.cgColor
+        labelUsername.layer.shadowRadius = 4
+        labelUsername.layer.shadowOpacity = 0.8
+        labelUsername.layer.shadowOffset = CGSize(width: 0, height: 0)
+        labelUsername.layer.masksToBounds = false
+        */
+        
         if (tabAccount.quotaRelative > 0) {
             progressQuota.progress = Float(tabAccount.quotaRelative) / 100
         } else {
@@ -392,8 +401,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))
     }
     
-    func loginDisappear() {
-        
+    func loginClose() {
+        appDelegate.activeLogin = nil
+    }
+    
+    func loginWebClose() {
+        appDelegate.activeLoginWeb = nil
     }
 }
 
@@ -408,7 +421,7 @@ extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
         let urlString: String = url.absoluteString.lowercased()
         
         // Protocol close webVC
-        if (urlString.contains(NCBrandOptions.sharedInstance.webCloseViewProtocol) == true) {
+        if (urlString.contains(NCBrandOptions.sharedInstance.webCloseViewProtocolPersonalized) == true) {
             
             if (self.presentingViewController != nil) {
                 self.dismiss(animated: true, completion: nil)

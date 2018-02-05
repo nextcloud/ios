@@ -81,10 +81,6 @@
     NSString *_noFilesSearchDescription;
     NSTimer *_timerWaitInput;
 
-    // Login
-    CCLoginWeb *_loginWeb;
-    CCLogin *_loginVC;
-    
     // Automatic Upload Folder
     NSString *_autoUploadFileName;
     NSString *_autoUploadDirectory;
@@ -92,6 +88,9 @@
     // Folder
     BOOL _loadingFolder;
     tableMetadata *_metadataFolder;
+    
+    // Image Title Segue
+    UIImage *imageTitleSegue;
 }
 @end
 
@@ -588,20 +587,10 @@
                 shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
             }
             
-            if (_metadataFolder.e2eEncrypted) {
-                
-                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleEncrypted"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
-                
-            } else if ([[[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl] isEqualToString:self.serverUrl]) {
-            
-                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titlePhotos"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
-                
-            } else if ([_metadataFolder.permissions containsString:k_permission_shared] || [_metadataFolder.permissions containsString:k_permission_mounted] || shareLink.length > 0 || shareUserAndGroup.length > 0) {
-                
-                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"titleShare"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
-                
+            if (self.imageTitle) {
+                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:self.imageTitle color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
             } else {
-                
+                self.navigationItem.titleView = nil;
                 self.navigationItem.title = _titleMain;
             }
         }
@@ -943,9 +932,14 @@
     });
 }
 
-- (void)loginDisappear
+- (void)loginClose
 {
     appDelegate.activeLogin = nil;
+}
+
+- (void)loginWebClose
+{
+    appDelegate.activeLoginWeb = nil;
 }
 
 #pragma mark -
@@ -955,7 +949,8 @@
 
 - (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location
 {
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    CGPoint convertedLocation = [self.view convertPoint:location toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:convertedLocation];
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
     if (metadata.thumbnailExists && _metadataFolder.e2eEncrypted == NO) {
@@ -988,8 +983,12 @@
 #pragma mark ==== External Sites ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getExternalSitesServerSuccess:(NSArray *)listOfExternalSites
+- (void)getExternalSitesServerSuccess:(CCMetadataNet *)metadataNet listOfExternalSites:(NSArray *)listOfExternalSites
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     [[NCManageDatabase sharedInstance] deleteExternalSites];
     
     for (OCExternalSites *tableExternalSites in listOfExternalSites)
@@ -998,6 +997,10 @@
 
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSString *error = [NSString stringWithFormat:@"Get external site failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
@@ -1008,8 +1011,12 @@
 #pragma mark ==== Activity ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getActivityServerSuccess:(NSArray *)listOfActivity
+- (void)getActivityServerSuccess:(CCMetadataNet *)metadataNet listOfActivity:(NSArray *)listOfActivity
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity];
     
     // Reload Activity Data Source
@@ -1018,6 +1025,10 @@
 
 - (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSString *error = [NSString stringWithFormat:@"Get Activity Server failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
@@ -1028,8 +1039,12 @@
 #pragma mark ==== Notification  ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getNotificationServerSuccess:(NSArray *)listOfNotifications
+- (void)getNotificationServerSuccess:(CCMetadataNet *)metadataNet listOfNotifications:(NSArray *)listOfNotifications
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         // Order by date
@@ -1066,6 +1081,10 @@
 
 - (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSString *error = [NSString stringWithFormat:@"Get Notification Server failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
@@ -1094,6 +1113,10 @@
 
 - (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSString *error = [NSString stringWithFormat:@"Get user profile failure error %d, %@", (int)errorCode, message];
     NSLog(@"[LOG] %@", error);
     
@@ -1102,15 +1125,13 @@
 
 - (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Update User (+ userProfile.id)
     [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
-    
-    // Get Account Active
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-    
-    // Setting appDelegate active account
-    [appDelegate settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
-    
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/128", appDelegate.activeUrl, appDelegate.activeUser];
@@ -1132,6 +1153,10 @@
 
 - (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
@@ -1145,8 +1170,12 @@
     [appDelegate settingThemingColorBrand];
 }
 
-- (void)getCapabilitiesOfServerSuccess:(OCCapabilities *)capabilities
+- (void)getCapabilitiesOfServerSuccess:(CCMetadataNet *)metadataNet capabilities:(OCCapabilities *)capabilities
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Update capabilities db
     [[NCManageDatabase sharedInstance] addCapabilities:capabilities];
     
@@ -1183,7 +1212,7 @@
     
     // ------ GET SERVICE SERVER ------------------------------------------------------------
     
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+    //CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
 
     // Read External Sites
     if (capabilities.isExternalSitesServerEnabled) {
@@ -1255,11 +1284,19 @@
 
 - (void)downloadThumbnailFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSLog(@"[LOG] Download Thumbnail Failure error %d, %@", (int)errorCode, message);
 }
 
 - (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
     
     if ([self indexPathIsValid:indexPath]) {
@@ -1491,6 +1528,9 @@
 
 - (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
+    // Delete record on Table Auto Upload
+    [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+    
     if (errorCode == 0) {
         
         // Auto Download Upload
@@ -1505,50 +1545,21 @@
             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
         }
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-            if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
-                
-                [self readFolder:serverUrl];
-                
-            } else {
-                
-                [self reloadDatasource:serverUrl];
-            }
-        });
-        
     } else {
         
-        // Auto Download Upload
-        if([selector isEqualToString:selectorUploadAutoUpload] || [selector isEqualToString:selectorUploadAutoUploadAll] || [selector isEqualToString:selectorUploadFile]) {
-            
-            // Delete record on Table Auto Upload
-            [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-            
-            // Activity
-            [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:errorMessage type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:appDelegate.activeUrl];
-            
-            if (errorCode != -999)
-                [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            
-        } else {
-            
-            // Read File test do not exists
-            if (errorCode == k_CCErrorFileUploadNotFound && fileID) {
-                
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-                
-                // reUpload
-                if (metadata)
-                    [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
-            }
-            
-            // Print error
-            else if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized) {
-                
-                [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-            }
-        }
+        // Activity
+        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:assetLocalIdentifier action:k_activityDebugActionUpload selector:selector note:errorMessage type:k_activityTypeFailure verbose:k_activityVerboseDefault  activeUrl:appDelegate.activeUrl];
         
+        if (errorCode != -999 && errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized)
+            [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    }
+    
+    if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
+            
+        [self readFolder:serverUrl];
+            
+    } else {
+            
         [self reloadDatasource:serverUrl];
     }
 }
@@ -1651,6 +1662,10 @@
 
 - (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
@@ -1658,13 +1673,17 @@
 
 - (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Read Folder
     if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
         
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
         
-        // Change etag or // E2E encrypted folder
-        if ([metadata.etag isEqualToString:directory.etag] == NO || (_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount])) {
+        // Change etag, read folder
+        if ([metadata.etag isEqualToString:directory.etag] == NO) {
             [self readFolder:metadataNet.serverUrl];
         }
     }
@@ -1694,21 +1713,25 @@
     // stoprefresh
     [_refreshControl endRefreshing];
     
+    _loadingFolder = NO;
+
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
+    if (errorCode == kOCErrorServerUnauthorized) {
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
     
-    _loadingFolder = NO;
-    [self tableViewReloadData];
+    } else {
+        [self tableViewReloadData];
         
-    [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+        [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     
-    // verify active user
-    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
-    if (message && [record.account isEqualToString:metadataNet.account])
         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
-    [self reloadDatasource:metadataNet.serverUrl];
+        [self reloadDatasource:metadataNet.serverUrl];
+    }
 }
 
 - (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
@@ -1716,10 +1739,8 @@
     // stoprefresh
     [_refreshControl endRefreshing];
     
-    // verify active user
-    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
-
-    if (![record.account isEqualToString:metadataNet.account])
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:metadataNet.account])
         return;
     
     // save metadataFolder
@@ -1797,12 +1818,26 @@
         [self tableViewReloadData];
     }
     
-    // E2E Is encrypted folder get metadata
+    // E2EE Is encrypted folder get metadata
     if (_metadataFolder.e2eEncrypted) {
         
         // Read Metadata
         if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
-            [appDelegate.endToEndInterface getEndToEndMetadata:_metadataFolder.fileName fileID:_metadataFolder.fileID serverUrl:self.serverUrl];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{                
+                NSString *metadata;
+                NSError *error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:metadataFolder.fileID metadata:&metadata];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (error) {
+                        if (error.code != 404)
+                            [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                    } else {
+                        if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:appDelegate.activeAccount] serverUrl:self.serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl] == false)
+                            [appDelegate messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                        else
+                            [self reloadDatasource];
+                    }
+                });
+            });
         } else {
             [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         }
@@ -1952,11 +1987,14 @@
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-    
-    if (message && errorCode != kOCErrorServerUnauthorized)
+    else
         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     
     _searchFileName = @"";
@@ -1964,6 +2002,10 @@
 
 - (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
     
     [self readFolderSuccess:metadataNet metadataFolder:nil metadatas:metadatas];
@@ -2021,11 +2063,6 @@
             
         } else {
             
-            // E2E
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [[CCNetworking sharedNetworking] rebuildAndSendEndToEndMetadataOnServerUrl:self.serverUrl];
-            });
-            
             // End Select Table View
             [self tableViewSelect:NO];
             
@@ -2042,9 +2079,13 @@
 {
     [_queueSelector addObject:selectorDelete];
     
-    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self];
+    // E2EE LOCK
+    tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileNameIdentifier = %@", appDelegate.activeAccount, metadata.fileName]];
+    if (tableE2eEncryption) {
         
-    [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+    }
+    
+    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:_hud hudTitled:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile]];        
 }
 
 - (void)deleteFile
@@ -2081,34 +2122,41 @@
     tableMetadata* metadata = [arguments objectAtIndex:0];
     NSString *fileName = [arguments objectAtIndex:1];
     
-    // E2E
+    // E2EE
     if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
         
         // verify if exists the new fileName
         if ([[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileName = %@", appDelegate.activeAccount, self.serverUrl, fileName]]) {
-            [appDelegate messageNotification:@"_error_" description:@"_file_already_exists_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+            [appDelegate messageNotification:@"_error_e2ee_" description:@"_file_already_exists_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
             return;
         }
         
-        if ([[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:fileName newFileNamePath:[CCUtility returnFileNamePathFromFileName:fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl]]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            NSString *token;
+                        
+            NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:self.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileNameRename:metadata.fileName fileNameNewRename:fileName  token:&token];
+            if (error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [appDelegate messageNotification:@"_error_e2ee_" description:@"_e2e_error_send_metadata_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                });
+            } else {
+                [[NCManageDatabase sharedInstance] setMetadataFileNameViewWithDirectoryID:metadata.directoryID fileName:metadata.fileName newFileNameView:fileName];
+            }
                 
-                NSError *error = [[CCNetworking sharedNetworking] SendEndToEndMetadataOnServerUrl:self.serverUrl];
-                if (error == nil) {
+            // Unlock
+            if (token) {
+                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadataFolder.fileID token:token];
+                if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [[NCManageDatabase sharedInstance] setMetadataFileNameViewWithDirectoryID:metadata.directoryID fileName:metadata.fileName newFileNameView:fileName];
-                        [self reloadDatasource];
+                        [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                     });
-                } else {
-                    // Restore previuos fileName on DB
-                    (void)[[NCManageDatabase sharedInstance] renameFileE2eEncryptionWithServerUrl:self.serverUrl fileNameIdentifier:metadata.fileName newFileName:metadata.fileNameView newFileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileNameView serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl]];
-                    [appDelegate messageNotification:@"_error_" description:[NSString stringWithFormat:@"Error to send metadata %d", (int)error.code] visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
                 }
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self reloadDatasource];
             });
-        } else {
-            [appDelegate messageNotification:@"_error_" description:@"Error file not found" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
-        }
+        });
         
     } else  {
         
@@ -2268,7 +2316,7 @@
 {
     [_queueSelector removeAllObjects];
     
-    // E2E DENIED
+    // E2EE DENIED
     if ([CCUtility isFolderEncrypted:serverUrlTo account:appDelegate.activeAccount]) {
         
         [appDelegate messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
@@ -2304,7 +2352,7 @@
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
     viewController.networkingOperationQueue = appDelegate.netQueue;
-    // E2E
+    // E2EE
     viewController.includeDirectoryE2EEncryption = NO;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
@@ -2614,9 +2662,8 @@
 {
     [_hud hideHud];
     
-    // change account ?
-    tableAccount *record = [[NCManageDatabase sharedInstance] getAccountActive];
-    if([record.account isEqualToString:metadataNet.account] == NO)
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
     NSArray *result = [[NCManageDatabase sharedInstance] updateShare:items activeUrl:appDelegate.activeUrl];
@@ -2660,11 +2707,14 @@
 {
     [_hud hideHud];
 
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-
-    if (errorCode != kOCErrorServerUnauthorized)
+    else
         [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 
     if (_shareOC)
@@ -2693,6 +2743,10 @@
 - (void)unShareSuccess:(CCMetadataNet *)metadataNet
 {
     [_hud hideHud];
+    
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
     
     // rimuoviamo la condivisione da db
     NSArray *result = [[NCManageDatabase sharedInstance] unShare:metadataNet.share fileName:metadataNet.fileName serverUrl:metadataNet.serverUrl sharesLink:appDelegate.sharesLink sharesUserAndGroup:appDelegate.sharesUserAndGroup];
@@ -2747,6 +2801,10 @@
 {
     [_hud hideHud];
     
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     if (_shareOC)
         [_shareOC reloadUserAndGroup:items];
 }
@@ -2755,11 +2813,14 @@
 {
     [_hud hideHud];
     
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-
-    if (errorCode != kOCErrorServerUnauthorized)
+    else
         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
@@ -2850,6 +2911,10 @@
 
 - (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
 {
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
     _dateReadDataSource = nil;
     
     [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
@@ -2915,7 +2980,7 @@
     if (errorCode == 404)
         [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
     
-    [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    [appDelegate messageNotification:@"_error_e2ee_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2998,15 +3063,6 @@
     // Brand
     if ([NCBrandOptions sharedInstance].disable_multiaccount)
         return;
-    
-    NSUInteger numInSession = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", appDelegate.activeAccount] sorted:nil ascending:NO] count];
-    NSUInteger numInQueue = [appDelegate.netQueue operationCount];
-    
-    if (numInSession+numInQueue > 0) {
-        
-        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];        
-        return;
-    }
     
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
@@ -3100,29 +3156,40 @@
 
 - (void)changeDefaultAccount:(CCMenuItem *)sender
 {
-    [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:NO];
+    // Verify session in progress
+    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
+        return;
+    }
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            
+    [appDelegate.netQueue cancelAllOperations];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
         if (tableAccount) {
             
             [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
     
             // go to home sweet home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
-        
-            [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];        
         }
     });
 }
 
 - (void)addNewAccount:(CCMenuItem *)sender
 {
-    [appDelegate.netQueue cancelAllOperations];
-    [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
+    // Verify session in progress
+    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
+        return;
+    }
     
-    [appDelegate openLoginView:self loginType:loginAdd];
+    [appDelegate.netQueue cancelAllOperations];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [appDelegate openLoginView:self loginType:loginAdd];
+    });
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3878,9 +3945,14 @@
     
     if (metadata == nil || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
         return NO;
-    else
-        return YES;
+    
+    // E2EE
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount] && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO)
+        return NO;
+    
+    return YES;
 }
+
 
 -(void)swipeTableCell:(nonnull MGSwipeTableCell *)cell didChangeSwipeState:(MGSwipeState)state gestureIsActive:(BOOL)gestureIsActive
 {
@@ -4025,7 +4097,6 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        
                                         [self openWindowShare:_metadata];
                                     }];
         }
@@ -4076,12 +4147,11 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        
                                         [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
                                     }];
         }
         
-        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !isFolderEncrypted) {
+        if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brandElement]
@@ -4118,12 +4188,12 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        
                                         [self performSelector:@selector(comandoLockPassword) withObject:nil];
                                     }];
         }
         
-        if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount] && !_metadata.e2eEncrypted && !([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
+        if (!_metadata.e2eEncrypted) {
+
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
@@ -4133,18 +4203,21 @@
                                     handler:^(AHKActionSheet *as) {
                                         
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                            
-                                            if ([appDelegate.endToEndInterface markEndToEndFolderEncrypted:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]) {
-                                               dispatch_async(dispatch_get_main_queue(), ^{
-                                                   [self readFolder:self.serverUrl];
-                                               });
-                                            }
-                                            
+                                            NSString *token;
+                                            NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName] token:&token];
+                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                if (error) {
+                                                    [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                                                } else {
+                                                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]];
+                                                    [self readFolder:self.serverUrl];
+                                                }
+                                            });
                                         });
                                     }];
         }
         
-        if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount] && _metadata.e2eEncrypted) {
+        if (_metadata.e2eEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
@@ -4154,18 +4227,21 @@
                                     handler:^(AHKActionSheet *as) {
                                         
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                            
-                                            if ([appDelegate.endToEndInterface deletemarkEndToEndFolderEncrypted:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]) {
-                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                            NSString *token;
+                                            NSError *error = [[NCNetworkingSync sharedManager] deletemarkEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName] token:&token];
+                                            dispatch_async(dispatch_get_main_queue(), ^{
+                                                if (error) {
+                                                    [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                                                } else {
+                                                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]];
                                                     [self readFolder:self.serverUrl];
-                                                });
-                                            }
-                                            
+                                                }
+                                            });
                                         });
                                     }];
         }
         
-        if ([CCUtility isEndToEndEnabled:appDelegate.activeAccount] && directory.e2eTokenLock.length > 0) {
+        if (directory.e2eTokenLock.length > 0) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_lock_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
@@ -4174,14 +4250,15 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-                                        
-                                        metadataNet.action = actionUnlockEndToEndFolderEncrypted;
-                                        metadataNet.fileID = _metadata.fileID;
-                                        metadataNet.serverUrl = directory.serverUrl;
-                                        metadataNet.token = directory.e2eTokenLock;
-                                        
-                                        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+
+                                            NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID token:directory.e2eTokenLock];
+                                            if (error) {
+                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                    [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                                                });
+                                            }
+                                        });
                                     }];
         }
         
@@ -4218,9 +4295,8 @@
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
                                         handler:^(AHKActionSheet *as) {
-                                        
                                             [self openWindowShare:_metadata];
-            }];
+                                        }];
         }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
@@ -4229,44 +4305,40 @@
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
-                                    
                                     [self performSelector:@selector(openIn:) withObject:_metadata];
                                 }];
         
-        if (isFolderEncrypted == NO || (isFolderEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount])) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                     height: 50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                 height: 50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
                                     
-                                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
+                                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_rename_",nil) message:nil preferredStyle:UIAlertControllerStyleAlert];
                                     
-                                        [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                                            textField.text = _metadata.fileNameView;
-                                            [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                                        }];
-                                    
-                                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                                            NSLog(@"[LOG] Cancel action");
-                                        }];
-                                    
-                                            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                                            UITextField *fileName = alertController.textFields.firstObject;
-                                        
-                                            [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
-                                        }];
-                                    
-                                        okAction.enabled = NO;
-                                    
-                                        [alertController addAction:cancelAction];
-                                        [alertController addAction:okAction];
-                                    
-                                        [self presentViewController:alertController animated:YES completion:nil];
+                                    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                                        textField.text = _metadata.fileNameView;
+                                        [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
                                     }];
-        }
+                                    
+                                    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                                        NSLog(@"[LOG] Cancel action");
+                                    }];
+                                    
+                                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                                        UITextField *fileName = alertController.textFields.firstObject;
+                                        [self performSelectorOnMainThread:@selector(renameFile:) withObject:[NSMutableArray arrayWithObjects:_metadata,fileName.text, nil] waitUntilDone:NO];
+                                    }];
+                                    
+                                    okAction.enabled = NO;
+                                    
+                                    [alertController addAction:cancelAction];
+                                    [alertController addAction:okAction];
+                                    
+                                    [self presentViewController:alertController animated:YES completion:nil];
+                                }];
         
         if (!isFolderEncrypted) {
 
@@ -4276,9 +4348,8 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                    
                                         [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
-            }];
+                                    }];
         }
         
         if (localFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, _metadata.fileID]]) {
@@ -4289,7 +4360,6 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        
                                         [self performSelector:@selector(removeLocalFile:) withObject:_metadata];
                                     }];
         }
@@ -4724,6 +4794,8 @@
     cell.shared.image = nil;
     cell.local.image = nil;
     
+    cell.imageTitleSegue = nil;
+    
     cell.labelTitle.enabled = YES;
     cell.labelTitle.text = @"";
     cell.labelInfoFile.enabled = YES;
@@ -4796,11 +4868,13 @@
         
         if (metadata.directory) {
             
-            if (metadata.e2eEncrypted)
+            if (metadata.e2eEncrypted) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brandElement];
-            else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
+                cell.imageTitleSegue = [UIImage imageNamed:@"titleEncrypted"];
+            } else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory]) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brandElement];
-            else
+                cell.imageTitleSegue = [UIImage imageNamed:@"titlePhotos"];
+            } else
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
             
         } else {
@@ -4823,7 +4897,7 @@
         cell.status.image = [UIImage imageNamed:@"passcode"];
     
     // ----------------------------------------------------------------------------------------------------------
-    // E2E Image Status Encrypted
+    // E2EE Image Status Encrypted
     // ----------------------------------------------------------------------------------------------------------
     
     if (_metadataFolder.e2eEncrypted && !metadata.directory) {
@@ -4859,6 +4933,7 @@
             if (metadata.directory) {
                 
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
+                cell.imageTitleSegue = [UIImage imageNamed:@"titleShared_with_me"];
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
             
@@ -4876,6 +4951,7 @@
             if (metadata.directory) {
                 
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_external"] color:[NCBrandColor sharedInstance].brandElement];
+                cell.imageTitleSegue = [UIImage imageNamed:@"titleExternal"];
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
                 
@@ -4892,19 +4968,23 @@
         
             if (metadata.directory) {
                 
-                if ([shareLink length] > 0)
-                    cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brandElement];
-                if ([shareUserAndGroup length] > 0)
+                if ([shareUserAndGroup length] > 0) {
                     cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
+                    cell.imageTitleSegue = [UIImage imageNamed:@"titleShared_with_me"];
+                } if ([shareLink length] > 0) {
+                    cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brandElement];
+                    cell.imageTitleSegue = [UIImage imageNamed:@"titlePublic"];
+                }
                 
                 cell.shared.userInteractionEnabled = NO;
                 
             } else {
                 
-                if ([shareLink length] > 0)
+                if ([shareLink length] > 0) {
                     cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareLink"] color:[NCBrandColor sharedInstance].brandElement];
-                if ([shareUserAndGroup length] > 0)
+                } if ([shareUserAndGroup length] > 0) {
                     cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brandElement];
+                }
                 
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
                 [tap setNumberOfTapsRequired:1];
@@ -5119,7 +5199,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {    
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    CCCellMain *cell = [tableView cellForRowAtIndexPath:indexPath];
     
     // settiamo il record file.
     _metadata = [self getMetadataFromSectionDataSource:indexPath];
@@ -5169,7 +5249,11 @@
         }
     }
     
-    if (_metadata.directory) [self performSegueDirectoryWithControlPasscode:true];
+    if (_metadata.directory) {
+        
+        imageTitleSegue = cell.imageTitleSegue;
+        [self performSegueDirectoryWithControlPasscode:true];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath
@@ -5257,7 +5341,7 @@
     _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
     _detailViewController.dateFilterQuery = nil;
     
-    [_detailViewController setTitle:metadata.fileName];
+    [_detailViewController setTitle:metadata.fileNameView];
 }
 
 // can i go to next viewcontroller
@@ -5321,6 +5405,7 @@
             viewController.serverUrl = serverUrlPush;
             viewController.titleMain = _metadata.fileName;
             viewController.textBackButton = _titleMain;
+            viewController.imageTitle = imageTitleSegue;
             
             // save self
             [appDelegate.listMainVC setObject:viewController forKey:serverUrlPush];
@@ -5330,6 +5415,9 @@
         } else {
            
             if (viewController.isViewLoaded) {
+                
+                // Icon Title
+                viewController.imageTitle = imageTitleSegue;
                 
                 // Fix : Application tried to present modally an active controller
                 if ([self.navigationController isBeingPresented]) {

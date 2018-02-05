@@ -63,7 +63,7 @@
             return NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
             break;
         case 400:                                       // 400
-            return NSLocalizedStringFromTable(@"Bad request", @"Error", nil);
+            return NSLocalizedStringFromTable(@"_bad_request_", @"Error", nil);
             break;
         case 403:                                       // 403
             return NSLocalizedStringFromTable(@"_error_not_permission_", @"Error", nil);

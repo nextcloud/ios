@@ -37,6 +37,7 @@
 
 //TWS
 - (void)handleSingleTapReader;
+- (void)handleSwipeUpDown;
 
 @end
 

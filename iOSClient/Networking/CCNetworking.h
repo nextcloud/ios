@@ -64,16 +64,6 @@
 - (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
-// Verify Download/Upload
-- (void)verifyDownloadInProgress;
-- (void)verifyDownloadInError:(id)delegate;
-- (void)verifyUploadInProgress;
-- (void)verifyUploadInErrorOrWait;
-
-// E2E Encryption
-- (NSError *)SendEndToEndMetadataOnServerUrl:(NSString *)serverUrl;
-- (NSError *)rebuildAndSendEndToEndMetadataOnServerUrl:(NSString *)serverUrl;
-
 @end
 
 @protocol CCNetworkingDelegate <NSObject>
@@ -102,7 +92,6 @@
 @property BOOL directory;
 @property (nonatomic, strong) NSString *directoryID;
 @property (nonatomic, strong) NSString *directoryIDTo;
-@property BOOL e2eEncrypted;
 @property (nonatomic, strong) NSString *encryptedMetadata;
 @property NSInteger errorCode;
 @property NSInteger errorRetry;
@@ -129,7 +118,6 @@
 @property NSInteger sharePermission;
 @property long size;
 @property NSInteger taskStatus;
-@property (nonatomic, strong) NSString *token;
 
 - (id)initWithAccount:(NSString *)withAccount;
 - (id)copyWithZone:(NSZone *)zone;

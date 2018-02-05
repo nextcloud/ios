@@ -1,5 +1,5 @@
 //
-//  NCEntoToEndInterface.swift
+//  NCEndToEndInitialize.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 03/04/17.
@@ -23,7 +23,14 @@
 
 import Foundation
 
-class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
+@objc protocol NCEndToEndInitializeDelegate {
+    
+    func endToEndInitializeSuccess()
+}
+
+class NCEndToEndInitialize : NSObject, OCNetworkingDelegate  {
+
+    @objc weak var delegate: NCEndToEndInitializeDelegate?
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -124,14 +131,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         default:
             appDelegate.messageNotification("E2E sign publicKey", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
-    }
-    
-    func deleteEnd(toEndPublicKeySuccess metadataNet: CCMetadataNet!) {
-        appDelegate.messageNotification("E2E delete publicKey", description: "Success", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.success, errorCode: 0)
-    }
-    
-    func deleteEnd(toEndPublicKeyFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        appDelegate.messageNotification("E2E delete publicKey", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------
@@ -268,14 +267,6 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         }
     }
     
-    func deleteEnd(toEndPrivateKeySuccess metadataNet: CCMetadataNet!) {
-        appDelegate.messageNotification("E2E delete privateKey", description: "Success", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.success, errorCode: 0)
-    }
-    
-    func deleteEnd(toEndPrivateKeyFailure metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        appDelegate.messageNotification("E2E delete privateKey", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-    }
-    
     // --------------------------------------------------------------------------------------------
     // MARK: Manage Server PublicKey
     // --------------------------------------------------------------------------------------------
@@ -288,11 +279,7 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
         NCManageDatabase.sharedInstance.clearTable(tableDirectory.self, account: appDelegate.activeAccount)
         NCManageDatabase.sharedInstance.clearTable(tableE2eEncryption.self, account: appDelegate.activeAccount)
 
-        // Reload All Datasource
-        NotificationCenter.default.post(name: Notification.Name("clearDateReadDataSource"), object: nil)
-
-        // All OK Activated flsg on Manage EndToEnd Encryption
-        NotificationCenter.default.post(name: Notification.Name("reloadManageEndToEndEncryption"), object: nil)
+        self.delegate?.endToEndInitializeSuccess()
     }
     
     func getEndToEndServerPublicKeyFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
@@ -312,109 +299,4 @@ class NCEntoToEndInterface : NSObject, OCNetworkingDelegate  {
             appDelegate.messageNotification("E2E Server publicKey", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
-    
-    // --------------------------------------------------------------------------------------------
-    // MARK: Manage Mark/Delete Encrypted Folder
-    // --------------------------------------------------------------------------------------------
-    
-    @objc func markEndToEndFolderEncrypted(_ url: String, fileID: String, serverUrl: String) -> Bool {
-        
-        var token: NSString?
-                
-        // Remove all records e2eMetadata
-        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", appDelegate.activeAccount, serverUrl))
-        
-        if let error = NCNetworkingSync.sharedManager().markEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, serverUrl: serverUrl,token: &token) as NSError? {
-            
-            appDelegate.messageNotification("E2E Mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
-
-            return false
-        }
-        
-        return true
-    }
-    
-    @objc func deletemarkEndToEndFolderEncrypted(_ url: String, fileID: String, serverUrl: String) -> Bool {
-        
-        var token: NSString?
-
-        // Remove all records e2eMetadata
-        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", appDelegate.activeAccount, serverUrl))
-        
-        if let error = NCNetworkingSync.sharedManager().deletemarkEnd(toEndFolderEncrypted: appDelegate.activeUser, userID: appDelegate.activeUserID, password: appDelegate.activePassword, url: url, fileID: fileID, serverUrl: serverUrl, token: &token) as NSError? {
-            
-            appDelegate.messageNotification("E2E Remove mark folder as encrypted", description: error.localizedDescription+" code \(error.code)", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: error.code)
-            
-            return false
-        }
-        
-        return true
-    }
-    
-    // --------------------------------------------------------------------------------------------
-    // MARK: Manage Metadata
-    // --------------------------------------------------------------------------------------------
-    
-    func getEndToEndMetadataSuccess(_ metadataNet: CCMetadataNet!) {
-        
-        guard let privateKey = CCUtility.getEndToEndPrivateKey(appDelegate.activeAccount) else {
-            
-            appDelegate.messageNotification("E2E Get Metadata", description: "Serious internal error: PrivareKey not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            return
-        }
-
-        guard let main = appDelegate.listMainVC[metadataNet.serverUrl] as? CCMain else {
-            
-            appDelegate.messageNotification("E2E Get Metadata", description: "Serious internal error: Main not found", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            return
-        }
-        
-        // Decode metadata JSON
-        if NCEndToEndMetadata.sharedInstance.decoderMetadata(metadataNet.encryptedMetadata, privateKey: privateKey, serverUrl: metadataNet.serverUrl, account: appDelegate.activeAccount, url: appDelegate.activeUrl) == false {
-        
-            appDelegate.messageNotification("E2E decode metadata", description: "Serious internal error in decoding metadata", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
-            return
-        }
-        
-        // Reload data source
-        main.reloadDatasource(metadataNet.serverUrl)
-    }
-    
-    func getEndToEndMetadataFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized) {
-            
-            appDelegate.openLoginView(appDelegate.activeMain, loginType: loginModifyPasswordUser)
-            
-        } else if (errorCode == 404) {
-            
-            print("No metadata found: "+metadataNet.serverUrl+"/"+metadataNet.fileName)
-            
-        } else if (errorCode != 404) {
-            
-            appDelegate.messageNotification("E2E Get metadata", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-        }
-    }
-    
-    @objc func getEndToEndMetadata(_ fileName: String, fileID: String, serverUrl: String) {
-        
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        
-        metadataNet.action = actionGetEndToEndMetadata
-        metadataNet.fileID = fileID
-        metadataNet.fileName = fileName
-        metadataNet.serverUrl = serverUrl
-        
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-
 }
-
-
-
-
-
-
-
-

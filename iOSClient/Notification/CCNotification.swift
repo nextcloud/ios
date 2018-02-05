@@ -195,6 +195,11 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
     
     func setNotificationServerSuccess(_ metadataNet: CCMetadataNet!) {
         
+        // Check Active Account
+        if (metadataNet.account != appDelegate.activeAccount) {
+            return
+        }
+        
         let listOfNotifications = appDelegate.listOfNotifications as NSArray as! [OCNotifications]
         
         if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.assetLocalIdentifier)})  {

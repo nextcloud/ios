@@ -196,9 +196,14 @@
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 
-- (void)loginDisappear
+- (void)loginClose
 {
     appDelegate.activeLogin = nil;
+}
+
+- (void)loginWebClose
+{
+    appDelegate.activeLoginWeb = nil;
 }
 
 #pragma --------------------------------------------------------------------------------------------
