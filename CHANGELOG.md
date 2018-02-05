@@ -5,8 +5,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### [2.19.2] - 2018-xx-xx
+### [2.19.3] - 2018-xx-xx
+- See https://github.com/nextcloud/ios/milestone/21
+
+## [2.19.2] - 2018-02-06
 - See https://github.com/nextcloud/ios/milestone/20
+### Fixed
+- Icons and labels overlap on iPad Pro. See [Details](https://github.com/nextcloud/ios/issues/476)
+- Not showing correct data usage. See [Details](https://github.com/nextcloud/ios/issues/451)
+- Negative file size. See [Details](https://github.com/nextcloud/ios/issues/448)
+
+### Changed
+- Replace icon for shared folders. See See [Details](https://github.com/nextcloud/ios/issues/458)
 
 ## [2.19.1] - 2017-12-22
 ### Fixed
