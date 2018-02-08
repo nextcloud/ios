@@ -321,13 +321,13 @@ extension SwiftWebVC: WKNavigationDelegate {
         self.delegate?.didFinishLoading(success: true, url: webView.url!)
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
         
-        
         webView.evaluateJavaScript("document.title", completionHandler: {(response, error) in
-            self.navBarTitle.text = response as! String?
-            self.navBarTitle.sizeToFit()
-            self.updateToolbarItems()
-        })
-        
+            if error == nil {
+                self.navBarTitle.text = response as! String?
+                self.navBarTitle.sizeToFit()
+                self.updateToolbarItems()
+            }
+        })        
     }
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
