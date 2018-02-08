@@ -4192,9 +4192,8 @@
                                     }];
         }
         
-        if (!_metadata.e2eEncrypted) {
+        if (!_metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
 
-            
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
@@ -4217,7 +4216,7 @@
                                     }];
         }
         
-        if (_metadata.e2eEncrypted) {
+        if (_metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]
@@ -4241,7 +4240,7 @@
                                     }];
         }
         
-        if (directory.e2eTokenLock.length > 0) {
+        if (directory.e2eTokenLock.length > 0 && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_lock_", nil)
                                       image:[UIImage imageNamed:@"encrypted_empty"]

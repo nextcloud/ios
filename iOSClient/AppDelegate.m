@@ -748,7 +748,7 @@
             if (errorcode == kCFURLErrorNotConnectedToInternet || errorcode == k_CCErrorNetworkNowAvailable) {
                 
                 if (errorCodePrev != errorcode)
-                    [JDStatusBarNotification showWithStatus:NSLocalizedString(title, nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
+                    [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_network_available_", nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
                 
                 errorCodePrev = errorcode;
                 
