@@ -200,8 +200,8 @@
     _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetOpenIn"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetShare"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
-    
-    if ([_fileNameExtension isEqualToString:@"TXT"]) {
+
+    if ([self fileIsModifiableText: _fileNameExtension]) {
         if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
             [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
         else
@@ -317,7 +317,7 @@
             [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"20",@"Sans-Serif",dataFile] baseURL:nil];
         }
         
-    } else if ([_fileNameExtension isEqualToString:@"TXT"]) {
+    } else if ([self fileIsModifiableText: _fileNameExtension]) {
         
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
@@ -396,6 +396,11 @@
         
         [self.navigationController pushViewController:self.photoBrowser animated:NO];
     }
+}
+
+- (Boolean)fileIsModifiableText:(NSString *) fileExtension
+{
+    return [@[@"TXT", @"MD", @"MARKDOWN", @"ORG"] containsObject:fileExtension];
 }
 
 - (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser
