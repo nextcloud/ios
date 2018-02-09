@@ -1208,11 +1208,15 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getAllExternalSites(predicate: NSPredicate) -> [tableExternalSites] {
+    @objc func getAllExternalSites() -> [tableExternalSites]? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
         
         let realm = try! Realm()
         
-        let results = realm.objects(tableExternalSites.self).filter(predicate).sorted(byKeyPath: "idExternalSite", ascending: true)
+        let results = realm.objects(tableExternalSites.self).filter("account = %@", tableAccount.account).sorted(byKeyPath: "idExternalSite", ascending: true)
         
         return Array(results)
     }
