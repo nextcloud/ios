@@ -3432,8 +3432,13 @@
             [self saveSelectedFiles];
     }];
 
-    appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.deleteItem,appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem]];
-
+    // E2EE
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
+        appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.deleteItem,appDelegate.downloadItem, appDelegate.saveItem]];
+    } else {
+        appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.deleteItem,appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem]];
+    }
+    
     appDelegate.reSelectMenu.imageOffset = CGSizeMake(5, -1);
     
     appDelegate.reSelectMenu.separatorOffset = CGSizeMake(50.0, 0.0);
