@@ -477,8 +477,9 @@
 - (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
     NSError *error;
+    NSString *fileID;
     
-    error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPhotos user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword];
+    error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPhotos user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword fileID:&fileID];
     
     if (error == nil) {
         
@@ -502,7 +503,7 @@
         
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
             
-            error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword];
+            error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword fileID:&fileID];
             
             if ( error == nil) {
                 
