@@ -506,7 +506,7 @@
 "_e2e_settings_the_passphrase_is_"  = "The passphrase is:";
 "_e2e_passphrase_request_title_"    = "Request passphrase";
 "_e2e_passphrase_request_message_"  = "Insert the 12 words";
-"_e2e_settings_remove_"             = "Decrypt locally";
+"_e2e_settings_remove_"             = "Remove locally the encryption";
 "_e2e_settings_remove_message_"     = "Confirm removal of encryption along with the passphrase.";
 "_e2e_set_folder_encrypted_"        = "Encrypt";
 "_e2e_remove_folder_encrypted_"     = "Decrypt";
