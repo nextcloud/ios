@@ -2977,25 +2977,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== E2E Encryption =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)unlockEndToEndFolderEncryptedSuccess:(CCMetadataNet *)metadataNet
-{
-    [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
-    
-    [appDelegate messageNotification:@"_success_" description:@"_e2e_remove_folder_lock_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeSuccess errorCode:0];
-}
-
-- (void)unlockEndToEndFolderEncryptedFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    if (errorCode == 404)
-        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:metadataNet.fileID token:@""];
-    
-    [appDelegate messageNotification:@"_error_e2ee_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Open in... =====
 #pragma --------------------------------------------------------------------------------------------
 
