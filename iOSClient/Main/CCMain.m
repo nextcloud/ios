@@ -2377,26 +2377,44 @@
 
 - (void)createFolderSuccess:(CCMetadataNet *)metadataNet
 {
-    NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];    
-    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil encrypted:false];
+    NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID]];
+    if (_metadataFolder.e2eEncrypted) {
         
-    if (metadata) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            NSString *token;
+            NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:metadataNet.fileID serverUrl:newDirectory token:&token];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (error) {
+                    [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                } else {
+                    [self readFolder:self.serverUrl];
+                }
+            });
+        });
         
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID] clearDateReadDirectoryID:nil];
-
-        metadata.fileID = metadataNet.fileID;
-        metadata.date = metadataNet.date;
-        metadata.permissions = @"RDNVCK";
-
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-        
-        [self reloadDatasource];
-            
     } else {
+        
+        (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil encrypted:false];
+        
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID]];
+        
+        if (metadata) {
             
-        [self readFileReloadFolder];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID] clearDateReadDirectoryID:nil];
+            
+            metadata.fileID = metadataNet.fileID;
+            metadata.date = metadataNet.date;
+            metadata.permissions = @"RDNVCK";
+            
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            
+            [self reloadDatasource];
+            
+        } else {
+            
+            [self readFileReloadFolder];
+        }
     }
 }
 
