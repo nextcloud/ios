@@ -290,15 +290,17 @@
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
                 
                 itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
-                NSString *fileName = itemDto.fileName;
+                NSString *fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
                 
                 // Skip hidden files
-                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                if (fileName.length > 0) {
+                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                        continue;
+                } else
                     continue;
                 
                 if (itemDto.isDirectory) {
                         
-                    fileName = [fileName substringToIndex:[fileName length] - 1];
                     serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
                         
                     (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDtoFolder.permissions encrypted:itemDto.isEncrypted];
@@ -394,13 +396,13 @@
                 NSString *serverUrl;
 
                 itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
-            
-                NSString *fileName = itemDto.fileName;
-                if (itemDto.isDirectory)
-                    fileName = [fileName substringToIndex:[fileName length] - 1];
-                
+                NSString *fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
+
                 // Skip hidden files
-                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                if (fileName.length > 0) {
+                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                        continue;
+                } else
                     continue;
             
                 // ----- BUG #942 ---------
@@ -552,17 +554,17 @@
         
         for(OCFileDto *itemDto in items) {
             
-            NSString *serverUrl;
+            NSString *serverUrl, *fileName;
             
             itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
             itemDto.filePath = [itemDto.filePath stringByRemovingPercentEncoding];
-
-            NSString *fileName = itemDto.fileName;
-            if (itemDto.isDirectory)
-                fileName = [fileName substringToIndex:[fileName length] - 1];
+            fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
             
             // Skip hidden files
-            if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+            if (fileName.length > 0) {
+                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                    continue;
+            } else
                 continue;
             
             // ----- BUG #942 ---------
