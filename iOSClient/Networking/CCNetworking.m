@@ -1187,7 +1187,7 @@
             
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
             if (directory.e2eTokenLock.length > 0 && directory.e2eTokenLock) {
-                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileID:directory.fileID token:directory.e2eTokenLock];
+                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl serverUrl:serverUrl fileID:directory.fileID token:directory.e2eTokenLock];
                 if (error) {
 #ifndef EXTENSION
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1195,6 +1195,8 @@
                     });
 #endif
                 }
+            } else {
+                NSLog(@"Error unlock not found");
             }
         });
     }

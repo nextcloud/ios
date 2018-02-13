@@ -2141,7 +2141,7 @@
             // Unlock
             token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl];
             if (token != nil) {
-                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadataFolder.fileID token:token];
+                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadataFolder.fileID token:token];
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
@@ -4227,7 +4227,7 @@
                                         
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 
-                                            NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID token:directory.e2eTokenLock];
+                                            NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadata.fileID token:directory.e2eTokenLock];
                                             if (error) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
                                                     [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
