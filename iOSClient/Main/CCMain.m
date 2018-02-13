@@ -2387,34 +2387,14 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (error) {
                     [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                } else {
-                    [self readFolder:self.serverUrl];
                 }
+                [self readFolder:self.serverUrl];
             });
         });
         
     } else {
         
-        (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory fileID:metadataNet.fileID permissions:nil encrypted:false];
-        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID]];
-        
-        if (metadata) {
-            
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID] clearDateReadDirectoryID:nil];
-            
-            metadata.fileID = metadataNet.fileID;
-            metadata.date = metadataNet.date;
-            metadata.permissions = @"RDNVCK";
-            
-            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-            
-            [self reloadDatasource];
-            
-        } else {
-            
-            [self readFileReloadFolder];
-        }
+        [self readFolder:self.serverUrl];
     }
 }
 
