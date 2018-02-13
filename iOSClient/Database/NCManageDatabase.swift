@@ -694,7 +694,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(serverUrl: String, permissions: String?, encrypted: Bool) -> String {
+    @objc func addDirectory(serverUrl: String, fileID: String?, permissions: String?, encrypted: Bool) -> String {
         
         guard let tableAccount = self.getAccountActive() else {
             return ""
@@ -717,7 +717,9 @@ class NCManageDatabase: NSObject {
                     directoryID = NSUUID().uuidString
                     addObject.directoryID = directoryID
                     addObject.e2eEncrypted = encrypted
-                
+                    if let fileID = fileID {
+                        addObject.fileID = fileID
+                    }
                     if let permissions = permissions {
                         addObject.permissions = permissions
                     }
@@ -726,11 +728,14 @@ class NCManageDatabase: NSObject {
                 
                 } else {
                 
+                    directoryID = result!.directoryID
+                    result!.e2eEncrypted = encrypted
+                    if let fileID = fileID {
+                        result!.fileID = fileID
+                    }
                     if let permissions = permissions {
                         result!.permissions = permissions
                     }
-                    directoryID = result!.directoryID
-                    result!.e2eEncrypted = encrypted
                     realm.add(result!, update: true)
                 }
             }
@@ -880,7 +885,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account,serverUrl).first else {
-            return self.addDirectory(serverUrl: serverUrl, permissions: nil, encrypted: false)
+            return self.addDirectory(serverUrl: serverUrl, fileID: nil,permissions: nil, encrypted: false)
         }
         
         return result.directoryID

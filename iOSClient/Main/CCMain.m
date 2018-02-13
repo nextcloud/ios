@@ -225,7 +225,7 @@
     [appDelegate plusButtonVisibile:true];
     
     // Search Bar
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount depth:NO]) {
         [self searchEnabled:NO];
     } else {
         [self searchEnabled:YES];
@@ -1575,7 +1575,7 @@
 
         // if request create the folder for Photos & the subfolders
         if ([autoUploadPath isEqualToString:serverUrl])
-            if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile encrypted:_metadataFolder.e2eEncrypted])
+            if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
                 return;
     
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -2117,7 +2117,7 @@
     NSString *fileName = [arguments objectAtIndex:1];
     
     // E2EE
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount depth:NO]) {
         
         // verify if exists the new fileName
         if ([[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileName = %@", appDelegate.activeAccount, self.serverUrl, fileName]]) {
@@ -2208,7 +2208,7 @@
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil encrypted:false];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory fileID:nil permissions:nil encrypted:false];
         }
     
         // next
@@ -2311,7 +2311,7 @@
     [_queueSelector removeAllObjects];
     
     // E2EE DENIED
-    if ([CCUtility isFolderEncrypted:serverUrlTo account:appDelegate.activeAccount]) {
+    if ([CCUtility isFolderEncrypted:serverUrlTo account:appDelegate.activeAccount depth:NO]) {
         
         [appDelegate messageNotification:@"_move_" description:@"Not possible move files to encrypted directory" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         return;
@@ -2395,7 +2395,7 @@
         
     } else {
         
-        (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory permissions:nil encrypted:false];
+        (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory fileID:metadataNet.fileID permissions:nil encrypted:false];
         
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileName = %@ AND directoryID = %@", metadataNet.fileName, metadataNet.directoryID]];
         
@@ -3432,7 +3432,7 @@
     }];
 
     // E2EE
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount depth:NO]) {
         appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.deleteItem,appDelegate.downloadItem, appDelegate.saveItem]];
     } else {
         appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.deleteItem,appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem]];
@@ -3945,7 +3945,7 @@
         return NO;
     
     // E2EE
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount] && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO)
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount depth:NO] && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO)
         return NO;
     
     return YES;
@@ -4072,7 +4072,7 @@
         
         BOOL lockDirectory = NO;
         NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileName];
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName] account:appDelegate.activeAccount];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName] account:appDelegate.activeAccount depth:NO];
         
         // Directory bloccata ?
         tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, dirServerUrl]];
@@ -4267,7 +4267,7 @@
     if (!_metadata.directory) {
         
         UIImage *iconHeader;
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount depth:NO];
 
         // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, _metadata.fileID]])
@@ -4431,7 +4431,7 @@
     _directoryOrder = [CCUtility getOrderSettings];
     
     // Remove optimization for encrypted directory
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount])
+    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount depth:NO])
         _dateReadDataSource = nil;
     
     // current directoryID
@@ -5232,7 +5232,7 @@
             
         } else {
             
-            if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount] && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
+            if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount depth:NO] && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
                 
                 [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
                 

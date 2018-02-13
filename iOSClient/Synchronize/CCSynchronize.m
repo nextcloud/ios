@@ -311,7 +311,7 @@
             tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
             
             if (!tableDirectory) {
-                (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:nil encrypted:false];
+                (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:nil permissions:nil encrypted:false];
                 tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
             }
             
