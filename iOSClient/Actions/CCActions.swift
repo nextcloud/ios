@@ -81,9 +81,7 @@ class CCActions: NSObject {
     // --------------------------------------------------------------------------------------------
 
     @objc func deleteFileOrFolder(_ metadata: tableMetadata,delegate: AnyObject, hud: CCHud?, hudTitled: String?) {
-        
-        var token: NSString?
-        
+                
         guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
             return
         }
