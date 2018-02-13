@@ -2138,7 +2138,7 @@
                 
             // Unlock
             NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl];
-            if (token) {
+            if (token != nil) {
                 NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadataFolder.fileID token:token];
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{

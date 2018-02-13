@@ -105,7 +105,7 @@ class CCActions: NSObject {
             // E2EE LOCK
             let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account = %@ AND fileNameIdentifier = %@", self.appDelegate.activeAccount, metadata.fileName))
             if tableE2eEncryption != nil {
-                let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, fileID: tableDirectory.fileID, token: &token)
+                let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, serverUrl:serverUrl, fileID: tableDirectory.fileID)
                 if error != nil {
                     DispatchQueue.main.async {
                         self.appDelegate.messageNotification("_delete_", description: error!.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
