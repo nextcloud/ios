@@ -217,12 +217,11 @@
 #pragma --------------------------------------------------------------------------------------------
 // E2EE
 
-- (NSError *)markEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl
+- (NSError *)markEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl token:(NSString *)token
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     __block NSError *returnError = nil;
-    __block NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:serverUrl];
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
@@ -295,12 +294,11 @@
     return returnError;
 }
 
-- (NSError *)deletemarkEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl
+- (NSError *)deletemarkEndToEndFolderEncrypted:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl token:(NSString *)token
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     __block NSError *returnError = nil;
-    __block NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:serverUrl];
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
@@ -637,7 +635,7 @@
     
     } else {
     
-        error = [[NCNetworkingSync sharedManager] deleteEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID];
+        [[NCNetworkingSync sharedManager] deleteEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID];
     }
     
     return error;

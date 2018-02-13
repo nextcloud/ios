@@ -148,6 +148,8 @@ class CCActions: NSObject {
         // E2EE Rebuild and send Metadata
         if tableDirectory.e2eEncrypted {
             
+            let token = NCManageDatabase.sharedInstance.getDirectoryE2ETokenLock(serverUrl: metadataNet.serverUrl)
+
             DispatchQueue.global().async {
                 
                 var errorUnlock: NSError?
@@ -162,7 +164,6 @@ class CCActions: NSObject {
                 }
                 
                 // Unlock
-                let token = NCManageDatabase.sharedInstance.getDirectoryE2ETokenLock(serverUrl: metadataNet.serverUrl)
                 if (token != nil) {
                     errorUnlock = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, fileID: tableDirectory.fileID, token: token! as String) as NSError?
                     if (errorUnlock != nil) {
