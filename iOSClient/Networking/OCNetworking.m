@@ -839,7 +839,7 @@
     [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account depth:NO];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:fileName account:_metadataNet.account depth:NO];
 
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
             
