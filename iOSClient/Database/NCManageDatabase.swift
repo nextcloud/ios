@@ -935,6 +935,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        realm.refresh()
 
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount.account, directoryID).first else {
             return nil
