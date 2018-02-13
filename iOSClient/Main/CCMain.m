@@ -1573,9 +1573,9 @@
  
         NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
 
-        // if request create the folder for Photos &  the subfolders
+        // if request create the folder for Photos & the subfolders
         if ([autoUploadPath isEqualToString:serverUrl])
-            if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
+            if (![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile encrypted:_metadataFolder.e2eEncrypted])
                 return;
     
         dispatch_async(dispatch_get_main_queue(), ^{

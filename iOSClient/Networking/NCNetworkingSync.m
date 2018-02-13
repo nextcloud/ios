@@ -150,12 +150,11 @@
     return returnError;
 }
 
-- (NSError *)createFolderAutomaticUpload:(NSString *)folderPathName user:(NSString *)user userID:(NSString *)userID password:(NSString *)password fileID:(NSString **)fileID
+- (NSError *)createFolderAutomaticUpload:(NSString *)folderPathName user:(NSString *)user userID:(NSString *)userID password:(NSString *)password encrypted:(BOOL)encrypted
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     __block NSError *returnError = nil;
-    __block NSString *returnFileID;
 
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
@@ -171,10 +170,27 @@
         [communication createFolder:folderPathName onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             NSDictionary *fields = [response allHeaderFields];
-            returnFileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+            NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
             
-            [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
-            dispatch_semaphore_signal(semaphore);
+            if (encrypted) {
+                
+                // MARK
+                [communication markEndToEndFolderEncrypted:[folderPathName stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                    
+                    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
+                    dispatch_semaphore_signal(semaphore);
+                    
+                } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                    
+                    returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_mark_folder_"];
+                    dispatch_semaphore_signal(semaphore);
+                }];
+                
+            } else {
+                
+                [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[CCUtility deletingLastPathComponentFromServerUrl:folderPathName] directoryID:nil];
+                dispatch_semaphore_signal(semaphore);
+            }
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
@@ -192,7 +208,6 @@
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
-    *fileID = returnFileID;
     return returnError;
 }
 #pragma --------------------------------------------------------------------------------------------

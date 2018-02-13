@@ -364,7 +364,7 @@
     });
     
     // Create the folder for Photos & if request the subfolders
-    if(![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector]) {
+    if(![[NCAutoUpload sharedInstance] createFolderSubFolderAutoUploadFolderPhotos:autoUploadPath useSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector encrypted:[CCUtility isFolderEncrypted:autoUploadPath account:appDelegate.activeAccount]]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // end loading
             [_hud hideHud];
@@ -474,12 +474,11 @@
 #pragma mark ===== Create Folder SubFolder Auto Upload Folder Photos ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
+- (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector encrypted:(BOOL)encrypted
 {
     NSError *error;
-    NSString *fileID;
     
-    error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPhotos user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword fileID:&fileID];
+    error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPhotos user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword encrypted:encrypted];
     
     if (error == nil) {
         
@@ -503,7 +502,7 @@
         
         for (NSString *dateSubFolder in [CCUtility createNameSubFolder:assets]) {
             
-            error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword fileID:&fileID];
+            error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:[NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder] user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword encrypted:encrypted];
             
             if ( error == nil) {
                 
