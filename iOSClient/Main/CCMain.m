@@ -2125,11 +2125,11 @@
             return;
         }
         
-        NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl];
-
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:self.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileNameRename:metadata.fileName fileNameNewRename:fileName ];
+            NSString *token;
+            
+            NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:self.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileNameRename:metadata.fileName fileNameNewRename:fileName];
             if (error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [appDelegate messageNotification:@"_error_e2ee_" description:@"_e2e_error_send_metadata_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
@@ -2139,6 +2139,7 @@
             }
                 
             // Unlock
+            token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl];
             if (token != nil) {
                 NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadataFolder.fileID token:token];
                 if (error) {
@@ -2381,10 +2382,8 @@
     
     if (_metadataFolder.e2eEncrypted) {
         
-        NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl];
-
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-            NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:metadataNet.fileID serverUrl:newDirectory token:token];
+            NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:metadataNet.fileID serverUrl:newDirectory];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (error) {
                     [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
@@ -4180,10 +4179,8 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl];
-
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                            NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName] token:token];
+                                            NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]];
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 if (error) {
                                                     [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
@@ -4205,10 +4202,8 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl];
-
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-                                            NSError *error = [[NCNetworkingSync sharedManager] deletemarkEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName] token:token];
+                                            NSError *error = [[NCNetworkingSync sharedManager] deletemarkEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]];
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 if (error) {
                                                     [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
