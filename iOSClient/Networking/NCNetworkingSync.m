@@ -422,23 +422,24 @@
     return returnError;
 }
 
-- (NSError *)storeEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID metadata:(NSString *)metadata token:(NSString  **)token
+- (NSError *)storeEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID metadata:(NSString *)metadata
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     __block NSError *returnError = nil;
-    __block NSString *returnToken = nil;
-    
+    __block NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:serverUrl];
+
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     // LOCK
-    [communication lockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:*token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
+    [communication lockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
-        returnToken = token;
-        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:fileID token:returnToken];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:fileID token:token];
+        });
         
         // STORE METADATA
         [communication storeEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID encryptedMetadata:metadata onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
@@ -460,30 +461,30 @@
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
-    *token = returnToken;
     return returnError;
 }
 
-- (NSError *)updateEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID metadata:(NSString *)metadata token:(NSString  **)token
+- (NSError *)updateEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID metadata:(NSString *)metadata
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     __block NSError *returnError = nil;
-    __block NSString *returnToken = nil;
-    
+    __block NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:serverUrl];
+
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     // LOCK
-    [communication lockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:*token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
+    [communication lockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
-        returnToken = token;
-        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:fileID token:returnToken];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithFileID:fileID token:token];
+        });
         
         // UPDATA METADATA
-        [communication updateEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID encryptedMetadata:metadata token:returnToken onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
+        [communication updateEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID encryptedMetadata:metadata token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
             
             dispatch_semaphore_signal(semaphore);
             
@@ -502,7 +503,6 @@
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
-    *token = returnToken;
     return returnError;
 }
 
@@ -569,12 +569,10 @@
     return returnError;
 }
 
-- (NSError *)sendEndToEndMetadataOnServerUrl:(NSString *)serverUrl account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileNameRename:(NSString *)fileName fileNameNewRename:(NSString *)fileNameNew token:(NSString **)token
+- (NSError *)sendEndToEndMetadataOnServerUrl:(NSString *)serverUrl account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileNameRename:(NSString *)fileName fileNameNewRename:(NSString *)fileNameNew
 {
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", account, serverUrl]];
-    *token = directory.e2eTokenLock;
     
-    NSString *e2eTokenLock = *token;
     NSString *metadata;
     NSError *error;
     
@@ -602,17 +600,15 @@
     
     // send Metadata
     if (error == nil)
-        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
+        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON];
     else if (error.code == 404)
-        error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
+        error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON];
     
-    *token = e2eTokenLock;
     return error;
 }
 
-- (NSError *)rebuildAndSendEndToEndMetadataOnServerUrl:(NSString *)serverUrl account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url token:(NSString  **)token
+- (NSError *)rebuildAndSendEndToEndMetadataOnServerUrl:(NSString *)serverUrl account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url
 {
-    NSString *e2eTokenLock = *token;
     NSError *error;
     NSString *e2eMetadataJSON;
     
@@ -627,14 +623,13 @@
         if (!e2eMetadataJSON)
             return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:NSLocalizedString(@"_e2e_error_encode_metadata_", nil) forKey:NSLocalizedDescriptionKey]];
         
-        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID metadata:e2eMetadataJSON token:&e2eTokenLock];
+        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON];
     
     } else {
     
         error = [[NCNetworkingSync sharedManager] deleteEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID];
     }
     
-    *token = e2eTokenLock;
     return error;
 }
 

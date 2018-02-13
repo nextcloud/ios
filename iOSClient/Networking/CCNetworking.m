@@ -982,9 +982,7 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
                 // Send Metadata
-                NSString *token;
-               
-                NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileNameRename:nil fileNameNewRename:nil token:&token];
+                NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:serverUrl account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl fileNameRename:nil fileNameNewRename:nil];
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
 

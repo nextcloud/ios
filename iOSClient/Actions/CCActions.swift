@@ -152,10 +152,11 @@ class CCActions: NSObject {
             
             DispatchQueue.global().async {
                 
-                var token = tableDirectory.e2eTokenLock as NSString?
+                var errorUnlock: NSError?
+                var errorRebuild: NSError?
                 
                 // Send Metadata
-                let errorRebuild = NCNetworkingSync.sharedManager().rebuildAndSendEndToEndMetadata(onServerUrl: metadataNet.serverUrl, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, token: &token) as NSError?
+                errorRebuild = NCNetworkingSync.sharedManager().rebuildAndSendEndToEndMetadata(onServerUrl: metadataNet.serverUrl, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) as NSError?
                 if (errorRebuild != nil) {
                     DispatchQueue.main.async {
                         self.deleteFileOrFolderFailure(metadataNet, message: errorRebuild!.localizedDescription as NSString, errorCode: errorRebuild!.code)
@@ -163,10 +164,13 @@ class CCActions: NSObject {
                 }
                 
                 // Unlock
-                let errorUnlock = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, fileID: tableDirectory.fileID, token: token! as String) as NSError?
-                if (errorUnlock != nil && errorRebuild == nil) {
-                    DispatchQueue.main.async {
-                        self.deleteFileOrFolderFailure(metadataNet, message: errorUnlock!.localizedDescription as NSString, errorCode: errorUnlock!.code)
+                let token = NCManageDatabase.sharedInstance.getDirectoryE2ETokenLock(serverUrl: metadataNet.serverUrl)
+                if (token != nil) {
+                    errorUnlock = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, fileID: tableDirectory.fileID, token: token! as String) as NSError?
+                    if (errorUnlock != nil) {
+                        DispatchQueue.main.async {
+                            self.deleteFileOrFolderFailure(metadataNet, message: errorUnlock!.localizedDescription as NSString, errorCode: errorUnlock!.code)
+                        }
                     }
                 }
                 

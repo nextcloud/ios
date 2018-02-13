@@ -2127,9 +2127,7 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            NSString *token;
-                        
-            NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:self.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileNameRename:metadata.fileName fileNameNewRename:fileName  token:&token];
+            NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:self.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileNameRename:metadata.fileName fileNameNewRename:fileName ];
             if (error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [appDelegate messageNotification:@"_error_e2ee_" description:@"_e2e_error_send_metadata_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
@@ -2139,6 +2137,7 @@
             }
                 
             // Unlock
+            NSString *token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl];
             if (token) {
                 NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadataFolder.fileID token:token];
                 if (error) {
