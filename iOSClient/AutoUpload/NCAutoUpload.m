@@ -477,9 +477,8 @@
 - (BOOL)createFolderSubFolderAutoUploadFolderPhotos:(NSString *)folderPhotos useSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
     NSString *fileID;
-    BOOL encrypted;
     
-    encrypted = [CCUtility isFolderEncrypted:folderPhotos account:appDelegate.activeAccount];
+    BOOL encrypted = [CCUtility isFolderEncrypted:folderPhotos account:appDelegate.activeAccount];
     NSError *error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPhotos user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID];
     
     if (error == nil) {
