@@ -414,12 +414,7 @@
 #pragma mark ===== Delete =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [self deleteFileOrFolderSuccess:metadataNet];
-}
-
-- (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
+- (void)deleteFileOrFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     [_queueMetadatas removeObject:metadataNet.selector];
     

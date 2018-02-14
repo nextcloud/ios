@@ -2034,19 +2034,12 @@
 #pragma mark ===== Delete File or Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)deleteFileOrFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
         [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-
-    NSLog(@"[LOG] Delete File failure error %d, %@", (int)errorCode, message);
-
-    [self deleteFileOrFolderSuccess:metadataNet];
-}
-
-- (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
-{
+    
     [_queueSelector removeObject:metadataNet.selector];
     
     if ([_queueSelector count] == 0) {
