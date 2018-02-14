@@ -435,7 +435,7 @@
                 serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
                 NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
-                BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account depth:NO];
+                BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account depth:NO];
 
                 [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
@@ -599,7 +599,7 @@
 
             NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
             BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account depth:NO];
-            
+
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
         }
         
