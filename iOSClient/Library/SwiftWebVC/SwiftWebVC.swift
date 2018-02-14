@@ -323,7 +323,9 @@ extension SwiftWebVC: WKNavigationDelegate {
         
         webView.evaluateJavaScript("document.title", completionHandler: {(response, error) in
             if error == nil {
-                self.navBarTitle.text = response as! String?
+                if (response != nil) {
+                    self.navBarTitle.text = response as! String?
+                }
                 self.navBarTitle.sizeToFit()
                 self.updateToolbarItems()
             }
