@@ -2110,7 +2110,7 @@
     NSString *fileName = [arguments objectAtIndex:1];
     
     // E2EE
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
+    if (_metadataFolder.e2eEncrypted) {
         
         // verify if exists the new fileName
         if ([[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileName = %@", appDelegate.activeAccount, self.serverUrl, fileName]]) {
@@ -3405,7 +3405,7 @@
     }];
 
     // E2EE
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
+    if (_metadataFolder.e2eEncrypted) {
         appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.deleteItem,appDelegate.downloadItem, appDelegate.saveItem]];
     } else {
         appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.deleteItem,appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem]];
@@ -3918,7 +3918,7 @@
         return NO;
     
     // E2EE
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount] && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO)
+    if (_metadataFolder.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO)
         return NO;
     
     return YES;
@@ -4238,7 +4238,6 @@
     if (!_metadata.directory) {
         
         UIImage *iconHeader;
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount];
 
         // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, _metadata.fileID]])
@@ -4255,7 +4254,7 @@
         ];
         
         
-        if (!isFolderEncrypted) {
+        if (!_metadataFolder.e2eEncrypted) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"]color:[NCBrandColor sharedInstance].brandElement]
@@ -4308,7 +4307,7 @@
                                     [self presentViewController:alertController animated:YES completion:nil];
                                 }];
         
-        if (!isFolderEncrypted) {
+        if (!_metadataFolder.e2eEncrypted) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brandElement]
@@ -4402,7 +4401,7 @@
     _directoryOrder = [CCUtility getOrderSettings];
     
     // Remove optimization for encrypted directory
-    if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount])
+    if (_metadataFolder.e2eEncrypted)
         _dateReadDataSource = nil;
     
     // current directoryID
@@ -5203,7 +5202,7 @@
             
         } else {
             
-            if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount] && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
+            if (_metadataFolder.e2eEncrypted && ![CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
                 
                 [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
                 
