@@ -902,8 +902,10 @@
     return [[UUID stringByReplacingOccurrencesOfString:@"-" withString:@""] lowercaseString];
 }
 
-+ (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account depth:(BOOL)depth
++ (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account
 {
+    BOOL depth = NO;
+    
     if (depth) {
         
         NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eEncrypted = 1 AND serverUrl BEGINSWITH %@", account, serverUrl] sorted:@"serverUrl" ascending:false];

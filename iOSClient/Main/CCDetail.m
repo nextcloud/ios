@@ -202,12 +202,12 @@
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
     if ([_fileNameExtension isEqualToString:@"TXT"]) {
-        if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount depth:NO]) // E2EE
+        if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
             [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
         else
             [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
     } else {
-        if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount depth:NO]) // E2EE
+        if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
             [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
         else
             [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
@@ -375,7 +375,7 @@
     // PhotoBrowser
     self.photoBrowser.displayActionButton = YES;
     self.photoBrowser.displayDeleteButton = YES;
-    if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount depth:NO]) // E2EE
+    if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
         self.photoBrowser.displayShareButton = NO;
     else
         self.photoBrowser.displayShareButton = YES;

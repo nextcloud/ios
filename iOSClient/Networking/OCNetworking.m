@@ -214,7 +214,7 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account depth:NO];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
         
         // Check items > 0
         if ([items count] == 0) {
@@ -435,7 +435,7 @@
                 serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
                 NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
-                BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account depth:NO];
+                BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
 
                 [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
@@ -598,7 +598,7 @@
             serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
             NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
-            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account depth:NO];
+            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
 
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
         }
@@ -839,7 +839,7 @@
     [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:fileName account:_metadataNet.account depth:NO];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:fileName account:_metadataNet.account];
 
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
             

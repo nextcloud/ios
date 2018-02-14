@@ -849,7 +849,7 @@
     metadata.sessionSelectorPost = selectorPost;
     
     // E2EE : ENCRYPTED FILE
-    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount depth:NO] && [CCUtility isEndToEndEnabled:_activeAccount]) {
+    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
@@ -977,7 +977,7 @@
     } else {
         
         // E2EE : CREATE AND SEND METADATA
-        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount depth:NO] && [CCUtility isEndToEndEnabled:_activeAccount]) {
+        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
                 
@@ -1131,7 +1131,7 @@
     
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, metadata.fileID);
 
-        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount depth:NO]) {
+        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
         
             // rename file fileNameView (original file) -> fileID
             [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileNameView]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
@@ -1181,7 +1181,7 @@
     }
     
     // E2EE : UNLOCK
-    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount depth:NO] && [CCUtility isEndToEndEnabled:_activeAccount]) {
+    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
