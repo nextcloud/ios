@@ -358,8 +358,17 @@
     NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session];
     NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
     
-    NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
-    NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
+    NSInteger queueUpload = [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
+    for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
+        if (record.e2eEncrypted == false)
+            queueUpload++;
+    }
+    
+    NSInteger queueUploadWWan = [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
+    for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
+        if (record.e2eEncrypted == false)
+            queueUploadWWan++;
+    }
     
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [_sectionDataSource.sections objectAtIndex:section];
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:section]];
@@ -479,7 +488,11 @@
     // Footer Upload
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUpload = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
+        NSInteger queueUpload = [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
+        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
+            if (record.e2eEncrypted == false)
+                queueUpload++;
+        }
         
         // element or elements ?
         if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -496,7 +509,11 @@
     // Footer Upload WWAN
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUploadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
+        NSInteger queueUploadWWan = [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
+        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
+            if (record.e2eEncrypted == false)
+                queueUploadWWan++;
+        }
         
         // element or elements ?
         if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
