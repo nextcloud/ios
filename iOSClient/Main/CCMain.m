@@ -5315,7 +5315,7 @@
 {
     NSString *nomeDir;
 
-    if(self.tableView.editing == NO) {
+    if (self.tableView.editing == NO) {
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         if (!serverUrl) return;
@@ -5355,6 +5355,13 @@
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:viewController];
             [self presentViewController:navController animated:YES completion:nil];
             
+            return;
+        }
+        
+        // E2EE Check enable
+        if (_metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount] == NO) {
+            
+            [appDelegate messageNotification:@"_info_" description:@"_e2e_goto_settings_for_enable_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
             return;
         }
         
