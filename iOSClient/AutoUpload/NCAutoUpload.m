@@ -479,7 +479,7 @@
     NSString *fileID;
     
     BOOL encrypted = [CCUtility isFolderEncrypted:folderPhotos account:appDelegate.activeAccount];
-    NSError *error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPhotos user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID];
+    NSError *error = [[NCNetworkingSync sharedManager] createFolder:folderPhotos user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID];
     
     if (error == nil) {
         
@@ -505,7 +505,7 @@
             
             NSString *folderPathName = [NSString stringWithFormat:@"%@/%@", folderPhotos, dateSubFolder];
             
-            error = [[NCNetworkingSync sharedManager] createFolderAutomaticUpload:folderPathName user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID];
+            error = [[NCNetworkingSync sharedManager] createFolder:folderPathName user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID];
             
             if ( error == nil) {
                 
