@@ -59,6 +59,8 @@
 
 // Theming
 @property (nonatomic, strong) NSString *themingBackground;
+@property (nonatomic) BOOL themingBackgroundDefault;
+@property (nonatomic) BOOL themingBackgroundPlain;
 @property (nonatomic, strong) NSString *themingColor;
 @property (nonatomic, strong) NSString *themingColorElement;
 @property (nonatomic, strong) NSString *themingColorText;

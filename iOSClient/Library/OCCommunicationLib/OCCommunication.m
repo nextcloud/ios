@@ -1413,6 +1413,16 @@
                     if ([theming valueForKey:@"background"] && ![[theming valueForKey:@"background"] isEqual:[NSNull null]])
                         capabilities.themingBackground = [theming valueForKey:@"background"];
                 
+                    if ([theming valueForKey:@"background-default"] && ![[theming valueForKey:@"background-default"] isEqual:[NSNull null]]) {
+                        NSNumber *result = (NSNumber*)[theming valueForKey:@"background-default"];
+                        capabilities.themingBackgroundDefault = result.boolValue;
+                    }
+                    
+                    if ([theming valueForKey:@"background-plain"] && ![[theming valueForKey:@"background-plain"] isEqual:[NSNull null]]) {
+                        NSNumber *result = (NSNumber*)[theming valueForKey:@"background-plain"];
+                        capabilities.themingBackgroundPlain = result.boolValue;
+                    }
+                    
                     if ([theming valueForKey:@"color"] && ![[theming valueForKey:@"color"] isEqual:[NSNull null]])
                         capabilities.themingColor = [theming valueForKey:@"color"];
                 
