@@ -1893,8 +1893,8 @@
                 if ([data valueForKey:@"address"] && ![[data valueForKey:@"address"] isKindOfClass:[NSNull class]])
                     userProfile.address = [data valueForKey:@"address"];
                 
-                if ([data valueForKey:@"displayname"] && ![[data valueForKey:@"displayname"] isKindOfClass:[NSNull class]])
-                    userProfile.displayName = [data valueForKey:@"displayname"];
+                if ([data valueForKey:@"display-name"] && ![[data valueForKey:@"display-name"] isKindOfClass:[NSNull class]])
+                    userProfile.displayName = [data valueForKey:@"display-name"];
               
                 if ([data valueForKey:@"email"] && ![[data valueForKey:@"email"] isKindOfClass:[NSNull class]])
                     userProfile.email = [data valueForKey:@"email"];
