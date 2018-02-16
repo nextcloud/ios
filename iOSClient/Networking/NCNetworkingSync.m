@@ -397,7 +397,7 @@
     return returnError;
 }
 
-- (NSError *)deleteEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID unlock:(BOOL)unlock
+- (NSError *)deleteEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID unlock:(BOOL)unlock
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -408,14 +408,53 @@
     [communication setCredentialsWithUser:user andUserID:userID andPassword:password];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication deleteEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:serverUrl completion:^(NSString * _Nullable tokenDatabase) {
         
-        dispatch_semaphore_signal(semaphore);
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_delete_metadata_"];
-        dispatch_semaphore_signal(semaphore);
+        // LOCK
+        [communication lockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:tokenDatabase onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
+            
+            [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:token];
+            
+            // DELETE METADATA
+            [communication deleteEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                
+                if (unlock) {
+                    // UNLOCK
+                    [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                        // Write DB token ""
+                        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
+                        dispatch_semaphore_signal(semaphore);
+                    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                        returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
+                        dispatch_semaphore_signal(semaphore);
+                    }];
+                } else {
+                    dispatch_semaphore_signal(semaphore);
+                }
+                
+            } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                
+                if (unlock) {
+                    // UNLOCK
+                    [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                        // Write DB token ""
+                        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
+                        dispatch_semaphore_signal(semaphore);
+                    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                        returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
+                        dispatch_semaphore_signal(semaphore);
+                    }];
+                } else {
+                    returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_store_metadata_"];
+                    dispatch_semaphore_signal(semaphore);
+                }
+            }];
+            
+        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+            
+            returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_lock_"];
+            dispatch_semaphore_signal(semaphore);
+        }];
     }];
     
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
@@ -445,12 +484,36 @@
             // STORE METADATA
             [communication storeEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID encryptedMetadata:metadata onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
             
-                dispatch_semaphore_signal(semaphore);
-            
+                if (unlock) {
+                    // UNLOCK
+                    [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                        // Write DB token ""
+                        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
+                        dispatch_semaphore_signal(semaphore);
+                    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                        returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
+                        dispatch_semaphore_signal(semaphore);
+                    }];
+                } else {
+                    dispatch_semaphore_signal(semaphore);
+                }
+                
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
-                returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_store_metadata_"];
-                dispatch_semaphore_signal(semaphore);
+                if (unlock) {
+                    // UNLOCK
+                    [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                        // Write DB token ""
+                        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
+                        dispatch_semaphore_signal(semaphore);
+                    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                        returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
+                        dispatch_semaphore_signal(semaphore);
+                    }];
+                } else {
+                    returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_store_metadata_"];
+                    dispatch_semaphore_signal(semaphore);
+                }
             }];
         
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
@@ -487,12 +550,36 @@
             // UPDATA METADATA
             [communication updateEndToEndMetadata:[url stringByAppendingString:@"/"] fileID:fileID encryptedMetadata:metadata token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *encryptedMetadata, NSString *redirectedServer) {
             
-                dispatch_semaphore_signal(semaphore);
-            
+                if (unlock) {
+                    // UNLOCK
+                    [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                        // Write DB token ""
+                        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
+                        dispatch_semaphore_signal(semaphore);
+                    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                        returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
+                        dispatch_semaphore_signal(semaphore);
+                    }];
+                } else {
+                    dispatch_semaphore_signal(semaphore);
+                }
+                
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
-                returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_update_metadata_"];
-                dispatch_semaphore_signal(semaphore);
+                if (unlock) {
+                    // UNLOCK
+                    [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                        // Write DB token ""
+                        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
+                        dispatch_semaphore_signal(semaphore);
+                    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                        returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
+                        dispatch_semaphore_signal(semaphore);
+                    }];
+                } else {
+                    returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_update_metadata_"];
+                    dispatch_semaphore_signal(semaphore);
+                }
             }];
         
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
@@ -629,7 +716,7 @@
     
     } else {
     
-        [[NCNetworkingSync sharedManager] deleteEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID unlock:YES];
+        [[NCNetworkingSync sharedManager] deleteEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID unlock:YES];
     }
     
     return error;
