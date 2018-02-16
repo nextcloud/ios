@@ -955,7 +955,7 @@ class NCManageDatabase: NSObject {
         }
         
         DispatchQueue.main.async {
-
+    
             let realm = try! Realm()
             realm.refresh()
         
@@ -1076,27 +1076,29 @@ class NCManageDatabase: NSObject {
             return
         }
         
-        let realm = try! Realm()
-        realm.refresh()
+        DispatchQueue.main.async {
+            
+            let realm = try! Realm()
+            realm.refresh()
         
-        realm.beginWrite()
+            realm.beginWrite()
         
-        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
-            realm.cancelWrite()
-            return
-        }
+            guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+                realm.cancelWrite()
+                return
+            }
         
-        if (token == nil) {
-            result.e2eTokenLock = ""
-        } else {
-            result.e2eTokenLock = token!
-        }
+            if (token == nil) {
+                result.e2eTokenLock = ""
+            } else {
+                result.e2eTokenLock = token!
+            }
     
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return
+            do {
+                try realm.commitWrite()
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
+            }
         }
     }
     
