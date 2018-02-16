@@ -1829,7 +1829,7 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (error) {
                         if (error.code != 404)
-                            [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                            [appDelegate messageNotification:@"_e2e_error_get_metadata_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                     } else {
                         if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:appDelegate.activeAccount] serverUrl:self.serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl] == false)
                             [appDelegate messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
