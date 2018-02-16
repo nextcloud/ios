@@ -2135,7 +2135,7 @@
                     NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadataFolder.fileID token:token];
                     if (error) {
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                            [appDelegate messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                         });
                     }
                 }
@@ -2377,7 +2377,7 @@
             NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:metadataNet.fileID serverUrl:newDirectory];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (error) {
-                    [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                    [appDelegate messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                 }
                 [self readFolder:self.serverUrl];
             });
@@ -4174,7 +4174,7 @@
                                             NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]];
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 if (error) {
-                                                    [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                                                    [appDelegate messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                                                 } else {
                                                     [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]];
                                                     [self readFolder:self.serverUrl];
@@ -4197,7 +4197,7 @@
                                             NSError *error = [[NCNetworkingSync sharedManager] deletemarkEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]];
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 if (error) {
-                                                    [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                                                    [appDelegate messageNotification:@"_e2e_error_delete_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                                                 } else {
                                                     [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, [NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]]];
                                                     [self readFolder:self.serverUrl];
@@ -4221,7 +4221,7 @@
                                             NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadata.fileID token:directory.e2eTokenLock];
                                             if (error) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                                                    [appDelegate messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                                                 });
                                             }
                                         });
