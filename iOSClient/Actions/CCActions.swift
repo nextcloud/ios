@@ -164,18 +164,17 @@ class CCActions: NSObject {
                     }
                 
                     // Unlock
-                    token = NCManageDatabase.sharedInstance.getDirectoryE2ETokenLock(serverUrl: metadataNet.serverUrl)
-                    if (token != nil) {
-                        errorUnlock = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, serverUrl: metadataNet.serverUrl,fileID: tableDirectory.fileID, token: token) as NSError?
-                        if (errorUnlock != nil) {
-                            DispatchQueue.main.async {
-                                self.deleteFileOrFolderSuccessFailure(metadataNet, message: errorUnlock!.localizedDescription as NSString, errorCode: errorUnlock!.code)
+                    NCManageDatabase.sharedInstance.getDirectoryE2ETokenLock(serverUrl: metadataNet.serverUrl, completion: { (token) in
+                        if (token != nil) {
+                            errorUnlock = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, serverUrl: metadataNet.serverUrl,fileID: tableDirectory.fileID, token: token) as NSError?
+                            if (errorUnlock != nil) {
+                                DispatchQueue.main.async {
+                                    self.deleteFileOrFolderSuccessFailure(metadataNet, message: errorUnlock!.localizedDescription as NSString, errorCode: errorUnlock!.code)
+                                }
                             }
                         }
-                    } else {
-                        print("Error unlock not found")
-                    }
-                
+                    })
+                    
                     if (errorRebuild == nil && errorUnlock == nil) {
                         DispatchQueue.main.async {
                              metadataNet.delegate?.deleteFileOrFolderSuccessFailure(metadataNet, message: "", errorCode: 0)

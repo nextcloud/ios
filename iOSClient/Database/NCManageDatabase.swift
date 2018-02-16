@@ -947,20 +947,24 @@ class NCManageDatabase: NSObject {
         return result.serverUrl
     }
     
-    @objc func getDirectoryE2ETokenLock(serverUrl: String) -> String? {
+    @objc func getDirectoryE2ETokenLock(serverUrl: String, completion: @escaping (String?) -> Void) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
+        DispatchQueue.main.async {
+            guard let tableAccount = self.getAccountActive() else {
+                completion(nil)
+                return
+            }
+        
+            let realm = try! Realm()
+            realm.refresh()
+        
+            guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@ AND e2eTokenLock != ''", tableAccount.account, serverUrl).first else {
+                completion(nil)
+                return
+            }
+        
+            completion(result.e2eTokenLock)
         }
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@ AND e2eTokenLock != ''", tableAccount.account, serverUrl).first else {
-            return nil
-        }
-        
-        return result.e2eTokenLock
     }
     
     @objc func setDateReadDirectory(directoryID: String) {

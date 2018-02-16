@@ -2120,8 +2120,6 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            NSString *token;
-            
             NSError *error = [[NCNetworkingSync sharedManager] sendEndToEndMetadataOnServerUrl:self.serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileNameRename:metadata.fileName fileNameNewRename:fileName];
             if (error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -2132,18 +2130,19 @@
             }
                 
             // Unlock
-            token = [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl];
-            if (token != nil) {
-                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadataFolder.fileID token:token];
-                if (error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                    });
+            [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl completion:^(NSString * _Nullable token) {
+                if (token != nil) {
+                    NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadataFolder.fileID token:token];
+                    if (error) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [appDelegate messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                        });
+                    }
                 }
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadDatasource];
-            });
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self reloadDatasource];
+                });
+            }];
         });
         
     } else  {
