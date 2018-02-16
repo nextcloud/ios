@@ -949,12 +949,13 @@ class NCManageDatabase: NSObject {
     
     @objc func getDirectoryE2ETokenLock(serverUrl: String, completion: @escaping (String?) -> Void) {
         
-        DispatchQueue.main.async {
-            guard let tableAccount = self.getAccountActive() else {
-                completion(nil)
-                return
-            }
+        guard let tableAccount = self.getAccountActive() else {
+            completion(nil)
+            return
+        }
         
+        DispatchQueue.main.async {
+
             let realm = try! Realm()
             realm.refresh()
         
