@@ -949,13 +949,13 @@ class NCManageDatabase: NSObject {
     
     @objc func getDirectoryE2ETokenLock(serverUrl: String, completion: @escaping (String?) -> Void) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            completion(nil)
-            return
-        }
-        
         DispatchQueue.main.async {
     
+            guard let tableAccount = self.getAccountActive() else {
+                completion(nil)
+                return
+            }
+            
             let realm = try! Realm()
             realm.refresh()
         
@@ -1072,11 +1072,11 @@ class NCManageDatabase: NSObject {
 
     @objc func setDirectoryE2ETokenLock(serverUrl: String, token: String?) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
         DispatchQueue.main.async {
+            
+            guard let tableAccount = self.getAccountActive() else {
+                return
+            }
             
             let realm = try! Realm()
             realm.refresh()
