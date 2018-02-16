@@ -1192,7 +1192,7 @@
                 if (error) {
 #ifndef EXTENSION
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_error_e2ee_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                        [(AppDelegate *)[[UIApplication sharedApplication] delegate] messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                     });
 #endif
                 }
