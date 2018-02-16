@@ -397,7 +397,7 @@
     return returnError;
 }
 
-- (NSError *)deleteEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID
+- (NSError *)deleteEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url fileID:(NSString *)fileID unlock:(BOOL)unlock
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -424,7 +424,7 @@
     return returnError;
 }
 
-- (NSError *)storeEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID metadata:(NSString *)metadata
+- (NSError *)storeEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID metadata:(NSString *)metadata unlock:(BOOL)unlock
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -466,7 +466,7 @@
     return returnError;
 }
 
-- (NSError *)updateEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID metadata:(NSString *)metadata
+- (NSError *)updateEndToEndMetadata:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID metadata:(NSString *)metadata unlock:(BOOL)unlock
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -602,9 +602,9 @@
     
     // send Metadata
     if (error == nil)
-        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON];
+        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON unlock:NO];
     else if (error.code == 404)
-        error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON];
+        error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON unlock:NO];
     
     return error;
 }
@@ -625,11 +625,11 @@
         if (!e2eMetadataJSON)
             return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:NSLocalizedString(@"_e2e_error_encode_metadata_", nil) forKey:NSLocalizedDescriptionKey]];
         
-        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON];
+        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON unlock:YES];
     
     } else {
     
-        [[NCNetworkingSync sharedManager] deleteEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID];
+        [[NCNetworkingSync sharedManager] deleteEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID unlock:YES];
     }
     
     return error;

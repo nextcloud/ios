@@ -153,7 +153,6 @@ class CCActions: NSObject {
                 
                     var errorUnlock: NSError?
                     var errorRebuild: NSError?
-                    var token: String?
                 
                     // Send Metadata
                     errorRebuild = NCNetworkingSync.sharedManager().rebuildAndSendEndToEndMetadata(onServerUrl: metadataNet.serverUrl, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl) as NSError?
@@ -166,6 +165,7 @@ class CCActions: NSObject {
                     // Unlock
                     NCManageDatabase.sharedInstance.getDirectoryE2ETokenLock(serverUrl: metadataNet.serverUrl, completion: { (token) in
                         if (token != nil) {
+                            
                             errorUnlock = NCNetworkingSync.sharedManager().unlockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, serverUrl: metadataNet.serverUrl,fileID: tableDirectory.fileID, token: token) as NSError?
                             if (errorUnlock != nil) {
                                 DispatchQueue.main.async {
