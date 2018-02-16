@@ -257,20 +257,23 @@
             
                     // UNLOCK
                     [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-                
                         [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
                         dispatch_semaphore_signal(semaphore);
-                
                     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-                
                         returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
                         dispatch_semaphore_signal(semaphore);
                     }];
             
                 } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
-                    returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_mark_folder_"];
-                    dispatch_semaphore_signal(semaphore);
+                    // UNLOCK
+                    [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
+                        dispatch_semaphore_signal(semaphore);
+                    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                        returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_mark_folder_"];
+                        dispatch_semaphore_signal(semaphore);
+                    }];
                 }];
         
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
@@ -332,20 +335,23 @@
             
                     // UNLOCK
                     [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
-                
                         [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
                         dispatch_semaphore_signal(semaphore);
-                
                     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-                
                         returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_unlock_"];
                         dispatch_semaphore_signal(semaphore);
                     }];
             
                 } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
-                    returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_delete_mark_folder_"];
-                    dispatch_semaphore_signal(semaphore);
+                    // UNLOCK
+                    [communication unlockEndToEndFolderEncrypted:[url stringByAppendingString:@"/"] fileID:fileID token:token onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+                        [[NCManageDatabase sharedInstance] setDirectoryE2ETokenLockWithServerUrl:serverUrl token:@""];
+                        dispatch_semaphore_signal(semaphore);
+                    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+                        returnError = [self getError:response error:error descriptionDefault:@"_e2e_error_delete_mark_folder_"];
+                        dispatch_semaphore_signal(semaphore);
+                    }];
                 }];
         
             } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
