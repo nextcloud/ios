@@ -270,6 +270,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     
     NSString *body;
     
+    userID = [userID stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+    
     NSParameterAssert(success);
     
     _requestMethod = @"SEARCH";
@@ -355,7 +357,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     NSParameterAssert(success);
     
     _requestMethod = @"REPORT";
-        
+    
+    userID = [userID stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:[NSString stringWithFormat:@"%@/files/%@%@", path, userID, folder] parameters:nil];
     
     body = [NSString stringWithFormat: @""
