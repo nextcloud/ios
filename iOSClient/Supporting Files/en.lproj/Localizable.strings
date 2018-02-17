@@ -512,7 +512,6 @@
 "_e2e_remove_folder_encrypted_"     = "Decrypt";
 "_e2e_goto_settings_for_enable_"    = "This is an encrypted directory, go to \"Settings\" and enable end-to-end encryption";
 "_e2e_delete_folder_not_permitted_" = "Deletion of the directory marked as 'encrypted' is not allowed";
-"_e2e_remove_folder_lock_"          = "Force remove folder lock";
 "_e2e_error_encode_metadata_"       = "Serious internal error in encoding metadata";
 "_e2e_error_decode_metadata_"       = "Serious internal error in decoding metadata";
 "_e2e_error_create_encrypted_"      = "Could not create encrypted file";

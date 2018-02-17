@@ -4193,7 +4193,7 @@
                                        type:AHKActionSheetButtonTypeEncrypted
                                     handler:^(AHKActionSheet *as) {
                                         
-                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                                             NSError *error = [[NCNetworkingSync sharedManager] deletemarkEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:_metadata.fileID serverUrl:[NSString stringWithFormat:@"%@/%@", self.serverUrl, _metadata.fileName]];
                                             dispatch_async(dispatch_get_main_queue(), ^{
                                                 if (error) {
@@ -4206,28 +4206,7 @@
                                         });
                                     }];
         }
-        
-        if (directory.e2eTokenLock.length > 0 && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_lock_", nil)
-                                      image:[UIImage imageNamed:@"encrypted_empty"]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-
-                                            NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadata.fileID token:directory.e2eTokenLock];
-                                            if (error) {
-                                                dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [appDelegate messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                                                });
-                                            }
-                                        });
-                                    }];
-        }
-        
+                
         [actionSheet show];
     }
     
