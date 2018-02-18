@@ -436,7 +436,7 @@
             NSString *versionNextcloud = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudServer, versionServer];
             NSString *versionNextcloudiOS = [NSString stringWithFormat:[NCBrandOptions sharedInstance].textCopyrightNextcloudiOS, versionApp];
             
-            NSString *nameSlogan = [NSString stringWithFormat:@"%@-%@", capabilities.themingName, capabilities.themingSlogan];
+            NSString *nameSlogan = [NSString stringWithFormat:@"%@ - %@", capabilities.themingName, capabilities.themingSlogan];
             
             sectionName = [NSString stringWithFormat:@"%@\n\n%@\n%@", versionNextcloudiOS, versionNextcloud,nameSlogan];
         }
