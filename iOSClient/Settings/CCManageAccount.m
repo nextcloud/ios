@@ -198,9 +198,7 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    if (loginType == loginAddForced) {
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 
 - (void)loginClose
