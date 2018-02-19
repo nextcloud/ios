@@ -179,9 +179,6 @@
     
     if ([rowDescriptor.tag isEqualToString:@"pickerAccount"] && oldValue && newValue) {
         
-        XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
-        NSString *accountNow = pickerAccount.rowDescriptor.value;
-
         if (![newValue isEqualToString:oldValue] && ![newValue isEqualToString:@""] && ![newValue isEqualToString:appDelegate.activeAccount])
             [self ChangeDefaultAccount:newValue];
         
