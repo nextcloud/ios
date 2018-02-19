@@ -165,14 +165,12 @@
 #pragma mark ===== Delete <delegate> =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)deleteFileOrFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] DeleteFileOrFolder failure error %d, %@", (int)errorCode, message);
-}
-
-- (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
-{
-    [self reloadDatasource];
+    if (errorCode == 0)
+        [self reloadDatasource];
+    else
+        NSLog(@"[LOG] DeleteFileOrFolder failure error %d, %@", (int)errorCode, message);
 }
 
 #pragma --------------------------------------------------------------------------------------------

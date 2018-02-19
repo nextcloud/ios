@@ -904,13 +904,20 @@
 
 + (BOOL)isFolderEncrypted:(NSString *)serverUrl account:(NSString *)account
 {
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directory = 1 AND e2eEncrypted = 1", account] sorted:@"directoryID" ascending:false];
+    BOOL depth = NO;
     
-    for (tableMetadata *metadata in metadatas) {
+    if (depth) {
         
-        NSString *serverUrlEncrypted = [NSString stringWithFormat:@"%@/%@", [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID], metadata.fileName];
-        //if ([serverUrl containsString:serverUrlEncrypted])
-        if ([serverUrl isEqualToString:serverUrlEncrypted])
+        NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eEncrypted = 1 AND serverUrl BEGINSWITH %@", account, serverUrl] sorted:@"serverUrl" ascending:false];
+        for (tableDirectory *directory in directories) {
+            if ([serverUrl containsString:directory.serverUrl])
+                return true;
+        }
+        
+    } else {
+        
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eEncrypted = 1 AND serverUrl = %@", account, serverUrl]];
+        if (directory != nil)
             return true;
     }
     

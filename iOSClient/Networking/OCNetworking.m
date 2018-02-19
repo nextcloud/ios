@@ -242,7 +242,7 @@
             OCFileDto *itemDtoFolder = [items objectAtIndex:0];
             //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl permissions:itemDtoFolder.permissions encrypted:itemDtoFolder.isEncrypted];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions encrypted:itemDtoFolder.isEncrypted];
             _metadataNet.directoryID = directoryID;
 
             NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -290,18 +290,20 @@
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
                 
                 itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
-                NSString *fileName = itemDto.fileName;
+                NSString *fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
                 
                 // Skip hidden files
-                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                if (fileName.length > 0) {
+                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                        continue;
+                } else
                     continue;
                 
                 if (itemDto.isDirectory) {
                         
-                    fileName = [fileName substringToIndex:[fileName length] - 1];
                     serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
                         
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDtoFolder.permissions encrypted:itemDto.isEncrypted];
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions encrypted:itemDto.isEncrypted];
                 }
                 
                 // ----- BUG #942 ---------
@@ -381,7 +383,6 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
 
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
@@ -394,13 +395,13 @@
                 NSString *serverUrl;
 
                 itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
-            
-                NSString *fileName = itemDto.fileName;
-                if (itemDto.isDirectory)
-                    fileName = [fileName substringToIndex:[fileName length] - 1];
-                
+                NSString *fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
+
                 // Skip hidden files
-                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                if (fileName.length > 0) {
+                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                        continue;
+                } else
                     continue;
             
                 // ----- BUG #942 ---------
@@ -433,7 +434,8 @@
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
                 serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
-                NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
+                NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
+                BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
 
                 [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
@@ -531,7 +533,6 @@
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
 
         NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
         NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
@@ -552,17 +553,17 @@
         
         for(OCFileDto *itemDto in items) {
             
-            NSString *serverUrl;
+            NSString *serverUrl, *fileName;
             
             itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
             itemDto.filePath = [itemDto.filePath stringByRemovingPercentEncoding];
-
-            NSString *fileName = itemDto.fileName;
-            if (itemDto.isDirectory)
-                fileName = [fileName substringToIndex:[fileName length] - 1];
+            fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
             
             // Skip hidden files
-            if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+            if (fileName.length > 0) {
+                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                    continue;
+            } else
                 continue;
             
             // ----- BUG #942 ---------
@@ -596,8 +597,9 @@
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
-            
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
+            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
+
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
         }
         
@@ -720,8 +722,8 @@
     
     [communication deleteFileOrFolder:serverFileUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        if ([_metadataNet.selector rangeOfString:selectorDelete].location != NSNotFound && [self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccess:)])
-            [self.delegate deleteFileOrFolderSuccess:_metadataNet];
+        if ([_metadataNet.selector rangeOfString:selectorDelete].location != NSNotFound && [self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
+            [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:@"" errorCode:0];
         
         [self complete];
         
@@ -732,12 +734,12 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate deleteFileOrFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate deleteFileOrFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+                [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
         
         // Request trusted certificated
@@ -837,7 +839,7 @@
     [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:fileName account:_metadataNet.account];
 
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
             

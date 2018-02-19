@@ -872,65 +872,62 @@
 #pragma mark ===== Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)deleteFileOrFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] DeleteFileOrFolder failure error %d, %@", (int)errorCode, message);
-}
-
-- (void)deleteFileOrFolderSuccess:(CCMetadataNet *)metadataNet
-{
-    // reload Main
-    [appDelegate.activeMain reloadDatasource];
+    if (errorCode == 0) {
+        
+        // reload Main
+        [appDelegate.activeMain reloadDatasource];
     
-    // If removed document (web) or PDF close
-    if (_webView || _readerPDFViewController)
-        [self removeAllView];
+        // If removed document (web) or PDF close
+        if (_webView || _readerPDFViewController)
+            [self removeAllView];
         
-    // if a message for a directory of these
-    if (![_dataSourceDirectoryID containsObject:metadataNet.directoryID])
-        return;
+        // if a message for a directory of these
+        if (![_dataSourceDirectoryID containsObject:metadataNet.directoryID])
+            return;
     
-    // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
-    if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataNet.fileID]) {
+        // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
+        if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataNet.fileID]) {
         
-        
-        NSArray *viewsToRemove = [self.view subviews];
-        for (id element in viewsToRemove) {
+            NSArray *viewsToRemove = [self.view subviews];
+            for (id element in viewsToRemove) {
             
-            if ([element isMemberOfClass:[UIView class]] || [element isMemberOfClass:[UIToolbar class]])
-                [element removeFromSuperview];
-        }
+                if ([element isMemberOfClass:[UIView class]] || [element isMemberOfClass:[UIToolbar class]])
+                    [element removeFromSuperview];
+            }
         
-        self.title = @"";
+            self.title = @"";
         
-        [self.navigationController popViewControllerAnimated:YES];
+            [self.navigationController popViewControllerAnimated:YES];
         
-    } else {
+        } else {
     
-        // only photoBrowser if exists
-        for (NSUInteger index=0; index < [self.dataSourceImagesVideos count] && _photoBrowser; index++ ) {
+            // only photoBrowser if exists
+            for (NSUInteger index=0; index < [self.dataSourceImagesVideos count] && _photoBrowser; index++ ) {
         
-            tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+                tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
         
-            // ricerca index
-            if ([metadata.fileID isEqualToString:metadataNet.fileID]) {
+                // ricerca index
+                if ([metadata.fileID isEqualToString:metadataNet.fileID]) {
             
-                [self.dataSourceImagesVideos removeObjectAtIndex:index];
+                    [self.dataSourceImagesVideos removeObjectAtIndex:index];
+                    [self.photos removeObjectAtIndex:index];
+                    [self.photoBrowser reloadData];
             
-                [self.photos removeObjectAtIndex:index];
-            
-                [self.photoBrowser reloadData];
-            
-                // Title
-                if ([self.dataSourceImagesVideos count] == 0) {
+                    // Title
+                    if ([self.dataSourceImagesVideos count] == 0) {
                 
-                    self.title = @"";
-                    [self.navigationController popViewControllerAnimated:YES];
-                }
+                        self.title = @"";
+                        [self.navigationController popViewControllerAnimated:YES];
+                    }
             
-                break;
+                    break;
+                }
             }
         }
+    } else {
+        NSLog(@"[LOG] DeleteFileOrFolder failure error %d, %@", (int)errorCode, message);
     }
 }
 
