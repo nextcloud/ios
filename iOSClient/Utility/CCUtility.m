@@ -475,12 +475,14 @@
 
 + (BOOL)isEndToEndEnabled:(NSString *)account
 {
+    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+
     NSString *publicKey = [self getEndToEndPublicKey:account];
     NSString *privateKey = [self getEndToEndPrivateKey:account];
     NSString *passphrase = [self getEndToEndPassphrase:account];
-    NSString *publicKeyServer = [self getEndToEndPublicKeyServer:account];
+    NSString *publicKeyServer = [self getEndToEndPublicKeyServer:account];    
     
-    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0 && publicKeyServer.length > 0) {
+    if (passphrase.length > 0 && privateKey.length > 0 && publicKey.length > 0 && publicKeyServer.length > 0 && capabilities.endToEndEncryption) {
         
         return YES;
         
