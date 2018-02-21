@@ -33,6 +33,10 @@
 
     NSArray *_dataSource;
     BOOL _reloadDataSource;
+    
+    // Automatic Upload Folder
+    NSString *_autoUploadFileName;
+    NSString *_autoUploadDirectory;
 }
 @end
 
@@ -514,6 +518,10 @@
         
     _dataSource = [NSArray arrayWithArray:metadatas];
     
+    // get auto upload folder
+    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
+    
     [self.tableView reloadData];
 }
 
@@ -577,7 +585,11 @@
     // Immage
     if (metadata.directory) {
             
-        if ([shareLink length] > 0) {
+        if (metadata.e2eEncrypted) {
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brandElement];
+        } else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory]) {
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brandElement];
+        } else if ([shareLink length] > 0) {
             cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brandElement];
         } else if ([shareUserAndGroup length] > 0) {
             cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
