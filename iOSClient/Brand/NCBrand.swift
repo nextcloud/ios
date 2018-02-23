@@ -68,7 +68,7 @@ class NCBrandColor: NSObject {
     
     @objc public let brand:                           String = "Nextcloud"
     @objc public let mailMe:                          String = "ios@nextcloud.com"
-    @objc public let textCopyrightNextcloudiOS:       String = "Nextcloud for iOS %@ © 2017 T.W.S. Inc."
+    @objc public let textCopyrightNextcloudiOS:       String = "Nextcloud for iOS %@ © 2018 T.W.S. Inc."
     @objc public let textCopyrightNextcloudServer:    String = "Nextcloud Server %@"
     @objc public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
     @objc public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"

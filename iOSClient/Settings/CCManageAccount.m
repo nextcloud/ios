@@ -177,10 +177,18 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    if ([rowDescriptor.tag isEqualToString:@"pickerAccount"] && oldValue && newValue){
+    if ([rowDescriptor.tag isEqualToString:@"pickerAccount"] && oldValue && newValue) {
         
-        // cambiamo default account se oldvalue != newValue
-        if (![newValue isEqualToString:oldValue]) [self ChangeDefaultAccount:newValue];
+        if (![newValue isEqualToString:oldValue] && ![newValue isEqualToString:@""] && ![newValue isEqualToString:appDelegate.activeAccount])
+            [self ChangeDefaultAccount:newValue];
+        
+        if ([newValue isEqualToString:@""]) {
+            
+            NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
+
+            if ([listAccount count] > 0)
+                [self ChangeDefaultAccount:listAccount[0]];
+        }
     }
 }
 
@@ -190,9 +198,7 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    if (loginType == loginAddForced) {
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
 }
 
 - (void)loginClose
@@ -269,7 +275,8 @@
         [self deleteAccount:accountNow];
         
         NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
-        if ([listAccount count] > 0) [self ChangeDefaultAccount:listAccount[0]];
+        if ([listAccount count] > 0)
+            [self ChangeDefaultAccount:listAccount[0]];
         else {
             [self addAccountForced];
         }

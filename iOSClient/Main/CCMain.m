@@ -1637,6 +1637,8 @@
             UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 // Send to Upload Queue
                 (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
+                // Start upload now
+                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
             }];
             
             [alertController addAction:cancelAction];
@@ -1652,6 +1654,8 @@
             
             // Send to Upload Queue
             (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
+            // Start upload now
+            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
         }
     }
 }

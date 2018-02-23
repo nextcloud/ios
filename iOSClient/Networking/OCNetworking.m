@@ -289,7 +289,6 @@
                 
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
                 
-                itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
                 NSString *fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
                 
                 // Skip hidden files
@@ -394,7 +393,6 @@
             
                 NSString *serverUrl;
 
-                itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
                 NSString *fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
 
                 // Skip hidden files
@@ -432,7 +430,6 @@
                 /* ---- */
             
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-                serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
                 NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
                 BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
@@ -555,8 +552,6 @@
             
             NSString *serverUrl, *fileName;
             
-            itemDto.fileName = [itemDto.fileName stringByRemovingPercentEncoding];
-            itemDto.filePath = [itemDto.filePath stringByRemovingPercentEncoding];
             fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
             
             // Skip hidden files
@@ -595,7 +590,6 @@
             /*      */
             
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-            serverUrl = [serverUrl stringByRemovingPercentEncoding];
 
             NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
             BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];

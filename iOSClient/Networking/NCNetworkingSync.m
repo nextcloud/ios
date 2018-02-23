@@ -746,7 +746,7 @@
         if (errorDescription == nil) errorDescription = NSLocalizedString(descriptionDefault, @"");
     }
     
-    errorDescription = [NSString stringWithFormat:@"%@ [%ld] - %@", NSLocalizedString(descriptionDefault, @""), errorCode, errorDescription];
+    errorDescription = [NSString stringWithFormat:@"%@ [%ld] - %@", NSLocalizedString(descriptionDefault, @""), (long)errorCode, errorDescription];
 
     if (errorDescription.length >= 250) {
         errorDescription = [errorDescription substringToIndex:250];
