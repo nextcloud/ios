@@ -438,7 +438,7 @@
             
             NSString *nameSlogan = [NSString stringWithFormat:@"%@ - %@", capabilities.themingName, capabilities.themingSlogan];
             
-            sectionName = [NSString stringWithFormat:@"%@\n\n%@\n%@", versionNextcloudiOS, versionNextcloud,nameSlogan];
+            sectionName = [NSString stringWithFormat:@"%@\n\n%@\n%@", versionNextcloudiOS, versionNextcloud, nameSlogan];
         }
         break;
     }
