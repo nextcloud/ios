@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 16,
+            schemaVersion: 17,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -66,6 +66,7 @@ class NCManageDatabase: NSObject {
             // 14 : Version 2.19.0.xx
             // 15 : Version 2.19.2
             // 16 : Version 2.20.2
+            // 17 : Version 2.20.4
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -915,26 +916,6 @@ class NCManageDatabase: NSObject {
         return result.serverUrl
     }
     
-    @objc func getDirectoryE2ETokenLock(serverUrl: String, completion: @escaping (String?) -> Void) {
-        
-        DispatchQueue.main.async {
-    
-            guard let tableAccount = self.getAccountActive() else {
-                completion(nil)
-                return
-            }
-            
-            let realm = try! Realm()
-        
-            guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@ AND e2eTokenLock != ''", tableAccount.account, serverUrl).first else {
-                completion(nil)
-                return
-            }
-        
-            completion(result.e2eTokenLock)
-        }
-    }
-    
     @objc func setDateReadDirectory(directoryID: String) {
         
         guard let tableAccount = self.getAccountActive() else {
@@ -1033,36 +1014,27 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    @objc func setDirectoryE2ETokenLock(serverUrl: String, token: String?) {
+    /*
+    @objc func getDirectoryE2ETokenLock(serverUrl: String, completion: @escaping (String?) -> Void) {
         
         DispatchQueue.main.async {
             
             guard let tableAccount = self.getAccountActive() else {
+                completion(nil)
                 return
             }
             
             let realm = try! Realm()
-        
-            realm.beginWrite()
-        
-            guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
-                realm.cancelWrite()
+            
+            guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@ AND e2eTokenLock != ''", tableAccount.account, serverUrl).first else {
+                completion(nil)
                 return
             }
-        
-            if (token == nil) {
-                result.e2eTokenLock = ""
-            } else {
-                result.e2eTokenLock = token!
-            }
-    
-            do {
-                try realm.commitWrite()
-            } catch let error {
-                print("[LOG] Could not write to database: ", error)
-            }
+            
+            completion(result.e2eTokenLock)
         }
     }
+    */
     
     //MARK: -
     //MARK: Table e2e Encryption
@@ -1175,6 +1147,76 @@ class NCManageDatabase: NSObject {
         return
     }
     
+    //MARK: -
+    //MARK: Table e2e Encryption Lock
+    
+    @objc func getE2ETokenLock(serverUrl: String) -> tableE2eEncryptionLock? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+            
+        guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+            return nil
+        }
+        
+        return tableE2eEncryptionLock.init(value: result)
+    }
+    
+    @objc func setE2ETokenLock(serverUrl: String, fileID: String, token: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+            
+        let realm = try! Realm()
+        realm.refresh()
+
+        realm.beginWrite()
+        
+        let addObject = tableE2eEncryptionLock()
+                
+        addObject.account = tableAccount.account
+        addObject.fileID = fileID
+        addObject.serverUrl = serverUrl
+        addObject.token = token
+                
+        realm.add(addObject, update: true)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func deteleE2ETokenLock(serverUrl: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+            
+        let realm = try! Realm()
+        realm.refresh()
+
+        realm.beginWrite()
+
+        guard let result = realm.objects(tableE2eEncryptionLock.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+            return
+        }
+            
+        realm.delete(result)
+            
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+
     //MARK: -
     //MARK: Table External Sites
     

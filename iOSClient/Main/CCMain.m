@@ -2134,19 +2134,19 @@
             }
                 
             // Unlock
-            [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl completion:^(NSString * _Nullable token) {
-                if (token != nil) {
-                    NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadataFolder.fileID token:token];
-                    if (error) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [appDelegate messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                        });
-                    }
+            tableE2eEncryptionLock *tableLock = [[NCManageDatabase sharedInstance] getE2ETokenLockWithServerUrl:self.serverUrl];
+
+            if (tableLock != nil) {
+                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadataFolder.fileID token:tableLock.token];
+                if (error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [appDelegate messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                    });
                 }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self reloadDatasource];
-                });
-            }];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self reloadDatasource];
+            });
         });
         
     } else  {
