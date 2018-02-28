@@ -441,6 +441,10 @@ extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
     public func didFinishLoading(success: Bool, url: URL) {
         print("Finished loading. Success: \(success).")
     }
+    
+    public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        decisionHandler(.allow)
+    }
 }
 
 class CCCellMore: UITableViewCell {

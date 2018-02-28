@@ -14,6 +14,7 @@ public protocol SwiftWebVCDelegate: class {
     func didFinishLoading(success: Bool)
     func didFinishLoading(success: Bool, url: URL)
     func loginWebClose()
+    func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
 }
 
 public class SwiftWebVC: UIViewController {
@@ -332,6 +333,11 @@ extension SwiftWebVC: WKNavigationDelegate {
     
     public func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         
+        self.delegate?.decidePolicyForNavigationAction(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
+        
+        /*
+        let url = navigationAction.request.url
+        
         if #available(iOS 9.0, *) {
             decisionHandler(.allow)
         } else {
@@ -347,6 +353,7 @@ extension SwiftWebVC: WKNavigationDelegate {
                 webView.load(newRequest as URLRequest)
             }
         }
+        */
     }
     
     public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
@@ -366,5 +373,5 @@ extension SwiftWebVC: WKNavigationDelegate {
             print("unknown state. error: \(String(describing: challenge.error))")
         }
     }
-
+    
 }
