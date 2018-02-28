@@ -1359,28 +1359,27 @@
     
     if (WWan) {
         
-        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
-            [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
-        }
         for (tableQueueUpload *record in [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session = %@", _activeAccount, k_upload_session_wwan]]) {
-            if (![recordsInUpload containsObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]])
-                [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
+            [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
+        }
+        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
+            if (![recordsInUpload containsObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]])
+                [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
         }
         
     } else {
         
-        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
-            [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
-        }
         for (tableQueueUpload *record in [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (session = %@ OR session = %@)", _activeAccount, k_upload_session, k_upload_session_foreground]]) {
-            if (![recordsInUpload containsObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]])
-                [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
+            [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
+        }
+        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
+            if (![recordsInUpload containsObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]])
+                [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
         }
     }
     
     return recordsInUpload.count;
 }
-
 
 @end
 

@@ -2275,25 +2275,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func countQueueUpload(session: String?) -> Int {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return 0
-        }
-        
-        let realm = try! Realm()
-
-        let results : Results<tableQueueUpload>
-        
-        if let session = session {
-            results = realm.objects(tableQueueUpload.self).filter("account = %@ AND session = %@", tableAccount.account, session)
-        } else {
-            results = realm.objects(tableQueueUpload.self).filter("account = %@", tableAccount.account)
-        }
-        
-        return results.count
-    }
-
     //MARK: -
     //MARK: Table Share
     
