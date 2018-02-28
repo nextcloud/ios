@@ -1134,6 +1134,9 @@
     if (tableAccount) {
         [[CCNetworking sharedNetworking] settingAccount];
         [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+    } else {
+        
+        [appDelegate messageNotification:@"Account" description:@"Internal error : account not found" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
