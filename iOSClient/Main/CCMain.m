@@ -1129,9 +1129,12 @@
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    // Update User (+ userProfile.id) & account network
-    [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
-    [[CCNetworking sharedNetworking] settingAccount];
+    // Update User (+ userProfile.id) & active account & account network
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+    if (tableAccount) {
+        [[CCNetworking sharedNetworking] settingAccount];
+        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+    }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         

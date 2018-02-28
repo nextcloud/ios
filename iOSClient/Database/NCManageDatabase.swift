@@ -405,10 +405,10 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setAccountsUserProfile(_ userProfile: OCUserProfile) {
+    @objc func setAccountsUserProfile(_ userProfile: OCUserProfile) -> tableAccount? {
      
-        guard let tblAccount = self.getAccountActive() else {
-            return
+        guard let activeAccount = self.getAccountActive() else {
+            return nil
         }
         
         let realm = try! Realm()
@@ -416,7 +416,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                guard let result = realm.objects(tableAccount.self).filter("account = %@", tblAccount.account).first else {
+                guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
                     return
                 }
                 
@@ -444,6 +444,8 @@ class NCManageDatabase: NSObject {
         } catch let error {
             print("[LOG] Could not write to database: ", error)
         }
+        
+        return activeAccount
     }
     
     //MARK: -
