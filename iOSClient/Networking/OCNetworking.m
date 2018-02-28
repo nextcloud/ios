@@ -413,7 +413,7 @@
                 }
                 // ------------------------
             
-                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
+                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUserID]];
                 NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
                 if (finalRange.location != NSNotFound && finalRange.location + finalRange.length <= itemDto.filePath.length) {
                     // It's safe to use range on str
@@ -572,7 +572,7 @@
             }
             // ------------------------
             
-            NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
+            NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUserID]];
             NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
             
             if (finalRange.location != NSNotFound && finalRange.location + finalRange.length <= itemDto.filePath.length) {
