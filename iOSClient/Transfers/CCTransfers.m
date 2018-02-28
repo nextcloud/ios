@@ -355,20 +355,11 @@
     NSString *titleSection, *numberTitle;
     NSInteger typeOfSession = 0;
     
-    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session];
-    NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
-    
-    NSInteger queueUpload = [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
-    for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
-        if (record.e2eEncrypted == false)
-            queueUpload++;
-    }
-    
-    NSInteger queueUploadWWan = [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
-    for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
-        if (record.e2eEncrypted == false)
-            queueUploadWWan++;
-    }
+    NSInteger queueDownload = [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:NO];
+    NSInteger queueDownloadWWan = [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:YES];
+
+    NSInteger queueUpload = [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:NO];
+    NSInteger queueUploadWWan = [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:YES];
     
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]]) titleSection = [_sectionDataSource.sections objectAtIndex:section];
     if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]]) titleSection = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:section]];
@@ -450,7 +441,7 @@
     // Footer Download
     if ([titleSection containsString:@"download"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session];
+        NSInteger queueDownload = [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:NO];
         
         // element or elements ?
         if (queueDownload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -467,7 +458,7 @@
     // Footer Download WWAN
     if ([titleSection containsString:@"download"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueDownloadWWan = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
+        NSInteger queueDownloadWWan = [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:YES];
         
         // element or elements ?
         if (queueDownloadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -488,11 +479,7 @@
     // Footer Upload
     if ([titleSection containsString:@"upload"] && ![titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUpload = [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session];
-        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
-            if (record.e2eEncrypted == false)
-                queueUpload++;
-        }
+        NSInteger queueUpload = [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:NO];
         
         // element or elements ?
         if (queueUpload > 1) element_s = NSLocalizedString(@"_elements_",nil);
@@ -509,12 +496,8 @@
     // Footer Upload WWAN
     if ([titleSection containsString:@"upload"] && [titleSection containsString:@"wwan"] && titleSection != nil) {
         
-        NSInteger queueUploadWWan = [[NCManageDatabase sharedInstance] countQueueUploadWithSession:k_upload_session_wwan];
-        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
-            if (record.e2eEncrypted == false)
-                queueUploadWWan++;
-        }
-        
+        NSInteger queueUploadWWan = [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:YES];
+       
         // element or elements ?
         if (queueUploadWWan > 1) element_s = NSLocalizedString(@"_elements_",nil);
         else element_s = NSLocalizedString(@"_element_",nil);

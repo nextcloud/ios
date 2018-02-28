@@ -64,6 +64,11 @@
 - (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
+// Utility
+
+- (NSInteger)getNumDownloadInProgressWWan:(BOOL)WWan;
+- (NSInteger)getNumUploadInProgressWWan:(BOOL)WWan;
+
 @end
 
 @protocol CCNetworkingDelegate <NSObject>

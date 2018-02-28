@@ -1334,6 +1334,54 @@
     }
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Utility =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (NSInteger)getNumDownloadInProgressWWan:(BOOL)WWan
+{
+    NSInteger numTableMetadataDownload, numTableQueueDownload;
+    
+    if (WWan) {
+        numTableMetadataDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+        numTableQueueDownload = [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
+    } else {
+        numTableMetadataDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count];
+        numTableQueueDownload = [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_foreground];
+    }
+    
+    return numTableMetadataDownload + numTableQueueDownload;
+}
+
+- (NSInteger)getNumUploadInProgressWWan:(BOOL)WWan
+{
+    NSMutableArray *recordsInUpload = [NSMutableArray new];
+    
+    if (WWan) {
+        
+        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
+            [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
+        }
+        for (tableQueueUpload *record in [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session = %@", _activeAccount, k_upload_session_wwan]]) {
+            if (![recordsInUpload containsObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]])
+                [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
+        }
+        
+    } else {
+        
+        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
+            [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
+        }
+        for (tableQueueUpload *record in [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (session = %@ OR session = %@)", _activeAccount, k_upload_session, k_upload_session_foreground]]) {
+            if (![recordsInUpload containsObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]])
+                [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
+        }
+    }
+    
+    return recordsInUpload.count;
+}
+
+
 @end
 
 #pragma --------------------------------------------------------------------------------------------
