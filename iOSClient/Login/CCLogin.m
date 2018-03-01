@@ -353,10 +353,12 @@
     serverVersionString = [jsongParsed valueForKey:@"versionstring"];
 
     NSArray *arrayVersion = [serverVersionString componentsSeparatedByString:@"."];
-    if (arrayVersion.count == 3) {
+    if (arrayVersion.count >= 3) {
         versionMajor = [arrayVersion[0] integerValue];
         versionMicro = [arrayVersion[1] integerValue];
         versionMinor = [arrayVersion[2] integerValue];
+    } else {
+        return false;
     }
     
     return true;
