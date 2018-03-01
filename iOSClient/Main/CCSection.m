@@ -69,6 +69,7 @@
     */
     
     NSInteger numDirectory = 0;
+    NSInteger numDirectoryFavorite = 0;
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     
     for (tableMetadata* metadata in records) {
@@ -80,7 +81,12 @@
         } else {
             
             if (metadata.directory && directoryOnTop) {
-                [copyRecords insertObject:metadata atIndex:numDirectory++];
+                if (metadata.favorite) {
+                    [copyRecords insertObject:metadata atIndex:numDirectoryFavorite++];
+                    numDirectory++;
+                } else {
+                    [copyRecords insertObject:metadata atIndex:numDirectory++];
+                }
             } else {
                 [copyRecords addObject:metadata];
             }
