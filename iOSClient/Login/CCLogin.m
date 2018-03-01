@@ -224,6 +224,13 @@
       self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];
     }
     
+    // Remove trailing slash
+    if ([self.baseUrl.text hasSuffix:@"/"])
+        self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
+    
+    // add webDAV for valid test url
+    NSString *urlTest = [self.baseUrl.text stringByAppendingString:webDAV];
+    
     // Remove stored cookies
     NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     for (NSHTTPCookie *cookie in [storage cookies])
@@ -234,12 +241,7 @@
     // Test Login Flow
     if ([self.baseUrl.text length] > 0 && _user.hidden && _password.hidden) {
         
-        NSString *urlBase = self.baseUrl.text;
-        // Remove trailing slash
-        if ([self.baseUrl.text hasSuffix:@"/"])
-            urlBase = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
-        
-        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlBase] cachePolicy:0 timeoutInterval:20.0];
+        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlTest] cachePolicy:0 timeoutInterval:20.0];
         [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
         [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
 
@@ -273,7 +275,7 @@
                     appDelegate.activeLoginWeb = [CCLoginWeb new];
                     appDelegate.activeLoginWeb.loginType = _loginType;
                     appDelegate.activeLoginWeb.delegate = self;
-                    appDelegate.activeLoginWeb.urlBase = urlBase;
+                    appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
                     
                     [appDelegate.activeLoginWeb presentModalWithDefaultTheme:self];
                 }
@@ -284,7 +286,7 @@
         
     } else {
     
-        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.baseUrl.text] cachePolicy:0 timeoutInterval:20.0];
+        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlTest] cachePolicy:0 timeoutInterval:20.0];
         [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
     
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -445,7 +447,7 @@
     if (account) {
     
         // Update User (+ userProfile.id)
-        [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+        (void)[[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
         
         // Set this account as default
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
