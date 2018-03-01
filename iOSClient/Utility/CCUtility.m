@@ -346,7 +346,15 @@
 
 + (BOOL)getDirectoryOnTop
 {
-    return [[UICKeyChainStore stringForKey:@"directoryOnTop" service:k_serviceShareKeyChain] boolValue];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"directoryOnTop" service:k_serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setDirectoryOnTop:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
 }
 
 + (void)setDirectoryOnTop:(BOOL)directoryOnTop
