@@ -28,6 +28,9 @@ NSString *const appApplicationSupport = @"Library/Application Support";
 NSString *const appDatabaseNextcloud = @"Library/Application Support/Nextcloud";
 NSString *const appCertificates = @"Library/Application Support/Certificates";
 
+// Server Status
+NSString *const serverStatus = @"/status.php";
+
 // webDAV & DAV
 NSString *const webDAV = @"/remote.php/webdav";
 NSString *const dav = @"/remote.php/dav";
