@@ -11,6 +11,15 @@
 #import "CCCertificate.h"
 #import "NCBridgeSwift.h"
 
+/*********************************************************************************
+ 
+ Netwok call synchronous mode, use this only from :
+ 
+ dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+ });
+ 
+*********************************************************************************/
+
 @implementation NCNetworkingSync
 
 + (NCNetworkingSync *)sharedManager {
