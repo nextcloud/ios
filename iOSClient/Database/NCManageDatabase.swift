@@ -701,42 +701,53 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(serverUrl: String, fileID: String?, permissions: String?, encrypted: Bool) -> String {
+    @objc func addDirectory(dateReadDirectory: NSDate?, encrypted: Bool, etag: String?, favorite: Bool, fileID: String?, permissions: String?, serverUrl: String) -> tableDirectory? {
         
         guard let tableAccount = self.getAccountActive() else {
-            return ""
+            return nil
         }
         
+        var result :tableDirectory?
         let realm = try! Realm()
-
-        var directoryID: String = ""
 
         do {
             try realm.write {
             
-                let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first
+                result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first
             
                 if result == nil || (result?.isInvalidated)! {
                 
-                    let addObject = tableDirectory()
-                    addObject.account = tableAccount.account
+                    result = tableDirectory()
+                    result!.account = tableAccount.account
                 
-                    directoryID = NSUUID().uuidString
-                    addObject.directoryID = directoryID
-                    addObject.e2eEncrypted = encrypted
+                    if let dateReadDirectory = dateReadDirectory {
+                        result!.dateReadDirectory = dateReadDirectory
+                    }
+                    result!.directoryID = NSUUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
+                    result!.e2eEncrypted = encrypted
+                    if let etag = etag {
+                        result!.etag = etag
+                    }
+                    result!.favorite = favorite
                     if let fileID = fileID {
-                        addObject.fileID = fileID
+                        result!.fileID = fileID
                     }
                     if let permissions = permissions {
-                        addObject.permissions = permissions
+                        result!.permissions = permissions
                     }
-                    addObject.serverUrl = serverUrl
-                    realm.add(addObject, update: true)
+                    result!.serverUrl = serverUrl
+                    realm.add(result!, update: true)
                 
                 } else {
                 
-                    directoryID = result!.directoryID
+                    if let dateReadDirectory = dateReadDirectory {
+                        result!.dateReadDirectory = dateReadDirectory
+                    }
                     result!.e2eEncrypted = encrypted
+                    if let etag = etag {
+                        result!.etag = etag
+                    }
+                    result!.favorite = favorite
                     if let fileID = fileID {
                         result!.fileID = fileID
                     }
@@ -748,10 +759,10 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return ""
+            return nil
         }
         
-        return directoryID
+        return tableDirectory.init(value: result!)
     }
     
     @objc func deleteDirectoryAndSubDirectory(serverUrl: String) {
@@ -893,7 +904,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account,serverUrl).first else {
-            return self.addDirectory(serverUrl: serverUrl, fileID: nil,permissions: nil, encrypted: false)
+            return self.addDirectory(dateReadDirectory: nil, encrypted: false, etag: nil, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrl)?.directoryID
         }
         
         return result.directoryID

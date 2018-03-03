@@ -310,8 +310,7 @@
             tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
             
             if (!tableDirectory) {
-                (void) [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:nil permissions:nil encrypted:metadata.e2eEncrypted];
-                tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+                tableDirectory = [[NCManageDatabase sharedInstance] addDirectoryWithDateReadDirectory:[NSDate date] encrypted:metadata.e2eEncrypted etag:metadata.etag favorite:metadata.favorite fileID:metadata.fileID permissions:metadata.permissions serverUrl:serverUrl];
             }
             
             // Verify changed etag
