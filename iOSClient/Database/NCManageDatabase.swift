@@ -701,7 +701,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Directory
     
-    @objc func addDirectory(dateReadDirectory: NSDate?, encrypted: Bool, etag: String?, favorite: Bool, fileID: String?, permissions: String?, serverUrl: String) -> tableDirectory? {
+    @objc func addDirectory(encrypted: Bool, favorite: Bool, fileID: String?, permissions: String?, serverUrl: String) -> tableDirectory? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -720,14 +720,8 @@ class NCManageDatabase: NSObject {
                     result = tableDirectory()
                     result!.account = tableAccount.account
                 
-                    if let dateReadDirectory = dateReadDirectory {
-                        result!.dateReadDirectory = dateReadDirectory
-                    }
                     result!.directoryID = NSUUID().uuidString.replacingOccurrences(of: "-", with: "").lowercased()
                     result!.e2eEncrypted = encrypted
-                    if let etag = etag {
-                        result!.etag = etag
-                    }
                     result!.favorite = favorite
                     if let fileID = fileID {
                         result!.fileID = fileID
@@ -740,13 +734,7 @@ class NCManageDatabase: NSObject {
                 
                 } else {
                 
-                    if let dateReadDirectory = dateReadDirectory {
-                        result!.dateReadDirectory = dateReadDirectory
-                    }
                     result!.e2eEncrypted = encrypted
-                    if let etag = etag {
-                        result!.etag = etag
-                    }
                     result!.favorite = favorite
                     if let fileID = fileID {
                         result!.fileID = fileID
@@ -904,7 +892,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account,serverUrl).first else {
-            return self.addDirectory(dateReadDirectory: nil, encrypted: false, etag: nil, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrl)?.directoryID
+            return self.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrl)?.directoryID
         }
         
         return result.directoryID

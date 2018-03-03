@@ -2212,7 +2212,7 @@
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
-            (void) [[NCManageDatabase sharedInstance] addDirectoryWithDateReadDirectory:nil encrypted:false etag:nil favorite:false fileID:nil permissions:nil serverUrl:newDirectory];
+            (void) [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:false favorite:false fileID:nil permissions:nil serverUrl:newDirectory];
         }
     
         // next

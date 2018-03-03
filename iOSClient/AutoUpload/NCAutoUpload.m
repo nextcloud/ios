@@ -485,7 +485,7 @@
         
         tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, folderPhotos]];
         if (!tableDirectory)
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithDateReadDirectory:nil encrypted:encrypted etag:nil favorite:false fileID:fileID permissions:nil serverUrl:folderPhotos];
+            (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:folderPhotos];
         
     } else {
         
@@ -509,7 +509,7 @@
             
             if ( error == nil) {
                 
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithDateReadDirectory:nil encrypted:encrypted etag:nil favorite:false fileID:fileID permissions:nil serverUrl:folderPathName];
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:folderPathName];
                 
             } else {
                 
