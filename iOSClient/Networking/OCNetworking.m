@@ -424,7 +424,7 @@
                 
                 if (itemDto.isDirectory && ![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
                     isFolderEncrypted = itemDto.isEncrypted;
-                    directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:isFolderEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:serverUrl].directoryID;
+                    directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:isFolderEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
                 } else {
                     isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
                     directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
