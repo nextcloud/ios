@@ -37,7 +37,6 @@
     NSString *_activeUserID;
     NSString *_activePassword;
     NSString *_activeUrl;
-    NSString *_homeServerUrl;
 }
 @end
 
@@ -58,9 +57,6 @@
         _activeUserID = withUserID;
         _activePassword = withPassword;
         _activeUrl = withUrl;
-        
-        _homeServerUrl = [_activeUrl stringByAppendingString:webDAV];
-
     }
     
     return self;
@@ -426,7 +422,7 @@
                     serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
                 
-                if (itemDto.isDirectory && ![serverUrl isEqualToString:_homeServerUrl]) {
+                if (itemDto.isDirectory && ![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
                     isFolderEncrypted = itemDto.isEncrypted;
                     directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:isFolderEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:serverUrl].directoryID;
                 } else {
@@ -580,7 +576,7 @@
                 serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             
-            if (itemDto.isDirectory && ![serverUrl isEqualToString:_homeServerUrl]) {
+            if (itemDto.isDirectory && ![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
                 isFolderEncrypted = itemDto.isEncrypted;
                 directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:isFolderEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:serverUrl].directoryID;
             } else {
