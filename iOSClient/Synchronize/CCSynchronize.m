@@ -305,16 +305,10 @@
         if ([metadataNet.selector isEqualToString:selectorReadFileFolder] || [metadataNet.selector isEqualToString:selectorReadFileFolderWithDownload]) {
             
             NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
-            
-            // Add Directory if do not exists
             tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
             
-            if (!tableDirectory) {
-                tableDirectory = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:metadata.e2eEncrypted  favorite:metadata.favorite fileID:metadata.fileID permissions:metadata.permissions serverUrl:serverUrl];
-            }
-            
             // Verify changed etag
-            if (![tableDirectory.etag isEqualToString:metadata.etag]) {
+            if (![tableDirectory.etag isEqualToString:metadata.etag] && tableDirectory) {
                 
                 if ([metadataNet.selector isEqualToString:selectorReadFileFolder])
                     [self readFolder:serverUrl selector:selectorReadFolder];
