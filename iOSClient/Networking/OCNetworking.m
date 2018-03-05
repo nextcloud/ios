@@ -422,7 +422,7 @@
                     serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
                 
-                if (itemDto.isDirectory && ![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
+                if (itemDto.isDirectory) {
                     // Add / update Directory
                     (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
                 }
