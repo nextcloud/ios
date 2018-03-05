@@ -51,6 +51,6 @@
 // Nextcloud Extension Document Provider Picker File Provider
 #if defined(EXTENSION_PICKER_FILE_PROVIDER)
 
-#import "PickerFileProvider-Swift.h"
+    #import "PickerFileProvider-Swift.h"
 
 #endif
