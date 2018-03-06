@@ -375,6 +375,9 @@
 		F7A321AD1E9E6AD50069AD1B /* CCAdvanced.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A321AC1E9E6AD50069AD1B /* CCAdvanced.m */; };
 		F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377141EB2364A002856D3 /* Crashlytics.framework */; };
 		F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7A377151EB2364A002856D3 /* Fabric.framework */; };
+		F7A5541E204EF8AF008468EC /* TOScrollBarGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A55418204EF8AF008468EC /* TOScrollBarGestureRecognizer.m */; };
+		F7A5541F204EF8AF008468EC /* TOScrollBar.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A5541B204EF8AF008468EC /* TOScrollBar.m */; };
+		F7A55420204EF8AF008468EC /* UIScrollView+TOScrollBar.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A5541D204EF8AF008468EC /* UIScrollView+TOScrollBar.m */; };
 		F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B0C0CC1EE7E7750033AC24 /* CCSynchronize.m */; };
 		F7B0C1751EE839A30033AC24 /* NCAutoUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B0C1741EE839A30033AC24 /* NCAutoUpload.m */; };
 		F7B1FBC41E72E3D1001781FE /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7B1FBB11E72E3D1001781FE /* Media.xcassets */; };
@@ -1329,6 +1332,12 @@
 		F7A377151EB2364A002856D3 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		F7A54C341C6267B500E2C8BF /* CCExifGeo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCExifGeo.h; sourceTree = "<group>"; };
 		F7A54C351C6267B500E2C8BF /* CCExifGeo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCExifGeo.m; sourceTree = "<group>"; };
+		F7A55418204EF8AF008468EC /* TOScrollBarGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOScrollBarGestureRecognizer.m; sourceTree = "<group>"; };
+		F7A55419204EF8AF008468EC /* TOScrollBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOScrollBar.h; sourceTree = "<group>"; };
+		F7A5541A204EF8AF008468EC /* UIScrollView+TOScrollBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+TOScrollBar.h"; sourceTree = "<group>"; };
+		F7A5541B204EF8AF008468EC /* TOScrollBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TOScrollBar.m; sourceTree = "<group>"; };
+		F7A5541C204EF8AF008468EC /* TOScrollBarGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TOScrollBarGestureRecognizer.h; sourceTree = "<group>"; };
+		F7A5541D204EF8AF008468EC /* UIScrollView+TOScrollBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+TOScrollBar.m"; sourceTree = "<group>"; };
 		F7A582D61A24DAB500E903D7 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = AppDelegate.m; sourceTree = "<group>"; };
 		F7A582D71A24DAB500E903D7 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = AppDelegate.h; sourceTree = "<group>"; };
 		F7ACE4291BAC0268006C0017 /* Acknowledgements.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Acknowledgements.h; sourceTree = "<group>"; };
@@ -1874,6 +1883,7 @@
 				F75037421DBFA91A008FB480 /* PureLayout */,
 				F70F05241C889184008DAB36 /* Reachability */,
 				F7DFE24E1EBDC3A400CF5202 /* Realm */,
+				F7A55417204EF8AF008468EC /* TOScrollBar */,
 				F75AE3C51E9D12900088BB09 /* SwiftyAvatar */,
 				F73CCE271DC13798007E38D8 /* UICKeyChainStore */,
 				F70F05561C889184008DAB36 /* UIImage+animatedGIF */,
@@ -2544,6 +2554,19 @@
 			name = Fabric;
 			path = "Libraries external/Fabric";
 			sourceTree = SOURCE_ROOT;
+		};
+		F7A55417204EF8AF008468EC /* TOScrollBar */ = {
+			isa = PBXGroup;
+			children = (
+				F7A55419204EF8AF008468EC /* TOScrollBar.h */,
+				F7A5541B204EF8AF008468EC /* TOScrollBar.m */,
+				F7A5541C204EF8AF008468EC /* TOScrollBarGestureRecognizer.h */,
+				F7A55418204EF8AF008468EC /* TOScrollBarGestureRecognizer.m */,
+				F7A5541A204EF8AF008468EC /* UIScrollView+TOScrollBar.h */,
+				F7A5541D204EF8AF008468EC /* UIScrollView+TOScrollBar.m */,
+			);
+			path = TOScrollBar;
+			sourceTree = "<group>";
 		};
 		F7ACE4281BAC0268006C0017 /* Settings */ = {
 			isa = PBXGroup;
@@ -3799,6 +3822,7 @@
 				F7D4238A1F0596C6009C9782 /* ThumbsMainToolbar.m in Sources */,
 				F70022EC1EC4C9100080073F /* OCXMLSharedParser.m in Sources */,
 				F7F54D061E5B14C800E19C62 /* MWCaptionView.m in Sources */,
+				F7A55420204EF8AF008468EC /* UIScrollView+TOScrollBar.m in Sources */,
 				F762CB001EACB66200B38484 /* XLFormSegmentedCell.m in Sources */,
 				F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */,
 				F70022B01EC4C9100080073F /* AFURLSessionManager.m in Sources */,
@@ -3814,6 +3838,7 @@
 				F7F54D0C1E5B14C800E19C62 /* MWTapDetectingView.m in Sources */,
 				F7D424631F063B82009C9782 /* CTAssetSelectionLabel.m in Sources */,
 				F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */,
+				F7A5541F204EF8AF008468EC /* TOScrollBar.m in Sources */,
 				F7A321651E9E37960069AD1B /* CCActivity.m in Sources */,
 				F762CB0C1EACB66200B38484 /* XLFormSectionDescriptor.m in Sources */,
 				F77B0E131D118A16002130FE /* AppDelegate.m in Sources */,
@@ -3885,6 +3910,7 @@
 				F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */,
 				F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F77B0E541D118A16002130FE /* CCMove.m in Sources */,
+				F7A5541E204EF8AF008468EC /* TOScrollBarGestureRecognizer.m in Sources */,
 				F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
 				F762CB171EACB66200B38484 /* XLFormRegexValidator.m in Sources */,
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
