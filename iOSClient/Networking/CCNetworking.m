@@ -1183,12 +1183,12 @@
     // E2EE : UNLOCK
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", _activeAccount, serverUrl]];
+        tableE2eEncryptionLock *tableLock = [[NCManageDatabase sharedInstance] getE2ETokenLockWithServerUrl:serverUrl];
 
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             
-            if (directory.e2eTokenLock.length > 0 && directory.e2eTokenLock) {
-                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl serverUrl:serverUrl fileID:directory.fileID token:directory.e2eTokenLock];
+            if (tableLock) {
+                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl serverUrl:serverUrl fileID:tableLock.fileID token:tableLock.token];
                 if (error) {
 #ifndef EXTENSION
                     dispatch_async(dispatch_get_main_queue(), ^{
@@ -1332,6 +1332,53 @@
     } else {
         *errorMessage = NSLocalizedString(@"_e2e_error_create_encrypted_", nil);
     }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Utility =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (NSInteger)getNumDownloadInProgressWWan:(BOOL)WWan
+{
+    NSInteger numTableMetadataDownload, numTableQueueDownload;
+    
+    if (WWan) {
+        numTableMetadataDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+        numTableQueueDownload = [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
+    } else {
+        numTableMetadataDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count];
+        numTableQueueDownload = [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_foreground];
+    }
+    
+    return numTableMetadataDownload + numTableQueueDownload;
+}
+
+- (NSInteger)getNumUploadInProgressWWan:(BOOL)WWan
+{
+    NSMutableArray *recordsInUpload = [NSMutableArray new];
+    
+    if (WWan) {
+        
+        for (tableQueueUpload *record in [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session = %@", _activeAccount, k_upload_session_wwan]]) {
+            [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
+        }
+        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
+            if (![recordsInUpload containsObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]])
+                [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
+        }
+        
+    } else {
+        
+        for (tableQueueUpload *record in [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (session = %@ OR session = %@)", _activeAccount, k_upload_session, k_upload_session_foreground]]) {
+            [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
+        }
+        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
+            if (![recordsInUpload containsObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]])
+                [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
+        }
+    }
+    
+    return recordsInUpload.count;
 }
 
 @end

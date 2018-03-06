@@ -1129,8 +1129,15 @@
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    // Update User (+ userProfile.id)
-    [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+    // Update User (+ userProfile.id) & active account & account network
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+    if (tableAccount) {
+        [[CCNetworking sharedNetworking] settingAccount];
+        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+    } else {
+        
+        [appDelegate messageNotification:@"Account" description:@"Internal error : account not found" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+    }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
@@ -2134,19 +2141,19 @@
             }
                 
             // Unlock
-            [[NCManageDatabase sharedInstance] getDirectoryE2ETokenLockWithServerUrl:self.serverUrl completion:^(NSString * _Nullable token) {
-                if (token != nil) {
-                    NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadataFolder.fileID token:token];
-                    if (error) {
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            [appDelegate messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                        });
-                    }
+            tableE2eEncryptionLock *tableLock = [[NCManageDatabase sharedInstance] getE2ETokenLockWithServerUrl:self.serverUrl];
+
+            if (tableLock != nil) {
+                NSError *error = [[NCNetworkingSync sharedManager] unlockEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl serverUrl:self.serverUrl fileID:_metadataFolder.fileID token:tableLock.token];
+                if (error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [appDelegate messageNotification:@"_e2e_error_unlock_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                    });
                 }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self reloadDatasource];
-                });
-            }];
+            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self reloadDatasource];
+            });
         });
         
     } else  {
@@ -2205,7 +2212,7 @@
             
             // Add new directory
             NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrlTo, fileName];
-            (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:newDirectory fileID:nil permissions:nil encrypted:false];
+            (void) [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:false favorite:false fileID:nil permissions:nil serverUrl:newDirectory];
         }
     
         // next
@@ -4391,7 +4398,8 @@
     // Controllo data lettura Data Source
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, serverUrl]];
     // Get MetadataFolder
-    _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", appDelegate.activeAccount, tableDirectory.fileID]];
+    if (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]])
+        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", appDelegate.activeAccount, tableDirectory.fileID]];
     
     NSDate *dateDateRecordDirectory = tableDirectory.dateReadDirectory;
     

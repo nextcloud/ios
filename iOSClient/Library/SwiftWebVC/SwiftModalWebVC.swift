@@ -13,6 +13,7 @@ public protocol SwiftModalWebVCDelegate: class {
     func didReceiveServerRedirectForProvisionalNavigation(url: URL)
     func didFinishLoading(success: Bool, url: URL)
     func loginWebClose()
+    func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
 }
 
 public class SwiftModalWebVC: UINavigationController {
@@ -138,5 +139,10 @@ extension SwiftModalWebVC: SwiftWebVCDelegate {
     
     public func loginWebClose() {
         self.delegateWeb?.loginWebClose()
+    }
+    
+    public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        
+        self.delegateWeb?.decidePolicyForNavigationAction(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)        
     }
 }

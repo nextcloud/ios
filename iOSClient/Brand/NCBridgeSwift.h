@@ -21,14 +21,16 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Nextcloud App
+//
+// App bridge swift
+//
+// change 
+// from   : Nextcloud-Swift.h
+// to     : brand-Swift.h
+//
 #if !defined(EXTENSION)
 
-    #if defined(CUSTOM_BUILD)
-        #import "CustomSwift.h"
-    #else
-        #import "Nextcloud-Swift.h"
-    #endif
+    #import "Nextcloud-Swift.h"
 
 #endif
 
@@ -49,6 +51,6 @@
 // Nextcloud Extension Document Provider Picker File Provider
 #if defined(EXTENSION_PICKER_FILE_PROVIDER)
 
-#import "PickerFileProvider-Swift.h"
+    #import "PickerFileProvider-Swift.h"
 
 #endif

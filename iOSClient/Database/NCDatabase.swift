@@ -108,7 +108,6 @@ class tableDirectory: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var lock: Bool = false
-    @objc dynamic var e2eTokenLock = ""
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     
@@ -134,6 +133,19 @@ class tableE2eEncryption: Object {
     
     override static func primaryKey() -> String {
         return "fileNamePath"
+    }
+}
+
+class tableE2eEncryptionLock: Object {
+
+    @objc dynamic var account = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var fileID = ""
+    @objc dynamic var serverUrl = ""
+    @objc dynamic var token = ""
+    
+    override static func primaryKey() -> String {
+        return "fileID"
     }
 }
 

@@ -220,6 +220,7 @@
 
 "_connect_server_anyway_"       = "Do you want to connect to the server anyway?";
 "_connection_error_"            = "Connection error";
+"_serverstatus_error_"          = "Connection to server failure, verify your server address or network status";
 "_add_your_nextcloud_"          = "Add your Nextcloud account";
 "_login_url_"                   = "Server address https://…";
 "_login_bottom_label_"          = "Don't have a server yet?\nChoose one of the providers.";

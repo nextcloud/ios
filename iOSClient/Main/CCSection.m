@@ -69,7 +69,9 @@
     */
     
     NSInteger numDirectory = 0;
+    NSInteger numDirectoryFavorite = 0;
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
+    NSMutableArray *metadataFilesFavorite = [NSMutableArray new];
     
     for (tableMetadata* metadata in records) {
         
@@ -80,12 +82,23 @@
         } else {
             
             if (metadata.directory && directoryOnTop) {
-                [copyRecords insertObject:metadata atIndex:numDirectory++];
+                if (metadata.favorite) {
+                    [copyRecords insertObject:metadata atIndex:numDirectoryFavorite++];
+                    numDirectory++;
+                } else {
+                    [copyRecords insertObject:metadata atIndex:numDirectory++];
+                }
             } else {
-                [copyRecords addObject:metadata];
+                if (metadata.favorite && directoryOnTop) {
+                    [metadataFilesFavorite addObject:metadata];
+                } else {
+                    [copyRecords addObject:metadata];
+                }
             }
         }
     }
+    if (directoryOnTop && metadataFilesFavorite.count > 0)
+        [copyRecords insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
     
     /*
      sectionArrayRow

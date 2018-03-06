@@ -56,7 +56,7 @@
         _activeUser = withUser;
         _activeUserID = withUserID;
         _activePassword = withPassword;
-        _activeUrl = withUrl;        
+        _activeUrl = withUrl;
     }
     
     return self;
@@ -242,7 +242,8 @@
             OCFileDto *itemDtoFolder = [items objectAtIndex:0];
             //NSDate *date = [NSDate dateWithTimeIntervalSince1970:itemDtoDirectory.date];
         
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:_metadataNet.serverUrl fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions encrypted:itemDtoFolder.isEncrypted];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDtoFolder.isEncrypted favorite:itemDtoFolder.isFavorite fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions serverUrl:_metadataNet.serverUrl].directoryID;
+            
             _metadataNet.directoryID = directoryID;
 
             NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -289,7 +290,7 @@
                 
                 OCFileDto *itemDto = [itemsSortedArray objectAtIndex:i];
                 
-                NSString *fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
+                NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
                 
                 // Skip hidden files
                 if (fileName.length > 0) {
@@ -302,7 +303,7 @@
                         
                     serverUrl = [CCUtility stringAppendServerUrl:_metadataNet.serverUrl addFileName:fileName];
                         
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDtoFolder.ocId permissions:itemDtoFolder.permissions encrypted:itemDto.isEncrypted];
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:serverUrl];
                 }
                 
                 // ----- BUG #942 ---------
@@ -391,9 +392,10 @@
         
             for(OCFileDto *itemDto in items) {
             
-                NSString *serverUrl;
+                NSString *serverUrl, *directoryID;
+                BOOL isFolderEncrypted;
 
-                NSString *fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
+                NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
 
                 // Skip hidden files
                 if (fileName.length > 0) {
@@ -413,27 +415,21 @@
                 }
                 // ------------------------
             
-                NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
-                NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
-                if (finalRange.location != NSNotFound && finalRange.location + finalRange.length <= itemDto.filePath.length) {
-                    // It's safe to use range on str
-                    serverUrl = [itemDto.filePath substringWithRange:finalRange];
-                } else {
-                    continue;
-                }
-                
-                /* TRIM */
+                serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUserID] withString:@""];
                 if ([serverUrl hasPrefix:@"/"])
                     serverUrl = [serverUrl substringFromIndex:1];
                 if ([serverUrl hasSuffix:@"/"])
                     serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-                /* ---- */
-            
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-
-                NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
-                BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
-
+                
+                if (itemDto.isDirectory) {
+                    // Add / update Directory
+                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
+                }
+                
+                isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
+                directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+                
                 [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
     
@@ -550,9 +546,10 @@
         
         for(OCFileDto *itemDto in items) {
             
-            NSString *serverUrl, *fileName;
+            NSString *serverUrl, *directoryID;
+            BOOL isFolderEncrypted;
             
-            fileName = [itemDto.fileName  stringByReplacingOccurrencesOfString:@"/" withString:@""];
+            NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
             
             // Skip hidden files
             if (fileName.length > 0) {
@@ -572,28 +569,21 @@
             }
             // ------------------------
             
-            NSRange firstInstance = [itemDto.filePath rangeOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUser]];
-            NSRange finalRange = NSMakeRange(firstInstance.location + firstInstance.length, itemDto.filePath.length-(firstInstance.location + firstInstance.length));
-            
-            if (finalRange.location != NSNotFound && finalRange.location + finalRange.length <= itemDto.filePath.length) {
-                // It's safe to use range on str
-                serverUrl = [itemDto.filePath substringWithRange:finalRange];
-            } else {
-                continue;
-            }
-
-            /* TRIM */
+            serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUserID] withString:@""];
             if ([serverUrl hasPrefix:@"/"])
                 serverUrl = [serverUrl substringFromIndex:1];
             if ([serverUrl hasSuffix:@"/"])
                 serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-            /*      */
-            
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-
-            NSString *directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithServerUrl:serverUrl fileID:itemDto.ocId permissions:itemDto.permissions encrypted:itemDto.isEncrypted];
-            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
-
+            
+            if (itemDto.isDirectory) {
+                // Add / update Directory
+                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
+            }
+            
+            isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
+            directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+            
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
         }
         

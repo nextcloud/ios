@@ -836,19 +836,8 @@
     
     NSInteger total = 0;
     
-    NSInteger queueDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
-    
-    for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
-        if (record.e2eEncrypted == false)
-            total++;
-    }
-    for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
-        if (record.e2eEncrypted == false)
-            total++;
-    }
-    
     // Total
-    total = total + queueDownload + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:nil] + [[NCManageDatabase sharedInstance] countQueueUploadWithSession:nil];
+    total = [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:NO] + [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:YES] + [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:NO] + [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:YES];
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     

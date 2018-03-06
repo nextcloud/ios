@@ -31,6 +31,14 @@
 {
     AppDelegate *appDelegate;
     UIView *rootView;
+    
+    NSString *serverProductName;
+    NSString *serverVersion;
+    NSString *serverVersionString;
+    
+    NSInteger versionMajor;
+    NSInteger versionMicro;
+    NSInteger versionMinor;
 }
 @end
 
@@ -224,6 +232,13 @@
       self.baseUrl.text = [NSString stringWithFormat:@"https://%@",self.baseUrl.text];
     }
     
+    // Remove trailing slash
+    if ([self.baseUrl.text hasSuffix:@"/"])
+        self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
+    
+    // add status.php for valid test url
+    NSString *urlTest = [self.baseUrl.text stringByAppendingString:serverStatus];
+    
     // Remove stored cookies
     NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
     for (NSHTTPCookie *cookie in [storage cookies])
@@ -231,93 +246,75 @@
         [storage deleteCookie:cookie];
     }
     
-    // Test Login Flow
-    if ([self.baseUrl.text length] > 0 && _user.hidden && _password.hidden) {
-        
-        NSString *urlBase = self.baseUrl.text;
-        // Remove trailing slash
-        if ([self.baseUrl.text hasSuffix:@"/"])
-            urlBase = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
-        
-        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlBase] cachePolicy:0 timeoutInterval:20.0];
-        [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
-        [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlTest] cachePolicy:0 timeoutInterval:20.0];
+    [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+    [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
 
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
         
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
             
-            dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
                 
-                self.login.enabled = YES;
-                self.loadingBaseUrl.hidden = YES;
-                
-                if (error) {
+            self.loadingBaseUrl.hidden = YES;
+            self.login.enabled = YES;
+            
+            if (error) {
                     
-                    if ([error code] == NSURLErrorServerCertificateUntrusted) {
+                if ([error code] == NSURLErrorServerCertificateUntrusted) {
                         
-                        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
+                    [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
                         
-                    } else {
-                        
-                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
-                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                        
-                        [alertController addAction:okAction];
-                        [self presentViewController:alertController animated:YES completion:nil];
-                    }
-
                 } else {
+                        
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                        
+                    [alertController addAction:okAction];
+                    [self presentViewController:alertController animated:YES completion:nil];
+                }
+
+            } else {
+                    
+                if (![self serverStatus:data]) {
+                        
+                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_serverstatus_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
+                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                        
+                    [alertController addAction:okAction];
+                    [self presentViewController:alertController animated:YES completion:nil];
+                    return;
+                }
+                
+                // Login Flow
+                if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
                     
                     appDelegate.activeLoginWeb = [CCLoginWeb new];
                     appDelegate.activeLoginWeb.loginType = _loginType;
                     appDelegate.activeLoginWeb.delegate = self;
-                    appDelegate.activeLoginWeb.urlBase = urlBase;
+                    appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
                     
                     [appDelegate.activeLoginWeb presentModalWithDefaultTheme:self];
                 }
-            });
-        }];
-        
-        [task resume];
-        
-    } else {
-    
-        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:self.baseUrl.text] cachePolicy:0 timeoutInterval:20.0];
-        [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
-    
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-    
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
-        
-            dispatch_async(dispatch_get_main_queue(), ^{
-            
-                self.login.enabled = YES;
-                self.loadingBaseUrl.hidden = YES;
-        
-                if (error != nil) {
-        
-                    // self signed certificate
-                    if ([error code] == NSURLErrorServerCertificateUntrusted) {
-                        
-                        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
                 
-                    } else {
+                // NO Login Flow available
+                if (versionMajor < k_flow_version_available) {
                     
-                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
-                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                    [self.loginTypeView setHidden:YES];
+
+                    _imageUser.hidden = NO;
+                    _user.hidden = NO;
+                    _imagePassword.hidden = NO;
+                    _password.hidden = NO;
                     
-                        [alertController addAction:okAction];
-                        [self presentViewController:alertController animated:YES completion:nil];
-                    }
+                    [_user becomeFirstResponder];
                 }
-            });
-        }];
-    
-        [task resume];
-    }
+            }
+        });
+    }];
+        
+    [task resume];
 }
 
 - (void)trustedCerticateAccepted
@@ -340,6 +337,31 @@
     } else {
         completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
     }
+}
+
+- (BOOL)serverStatus:(NSData *)data
+{
+    NSError *error;
+    NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+    
+    if (error) {
+        return false;
+    }
+    
+    serverProductName = [jsongParsed valueForKey:@"productname"];
+    serverVersion = [jsongParsed valueForKey:@"version"];
+    serverVersionString = [jsongParsed valueForKey:@"versionstring"];
+
+    NSArray *arrayVersion = [serverVersionString componentsSeparatedByString:@"."];
+    if (arrayVersion.count >= 3) {
+        versionMajor = [arrayVersion[0] integerValue];
+        versionMicro = [arrayVersion[1] integerValue];
+        versionMinor = [arrayVersion[2] integerValue];
+    } else {
+        return false;
+    }
+    
+    return true;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -445,7 +467,7 @@
     if (account) {
     
         // Update User (+ userProfile.id)
-        [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+        (void)[[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
         
         // Set this account as default
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];

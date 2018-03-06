@@ -27,6 +27,8 @@ extern NSString *const appApplicationSupport;
 extern NSString *const appDatabaseNextcloud;
 extern NSString *const appCertificates;
 
+extern NSString *const serverStatus;
+
 extern NSString *const webDAV;
 extern NSString *const dav;
 
@@ -264,6 +266,9 @@ extern NSString *const flowEndpoint;
 
 // E2EE
 #define k_max_filesize_E2E                              524288000   // 500 MB
+
+// Flow Version
+#define k_flow_version_available                        12
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
