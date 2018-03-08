@@ -120,8 +120,10 @@
     } else {
         
         // Landscape
-        self.bottomLabel.hidden = YES;
-        self.loginTypeView.hidden = YES;
+        if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+            self.bottomLabel.hidden = YES;
+            self.loginTypeView.hidden = YES;
+        }
     }
     
     // Brand
@@ -199,8 +201,10 @@
         } else {
             
             // Landscape
-            self.bottomLabel.hidden = YES;
-            self.loginTypeView.hidden = YES;
+            if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+                self.bottomLabel.hidden = YES;
+                self.loginTypeView.hidden = YES;
+            }
         }
     }];
     
