@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### [2.20.3] - 2018-xx-xx
+### [2.20.4] - 2018-xx-xx
+- See https://github.com/nextcloud/ios/milestone/26
+
+## [2.20.3] - 2018-02-22
+### Changed
 - See https://github.com/nextcloud/ios/milestone/24
 
 ## [2.20.2] - 2018-02-18
