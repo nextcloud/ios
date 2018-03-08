@@ -24,6 +24,7 @@
 #import "CCPhotos.h"
 #import "AppDelegate.h"
 #import "CCManageAutoUpload.h"
+#import "TOScrollBar.h"
 #import "NCBridgeSwift.h"
 
 @interface CCPhotos () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
@@ -41,6 +42,8 @@
     CCSectionDataSourceMetadata *_sectionDataSource;
     
     CCHud *_hud;
+    
+    TOScrollBar *_scrollBar;
 }
 @end
 
@@ -92,6 +95,16 @@
     // empty Data Source
     self.collectionView.emptyDataSetDelegate = self;
     self.collectionView.emptyDataSetSource = self;
+
+    // scroll bar
+    _scrollBar = [TOScrollBar new];
+    [self.collectionView to_addScrollBar:_scrollBar];
+    
+    _scrollBar.handleTintColor = [NCBrandColor sharedInstance].brand;
+    _scrollBar.handleWidth = 20;
+    _scrollBar.handleMinimiumHeight = 20;
+    _scrollBar.trackWidth = 0;
+    _scrollBar.edgeInset = 12;
 }
 
 // Apparirà
@@ -122,6 +135,7 @@
     if (self.isViewLoaded && self.view.window)
         [appDelegate changeTheming:self];
     
+    _scrollBar.handleTintColor = [NCBrandColor sharedInstance].brand;
     [self.collectionView reloadData];
 }
 
