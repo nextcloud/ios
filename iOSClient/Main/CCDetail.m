@@ -864,6 +864,8 @@
 
 - (void)handleSwipeUpDown
 {
+    self.navigationController.navigationBarHidden = false;  // iOS App is unusable after swipe up or down with PDF in fullscreen #526
+
     [self removeAllView];
     [self.navigationController popViewControllerAnimated:YES];
 }
