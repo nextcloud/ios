@@ -746,6 +746,13 @@
 		F7053E3C1C639DF500741EA5 /* CCUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUtility.h; sourceTree = "<group>"; };
 		F7053E3D1C639DF500741EA5 /* CCUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCUtility.m; sourceTree = "<group>"; };
 		F70944BC1F86364000AE4541 /* MainInterface.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
+		F70A07C5205285FA00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
+		F70A07C6205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/SwiftWebVC.strings"; sourceTree = "<group>"; };
+		F70A07C7205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/BKPasscodeView.strings"; sourceTree = "<group>"; };
+		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F70A07C9205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		F70A07CA205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Intro.strings"; sourceTree = "<group>"; };
+		F70A07CB205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Error.strings"; sourceTree = "<group>"; };
 		F70A63061D5B3467004E2AA5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
 		F70A63071D5B3467004E2AA5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
@@ -3364,6 +3371,7 @@
 				"cs-CZ",
 				ko,
 				"es-419",
+				"pt-PT",
 			);
 			mainGroup = F7F67B9F1A24D27800EE80DA;
 			productRefGroup = F7F67B9F1A24D27800EE80DA;
@@ -4124,6 +4132,7 @@
 				F7BB04841FD58ACB00BBFD2A /* cs-CZ */,
 				F7320933201B812F008A0888 /* ko */,
 				F732093A201B81E4008A0888 /* es-419 */,
+				F70A07C7205285FB00DC1231 /* pt-PT */,
 			);
 			name = BKPasscodeView.strings;
 			path = "Supporting Files";
@@ -4170,6 +4179,7 @@
 				F7BB04831FD58ACA00BBFD2A /* cs-CZ */,
 				F7320932201B812F008A0888 /* ko */,
 				F7320939201B81E4008A0888 /* es-419 */,
+				F70A07C6205285FB00DC1231 /* pt-PT */,
 			);
 			name = SwiftWebVC.strings;
 			path = "Supporting Files";
@@ -4216,6 +4226,7 @@
 				F7BB04871FD58ACB00BBFD2A /* cs-CZ */,
 				F7320936201B8130008A0888 /* ko */,
 				F732093D201B81E5008A0888 /* es-419 */,
+				F70A07CA205285FB00DC1231 /* pt-PT */,
 			);
 			name = Intro.strings;
 			path = "Supporting Files";
@@ -4262,6 +4273,7 @@
 				F7BB04821FD58ACA00BBFD2A /* cs-CZ */,
 				F7320931201B812F008A0888 /* ko */,
 				F7320938201B81E4008A0888 /* es-419 */,
+				F70A07C5205285FA00DC1231 /* pt-PT */,
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
@@ -4308,6 +4320,7 @@
 				F7BB04881FD58ACB00BBFD2A /* cs-CZ */,
 				F7320937201B8130008A0888 /* ko */,
 				F732093E201B81E5008A0888 /* es-419 */,
+				F70A07CB205285FB00DC1231 /* pt-PT */,
 			);
 			name = Error.strings;
 			path = "Supporting Files";
@@ -4354,6 +4367,7 @@
 				F7BB04861FD58ACB00BBFD2A /* cs-CZ */,
 				F7320935201B8130008A0888 /* ko */,
 				F732093C201B81E4008A0888 /* es-419 */,
+				F70A07C9205285FB00DC1231 /* pt-PT */,
 			);
 			name = InfoPlist.strings;
 			path = "Supporting Files";
@@ -4400,6 +4414,7 @@
 				F7BB04851FD58ACB00BBFD2A /* cs-CZ */,
 				F7320934201B812F008A0888 /* ko */,
 				F732093B201B81E4008A0888 /* es-419 */,
+				F70A07C8205285FB00DC1231 /* pt-PT */,
 			);
 			name = Localizable.strings;
 			path = "Supporting Files";
