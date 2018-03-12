@@ -320,6 +320,39 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Search =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    //NSLog
+}
+
+- (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
+{
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
+    //[self readFolderSuccess:metadataNet metadataFolder:nil metadatas:metadatas];
+}
+
+
+- (void)searchContentType:(NSString *)contentType selector:(NSString *)selector
+{
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+    
+    metadataNet.action = actionSearch;
+    metadataNet.contentType = contentType;
+    metadataNet.date = [NSDate date];
+    metadataNet.depth = @"infinity";
+    metadataNet.priority = NSOperationQueuePriorityLow;
+    metadataNet.selector = selector;
+
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Verify Metadatas =====
 #pragma --------------------------------------------------------------------------------------------
 

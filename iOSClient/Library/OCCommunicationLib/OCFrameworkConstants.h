@@ -32,6 +32,9 @@
 //Timeout for fast requests
 #define k_timeout_fast 5 //seconds
 
+//Timeout to search
+#define k_timeout_search 60 //seconds
+
 //Chunk length
 #define k_OC_lenght_chunk 1048576
 
