@@ -639,14 +639,19 @@
         
         if (successRequest) {
             
-            NSData *responseData = (NSData*) responseObject;
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+
+                NSData *responseData = (NSData*) responseObject;
             
-            OCXMLListParser *parser = [OCXMLListParser new];
-            [parser initParserWithData:responseData];
-            NSMutableArray *searchList = [parser.searchList mutableCopy];
+                OCXMLListParser *parser = [OCXMLListParser new];
+                [parser initParserWithData:responseData];
+                NSMutableArray *searchList = [parser.searchList mutableCopy];
             
-            //Return success
-            successRequest(response, searchList, request.redirectedServer, token);
+                //Return success
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    successRequest(response, searchList, request.redirectedServer, token);
+                });
+            });
         }
         
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
@@ -818,16 +823,10 @@
             failure(response, nil, request.redirectedServer);
         }
         
-        
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failure(response, error, request.redirectedServer);
     }];
-
-    
-    
-    
 }
-
 
 - (void) readSharedByServer: (NSString *) path
             onCommunication:(OCCommunication *)sharedOCCommunication
