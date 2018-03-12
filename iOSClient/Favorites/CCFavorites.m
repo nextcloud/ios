@@ -510,7 +510,7 @@
             recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", appDelegate.activeAccount, directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
     }
         
-    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil e2eEncryptions:nil groupByField:nil activeAccount:appDelegate.activeAccount];
+    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil activeAccount:appDelegate.activeAccount];
         
     NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
     for (NSString *fileID in fileIDs)

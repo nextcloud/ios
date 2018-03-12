@@ -74,7 +74,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata e2eEncryptions:(NSArray *)e2eEncryptions groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     long counterSessionDownload = 0;

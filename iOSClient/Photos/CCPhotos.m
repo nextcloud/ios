@@ -543,7 +543,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
         NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasContentTypeImageVideo];
-        CCSectionDataSourceMetadata *tempSectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil e2eEncryptions:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
+        CCSectionDataSourceMetadata *tempSectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
         
         dispatch_async(dispatch_get_main_queue(), ^{
             _sectionDataSource = [tempSectionDataSource copy];
@@ -651,11 +651,20 @@
         
         } else {
         
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", appDelegate.activeAccount, metadata.directoryID]];
+
             // Thumbnail not present
-            imageView.image = [UIImage imageNamed:@"file_photo"];
-        
-            if (metadata.thumbnailExists)
-                [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
+            if (directory.e2eEncrypted) {
+                
+                imageView.image = [UIImage imageNamed:@"file_photo_encrypted"];
+                
+            } else {
+                
+                imageView.image = [UIImage imageNamed:@"file_photo"];
+
+                if (metadata.thumbnailExists)
+                    [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
+            }
         }
     
         // Cheched

@@ -4347,7 +4347,7 @@
     // Search Mode
     if (_isSearchMode) {
         
-        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil e2eEncryptions:nil groupByField:_directoryGroupBy activeAccount:appDelegate.activeAccount];
+        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy activeAccount:appDelegate.activeAccount];
 
         [self tableViewReloadData];
         
@@ -4418,10 +4418,9 @@
         if (directoryID) {
         
             NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND status = %i", appDelegate.activeAccount, directoryID, k_metadataStatusNormal] sorted:sorted ascending:[CCUtility getAscendingSettings]];
-            NSArray *recordsTableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionsWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, serverUrl]];
                                                   
             _sectionDataSource = [CCSectionDataSourceMetadata new];
-            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil e2eEncryptions:recordsTableE2eEncryption groupByField:_directoryGroupBy activeAccount:appDelegate.activeAccount];
+            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy activeAccount:appDelegate.activeAccount];
             
             // get auto upload folder
             _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
