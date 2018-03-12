@@ -306,32 +306,27 @@
     if (self.maintenanceMode)
         return;
 
-    // Execute : now
     NSLog(@"[LOG] Update contenttype image for Photos Tab");
     [[CCSynchronize sharedSynchronize] searchContentType:@[@"image/%", @"video/%"] selector:selectorSearchContentType];
     
-    // Execute : after 1 sec.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        // verify Upload
-        [self verifyUploadInErrorOrWait];
+    // verify Upload
+    [self verifyUploadInErrorOrWait];
 
-        if (_activeMain) {
-            NSLog(@"[LOG] Request Server Capabilities");
-            [_activeMain requestServerCapabilities];
-        }
+    if (_activeMain) {
+        NSLog(@"[LOG] Request Server Capabilities");
+        [_activeMain requestServerCapabilities];
+    }
         
-        if (_activeMain && [[NCBrandOptions sharedInstance] use_middlewarePing]) {
-            NSLog(@"[LOG] Middleware Ping");
-            [_activeMain middlewarePing];
-        }
+    if (_activeMain && [[NCBrandOptions sharedInstance] use_middlewarePing]) {
+        NSLog(@"[LOG] Middleware Ping");
+        [_activeMain middlewarePing];
+    }
         
-        NSLog(@"[LOG] Initialize Auto upload");
-        [[NCAutoUpload sharedInstance] initStateAutoUpload];
+    NSLog(@"[LOG] Initialize Auto upload");
+    [[NCAutoUpload sharedInstance] initStateAutoUpload];
         
-        NSLog(@"[LOG] Listning Favorites");
-        [_activeFavorites readListingFavorites];
-    });
+    NSLog(@"[LOG] Listning Favorites");
+    [_activeFavorites readListingFavorites];
 }
 
 #pragma --------------------------------------------------------------------------------------------
