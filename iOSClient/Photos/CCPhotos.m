@@ -249,8 +249,8 @@
 
 - (void)getGeoLocationForSection:(NSInteger)section
 {
-    // test section
-    if (_sectionDataSource.sectionArrayRow.count <= section)
+    // test
+    if (_sectionDataSource.sections.count <= section)
         return;
     
     NSString *addLocation = @"";
@@ -567,6 +567,10 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
+    // test
+    if (_sectionDataSource.sections.count <= section)
+        return 0;
+    
     return [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]] count];
 }
 
@@ -600,7 +604,8 @@
         
         UILabel *titleLabel = (UILabel *)[headerView viewWithTag:100];
         titleLabel.textColor = [UIColor blackColor];
-        titleLabel.text = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
+        if (_sectionDataSource.sections.count > indexPath.section)
+            titleLabel.text = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
 
         return headerView;
     }
@@ -628,6 +633,9 @@
     UIImageView *checked = [cell viewWithTag:300];
     checked.image = [UIImage imageNamed:@"checked"];
 
+    if (_sectionDataSource.sections.count <= indexPath.section)
+        return cell;
+    
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     
     if ([metadatasForKey count] > indexPath.row) {
@@ -666,6 +674,10 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    // test
+    if (_sectionDataSource.sections.count <= indexPath.section)
+        return;
+    
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     
     if ([metadatasForKey count] > indexPath.row) {
@@ -687,7 +699,10 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    // test
     if (_cellEditing == NO)
+        return;
+    if (_sectionDataSource.sections.count <= indexPath.section)
         return;
     
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
