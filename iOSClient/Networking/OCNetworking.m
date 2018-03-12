@@ -383,7 +383,6 @@
         
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
             if ([self.delegate respondsToSelector:@selector(searchFailure:message:errorCode:)])
                 [self.delegate searchFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
