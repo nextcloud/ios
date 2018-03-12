@@ -317,6 +317,10 @@
         [[CCSynchronize sharedSynchronize] readFileForFolder:fileName serverUrl:serverUrl selector:selectorReadFileFolder];        
     }
     
+    //TEST
+    //[[CCActions sharedInstance] search:@"" fileName:@"" depth:@"infinity" date:nil contentType:@"image/%" selector:selectorSearchContentType delegate:self];
+
+    
     // Execute : after 1 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         

@@ -296,7 +296,7 @@ class CCActions: NSObject {
     // MARK: Search
     // --------------------------------------------------------------------------------------------
     
-    @objc func search(_ serverUrl: String, fileName: String, depth: String, date: Date?, selector: String, delegate: AnyObject) {
+    @objc func search(_ serverUrl: String, fileName: String, depth: String, date: Date?, contentType: String?, selector: String, delegate: AnyObject) {
         
         guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) else {
             return
@@ -307,6 +307,7 @@ class CCActions: NSObject {
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
         metadataNet.action = actionSearch
+        metadataNet.contentType = contentType
         metadataNet.date = date
         metadataNet.delegate = delegate
         metadataNet.directoryID = directoryID

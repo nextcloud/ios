@@ -1932,7 +1932,7 @@
 {
     NSString *home = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     
-    [[CCActions sharedInstance] search:home fileName:_searchFileName depth:@"infinity" date:nil selector:selectorSearch delegate:self];
+    [[CCActions sharedInstance] search:home fileName:_searchFileName depth:@"infinity" date:nil contentType:nil selector:selectorSearchFiles delegate:self];
 
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
@@ -1970,7 +1970,7 @@
             
         metadataNet.account = appDelegate.activeAccount;
         metadataNet.directoryID = directoryID;
-        metadataNet.selector = selectorSearch;
+        metadataNet.selector = selectorSearchFiles;
         metadataNet.serverUrl = _serverUrl;
 
         [self readFolderSuccess:metadataNet metadataFolder:nil metadatas:_searchResultMetadatas];
