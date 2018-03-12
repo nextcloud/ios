@@ -139,6 +139,7 @@ extern NSString *const flowEndpoint;
 // Error
 #define k_CCErrorTaskNil                                -9999
 #define k_CCErrorTaskDownloadNotFound                   -9998
+#define k_CCErrorUserNotAvailble                        -9997
 #define k_CCErrorInternalError                          -9996
 #define k_CCErrorNetworkNowAvailable                    -9995
 #define k_CCErrorFileAlreadyInDownload                  -9994
