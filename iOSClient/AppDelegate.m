@@ -307,18 +307,8 @@
         return;
 
     // Execute : now
-    NSLog(@"[LOG] Update Folder Photo");
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:_activeUrl];
-    if ([autoUploadPath length] > 0) {
-        
-        NSString *fileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
-        
-        [[CCSynchronize sharedSynchronize] readFileForFolder:fileName serverUrl:serverUrl selector:selectorReadFileFolder];        
-    }
-    
-    //TEST
-    [[CCSynchronize sharedSynchronize] searchContentType:@"image/%" selector:selectorSearchContentType];
+    NSLog(@"[LOG] Update contenttype image for Photos Tab");
+    [[CCSynchronize sharedSynchronize] searchContentType:@[@"image/%", @"video/%"] selector:selectorSearchContentType];
     
     // Execute : after 1 sec.
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{

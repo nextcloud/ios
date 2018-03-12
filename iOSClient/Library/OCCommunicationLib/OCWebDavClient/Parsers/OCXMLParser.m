@@ -201,8 +201,9 @@ NSString *OCCWebDAVURIKey           = @"uri";
         _currentFile.ocId = _xmlChars;
         
     } else if ([elementName hasSuffix:@":getetag"] && [_xmlChars length]) {
+        
         //ETAG
-        NSLog(@"getetag: %@", _xmlChars);
+        //NSLog(@"getetag: %@", _xmlChars);
         
         NSString *stringClean = _xmlChars;
         stringClean = [_xmlChars stringByReplacingOccurrencesOfString:@"\"" withString:@""];

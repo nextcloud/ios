@@ -266,9 +266,9 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [self mr_listPath:path depth:depth withUserSessionToken:token onCommunication:sharedOCCommunication success:success failure:failure];
 }
 
-- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth dateLastModified:(NSString *)dateLastModified contentType:(NSString *)contentType user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth dateLastModified:(NSString *)dateLastModified contentType:(NSArray *)contentType user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *, id, NSString *token))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *, NSString *token))failure {
     
-    NSString *body;
+    NSString *body, *whereType;
         
     NSParameterAssert(success);
     
@@ -303,15 +303,14 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                         "<d:depth>infinity</d:depth>"
                     "</d:scope>"
                 "</d:from>"
-                "<d:where>"
-                    "<d:like>"
-                        "<d:prop><d:getcontenttype/></d:prop>"
-                        "<d:literal>%@</d:literal>"
-                    "</d:like>"
-                "</d:where>"
-            "</d:basicsearch>"
-        "</d:searchrequest>", userID, contentType];
+                "<d:where><d:or>", userID];
         
+        for (NSString *type in contentType) {
+            whereType = [NSString stringWithFormat: @"%@<d:like><d:prop><d:getcontenttype/></d:prop><d:literal>%@</d:literal></d:like>", whereType, type];
+        }
+        
+        body = [NSString stringWithFormat: @"%@%@</d:or></d:where></d:basicsearch></d:searchrequest>", body, whereType];
+      
     } else {
         
         body = [NSString stringWithFormat: @""

@@ -1842,7 +1842,7 @@ class NCManageDatabase: NSObject {
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
-    @objc func getTableMetadatasPhotos(serverUrl: String) -> [tableMetadata]? {
+    @objc func getTableMetadatasContentTypeImageVideo() -> [tableMetadata]? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -1850,10 +1850,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
 
-        let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, serverUrl)).sorted(byKeyPath: "serverUrl", ascending: true)
-        let directoriesID = Array(directories.map { $0.directoryID })
-        
-        let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND session = '' AND (typeFile = %@ OR typeFile = %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
+        let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND session = '' AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video)).sorted(byKeyPath: "date", ascending: false)
             
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }

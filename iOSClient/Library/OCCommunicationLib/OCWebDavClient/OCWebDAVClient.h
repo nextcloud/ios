@@ -196,7 +196,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  
 */ 
 
-- (void)search:(NSString * _Nonnull)path folder:(NSString * _Nonnull)folder fileName:(NSString * _Nonnull)fileName depth:(NSString * _Nonnull)depth dateLastModified:(NSString * _Nonnull)dateLastModified contentType:(NSString * _Nonnull)contentType user:(NSString * _Nonnull)user userID:(NSString * _Nonnull)userID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication withUserSessionToken:(NSString * _Nonnull)token success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nonnull, NSString * _Nonnull token))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull, NSString * _Nonnull token))failure;
+- (void)search:(NSString * _Nonnull)path folder:(NSString * _Nonnull)folder fileName:(NSString * _Nonnull)fileName depth:(NSString * _Nonnull)depth dateLastModified:(NSString * _Nonnull)dateLastModified contentType:(NSArray * _Nonnull)contentType user:(NSString * _Nonnull)user userID:(NSString * _Nonnull)userID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication withUserSessionToken:(NSString * _Nonnull)token success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nonnull, NSString * _Nonnull token))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull, NSString * _Nonnull token))failure;
 
 /**
  

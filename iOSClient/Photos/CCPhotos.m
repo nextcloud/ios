@@ -38,7 +38,6 @@
     NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
     
-    NSDate *_dateReadDataSource;
     CCSectionDataSourceMetadata *_sectionDataSource;
     
     CCHud *_hud;
@@ -251,6 +250,10 @@
 
 - (void)getGeoLocationForSection:(NSInteger)section
 {
+    // test section
+    if (_sectionDataSource.sectionArrayRow.count <= section)
+        return;
+    
     NSString *addLocation = @"";
     
     NSArray *fileIDsForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]];
@@ -292,6 +295,7 @@
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
+/*
 - (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
 {
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
@@ -309,6 +313,7 @@
 
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
+
 
 - (UIImage *)buttonImageForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state
 {
@@ -331,6 +336,7 @@
     [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== openSelectedFiles =====
@@ -526,7 +532,6 @@
 - (void)reloadDatasourceForced
 {
     [CCSectionMetadata removeAllObjectsSectionDataSource:_sectionDataSource];
-    _dateReadDataSource = nil;
     [self reloadDatasource];
 }
 
@@ -536,25 +541,15 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    _directoryStartDatasource = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
-    NSDate *dateDateRecordDirectory = nil;
-    
-    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl BEGINSWITH %@", appDelegate.activeAccount, _directoryStartDatasource] sorted:@"dateReadDirectory" ascending:false];
-    if ([directories count] > 0) {
-        tableDirectory *directory = [directories objectAtIndex:0];
-        dateDateRecordDirectory = directory.dateReadDirectory;
-    }
-    
-    if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-        NSLog(@"[LOG] Photos rebuild Data Source serverUrl : %@", _directoryStartDatasource);
-
-        _dateReadDataSource = [NSDate date];
-        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:_directoryStartDatasource];
+        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasContentTypeImageVideo];
         _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil e2eEncryptions:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
         
-        [self reloadCollection];
-    }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self reloadCollection];
+        });
+    });
 }
 
 - (void)reloadCollection

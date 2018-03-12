@@ -90,7 +90,7 @@
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *action;
 @property (nonatomic, strong) NSString *assetLocalIdentifier;
-@property (nonatomic, strong) NSString *contentType;
+@property (nonatomic, strong) NSArray *contentType;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, weak) id delegate;
 @property (nonatomic, strong) NSString *depth;
