@@ -38,6 +38,8 @@
 @property NSInteger files;
 @property double totalSize;
 
+- (id)copyWithZone:(NSZone *)zone;
+
 @end
 
 @interface CCSectionMetadata : NSObject
