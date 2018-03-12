@@ -320,58 +320,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Search =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    //NSLog
-}
-
-- (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        
-        NSMutableArray *addMetadatas = [NSMutableArray new];
-        
-        for (tableMetadata *metadata in metadatas) {
-    
-            // Verify if do not exists this Metadata
-            tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
-                
-            if (!result)
-                [addMetadatas addObject:metadata];
-        }
-        
-        if ([addMetadatas count] > 0) {
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
-        }
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate.activePhotos reloadDatasourceForced];
-        });
-    });
-}
-
-- (void)searchContentType:(NSArray *)contentType selector:(NSString *)selector
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    metadataNet.action = actionSearch;
-    metadataNet.contentType = contentType;
-    metadataNet.date = [NSDate date];
-    metadataNet.depth = @"infinity";
-    metadataNet.priority = NSOperationQueuePriorityLow;
-    metadataNet.selector = selector;
-
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Verify Metadatas =====
 #pragma --------------------------------------------------------------------------------------------
 

@@ -306,9 +306,6 @@
     if (self.maintenanceMode)
         return;
 
-    NSLog(@"[LOG] Update contenttype image for Photos Tab");
-    [[CCSynchronize sharedSynchronize] searchContentType:@[@"image/%", @"video/%"] selector:selectorSearchContentType];
-    
     // verify Upload
     [self verifyUploadInErrorOrWait];
 
@@ -324,7 +321,10 @@
         
     NSLog(@"[LOG] Initialize Auto upload");
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
-        
+    
+    NSLog(@"[LOG] Update contenttype image for Photos Tab");
+    [_activePhotos readPhotoVideo];
+    
     NSLog(@"[LOG] Listning Favorites");
     [_activeFavorites readListingFavorites];
 }

@@ -287,7 +287,9 @@
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
+    NSString *text;
+    
+    text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
     
@@ -522,6 +524,54 @@
 {
     //NSDictionary *dict = notification.userInfo;
     //float progress = [[dict valueForKey:@"progress"] floatValue];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== readPhotoVideo ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    //NSLog
+}
+
+- (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
+{
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+        return;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        
+        NSMutableArray *addMetadatas = [NSMutableArray new];
+        
+        for (tableMetadata *metadata in metadatas) {
+            
+            // Verify if do not exists this Metadata
+            tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+            
+            if (!result)
+                [addMetadatas addObject:metadata];
+        }
+        
+        if ([addMetadatas count] > 0) {
+            
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self reloadDatasourceForced];
+            });
+        }
+    });
+}
+
+- (void)readPhotoVideo
+{
+    // test
+    if (appDelegate.activeAccount.length == 0)
+        return;
+    
+    [[CCActions sharedInstance] search:@"" fileName:@"" depth:@"infinity" date:[NSDate date] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
