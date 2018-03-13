@@ -471,7 +471,7 @@
     if (account) {
     
         // Update User (+ userProfile.id)
-        (void)[[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+        (void)[[NCManageDatabase sharedInstance] setAccountUserProfile:userProfile];
         
         // Set this account as default
         tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];

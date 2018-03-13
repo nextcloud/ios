@@ -549,6 +549,9 @@
         return;
     }
     
+    // Update date 
+    [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         NSMutableArray *addMetadatas = [NSMutableArray new];
@@ -578,6 +581,9 @@
     // test
     if (appDelegate.activeAccount.length == 0 || _isSearchMode)
         return;
+    
+    //tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    // account.dateSearchContentTypeImageVideo
     
     [[CCActions sharedInstance] search:@"" fileName:@"" depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
     

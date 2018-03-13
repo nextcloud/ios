@@ -1128,7 +1128,7 @@
         return;
     
     // Update User (+ userProfile.id) & active account & account network
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
+    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountUserProfile:userProfile];
     if (tableAccount) {
         [[CCNetworking sharedNetworking] settingAccount];
         [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];

@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 17,
+            schemaVersion: 18,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -67,6 +67,7 @@ class NCManageDatabase: NSObject {
             // 15 : Version 2.19.2
             // 16 : Version 2.20.2
             // 17 : Version 2.20.4
+            // 18 : Version 2.20.6
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -405,7 +406,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setAccountsUserProfile(_ userProfile: OCUserProfile) -> tableAccount? {
+    @objc func setAccountUserProfile(_ userProfile: OCUserProfile) -> tableAccount? {
      
         guard let activeAccount = self.getAccountActive() else {
             return nil
@@ -446,6 +447,28 @@ class NCManageDatabase: NSObject {
         }
         
         return activeAccount
+    }
+    
+    @objc func setAccountDateSearchContentTypeImageVideo(_ date: Date) {
+        
+        guard let activeAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+                    return
+                }
+                
+                result.dateSearchContentTypeImageVideo = date
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
     }
     
     //MARK: -
