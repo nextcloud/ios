@@ -341,8 +341,6 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                 "</d:from>"
                 "<d:where>"
                     "<d:like>"
-                        //"<d:prop><d:getcontenttype/></d:prop>"
-                        //"<d:literal>image/%</d:literal>"
                         "<d:prop><d:displayname/></d:prop>"
                         "<d:literal>%@</d:literal>"
                     "</d:like>"
