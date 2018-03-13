@@ -380,7 +380,7 @@
         
         // Load photo datasorce
         if (appDelegate.activePhotos)
-            [appDelegate.activePhotos reloadDatasourceForced];
+            [appDelegate.activePhotos reloadDatasource];
         
         // remove all of detail
         if (appDelegate.activeDetail)
@@ -4146,10 +4146,7 @@
                                         
                                         // Clear data (old) Auto Upload
                                         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:_autoUploadDirectory directoryID:nil];
-                                        
-                                        if (appDelegate.activeAccount.length > 0 && appDelegate.activePhotos)
-                                            [appDelegate.activePhotos reloadDatasourceForced];
-                                        
+                                                                                
                                         [self readFolder:serverUrl];
                                         
                                         NSLog(@"[LOG] Update Folder Photo");

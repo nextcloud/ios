@@ -453,12 +453,12 @@
                 
             } else {
                 
-                [self reloadDatasourceForced];
+                [self reloadDatasource];
             }
             
         } else {
             
-            [self reloadDatasourceForced];
+            [self reloadDatasource];
         }
     }
 }
@@ -560,7 +560,7 @@
             (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
             dispatch_async(dispatch_get_main_queue(), ^{
                 _textTitleForEmptyDataSet = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
-                [self reloadDatasourceForced];
+                [self reloadDatasource];
             });
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -586,12 +586,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Collection ====
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)reloadDatasourceForced
-{
-    [CCSectionMetadata removeAllObjectsSectionDataSource:_sectionDataSource];
-    [self reloadDatasource];
-}
 
 - (void)reloadDatasource
 {    

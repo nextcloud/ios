@@ -248,11 +248,6 @@
         [_activeMain readFileReloadFolder];
     }
     
-    // refresh Photos tab
-    if (_activePhotos) {
-        [_activePhotos reloadDatasourceForced];
-    }
-    
     // Initializations
     [self applicationInitialized];
 }
