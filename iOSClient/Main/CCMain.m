@@ -114,6 +114,9 @@
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(setTitle) name:@"setTitleMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+        
+        // Active Main
+        appDelegate.activeMain = self;
     }
     
     return self;
@@ -151,7 +154,7 @@
     self.searchController.searchBar.delegate = self;
     
     [CCNetworking sharedNetworking].delegate = self;
-        
+    
     // Custom Cell
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
@@ -362,10 +365,7 @@
             appDelegate.sharesLink = results[0];
             appDelegate.sharesUserAndGroup = results[1];
         }
-        
-        // Read (File) Folder
-        [self readFileReloadFolder];
-        
+                
         // Setting Theming
         [appDelegate settingThemingColorBrand];
         

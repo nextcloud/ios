@@ -241,11 +241,7 @@
 // L' applicazione entrerà in primo piano (attivo solo dopo il background)
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
-{    
-    // refresh active Main
-    if (_activeMain)
-        [_activeMain readFileReloadFolder];
-    
+{
     // Initializations
     [self applicationInitialized];
 }
@@ -302,12 +298,13 @@
     // verify Upload
     [self verifyUploadInErrorOrWait];
 
-    if (_activeMain) {
-        NSLog(@"[LOG] Request Server Capabilities");
-        [_activeMain requestServerCapabilities];
-    }
-        
-    if (_activeMain && [[NCBrandOptions sharedInstance] use_middlewarePing]) {
+    NSLog(@"[LOG] Request Server Capabilities");
+    [_activeMain requestServerCapabilities];
+    
+    NSLog(@"[LOG] Refresh Active Main");
+    [_activeMain readFileReloadFolder];
+    
+    if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
         [_activeMain middlewarePing];
     }
