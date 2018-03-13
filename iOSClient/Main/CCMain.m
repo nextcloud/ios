@@ -331,6 +331,14 @@
 #pragma mark ===== Initizlize Mail =====
 #pragma --------------------------------------------------------------------------------------------
 
+//
+// Callers :
+//
+// loginSuccess (delagate)
+// ChangeDefaultAccount (delegate)
+// Split : inizialize
+// Settings Advanced : removeAllFiles
+//
 - (void)initializeMain:(NSNotification *)notification
 {
     _directoryGroupBy = nil;
