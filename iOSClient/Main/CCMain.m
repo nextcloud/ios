@@ -183,9 +183,6 @@
         // Settings this folder & delegate & Loading datasource
         appDelegate.directoryUser = [CCUtility getDirectoryActiveUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
         
-        // Load Datasource
-        [self reloadDatasource:_serverUrl];
-        
         // Read (File) Folder
         [self readFileReloadFolder];
     }
@@ -249,9 +246,6 @@
         
         if (appDelegate.activeAccount.length > 0 && [_selectedFileIDsMetadatas count] == 0) {
         
-            // Load Datasource
-            [self reloadDatasource:_serverUrl];
-            
             // Read (file) Folder
             [self readFileReloadFolder];
         }
@@ -369,9 +363,6 @@
             appDelegate.sharesUserAndGroup = results[1];
         }
         
-        // Load Datasource
-        [self reloadDatasource:_serverUrl];
-
         // Read (File) Folder
         [self readFileReloadFolder];
         
@@ -1704,6 +1695,9 @@
 {
     if (!_serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode)
         return;
+    
+    // Load Datasource
+    [self reloadDatasource];
     
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
 

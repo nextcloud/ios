@@ -243,10 +243,8 @@
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {    
     // refresh active Main
-    if (_activeMain) {
-        [_activeMain reloadDatasource];
+    if (_activeMain)
         [_activeMain readFileReloadFolder];
-    }
     
     // Initializations
     [self applicationInitialized];
