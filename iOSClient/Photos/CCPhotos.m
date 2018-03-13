@@ -562,14 +562,12 @@
                 [addMetadatas addObject:metadata];
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if ([addMetadatas count] > 0) {
+        if ([addMetadatas count] > 0) {
+            dispatch_async(dispatch_get_main_queue(), ^{
                 (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
                 [self reloadDatasource];
-            } else {
-                [self reloadCollection];
-            }
-        });
+            });
+        }
         
         _isSearchMode = NO;
     });
@@ -584,8 +582,6 @@
     [[CCActions sharedInstance] search:@"" fileName:@"" depth:@"infinity" date:[NSDate date] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
     
     _isSearchMode = YES;
-    
-    [self reloadCollection];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -604,8 +600,11 @@
         CCSectionDataSourceMetadata *tempSectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
         
         dispatch_async(dispatch_get_main_queue(), ^{
-            _sectionDataSource = [tempSectionDataSource copy];
-            [self reloadCollection];
+            // OPTIMIZED
+            if (tempSectionDataSource.totalSize != _sectionDataSource.totalSize || tempSectionDataSource.files != _sectionDataSource.files) {
+                _sectionDataSource = [tempSectionDataSource copy];
+                [self reloadCollection];
+            }
         });
     });
 }
