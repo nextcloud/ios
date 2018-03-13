@@ -153,6 +153,7 @@
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
     
+    // Actie Delegate Networking
     [CCNetworking sharedNetworking].delegate = self;
     
     // Custom Cell
@@ -370,12 +371,10 @@
         [appDelegate settingThemingColorBrand];
         
         // Load photo datasorce
-        if (appDelegate.activePhotos)
-            [appDelegate.activePhotos reloadDatasource];
+        [appDelegate.activePhotos reloadDatasource];
         
         // remove all of detail
-        if (appDelegate.activeDetail)
-            [appDelegate.activeDetail removeAllView];
+        [appDelegate.activeDetail removeAllView];
         
         // remove all Notification Messages
         [appDelegate.listOfNotifications removeAllObjects];
