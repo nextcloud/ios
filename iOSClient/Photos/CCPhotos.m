@@ -579,7 +579,7 @@
     if (appDelegate.activeAccount.length == 0 || _isSearchMode)
         return;
     
-    [[CCActions sharedInstance] search:@"" fileName:@"" depth:@"infinity" date:[NSDate date] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
+    [[CCActions sharedInstance] search:@"" fileName:@"" depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
     
     _isSearchMode = YES;
 }
