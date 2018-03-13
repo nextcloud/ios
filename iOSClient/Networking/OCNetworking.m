@@ -175,7 +175,7 @@
         } else {
             
             if ([self.delegate respondsToSelector:@selector(downloadThumbnailFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
-                [self.delegate downloadThumbnailFailure:_metadataNet message:@"No data" errorCode:0];
+                [self.delegate downloadThumbnailFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
         }
         
         [self complete];
@@ -211,6 +211,16 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication readFolder:_metadataNet.serverUrl depth:_metadataNet.depth withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+        
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
+                [self.delegate readFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
         
         NSMutableArray *metadatas = [NSMutableArray new];
         BOOL showHiddenFiles = [CCUtility getShowHiddenFiles];
@@ -490,6 +500,16 @@
 
     [communication settingFavoriteServer:path andFileOrFolderPath:_metadataNet.fileName favorite:[_metadataNet.options boolValue] withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
         
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(settingFavoriteFailure:message:errorCode:)])
+                [self.delegate settingFavoriteFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
+        
         if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccess:)])
             [self.delegate settingFavoriteSuccess:_metadataNet];
         
@@ -652,6 +672,16 @@
     
     [communication createFolder:nameFolderURL onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(createFolderFailure:message:errorCode:)])
+                [self.delegate createFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
+        
         NSDictionary *fields = [response allHeaderFields];
 
         _metadataNet.fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
@@ -725,6 +755,16 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication deleteFileOrFolder:serverFileUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
+                [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
         
         if ([_metadataNet.selector rangeOfString:selectorDelete].location != NSNotFound && [self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
             [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:@"" errorCode:0];
@@ -842,7 +882,16 @@
     
     [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
+        // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)])
+                [self.delegate readFileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
+        
         BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:fileName account:_metadataNet.account];
 
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
@@ -927,11 +976,19 @@
     
     [communication readSharedByServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
         
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)])
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
+        
         BOOL openWindow = NO;
         
         [appDelegate.sharesID removeAllObjects];
-        
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         
         if ([recordAccount.account isEqualToString:_metadataNet.account]) {
         
@@ -1173,6 +1230,16 @@
     
     [communication getSharePermissionsFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *permissions, NSString *redirectedServer) {
         
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(getSharePermissionsFileFailure:message:errorCode:)])
+                [self.delegate getSharePermissionsFileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
+        
         if([self.delegate respondsToSelector:@selector(getSharePermissionsFileSuccess:permissions:)])
             [self.delegate getSharePermissionsFileSuccess:_metadataNet permissions:permissions];
         
@@ -1214,6 +1281,16 @@
     
     [communication getActivityServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
         
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(getActivityServerFailure:message:errorCode:)])
+                [self.delegate getActivityServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
+        
         if ([self.delegate respondsToSelector:@selector(getActivityServerSuccess:listOfActivity:)])
             [self.delegate getActivityServerSuccess:_metadataNet listOfActivity:listOfActivity];
         
@@ -1254,6 +1331,16 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication getExternalSitesServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer) {
+        
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(getExternalSitesServerFailure:message:errorCode:)])
+                [self.delegate getExternalSitesServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
         
         if ([self.delegate respondsToSelector:@selector(getExternalSitesServerSuccess:listOfExternalSites:)])
             [self.delegate getExternalSitesServerSuccess:_metadataNet listOfExternalSites:listOfExternalSites];
@@ -1337,6 +1424,16 @@
     
     [communication getNotificationServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer) {
         
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(getNotificationServerFailure:message:errorCode:)])
+                [self.delegate getNotificationServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
+        
         if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccess:listOfNotifications:)])
             [self.delegate getNotificationServerSuccess:_metadataNet listOfNotifications:listOfNotifications];
         
@@ -1378,6 +1475,16 @@
     NSString *type = _metadataNet.options;
     
     [communication setNotificationServer:_metadataNet.serverUrl type:type onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(setNotificationServerFailure:message:errorCode:)])
+                [self.delegate setNotificationServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
         
         if ([self.delegate respondsToSelector:@selector(setNotificationServerSuccess:)])
             [self.delegate setNotificationServerSuccess:_metadataNet];
@@ -1501,6 +1608,16 @@
     
     [communication getUserProfileServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer) {
         
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(getUserProfileFailure:message:errorCode:)])
+                [self.delegate getUserProfileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
+        
         if ([self.delegate respondsToSelector:@selector(getUserProfileSuccess:userProfile:)])
             [self.delegate getUserProfileSuccess:_metadataNet userProfile:userProfile];
         
@@ -1541,7 +1658,17 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     [communication getCapabilitiesOfServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer) {
-                
+        
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+            if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerFailure:message:errorCode:)])
+                [self.delegate getCapabilitiesOfServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            
+            [self complete];
+            return;
+        }
+        
         if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccess:capabilities:)])
             [self.delegate getCapabilitiesOfServerSuccess:_metadataNet capabilities:capabilities];
         
