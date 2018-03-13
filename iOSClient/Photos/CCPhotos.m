@@ -44,8 +44,7 @@
     
     TOScrollBar *_scrollBar;
     
-    NSString *_textTitleForEmptyDataSet;
-
+    BOOL _isSearchMode;
 }
 @end
 
@@ -97,7 +96,6 @@
     // empty Data Source
     self.collectionView.emptyDataSetDelegate = self;
     self.collectionView.emptyDataSetSource = self;
-    _textTitleForEmptyDataSet = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
 
     // scroll bar
     _scrollBar = [TOScrollBar new];
@@ -291,9 +289,17 @@
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
+    NSString *text;
+    
+    if (_isSearchMode) {
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_search_in_progress_", nil)];
+    } else {
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
+    }
+    
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
     
-    return [[NSAttributedString alloc] initWithString:_textTitleForEmptyDataSet attributes:attributes];
+    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
 /*
@@ -532,14 +538,14 @@
 
 - (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    _textTitleForEmptyDataSet = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
+    _isSearchMode = NO;
 }
 
 - (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount]) {
-        _textTitleForEmptyDataSet = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
+        _isSearchMode = NO;
         return;
     }
     
@@ -556,30 +562,29 @@
                 [addMetadatas addObject:metadata];
         }
         
-        if ([addMetadatas count] > 0) {
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                _textTitleForEmptyDataSet = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if ([addMetadatas count] > 0) {
+                (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
                 [self reloadDatasource];
-            });
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                _textTitleForEmptyDataSet = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
+            } else {
                 [self reloadCollection];
-            });
-        }
+            }
+        });
+        
+        _isSearchMode = NO;
     });
 }
 
 - (void)readPhotoVideo
 {
     // test
-    if (appDelegate.activeAccount.length == 0)
+    if (appDelegate.activeAccount.length == 0 || _isSearchMode)
         return;
     
     [[CCActions sharedInstance] search:@"" fileName:@"" depth:@"infinity" date:[NSDate date] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
     
-    _textTitleForEmptyDataSet = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_search_in_progress_", nil)];
+    _isSearchMode = YES;
+    
     [self reloadCollection];
 }
 
