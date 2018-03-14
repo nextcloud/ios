@@ -1338,6 +1338,7 @@
         // add Favorite
         if ([selector isEqualToString:selectorAddFavorite]) {
             [[CCActions sharedInstance] settingFavorite:metadata favorite:YES delegate:self];
+            [self reloadDatasource:serverUrl];
         }
         
         // open View File
