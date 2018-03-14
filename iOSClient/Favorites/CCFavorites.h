@@ -46,6 +46,7 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) UIDocumentInteractionController *docController;
 
+- (void)reloadDatasource;
 - (void)readListingFavorites;
 - (void)addFavoriteFolder:(NSString *)serverUrl;
 

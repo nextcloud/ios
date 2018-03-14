@@ -378,12 +378,6 @@
         // Setting Theming
         [appDelegate settingThemingColorBrand];
         
-        // Load photo datasorce
-        [appDelegate.activePhotos reloadDatasource];
-        
-        // Read this folder
-        [self readFileReloadFolder];
-
         // remove all of detail
         [appDelegate.activeDetail removeAllView];
         
@@ -399,6 +393,13 @@
         
         NSLog(@"[LOG] Request Server Capabilities");
         [self requestServerCapabilities];
+        
+        // Clear datasorce
+        [appDelegate.activePhotos reloadDatasource];
+        [appDelegate.activeFavorites reloadDatasource];
+        
+        // Read this folder
+        [self readFileReloadFolder];
         
     } else {
         

@@ -431,44 +431,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== User Profile  ====
-#pragma --------------------------------------------------------------------------------------------
-/*
-- (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
-    
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-    
-    [alertController addAction:okAction];
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
-{
-    // Verify if the account already exists
-    if (userProfile.id.length > 0 && self.baseUrl.text.length > 0 && self.user.text.length > 0) {
-    
-        tableAccount *accountAlreadyExists = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"url = %@ AND user = %@ AND userID != %@", self.baseUrl.text, userProfile.id, self.user.text]];
-        
-        if (accountAlreadyExists) {
-            
-            [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:[NSString stringWithFormat:NSLocalizedString(@"_account_already_exists_", nil), userProfile.id] preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-            
-            [alertController addAction:okAction];
-            [self presentViewController:alertController animated:YES completion:nil];
-            
-            return;
-        }
-    }
-}
-*/
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark == TextField ==
 #pragma --------------------------------------------------------------------------------------------
 
