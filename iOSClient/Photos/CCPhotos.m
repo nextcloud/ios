@@ -582,7 +582,9 @@
     if (appDelegate.activeAccount.length == 0 || _isSearchMode)
         return;
     
-    //tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    // WAITING FOR d:creationdate
+    //
+    // tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     // account.dateSearchContentTypeImageVideo
     
     [[CCActions sharedInstance] search:@"" fileName:@"" depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
