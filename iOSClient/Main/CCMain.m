@@ -1217,8 +1217,10 @@
     
     // ------ GET SERVICE SERVER ------------------------------------------------------------
     
-    //CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-
+    // Read User Profile
+    metadataNet.action = actionGetUserProfile;
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+    
     // Read External Sites
     if (capabilities.isExternalSitesServerEnabled) {
         
@@ -1236,10 +1238,6 @@
     
     // Read Notification
     metadataNet.action = actionGetNotificationServer;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-    
-    // Read User Profile
-    metadataNet.action = actionGetUserProfile;
     [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
     
     // Read Activity
