@@ -233,6 +233,7 @@
 		F75131641FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */ = {isa = PBXBuildFile; fileRef = F75131621FA5EFF4002BB4D1 /* NCNetworkingSync.m */; };
 		F75131651FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */ = {isa = PBXBuildFile; fileRef = F75131621FA5EFF4002BB4D1 /* NCNetworkingSync.m */; };
 		F75131661FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */ = {isa = PBXBuildFile; fileRef = F75131621FA5EFF4002BB4D1 /* NCNetworkingSync.m */; };
+		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F75797AE1E81356C00187A1B /* CTAssetsPicker.strings in Resources */ = {isa = PBXBuildFile; fileRef = F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */; };
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
@@ -1001,6 +1002,7 @@
 		F7540F2A1D5B238600C3FFA8 /* x509.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509.h; sourceTree = "<group>"; };
 		F7540F2B1D5B238600C3FFA8 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		F7540F2C1D5B238600C3FFA8 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
+		F755BD9A20594AC7008C5FBB /* NCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCService.swift; sourceTree = "<group>"; };
 		F75797AD1E81356C00187A1B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageAutoUploadFileName.swift; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
@@ -2158,6 +2160,7 @@
 			isa = PBXGroup;
 			children = (
 				F732BA031D76CE1500E9878B /* CCNetworking.h */,
+				F755BD9A20594AC7008C5FBB /* NCService.swift */,
 				F732BA041D76CE1500E9878B /* CCNetworking.m */,
 				F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */,
 				F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */,
@@ -3984,6 +3987,7 @@
 				F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */,
 				F75131631FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */,
 				F762CB011EACB66200B38484 /* XLFormSelectorCell.m in Sources */,
+				F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */,
 				F70022AD1EC4C9100080073F /* AFURLResponseSerialization.m in Sources */,
 				F7D424531F063B82009C9782 /* NSBundle+CTAssetsPickerController.m in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
