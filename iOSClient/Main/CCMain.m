@@ -381,21 +381,25 @@
         // Load photo datasorce
         [appDelegate.activePhotos reloadDatasource];
         
+        // Read this folder
+        [self readFileReloadFolder];
+
         // remove all of detail
         [appDelegate.activeDetail removeAllView];
         
         // remove all Notification Messages
         [appDelegate.listOfNotifications removeAllObjects];
         
-        // Not Photos Video in library ? then align
+        // Not Photos Video in library ? then align and Init Auto Upload
         NSArray *recordsPhotoLibrary = [[NCManageDatabase sharedInstance] getPhotoLibraryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", appDelegate.activeAccount]];
         if ([recordsPhotoLibrary count] == 0) {
             [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         }
+        [[NCAutoUpload sharedInstance] initStateAutoUpload];
         
-        // Initializations
-        [appDelegate applicationInitialized];
-                
+        NSLog(@"[LOG] Request Server Capabilities");
+        [self requestServerCapabilities];
+        
     } else {
         
         // reload datasource
@@ -1137,6 +1141,10 @@
         [appDelegate messageNotification:@"Account" description:@"Internal error : account not found" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
     }
 
+    // Required userd ID (search + favorite)
+    [appDelegate.activePhotos readPhotoVideo];    
+    [appDelegate.activeFavorites readListingFavorites];
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/128", appDelegate.activeUrl, appDelegate.activeUser];
@@ -1207,12 +1215,19 @@
         });
     });
 
-    // ------ SEARCH  ------------------------------------------------------------------------
+    // ------ SEARCH  -----------------------------------------------------------------------
     
     // Search bar if change version
     if ([[NCManageDatabase sharedInstance] getServerVersion] != capabilities.versionMajor) {
     
         [self cancelSearchBar];
+    }
+    
+    // ------ MIDDLEWARE PING ---------------------------------------------------------------
+    
+    if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
+        NSLog(@"[LOG] Middleware Ping");
+        [self middlewarePing];
     }
     
     // ------ GET SERVICE SERVER ------------------------------------------------------------
@@ -1253,7 +1268,7 @@
 - (void)requestServerCapabilities
 {
     // test
-    if (appDelegate.activeAccount.length == 0)
+    if (appDelegate.activeAccount.length == 0 || appDelegate.maintenanceMode)
         return;
     
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
@@ -1270,7 +1285,7 @@
 - (void)middlewarePing
 {
     // test
-    if (appDelegate.activeAccount.length == 0)
+    if (appDelegate.activeAccount.length == 0 || appDelegate.maintenanceMode)
         return;
     
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];

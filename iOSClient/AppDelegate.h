@@ -131,9 +131,6 @@
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
 
-// initializations 
-- (void)applicationInitialized;
-
 // Quick Actions - ShotcutItem
 - (void)configDynamicShortcutItems;
 - (BOOL)handleShortCutItem:(UIApplicationShortcutItem *)shortcutItem;

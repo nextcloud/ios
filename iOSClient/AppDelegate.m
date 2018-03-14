@@ -242,8 +242,15 @@
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    // Initializations
-    [self applicationInitialized];
+    // Test Maintenance
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
+    
+    NSLog(@"[LOG] Request Server Capabilities");
+    [_activeMain requestServerCapabilities];
+    
+    NSLog(@"[LOG] Initialize Auto upload");
+    [[NCAutoUpload sharedInstance] initStateAutoUpload];    
 }
 
 //
@@ -251,7 +258,12 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-   
+    // Test Maintenance
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
+    
+    // verify Upload
+    [self verifyUploadInErrorOrWait];
 }
 
 //
@@ -284,44 +296,6 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {    
     NSLog(@"[LOG] bye bye, Nextcloud !");
-}
-
-//
-// Application Initialized
-//
-// Callers :
-//
-// CCMain : initializeMain
-// appDelegate : applicationWillEnterForeground
-//
-- (void)applicationInitialized
-{
-    // Test Maintenance
-    if (self.maintenanceMode)
-        return;
-
-    // verify Upload
-    [self verifyUploadInErrorOrWait];
-
-    NSLog(@"[LOG] Request Server Capabilities");
-    [_activeMain requestServerCapabilities];
-    
-    NSLog(@"[LOG] Refresh Active Main");
-    [_activeMain readFileReloadFolder];
-    
-    if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
-        NSLog(@"[LOG] Middleware Ping");
-        [_activeMain middlewarePing];
-    }
-        
-    NSLog(@"[LOG] Initialize Auto upload");
-    [[NCAutoUpload sharedInstance] initStateAutoUpload];
-    
-    NSLog(@"[LOG] Update contenttype image for Photos Tab");
-    [_activePhotos readPhotoVideo];
-    
-    NSLog(@"[LOG] Listning Favorites");
-    [_activeFavorites readListingFavorites];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1538,6 +1512,10 @@
 
 - (void)verifyUploadInErrorOrWait
 {
+    // Test Maintenance
+    if (self.maintenanceMode || self.activeAccount.length == 0)
+        return;
+    
     NSMutableSet *directoryIDs = [NSMutableSet new];
     
     NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'upload' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifier = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierWaitStart] sorted:nil ascending:NO];
