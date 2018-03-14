@@ -1224,13 +1224,6 @@
         [self cancelSearchBar];
     }
     
-    // ------ MIDDLEWARE PING ---------------------------------------------------------------
-    
-    if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
-        NSLog(@"[LOG] Middleware Ping");
-        [self middlewarePing];
-    }
-    
     // ------ GET SERVICE SERVER ------------------------------------------------------------
     
     // Read User Profile
