@@ -1139,7 +1139,7 @@
         [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
     } else {
         
-        [appDelegate messageNotification:@"Account" description:@"Internal error : account not found" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+        [appDelegate messageNotification:@"Account" description:@"Internal error : account not found on DB" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
     }
 
     // Required userd ID (search + favorite)
