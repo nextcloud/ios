@@ -4157,11 +4157,11 @@
                                                                                 
                                         [self readFolder:serverUrl];
                                         
-                                        NSLog(@"[LOG] Update Folder Photo");
-                                        NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
-                                        if ([autoUploadPath length] > 0) {
-                                            [[CCSynchronize sharedSynchronize] readFileForFolder:_metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolder];
-                                        }
+                                        //NSLog(@"[LOG] Update Folder Photo");
+                                        //NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
+                                        //if ([autoUploadPath length] > 0) {
+                                        //    [[CCSynchronize sharedSynchronize] readFileForFolder:_metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolder];
+                                        //}
                                     }];
         }
 
