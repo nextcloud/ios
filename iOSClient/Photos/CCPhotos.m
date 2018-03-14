@@ -609,10 +609,10 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             // OPTIMIZED
-            if (tempSectionDataSource.totalSize != _sectionDataSource.totalSize || tempSectionDataSource.files != _sectionDataSource.files) {
+            //if (tempSectionDataSource.totalSize != _sectionDataSource.totalSize || tempSectionDataSource.files != _sectionDataSource.files) {
                 _sectionDataSource = [tempSectionDataSource copy];
                 [self reloadCollection];
-            }
+            //}
         });
     });
 }
