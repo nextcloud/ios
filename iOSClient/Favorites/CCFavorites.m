@@ -286,7 +286,7 @@
 #pragma mark ==== Download Thumbnail <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
+- (void)downloadThumbnailSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])

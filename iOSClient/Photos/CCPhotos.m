@@ -507,18 +507,21 @@
 #pragma mark ==== Download Thumbnail Delegate ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
+- (void)downloadThumbnailSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
-    
-    if ([self indexPathIsValid:indexPath]) {
-    
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadataNet.fileID]])
-            [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+    if (errorCode == 0) {
+        
+        NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
+        
+        if ([self indexPathIsValid:indexPath]) {
+        
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadataNet.fileID]])
+                [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+        }
     }
 }
 

@@ -149,7 +149,8 @@
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileID, ext]]) {
         
-        [self.delegate downloadThumbnailSuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)])
+            [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:nil errorCode:0];
         
         [self complete];
         
@@ -170,12 +171,13 @@
             
             [CCGraphics saveIcoWithEtag:_metadataNet.fileID image:thumbnailImage writeToFile:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileID, ext] copy:NO move:NO fromPath:nil toPath:nil];
 
-            if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccess:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
-                [self.delegate downloadThumbnailSuccess:_metadataNet];
+            if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
+                [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:nil errorCode:0];
+            
         } else {
             
-            if ([self.delegate respondsToSelector:@selector(downloadThumbnailFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
-                [self.delegate downloadThumbnailFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
+                [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
         }
         
         [self complete];
@@ -187,12 +189,12 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(downloadThumbnailFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail]) {
+        if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail]) {
             
             if (errorCode == 503)
-                [self.delegate downloadThumbnailFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate downloadThumbnailFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
+                [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
         }
         
         [self complete];

@@ -42,7 +42,7 @@ import Foundation
 
 @objc protocol CCActionsDownloadThumbnailDelegate {
     
-    func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet)
+    func downloadThumbnailSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
 @objc protocol CCActionsSettingFavoriteDelegate {
@@ -355,14 +355,9 @@ class CCActions: NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
 
-    @objc func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet) {
+    @objc func downloadThumbnailSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
-        metadataNet.delegate?.downloadThumbnailSuccess(metadataNet)
-    }
-    
-    @objc func downloadThumbnailFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
-        
-        NSLog("[LOG] Thumbnail Error \(metadataNet.fileName!) \(message) error %\(errorCode))")
+        metadataNet.delegate?.downloadThumbnailSuccessFailure(metadataNet, message: message, errorCode: errorCode)        
     }
 
     // --------------------------------------------------------------------------------------------

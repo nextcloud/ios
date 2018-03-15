@@ -280,22 +280,24 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     //  MARK: - Download Thumbnail
     
-    func downloadThumbnailFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        NSLog("[LOG] Thumbnail Error \(metadataNet.fileName) \(message) (error \(errorCode))");
-    }
-    
-    func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet!) {
+    func downloadThumbnailSuccessFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
-        if let indexPath = thumbnailInLoading[metadataNet.fileID] {
-            
-            let path = "\(directoryUser)/\(metadataNet.fileID!).ico"
-            
-            if FileManager.default.fileExists(atPath: path) {
+        if (errorCode == 0) {
+        
+            if let indexPath = thumbnailInLoading[metadataNet.fileID] {
                 
-                if let cell = tableView.cellForRow(at: indexPath) as? recordMetadataCell {
-                    cell.fileImageView.image = UIImage(contentsOfFile: path)
+                let path = "\(directoryUser)/\(metadataNet.fileID!).ico"
+                
+                if FileManager.default.fileExists(atPath: path) {
+                    
+                    if let cell = tableView.cellForRow(at: indexPath) as? recordMetadataCell {
+                        cell.fileImageView.image = UIImage(contentsOfFile: path)
+                    }
                 }
             }
+        } else {
+            
+            NSLog("[LOG] Thumbnail Error \(metadataNet.fileName) \(message) (error \(errorCode))");
         }
     }
     

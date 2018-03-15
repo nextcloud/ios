@@ -143,9 +143,12 @@
 #pragma mark ==== Download Thumbnail <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
+- (void)downloadThumbnailSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [self reloadDatasource];
+    if (errorCode == 0) {
+        
+        [self reloadDatasource];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
