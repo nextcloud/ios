@@ -273,21 +273,21 @@
 
 // MARK: - Read Folder
 
-- (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [self readFolder];
-}
-
-- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
-{
-    if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
-        
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
-        
-        if ([metadata.etag isEqualToString:directory.etag] == NO) {
+    if (errorCode == 0) {
+    
+        if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
             
-            [self readFolder];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
+            
+            if ([metadata.etag isEqualToString:directory.etag] == NO) {
+                
+                [self readFolder];
+            }
         }
+    } else {
+        [self readFolder];
     }
 }
 

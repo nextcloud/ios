@@ -887,8 +887,8 @@
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)])
-                [self.delegate readFileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            if ([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
+                [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -912,13 +912,13 @@
         
                 metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
                         
-                if([self.delegate respondsToSelector:@selector(readFileSuccess:metadata:)])
-                    [self.delegate readFileSuccess:_metadataNet metadata:metadata];
+                if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
+                    [self.delegate readFileSuccessFailure:_metadataNet metadata:metadata message:nil errorCode:0];
                 
             } else {
                 
-                if([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)])
-                    [self.delegate readFileFailure:_metadataNet message:@"Directory not found" errorCode:0];
+                if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
+                    [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:@"Directory not found" errorCode:k_CCErrorInternalError];
             }
         }
         
@@ -930,8 +930,8 @@
 
             [appDelegate messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
 #endif
-            if([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)])
-                [self.delegate readFileFailure:_metadataNet message:@"Read File WebDAV : [items NULL] please fix" errorCode:0];
+            if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
+                [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:@"Read File WebDAV : [items NULL] please fix" errorCode:k_CCErrorInternalError];
         }
         
         [self complete];
@@ -947,12 +947,12 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(readFileFailure:message:errorCode:)] && [recordAccount.account isEqualToString:_metadataNet.account]) {
+        if ([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)] && [recordAccount.account isEqualToString:_metadataNet.account]) {
             
             if (errorCode == 503)
-                [self.delegate readFileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate readFileFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
+                [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
         }
 
         // Request trusted certificated

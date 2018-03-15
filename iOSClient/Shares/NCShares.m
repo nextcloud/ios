@@ -155,16 +155,16 @@
 #pragma mark ==== Read File <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Read file failure error %d, %@", (int)errorCode, message);
-}
-
-- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
-{
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-    
-    [self reloadDatasource];
+    if (errorCode == 0) {
+        
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        [self reloadDatasource];
+        
+    } else {
+        NSLog(@"[LOG] Read file failure error %d, %@", (int)errorCode, message);
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

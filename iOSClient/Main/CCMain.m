@@ -1663,32 +1663,29 @@
 #pragma mark ==== Read File ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-}
-
-- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
+    if (errorCode == 0) {
     
-    // Read Folder
-    if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
-        
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
-        
-        // Change etag, read folder
-        if ([metadata.etag isEqualToString:directory.etag] == NO) {
-            [self readFolder:metadataNet.serverUrl];
+        // Read Folder
+        if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
+            
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
+            
+            // Change etag, read folder
+            if ([metadata.etag isEqualToString:directory.etag] == NO) {
+                [self readFolder:metadataNet.serverUrl];
+            }
         }
+        
+    } else {
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized)
+            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
     }
 }
 
