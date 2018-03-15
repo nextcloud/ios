@@ -2353,42 +2353,44 @@
 #pragma mark ===== Create folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)createFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-    else
-        [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-    
-    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
-    [self reloadDatasource];
+    if (errorCode == 0) {
         
-    // We are in directory fail ?
-    CCMain *vc = [appDelegate.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName]];
-    if (vc)
-        [vc.navigationController popViewControllerAnimated:YES];
-}
-
-- (void)createFolderSuccess:(CCMetadataNet *)metadataNet
-{
-    NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];
-    
-    if (_metadataFolder.e2eEncrypted) {
+        NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:metadataNet.fileID serverUrl:newDirectory];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (error) {
-                    [appDelegate messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
-                }
-                [self readFolder:self.serverUrl];
+        if (_metadataFolder.e2eEncrypted) {
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                NSError *error = [[NCNetworkingSync sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:metadataNet.fileID serverUrl:newDirectory];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (error) {
+                        [appDelegate messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
+                    }
+                    [self readFolder:self.serverUrl];
+                });
             });
-        });
+            
+        } else {
+            
+            [self readFolder:self.serverUrl];
+        }
         
     } else {
         
-        [self readFolder:self.serverUrl];
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized)
+            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+        else
+            [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
+        [self reloadDatasource];
+        
+        // We are in directory fail ?
+        CCMain *vc = [appDelegate.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName]];
+        if (vc)
+            [vc.navigationController popViewControllerAnimated:YES];
     }
 }
 

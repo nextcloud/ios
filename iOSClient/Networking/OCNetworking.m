@@ -677,8 +677,8 @@
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(createFolderFailure:message:errorCode:)])
-                [self.delegate createFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)])
+                [self.delegate createFolderSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -689,8 +689,8 @@
         _metadataNet.fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
         _metadataNet.date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
         
-        if ([self.delegate respondsToSelector:@selector(createFolderSuccess:)])
-            [self.delegate createFolderSuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)])
+            [self.delegate createFolderSuccessFailure:_metadataNet message:nil errorCode:0];
        
         [self complete];
 
@@ -707,8 +707,8 @@
         if (errorCode == 0)
             errorCode = error.code;
 
-        if ([self.delegate respondsToSelector:@selector(createFolderFailure:message:errorCode:)])
-            [self.delegate createFolderFailure:_metadataNet message:message errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)])
+            [self.delegate createFolderSuccessFailure:_metadataNet message:message errorCode:errorCode];
         
         // Request trusted certificated
         if ([error code] == NSURLErrorServerCertificateUntrusted)
@@ -731,12 +731,12 @@
         }
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(createFolderFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)]) {
             
             if (error.code == 503)
-                [self.delegate createFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:error.code];
+                [self.delegate createFolderSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:error.code];
             else
-                [self.delegate createFolderFailure:_metadataNet message:message errorCode:error.code];
+                [self.delegate createFolderSuccessFailure:_metadataNet message:message errorCode:error.code];
         }
         
         [self complete];

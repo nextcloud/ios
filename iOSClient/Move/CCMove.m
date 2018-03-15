@@ -364,20 +364,21 @@
 
 // MARK: - Create Folder
 
-- (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)createFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    if (errorCode == 0) {
     
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    }]];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)createFolderSuccess:(CCMetadataNet *)metadataNet
-{    
-    // Load Folder or the Datasource
-    [self readFolder];
+        [self readFolder];
+        
+    } else {
+      
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        }]];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
 }
 
 - (void)createFolder:(NSString *)fileNameFolder
