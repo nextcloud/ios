@@ -597,21 +597,26 @@
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)reloadDatasource
-{    
-    // test
-    if (appDelegate.activeAccount.length == 0)
-        return;
+{
+    @synchronized(self) {
+        // test
+        if (appDelegate.activeAccount.length == 0)
+            return;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasContentTypeImageVideo];
-        CCSectionDataSourceMetadata *tempSectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
+            NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasContentTypeImageVideo];
+            CCSectionDataSourceMetadata *tempSectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            _sectionDataSource = [tempSectionDataSource copy];
-            [self reloadCollection];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // OPTIMIZED
+                if (tempSectionDataSource.totalSize != _sectionDataSource.totalSize || tempSectionDataSource.files != _sectionDataSource.files) {
+                    _sectionDataSource = [tempSectionDataSource copy];
+                    [self reloadCollection];
+                }
+            });
         });
-    });
+    }
 }
 
 - (void)reloadCollection
