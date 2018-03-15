@@ -1991,30 +1991,27 @@
     [self readFolder:_serverUrl];
 }
 
-- (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-    else
-        [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+    if (errorCode == 0) {
     
-    _searchFileName = @"";
-}
-
-- (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
-    
-    [self readFolderSuccess:metadataNet metadataFolder:nil metadatas:metadatas];
+        _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
+        [self readFolderSuccess:metadataNet metadataFolder:nil metadatas:metadatas];
+        
+    } else {
+        
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized)
+            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+        else
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        
+        _searchFileName = @"";
+    }
 }
 
 - (void)cancelSearchBar

@@ -36,8 +36,7 @@ import Foundation
 
 @objc protocol CCActionsSearchDelegate {
     
-    func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [Any])
-    func searchFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+    func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
 }
 
 @objc protocol CCActionsDownloadThumbnailDelegate {
@@ -318,14 +317,9 @@ class CCActions: NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata]) {
+    @objc func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata], message: NSString, errorCode: NSInteger) {
         
-        metadataNet.delegate?.searchSuccess(metadataNet, metadatas: metadatas)
-    }
-    
-    @objc func searchFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
-        
-        metadataNet.delegate?.searchFailure(metadataNet, message: message, errorCode: errorCode)
+        metadataNet.delegate?.searchSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------

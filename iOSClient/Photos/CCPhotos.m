@@ -535,12 +535,7 @@
 #pragma mark ==== readPhotoVideo ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    _isSearchMode = NO;
-}
-
-- (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
+- (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount]) {
@@ -548,31 +543,37 @@
         return;
     }
     
-    // Update date 
-    [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
+    if (errorCode == 0) {
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        // Update date
+        [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
         
-        NSMutableArray *addMetadatas = [NSMutableArray new];
-        
-        for (tableMetadata *metadata in metadatas) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             
-            // Verify if do not exists this Metadata
-            tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+            NSMutableArray *addMetadatas = [NSMutableArray new];
             
-            if (!result)
-                [addMetadatas addObject:metadata];
-        }
+            for (tableMetadata *metadata in metadatas) {
+                
+                // Verify if do not exists this Metadata
+                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+                
+                if (!result)
+                    [addMetadatas addObject:metadata];
+            }
+            
+            if ([addMetadatas count] > 0) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
+                    [self reloadDatasource];
+                });
+            }
+            
+            _isSearchMode = NO;
+        });
         
-        if ([addMetadatas count] > 0) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
-                [self reloadDatasource];
-            });
-        }
-        
+    } else {
         _isSearchMode = NO;
-    });
+    }
 }
 
 - (void)readPhotoVideo

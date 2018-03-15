@@ -92,8 +92,7 @@
 - (void)getUserProfileSuccessFailure:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Search
-- (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas;
-- (void)searchFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Favorite
 - (void)settingFavoriteSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
