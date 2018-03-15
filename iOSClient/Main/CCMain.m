@@ -986,28 +986,26 @@
 #pragma mark ==== External Sites ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getExternalSitesServerSuccess:(CCMetadataNet *)metadataNet listOfExternalSites:(NSArray *)listOfExternalSites
+- (void)getExternalSitesServerSuccessFailure:(CCMetadataNet *)metadataNet listOfExternalSites:(NSArray *)listOfExternalSites message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    [[NCManageDatabase sharedInstance] deleteExternalSites];
-    
-    for (OCExternalSites *tableExternalSites in listOfExternalSites)
-        [[NCManageDatabase sharedInstance] addExternalSites:tableExternalSites];
-}
-
-- (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    NSString *error = [NSString stringWithFormat:@"Get external site failure error %d, %@", (int)errorCode, message];
-    NSLog(@"[LOG] %@", error);
-    
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get External Sites Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+    if (errorCode == 0) {
+        
+        [[NCManageDatabase sharedInstance] deleteExternalSites];
+        
+        for (OCExternalSites *tableExternalSites in listOfExternalSites)
+            [[NCManageDatabase sharedInstance] addExternalSites:tableExternalSites];
+        
+    } else {
+        
+        NSString *error = [NSString stringWithFormat:@"Get external site failure error %d, %@", (int)errorCode, message];
+        NSLog(@"[LOG] %@", error);
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get External Sites Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
