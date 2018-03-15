@@ -305,44 +305,46 @@
 
 // MARK: - Read Folder
 
-- (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    _loadingFolder = NO;
-    self.move.enabled = NO;
-    
-    [self.tableView reloadData];
-    
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-    
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    }]];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
-{
-    NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
- 
-    // Update directory etag
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
-    
-    for (tableMetadata *metadata in metadatas) {
+    if (errorCode == 0 && message == nil) {
         
-        // Insert in Array
-        [metadatasToInsertInDB addObject:metadata];
+        NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
+     
+        // Update directory etag
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
+        
+        for (tableMetadata *metadata in metadatas) {
+            
+            // Insert in Array
+            [metadatasToInsertInDB addObject:metadata];
+        }
+
+        // insert in Database
+        metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
+
+        // get auto upload folder
+        _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
+        
+        _loadingFolder = NO;
+        
+        [self.tableView reloadData];
+        
+    } else {
+        
+        _loadingFolder = NO;
+        self.move.enabled = NO;
+        
+        [self.tableView reloadData];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        }]];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
     }
-
-    // insert in Database
-    metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
-
-    // get auto upload folder
-    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
-    
-    _loadingFolder = NO;
-    
-    [self.tableView reloadData];
 }
 
 - (void)readFolder

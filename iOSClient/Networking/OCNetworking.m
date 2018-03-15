@@ -217,8 +217,8 @@
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)])
-                [self.delegate readFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailure:metadataFolder:metadatas:message:errorCode:)])
+                [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:nil metadatas:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -239,8 +239,8 @@
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:metadataFolder:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet metadataFolder:nil metadatas:metadatas];
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailure:metadataFolder:metadatas:message:errorCode:)])
+                    [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:nil metadatas:metadatas message:nil errorCode:0];
             });
 
             [self complete];
@@ -284,8 +284,8 @@
                 if (!directoryIDFolder) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         
-                        if ([self.delegate respondsToSelector:@selector(readFolderSuccess:metadataFolder:metadatas:)])
-                            [self.delegate readFolderSuccess:_metadataNet metadataFolder:metadataFolder metadatas:metadatas];
+                        if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailure:metadataFolder:metadatas:message:errorCode:)])
+                            [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:metadataFolder metadatas:metadatas message:nil errorCode:0];
                     });
                 }
                 metadataFolder = [CCUtility trasformedOCFileToCCMetadata:itemDtoFolder fileName:[_metadataNet.serverUrl lastPathComponent] serverUrl:serverUrlFolder directoryID:directoryIDFolder autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
@@ -334,8 +334,8 @@
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 
-                if ([self.delegate respondsToSelector:@selector(readFolderSuccess:metadataFolder:metadatas:)])
-                    [self.delegate readFolderSuccess:_metadataNet metadataFolder:metadataFolder metadatas:metadatas];
+                if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailure:metadataFolder:metadatas:message:errorCode:)])
+                    [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:metadataFolder metadatas:metadatas message:nil errorCode:0];
             });
         });
         
@@ -348,12 +348,12 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(readFolderFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(readFolderSuccessFailure:metadataFolder:metadatas:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate readFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:nil metadatas:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate readFolderFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+                [self.delegate readFolderSuccessFailure:_metadataNet metadataFolder:nil metadatas:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
         
         // Request trusted certificated

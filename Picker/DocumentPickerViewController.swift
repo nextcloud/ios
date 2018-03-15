@@ -235,47 +235,49 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         hud.visibleIndeterminateHud()
     }
     
-    func readFolderFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
+    func readFolderSuccessFailure(_ metadataNet: CCMetadataNet!, metadataFolder: tableMetadata?, metadatas: [Any]!, message: String!, errorCode: Int) {
         
-        hud.hideHud()
+        if (errorCode == 0) {
         
-        let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
-            self.dismissGrantingAccess(to: nil)
-        })
-        
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    func readFolderSuccess(_ metadataNet: CCMetadataNet!, metadataFolder: tableMetadata?, metadatas: [Any]!) {
-        
-        // remove all record
-        var predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", activeAccount, metadataNet.directoryID!)
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: metadataNet.directoryID!)
-        
-        for metadata in metadatas as! [tableMetadata] {
+            // remove all record
+            var predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", activeAccount, metadataNet.directoryID!)
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: metadataNet.directoryID!)
             
-            // Only Directory ?
-            if (parameterMode == .moveToService || parameterMode == .exportToService) && metadata.directory == false {
-                continue
+            for metadata in metadatas as! [tableMetadata] {
+                
+                // Only Directory ?
+                if (parameterMode == .moveToService || parameterMode == .exportToService) && metadata.directory == false {
+                    continue
+                }
+                
+                // Add record
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
             }
             
-            // Add record
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            predicate = NSPredicate(format: "account = %@ AND directoryID = %@", activeAccount, metadataNet.directoryID!)
+            recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sorted: "fileName", ascending: true)
+            
+            autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
+            autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(activeUrl)
+            
+            if (CCUtility.isEnd(toEndEnabled: activeAccount)) {
+            }
+            
+            tableView.reloadData()
+            
+            hud.hideHud()
+            
+        } else {
+            
+            hud.hideHud()
+            
+            let alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { action in
+                self.dismissGrantingAccess(to: nil)
+            })
+            
+            self.present(alert, animated: true, completion: nil)
         }
-        
-        predicate = NSPredicate(format: "account = %@ AND directoryID = %@", activeAccount, metadataNet.directoryID!)
-        recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sorted: "fileName", ascending: true)
-        
-        autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.sharedInstance.getAccountAutoUploadDirectory(activeUrl)
-        
-        if (CCUtility.isEnd(toEndEnabled: activeAccount)) {
-        }
-        
-        tableView.reloadData()
-        
-        hud.hideHud()
     }
     
     //  MARK: - Download Thumbnail

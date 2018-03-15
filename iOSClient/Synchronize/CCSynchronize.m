@@ -79,29 +79,28 @@
     NSLog(@"[LOG] %@ directory : %@", selector, serverUrl);
 }
 
-- (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+// MULTI THREAD
+- (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    // Folder not present, remove it
-    if (errorCode == 404) {
+    // ERROR
+    if (errorCode != 0 || message != nil) {
         
-        [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl];
-        [appDelegate.activeMain reloadDatasource:metadataNet.serverUrl];
+        // Folder not present, remove it
+        if (errorCode == 404) {
+            
+            [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl];
+            [appDelegate.activeMain reloadDatasource:metadataNet.serverUrl];
+        }
+        
+        return;
     }
-}
-
-// MULTI THREAD
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
-{
+    
     // Add/update self Folder
     if (!metadataFolder || !metadatas || [metadatas count] == 0)
-        return;
-    
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
     // Add metadata and update etag Directory

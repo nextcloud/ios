@@ -1714,33 +1714,7 @@
 #pragma mark ==== Read Folder ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // stoprefresh
-    [_refreshControl endRefreshing];
-    
-    _loadingFolder = NO;
-
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized) {
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-    
-    } else {
-        [self tableViewReloadData];
-        
-        [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
-    
-        [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-    
-        [self reloadDatasource:metadataNet.serverUrl];
-    }
-}
-
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
+- (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // stoprefresh
     [_refreshControl endRefreshing];
@@ -1748,6 +1722,30 @@
     // Check Active Account
     if (![metadataNet.account isEqualToString:metadataNet.account])
         return;
+    
+    // ERROR
+    if (errorCode != 0 || message != nil) {
+        
+        _loadingFolder = NO;
+        
+        // Check Active Account
+        if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+            return;
+        
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized) {
+            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+            
+        } else {
+            [self tableViewReloadData];
+            
+            [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
+            
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            
+            [self reloadDatasource:metadataNet.serverUrl];
+        }
+    }
     
     // save metadataFolder
     _metadataFolder = metadataFolder;
@@ -1968,7 +1966,7 @@
         metadataNet.selector = selectorSearchFiles;
         metadataNet.serverUrl = _serverUrl;
 
-        [self readFolderSuccess:metadataNet metadataFolder:nil metadatas:_searchResultMetadatas];
+        [self readFolderSuccessFailure:metadataNet metadataFolder:nil metadatas:_searchResultMetadatas message:nil errorCode:0];
     
         // Version >= 12
         if ([[NCManageDatabase sharedInstance] getServerVersion] >= 12) {
@@ -2000,7 +1998,7 @@
     if (errorCode == 0) {
     
         _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatas];
-        [self readFolderSuccess:metadataNet metadataFolder:nil metadatas:metadatas];
+        [self readFolderSuccessFailure:metadataNet metadataFolder:nil metadatas:metadatas message:nil errorCode:0];
         
     } else {
         
