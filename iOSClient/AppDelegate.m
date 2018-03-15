@@ -266,9 +266,9 @@
     [self verifyUploadInErrorOrWait];
     
     // middelware ping
-    if ([[NCBrandOptions sharedInstance] use_middlewarePing] && _activeMain) {
+    if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
-        [_activeMain middlewarePing];
+        [[NCService sharedInstance] middlewarePing];
     }
 }
 

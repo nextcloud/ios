@@ -82,7 +82,6 @@
 - (void)reloadDatasource:(NSString *)serverUrl;
 
 - (void)requestServerCapabilities;
-- (void)middlewarePing;
 
 - (void)openWindowShare:(tableMetadata *)metadata;
 - (void)clearDateReadDataSource:(NSNotification *)notification;
