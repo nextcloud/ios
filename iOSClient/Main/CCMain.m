@@ -1114,50 +1114,47 @@
 #pragma mark ==== User Profile  ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)getUserProfileSuccessFailure:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    NSString *error = [NSString stringWithFormat:@"Get user profile failure error %d, %@", (int)errorCode, message];
-    NSLog(@"[LOG] %@", error);
+    if (errorCode == 0) {
     
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get user profile Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-}
+        // Update User (+ userProfile.id) & active account & account network
+        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountUserProfile:userProfile];
+        if (tableAccount) {
+            [[CCNetworking sharedNetworking] settingAccount];
+            [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+        } else {
+            [appDelegate messageNotification:@"Account" description:@"Internal error : account not found on DB" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+        }
 
-- (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    // Update User (+ userProfile.id) & active account & account network
-    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountUserProfile:userProfile];
-    if (tableAccount) {
-        [[CCNetworking sharedNetworking] settingAccount];
-        [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+        // Required userd ID (search + favorite)
+        [appDelegate.activePhotos readPhotoVideo];
+        [appDelegate.activeFavorites readListingFavorites];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            
+            NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/128", appDelegate.activeUrl, appDelegate.activeUser];
+            //UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]]; DEPRECATED iOS9
+            UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]]]];
+            if (avatar)
+                [UIImagePNGRepresentation(avatar) writeToFile:[NSString stringWithFormat:@"%@/avatar.png", appDelegate.directoryUser] atomically:YES];
+            else
+                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/avatar.png", appDelegate.directoryUser] error:nil];
+            
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeUserProfile" object:nil];
+        });
+        
     } else {
         
-        [appDelegate messageNotification:@"Account" description:@"Internal error : account not found on DB" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+        NSString *error = [NSString stringWithFormat:@"Get user profile failure error %d, %@", (int)errorCode, message];
+        NSLog(@"[LOG] %@", error);
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get user profile Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
     }
-
-    // Required userd ID (search + favorite)
-    [appDelegate.activePhotos readPhotoVideo];    
-    [appDelegate.activeFavorites readListingFavorites];
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        
-        NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/128", appDelegate.activeUrl, appDelegate.activeUser];
-        //UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]]; DEPRECATED iOS9
-        UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]]]];
-        if (avatar)
-            [UIImagePNGRepresentation(avatar) writeToFile:[NSString stringWithFormat:@"%@/avatar.png", appDelegate.directoryUser] atomically:YES];
-        else
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/avatar.png", appDelegate.directoryUser] error:nil];
-        
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeUserProfile" object:nil];
-    });
 }
 
 #pragma --------------------------------------------------------------------------------------------

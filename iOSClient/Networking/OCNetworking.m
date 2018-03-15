@@ -1611,15 +1611,15 @@
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(getUserProfileFailure:message:errorCode:)])
-                [self.delegate getUserProfileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            if ([self.delegate respondsToSelector:@selector(getUserProfileSuccessFailure:userProfile:message:errorCode:)])
+                [self.delegate getUserProfileSuccessFailure:_metadataNet userProfile:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
         }
         
-        if ([self.delegate respondsToSelector:@selector(getUserProfileSuccess:userProfile:)])
-            [self.delegate getUserProfileSuccess:_metadataNet userProfile:userProfile];
+        if ([self.delegate respondsToSelector:@selector(getUserProfileSuccessFailure:userProfile:message:errorCode:)])
+            [self.delegate getUserProfileSuccessFailure:_metadataNet userProfile:userProfile message:nil errorCode:0];
         
         [self complete];
         
@@ -1630,12 +1630,12 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(getUserProfileFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(getUserProfileSuccessFailure:userProfile:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate getUserProfileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getUserProfileSuccessFailure:_metadataNet userProfile:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate getUserProfileFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+                [self.delegate getUserProfileSuccessFailure:_metadataNet userProfile:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
 
         // Request trusted certificated

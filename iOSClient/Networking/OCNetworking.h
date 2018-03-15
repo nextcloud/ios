@@ -95,8 +95,7 @@
 - (void)setNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // User Profile
-- (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile;
-- (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)getUserProfileSuccessFailure:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Search
 - (void)searchSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas;
