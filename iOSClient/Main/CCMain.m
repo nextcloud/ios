@@ -2898,39 +2898,39 @@
 #pragma mark ===== Favorite =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
+- (void)settingFavoriteSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    _dateReadDataSource = nil;
+    if (errorCode == 0) {
     
-    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
-    
-    if (_isSearchMode)
-        [self readFolder:metadataNet.serverUrl];
-    else
-        [self reloadDatasource:metadataNet.serverUrl];
-    
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
-    
-    if (metadata.directory && metadata.favorite) {
+        _dateReadDataSource = nil;
         
-        NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
+        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
         
-        [appDelegate.activeFavorites addFavoriteFolder:dir];
+        if (_isSearchMode)
+            [self readFolder:metadataNet.serverUrl];
+        else
+            [self reloadDatasource:metadataNet.serverUrl];
+        
+        
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadataNet.fileID]];
+        
+        if (metadata.directory && metadata.favorite) {
+            
+            NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
+            
+            [appDelegate.activeFavorites addFavoriteFolder:dir];
+        }
+    } else {
+        
+        if (errorCode == kOCErrorServerUnauthorized)
+            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+        
+        NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
     }
-}
-
-- (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-
-    NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
 }
 
 - (void)addFavorite:(tableMetadata *)metadata

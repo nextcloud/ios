@@ -505,15 +505,15 @@
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(settingFavoriteFailure:message:errorCode:)])
-                [self.delegate settingFavoriteFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)])
+                [self.delegate settingFavoriteSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
         }
         
-        if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccess:)])
-            [self.delegate settingFavoriteSuccess:_metadataNet];
+        if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)])
+            [self.delegate settingFavoriteSuccessFailure:_metadataNet message:nil errorCode:0];
         
         [self complete];
         
@@ -524,12 +524,12 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(settingFavoriteFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate settingFavoriteFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate settingFavoriteSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate settingFavoriteFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+                [self.delegate settingFavoriteSuccessFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
 
         // Request trusted certificated

@@ -181,16 +181,17 @@
 #pragma mark ===== Favorite <delegate> =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)settingFavoriteSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
-}
-
-- (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
-{
-    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
- 
-    [self reloadDatasource];
+    if (errorCode == 0) {
+        
+        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
+        [self reloadDatasource];
+        
+    } else {
+        
+         NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
+    }
 }
 
 - (void)readListingFavorites
