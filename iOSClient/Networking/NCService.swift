@@ -91,7 +91,7 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             }
             
             let error = "Get Capabilities failure error \(errorCode) \(message!)"
-            print("[LOG] \(message!)")
+            print("[LOG] \(error)")
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Capabilities of Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
             
