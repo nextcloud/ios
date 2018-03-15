@@ -1160,98 +1160,95 @@
     });
 }
 
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Capabilities  ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getCapabilitiesOfServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)getCapabilitiesOfServerSuccessFailure:(CCMetadataNet *)metadataNet capabilities:(OCCapabilities *)capabilities message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-
-    NSString *error = [NSString stringWithFormat:@"Get Capabilities failure error %d, %@", (int)errorCode, message];
-    NSLog(@"[LOG] %@", error);
+    if (errorCode == 0) {
     
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Capabilities of Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+        // Update capabilities db
+        [[NCManageDatabase sharedInstance] addCapabilities:capabilities];
     
-    // Change Theming color
-    [appDelegate settingThemingColorBrand];
-}
-
-- (void)getCapabilitiesOfServerSuccess:(CCMetadataNet *)metadataNet capabilities:(OCCapabilities *)capabilities
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
+        // ------ THEMING -----------------------------------------------------------------------
     
-    // Update capabilities db
-    [[NCManageDatabase sharedInstance] addCapabilities:capabilities];
-    
-    // ------ THEMING -----------------------------------------------------------------------
-    
-    // Download Theming Background & Change Theming color
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+        // Download Theming Background & Change Theming color
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
-        if ([NCBrandOptions sharedInstance].use_themingBackground == YES) {
+            if ([NCBrandOptions sharedInstance].use_themingBackground == YES) {
         
-            //UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]]; DEPRECATED iOS9
-            UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]]]];
-            if (themingBackground) {
-                 dispatch_async(dispatch_get_main_queue(), ^{
-                     [UIImagePNGRepresentation(themingBackground) writeToFile:[NSString stringWithFormat:@"%@/themingBackground.png", appDelegate.directoryUser] atomically:YES];
-                 });
-            } else {
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/themingBackground.png", appDelegate.directoryUser] error:nil];
+                //UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]]; DEPRECATED iOS9
+                UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]]]];
+                if (themingBackground) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [UIImagePNGRepresentation(themingBackground) writeToFile:[NSString stringWithFormat:@"%@/themingBackground.png", appDelegate.directoryUser] atomically:YES];
+                    });
+                } else {
+                    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/themingBackground.png", appDelegate.directoryUser] error:nil];
+                }
             }
+        
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [appDelegate settingThemingColorBrand];
+            });
+        });
+
+        // ------ SEARCH  -----------------------------------------------------------------------
+        
+        // Search bar if change version
+        if ([[NCManageDatabase sharedInstance] getServerVersion] != capabilities.versionMajor) {
+        
+            [self cancelSearchBar];
         }
         
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [appDelegate settingThemingColorBrand];
-        });
-    });
-
-    // ------ SEARCH  -----------------------------------------------------------------------
-    
-    // Search bar if change version
-    if ([[NCManageDatabase sharedInstance] getServerVersion] != capabilities.versionMajor) {
-    
-        [self cancelSearchBar];
-    }
-    
-    // ------ GET SERVICE SERVER ------------------------------------------------------------
-    
-    // Read User Profile
-    metadataNet.action = actionGetUserProfile;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-    
-    // Read External Sites
-    if (capabilities.isExternalSitesServerEnabled) {
+        // ------ GET SERVICE SERVER ------------------------------------------------------------
         
-        metadataNet.action = actionGetExternalSitesServer;
+        // Read User Profile
+        metadataNet.action = actionGetUserProfile;
         [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-    }
-    
-    // Read Share
-    if (capabilities.isFilesSharingAPIEnabled) {
         
-        [appDelegate.sharesID removeAllObjects];
-        metadataNet.action = actionReadShareServer;
+        // Read External Sites
+        if (capabilities.isExternalSitesServerEnabled) {
+            
+            metadataNet.action = actionGetExternalSitesServer;
+            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        }
+        
+        // Read Share
+        if (capabilities.isFilesSharingAPIEnabled) {
+            
+            [appDelegate.sharesID removeAllObjects];
+            metadataNet.action = actionReadShareServer;
+            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        }
+        
+        // Read Notification
+        metadataNet.action = actionGetNotificationServer;
         [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        
+        // Read Activity
+        metadataNet.action = actionGetActivityServer;
+        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        
+    } else {
+      
+        // Unauthorized
+        if (errorCode == kOCErrorServerUnauthorized)
+            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+        
+        NSString *error = [NSString stringWithFormat:@"Get Capabilities failure error %d, %@", (int)errorCode, message];
+        NSLog(@"[LOG] %@", error);
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Capabilities of Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+        
+        // Change Theming color
+        [appDelegate settingThemingColorBrand];
     }
-    
-    // Read Notification
-    metadataNet.action = actionGetNotificationServer;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-    
-    // Read Activity
-    metadataNet.action = actionGetActivityServer;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma mark -
