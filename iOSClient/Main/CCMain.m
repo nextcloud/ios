@@ -1014,28 +1014,26 @@
 #pragma mark ==== Activity ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getActivityServerSuccess:(CCMetadataNet *)metadataNet listOfActivity:(NSArray *)listOfActivity
+- (void)getActivityServerSuccessFailure:(CCMetadataNet *)metadataNet listOfActivity:(NSArray *)listOfActivity message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity];
+    if (errorCode == 0) {
+        
+        [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity];
+        
+        // Reload Activity Data Source
+        [appDelegate.activeActivity reloadDatasource];
+        
+    } else {
     
-    // Reload Activity Data Source
-    [appDelegate.activeActivity reloadDatasource];
-}
-
-- (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    NSString *error = [NSString stringWithFormat:@"Get Activity Server failure error %d, %@", (int)errorCode, message];
-    NSLog(@"[LOG] %@", error);
-    
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Activity Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+        NSString *error = [NSString stringWithFormat:@"Get Activity Server failure error %d, %@", (int)errorCode, message];
+        NSLog(@"[LOG] %@", error);
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Activity Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

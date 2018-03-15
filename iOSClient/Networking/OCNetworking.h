@@ -80,8 +80,7 @@
 - (void)getCapabilitiesOfServerSuccessFailure:(CCMetadataNet *)metadataNet capabilities:(OCCapabilities *)capabilities message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Activity
-- (void)getActivityServerSuccess:(CCMetadataNet *)metadataNet listOfActivity:(NSArray *)listOfActivity;
-- (void)getActivityServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)getActivityServerSuccessFailure:(CCMetadataNet *)metadataNet listOfActivity:(NSArray *)listOfActivity message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // External Sites
 - (void)getExternalSitesServerSuccess:(CCMetadataNet *)metadataNet listOfExternalSites:(NSArray *)listOfExternalSites;

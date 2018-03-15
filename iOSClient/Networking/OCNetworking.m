@@ -1284,15 +1284,15 @@
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(getActivityServerFailure:message:errorCode:)])
-                [self.delegate getActivityServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            if ([self.delegate respondsToSelector:@selector(getActivityServerSuccessFailure:listOfActivity:message:errorCode:)])
+                [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
         }
         
-        if ([self.delegate respondsToSelector:@selector(getActivityServerSuccess:listOfActivity:)])
-            [self.delegate getActivityServerSuccess:_metadataNet listOfActivity:listOfActivity];
+        if ([self.delegate respondsToSelector:@selector(getActivityServerSuccessFailure:listOfActivity:message:errorCode:)])
+            [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:listOfActivity message:nil errorCode:0];
         
         [self complete];
         
@@ -1303,12 +1303,12 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(getActivityServerFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(getActivityServerSuccessFailure:listOfActivity:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate getActivityServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate getActivityServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+                [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
 
         // Request trusted certificated
