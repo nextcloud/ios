@@ -251,10 +251,6 @@
 
 - (void)getGeoLocationForSection:(NSInteger)section
 {
-    // test
-    if (_sectionDataSource.sections.count <= section)
-        return;
-    
     NSString *addLocation = @"";
     
     NSArray *fileIDsForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]];
@@ -634,10 +630,6 @@
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    // test
-    if (_sectionDataSource.sections.count <= section)
-        return 0;
-    
     return [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]] count];
 }
 
@@ -700,9 +692,6 @@
     UIImageView *checked = [cell viewWithTag:300];
     checked.image = [UIImage imageNamed:@"checked"];
 
-    if (_sectionDataSource.sections.count <= indexPath.section)
-        return cell;
-    
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     
     if ([metadatasForKey count] > indexPath.row) {
@@ -750,10 +739,6 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    // test
-    if (_sectionDataSource.sections.count <= indexPath.section)
-        return;
-    
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     
     if ([metadatasForKey count] > indexPath.row) {
@@ -778,9 +763,7 @@
     // test
     if (_cellEditing == NO)
         return;
-    if (_sectionDataSource.sections.count <= indexPath.section)
-        return;
-    
+   
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     
     if ([metadatasForKey count] > indexPath.row) {
