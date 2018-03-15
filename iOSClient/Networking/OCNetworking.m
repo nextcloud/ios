@@ -1427,15 +1427,15 @@
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(getNotificationServerFailure:message:errorCode:)])
-                [self.delegate getNotificationServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccessFailure:listOfNotifications:message:errorCode:)])
+                [self.delegate getNotificationServerSuccessFailure:_metadataNet listOfNotifications:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
         }
         
-        if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccess:listOfNotifications:)])
-            [self.delegate getNotificationServerSuccess:_metadataNet listOfNotifications:listOfNotifications];
+        if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccessFailure:listOfNotifications:message:errorCode:)])
+            [self.delegate getNotificationServerSuccessFailure:_metadataNet listOfNotifications:listOfNotifications message:nil errorCode:0];
         
         [self complete];
         
@@ -1446,12 +1446,12 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(getNotificationServerFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccessFailure:listOfNotifications:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate getNotificationServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getNotificationServerSuccessFailure:_metadataNet listOfNotifications:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate getNotificationServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+                [self.delegate getNotificationServerSuccessFailure:_metadataNet listOfNotifications:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
 
         // Request trusted certificated

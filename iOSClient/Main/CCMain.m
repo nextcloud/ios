@@ -1042,60 +1042,58 @@
 #pragma mark ==== Notification  ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)getNotificationServerSuccess:(CCMetadataNet *)metadataNet listOfNotifications:(NSArray *)listOfNotifications
+- (void)getNotificationServerSuccessFailure:(CCMetadataNet *)metadataNet listOfNotifications:(NSArray *)listOfNotifications message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        
-        // Order by date
-        NSArray *sortedListOfNotifications = [listOfNotifications sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+    if (errorCode == 0) {
+    
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             
-            OCNotifications *notification1 = obj1, *notification2 = obj2;
+            // Order by date
+            NSArray *sortedListOfNotifications = [listOfNotifications sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                
+                OCNotifications *notification1 = obj1, *notification2 = obj2;
+            
+                return [notification2.date compare: notification1.date];
+            
+            }];
         
-            return [notification2.date compare: notification1.date];
-        
-        }];
-    
-        // verify if listOfNotifications is changed
-        NSString *old = @"", *new = @"";
-        for (OCNotifications *notification in listOfNotifications)
-            new = [new stringByAppendingString:@(notification.idNotification).stringValue];
-        for (OCNotifications *notification in appDelegate.listOfNotifications)
-            old = [old stringByAppendingString:@(notification.idNotification).stringValue];
+            // verify if listOfNotifications is changed
+            NSString *old = @"", *new = @"";
+            for (OCNotifications *notification in listOfNotifications)
+                new = [new stringByAppendingString:@(notification.idNotification).stringValue];
+            for (OCNotifications *notification in appDelegate.listOfNotifications)
+                old = [old stringByAppendingString:@(notification.idNotification).stringValue];
 
-        if (![new isEqualToString:old]) {
+            if (![new isEqualToString:old]) {
+            
+                appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sortedListOfNotifications];
+            
+                // reload Notification view
+                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"notificationReloadData" object:nil];
+            }
         
-            appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sortedListOfNotifications];
+            // Update NavigationBar
+            if (!_isSelectedMode) {
+                
+                [self performSelectorOnMainThread:@selector(setUINavigationBarDefault) withObject:nil waitUntilDone:NO];
+            }
+        });
         
-            // reload Notification view
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"notificationReloadData" object:nil];
-        }
-    
+    } else {
+        
+        NSString *error = [NSString stringWithFormat:@"Get Notification Server failure error %d, %@", (int)errorCode, message];
+        NSLog(@"[LOG] %@", error);
+        
+        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Notification Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+        
         // Update NavigationBar
-        if (!_isSelectedMode) {
-            
-            [self performSelectorOnMainThread:@selector(setUINavigationBarDefault) withObject:nil waitUntilDone:NO];
-        }
-    });
-}
-
-- (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    NSString *error = [NSString stringWithFormat:@"Get Notification Server failure error %d, %@", (int)errorCode, message];
-    NSLog(@"[LOG] %@", error);
-    
-    [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Notification Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-    
-    // Update NavigationBar
-    if (!_isSelectedMode)
-        [self setUINavigationBarDefault];
+        if (!_isSelectedMode)
+            [self setUINavigationBarDefault];
+    }
 }
 
 - (void)viewNotification

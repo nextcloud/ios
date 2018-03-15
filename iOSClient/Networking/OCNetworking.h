@@ -88,8 +88,7 @@
 - (void)getExternalSitesServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 // Notification
-- (void)getNotificationServerSuccess:(CCMetadataNet *)metadataNet listOfNotifications:(NSArray *)listOfNotifications;
-- (void)getNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
+- (void)getNotificationServerSuccessFailure:(CCMetadataNet *)metadataNet listOfNotifications:(NSArray *)listOfNotifications message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)setNotificationServerSuccess:(CCMetadataNet *)metadataNet;
 - (void)setNotificationServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
