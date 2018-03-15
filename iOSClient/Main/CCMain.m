@@ -1724,7 +1724,7 @@
         return;
     
     // ERROR
-    if (errorCode != 0 || message != nil) {
+    if (errorCode != 0) {
         
         _loadingFolder = NO;
         
@@ -1745,6 +1745,8 @@
             
             [self reloadDatasource:metadataNet.serverUrl];
         }
+        
+        return;
     }
     
     // save metadataFolder

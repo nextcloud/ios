@@ -87,7 +87,7 @@
         return;
     
     // ERROR
-    if (errorCode != 0 || message != nil) {
+    if (errorCode != 0) {
         
         // Folder not present, remove it
         if (errorCode == 404) {

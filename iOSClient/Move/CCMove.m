@@ -307,7 +307,7 @@
 
 - (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    if (errorCode == 0 && message == nil) {
+    if (errorCode == 0) {
         
         NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
      
