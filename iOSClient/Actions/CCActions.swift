@@ -52,8 +52,7 @@ import Foundation
 
 @objc protocol CCActionsListingFavoritesDelegate {
     
-    func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [Any])
-    func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+    func listingFavoritesSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
 }
 
 class CCActions: NSObject {
@@ -406,14 +405,9 @@ class CCActions: NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata]) {
+    @objc func listingFavoritesSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata], message: NSString, errorCode: NSInteger) {
         
-        metadataNet.delegate?.listingFavoritesSuccess(metadataNet, metadatas: metadatas)
-    }
-    
-    @objc func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
-        
-        metadataNet.delegate?.listingFavoritesFailure(metadataNet, message: message, errorCode: errorCode)
+        metadataNet.delegate?.listingFavoritesSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------

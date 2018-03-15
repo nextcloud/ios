@@ -559,8 +559,8 @@
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(listingFavoritesFailure:message:errorCode:)])
-                [self.delegate listingFavoritesFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+            if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccessFailure:metadatas:message:errorCode:)])
+                [self.delegate listingFavoritesSuccessFailure:_metadataNet metadatas:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -629,8 +629,8 @@
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
         }
         
-        if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccess:metadatas:)])
-            [self.delegate listingFavoritesSuccess:_metadataNet metadatas:metadatas];
+        if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccessFailure:metadatas:message:errorCode:)])
+            [self.delegate listingFavoritesSuccessFailure:_metadataNet metadatas:metadatas message:nil errorCode:0];
         
         [self complete];
         
@@ -641,12 +641,12 @@
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(listingFavoritesFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccessFailure:metadatas:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate listingFavoritesFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate listingFavoritesSuccessFailure:_metadataNet metadatas:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
             else
-                [self.delegate listingFavoritesFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+                [self.delegate listingFavoritesSuccessFailure:_metadataNet metadatas:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
 
         // Request trusted certificated
