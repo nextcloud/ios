@@ -86,7 +86,7 @@ class CCActions: NSObject {
 
         // fix CCActions.swift line 88 2.17.2 (00005)
         if (serverUrl == "") {
-            appDelegate.messageNotification("_delete_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            appDelegate.messageNotification("_delete_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
             return
         }
         
@@ -102,7 +102,7 @@ class CCActions: NSObject {
                 let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, serverUrl:serverUrl, fileID: tableDirectory.fileID)
                 if error != nil {
                     DispatchQueue.main.async {
-                        self.appDelegate.messageNotification("_delete_", description: error!.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                        self.appDelegate.messageNotification("_delete_", description: error!.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
                     }
                     return;
                 }

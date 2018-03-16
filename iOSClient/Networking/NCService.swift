@@ -115,6 +115,35 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
     }
 
     //MARK: -
+    //MARK: requestServerCapabilities
+    
+    @objc func getUserProfileSuccessFailure(_ metadataNet: CCMetadataNet!, userProfile: OCUserProfile?, message: String?, errorCode: Int) {
+        
+        // Check Active Account
+        if (metadataNet.account != appDelegate.activeAccount) {
+            return;
+        }
+        
+        if (errorCode == 0) {
+            
+            // Update User (+ userProfile.id) & active account & account network
+            guard let tableAccount = NCManageDatabase.sharedInstance.setAccountUserProfile(userProfile!) else {
+                appDelegate.messageNotification("Accopunt", description: "Internal error : account not found on DB", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+                return
+            }
+            
+            CCNetworking.shared().settingAccount()
+            appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: tableAccount.password)
+            
+        } else {
+            
+        }
+        
+        
+    }
+    
+    
+    //MARK: -
     //MARK: Delegate : Login
     
     func loginSuccess(_ loginType: Int) {
