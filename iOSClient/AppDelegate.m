@@ -1177,8 +1177,8 @@
             
             [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:k_CCErrorNetworkNowAvailable];
             
-            if (_activeMain)
-                [_activeMain performSelector:@selector(requestServerCapabilities) withObject:nil afterDelay:3];
+            NSLog(@"[LOG] Request Service Server Nextcloud");
+            [[NCService sharedInstance] startRequestServicesServer];
         }
         
         NSLog(@"[LOG] Reachability Changed: Reachable");
