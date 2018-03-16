@@ -708,22 +708,28 @@
         
         if (visible) {
             
-            if (errorcode == kCFURLErrorNotConnectedToInternet || errorcode == k_CCErrorNetworkNowAvailable) {
-                
-                if (errorCodePrev != errorcode)
-                    [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_network_available_", nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
-                
-                errorCodePrev = errorcode;
-                
-            } else {
-                
-                if (description.length > 0) {
-                
-                    [TWMessageBarManager sharedInstance].styleSheet = self;
-                    [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n", NSLocalizedString(title, nil)] description:NSLocalizedString(description, nil) type:type duration:delay];
-                }
+            switch (errorcode) {
+                    
+                // JDStatusBarNotification
+                case kCFURLErrorNotConnectedToInternet :
+                    
+                    if (errorCodePrev != errorcode)
+                        [JDStatusBarNotification showWithStatus:NSLocalizedString(title, nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
+                    
+                    errorCodePrev = errorcode;
+                    break;
+                    
+                // TWMessageBarManager
+                default:
+                    
+                    if (description.length > 0) {
+                        
+                        [TWMessageBarManager sharedInstance].styleSheet = self;
+                        [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n", NSLocalizedString(title, nil)] description:NSLocalizedString(description, nil) type:type duration:delay];
+                    }
+                    break;
             }
-            
+                        
         } else {
             
             [[TWMessageBarManager sharedInstance] hideAllAnimated:YES];
@@ -1174,8 +1180,6 @@
     if ([self.reachability isReachable]) {
         
         if (self.lastReachability == NO) {
-            
-            [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:k_CCErrorNetworkNowAvailable];
             
             NSLog(@"[LOG] Request Service Server Nextcloud");
             [[NCService sharedInstance] startRequestServicesServer];
