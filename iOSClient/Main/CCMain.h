@@ -65,9 +65,13 @@
 @property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 @property (nonatomic, strong) UIImage *imageTitle;
+@property BOOL isSelectedMode;
+
 
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
+
+- (void)setUINavigationBarDefault;
 
 - (void)readFolder:(NSString *)serverUrl;
 - (void)readFileReloadFolder;

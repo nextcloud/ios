@@ -46,8 +46,6 @@
     BOOL _isRoot;
     BOOL _isViewDidLoad;
     
-    BOOL _isSelectedMode;
-        
     NSMutableDictionary *_selectedFileIDsMetadatas;
     NSUInteger _numSelectedFileIDsMetadatas;
     NSMutableArray *_queueSelector;
@@ -983,32 +981,6 @@
 #pragma mark -
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Activity ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getActivityServerSuccessFailure:(CCMetadataNet *)metadataNet listOfActivity:(NSArray *)listOfActivity message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    if (errorCode == 0) {
-        
-        [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity];
-        
-        // Reload Activity Data Source
-        [appDelegate.activeActivity reloadDatasource];
-        
-    } else {
-    
-        NSString *error = [NSString stringWithFormat:@"Get Activity Server failure error %d, %@", (int)errorCode, message];
-        NSLog(@"[LOG] %@", error);
-        
-        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Activity Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Notification  ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1147,7 +1119,7 @@
         
         // Read Notification
         metadataNet.action = actionGetNotificationServer;
-        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:NCService.sharedInstance metadataNet:metadataNet];
         
         // Read Activity
         metadataNet.action = actionGetActivityServer;

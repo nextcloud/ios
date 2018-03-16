@@ -208,6 +208,63 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         }
     }
     
+    @objc func getNotificationServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfNotifications: [Any]?, message: String?, errorCode: Int) {
+    
+        // Check Active Account
+        if (metadataNet.account != appDelegate.activeAccount) {
+            return;
+        }
+        
+        if (errorCode == 0) {
+            
+            DispatchQueue.global(qos: .default).async {
+
+                let sortedListOfNotifications = (listOfNotifications! as NSArray).sortedArray(using: [
+                    NSSortDescriptor(key: "date", ascending: false)
+                ])
+                
+                var old = ""
+                var new = ""
+                
+                for notification in listOfNotifications! {
+                    let id = (notification as AnyObject).idNotification!
+                    new = new + String(describing: id)
+                }
+                for notification in self.appDelegate.listOfNotifications! {
+                    let id = (notification as AnyObject).idNotification!
+                    old = old + String(describing: id)
+                }
+                
+                
+                DispatchQueue.main.async {
+                
+                    if (new != old) {
+                    
+                        self.appDelegate.listOfNotifications = NSMutableArray.init(array: sortedListOfNotifications)
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
+                
+                        // Update Main NavigationBar
+                        if (self.appDelegate.activeMain.isSelectedMode == false) {
+                            self.appDelegate.activeMain.setUINavigationBarDefault()
+                        }
+                    }
+                }
+            }
+            
+        } else {
+            
+            let error = "Get Notification Server failure error \(errorCode) \(message!)"
+            print("[LOG] \(error)")
+            
+            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Notification Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
+            
+            // Update Main NavigationBar
+            if (appDelegate.activeMain.isSelectedMode == false) {
+                appDelegate.activeMain.setUINavigationBarDefault()
+            }
+        }
+    }
+    
     //MARK: -
     //MARK: Delegate : Login
     
