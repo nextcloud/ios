@@ -983,32 +983,6 @@
 #pragma mark -
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== External Sites ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getExternalSitesServerSuccessFailure:(CCMetadataNet *)metadataNet listOfExternalSites:(NSArray *)listOfExternalSites message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    if (errorCode == 0) {
-        
-        [[NCManageDatabase sharedInstance] deleteExternalSites];
-        
-        for (OCExternalSites *tableExternalSites in listOfExternalSites)
-            [[NCManageDatabase sharedInstance] addExternalSites:tableExternalSites];
-        
-    } else {
-        
-        NSString *error = [NSString stringWithFormat:@"Get external site failure error %d, %@", (int)errorCode, message];
-        NSLog(@"[LOG] %@", error);
-        
-        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get External Sites Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Activity ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1105,53 +1079,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== User Profile  ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getUserProfileSuccessFailure:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    if (errorCode == 0) {
-    
-        // Update User (+ userProfile.id) & active account & account network
-        tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountUserProfile:userProfile];
-        if (tableAccount) {
-            [[CCNetworking sharedNetworking] settingAccount];
-            [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
-        } else {
-            [appDelegate messageNotification:@"Account" description:@"Internal error : account not found on DB" visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-        }
-
-        // Required userd ID (search + favorite)
-        [appDelegate.activePhotos readPhotoVideo];
-        [appDelegate.activeFavorites readListingFavorites];
-        
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-            
-            NSString *address = [NSString stringWithFormat:@"%@/index.php/avatar/%@/128", appDelegate.activeUrl, appDelegate.activeUser];
-            //UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]]; DEPRECATED iOS9
-            UIImage *avatar = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[address stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]]]];
-            if (avatar)
-                [UIImagePNGRepresentation(avatar) writeToFile:[NSString stringWithFormat:@"%@/avatar.png", appDelegate.directoryUser] atomically:YES];
-            else
-                [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/avatar.png", appDelegate.directoryUser] error:nil];
-            
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"changeUserProfile" object:nil];
-        });
-        
-    } else {
-        
-        NSString *error = [NSString stringWithFormat:@"Get user profile failure error %d, %@", (int)errorCode, message];
-        NSLog(@"[LOG] %@", error);
-        
-        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get user profile Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Capabilities  ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -1201,13 +1128,13 @@
         
         // Read User Profile
         metadataNet.action = actionGetUserProfile;
-        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:NCService.sharedInstance metadataNet:metadataNet];
         
         // Read External Sites
         if (capabilities.isExternalSitesServerEnabled) {
             
             metadataNet.action = actionGetExternalSitesServer;
-            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:NCService.sharedInstance metadataNet:metadataNet];
         }
         
         // Read Share

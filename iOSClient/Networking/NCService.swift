@@ -31,9 +31,6 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         let instance = NCService()
         return instance
     }()
-
-    //MARK: -
-    //MARK: middlewarePing
     
      @objc func middlewarePing() {
        
@@ -50,9 +47,6 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         
         //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
-    
-    //MARK: -
-    //MARK: requestServerCapabilities
     
     func getCapabilitiesOfServerSuccessFailure(_ metadataNet: CCMetadataNet!, capabilities: OCCapabilities?, message: String?, errorCode: Int) {
         
@@ -113,9 +107,6 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         metadataNet.action = actionGetCapabilities;
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
-
-    //MARK: -
-    //MARK: requestServerCapabilities
     
     @objc func getUserProfileSuccessFailure(_ metadataNet: CCMetadataNet!, userProfile: OCUserProfile?, message: String?, errorCode: Int) {
         
@@ -141,20 +132,24 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             
             DispatchQueue.global(qos: .default).async {
                 
-                guard let imageData = try? Data(contentsOf: URL(string: "\(self.appDelegate.activeUrl)/index.php/avatar/\(self.appDelegate.activeUser)/128")!) else {
+                let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128"
+                guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
                     return
                 }
                 
                 guard let avatar = UIImage(data: imageData) else {
-                    try? FileManager.default.removeItem(atPath: "\(self.appDelegate.directoryUser)/avatar.png")
+                    let fileName = "\(self.appDelegate.directoryUser!)/avatar.png"
+                    try? FileManager.default.removeItem(atPath: fileName)
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
                     return
                 }
                 
                 if let data = UIImagePNGRepresentation(avatar) {
-                    try? data.write(to: URL(string:"\(self.appDelegate.directoryUser)/avatar.png")!)
+                    let fileName = "\(self.appDelegate.directoryUser!)/avatar.png"
+                    try? data.write(to: URL(fileURLWithPath: fileName))
                 }
+                
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
             }
             
@@ -164,6 +159,30 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             print("[LOG] \(error)")
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get user profile Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
+        }
+    }
+    
+    @objc func getExternalSitesServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfExternalSites: [Any]?, message: String?, errorCode: Int) {
+        
+        // Check Active Account
+        if (metadataNet.account != appDelegate.activeAccount) {
+            return;
+        }
+        
+        if (errorCode == 0) {
+            
+            NCManageDatabase.sharedInstance.deleteExternalSites()
+            
+            for externalSites in listOfExternalSites! {
+                NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites)
+            }
+            
+        } else {
+         
+            let error = "Get external site failure error \(errorCode) \(message!)"
+            print("[LOG] \(error)")
+            
+            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get external site Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
         }
     }
     
