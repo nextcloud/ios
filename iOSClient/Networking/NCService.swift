@@ -130,18 +130,24 @@ class NCService: NSObject, OCNetworkingDelegate {
                 DispatchQueue.global().async {
                 
                     let address = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    let fileName = "\(self.appDelegate.directoryUser!)/themingBackground.png"
+
                     guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
+                        DispatchQueue.main.async {
+                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+                        }
                         return
                     }
                     
                     guard let image = UIImage(data: imageData) else {
-                        let fileName = "\(self.appDelegate.directoryUser!)/themingBackground.png"
                         try? FileManager.default.removeItem(atPath: fileName)
+                        DispatchQueue.main.async {
+                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+                        }
                         return
                     }
                     
                     if let data = UIImagePNGRepresentation(image) {
-                        let fileName = "\(self.appDelegate.directoryUser!)/themingBackground.png"
                         try? data.write(to: URL(fileURLWithPath: fileName))
                     }
                     
@@ -149,6 +155,10 @@ class NCService: NSObject, OCNetworkingDelegate {
                         self.appDelegate.settingThemingColorBrand()
                     }
                 }
+                
+            } else {
+                
+                self.appDelegate.settingThemingColorBrand()
             }
             
             // ------ SEARCH ------------------------------------------------------------------------
@@ -232,24 +242,30 @@ class NCService: NSObject, OCNetworkingDelegate {
             DispatchQueue.global(qos: .default).async {
                 
                 let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                let fileName = "\(self.appDelegate.directoryUser!)/avatar.png"
+
                 guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                    }
                     return
                 }
                 
                 guard let image = UIImage(data: imageData) else {
-                    let fileName = "\(self.appDelegate.directoryUser!)/avatar.png"
                     try? FileManager.default.removeItem(atPath: fileName)
-                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                    }
                     return
                 }
                 
                 if let data = UIImagePNGRepresentation(image) {
-                    let fileName = "\(self.appDelegate.directoryUser!)/avatar.png"
                     try? data.write(to: URL(fileURLWithPath: fileName))
                 }
                 
-                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                }
             }
             
         } else {
