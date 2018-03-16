@@ -389,8 +389,8 @@
         }
         [[NCAutoUpload sharedInstance] initStateAutoUpload];
         
-        NSLog(@"[LOG] Request Server Capabilities");
-        [self requestServerCapabilities];
+        NSLog(@"[LOG] Request Service Server Nextcloud");
+        [[NCService sharedInstance] startRequestServicesServer];
         
         // Clear datasorce
         [appDelegate.activePhotos reloadDatasource];
@@ -917,6 +917,22 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== View Notification  ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)viewNotification
+{
+    if ([appDelegate.listOfNotifications count] > 0) {
+        
+        CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
+        
+        [notificationVC setModalPresentationStyle:UIModalPresentationFormSheet];
+        
+        [self presentViewController:notificationVC animated:YES completion:nil];
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark === Delegate Login ===
 #pragma --------------------------------------------------------------------------------------------
 
@@ -976,186 +992,6 @@
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:previewingContext.sourceRect.origin];
     
     [self tableView:self.tableView didSelectRowAtIndexPath:indexPath];
-}
-
-#pragma mark -
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Notification  ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getNotificationServerSuccessFailure:(CCMetadataNet *)metadataNet listOfNotifications:(NSArray *)listOfNotifications message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    if (errorCode == 0) {
-    
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-            
-            // Order by date
-            NSArray *sortedListOfNotifications = [listOfNotifications sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-                
-                OCNotifications *notification1 = obj1, *notification2 = obj2;
-            
-                return [notification2.date compare: notification1.date];
-            
-            }];
-        
-            // verify if listOfNotifications is changed
-            NSString *old = @"", *new = @"";
-            for (OCNotifications *notification in listOfNotifications)
-                new = [new stringByAppendingString:@(notification.idNotification).stringValue];
-            for (OCNotifications *notification in appDelegate.listOfNotifications)
-                old = [old stringByAppendingString:@(notification.idNotification).stringValue];
-
-            if (![new isEqualToString:old]) {
-            
-                appDelegate.listOfNotifications = [[NSMutableArray alloc] initWithArray:sortedListOfNotifications];
-            
-                // reload Notification view
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"notificationReloadData" object:nil];
-            }
-        
-            // Update NavigationBar
-            if (!_isSelectedMode) {
-                
-                [self performSelectorOnMainThread:@selector(setUINavigationBarDefault) withObject:nil waitUntilDone:NO];
-            }
-        });
-        
-    } else {
-        
-        NSString *error = [NSString stringWithFormat:@"Get Notification Server failure error %d, %@", (int)errorCode, message];
-        NSLog(@"[LOG] %@", error);
-        
-        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Notification Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-        
-        // Update NavigationBar
-        if (!_isSelectedMode)
-            [self setUINavigationBarDefault];
-    }
-}
-
-- (void)viewNotification
-{
-    if ([appDelegate.listOfNotifications count] > 0) {
-        
-        CCNotification *notificationVC = [[UIStoryboard storyboardWithName:@"CCNotification" bundle:nil] instantiateViewControllerWithIdentifier:@"CCNotification"];
-        
-        [notificationVC setModalPresentationStyle:UIModalPresentationFormSheet];
-
-        [self presentViewController:notificationVC animated:YES completion:nil];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Capabilities  ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getCapabilitiesOfServerSuccessFailure:(CCMetadataNet *)metadataNet capabilities:(OCCapabilities *)capabilities message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
-    
-    if (errorCode == 0) {
-    
-        // Update capabilities db
-        [[NCManageDatabase sharedInstance] addCapabilities:capabilities];
-    
-        // ------ THEMING -----------------------------------------------------------------------
-    
-        // Download Theming Background & Change Theming color
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-        
-            if ([NCBrandOptions sharedInstance].use_themingBackground == YES) {
-        
-                //UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]]]; DEPRECATED iOS9
-                UIImage *themingBackground = [UIImage imageWithData:[NSData dataWithContentsOfURL:[NSURL URLWithString:[capabilities.themingBackground stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]]]];
-                if (themingBackground) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        [UIImagePNGRepresentation(themingBackground) writeToFile:[NSString stringWithFormat:@"%@/themingBackground.png", appDelegate.directoryUser] atomically:YES];
-                    });
-                } else {
-                    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/themingBackground.png", appDelegate.directoryUser] error:nil];
-                }
-            }
-        
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [appDelegate settingThemingColorBrand];
-            });
-        });
-
-        // ------ SEARCH  -----------------------------------------------------------------------
-        
-        // Search bar if change version
-        if ([[NCManageDatabase sharedInstance] getServerVersion] != capabilities.versionMajor) {
-        
-            [self cancelSearchBar];
-        }
-        
-        // ------ GET SERVICE SERVER ------------------------------------------------------------
-        
-        // Read User Profile
-        metadataNet.action = actionGetUserProfile;
-        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:NCService.sharedInstance metadataNet:metadataNet];
-        
-        // Read External Sites
-        if (capabilities.isExternalSitesServerEnabled) {
-            
-            metadataNet.action = actionGetExternalSitesServer;
-            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:NCService.sharedInstance metadataNet:metadataNet];
-        }
-        
-        // Read Share
-        if (capabilities.isFilesSharingAPIEnabled) {
-            
-            [appDelegate.sharesID removeAllObjects];
-            metadataNet.action = actionReadShareServer;
-            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-        }
-        
-        // Read Notification
-        metadataNet.action = actionGetNotificationServer;
-        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:NCService.sharedInstance metadataNet:metadataNet];
-        
-        // Read Activity
-        metadataNet.action = actionGetActivityServer;
-        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:NCService.sharedInstance metadataNet:metadataNet];
-        
-    } else {
-      
-        // Unauthorized
-        if (errorCode == kOCErrorServerUnauthorized)
-            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
-        
-        NSString *error = [NSString stringWithFormat:@"Get Capabilities failure error %d, %@", (int)errorCode, message];
-        NSLog(@"[LOG] %@", error);
-        
-        [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionCapabilities selector:@"Get Capabilities of Server" note:error type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
-        
-        // Change Theming color
-        [appDelegate settingThemingColorBrand];
-    }
-}
-
-#pragma mark -
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Request Server Information  ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)requestServerCapabilities
-{
-    // test
-    if (appDelegate.activeAccount.length == 0 || appDelegate.maintenanceMode)
-        return;
-    
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    metadataNet.action = actionGetCapabilities;
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
 #pragma mark -

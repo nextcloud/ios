@@ -246,8 +246,8 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    NSLog(@"[LOG] Request Server Capabilities");
-    [_activeMain requestServerCapabilities];
+    NSLog(@"[LOG] Request Service Server Nextcloud");
+    [[NCService sharedInstance] startRequestServicesServer];
     
     NSLog(@"[LOG] Initialize Auto upload");
     [[NCAutoUpload sharedInstance] initStateAutoUpload];    

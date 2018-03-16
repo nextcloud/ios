@@ -85,8 +85,6 @@
 - (void)reloadDatasource;
 - (void)reloadDatasource:(NSString *)serverUrl;
 
-- (void)requestServerCapabilities;
-
 - (void)openWindowShare:(tableMetadata *)metadata;
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;

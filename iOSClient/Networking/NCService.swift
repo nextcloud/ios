@@ -32,10 +32,80 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         return instance
     }()
     
-     @objc func middlewarePing() {
-       
+    //MARK: -
+    //MARK: Start Services API NC
+    
+    @objc func startRequestServicesServer() {
+   
+        self.requestUserProfile()
+        self.requestServerCapabilities()
+        self.requestNotificationServer()
+        self.requestActivityServer()
+    }
+
+    //MARK: -
+    //MARK: Request Service API NC
+    
+    @objc func requestServerCapabilities() {
+        
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return;
+            return
+        }
+        
+        guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
+            return
+        }
+        
+        metadataNet.action = actionGetCapabilities
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+    
+    @objc func requestUserProfile() {
+        
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
+            return
+        }
+        
+        guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
+            return
+        }
+        
+        metadataNet.action = actionGetUserProfile
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+    
+    @objc func requestNotificationServer() {
+        
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
+            return
+        }
+        
+        guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
+            return
+        }
+        
+        metadataNet.action = actionGetNotificationServer
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+    
+    @objc func requestActivityServer() {
+        
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
+            return
+        }
+        
+        guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
+            return
+        }
+        
+        metadataNet.action = actionGetActivityServer
+        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+    
+    @objc func middlewarePing() {
+        
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
+            return
         }
         
         guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
@@ -48,11 +118,14 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
+    //MARK: -
+    //MARK: Delegate Service API NC
+    
     func getCapabilitiesOfServerSuccessFailure(_ metadataNet: CCMetadataNet!, capabilities: OCCapabilities?, message: String?, errorCode: Int) {
         
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {
-            return;
+            return
         }
         
         if (errorCode == 0) {
@@ -66,6 +139,26 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             DispatchQueue.global().async {
                 
                 if (NCBrandOptions.sharedInstance.use_themingBackground) {
+                    
+                    let address = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
+                    guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
+                        return
+                    }
+                    
+                    guard let image = UIImage(data: imageData) else {
+                        let fileName = "\(self.appDelegate.directoryUser!)/themingBackground.png"
+                        try? FileManager.default.removeItem(atPath: fileName)
+                        return
+                    }
+                    
+                    if let data = UIImagePNGRepresentation(image) {
+                        let fileName = "\(self.appDelegate.directoryUser!)/themingBackground.png"
+                        try? data.write(to: URL(fileURLWithPath: fileName))
+                    }
+                    
+                    DispatchQueue.main.async {
+                        self.appDelegate.settingThemingColorBrand()
+                    }
                 }
             }
             
@@ -76,6 +169,21 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             }
             
             // ------ GET OTHER SERVICE -------------------------------------------------------------
+
+            // Read External Sites
+            if (capabilities!.isExternalSitesServerEnabled) {
+                
+                metadataNet.action = actionGetExternalSitesServer
+                appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+            }
+            
+            // Read Share
+            if (capabilities!.isFilesSharingAPIEnabled) {
+                
+                appDelegate.sharesID.removeAllObjects()
+                metadataNet.action = actionReadShareServer
+                appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: appDelegate.activeMain, metadataNet: metadataNet)
+            }
             
         } else {
             
@@ -94,25 +202,11 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         }
     }
     
-    @objc func requestServerCapabilities() {
-        
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return;
-        }
-    
-        guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
-            return
-        }
-    
-        metadataNet.action = actionGetCapabilities;
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-    
     @objc func getUserProfileSuccessFailure(_ metadataNet: CCMetadataNet!, userProfile: OCUserProfile?, message: String?, errorCode: Int) {
         
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {
-            return;
+            return
         }
         
         if (errorCode == 0) {
@@ -132,20 +226,20 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             
             DispatchQueue.global(qos: .default).async {
                 
-                let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128"
+                let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                 guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
                     return
                 }
                 
-                guard let avatar = UIImage(data: imageData) else {
+                guard let image = UIImage(data: imageData) else {
                     let fileName = "\(self.appDelegate.directoryUser!)/avatar.png"
                     try? FileManager.default.removeItem(atPath: fileName)
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
                     return
                 }
                 
-                if let data = UIImagePNGRepresentation(avatar) {
+                if let data = UIImagePNGRepresentation(image) {
                     let fileName = "\(self.appDelegate.directoryUser!)/avatar.png"
                     try? data.write(to: URL(fileURLWithPath: fileName))
                 }
@@ -166,7 +260,7 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {
-            return;
+            return
         }
         
         if (errorCode == 0) {
@@ -189,7 +283,7 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {
-            return;
+            return
         }
         
         if (errorCode == 0) {
@@ -212,7 +306,7 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
     
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {
-            return;
+            return
         }
         
         if (errorCode == 0) {
@@ -266,7 +360,7 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
     }
     
     //MARK: -
-    //MARK: Delegate : Login
+    //MARK: Delegate Login
     
     func loginSuccess(_ loginType: Int) {
         
@@ -275,11 +369,11 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
     }
 
     func loginClose() {
-        appDelegate.activeLogin = nil;
+        appDelegate.activeLogin = nil
     }
     
     func loginWebClose() {
-        appDelegate.activeLoginWeb = nil;
+        appDelegate.activeLoginWeb = nil
     }
     
 }
