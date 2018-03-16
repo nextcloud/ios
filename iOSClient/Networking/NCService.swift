@@ -172,7 +172,6 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
         if (errorCode == 0) {
             
             NCManageDatabase.sharedInstance.deleteExternalSites()
-            
             for externalSites in listOfExternalSites! {
                 NCManageDatabase.sharedInstance.addExternalSites(externalSites as! OCExternalSites)
             }
@@ -183,6 +182,29 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             print("[LOG] \(error)")
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get external site Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
+        }
+    }
+    
+    @objc func getActivityServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfActivity: [Any]?, message: String?, errorCode: Int) {
+        
+        // Check Active Account
+        if (metadataNet.account != appDelegate.activeAccount) {
+            return;
+        }
+        
+        if (errorCode == 0) {
+            
+            NCManageDatabase.sharedInstance.addActivityServer(listOfActivity as! [OCActivity])
+            if (appDelegate.activeActivity != nil) {
+                appDelegate.activeActivity.reloadDatasource()
+            }
+            
+        } else {
+            
+            let error = "Get Activity Server failure error \(errorCode) \(message!)"
+            print("[LOG] \(error)")
+            
+            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Activity Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
         }
     }
     

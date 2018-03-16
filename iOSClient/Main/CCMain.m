@@ -1151,7 +1151,7 @@
         
         // Read Activity
         metadataNet.action = actionGetActivityServer;
-        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:NCService.sharedInstance metadataNet:metadataNet];
         
     } else {
       
