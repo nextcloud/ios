@@ -135,13 +135,37 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             CCNetworking.shared().settingAccount()
             appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: tableAccount.password)
             
+            // Call func thath required the userdID
+            appDelegate.activePhotos.readPhotoVideo()
+            appDelegate.activeFavorites.readListingFavorites()
+            
+            DispatchQueue.global(qos: .default).async {
+                
+                guard let imageData = try? Data(contentsOf: URL(string: "\(self.appDelegate.activeUrl)/index.php/avatar/\(self.appDelegate.activeUser)/128")!) else {
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                    return
+                }
+                
+                guard let avatar = UIImage(data: imageData) else {
+                    try? FileManager.default.removeItem(atPath: "\(self.appDelegate.directoryUser)/avatar.png")
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                    return
+                }
+                
+                if let data = UIImagePNGRepresentation(avatar) {
+                    try? data.write(to: URL(string:"\(self.appDelegate.directoryUser)/avatar.png")!)
+                }
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+            }
+            
         } else {
             
+            let error = "Get user profile failure error \(errorCode) \(message!)"
+            print("[LOG] \(error)")
+            
+            NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get user profile Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
         }
-        
-        
     }
-    
     
     //MARK: -
     //MARK: Delegate : Login
