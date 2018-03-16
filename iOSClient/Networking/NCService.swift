@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegateWeb {
+class NCService: NSObject, OCNetworkingDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
@@ -357,22 +357,4 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             }
         }
     }
-    
-    //MARK: -
-    //MARK: Delegate Login
-    
-    func loginSuccess(_ loginType: Int) {
-        
-        // go to home sweet home
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil)
-    }
-
-    func loginClose() {
-        appDelegate.activeLogin = nil
-    }
-    
-    func loginWebClose() {
-        appDelegate.activeLoginWeb = nil
-    }
-    
 }
