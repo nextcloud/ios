@@ -30,7 +30,14 @@
         self.themingSlogan = @"";
         self.themingUrl = @"";
         
+        self.externalSiteV1 = @"";
+        
         self.endToEndEncryptionVersion = @"";
+        
+        self.notificationOcsEndpoints = @"";
+        self.notificationPush = @"";
+        
+        self.spreedFeatures = @"";
     }
     return self;
 }

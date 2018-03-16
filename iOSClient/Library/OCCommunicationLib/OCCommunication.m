@@ -1385,13 +1385,13 @@
             
                 NSDictionary *externalSitesDic = [capabilitiesDict valueForKey:@"external"];
                 if (externalSitesDic) {
+                    capabilities.isExternalSitesServerEnabled = YES;
                     NSArray *externalSitesArray = [externalSitesDic valueForKey:@"v1"];
-                    if (externalSitesArray)
-                        if ([[externalSitesArray objectAtIndex:0] isEqualToString:@"sites"])
-                            capabilities.isExternalSitesServerEnabled = YES;
+                    capabilities.externalSiteV1 = [externalSitesArray componentsJoinedByString:@","];
                 }
                 
                 // NOTIFICATION
+                
                 NSDictionary *notificationDic = [capabilitiesDict valueForKey:@"notifications"];
                 if (notificationDic) {
                     capabilities.isNotificationServerEnabled = YES;
@@ -1400,6 +1400,16 @@
                     NSArray *pushArray = [notificationDic valueForKey:@"push"];
                     capabilities.notificationPush = [pushArray componentsJoinedByString:@","];
                 }
+                
+                // SPREED
+                
+                NSDictionary *spreedDic = [capabilitiesDict valueForKey:@"spreed"];
+                if (spreedDic) {
+                    capabilities.isSpreedServerEnabled = YES;
+                    NSArray *featuresArray = [capabilitiesDict valueForKey:@"features"];
+                    capabilities.spreedFeatures = [featuresArray componentsJoinedByString:@","];
+                }
+                
                 //FILES
             
                 NSDictionary *files = [capabilitiesDict valueForKey:@"files"];

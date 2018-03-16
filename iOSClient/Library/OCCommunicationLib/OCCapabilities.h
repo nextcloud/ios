@@ -51,11 +51,16 @@
 
 // External sites
 @property (nonatomic) BOOL isExternalSitesServerEnabled;
+@property (nonatomic, strong) NSString *externalSiteV1;
 
 // Notification
 @property (nonatomic) BOOL isNotificationServerEnabled;
 @property (nonatomic, strong) NSString *notificationOcsEndpoints;
 @property (nonatomic, strong) NSString *notificationPush;
+
+// Spreed
+@property (nonatomic) BOOL isSpreedServerEnabled;
+@property (nonatomic, strong) NSString *spreedFeatures;
 
 /*FILES*/
 @property (nonatomic) BOOL isFileBigFileChunkingEnabled;
