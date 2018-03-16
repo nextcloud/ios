@@ -424,7 +424,15 @@
 
 + (BOOL)getFormatCompatibility
 {
-    return [[UICKeyChainStore stringForKey:@"formatCompatibility" service:k_serviceShareKeyChain] boolValue];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"formatCompatibility" service:k_serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setFormatCompatibility:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
 }
 
 + (void)setFormatCompatibility:(BOOL)set
