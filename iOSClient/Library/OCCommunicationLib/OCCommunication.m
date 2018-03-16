@@ -1391,6 +1391,15 @@
                             capabilities.isExternalSitesServerEnabled = YES;
                 }
                 
+                // NOTIFICATION
+                NSDictionary *notificationDic = [capabilitiesDict valueForKey:@"notifications"];
+                if (notificationDic) {
+                    capabilities.isNotificationServerEnabled = YES;
+                    NSArray *ocsendpointsArray = [notificationDic valueForKey:@"ocs-endpoints"];
+                    capabilities.notificationOcsEndpoints = [ocsendpointsArray componentsJoinedByString:@","];
+                    NSArray *pushArray = [notificationDic valueForKey:@"push"];
+                    capabilities.notificationPush = [pushArray componentsJoinedByString:@","];
+                }
                 //FILES
             
                 NSDictionary *files = [capabilitiesDict valueForKey:@"files"];

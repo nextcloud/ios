@@ -43,7 +43,6 @@ class NCService: NSObject, OCNetworkingDelegate {
         
         self.requestUserProfile()
         self.requestServerCapabilities()
-        self.requestNotificationServer()
         self.requestActivityServer()
     }
 
@@ -75,20 +74,6 @@ class NCService: NSObject, OCNetworkingDelegate {
         }
         
         metadataNet.action = actionGetUserProfile
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-    
-    @objc func requestNotificationServer() {
-        
-        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
-            return
-        }
-        
-        guard let metadataNet = CCMetadataNet.init(account: appDelegate.activeAccount) else {
-            return
-        }
-        
-        metadataNet.action = actionGetNotificationServer
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
@@ -139,11 +124,11 @@ class NCService: NSObject, OCNetworkingDelegate {
             
             // ------ THEMING -----------------------------------------------------------------------
             
-            // Download Theming Background & Change Theming color
-            DispatchQueue.global().async {
+            if (NCBrandOptions.sharedInstance.use_themingBackground) {
                 
-                if (NCBrandOptions.sharedInstance.use_themingBackground) {
-                    
+                // Download Theming Background & Change Theming color
+                DispatchQueue.global().async {
+                
                     let address = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
                     guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
                         return
@@ -174,6 +159,23 @@ class NCService: NSObject, OCNetworkingDelegate {
             
             // ------ GET OTHER SERVICE -------------------------------------------------------------
 
+            // Read Notification
+            if (capabilities!.isNotificationServerEnabled) {
+                
+                metadataNet.action = actionGetNotificationServer
+                appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                
+            } else {
+                
+                // Remove all Notification
+                self.appDelegate.listOfNotifications.removeAllObjects()
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
+                // Update Main NavigationBar
+                if (self.appDelegate.activeMain.isSelectedMode == false) {
+                    self.appDelegate.activeMain.setUINavigationBarDefault()
+                }
+            }
+            
             // Read External Sites
             if (capabilities!.isExternalSitesServerEnabled) {
                 
