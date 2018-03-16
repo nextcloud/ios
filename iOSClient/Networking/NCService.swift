@@ -134,24 +134,23 @@ class NCService: NSObject, OCNetworkingDelegate {
 
                     guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
                         DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
+                            self.appDelegate.settingThemingColorBrand()
                         }
                         return
-                    }
-                    
-                    guard let image = UIImage(data: imageData) else {
-                        try? FileManager.default.removeItem(atPath: fileName)
-                        DispatchQueue.main.async {
-                            NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeTheming"), object: nil)
-                        }
-                        return
-                    }
-                    
-                    if let data = UIImagePNGRepresentation(image) {
-                        try? data.write(to: URL(fileURLWithPath: fileName))
                     }
                     
                     DispatchQueue.main.async {
+                        
+                        guard let image = UIImage(data: imageData) else {
+                            try? FileManager.default.removeItem(atPath: fileName)
+                            self.appDelegate.settingThemingColorBrand()
+                            return
+                        }
+                    
+                        if let data = UIImagePNGRepresentation(image) {
+                            try? data.write(to: URL(fileURLWithPath: fileName))
+                        }
+                    
                         self.appDelegate.settingThemingColorBrand()
                     }
                 }
@@ -251,19 +250,18 @@ class NCService: NSObject, OCNetworkingDelegate {
                     return
                 }
                 
-                guard let image = UIImage(data: imageData) else {
-                    try? FileManager.default.removeItem(atPath: fileName)
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
-                    }
-                    return
-                }
-                
-                if let data = UIImagePNGRepresentation(image) {
-                    try? data.write(to: URL(fileURLWithPath: fileName))
-                }
-                
                 DispatchQueue.main.async {
+                    
+                    guard let image = UIImage(data: imageData) else {
+                        try? FileManager.default.removeItem(atPath: fileName)
+                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
+                        return
+                    }
+                
+                    if let data = UIImagePNGRepresentation(image) {
+                        try? data.write(to: URL(fileURLWithPath: fileName))
+                    }
+                
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
                 }
             }
