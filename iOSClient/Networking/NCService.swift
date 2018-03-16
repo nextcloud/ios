@@ -171,7 +171,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                 self.appDelegate.listOfNotifications.removeAllObjects()
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
                 // Update Main NavigationBar
-                if (self.appDelegate.activeMain.isSelectedMode == false) {
+                if (appDelegate.activeMain != nil && self.appDelegate.activeMain.isSelectedMode == false) {
                     self.appDelegate.activeMain.setUINavigationBarDefault()
                 }
             }
@@ -181,10 +181,14 @@ class NCService: NSObject, OCNetworkingDelegate {
                 
                 metadataNet.action = actionGetExternalSitesServer
                 appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+                
+            } else {
+                
+                NCManageDatabase.sharedInstance.deleteExternalSites()
             }
             
             // Read Share
-            if (capabilities!.isFilesSharingAPIEnabled) {
+            if (capabilities!.isFilesSharingAPIEnabled && appDelegate.activeMain != nil) {
                 
                 appDelegate.sharesID.removeAllObjects()
                 metadataNet.action = actionReadShareServer
@@ -339,7 +343,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "notificationReloadData"), object: nil)
                 
                         // Update Main NavigationBar
-                        if (self.appDelegate.activeMain.isSelectedMode == false) {
+                        if (self.appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
                             self.appDelegate.activeMain.setUINavigationBarDefault()
                         }
                     }
@@ -354,7 +358,7 @@ class NCService: NSObject, OCNetworkingDelegate {
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Notification Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
             
             // Update Main NavigationBar
-            if (appDelegate.activeMain.isSelectedMode == false) {
+            if (appDelegate.activeMain.isSelectedMode == false && self.appDelegate.activeMain != nil) {
                 appDelegate.activeMain.setUINavigationBarDefault()
             }
         }
