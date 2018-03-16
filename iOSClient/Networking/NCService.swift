@@ -37,6 +37,10 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
     
     @objc func startRequestServicesServer() {
    
+        if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
+            return
+        }
+        
         self.requestUserProfile()
         self.requestServerCapabilities()
         self.requestNotificationServer()
@@ -187,18 +191,13 @@ class NCService: NSObject, OCNetworkingDelegate, CCLoginDelegate, CCLoginDelegat
             
         } else {
             
-            // Unauthorized
-            if (errorCode == kOCErrorServerUnauthorized) {
-                appDelegate.openLoginView(self, loginType: loginModifyPasswordUser)
-            }
+            // Change Theming color
+            appDelegate.settingThemingColorBrand()
             
             let error = "Get Capabilities failure error \(errorCode) \(message!)"
             print("[LOG] \(error)")
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Capabilities of Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
-            
-            // Change Theming color
-            appDelegate.settingThemingColorBrand()
         }
     }
     
