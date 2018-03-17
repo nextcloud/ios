@@ -84,6 +84,7 @@ class NCText: UIViewController, UITextViewDelegate {
         textView.becomeFirstResponder()
         textView.delegate = self
         textView.selectedTextRange = textView.textRange(from: textView.beginningOfDocument, to: textView.beginningOfDocument)
+        //textView.font = UIFont(name: "NameOfTheFont", size: 20)
 
         textViewDidChange(textView)
     }
