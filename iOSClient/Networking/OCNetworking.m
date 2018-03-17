@@ -894,7 +894,7 @@
             return;
         }
         
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:fileName account:_metadataNet.account];
+        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
 
         if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
             
