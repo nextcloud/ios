@@ -549,9 +549,15 @@
         [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        
-            NSMutableArray *addMetadatas = [NSMutableArray new];
             
+            NSMutableArray *addMetadatas = [NSMutableArray new];
+
+            // DELETE RECORD IF NOT PRESENT ON DB
+            NSArray *metadatasDBImageVideo = [[NCManageDatabase sharedInstance] getTableMetadatasContentTypeImageVideo];
+            for (tableMetadata *metadata in metadatasDBImageVideo) {
+            }
+            
+            // INSERT NEW RECORD ON DB
             for (tableMetadata *metadata in metadatas) {
                 
                 // Verify if do not exists this Metadata
