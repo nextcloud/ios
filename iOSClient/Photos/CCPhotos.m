@@ -553,7 +553,8 @@
             NSMutableArray *addMetadatas = [NSMutableArray new];
 
             // DELETE RECORD IF NOT PRESENT ON DB
-           
+            //NSArray *metadatasDBImageVideo = [[NCManageDatabase sharedInstance] getTableMetadatasContentTypeImageVideo];
+            
             // INSERT NEW RECORD ON DB
             for (tableMetadata *metadata in metadatas) {
                 
