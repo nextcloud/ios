@@ -1912,6 +1912,7 @@ class NCManageDatabase: NSObject {
                                 }
                             }
                         }
+                        print("Delete update: \(isUpdate)")
                         
                         // INSERT NEW RECORD ON DB [From SEARCH To DB]
                         for metadata in metadatas {
@@ -1920,9 +1921,11 @@ class NCManageDatabase: NSObject {
                                 isUpdate = true
                             }
                         }
+                        print("Insert update: \(isUpdate)")
                     }
                 } catch let error {
                     print("[LOG] Could not write to database: ", error)
+                    realm.cancelWrite()
                     return false
                 }
             }
