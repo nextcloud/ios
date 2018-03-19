@@ -194,15 +194,6 @@
     }
 }
 
-- (void)searchFavorite
-{
-    // test
-    if (appDelegate.activeAccount.length == 0)
-        return;
-
-    [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
-}
-
 - (void)addFavoriteFolder:(NSString *)serverUrl
 {
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
@@ -279,6 +270,15 @@
         
         NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
     }
+}
+
+- (void)listingFavorites
+{
+    // test
+    if (appDelegate.activeAccount.length == 0)
+        return;
+    
+    [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------

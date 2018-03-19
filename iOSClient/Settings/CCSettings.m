@@ -404,7 +404,7 @@
         } 
     }
     
-    [appDelegate.activeFavorites searchFavorite];
+    [appDelegate.activeFavorites listingFavorites];
 }
 
 #pragma --------------------------------------------------------------------------------------------
