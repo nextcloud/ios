@@ -1885,52 +1885,51 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        var isUpdate = false
         
-        if realm.isInWriteTransaction {
-            
-            print("[LOG] Could not write to database, addPhotoLibrary is already in write transaction")
-            return false
-            
-        } else {
-            
-            do {
-                do {
-                    try realm.write {
-                        
-                        let metadatasDBImageVideo = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video))
-                        let fileIDArrayDB = metadatasDBImageVideo.map({ $0.fileID }) as [String]
-                        let fileIDArraySearch = metadatas.map({ $0.fileID }) as [String]
-
-                        // DELETE RECORD IF NOT PRESENT ON DB [From DB To SEARCH]
-                        for fileID in fileIDArrayDB {
-                            if !(fileIDArraySearch.contains(fileID)) {
-                                if let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first {
-                                    realm.delete(result)
-                                    isUpdate = true
-                                }
-                            }
-                        }
-                        print("Delete update: \(isUpdate)")
-                        
-                        // INSERT NEW RECORD ON DB [From SEARCH To DB]
-                        for metadata in metadatas {
-                            if !(fileIDArrayDB.contains(metadata.fileID)) {
-                                realm.add(metadata, update: true)
-                                isUpdate = true
-                            }
-                        }
-                        print("Insert update: \(isUpdate)")
-                    }
-                } catch let error {
-                    print("[LOG] Could not write to database: ", error)
-                    realm.cancelWrite()
-                    return false
+        let metadatasDBImageVideo = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video))
+        let fileIDArrayDB = metadatasDBImageVideo.map({ $0.fileID }) as [String]
+        let fileIDArraySearch = metadatas.map({ $0.fileID }) as [String]
+        
+        // DELETE RECORD IF NOT PRESENT ON DB [From DB To SEARCH]
+        var resultsDelete = [tableMetadata]()
+        for fileID in fileIDArrayDB {
+            if !(fileIDArraySearch.contains(fileID)) {
+                if let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first {
+                    resultsDelete.append(result)
                 }
             }
         }
         
-        return isUpdate
+        // INSERT NEW RECORD ON DB [From SEARCH To DB]
+        var resultsInsert = [tableMetadata]()
+        for metadata in metadatas {
+            if !(fileIDArrayDB.contains(metadata.fileID)) {
+                resultsInsert.append(metadata)
+            }
+        }
+        
+        do {
+            try realm.write {
+                
+                // DELETE
+                for metadata in resultsDelete {
+                    realm.delete(metadata)
+                }
+                // INSERT
+                for metadata in resultsInsert {
+                    realm.add(metadata, update: true)
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            realm.cancelWrite()
+            return false
+        }
+        
+        if (resultsDelete.count > 0 || resultsInsert.count > 0) {
+            return true
+        }
+        return false
     }
     
     //MARK: -
