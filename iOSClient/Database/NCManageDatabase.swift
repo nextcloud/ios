@@ -1878,6 +1878,44 @@ class NCManageDatabase: NSObject {
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
     
+    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata]) {
+        
+        let realm = try! Realm()
+        
+        if realm.isInWriteTransaction {
+            
+            print("[LOG] Could not write to database, addPhotoLibrary is already in write transaction")
+            return
+            
+        } else {
+            
+            do {
+                do {
+                    try realm.write {
+                        
+                        let metadatasDBImageVideo = getTableMetadatasContentTypeImageVideo()
+                        var addMetadatas = [tableMetadata]()
+                        
+                        if (metadatasDBImageVideo != nil) {
+                            
+                            for metadata in metadatasDBImageVideo! {
+                                let fileID = metadata.fileID
+                                let metadataFilter = metadatas.filter({ $0.fileID == fileID })
+                                if (metadataFilter.count == 0) {
+                                    addMetadatas.append(contentsOf: metadataFilter)
+                                }
+                            }
+                        }
+                    }
+                } catch let error {
+                    print("[LOG] Could not write to database: ", error)
+                    return
+                }
+            }
+        }
+        
+    }
+    
     //MARK: -
     //MARK: Table Photo Library
     

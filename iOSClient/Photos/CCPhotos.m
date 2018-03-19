@@ -554,6 +554,7 @@
 
             // DELETE RECORD IF NOT PRESENT ON DB
             //NSArray *metadatasDBImageVideo = [[NCManageDatabase sharedInstance] getTableMetadatasContentTypeImageVideo];
+            //[[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas];
             
             // INSERT NEW RECORD ON DB
             for (tableMetadata *metadata in metadatas) {
