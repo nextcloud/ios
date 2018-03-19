@@ -1899,11 +1899,10 @@ class NCManageDatabase: NSObject {
                     try realm.write {
                         
                         let metadatasDBImageVideo = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video))
-                        
+                        let fileIDArrayDB = metadatasDBImageVideo.map({ $0.fileID }) as [String]
                         let fileIDArraySearch = metadatas.map({ $0.fileID }) as [String]
 
                         // DELETE RECORD IF NOT PRESENT ON DB [From DB To SEARCH]
-                        let fileIDArrayDB = metadatasDBImageVideo.map({ $0.fileID }) as [String]
                         for fileID in fileIDArrayDB {
                             if !(fileIDArraySearch.contains(fileID)) {
                                 let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first
