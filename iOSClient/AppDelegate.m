@@ -147,6 +147,12 @@
         }
     }
     
+#ifdef DEBUG
+    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path]];
+    NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryLocal]];
+    [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
+#endif
+    
     // Operation Queue OC Networking
     _netQueue = [[NSOperationQueue alloc] init];
     _netQueue.name = k_queue;
