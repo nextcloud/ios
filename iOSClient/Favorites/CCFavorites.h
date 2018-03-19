@@ -47,7 +47,7 @@
 @property (nonatomic, strong) UIDocumentInteractionController *docController;
 
 - (void)reloadDatasource;
-- (void)readListingFavorites;
+- (void)searchFavorite;
 - (void)addFavoriteFolder:(NSString *)serverUrl;
 
 @end

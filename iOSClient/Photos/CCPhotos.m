@@ -566,7 +566,7 @@
     }
 }
 
-- (void)readPhotoVideo
+- (void)searchPhotoVideo
 {
     // test
     if (appDelegate.activeAccount.length == 0 || _isSearchMode)

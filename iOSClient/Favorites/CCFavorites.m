@@ -194,7 +194,7 @@
     }
 }
 
-- (void)readListingFavorites
+- (void)searchFavorite
 {
     // test
     if (appDelegate.activeAccount.length == 0)
