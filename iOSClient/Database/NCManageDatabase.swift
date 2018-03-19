@@ -1880,6 +1880,10 @@ class NCManageDatabase: NSObject {
     
     @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata]) {
         
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
         let realm = try! Realm()
         
         if realm.isInWriteTransaction {
@@ -1893,18 +1897,24 @@ class NCManageDatabase: NSObject {
                 do {
                     try realm.write {
                         
-                        let metadatasDBImageVideo = getTableMetadatasContentTypeImageVideo()
-                        var addMetadatas = [tableMetadata]()
+                        let metadatasDBImageVideo = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video))
                         
-                        if (metadatasDBImageVideo != nil) {
+                        // DELETE RECORD IF NOT PRESENT ON DB [From DB To SEARCH]
+                        let fileIDArrayDB = metadatasDBImageVideo.map({ $0.fileID })
+                        let fileIDArraySearch = metadatas.map({ $0.fileID })
                             
-                            for metadata in metadatasDBImageVideo! {
-                                let fileID = metadata.fileID
-                                let metadataFilter = metadatas.filter({ $0.fileID == fileID })
-                                if (metadataFilter.count == 0) {
-                                    addMetadatas.append(contentsOf: metadataFilter)
+                        for fileID in fileIDArrayDB {
+                            if !(fileIDArraySearch.contains(fileID)) {
+                                let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first
+                                if (result != nil) {
+                                    realm.delete(result!)
                                 }
                             }
+                        }
+                        
+                        // INSERT NEW RECORD ON DB [From SEARCH To DB]
+                        for metadata in metadatas {
+                            
                         }
                     }
                 } catch let error {
