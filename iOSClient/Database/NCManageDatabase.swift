@@ -1878,18 +1878,19 @@ class NCManageDatabase: NSObject {
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
     
-    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata]) {
+    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata]) -> Bool {
         
         guard let tableAccount = self.getAccountActive() else {
-            return
+            return false
         }
         
         let realm = try! Realm()
+        var isUpdate = false
         
         if realm.isInWriteTransaction {
             
             print("[LOG] Could not write to database, addPhotoLibrary is already in write transaction")
-            return
+            return false
             
         } else {
             
@@ -1914,16 +1915,20 @@ class NCManageDatabase: NSObject {
                         
                         // INSERT NEW RECORD ON DB [From SEARCH To DB]
                         for metadata in metadatas {
-                            
+                            if !(fileIDArraySearch.contains(metadata.fileID)) {
+                                realm.add(metadata, update: true)
+                                isUpdate = true
+                            }
                         }
                     }
                 } catch let error {
                     print("[LOG] Could not write to database: ", error)
-                    return
+                    return false
                 }
             }
         }
         
+        return isUpdate
     }
     
     //MARK: -
