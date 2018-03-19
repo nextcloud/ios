@@ -1905,9 +1905,8 @@ class NCManageDatabase: NSObject {
                         // DELETE RECORD IF NOT PRESENT ON DB [From DB To SEARCH]
                         for fileID in fileIDArrayDB {
                             if !(fileIDArraySearch.contains(fileID)) {
-                                let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first
-                                if (result != nil) {
-                                    realm.delete(result!)
+                                if let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first {
+                                    realm.delete(result)
                                     isUpdate = true
                                 }
                             }
