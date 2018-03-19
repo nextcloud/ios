@@ -548,18 +548,12 @@
         // Update date
         [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
         
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        BOOL isUpdate = [[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas];
             
-            BOOL isUpdate = [[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas];
+        if (isUpdate)
+            [self reloadDatasource];
             
-            if (isUpdate) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self reloadDatasource];
-                });
-            }
-            
-            _isSearchMode = NO;
-        });
+        _isSearchMode = NO;
         
     } else {
         _isSearchMode = NO;
