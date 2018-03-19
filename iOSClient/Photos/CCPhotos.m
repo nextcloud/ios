@@ -550,24 +550,10 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            NSMutableArray *addMetadatas = [NSMutableArray new];
-            // DELETE RECORD IF NOT PRESENT ON DB
-            //NSArray *metadatasDBImageVideo = [[NCManageDatabase sharedInstance] getTableMetadatasContentTypeImageVideo];
-            [[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas];
+            BOOL isUpdate = [[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas];
             
-            // INSERT NEW RECORD ON DB
-            for (tableMetadata *metadata in metadatas) {
-                
-                // Verify if do not exists this Metadata
-                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
-                
-                if (!result)
-                    [addMetadatas addObject:metadata];
-            }
-            
-            if ([addMetadatas count] > 0) {
+            if (isUpdate) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    (void)[[NCManageDatabase sharedInstance] addMetadatas:addMetadatas serverUrl:metadataNet.serverUrl];
                     [self reloadDatasource];
                 });
             }

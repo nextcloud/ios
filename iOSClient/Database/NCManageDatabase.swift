@@ -1909,6 +1909,7 @@ class NCManageDatabase: NSObject {
                                 let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first
                                 if (result != nil) {
                                     realm.delete(result!)
+                                    isUpdate = true
                                 }
                             }
                         }
