@@ -229,6 +229,7 @@ class NCManageDatabase: NSObject {
     @objc func getAccountActive() -> tableAccount? {
         
         let realm = try! Realm()
+        realm.refresh()
         
         guard let result = realm.objects(tableAccount.self).filter("active = true").first else {
             return nil
@@ -240,6 +241,7 @@ class NCManageDatabase: NSObject {
     @objc func getAccounts() -> [String]? {
         
         let realm = try! Realm()
+        realm.refresh()
         
         let results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
         
@@ -253,7 +255,8 @@ class NCManageDatabase: NSObject {
     @objc func getAccount(predicate: NSPredicate) -> tableAccount? {
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         if let result = realm.objects(tableAccount.self).filter(predicate).first {
             return tableAccount.init(value: result)
         }
@@ -264,7 +267,8 @@ class NCManageDatabase: NSObject {
     @objc func getAccountAutoUploadFileName() -> String {
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableAccount.self).filter("active = true").first else {
             return ""
         }
@@ -279,7 +283,8 @@ class NCManageDatabase: NSObject {
     @objc func getAccountAutoUploadDirectory(_ activeUrl : String) -> String {
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableAccount.self).filter("active = true").first else {
             return ""
         }
@@ -477,7 +482,8 @@ class NCManageDatabase: NSObject {
     @objc func getActivity(predicate: NSPredicate) -> [tableActivity] {
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results = realm.objects(tableActivity.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
         
         return Array(results.map { tableActivity.init(value:$0) })
@@ -624,7 +630,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         return realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first
     }
     
@@ -635,7 +642,8 @@ class NCManageDatabase: NSObject {
         }
 
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
             return 0
         }
@@ -650,7 +658,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
             return 0
         }
@@ -715,7 +724,8 @@ class NCManageDatabase: NSObject {
     @objc func getCertificatesLocation(_ localCertificatesFolder: String) -> [String] {
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results = realm.objects(tableCertificates.self)
     
         return Array(results.map { "\(localCertificatesFolder)/\($0.certificateLocation)" })
@@ -783,7 +793,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, serverUrl)
         
         // Delete table Metadata & LocalFile
@@ -1092,7 +1103,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableE2eEncryption.self).filter(predicate).sorted(byKeyPath: "metadataKeyIndex", ascending: false).first else {
             return nil
         }
@@ -1107,7 +1119,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results : Results<tableE2eEncryption>
         
         results = realm.objects(tableE2eEncryption.self).filter(predicate)
@@ -1279,7 +1292,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results = realm.objects(tableExternalSites.self).filter("account = %@", tableAccount.account).sorted(byKeyPath: "idExternalSite", ascending: true)
         
         return Array(results)
@@ -1324,7 +1338,8 @@ class NCManageDatabase: NSObject {
     @objc func getLocationFromGeoLatitude(_ latitude: String, longitude: String) -> String? {
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableGPS.self).filter("latitude = %@ AND longitude = %@", latitude, longitude).first else {
             return nil
         }
@@ -1429,7 +1444,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else {
             return nil
         }
@@ -1731,7 +1747,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
             return nil
         }
@@ -1746,7 +1763,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results : Results<tableMetadata>
         
         if let sorted = sorted {
@@ -1776,7 +1794,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
         if (results.count > 0  && results.count > index) {
@@ -1793,7 +1812,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@ AND fileName = %@", tableAccount.account, directoryID, fileName).first else {
             return nil
         }
@@ -1852,7 +1872,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video)).sorted(byKeyPath: "date", ascending: false)
             
         return Array(metadatas.map { tableMetadata.init(value:$0) })
@@ -1865,6 +1886,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        realm.refresh()
         
         let metadatasDBImageVideo = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video))
         let fileIDArrayDB = metadatasDBImageVideo.map({ $0.fileID }) as [String]
@@ -1975,7 +1997,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         var predicate = NSPredicate()
         
         if (image && video) {
@@ -2090,7 +2113,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results : Results<tableQueueDownload>
         
         if let session = session {
@@ -2238,7 +2262,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first else {
             return nil
         }
@@ -2264,7 +2289,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock = true", tableAccount.account)
         
         return Array(results.map { tableQueueUpload.init(value:$0) })
@@ -2277,7 +2303,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results = realm.objects(tableQueueUpload.self).filter(predicate)
         
         return Array(results.map { tableQueueUpload.init(value:$0) })
@@ -2614,7 +2641,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-
+        realm.refresh()
+        
         let results = realm.objects(tableShare.self).filter("account = %@", tableAccount.account).sorted(byKeyPath: "fileName", ascending: true)
         
         return Array(results)
