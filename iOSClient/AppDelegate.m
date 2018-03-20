@@ -150,6 +150,7 @@
 #ifdef DEBUG
     NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path]];
     NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryLocal]];
+    [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
     [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
 #endif
     
@@ -1643,11 +1644,6 @@
 
         [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
         [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
-    }
-    
-    if (([actualVersion compare:@"2.20.6" options:NSNumericSearch] == NSOrderedAscending)) {
-
-        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:nil];
     }
     
     return YES;
