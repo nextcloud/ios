@@ -322,7 +322,6 @@
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
                     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
                     [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 #endif
                     continue;
@@ -430,7 +429,6 @@
                 if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
                     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
                     [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 #endif
                     continue;
@@ -586,53 +584,59 @@
             
         }];
         
-        for(OCFileDto *itemDto in items) {
-            
-            NSString *serverUrl, *directoryID;
-            BOOL isFolderEncrypted;
-            
-            NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
-            
-            // Skip hidden files
-            if (fileName.length > 0) {
-                if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+       
+            for(OCFileDto *itemDto in items) {
+                
+                NSString *serverUrl, *directoryID;
+                BOOL isFolderEncrypted;
+                
+                NSString *fileName = [itemDto.fileName stringByReplacingOccurrencesOfString:@"/" withString:@""];
+                
+                // Skip hidden files
+                if (fileName.length > 0) {
+                    if (!showHiddenFiles && [[fileName substringToIndex:1] isEqualToString:@"."])
+                        continue;
+                } else
                     continue;
-            } else
-                continue;
-            
-            // ----- BUG #942 ---------
-            if ([itemDto.etag length] == 0) {
+                
+                // ----- BUG #942 ---------
+                if ([itemDto.etag length] == 0) {
 #ifndef EXTENSION
-                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-                [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+                    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                    [appDelegate messageNotification:@"Server error" description:@"Metadata fileID absent, record excluded, please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 #endif
-                continue;
+                    continue;
+                }
+                // ------------------------
+                
+                serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUserID] withString:@""];
+                if ([serverUrl hasPrefix:@"/"])
+                    serverUrl = [serverUrl substringFromIndex:1];
+                if ([serverUrl hasSuffix:@"/"])
+                    serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+                serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
+                
+                if (itemDto.isDirectory) {
+                    directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
+                } else {
+                    directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+                }
+                
+                isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
+                
+                [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
-            // ------------------------
             
-            serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUserID] withString:@""];
-            if ([serverUrl hasPrefix:@"/"])
-                serverUrl = [serverUrl substringFromIndex:1];
-            if ([serverUrl hasSuffix:@"/"])
-                serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-            serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
-            
-            if (itemDto.isDirectory) {
-                directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
-            } else {
-                directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-            }
-            
-            isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
-            
-            [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
-        }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccessFailure:metadatas:message:errorCode:)])
+                    [self.delegate listingFavoritesSuccessFailure:_metadataNet metadatas:metadatas message:nil errorCode:0];
+            });
         
-        if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccessFailure:metadatas:message:errorCode:)])
-            [self.delegate listingFavoritesSuccessFailure:_metadataNet metadatas:metadatas message:nil errorCode:0];
+        });
         
         [self complete];
+        
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
