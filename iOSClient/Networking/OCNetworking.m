@@ -446,11 +446,13 @@
                 
                 if (itemDto.isDirectory) {
                     // Add / update Directory
-                    (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
+                    directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
+                } else {
+                    directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+
                 }
                 
                 isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
-                directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
                 
                 [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
             }
@@ -620,11 +622,12 @@
             
             if (itemDto.isDirectory) {
                 // Add / update Directory
-                (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
+                directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
+            } else {
+                directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
             }
             
             isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
-            directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
             
             [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted]];
         }

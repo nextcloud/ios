@@ -732,6 +732,7 @@ class NCManageDatabase: NSObject {
         
         var result :tableDirectory?
         let realm = try! Realm()
+        realm.refresh()
 
         do {
             try realm.write {
@@ -773,6 +774,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
+        realm.refresh()
         return tableDirectory.init(value: result!)
     }
     
@@ -877,6 +879,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        realm.refresh()
 
         guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
             return nil
@@ -892,6 +895,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        realm.refresh()
 
         let results = realm.objects(tableDirectory.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
         
@@ -913,7 +917,8 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        
+        realm.refresh()
+
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account,serverUrl).first else {
             return self.addDirectory(encrypted: false, favorite: false, fileID: nil, permissions: nil, serverUrl: serverUrl)?.directoryID
         }
@@ -932,6 +937,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        realm.refresh()
 
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount.account, directoryID).first else {
             return nil
@@ -949,7 +955,8 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         realm.beginWrite()
-        
+        realm.refresh()
+
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount.account, directoryID).first else {
             realm.cancelWrite()
             return
@@ -971,6 +978,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        realm.refresh()
 
         do {
             try realm.write {
@@ -994,6 +1002,7 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        realm.refresh()
 
         var update = false
         
@@ -1038,28 +1047,6 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    /*
-    @objc func getDirectoryE2ETokenLock(serverUrl: String, completion: @escaping (String?) -> Void) {
-        
-        DispatchQueue.main.async {
-            
-            guard let tableAccount = self.getAccountActive() else {
-                completion(nil)
-                return
-            }
-            
-            let realm = try! Realm()
-            
-            guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@ AND e2eTokenLock != ''", tableAccount.account, serverUrl).first else {
-                completion(nil)
-                return
-            }
-            
-            completion(result.e2eTokenLock)
-        }
-    }
-    */
-    
     //MARK: -
     //MARK: Table e2e Encryption
     
