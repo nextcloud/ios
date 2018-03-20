@@ -106,11 +106,11 @@
     NSLog(@"[LOG] Start program group -----------------");
     NSLog(@"%@", dirGroup);    
     NSLog(@"[LOG] Start program application -----------");
-    NSLog(@"%@", [[CCUtility getDirectoryLocal] stringByDeletingLastPathComponent]);
+    NSLog(@"%@", [[CCUtility getDirectoryDocuments] stringByDeletingLastPathComponent]);
     NSLog(@"[LOG] -------------------------------------");
 
-    // create Directory local => Documents
-    dir = [CCUtility getDirectoryLocal];
+    // create Directory Documents
+    dir = [CCUtility getDirectoryDocuments];
     if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
     
@@ -119,7 +119,7 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
 
-    // create dir Database Nextcloud
+    // create Directory database Nextcloud
     dir = [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
     [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
@@ -148,8 +148,9 @@
     }
     
 #ifdef DEBUG
+    NSLog(@"[LOG] Copy DB on ");
     NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path]];
-    NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryLocal]];
+    NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
     [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
     [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
 #endif

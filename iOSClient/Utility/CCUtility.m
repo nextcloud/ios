@@ -783,8 +783,8 @@
     return dirUserBaseUrl;
 }
 
-// Return the path of directory Local -> NSDocumentDirectory
-+ (NSString *)getDirectoryLocal
+// Return the path of directory Documents -> NSDocumentDirectory
++ (NSString *)getDirectoryDocuments
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     

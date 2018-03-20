@@ -362,7 +362,7 @@
         
         [self emptyUserDirectoryUser:appDelegate.activeUser url:appDelegate.activeUrl removeIco:removeIco];
         
-        [self emptyLocalDirectory];
+        [self emptyDocumentsDirectory];
         
         NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
         for (NSString *file in tmpDirectory)
@@ -572,12 +572,12 @@
     }
 }
 
-- (void)emptyLocalDirectory
+- (void)emptyDocumentsDirectory
 {
     NSString *file;
     NSString *dirIniziale;
     
-    dirIniziale = [CCUtility getDirectoryLocal];
+    dirIniziale = [CCUtility getDirectoryDocuments];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
     

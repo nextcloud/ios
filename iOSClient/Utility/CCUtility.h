@@ -164,7 +164,7 @@
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getOLDDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
-+ (NSString *)getDirectoryLocal;
++ (NSString *)getDirectoryDocuments;
 + (NSString *)getDirectoryAudio;
 + (NSString *)getDirectoryCerificates;
 + (NSString *)getTitleSectionDate:(NSDate *)date;
