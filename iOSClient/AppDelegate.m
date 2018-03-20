@@ -148,7 +148,7 @@
     }
     
 #ifdef DEBUG
-    NSLog(@"[LOG] Copy DB on ");
+    NSLog(@"[LOG] Copy DB on Documents directory");
     NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path]];
     NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
     [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
