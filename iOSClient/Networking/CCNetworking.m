@@ -934,7 +934,7 @@
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     [request setValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
 
-    // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier)
+    // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier) image/video
     if (assetLocalIdentifier) {
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
         if (result.count) {
