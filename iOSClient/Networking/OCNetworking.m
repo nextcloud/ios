@@ -445,7 +445,6 @@
                 serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
                 
                 if (itemDto.isDirectory) {
-                    // Add / update Directory
                     directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
                 } else {
                     directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
@@ -621,7 +620,6 @@
             serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
             
             if (itemDto.isDirectory) {
-                // Add / update Directory
                 directoryID = [[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]].directoryID;
             } else {
                 directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
