@@ -732,7 +732,6 @@ class NCManageDatabase: NSObject {
         
         var result :tableDirectory?
         let realm = try! Realm()
-        realm.refresh()
 
         do {
             try realm.write {
@@ -774,7 +773,6 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        realm.refresh()
         return tableDirectory.init(value: result!)
     }
     
@@ -955,7 +953,6 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
 
         realm.beginWrite()
-        realm.refresh()
 
         guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount.account, directoryID).first else {
             realm.cancelWrite()
@@ -978,7 +975,6 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        realm.refresh()
 
         do {
             try realm.write {
@@ -1002,7 +998,6 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
-        realm.refresh()
 
         var update = false
         
@@ -1184,7 +1179,6 @@ class NCManageDatabase: NSObject {
         }
             
         let realm = try! Realm()
-        realm.refresh()
 
         realm.beginWrite()
         
@@ -1211,7 +1205,6 @@ class NCManageDatabase: NSObject {
         }
             
         let realm = try! Realm()
-        realm.refresh()
 
         realm.beginWrite()
 

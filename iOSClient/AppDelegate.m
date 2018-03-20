@@ -1638,13 +1638,16 @@
             //[[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
         }
     }
-    
-    // VERSION < 2.19.1
-    
+        
     if (([actualVersion compare:@"2.19.1" options:NSNumericSearch] == NSOrderedAscending)) {
 
         [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
         [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
+    }
+    
+    if (([actualVersion compare:@"2.20.6" options:NSNumericSearch] == NSOrderedAscending)) {
+
+        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:nil];
     }
     
     return YES;
