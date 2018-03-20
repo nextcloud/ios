@@ -124,7 +124,7 @@ class NCService: NSObject, OCNetworkingDelegate {
             
             // ------ THEMING -----------------------------------------------------------------------
             
-            if (NCBrandOptions.sharedInstance.use_themingBackground) {
+            if (NCBrandOptions.sharedInstance.use_themingBackground && capabilities!.themingBackground != "") {
                 
                 // Download Theming Background & Change Theming color
                 DispatchQueue.global().async {
