@@ -139,9 +139,9 @@ extern NSString *const flowEndpoint;
 // Error
 #define k_CCErrorTaskNil                                -9999
 #define k_CCErrorTaskDownloadNotFound                   -9998
+#define k_CCErrorUserNotAvailble                        -9997
 #define k_CCErrorInternalError                          -9996
-#define k_CCErrorNetworkNowAvailable                    -9995
-#define k_CCErrorFileAlreadyInDownload                  -9994
+#define k_CCErrorFileAlreadyInDownload                  -9995
 
 // Search
 #define k_minCharsSearch                                2
@@ -175,7 +175,8 @@ extern NSString *const flowEndpoint;
 #define selectorRename                                  @"rename"
 #define selectorSave                                    @"save"
 #define selectorShare                                   @"share"
-#define selectorSearch                                  @"search"
+#define selectorSearchFiles                             @"searchFiles"
+#define selectorSearchContentType                       @"searchContentType"
 #define selectorUnshare                                 @"unshare"
 #define selectorUpdateShare                             @"updateShare"
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"

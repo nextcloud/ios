@@ -624,7 +624,7 @@
 ///-----------------------------------
 /// @name search
 ///-----------------------------------
-- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth dateLastModified:(NSString *)dateLastModified contentType:(NSString *)contentType withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
+- (void)search:(NSString *)path folder:(NSString *)folder fileName:(NSString *)fileName depth:(NSString *)depth dateLastModified:(NSString *)dateLastModified contentType:(NSArray *)contentType withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest{
     
     if (!token){
         token = @"no token";
@@ -639,14 +639,19 @@
         
         if (successRequest) {
             
-            NSData *responseData = (NSData*) responseObject;
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+
+                NSData *responseData = (NSData*) responseObject;
             
-            OCXMLListParser *parser = [OCXMLListParser new];
-            [parser initParserWithData:responseData];
-            NSMutableArray *searchList = [parser.searchList mutableCopy];
+                OCXMLListParser *parser = [OCXMLListParser new];
+                [parser initParserWithData:responseData];
+                NSMutableArray *searchList = [parser.searchList mutableCopy];
             
-            //Return success
-            successRequest(response, searchList, request.redirectedServer, token);
+                //Return success
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    successRequest(response, searchList, request.redirectedServer, token);
+                });
+            });
         }
         
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
@@ -818,16 +823,10 @@
             failure(response, nil, request.redirectedServer);
         }
         
-        
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
         failure(response, error, request.redirectedServer);
     }];
-
-    
-    
-    
 }
-
 
 - (void) readSharedByServer: (NSString *) path
             onCommunication:(OCCommunication *)sharedOCCommunication
@@ -1386,10 +1385,29 @@
             
                 NSDictionary *externalSitesDic = [capabilitiesDict valueForKey:@"external"];
                 if (externalSitesDic) {
+                    capabilities.isExternalSitesServerEnabled = YES;
                     NSArray *externalSitesArray = [externalSitesDic valueForKey:@"v1"];
-                    if (externalSitesArray)
-                        if ([[externalSitesArray objectAtIndex:0] isEqualToString:@"sites"])
-                            capabilities.isExternalSitesServerEnabled = YES;
+                    capabilities.externalSiteV1 = [externalSitesArray componentsJoinedByString:@","];
+                }
+                
+                // NOTIFICATION
+                
+                NSDictionary *notificationDic = [capabilitiesDict valueForKey:@"notifications"];
+                if (notificationDic) {
+                    capabilities.isNotificationServerEnabled = YES;
+                    NSArray *ocsendpointsArray = [notificationDic valueForKey:@"ocs-endpoints"];
+                    capabilities.notificationOcsEndpoints = [ocsendpointsArray componentsJoinedByString:@","];
+                    NSArray *pushArray = [notificationDic valueForKey:@"push"];
+                    capabilities.notificationPush = [pushArray componentsJoinedByString:@","];
+                }
+                
+                // SPREED
+                
+                NSDictionary *spreedDic = [capabilitiesDict valueForKey:@"spreed"];
+                if (spreedDic) {
+                    capabilities.isSpreedServerEnabled = YES;
+                    NSArray *featuresArray = [capabilitiesDict valueForKey:@"features"];
+                    capabilities.spreedFeatures = [featuresArray componentsJoinedByString:@","];
                 }
                 
                 //FILES

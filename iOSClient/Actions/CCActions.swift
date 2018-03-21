@@ -36,25 +36,22 @@ import Foundation
 
 @objc protocol CCActionsSearchDelegate {
     
-    func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [Any])
-    func searchFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+    func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
 }
 
 @objc protocol CCActionsDownloadThumbnailDelegate {
     
-    func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet)
+    func downloadThumbnailSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
 @objc protocol CCActionsSettingFavoriteDelegate {
     
-    func settingFavoriteSuccess(_ metadataNet: CCMetadataNet)
-    func settingFavoriteFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+    func settingFavoriteSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
 @objc protocol CCActionsListingFavoritesDelegate {
     
-    func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [Any])
-    func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
+    func listingFavoritesSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
 }
 
 class CCActions: NSObject {
@@ -89,7 +86,7 @@ class CCActions: NSObject {
 
         // fix CCActions.swift line 88 2.17.2 (00005)
         if (serverUrl == "") {
-            appDelegate.messageNotification("_delete_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+            appDelegate.messageNotification("_delete_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
             return
         }
         
@@ -105,7 +102,7 @@ class CCActions: NSObject {
                 let error = NCNetworkingSync.sharedManager().lockEnd(toEndFolderEncrypted: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, serverUrl:serverUrl, fileID: tableDirectory.fileID)
                 if error != nil {
                     DispatchQueue.main.async {
-                        self.appDelegate.messageNotification("_delete_", description: error!.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: 0)
+                        self.appDelegate.messageNotification("_delete_", description: error!.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
                     }
                     return;
                 }
@@ -296,7 +293,7 @@ class CCActions: NSObject {
     // MARK: Search
     // --------------------------------------------------------------------------------------------
     
-    @objc func search(_ serverUrl: String, fileName: String, depth: String, date: Date?, selector: String, delegate: AnyObject) {
+    @objc func search(_ serverUrl: String, fileName: String, depth: String, date: Date?, contenType: [String]?, selector: String, delegate: AnyObject) {
         
         guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) else {
             return
@@ -307,6 +304,7 @@ class CCActions: NSObject {
         let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
         
         metadataNet.action = actionSearch
+        metadataNet.contentType = contenType
         metadataNet.date = date
         metadataNet.delegate = delegate
         metadataNet.directoryID = directoryID
@@ -319,14 +317,9 @@ class CCActions: NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func searchSuccess(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata]) {
+    @objc func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata], message: NSString, errorCode: NSInteger) {
         
-        metadataNet.delegate?.searchSuccess(metadataNet, metadatas: metadatas)
-    }
-    
-    @objc func searchFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
-        
-        metadataNet.delegate?.searchFailure(metadataNet, message: message, errorCode: errorCode)
+        metadataNet.delegate?.searchSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------
@@ -354,14 +347,9 @@ class CCActions: NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
 
-    @objc func downloadThumbnailSuccess(_ metadataNet: CCMetadataNet) {
+    @objc func downloadThumbnailSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
-        metadataNet.delegate?.downloadThumbnailSuccess(metadataNet)
-    }
-    
-    @objc func downloadThumbnailFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
-        
-        NSLog("[LOG] Thumbnail Error \(metadataNet.fileName!) \(message) error %\(errorCode))")
+        metadataNet.delegate?.downloadThumbnailSuccessFailure(metadataNet, message: message, errorCode: errorCode)        
     }
 
     // --------------------------------------------------------------------------------------------
@@ -387,16 +375,13 @@ class CCActions: NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func settingFavoriteSuccess(_ metadataNet: CCMetadataNet) {
+    @objc func settingFavoriteSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
         
-        metadataNet.delegate?.settingFavoriteSuccess(metadataNet)
-    }
-    
-    @objc func settingFavoriteFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
-        
-        appDelegate.messageNotification("_favorites_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error, errorCode: errorCode)
+        if (errorCode != 0) {
+            appDelegate.messageNotification("_favorites_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error, errorCode: errorCode)
+        }
 
-        metadataNet.delegate?.settingFavoriteFailure(metadataNet, message: message, errorCode: errorCode)
+        metadataNet.delegate?.settingFavoriteSuccessFailure(metadataNet, message: message, errorCode: errorCode)
     }
 
     // --------------------------------------------------------------------------------------------
@@ -414,14 +399,9 @@ class CCActions: NSObject {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func listingFavoritesSuccess(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata]) {
+    @objc func listingFavoritesSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata], message: NSString, errorCode: NSInteger) {
         
-        metadataNet.delegate?.listingFavoritesSuccess(metadataNet, metadatas: metadatas)
-    }
-    
-    @objc func listingFavoritesFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
-        
-        metadataNet.delegate?.listingFavoritesFailure(metadataNet, message: message, errorCode: errorCode)
+        metadataNet.delegate?.listingFavoritesSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
     }
     
     // --------------------------------------------------------------------------------------------

@@ -120,8 +120,10 @@
     } else {
         
         // Landscape
-        self.bottomLabel.hidden = YES;
-        self.loginTypeView.hidden = YES;
+        if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+            self.bottomLabel.hidden = YES;
+            self.loginTypeView.hidden = YES;
+        }
     }
     
     // Brand
@@ -199,8 +201,10 @@
         } else {
             
             // Landscape
-            self.bottomLabel.hidden = YES;
-            self.loginTypeView.hidden = YES;
+            if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
+                self.bottomLabel.hidden = YES;
+                self.loginTypeView.hidden = YES;
+            }
         }
     }];
     
@@ -277,15 +281,7 @@
 
             } else {
                     
-                if (![self serverStatus:data]) {
-                        
-                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_serverstatus_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                        
-                    [alertController addAction:okAction];
-                    [self presentViewController:alertController animated:YES completion:nil];
-                    return;
-                }
+                [self serverStatus:data];
                 
                 // Login Flow
                 if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
@@ -339,14 +335,21 @@
     }
 }
 
-- (BOOL)serverStatus:(NSData *)data
+- (void)serverStatus:(NSData *)data
 {
+    serverProductName = @"";
+    serverVersion = @"0.0.0";
+    serverVersionString = @"0.0.0";
+    
+    versionMajor = 0;
+    versionMicro = 0;
+    versionMinor = 0;
+    
     NSError *error;
     NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
     
-    if (error) {
-        return false;
-    }
+    if (error)
+        return;
     
     serverProductName = [jsongParsed valueForKey:@"productname"];
     serverVersion = [jsongParsed valueForKey:@"version"];
@@ -357,11 +360,7 @@
         versionMajor = [arrayVersion[0] integerValue];
         versionMicro = [arrayVersion[1] integerValue];
         versionMinor = [arrayVersion[2] integerValue];
-    } else {
-        return false;
     }
-    
-    return true;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -399,10 +398,16 @@
                 [[NCManageDatabase sharedInstance] deleteAccount:account];
                 [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password loginFlow:false];
             
-                // Read User Profile
-                CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:account];
-                metadataNet.action = actionGetUserProfile;
-                [appDelegate.netQueue addOperation:[[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:user withUserID:user withPassword:password withUrl:url]];
+                tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+                
+                // Setting appDelegate active account
+                [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+                    
+                [self.delegate loginSuccess:_loginType];
+                    
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                    [self dismissViewControllerAnimated:YES completion:nil];
+                });
             }
         
         } else {
@@ -423,66 +428,6 @@
         self.login.enabled = YES;
         self.loadingBaseUrl.hidden = YES;
     });
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== User Profile  ====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)getUserProfileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
-    
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-    
-    [alertController addAction:okAction];
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)getUserProfileSuccess:(CCMetadataNet *)metadataNet userProfile:(OCUserProfile *)userProfile
-{
-    // Verify if the account already exists
-    if (userProfile.id.length > 0 && self.baseUrl.text.length > 0 && self.user.text.length > 0) {
-    
-        tableAccount *accountAlreadyExists = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"url = %@ AND user = %@ AND userID != %@", self.baseUrl.text, userProfile.id, self.user.text]];
-        
-        if (accountAlreadyExists) {
-            
-            [[NCManageDatabase sharedInstance] deleteAccount:metadataNet.account];
-            
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:[NSString stringWithFormat:NSLocalizedString(@"_account_already_exists_", nil), userProfile.id] preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-            
-            [alertController addAction:okAction];
-            [self presentViewController:alertController animated:YES completion:nil];
-            
-            return;
-        }
-    }
-    
-    // Verify if account is a valid account
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account = %@", metadataNet.account]];
-    
-    if (account) {
-    
-        // Update User (+ userProfile.id)
-        (void)[[NCManageDatabase sharedInstance] setAccountsUserProfile:userProfile];
-        
-        // Set this account as default
-        tableAccount *account = [[NCManageDatabase sharedInstance] setAccountActive:metadataNet.account];
-        if (account) {
-        
-            // Setting appDelegate active account
-            [appDelegate settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
-    
-            [self.delegate loginSuccess:_loginType];
-        
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                [self dismissViewControllerAnimated:YES completion:nil];
-            });
-        }
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

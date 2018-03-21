@@ -46,9 +46,9 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
         self.tableView.estimatedRowHeight = 50.0
 
         // Register to receive notification reload data
-        NotificationCenter.default.addObserver(self, selector: #selector(self.tableView.reloadData), name: Notification.Name("notificationReloadData"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.reloadDatasource), name: Notification.Name("notificationReloadData"), object: nil)
 
-        self.tableView.reloadData()
+        reloadDatasource()
     }
     
     override func didReceiveMemoryWarning() {
@@ -65,6 +65,10 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
     
     // MARK: - Table
 
+    @objc func reloadDatasource() {
+        self.tableView.reloadData()
+    }
+    
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return true
     }
@@ -188,28 +192,30 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
     
     // MARK: - Networking delegate
 
-    func setNotificationServerFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
-        
-        appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-    }
-    
-    func setNotificationServerSuccess(_ metadataNet: CCMetadataNet!) {
+    func setNotificationServerSuccessFailure(_ metadataNet: CCMetadataNet!, message: String!, errorCode: Int) {
         
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {
             return
         }
         
-        let listOfNotifications = appDelegate.listOfNotifications as NSArray as! [OCNotifications]
-        
-        if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.assetLocalIdentifier)})  {
-            appDelegate.listOfNotifications.removeObject(at: index)
-        }
-        
-        self.tableView.reloadData()
-        
-        if appDelegate.listOfNotifications.count == 0 {
-            viewClose()
+        if (errorCode == 0) {
+            
+            let listOfNotifications = appDelegate.listOfNotifications as NSArray as! [OCNotifications]
+            
+            if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.assetLocalIdentifier)})  {
+                appDelegate.listOfNotifications.removeObject(at: index)
+            }
+            
+            reloadDatasource()
+            
+            if appDelegate.listOfNotifications.count == 0 {
+                viewClose()
+            }
+            
+        } else {
+            
+            appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
     
@@ -235,7 +241,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                     let pathFileName = (self.appDelegate.directoryUser) + "/" + fileName
                     try data.write(to: URL(fileURLWithPath: pathFileName), options: .atomic)
                     
-                    self.tableView.reloadData()
+                    self.reloadDatasource()
                 } catch {
                     print(error)
                 }

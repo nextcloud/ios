@@ -424,7 +424,15 @@
 
 + (BOOL)getFormatCompatibility
 {
-    return [[UICKeyChainStore stringForKey:@"formatCompatibility" service:k_serviceShareKeyChain] boolValue];
+    NSString *valueString = [UICKeyChainStore stringForKey:@"formatCompatibility" service:k_serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setFormatCompatibility:YES];
+        return true;
+    }
+    
+    return [valueString boolValue];
 }
 
 + (void)setFormatCompatibility:(BOOL)set
@@ -775,8 +783,8 @@
     return dirUserBaseUrl;
 }
 
-// Return the path of directory Local -> NSDocumentDirectory
-+ (NSString *)getDirectoryLocal
+// Return the path of directory Documents -> NSDocumentDirectory
++ (NSString *)getDirectoryDocuments
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     

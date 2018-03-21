@@ -396,7 +396,7 @@
 "_direct_sharee_title_"         = "Share";
 "_direct_sharee_footer_"        = "If you already know the name, enter it, then select the share type and press 'Done' to confirm";
 "_direct_sharee_"               = "Enter the username…";
-"_user_sharee_footer_"          = "Tap to change privileges";
+"_user_sharee_footer_"          = "Tap to change permissions";
 "_share_type_title_"            = "Type of share";
 "_share_type_user_"             = "User";
 "_share_type_group_"            = "Group";

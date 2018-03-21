@@ -38,12 +38,13 @@
     NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
     
-    NSDate *_dateReadDataSource;
     CCSectionDataSourceMetadata *_sectionDataSource;
     
     CCHud *_hud;
     
     TOScrollBar *_scrollBar;
+    
+    BOOL _isSearchMode;
 }
 @end
 
@@ -104,7 +105,7 @@
     _scrollBar.handleWidth = 20;
     _scrollBar.handleMinimiumHeight = 20;
     _scrollBar.trackWidth = 0;
-    _scrollBar.edgeInset = 12;
+    _scrollBar.edgeInset = 12;    
 }
 
 // Apparirà
@@ -119,7 +120,6 @@
     // Plus Button
     [appDelegate plusButtonVisibile:true];
 
-    
     [self reloadDatasource];
 }
 
@@ -285,13 +285,20 @@
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
 {
-    NSString *text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
+    NSString *text;
+    
+    if (_isSearchMode) {
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_search_in_progress_", nil)];
+    } else {
+        text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
+    }
     
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
     
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
+/*
 - (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
 {
     NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
@@ -309,6 +316,7 @@
 
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
+
 
 - (UIImage *)buttonImageForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state
 {
@@ -331,6 +339,7 @@
     [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== openSelectedFiles =====
@@ -446,12 +455,12 @@
                 
             } else {
                 
-                [self reloadDatasourceForced];
+                [self reloadDatasource];
             }
             
         } else {
             
-            [self reloadDatasourceForced];
+            [self reloadDatasource];
         }
     }
 }
@@ -498,18 +507,21 @@
 #pragma mark ==== Download Thumbnail Delegate ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
+- (void)downloadThumbnailSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
-    
-    if ([self indexPathIsValid:indexPath]) {
-    
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadataNet.fileID]])
-            [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+    if (errorCode == 0) {
+        
+        NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
+        
+        if ([self indexPathIsValid:indexPath]) {
+        
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadataNet.fileID]])
+                [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+        }
     }
 }
 
@@ -520,40 +532,80 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== readPhotoVideo ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
+{
+    // Check Active Account
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount]) {
+        _isSearchMode = NO;
+        return;
+    }
+    
+    if (errorCode == 0) {
+    
+        // Update date
+        [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            BOOL isUpdate = [[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas];
+            
+            if (isUpdate) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self reloadDatasource];
+                });
+            }
+            
+            _isSearchMode = NO;
+        });
+    
+    } else {
+        _isSearchMode = NO;
+    }
+}
+
+- (void)searchPhotoVideo
+{
+    // test
+    if (appDelegate.activeAccount.length == 0 || _isSearchMode)
+        return;
+    
+    // WAITING FOR d:creationdate
+    //
+    // tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
+    // account.dateSearchContentTypeImageVideo
+    
+    [[CCActions sharedInstance] search:@"" fileName:@"" depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
+    
+    _isSearchMode = YES;
+}
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Collection ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)reloadDatasourceForced
-{
-    [CCSectionMetadata removeAllObjectsSectionDataSource:_sectionDataSource];
-    _dateReadDataSource = nil;
-    [self reloadDatasource];
-}
-
 - (void)reloadDatasource
-{    
-    // test
-    if (appDelegate.activeAccount.length == 0)
-        return;
+{
+    @synchronized(self) {
+        // test
+        if (appDelegate.activeAccount.length == 0)
+            return;
     
-    _directoryStartDatasource = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
-    NSDate *dateDateRecordDirectory = nil;
-    
-    NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl BEGINSWITH %@", appDelegate.activeAccount, _directoryStartDatasource] sorted:@"dateReadDirectory" ascending:false];
-    if ([directories count] > 0) {
-        tableDirectory *directory = [directories objectAtIndex:0];
-        dateDateRecordDirectory = directory.dateReadDirectory;
-    }
-    
-    if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-        NSLog(@"[LOG] Photos rebuild Data Source serverUrl : %@", _directoryStartDatasource);
-
-        _dateReadDataSource = [NSDate date];
-        NSArray *results = [[NCManageDatabase sharedInstance] getTableMetadatasPhotosWithServerUrl:_directoryStartDatasource];
-        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:results listProgressMetadata:nil e2eEncryptions:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
+            NSArray *metadatasDBImageVideo = [[NCManageDatabase sharedInstance] getTableMetadatasContentTypeImageVideo];
+            CCSectionDataSourceMetadata *tempSectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatasDBImageVideo listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
         
-        [self reloadCollection];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                // OPTIMIZED
+                if (tempSectionDataSource.totalSize != _sectionDataSource.totalSize || tempSectionDataSource.files != _sectionDataSource.files) {
+                    _sectionDataSource = [tempSectionDataSource copy];
+                    [self reloadCollection];
+                }
+            });
+        });
     }
 }
 
@@ -605,7 +657,8 @@
         
         UILabel *titleLabel = (UILabel *)[headerView viewWithTag:100];
         titleLabel.textColor = [UIColor blackColor];
-        titleLabel.text = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
+        if (_sectionDataSource.sections.count > indexPath.section)
+            titleLabel.text = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
 
         return headerView;
     }
@@ -648,11 +701,20 @@
         
         } else {
         
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", appDelegate.activeAccount, metadata.directoryID]];
+
             // Thumbnail not present
-            imageView.image = [UIImage imageNamed:@"file_photo"];
-        
-            if (metadata.thumbnailExists)
-                [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
+            if (directory.e2eEncrypted) {
+                
+                imageView.image = [UIImage imageNamed:@"file_photo_encrypted"];
+                
+            } else {
+                
+                imageView.image = [UIImage imageNamed:@"file_photo"];
+
+                if (metadata.thumbnailExists)
+                    [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
+            }
         }
     
         // Cheched
@@ -692,9 +754,10 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    // test
     if (_cellEditing == NO)
         return;
-    
+   
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
     
     if ([metadatasForKey count] > indexPath.row) {

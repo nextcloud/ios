@@ -46,6 +46,26 @@
     return self;
 }
 
+- (id)copyWithZone: (NSZone *) zone
+{
+    CCSectionDataSourceMetadata *sectionDataSourceMetadata = [[CCSectionDataSourceMetadata allocWithZone: zone] init];
+    
+    [sectionDataSourceMetadata setAllRecordsDataSource: self.allRecordsDataSource];
+    [sectionDataSourceMetadata setAllEtag: self.allEtag];
+    [sectionDataSourceMetadata setSections: self.sections];
+    [sectionDataSourceMetadata setSectionArrayRow: self.sectionArrayRow];
+    [sectionDataSourceMetadata setFileIDIndexPath: self.fileIDIndexPath];
+    
+    [sectionDataSourceMetadata setVideo: self.video];
+    [sectionDataSourceMetadata setImage: self.image];
+    
+    [sectionDataSourceMetadata setDirectories: self.directories];
+    [sectionDataSourceMetadata setFiles: self.files];
+    [sectionDataSourceMetadata setTotalSize: self.totalSize];
+    
+    return sectionDataSourceMetadata;
+}
+
 @end
 
 
@@ -54,7 +74,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata e2eEncryptions:(NSArray *)e2eEncryptions groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     long counterSessionDownload = 0;

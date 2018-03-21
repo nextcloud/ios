@@ -181,25 +181,17 @@
 #pragma mark ===== Favorite <delegate> =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)settingFavoriteFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)settingFavoriteSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
-}
-
-- (void)settingFavoriteSuccess:(CCMetadataNet *)metadataNet
-{
-    [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
- 
-    [self reloadDatasource];
-}
-
-- (void)readListingFavorites
-{
-    // test
-    if (appDelegate.activeAccount.length == 0)
-        return;
-
-    [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
+    if (errorCode == 0) {
+        
+        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
+        [self reloadDatasource];
+        
+    } else {
+        
+         NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
+    }
 }
 
 - (void)addFavoriteFolder:(NSString *)serverUrl
@@ -225,68 +217,75 @@
     [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:[CCSynchronize sharedSynchronize] metadataNet:metadataNet];
 }
 
-- (void)listingFavoritesSuccess:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas
+- (void)listingFavoritesSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
         return;
     
-    NSString *father = @"";
-    NSMutableArray *filesEtag = [NSMutableArray new];
+    if (errorCode == 0) {
     
-    for (tableMetadata *metadata in metadatas) {
+        NSString *father = @"";
+        NSMutableArray *filesEtag = [NSMutableArray new];
         
-        // insert for test NOT favorite
-        [filesEtag addObject:metadata.fileID];
-        
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-        
-        if (![serverUrlSon containsString:father]) {
+        for (tableMetadata *metadata in metadatas) {
             
-            if (metadata.directory) {
+            // insert for test NOT favorite
+            [filesEtag addObject:metadata.fileID];
+            
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+            NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
+            
+            if (![serverUrlSon containsString:father]) {
                 
-                if ([CCUtility getFavoriteOffline])
-                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
-                else
-                    [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolder];
+                if (metadata.directory) {
+                    
+                    if ([CCUtility getFavoriteOffline])
+                        [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
+                    else
+                        [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolder];
 
-            } else {
+                } else {
+                    
+                    if ([CCUtility getFavoriteOffline])
+                        [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
+                    else
+                        [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFile];
+                }
                 
-                if ([CCUtility getFavoriteOffline])
-                    [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
-                else
-                    [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFile];
+                father = serverUrlSon;
             }
-            
-            father = serverUrlSon;
         }
+        
+        // Verify remove favorite
+        NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", appDelegate.activeAccount] sorted:nil ascending:NO];
+        
+        for (tableMetadata *metadata in allRecordFavorite)
+            if (![filesEtag containsObject:metadata.fileID])
+                [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:NO];
+        
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
+    
+    } else {
+        
+        NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
     }
-    
-    // Verify remove favorite
-    NSArray *allRecordFavorite = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND favorite = true", appDelegate.activeAccount] sorted:nil ascending:NO];
-    
-    for (tableMetadata *metadata in allRecordFavorite)
-        if (![filesEtag containsObject:metadata.fileID])
-            [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:NO];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
 }
 
-- (void)listingFavoritesFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)listingFavorites
 {
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+    // test
+    if (appDelegate.activeAccount.length == 0)
         return;
     
-    NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
+    [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
 }
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Download Thumbnail <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailSuccess:(CCMetadataNet *)metadataNet
+- (void)downloadThumbnailSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
@@ -510,7 +509,7 @@
             recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@", appDelegate.activeAccount, directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
     }
         
-    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil e2eEncryptions:nil groupByField:nil activeAccount:appDelegate.activeAccount];
+    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil activeAccount:appDelegate.activeAccount];
         
     NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
     for (NSString *fileID in fileIDs)

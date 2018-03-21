@@ -106,11 +106,11 @@
     NSLog(@"[LOG] Start program group -----------------");
     NSLog(@"%@", dirGroup);    
     NSLog(@"[LOG] Start program application -----------");
-    NSLog(@"%@", [[CCUtility getDirectoryLocal] stringByDeletingLastPathComponent]);
+    NSLog(@"%@", [[CCUtility getDirectoryDocuments] stringByDeletingLastPathComponent]);
     NSLog(@"[LOG] -------------------------------------");
 
-    // create Directory local => Documents
-    dir = [CCUtility getDirectoryLocal];
+    // create Directory Documents
+    dir = [CCUtility getDirectoryDocuments];
     if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
     
@@ -119,7 +119,7 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
 
-    // create dir Database Nextcloud
+    // create Directory database Nextcloud
     dir = [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
     [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
@@ -146,6 +146,14 @@
             [self settingActiveAccount:account.account activeUrl:account.url activeUser:account.user activeUserID:account.userID activePassword:account.password];
         }
     }
+    
+#ifdef DEBUG
+    NSLog(@"[LOG] Copy DB on Documents directory");
+    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path]];
+    NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
+    [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
+    [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
+#endif
     
     // Operation Queue OC Networking
     _netQueue = [[NSOperationQueue alloc] init];
@@ -241,20 +249,16 @@
 // L' applicazione entrerà in primo piano (attivo solo dopo il background)
 //
 - (void)applicationWillEnterForeground:(UIApplication *)application
-{    
-    // refresh active Main
-    if (_activeMain) {
-        [_activeMain reloadDatasource];
-        [_activeMain readFileReloadFolder];
-    }
+{
+    // Test Maintenance
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
     
-    // refresh Photos tab
-    if (_activePhotos) {
-        [_activePhotos reloadDatasourceForced];
-    }
+    NSLog(@"[LOG] Request Service Server Nextcloud");
+    [[NCService sharedInstance] startRequestServicesServer];
     
-    // Initializations
-    [self applicationInitialized];
+    NSLog(@"[LOG] Initialize Auto upload");
+    [[NCAutoUpload sharedInstance] initStateAutoUpload];    
 }
 
 //
@@ -262,7 +266,18 @@
 //
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-   
+    // Test Maintenance
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
+    
+    // verify Upload
+    [self verifyUploadInErrorOrWait];
+    
+    // middelware ping
+    if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
+        NSLog(@"[LOG] Middleware Ping");
+        [[NCService sharedInstance] middlewarePing];
+    }
 }
 
 //
@@ -295,50 +310,6 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {    
     NSLog(@"[LOG] bye bye, Nextcloud !");
-}
-
-//
-// Application Initialized
-//
-- (void)applicationInitialized
-{
-    // Test Maintenance
-    if (self.maintenanceMode)
-        return;
-
-    // Execute : now
-    NSLog(@"[LOG] Update Folder Photo");
-    NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:_activeUrl];
-    if ([autoUploadPath length] > 0) {
-        
-        NSString *fileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
-        
-        [[CCSynchronize sharedSynchronize] readFileForFolder:fileName serverUrl:serverUrl selector:selectorReadFileFolder];        
-    }
-    
-    // Execute : after 1 sec.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        
-        // verify Upload
-        [self verifyUploadInErrorOrWait];
-
-        if (_activeMain) {
-            NSLog(@"[LOG] Request Server Capabilities");
-            [_activeMain requestServerCapabilities];
-        }
-        
-        if (_activeMain && [[NCBrandOptions sharedInstance] use_middlewarePing]) {
-            NSLog(@"[LOG] Middleware Ping");
-            [_activeMain middlewarePing];
-        }
-        
-        NSLog(@"[LOG] Initialize Auto upload");
-        [[NCAutoUpload sharedInstance] initStateAutoUpload];
-        
-        NSLog(@"[LOG] Listning Favorites");
-        [_activeFavorites readListingFavorites];
-    });
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -745,22 +716,28 @@
         
         if (visible) {
             
-            if (errorcode == kCFURLErrorNotConnectedToInternet || errorcode == k_CCErrorNetworkNowAvailable) {
-                
-                if (errorCodePrev != errorcode)
-                    [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_network_available_", nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
-                
-                errorCodePrev = errorcode;
-                
-            } else {
-                
-                if (description.length > 0) {
-                
-                    [TWMessageBarManager sharedInstance].styleSheet = self;
-                    [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n", NSLocalizedString(title, nil)] description:NSLocalizedString(description, nil) type:type duration:delay];
-                }
+            switch (errorcode) {
+                    
+                // JDStatusBarNotification
+                case kCFURLErrorNotConnectedToInternet :
+                    
+                    if (errorCodePrev != errorcode)
+                        [JDStatusBarNotification showWithStatus:NSLocalizedString(title, nil) dismissAfter:delay styleName:JDStatusBarStyleDefault];
+                    
+                    errorCodePrev = errorcode;
+                    break;
+                    
+                // TWMessageBarManager
+                default:
+                    
+                    if (description.length > 0) {
+                        
+                        [TWMessageBarManager sharedInstance].styleSheet = self;
+                        [[TWMessageBarManager sharedInstance] showMessageWithTitle:[NSString stringWithFormat:@"%@\n", NSLocalizedString(title, nil)] description:NSLocalizedString(description, nil) type:type duration:delay];
+                    }
+                    break;
             }
-            
+                        
         } else {
             
             [[TWMessageBarManager sharedInstance] hideAllAnimated:YES];
@@ -1212,10 +1189,8 @@
         
         if (self.lastReachability == NO) {
             
-            [self messageNotification:@"_network_available_" description:nil visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:k_CCErrorNetworkNowAvailable];
-            
-            if (_activeMain)
-                [_activeMain performSelector:@selector(requestServerCapabilities) withObject:nil afterDelay:3];
+            NSLog(@"[LOG] Request Service Server Nextcloud");
+            [[NCService sharedInstance] startRequestServicesServer];
         }
         
         NSLog(@"[LOG] Reachability Changed: Reachable");
@@ -1366,9 +1341,9 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
         
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
-        });
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        
+        [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
         
@@ -1490,7 +1465,7 @@
     
     if (errorCount >= k_maxErrorAutoUploadAll) {
         
-        [self messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+        [self messageNotification:@"_error_" description:@"_too_errors_automatic_all_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
         
         [[NCManageDatabase sharedInstance] addActivityClient:@"" fileID:@"" action:k_activityDebugActionAutoUpload selector:selectorUploadAutoUploadAll note:@"_too_errors_automatic_all_" type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
 
@@ -1555,6 +1530,10 @@
 
 - (void)verifyUploadInErrorOrWait
 {
+    // Test Maintenance
+    if (self.maintenanceMode || self.activeAccount.length == 0)
+        return;
+    
     NSMutableSet *directoryIDs = [NSMutableSet new];
     
     NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'upload' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifier = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierWaitStart] sorted:nil ascending:NO];
@@ -1570,6 +1549,7 @@
         NSLog(@"[LOG] Re upload file : %@", metadata.fileName);
     }
 }
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Open CCUploadFromOtherUpp  =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1660,9 +1640,7 @@
             //[[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:nil];
         }
     }
-    
-    // VERSION < 2.19.1
-    
+        
     if (([actualVersion compare:@"2.19.1" options:NSNumericSearch] == NSOrderedAscending)) {
 
         [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];

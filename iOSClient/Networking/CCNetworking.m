@@ -417,8 +417,11 @@
                 etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
             
                 NSString *dateString = [fields objectForKey:@"Date"];
-                if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
-                    NSLog(@"[LOG] Date '%@' could not be parsed: %@", dateString, error);
+                if (dateString) {
+                    if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
+                        date = [NSDate date];
+                    }
+                } else {
                     date = [NSDate date];
                 }
             }
@@ -931,7 +934,7 @@
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     [request setValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
 
-    // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier)
+    // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier) image/video
     if (assetLocalIdentifier) {
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[assetLocalIdentifier] options:nil];
         if (result.count) {

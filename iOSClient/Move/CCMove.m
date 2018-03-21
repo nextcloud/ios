@@ -273,21 +273,21 @@
 
 // MARK: - Read Folder
 
-- (void)readFileFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    [self readFolder];
-}
-
-- (void)readFileSuccess:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata
-{
-    if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
-        
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
-        
-        if ([metadata.etag isEqualToString:directory.etag] == NO) {
+    if (errorCode == 0) {
+    
+        if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
             
-            [self readFolder];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
+            
+            if ([metadata.etag isEqualToString:directory.etag] == NO) {
+                
+                [self readFolder];
+            }
         }
+    } else {
+        [self readFolder];
     }
 }
 
@@ -305,44 +305,46 @@
 
 // MARK: - Read Folder
 
-- (void)readFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    _loadingFolder = NO;
-    self.move.enabled = NO;
-    
-    [self.tableView reloadData];
-    
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-    
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    }]];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)readFolderSuccess:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas
-{
-    NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
- 
-    // Update directory etag
-    [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
-    
-    for (tableMetadata *metadata in metadatas) {
+    if (errorCode == 0) {
         
-        // Insert in Array
-        [metadatasToInsertInDB addObject:metadata];
+        NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
+     
+        // Update directory etag
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
+        
+        for (tableMetadata *metadata in metadatas) {
+            
+            // Insert in Array
+            [metadatasToInsertInDB addObject:metadata];
+        }
+
+        // insert in Database
+        metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
+
+        // get auto upload folder
+        _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+        _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
+        
+        _loadingFolder = NO;
+        
+        [self.tableView reloadData];
+        
+    } else {
+        
+        _loadingFolder = NO;
+        self.move.enabled = NO;
+        
+        [self.tableView reloadData];
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        }]];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
     }
-
-    // insert in Database
-    metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
-
-    // get auto upload folder
-    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
-    
-    _loadingFolder = NO;
-    
-    [self.tableView reloadData];
 }
 
 - (void)readFolder
@@ -364,20 +366,21 @@
 
 // MARK: - Create Folder
 
-- (void)createFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)createFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    if (errorCode == 0) {
     
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-    }]];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
-- (void)createFolderSuccess:(CCMetadataNet *)metadataNet
-{    
-    // Load Folder or the Datasource
-    [self readFolder];
+        [self readFolder];
+        
+    } else {
+      
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+        
+        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        }]];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
 }
 
 - (void)createFolder:(NSString *)fileNameFolder

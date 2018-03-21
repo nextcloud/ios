@@ -65,9 +65,13 @@
 @property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 @property (nonatomic, strong) UIImage *imageTitle;
+@property BOOL isSelectedMode;
+
 
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
+
+- (void)setUINavigationBarDefault;
 
 - (void)readFolder:(NSString *)serverUrl;
 - (void)readFileReloadFolder;
@@ -80,9 +84,6 @@
 
 - (void)reloadDatasource;
 - (void)reloadDatasource:(NSString *)serverUrl;
-
-- (void)requestServerCapabilities;
-- (void)middlewarePing;
 
 - (void)openWindowShare:(tableMetadata *)metadata;
 - (void)clearDateReadDataSource:(NSNotification *)notification;

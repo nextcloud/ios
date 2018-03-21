@@ -404,7 +404,7 @@
         } 
     }
     
-    [appDelegate.activeFavorites readListingFavorites];
+    [appDelegate.activeFavorites listingFavorites];
 }
 
 #pragma --------------------------------------------------------------------------------------------
