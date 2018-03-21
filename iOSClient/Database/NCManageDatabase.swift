@@ -833,7 +833,6 @@ class NCManageDatabase: NSObject {
                 result.e2eEncrypted = encrypted
                 if let serverUrlTo = serverUrlTo {
                     result.serverUrl = serverUrlTo
-
                 }
                 if let etag = etag {
                     result.etag = etag
