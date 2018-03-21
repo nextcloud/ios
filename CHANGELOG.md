@@ -5,9 +5,75 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### [2.18.1] - 2017-xx-xx
+### [2.20.6] - 2018-xx-xx
+- See https://github.com/nextcloud/ios/milestone/28
 
-### [2.17.9] - 2017-xx-xx
+## [2.20.5] - 2018-03-08
+- See https://github.com/nextcloud/ios/milestone/27
+
+## [2.20.4] - 2018-03-05
+- See https://github.com/nextcloud/ios/milestone/26
+
+## [2.20.3] - 2018-02-22
+### Changed
+- See https://github.com/nextcloud/ios/milestone/24
+
+## [2.20.2] - 2018-02-18
+### Changed
+- No information available
+
+## [2.20.1] - 2018-02-15
+### Changed
+- See https://github.com/nextcloud/ios/milestone/23
+
+## [2.20.0] - 2018-02-09
+### Changed
+- See https://github.com/nextcloud/ios/milestone/22
+
+## [2.19.3] - 2018-02-06
+### Changed
+- See https://github.com/nextcloud/ios/milestone/21
+
+## [2.19.2] - 2018-02-03
+### Fixed
+- Icons and labels overlap on iPad Pro. See [Details](https://github.com/nextcloud/ios/issues/476)
+- Not showing correct data usage. See [Details](https://github.com/nextcloud/ios/issues/451)
+- Negative file size. See [Details](https://github.com/nextcloud/ios/issues/448)
+
+### Changed
+- Replace icon for shared folders. See See [Details](https://github.com/nextcloud/ios/issues/458)
+- See https://github.com/nextcloud/ios/milestone/20
+
+## [2.19.1] - 2017-12-22
+### Fixed
+- Bugfix manual Upload
+
+## [2.19.0] - 2017-12-21
+### Added
+- End-to-end encryption is now supported
+- iPad : support for multitask Slide Over
+
+### Fixed
+- Folders on top #408
+- Theming 2.0 now works with light colors (only for Nextcloud 13) #427
+- Search bar is showing again like expected #413
+- Different „Blue“-tone in Status and search bar on iPhone X #418
+- Fix Upload Video
+- Fix UI for iOS 11 and iPhone X
+
+### Changed
+- UI for setting up multiple accounts has been improved #420
+- Settings : “Most Compatible” option move from “Auto Upload” to “Advanced”
+
+## [2.18.2] - 2017-11-07
+### Fixed
+- upload and save photo / video on camera roll
+
+## [2.18.1] - 2017-11-06
+### Fixed
+- iPhone X UI
+- Crash when save selected images/videos without permission
+- Microsoft Excel sheets with multiple "pages" now works
 
 ## [2.18.0] - 2017-10-27
 ### Added
