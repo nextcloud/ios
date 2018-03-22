@@ -142,6 +142,7 @@ extern NSString *const flowEndpoint;
 #define k_CCErrorUserNotAvailble                        -9997
 #define k_CCErrorInternalError                          -9996
 #define k_CCErrorFileAlreadyInDownload                  -9995
+#define k_CCErrorWebdavResponseError                    -9994
 
 // Search
 #define k_minCharsSearch                                2

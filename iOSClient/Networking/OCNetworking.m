@@ -185,7 +185,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -343,7 +343,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -465,7 +465,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
@@ -518,7 +518,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -641,7 +641,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -708,7 +708,7 @@
             message = [CCError manageErrorOC:response.statusCode error:error];
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)])
@@ -780,7 +780,7 @@
     } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -827,7 +827,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)])
@@ -947,7 +947,7 @@
         _metadataNet.errorRetry++;
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1016,7 +1016,7 @@
     } failureRequest :^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1051,7 +1051,7 @@
     } failureRequest :^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
@@ -1087,7 +1087,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
@@ -1127,7 +1127,7 @@
 #endif
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
@@ -1168,7 +1168,7 @@
 #endif
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
@@ -1205,7 +1205,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
@@ -1254,7 +1254,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1305,7 +1305,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1356,7 +1356,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1395,7 +1395,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1448,7 +1448,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1500,7 +1500,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1553,7 +1553,7 @@
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
            
             NSInteger errorCode = response.statusCode;
-            if (errorCode == 0)
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
             
             // Error
@@ -1578,7 +1578,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
     
         // Error
@@ -1632,7 +1632,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1683,7 +1683,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
 
         // Error
@@ -1729,7 +1729,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1763,7 +1763,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1800,7 +1800,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1835,7 +1835,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1867,7 +1867,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1899,7 +1899,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
@@ -1933,7 +1933,7 @@
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
         NSInteger errorCode = response.statusCode;
-        if (errorCode == 0)
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
