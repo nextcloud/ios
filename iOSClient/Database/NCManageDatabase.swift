@@ -1864,7 +1864,7 @@ class NCManageDatabase: NSObject {
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
-    @objc func getTableMetadatasContentTypeImageVideo() -> [tableMetadata]? {
+    @objc func getTableMetadatasContentTypeImageVideo(_ startDirectory: String, activeUrl: String) -> [tableMetadata]? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -1873,9 +1873,20 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video)).sorted(byKeyPath: "date", ascending: false)
+        if (startDirectory == CCUtility.getHomeServerUrlActiveUrl(activeUrl)) {
             
-        return Array(metadatas.map { tableMetadata.init(value:$0) })
+            // All directory
+            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video)).sorted(byKeyPath: "date", ascending: false)
+            return Array(metadatas.map { tableMetadata.init(value:$0) })
+            
+        } else {
+            
+            let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
+            let directoriesID = Array(directories.map { $0.directoryID })
+            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND session = '' AND (typeFile = %@ OR typeFile = %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
+            
+            return Array(metadatas.map { tableMetadata.init(value:$0) })
+        }
     }
     
     @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata]) -> Bool {
