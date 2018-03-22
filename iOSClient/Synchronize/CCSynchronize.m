@@ -44,8 +44,6 @@
             
             sharedSynchronize = [CCSynchronize new];
             sharedSynchronize.foldersInSynchronized = [NSMutableOrderedSet new];
-            sharedSynchronize->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
         }
         return sharedSynchronize;
     }

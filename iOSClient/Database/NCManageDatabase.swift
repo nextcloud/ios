@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 18,
+            schemaVersion: 19,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -68,6 +68,7 @@ class NCManageDatabase: NSObject {
             // 16 : Version 2.20.2
             // 17 : Version 2.20.4
             // 18 : Version 2.20.6
+            // 19 : Version 2.20.7
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -470,6 +471,51 @@ class NCManageDatabase: NSObject {
                 }
                 
                 result.dateSearchContentTypeImageVideo = date
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func getAccountStartDirectoryPhotosTab(_ homeServerUrl: String) -> String {
+        
+        guard let activeAccount = self.getAccountActive() else {
+            return ""
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+
+        guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+            return ""
+        }
+        
+        if result.startDirectoryPhotosTab == "" {
+            
+            self.setAccountStartDirectoryPhotosTab(homeServerUrl)
+            return homeServerUrl
+            
+        } else {
+            return result.startDirectoryPhotosTab
+        }
+    }
+    
+    @objc func setAccountStartDirectoryPhotosTab(_ directory: String) {
+        
+        guard let activeAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableAccount.self).filter("account = %@", activeAccount.account).first else {
+                    return
+                }
+                
+                result.startDirectoryPhotosTab = directory
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
