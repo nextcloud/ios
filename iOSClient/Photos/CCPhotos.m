@@ -42,9 +42,7 @@
     
     CCHud *_hud;
     
-    TOScrollBar *_scrollBar;
-    
-    BOOL _isSearchMode;
+    TOScrollBar *_scrollBar;    
 }
 @end
 
@@ -550,7 +548,9 @@
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
-            BOOL isUpdate = [[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas];
+            NSString *startDirectory = [CCUtility getStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+
+            BOOL isUpdate = [[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas startDirectory:startDirectory activeUrl:appDelegate.activeUrl];
             
             if (isUpdate) {
                 dispatch_async(dispatch_get_main_queue(), ^{

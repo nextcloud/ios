@@ -1889,7 +1889,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata]) -> Bool {
+    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String, activeUrl: String) -> Bool {
         
         guard let tableAccount = self.getAccountActive() else {
             return false
@@ -1898,8 +1898,8 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let metadatasDBImageVideo = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video))
-        let fileIDArrayDB = metadatasDBImageVideo.map({ $0.fileID }) as [String]
+        let metadatasDBImageVideo = self.getTableMetadatasContentTypeImageVideo(startDirectory, activeUrl: activeUrl)
+        let fileIDArrayDB = metadatasDBImageVideo!.map({ $0.fileID }) as [String]
         let fileIDArraySearch = metadatas.map({ $0.fileID }) as [String]
         
         // DELETE RECORD IF NOT PRESENT ON DB [From DB To SEARCH]
@@ -1922,15 +1922,10 @@ class NCManageDatabase: NSObject {
         
         do {
             try realm.write {
-                
                 // DELETE
-                for metadata in resultsDelete {
-                    realm.delete(metadata)
-                }
+                realm.delete(resultsDelete)
                 // INSERT
-                for metadata in resultsInsert {
-                    realm.add(metadata, update: true)
-                }
+                realm.add(resultsInsert, update: true)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)

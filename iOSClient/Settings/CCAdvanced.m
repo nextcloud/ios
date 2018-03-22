@@ -543,10 +543,10 @@
 
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
 {
-    [CCUtility setStartDirectoryPhotosTab:serverUrlTo];
-    
     NSString *oldStartDirectoryPhotosTab = [CCUtility getStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
-    
+
+    [CCUtility setStartDirectoryPhotosTab:serverUrlTo];
+        
     if (![serverUrlTo isEqualToString:oldStartDirectoryPhotosTab]) {
     
         // Save
