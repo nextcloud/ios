@@ -184,7 +184,14 @@
     self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, nil];
     
     // Title
-    self.navigationItem.title = NSLocalizedString(@"_photo_camera_", nil);
+    
+    NSString *directory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+    NSString *folder = [directory stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""];
+    
+    if ([folder isEqualToString:@""])
+        self.navigationItem.title = NSLocalizedString(@"_photo_camera_", nil);
+    else
+        self.navigationItem.title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_photo_camera_", nil), folder];
 }
 
 - (void)setUINavigationBarSelected
