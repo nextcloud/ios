@@ -106,6 +106,10 @@
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
 
+    // get auto upload folder
+    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
+    
     // read file->folder
     [self readFileReloadFolder];
 }
@@ -323,10 +327,6 @@
         // insert in Database
         metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
 
-        // get auto upload folder
-        _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-        _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
-        
         _loadingFolder = NO;
         
         [self.tableView reloadData];
