@@ -211,6 +211,8 @@
 "_show_hidden_files_"           = "Show hidden files";
 "_format_compatibility_"        = "Most Compatible";
 "_format_compatibility_footer_" = "\"Most compatible\" will always save photos as JPEG";
+"_start_directory_photos_tab_"  = "Folder tab \"Photos\"";
+"_start_directory_photos_tab_footer_" = "Select the starting directory to search for images and videos for the Photos tab";
 
 // Login
 

@@ -145,6 +145,9 @@
 
 + (void)clearAllKeysEndToEnd:(NSString *)account;
 
++ (void)setStartDirectoryPhotosTab:(NSString *)directory;
++ (NSString *)getStartDirectoryPhotosTab:(NSString *)homeServerUrl;
+
 // ===== Varius =====
 
 + (NSString *)getUserAgent;

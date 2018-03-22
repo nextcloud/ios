@@ -516,10 +516,23 @@
     [self setEndToEndPublicKeyServer:account publicKey:nil];
 }
 
-#pragma ------------------------------ GET
++ (void)setStartDirectoryPhotosTab:(NSString *)directory
+{
+    [UICKeyChainStore setString:directory forKey:@"startDirectoryPhotosTab" service:k_serviceShareKeyChain];
+}
 
-
-
++ (NSString *)getStartDirectoryPhotosTab:(NSString *)homeServerUrl
+{
+    NSString *valueString = [UICKeyChainStore stringForKey:@"startDirectoryPhotosTab" service:k_serviceShareKeyChain];
+    
+    // Default TRUE
+    if (valueString == nil) {
+        [self setStartDirectoryPhotosTab:homeServerUrl];
+        valueString = homeServerUrl;
+    }
+    
+    return valueString;
+}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====

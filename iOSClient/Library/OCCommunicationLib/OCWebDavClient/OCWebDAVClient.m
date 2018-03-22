@@ -300,11 +300,11 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                 "</d:select>"
                 "<d:from>"
                     "<d:scope>"
-                        "<d:href>/files/%@</d:href>"
+                        "<d:href>/files/%@%@</d:href>"
                         "<d:depth>infinity</d:depth>"
                     "</d:scope>"
                 "</d:from>"
-                "<d:where><d:and><d:or>", userID];
+                "<d:where><d:and><d:or>", userID, folder];
         
         for (NSString *type in contentType) {
             whereType = [NSString stringWithFormat: @"%@<d:like><d:prop><d:getcontenttype/></d:prop><d:literal>%@</d:literal></d:like>", whereType, type];

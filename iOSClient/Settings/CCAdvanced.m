@@ -119,6 +119,26 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
+    // Section : START DIRECTOY PHOTOS TAB -----------------------------------
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_start_directory_photos_tab_footer_", nil);
+    
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"startDirectoryPhotosTab" rowType:XLFormRowDescriptorTypeButton];
+    NSString *directory = [CCUtility getStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+    NSString *folder = [directory stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""];
+    if ([folder isEqualToString:@""])
+        folder = @"/";
+    row.title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_start_directory_photos_tab_", nil), folder];
+    //[row.cellConfig setObject:[UIImage imageNamed:@"tabBarPhotos"] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
+    row.action.formSelector = @selector(selectStartDirectoryPhotosTab:);
+    [section addFormRow:row];
+    
     // Section CLEAR CACHE -------------------------------------------------
     
     section = [XLFormSectionDescriptor formSection];
@@ -215,7 +235,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark === Mail ===
+#pragma mark == Action ==
 #pragma --------------------------------------------------------------------------------------------
 
 - (void) mailComposeController:(MFMailComposeViewController *)vc didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
@@ -313,9 +333,26 @@
     }
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Clear Activity ===
-#pragma --------------------------------------------------------------------------------------------
+- (void)selectStartDirectoryPhotosTab:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
+        
+    CCMove *viewController = (CCMove *)navigationController.topViewController;
+        
+    viewController.delegate = self;
+    viewController.move.title = NSLocalizedString(@"_select_", nil);
+    viewController.tintColor = [NCBrandColor sharedInstance].brandText;
+    viewController.barTintColor = [NCBrandColor sharedInstance].brand;
+    viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
+    viewController.networkingOperationQueue = appDelegate.netQueue;
+    // E2EE
+    viewController.includeDirectoryE2EEncryption = YES;
+        
+    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
 
 - (void)clearActivity:(XLFormRowDescriptor *)sender
 {
@@ -326,9 +363,6 @@
     [appDelegate.activeActivity reloadDatasource];
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark === Clear Cache ===
-#pragma --------------------------------------------------------------------------------------------
 
 - (void)removeAllFiles:(BOOL)removeIco
 {
@@ -449,10 +483,6 @@
     });
 }
 
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark == Exit Nextcloud ==
-#pragma --------------------------------------------------------------------------------------------
-
 - (void)exitNextcloud:(XLFormRowDescriptor *)sender
 {
     [self deselectFormRow:sender];
@@ -504,6 +534,34 @@
         // Change Rect to position Popover
         UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
         [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:sender]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    }
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark == Delegate Move ==
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+{
+    [CCUtility setStartDirectoryPhotosTab:serverUrlTo];
+    
+    NSString *oldStartDirectoryPhotosTab = [CCUtility getStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+    
+    if (![serverUrlTo isEqualToString:oldStartDirectoryPhotosTab]) {
+    
+        // Save
+        [CCUtility setStartDirectoryPhotosTab:serverUrlTo];
+        
+        // Reload row
+        XLFormRowDescriptor *rowStartDirectoryPhotosTab = [self.form formRowWithTag:@"startDirectoryPhotosTab"];
+        NSString *folder = [serverUrlTo stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""];
+        if ([folder isEqualToString:@""])
+            folder = @"/";
+        rowStartDirectoryPhotosTab.title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_start_directory_photos_tab_", nil), folder];
+        [self.tableView reloadData];
+        
+        // search PhotoVideo with new start directory
+        [appDelegate.activePhotos searchPhotoVideo];
     }
 }
 
