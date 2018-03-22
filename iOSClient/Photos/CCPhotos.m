@@ -188,10 +188,11 @@
     NSString *directory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
     NSString *folder = [directory stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""];
     
-    if ([folder isEqualToString:@""])
+    if (folder.length == 0) {
         self.navigationItem.title = NSLocalizedString(@"_photo_camera_", nil);
-    else
-        self.navigationItem.title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_photo_camera_", nil), folder];
+    } else {
+        self.navigationItem.title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_photo_camera_", nil), [folder substringFromIndex:1]];
+    }
 }
 
 - (void)setUINavigationBarSelected
