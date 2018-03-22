@@ -163,12 +163,15 @@
 
 - (void)setUINavigationBarDefault
 {
+    UIImage *icon;
+    
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     
-    // select
-    UIImage *icon = [UIImage imageNamed:@"seleziona"];
+    icon = [UIImage imageNamed:@"seleziona"];
     UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(collectionSelectYES)];
-    
+    icon = [UIImage imageNamed:@"startDirectoryPhotosTab"];
+    UIBarButtonItem *buttonStartDirectoryPhotosTab = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(selectStartDirectoryPhotosTab)];
+
     if ([_sectionDataSource.allRecordsDataSource count] > 0) {
         
         self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, nil];
@@ -178,7 +181,7 @@
         self.navigationItem.rightBarButtonItems = nil;
     }
     
-    self.navigationItem.leftBarButtonItem = nil;
+    self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, nil];
     
     // Title
     self.navigationItem.title = NSLocalizedString(@"_photo_camera_", nil);
@@ -527,6 +530,44 @@
 {
     //NSDictionary *dict = notification.userInfo;
     //float progress = [[dict valueForKey:@"progress"] floatValue];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Change Start directory ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+{
+    NSString *oldStartDirectoryPhotosTab = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+    
+    if (![serverUrlTo isEqualToString:oldStartDirectoryPhotosTab]) {
+        
+        // Save
+        [[NCManageDatabase sharedInstance] setAccountStartDirectoryPhotosTab:serverUrlTo];
+        
+        // search PhotoVideo with new start directory
+        [self searchPhotoVideo];
+    }
+}
+
+- (void)selectStartDirectoryPhotosTab
+{
+    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
+    
+    CCMove *viewController = (CCMove *)navigationController.topViewController;
+    
+    viewController.delegate = self;
+    viewController.move.title = NSLocalizedString(@"_select_dir_photos_tab_", nil);
+    viewController.tintColor = [NCBrandColor sharedInstance].brandText;
+    viewController.barTintColor = [NCBrandColor sharedInstance].brand;
+    viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
+    viewController.networkingOperationQueue = appDelegate.netQueue;
+    viewController.hideCreateFolder = YES;
+    // E2EE
+    viewController.includeDirectoryE2EEncryption = NO;
+    
+    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

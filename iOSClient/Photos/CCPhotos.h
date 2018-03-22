@@ -34,10 +34,11 @@
 #import "CCSection.h"
 #import "CCHud.h"
 #import "OCNetworking.h"
+#import "CCMove.h"
 
 @class tableMetadata;
 
-@interface CCPhotos: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate>
+@interface CCPhotos: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate, CCMoveDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property BOOL isSearchMode;

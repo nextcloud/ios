@@ -72,7 +72,7 @@
     
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
     [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
-
+    
     if (![_serverUrl length]) {
         
         UIImageView *image;
@@ -124,6 +124,11 @@
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
     self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
+    
+    if (self.hideCreateFolder) {
+        [self.create setEnabled:NO];
+        [self.create setTintColor: [UIColor clearColor]];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -528,6 +533,7 @@
     viewController.delegate = self.delegate;
     viewController.includeDirectoryE2EEncryption = self.includeDirectoryE2EEncryption;
     viewController.move.title = self.move.title;
+    viewController.hideCreateFolder = self.hideCreateFolder;
     viewController.networkingOperationQueue = _networkingOperationQueue;
 
     viewController.passMetadata = metadata;

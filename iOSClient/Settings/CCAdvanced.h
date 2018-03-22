@@ -25,9 +25,8 @@
 #import "XLFormViewController.h"
 #import "XLForm.h"
 #import "CCHud.h"
-#import "CCMove.h"
 
-@interface CCAdvanced : XLFormViewController <MFMailComposeViewControllerDelegate, CCMoveDelegate>
+@interface CCAdvanced : XLFormViewController <MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) CCHud *hud;
 

@@ -39,6 +39,7 @@
 @property (nonatomic, weak) id <CCMoveDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;
 @property BOOL includeDirectoryE2EEncryption;
+@property BOOL hideCreateFolder;
 
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) tableMetadata *passMetadata;
