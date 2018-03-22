@@ -2502,9 +2502,9 @@
             
             if (statusCode == kOCUserProfileAPISuccessful) {
                 
-                if ([data valueForKey:@"encrypted-meta-data"] && ![[data valueForKey:@"encrypted-meta-data"] isKindOfClass:[NSNull class]]) {
+                if ([data valueForKey:@"meta-data"] && ![[data valueForKey:@"meta-data"] isKindOfClass:[NSNull class]]) {
                     
-                    encryptedMetadata = [data valueForKey:@"encrypted-meta-data"];
+                    encryptedMetadata = [data valueForKey:@"meta-data"];
                     successRequest(response, encryptedMetadata, request.redirectedServer);
                     
                 } else {
