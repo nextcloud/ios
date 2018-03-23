@@ -92,6 +92,10 @@
 
 // Networking
 
+"_file_too_big_"            = "File too large to be encrypted/decrypted";
+"_file_too_big_max_100_"    = "File too large (max 100 kb.)";
+"_...loading..._"           = "Loading…";
+"_download_plist_"          = " ";
 "_no_reuploadfile_"         = "Could not find nor resend file. Delete the upload and reload the file to upload it.";
 "_file_already_exists_"     = "Unable to complete the operation, a file with the same name exists";
 "_read_file_error_"         = "Could not read the file";
