@@ -587,6 +587,7 @@
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount]) {
         _isSearchMode = NO;
+        [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
         return;
     }
     
@@ -601,17 +602,20 @@
 
             BOOL isUpdate = [[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas startDirectory:startDirectory activeUrl:appDelegate.activeUrl];
             
-            if (isUpdate) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (isUpdate) {
                     [self reloadDatasource];
-                });
-            }
-            
+                } else {
+                    [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
+                }
+            });
+
             _isSearchMode = NO;
         });
     
     } else {
         _isSearchMode = NO;
+        [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
     }
 }
 
@@ -631,6 +635,7 @@
     [[CCActions sharedInstance] search:startDirectory fileName:@"" depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
     
     _isSearchMode = YES;
+    [self.navigationItem.leftBarButtonItems[0] setEnabled:NO];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -641,8 +646,10 @@
 {
     @synchronized(self) {
         // test
-        if (appDelegate.activeAccount.length == 0)
+        if (appDelegate.activeAccount.length == 0) {
+            [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
             return;
+        }
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
@@ -657,6 +664,7 @@
                     _sectionDataSource = [tempSectionDataSource copy];
                     [self reloadCollection];
                 }
+                [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
             });
         });
     }
