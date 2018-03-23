@@ -34,16 +34,18 @@
 #import "CCSection.h"
 #import "CCHud.h"
 #import "OCNetworking.h"
+#import "CCMove.h"
 
 @class tableMetadata;
 
-@interface CCPhotos: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate>
+@interface CCPhotos: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate, CCMoveDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
+@property BOOL isSearchMode;
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
-- (void)reloadDatasource;
+- (void)reloadDatasourceFromSearch:(BOOL)fromSearch;
 - (void)searchPhotoVideo;
 
 @end

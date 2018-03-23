@@ -209,9 +209,13 @@ class NCService: NSObject, OCNetworkingDelegate {
             // Change Theming color
             appDelegate.settingThemingColorBrand()
             
-            let error = "Get Capabilities failure error \(errorCode) \(message!)"
-            print("[LOG] \(error)")
-            
+            var error = ""
+            if let message = message {
+                error = "Get Capabilities failure error \(errorCode) \(message)"
+            } else {
+                error = "Get Capabilities failure error \(errorCode)"
+            }
+                        
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Capabilities of Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
         }
     }
@@ -268,8 +272,12 @@ class NCService: NSObject, OCNetworkingDelegate {
             
         } else {
             
-            let error = "Get user profile failure error \(errorCode) \(message!)"
-            print("[LOG] \(error)")
+            var error = ""
+            if let message = message {
+                error = "Get user profile failure error \(errorCode) \(message)"
+            } else {
+                error = "Get user profile failure error \(errorCode)"
+            }
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get user profile Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
         }
@@ -291,8 +299,12 @@ class NCService: NSObject, OCNetworkingDelegate {
             
         } else {
          
-            let error = "Get external site failure error \(errorCode) \(message!)"
-            print("[LOG] \(error)")
+            var error = ""
+            if let message = message {
+                error = "Get external site failure error \(errorCode) \(message)"
+            } else {
+                error = "Get external site failure error \(errorCode)"
+            }
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get external site Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
         }
@@ -314,8 +326,12 @@ class NCService: NSObject, OCNetworkingDelegate {
             
         } else {
             
-            let error = "Get Activity Server failure error \(errorCode) \(message!)"
-            print("[LOG] \(error)")
+            var error = ""
+            if let message = message {
+                error = "Get Activity Server failure error \(errorCode) \(message)"
+            } else {
+                error = "Get Activity Server failure error \(errorCode)"
+            }
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Activity Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
         }
@@ -366,8 +382,12 @@ class NCService: NSObject, OCNetworkingDelegate {
             
         } else {
             
-            let error = "Get Notification Server failure error \(errorCode) \(message!)"
-            print("[LOG] \(error)")
+            var error = ""
+            if let message = message {
+                error = "Get Notification Server failure error \(errorCode) \(message)"
+            } else {
+                error = "Get Notification Server failure error \(errorCode)"
+            }
             
             NCManageDatabase.sharedInstance.addActivityClient("", fileID: "", action: k_activityDebugActionCapabilities, selector: "Get Notification Server", note: error, type: k_activityTypeFailure, verbose: true, activeUrl: appDelegate.activeUrl)
             

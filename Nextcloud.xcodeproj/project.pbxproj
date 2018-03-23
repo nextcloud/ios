@@ -2159,8 +2159,8 @@
 		F74D3DB81BAC1941000BAE4B /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				F732BA031D76CE1500E9878B /* CCNetworking.h */,
 				F755BD9A20594AC7008C5FBB /* NCService.swift */,
+				F732BA031D76CE1500E9878B /* CCNetworking.h */,
 				F732BA041D76CE1500E9878B /* CCNetworking.m */,
 				F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */,
 				F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */,

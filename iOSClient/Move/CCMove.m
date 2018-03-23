@@ -72,7 +72,7 @@
     
     [self.cancel setTitle:NSLocalizedString(@"_cancel_", nil)];
     [self.create setTitle:NSLocalizedString(@"_create_folder_", nil)];
-
+    
     if (![_serverUrl length]) {
         
         UIImageView *image;
@@ -106,6 +106,10 @@
     self.tableView.emptyDataSetDelegate = self;
     self.tableView.emptyDataSetSource = self;
 
+    // get auto upload folder
+    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
+    
     // read file->folder
     [self readFileReloadFolder];
 }
@@ -120,6 +124,11 @@
     
     self.navigationController.toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar;
     self.navigationController.toolbar.tintColor = NCBrandColor.sharedInstance.brandElement;
+    
+    if (self.hideCreateFolder) {
+        [self.create setEnabled:NO];
+        [self.create setTintColor: [UIColor clearColor]];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -323,10 +332,6 @@
         // insert in Database
         metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
 
-        // get auto upload folder
-        _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-        _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
-        
         _loadingFolder = NO;
         
         [self.tableView reloadData];
@@ -528,6 +533,7 @@
     viewController.delegate = self.delegate;
     viewController.includeDirectoryE2EEncryption = self.includeDirectoryE2EEncryption;
     viewController.move.title = self.move.title;
+    viewController.hideCreateFolder = self.hideCreateFolder;
     viewController.networkingOperationQueue = _networkingOperationQueue;
 
     viewController.passMetadata = metadata;

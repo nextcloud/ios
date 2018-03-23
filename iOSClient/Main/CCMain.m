@@ -393,7 +393,7 @@
         [[NCService sharedInstance] startRequestServicesServer];
         
         // Clear datasorce
-        [appDelegate.activePhotos reloadDatasource];
+        [appDelegate.activePhotos reloadDatasourceFromSearch:NO];
         [appDelegate.activeFavorites reloadDatasource];
         
         // Read this folder
@@ -1639,9 +1639,9 @@
 
 - (void)searchStartTimer
 {
-    NSString *home = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
+    NSString *startDirectory = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     
-    [[CCActions sharedInstance] search:home fileName:_searchFileName depth:@"infinity" date:nil contenType:nil selector:selectorSearchFiles delegate:self];
+    [[CCActions sharedInstance] search:startDirectory fileName:_searchFileName depth:@"infinity" date:nil contenType:nil selector:selectorSearchFiles delegate:self];
 
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);

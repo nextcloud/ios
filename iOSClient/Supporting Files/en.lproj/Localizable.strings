@@ -83,6 +83,7 @@
 "_success_"                 = "Success";
 "_initialization_"          = "Initialization";
 "_experimental_"            = "Experimental";
+"_select_dir_photos_tab_"   = "Select as folder \"Photos\"";
 
 // App
 
