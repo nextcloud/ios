@@ -118,7 +118,8 @@
     // Plus Button
     [appDelegate plusButtonVisibile:true];
 
-    [self reloadDatasource];
+    if(!_isSearchMode)
+        [self reloadDatasourceFromSearch:NO];
 }
 
 - (void)viewSafeAreaInsetsDidChange
@@ -163,36 +164,39 @@
 
 - (void)setUINavigationBarDefault
 {
-    UIImage *icon;
-    
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+ 
+    // curront folder search
+    NSString *directory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+    NSString *folder = [directory stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""];
     
+    // Title
+    self.navigationItem.titleView = nil;
+    if (folder.length == 0) {
+        self.navigationItem.title = NSLocalizedString(@"_photo_camera_", nil);
+    } else {
+        self.navigationItem.title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_photo_camera_", nil), [folder substringFromIndex:1]];
+    }
+    
+    if (_isSearchMode) {
+        [CCGraphics addImageToTitle:self.navigationItem.title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loadingTitle"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
+        [self.collectionView reloadData];
+        return;
+    }
+    
+    // Button Item
+    UIImage *icon;
     icon = [UIImage imageNamed:@"seleziona"];
     UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(collectionSelectYES)];
     icon = [UIImage imageNamed:@"startDirectoryPhotosTab"];
     UIBarButtonItem *buttonStartDirectoryPhotosTab = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(selectStartDirectoryPhotosTab)];
 
     if ([_sectionDataSource.allRecordsDataSource count] > 0) {
-        
         self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, nil];
-        
     } else {
-        
         self.navigationItem.rightBarButtonItems = nil;
     }
-    
     self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, nil];
-    
-    // Title
-    
-    NSString *directory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
-    NSString *folder = [directory stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""];
-    
-    if (folder.length == 0) {
-        self.navigationItem.title = NSLocalizedString(@"_photo_camera_", nil);
-    } else {
-        self.navigationItem.title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_photo_camera_", nil), [folder substringFromIndex:1]];
-    }
 }
 
 - (void)setUINavigationBarSelected
@@ -276,6 +280,22 @@
         
         }
     }
+}
+
+- (void)searchInProgress:(BOOL)search
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (search) {
+            _isSearchMode = YES;
+            [self.navigationItem.leftBarButtonItems[0] setEnabled:NO];
+            [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
+        } else {
+            _isSearchMode = NO;
+            [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
+            [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
+        }
+        [self setUINavigationBarDefault];
+    });
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -464,12 +484,12 @@
                 
             } else {
                 
-                [self reloadDatasource];
+                [self reloadDatasourceFromSearch:NO];
             }
             
         } else {
             
-            [self reloadDatasource];
+            [self reloadDatasourceFromSearch:NO];
         }
     }
 }
@@ -579,15 +599,14 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== readPhotoVideo ====
+#pragma mark ==== Search Photo/Video ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount]) {
-        _isSearchMode = NO;
-        [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
+        [self searchInProgress:NO];
         return;
     }
     
@@ -600,22 +619,15 @@
             
             NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
 
-            BOOL isUpdate = [[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas startDirectory:startDirectory activeUrl:appDelegate.activeUrl];
+            (void)[[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas startDirectory:startDirectory activeUrl:appDelegate.activeUrl];
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (isUpdate) {
-                    [self reloadDatasource];
-                } else {
-                    [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
-                }
+                [self reloadDatasourceFromSearch:YES];
             });
-
-            _isSearchMode = NO;
         });
     
     } else {
-        _isSearchMode = NO;
-        [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
+        [self searchInProgress:NO];
     }
 }
 
@@ -634,20 +646,20 @@
 
     [[CCActions sharedInstance] search:startDirectory fileName:@"" depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
     
-    _isSearchMode = YES;
-    [self.navigationItem.leftBarButtonItems[0] setEnabled:NO];
+    [self searchInProgress:YES];
+    [self collectionSelect:NO];
 }
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Collection ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)reloadDatasource
+- (void)reloadDatasourceFromSearch:(BOOL)fromSearch
 {
     @synchronized(self) {
         // test
         if (appDelegate.activeAccount.length == 0) {
-            [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
+            [self searchInProgress:NO];
             return;
         }
     
@@ -664,7 +676,8 @@
                     _sectionDataSource = [tempSectionDataSource copy];
                     [self reloadCollection];
                 }
-                [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
+                if (fromSearch)
+                    [self searchInProgress:NO];
             });
         });
     }

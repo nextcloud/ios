@@ -45,7 +45,7 @@
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
-- (void)reloadDatasource;
+- (void)reloadDatasourceFromSearch:(BOOL)fromSearch;
 - (void)searchPhotoVideo;
 
 @end
