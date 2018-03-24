@@ -42,7 +42,8 @@
     
     CCHud *_hud;
     
-    TOScrollBar *_scrollBar;    
+    TOScrollBar *_scrollBar;
+    NSString *_saveEtag;
 }
 @end
 
@@ -612,9 +613,6 @@
     
     if (errorCode == 0) {
     
-        // Update date
-        [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
-        
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
@@ -624,6 +622,11 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self reloadDatasourceFromSearch:YES];
             });
+            
+            // Update date
+            [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
+            // Save etag
+            _saveEtag = metadataNet.etag;
         });
     
     } else {
@@ -644,10 +647,26 @@
     
     NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
 
-    [[CCActions sharedInstance] search:startDirectory fileName:@"" depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
-    
-    [self searchInProgress:YES];
-    [self collectionSelect:NO];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        NSArray *items;
+        NSError *error = [[NCNetworkingSync sharedManager] readFile:startDirectory user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword items:&items];
+        
+        if (error == nil && items.count > 0) {
+        
+            OCFileDto *file = items[0];
+            
+            if (![file.etag isEqualToString:_saveEtag]) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+
+                    [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:file.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
+                    [self searchInProgress:YES];
+                    [self collectionSelect:NO];
+                });
+            }
+        }
+    });
 }
 
 #pragma --------------------------------------------------------------------------------------------
