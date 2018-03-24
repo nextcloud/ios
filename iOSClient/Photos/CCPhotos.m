@@ -654,13 +654,13 @@
         
         if (error == nil && items.count > 0) {
         
-            OCFileDto *file = items[0];
+            OCFileDto *fileStartDirectory = items[0];
             
-            if (![file.etag isEqualToString:_saveEtag]) {
+            if (![fileStartDirectory.etag isEqualToString:_saveEtag]) {
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
 
-                    [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:file.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
+                    [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:fileStartDirectory.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
                     [self searchInProgress:YES];
                     [self collectionSelect:NO];
                 });
