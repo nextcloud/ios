@@ -43,7 +43,7 @@
     CCHud *_hud;
     
     TOScrollBar *_scrollBar;
-    NSString *_saveEtag;
+    NSMutableDictionary *_saveEtagForStartDirectory;
 }
 @end
 
@@ -88,8 +88,9 @@
 {
     [super viewDidLoad];
     
-    _queueMetadatas = [[NSMutableArray alloc] init];
-    _selectedMetadatas = [[NSMutableArray alloc] init];
+    _queueMetadatas = [NSMutableArray new];
+    _selectedMetadatas = [NSMutableArray new];
+    _saveEtagForStartDirectory = [NSMutableDictionary new];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     
     // empty Data Source
@@ -296,6 +297,7 @@
             [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
         }
         [self setUINavigationBarDefault];
+        [self reloadCollection];
     });
 }
 
@@ -626,7 +628,7 @@
             // Update date
             [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
             // Save etag
-            _saveEtag = metadataNet.etag;
+            [_saveEtagForStartDirectory setObject:metadataNet.etag forKey:metadataNet.serverUrl];
         });
     
     } else {
@@ -656,7 +658,7 @@
         
             OCFileDto *fileStartDirectory = items[0];
             
-            if (![fileStartDirectory.etag isEqualToString:_saveEtag]) {
+            if (![fileStartDirectory.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]]) {
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -664,6 +666,8 @@
                     [self searchInProgress:YES];
                     [self collectionSelect:NO];
                 });
+            } else {
+                [self reloadDatasourceFromSearch:YES];
             }
         }
     });
@@ -693,7 +697,6 @@
                 // OPTIMIZED
                 if (tempSectionDataSource.totalSize != _sectionDataSource.totalSize || tempSectionDataSource.files != _sectionDataSource.files) {
                     _sectionDataSource = [tempSectionDataSource copy];
-                    [self reloadCollection];
                 }
                 if (fromSearch)
                     [self searchInProgress:NO];
