@@ -52,6 +52,6 @@
 "_bad_request_"                         = "Bad request";
 "_webdav_locked_"                       = "WebDAV Locked: Trying to access locked resource";
 "_error_user_not_available_"            = "The user is no longer available";
-"_server_response_error_"               = "Server response contenent error";
+"_server_response_error_"               = "Server response content error";
 
 
