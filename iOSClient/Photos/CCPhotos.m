@@ -273,18 +273,16 @@
 
 - (void)searchInProgress:(BOOL)search
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (search) {
-            _isSearchMode = YES;
-            [self.navigationItem.leftBarButtonItems[0] setEnabled:NO];
-            [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
-        } else {
-            _isSearchMode = NO;
-            [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
-            [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
-        }
-        [self setUINavigationBarDefault];
-    });
+    if (search) {
+        _isSearchMode = YES;
+        [self.navigationItem.leftBarButtonItems[0] setEnabled:NO];
+        [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
+    } else {
+        _isSearchMode = NO;
+        [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
+        [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
+    }
+    [self setUINavigationBarDefault];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -646,7 +644,6 @@
             if (![fileStartDirectory.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]]) {
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
-
                     [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:fileStartDirectory.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
                     [self searchInProgress:YES];
                     [self editingModeNO];
