@@ -573,7 +573,7 @@
     
     if (![serverUrlTo isEqualToString:oldStartDirectoryPhotosTab]) {
         
-        // Save
+        // Save Start Directory
         [[NCManageDatabase sharedInstance] setAccountStartDirectoryPhotosTab:serverUrlTo];
         
         // search PhotoVideo with new start directory
@@ -669,6 +669,8 @@
             } else {
                 [self reloadDatasourceFromSearch:YES];
             }
+        } else {
+            [self reloadDatasourceFromSearch:YES];
         }
     });
 }
