@@ -189,7 +189,7 @@
     // Button Item
     UIImage *icon;
     icon = [UIImage imageNamed:@"seleziona"];
-    UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(collectionSelectYES)];
+    UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(editingModeYES)];
     icon = [UIImage imageNamed:@"startDirectoryPhotosTab"];
     UIBarButtonItem *buttonStartDirectoryPhotosTab = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(selectStartDirectoryPhotosTab)];
 
@@ -218,23 +218,6 @@
     
     // Title
     self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[_selectedMetadatas count], (unsigned long)[_sectionDataSource.allRecordsDataSource count]];
-}
-
-- (void)collectionSelect:(BOOL)edit
-{
-    [self.collectionView setAllowsMultipleSelection:edit];
-    
-    _cellEditing = edit;
-    
-    if (edit)
-        [self setUINavigationBarSelected];
-    else
-        [self setUINavigationBarDefault];
-}
-
-- (void)collectionSelectYES
-{
-    [self collectionSelect:YES];
 }
 
 - (void)cellSelect:(BOOL)select indexPath:(NSIndexPath *)indexPath metadata:(tableMetadata *)metadata
@@ -664,7 +647,7 @@
 
                     [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:fileStartDirectory.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
                     [self searchInProgress:YES];
-                    [self collectionSelect:NO];
+                    [self editingMode:NO];
                 });
             } else {
                 [self reloadDatasourceFromSearch:YES];
@@ -676,7 +659,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Collection ====
+#pragma mark ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)reloadDatasourceFromSearch:(BOOL)fromSearch
@@ -711,10 +694,30 @@
 - (void)reloadCollection
 {
     [self.collectionView reloadData];
-        
     [_selectedMetadatas removeAllObjects];
-    [self collectionSelect:NO];
+    [self editingMode:NO];
 }
+
+- (void)editingMode:(BOOL)mode
+{
+    [self.collectionView setAllowsMultipleSelection:mode];
+    
+    _cellEditing = mode;
+    
+    if (mode)
+        [self setUINavigationBarSelected];
+    else
+        [self setUINavigationBarDefault];
+}
+
+- (void)editingModeYES
+{
+    [self editingMode:YES];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Collection ====
+#pragma --------------------------------------------------------------------------------------------
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {    
