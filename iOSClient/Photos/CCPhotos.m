@@ -199,6 +199,8 @@
         self.navigationItem.rightBarButtonItems = nil;
     }
     self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, nil];
+    
+    [self.collectionView reloadData];
 }
 
 - (void)setUINavigationBarSelected
@@ -211,13 +213,15 @@
     icon = [UIImage imageNamed:@"openSelectedFiles"];
     UIBarButtonItem *buttonOpenWith = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(openSelectedFiles)];
     
-    UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(reloadCollection)];
+    UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(editingModeNO)];
     
     self.navigationItem.leftBarButtonItem = leftButton;
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonDelete, buttonOpenWith, nil];
     
     // Title
     self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[_selectedMetadatas count], (unsigned long)[_sectionDataSource.allRecordsDataSource count]];
+    
+    [self.collectionView reloadData];
 }
 
 - (void)cellSelect:(BOOL)select indexPath:(NSIndexPath *)indexPath metadata:(tableMetadata *)metadata
@@ -280,7 +284,6 @@
             [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
         }
         [self setUINavigationBarDefault];
-        [self reloadCollection];
     });
 }
 
@@ -403,8 +406,7 @@
                 self.navigationItem.rightBarButtonItem.enabled = YES;
                 
                 if (completed) {
-                    
-                    [self performSelector:@selector(reloadCollection) withObject:nil];
+                    [self.collectionView reloadData];
                 }
             }];
         }];
@@ -647,7 +649,7 @@
 
                     [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:fileStartDirectory.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
                     [self searchInProgress:YES];
-                    [self editingMode:NO];
+                    [self editingModeNO];
                 });
             } else {
                 [self reloadDatasourceFromSearch:YES];
@@ -681,7 +683,7 @@
                 // OPTIMIZED
                 if (tempSectionDataSource.totalSize != _sectionDataSource.totalSize || tempSectionDataSource.files != _sectionDataSource.files) {
                     _sectionDataSource = [tempSectionDataSource copy];
-                    [self reloadCollection];
+                    [self.collectionView reloadData];
                 }
                 if (fromSearch) {
                     [self searchInProgress:NO];
@@ -691,28 +693,19 @@
     }
 }
 
-- (void)reloadCollection
-{
-    [self.collectionView reloadData];
-    [_selectedMetadatas removeAllObjects];
-    [self editingMode:NO];
-}
-
-- (void)editingMode:(BOOL)mode
-{
-    [self.collectionView setAllowsMultipleSelection:mode];
-    
-    _cellEditing = mode;
-    
-    if (mode)
-        [self setUINavigationBarSelected];
-    else
-        [self setUINavigationBarDefault];
-}
-
 - (void)editingModeYES
 {
-    [self editingMode:YES];
+    [self.collectionView setAllowsMultipleSelection:true];
+    _cellEditing = true;
+    [self setUINavigationBarSelected];
+}
+
+- (void)editingModeNO
+{
+    [self.collectionView setAllowsMultipleSelection:false];
+    _cellEditing = false;
+    [_selectedMetadatas removeAllObjects];
+    [self setUINavigationBarDefault];
 }
 
 #pragma --------------------------------------------------------------------------------------------
