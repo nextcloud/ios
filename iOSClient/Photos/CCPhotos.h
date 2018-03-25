@@ -42,6 +42,8 @@
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property BOOL isSearchMode;
+@property BOOL isEditMode;
+
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 

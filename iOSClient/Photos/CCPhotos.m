@@ -33,7 +33,6 @@
 
     tableMetadata *_metadata;
 
-    BOOL _cellEditing;
     NSMutableArray *_queueMetadatas;
     NSMutableArray *_selectedMetadatas;
     NSUInteger _numSelectedMetadatas;
@@ -120,7 +119,7 @@
     // Plus Button
     [appDelegate plusButtonVisibile:true];
 
-    if(!_isSearchMode)
+    if(!_isSearchMode && !_isEditMode)
         [self reloadDatasourceFromSearch:NO];
 }
 
@@ -137,7 +136,9 @@
         [appDelegate changeTheming:self];
     
     _scrollBar.handleTintColor = [NCBrandColor sharedInstance].brand;
-    [self.collectionView reloadData];
+    
+    if(!_isSearchMode && !_isEditMode)
+        [self.collectionView reloadData];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
@@ -622,7 +623,7 @@
 - (void)searchPhotoVideo
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || _isSearchMode)
+    if (appDelegate.activeAccount.length == 0 || _isSearchMode || _isEditMode)
         return;
     
     // WAITING FOR d:creationdate
@@ -693,14 +694,14 @@
 - (void)editingModeYES
 {
     [self.collectionView setAllowsMultipleSelection:true];
-    _cellEditing = true;
+    _isEditMode = true;
     [self setUINavigationBarSelected];
 }
 
 - (void)editingModeNO
 {
     [self.collectionView setAllowsMultipleSelection:false];
-    _cellEditing = false;
+    _isEditMode = false;
     [_selectedMetadatas removeAllObjects];
     [self setUINavigationBarDefault];
 }
@@ -832,7 +833,7 @@
         NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
         _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
-        if (_cellEditing) {
+        if (_isEditMode) {
         
             [self cellSelect:YES indexPath:indexPath metadata:_metadata];
         
@@ -847,7 +848,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     // test
-    if (_cellEditing == NO)
+    if (_isEditMode == NO)
         return;
    
     NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
