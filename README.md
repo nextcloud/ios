@@ -1,4 +1,4 @@
-# [Nextcloud](https://nextcloud.com)  iOS app V 2.20.6
+# [Nextcloud](https://nextcloud.com)  iOS app V 2.20.7
 
 [<img src="Animation.gif"
 alt="Download from App Storey"
