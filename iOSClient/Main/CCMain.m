@@ -1641,7 +1641,7 @@
 {
     NSString *startDirectory = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     
-    [[CCActions sharedInstance] search:startDirectory fileName:_searchFileName depth:@"infinity" date:nil contenType:nil selector:selectorSearchFiles delegate:self];
+    [[CCActions sharedInstance] search:startDirectory fileName:_searchFileName etag:@"" depth:@"infinity" date:nil contenType:nil selector:selectorSearchFiles delegate:self];
 
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
