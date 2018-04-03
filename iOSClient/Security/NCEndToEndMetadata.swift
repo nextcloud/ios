@@ -160,7 +160,7 @@ class NCEndToEndMetadata : NSObject  {
                     return false
                 }
                 
-                guard let metadataKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeyEncryptedData as Data!, privateKey: privateKey) else {
+                guard let metadataKeyBase64 = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(metadataKeyEncryptedData as Data?, privateKey: privateKey) else {
                     return false
                 }
                 
