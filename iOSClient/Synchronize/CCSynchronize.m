@@ -284,9 +284,10 @@
                 
                 NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
                 tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+                tableMetadata *tableMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", metadataNet.account, metadata.fileID]];
                 
-                // Verify changed etag
-                if (![tableDirectory.etag isEqualToString:metadata.etag] && tableDirectory) {
+                // Verify changed etag OR was not favorite
+                if (!([tableDirectory.etag isEqualToString:metadata.etag] && tableDirectory) || (tableMetadata && tableMetadata.favorite == NO && metadata.favorite == YES)) {
                     
                     if ([metadataNet.selector isEqualToString:selectorReadFileFolder])
                         [self readFolder:serverUrl selector:selectorReadFolder];
