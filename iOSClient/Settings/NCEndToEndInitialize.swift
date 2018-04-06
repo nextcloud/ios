@@ -106,7 +106,7 @@ class NCEndToEndInitialize : NSObject, OCNetworkingDelegate  {
             appDelegate.messageNotification("E2E get publicKey", description: "forbidden: the user can't access the public keys", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
         default:
-            appDelegate.messageNotification("E2E get publicKey", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            appDelegate.messageNotification("E2E get publicKey", description: message as String, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
 
@@ -129,7 +129,7 @@ class NCEndToEndInitialize : NSObject, OCNetworkingDelegate  {
             appDelegate.messageNotification("E2E sign publicKey", description: "conflict: a public key for the user already exists", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
         default:
-            appDelegate.messageNotification("E2E sign publicKey", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            appDelegate.messageNotification("E2E sign publicKey", description: message as String, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
     
@@ -239,7 +239,7 @@ class NCEndToEndInitialize : NSObject, OCNetworkingDelegate  {
             appDelegate.messageNotification("E2E get privateKey", description: "forbidden: the user can't access the private key", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
         default:
-            appDelegate.messageNotification("E2E get privateKey", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            appDelegate.messageNotification("E2E get privateKey", description: message as String, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
     
@@ -263,7 +263,7 @@ class NCEndToEndInitialize : NSObject, OCNetworkingDelegate  {
             appDelegate.messageNotification("E2E store privateKey", description: "conflict: a private key for the user already exists", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         
         default:
-            appDelegate.messageNotification("E2E store privateKey", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            appDelegate.messageNotification("E2E store privateKey", description: message as String, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
     
@@ -296,7 +296,7 @@ class NCEndToEndInitialize : NSObject, OCNetworkingDelegate  {
             appDelegate.messageNotification("E2E Server publicKey", description: "forbidden: the user can't access the Server publickey", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             
         default:
-            appDelegate.messageNotification("E2E Server publicKey", description: message as String!, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            appDelegate.messageNotification("E2E Server publicKey", description: message as String, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         }
     }
 }

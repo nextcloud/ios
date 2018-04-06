@@ -44,6 +44,7 @@
             
             sharedSynchronize = [CCSynchronize new];
             sharedSynchronize.foldersInSynchronized = [NSMutableOrderedSet new];
+            sharedSynchronize->appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         }
         return sharedSynchronize;
     }
@@ -105,6 +106,10 @@
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataFolder];
     [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
 
+    // reload folder ../ *
+    NSString *serverUrlParent = [[NCManageDatabase sharedInstance] getServerUrl:metadataFolder.directoryID];
+    [appDelegate.activeMain reloadDatasource:serverUrlParent];
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
         NSMutableArray *metadatasForVerifyChange = [NSMutableArray new];
@@ -283,9 +288,10 @@
                 
                 NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
                 tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, serverUrl]];
+                tableMetadata *tableMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", metadataNet.account, metadata.fileID]];
                 
-                // Verify changed etag
-                if (![tableDirectory.etag isEqualToString:metadata.etag] && tableDirectory) {
+                // Verify changed etag OR was not favorite
+                if (!([tableDirectory.etag isEqualToString:metadata.etag]) || (tableMetadata == nil || tableMetadata.favorite == NO)) {
                     
                     if ([metadataNet.selector isEqualToString:selectorReadFileFolder])
                         [self readFolder:serverUrl selector:selectorReadFolder];

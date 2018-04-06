@@ -1731,7 +1731,7 @@
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
         NSLog(@"[LOG] Activity : %@",jsongParsed);
         
-        if (jsongParsed && jsongParsed.allKeys > 0) {
+        if (jsongParsed && [jsongParsed isKindOfClass:[NSDictionary class]] && jsongParsed.allKeys > 0) {
             
             NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
             NSDictionary *meta = [ocs valueForKey:@"meta"];
