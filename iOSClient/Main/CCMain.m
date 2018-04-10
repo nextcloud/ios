@@ -565,11 +565,19 @@
             if ([appDelegate.reachability isReachable] == NO) {
                 _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navigationLogoOffline"]];
             } else {
-                tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
-                if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
-                    _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor blackColor]]];
-                else
-                    _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor whiteColor]]];
+                
+                if ([NCBrandOptions sharedInstance].use_themingColor) {
+                
+                    tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
+                    
+                    if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
+                        _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor blackColor]]];
+                    else
+                        _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor whiteColor]]];
+                } else {
+                    
+                    _ImageTitleHomeCryptoCloud = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"navigationLogo"]];
+                }
             }
             
             [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];

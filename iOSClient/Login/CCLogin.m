@@ -61,7 +61,7 @@
     self.annulla.tintColor = [NCBrandColor sharedInstance].customerText;
     
     // Base URL
-    _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] color:[NCBrandColor sharedInstance].customerText];
+    _imageBaseUrl.image = [UIImage imageNamed:@"loginURL"];
     _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.tintColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
