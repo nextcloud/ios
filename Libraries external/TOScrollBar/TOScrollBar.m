@@ -29,7 +29,7 @@ static const CGFloat kTOScrollBarTrackWidth      = 2.0f;     // The default widt
 static const CGFloat kTOScrollBarHandleWidth     = 4.0f;     // The default width of the handle control
 static const CGFloat kTOScrollBarEdgeInset       = 7.5f;     // The distance from the edge of the view to the center of the track
 static const CGFloat kTOScrollBarHandleMinHeight = 64.0f;    // The minimum usable size to which the handle can shrink
-static const CGFloat kTOScrollBarWidth           = 30.0f;    // The width of this control (44 is minimum recommended tapping space)
+static const CGFloat kTOScrollBarWidth           = 20.0f;    // The width of this control (44 is minimum recommended tapping space) TWS how handleWidth
 static const CGFloat kTOScrollBarVerticalPadding = 10.0f;    // The default padding at the top and bottom of the view
 static const CGFloat kTOScrollBarMinimumContentScale = 5.0f; // The minimum scale of the content view before showing the scroll view is necessary
 

@@ -104,7 +104,7 @@
     _scrollBar.handleWidth = 20;
     _scrollBar.handleMinimiumHeight = 20;
     _scrollBar.trackWidth = 0;
-    _scrollBar.edgeInset = 12;    
+    _scrollBar.edgeInset = 12;
 }
 
 // Apparirà
