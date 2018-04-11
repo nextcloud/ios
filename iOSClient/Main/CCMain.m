@@ -1647,6 +1647,11 @@
         self.searchController.searchBar.delegate = self;
         self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
         self.searchController.searchBar.backgroundImage = [UIImage new];
+        // color searchbbar button text (cancel)
+        UIButton *searchButton = self.searchController.searchBar.subviews.firstObject.subviews.lastObject;
+        if (searchButton && [searchButton isKindOfClass:[UIButton class]]) {
+            [searchButton setTitleColor:[NCBrandColor sharedInstance].brandText forState:UIControlStateNormal];
+        }
         
         self.tableView.tableHeaderView = self.searchController.searchBar;
         [self.tableView setContentOffset:CGPointMake(0, self.searchController.searchBar.frame.size.height - self.tableView.contentOffset.y)];
