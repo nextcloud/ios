@@ -54,14 +54,14 @@
     self.view.backgroundColor = [NCBrandColor sharedInstance].customer;
     
     // Image Brand
-    self.imageBrand.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginLogo"] color:[NCBrandColor sharedInstance].customerText];
+    self.imageBrand.image = [UIImage imageNamed:@"loginLogo"];
     
     // Annulla
     [self.annulla setTitle:NSLocalizedString(@"_cancel_", nil) forState:UIControlStateNormal];
     self.annulla.tintColor = [NCBrandColor sharedInstance].customerText;
     
     // Base URL
-    _imageBaseUrl.image = [UIImage imageNamed:@"loginURL"];
+    _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] color:[NCBrandColor sharedInstance].customerText];
     _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.tintColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
