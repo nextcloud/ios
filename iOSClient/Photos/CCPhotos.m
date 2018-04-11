@@ -404,6 +404,8 @@
                 self.navigationItem.leftBarButtonItem.enabled = YES;
                 self.navigationItem.rightBarButtonItem.enabled = YES;
                 
+                [self editingModeNO];
+
                 if (completed) {
                     [self.collectionView reloadData];
                 }
@@ -472,6 +474,7 @@
             } else {
                 
                 [self reloadDatasourceFromSearch:NO];
+                [self editingModeNO];
             }
             
         } else {
