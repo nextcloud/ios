@@ -529,7 +529,14 @@
 - (void)deleteRefreshControl
 {
     [_refreshControl endRefreshing];
-    self.refreshControl = nil;
+    
+    for (UIView *subview in [_tableView subviews]) {
+        if (subview == _refreshControl)
+            [subview removeFromSuperview];
+    }
+    
+    _tableView.refreshControl = nil;
+    _refreshControl = nil;
 }
 
 - (void)refreshControlTarget
