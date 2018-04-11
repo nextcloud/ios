@@ -172,8 +172,13 @@
     }
 
     // Back Button
-    if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]])
-        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationLogo"] style:UIBarButtonItemStylePlain target:nil action:nil];
+    if ([_serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
+        
+        UIImage *backButtonImage = [UIImage imageNamed:@"navigationLogo"];
+        backButtonImage = [backButtonImage imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+        
+        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithImage:backButtonImage style:UIBarButtonItemStylePlain target:nil action:nil];
+    }
     
     // reMenu Background
     _reMenuBackgroundView = [UIView new];
