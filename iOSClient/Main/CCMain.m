@@ -1642,9 +1642,9 @@
         self.searchController.searchResultsUpdater = self;
         self.searchController.dimsBackgroundDuringPresentation = NO;
         self.searchController.searchBar.translucent = NO;
-        self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
         [self.searchController.searchBar sizeToFit];
         self.searchController.searchBar.delegate = self;
+        self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
         self.searchController.searchBar.backgroundColor = [NCBrandColor sharedInstance].brand;
         self.searchController.searchBar.backgroundImage = [UIImage new];
         // color searchbbar button text (cancel)
