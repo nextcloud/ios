@@ -905,25 +905,59 @@
         
     } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
+        NSString *message = [NSString new];
+        NSInteger errorCode = [self deleteFileOrFolderFailureServerUrl:_metadataNet.serverUrl response:response error:error message:&message];
         
-        // Error
         if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
-            else
-                [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
+            [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:message errorCode:errorCode];
         }
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
     }];
+}
+
+- (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    NSString *serverFileUrl = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication deleteFileOrFolder:serverFileUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        
+        success();
+        
+    } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message = [NSString new];
+        NSInteger errorCode = [self deleteFileOrFolderFailureServerUrl:serverUrl response:response error:error message:&message];
+        
+        failure(message, errorCode);
+    }];
+}
+
+- (NSInteger)deleteFileOrFolderFailureServerUrl:(NSString *)serverUrl response:(NSHTTPURLResponse *)response error:(NSError *)error message:(NSString **)message
+{
+    NSInteger errorCode = response.statusCode;
+    if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+        errorCode = error.code;
+    
+    // Error
+    if (errorCode == 503)
+        *message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+    else
+        *message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+    
+    // Request trusted certificated
+    if ([error code] == NSURLErrorServerCertificateUntrusted)
+        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+    
+    // Activity
+    [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionDeleteFileFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+    
+    return errorCode;
 }
 
 #pragma --------------------------------------------------------------------------------------------
