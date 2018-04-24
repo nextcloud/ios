@@ -283,6 +283,10 @@ class FileProvider: NSFileProviderExtension {
                     return
                 }
                 
+                guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl)) else {
+                    return
+                }
+                
                 uploading.append(identifier.rawValue)
                 
                 _ =  ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, success: { (fileID, etag, date) in
@@ -310,7 +314,12 @@ class FileProvider: NSFileProviderExtension {
                     _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
                     
                     self.uploading = self.uploading.filter() { $0 != identifier.rawValue }
-            
+                    
+                    let itemDirectory = NSFileProviderItemIdentifier(directory.fileID)
+                    NSFileProviderManager.default.signalEnumerator(for: itemDirectory, completionHandler: { (error) in
+                        //
+                    })
+                    
                 }, failure: { (message, errorCode) in
                     
                     self.uploading = self.uploading.filter() { $0 != identifier.rawValue }
