@@ -59,6 +59,7 @@ class FileProvider: NSFileProviderExtension {
     
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         
+        /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
         }
@@ -114,6 +115,7 @@ class FileProvider: NSFileProviderExtension {
     
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
         
+        /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
             return nil
         }
@@ -444,12 +446,12 @@ class FileProvider: NSFileProviderExtension {
     
     override func fetchThumbnails(for itemIdentifiers: [NSFileProviderItemIdentifier], requestedSize size: CGSize, perThumbnailCompletionHandler: @escaping (NSFileProviderItemIdentifier, Data?, Error?) -> Void, completionHandler: @escaping (Error?) -> Void) -> Progress {
         
-        let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
-
+        /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
-            return progress
+            return Progress(totalUnitCount:0)
         }
 
+        let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
         var counterProgress: Int64 = 0
             
         for item in itemIdentifiers {
@@ -507,6 +509,7 @@ class FileProvider: NSFileProviderExtension {
     
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
 
+        /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
             return
         }
@@ -544,6 +547,7 @@ class FileProvider: NSFileProviderExtension {
     
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
+        /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
             return
         }
@@ -638,5 +642,4 @@ class FileProvider: NSFileProviderExtension {
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
-    
 }
