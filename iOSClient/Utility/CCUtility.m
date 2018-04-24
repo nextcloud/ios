@@ -997,8 +997,11 @@
     return metadata;
 }
 
-+ (void)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
++ (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
 {
+    CFStringRef fileUTI = nil;
+    NSString *returnFileUTI = nil;
+    
     if ([fileNameView isEqualToString:@"."]) {
         
         metadata.typeFile = k_metadataTypeFile_unknown;
@@ -1007,14 +1010,15 @@
     } else if (metadata.directory) {
         
         metadata.typeFile = k_metadataTypeFile_directory;
+        fileUTI = kUTTypeFolder;
         
     } else {
         
         CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
-        CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
         NSString *ext = (__bridge NSString *)fileExtension;
         ext = ext.uppercaseString;
-        
+        fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+
         // thumbnailExists
             
         if ([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
@@ -1084,10 +1088,14 @@
                 metadata.iconName = @"file";
             }
         }
-        
-        if (fileUTI)
-            CFRelease(fileUTI);
     }
+    
+    if (fileUTI != nil) {
+        returnFileUTI = (__bridge NSString *)fileUTI;
+        CFRelease(fileUTI);
+    }
+    
+    return returnFileUTI;
 }
 
 + (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNameView:(NSString *)fileNameView directory:(NSString *)directory activeAccount:(NSString *)activeAccount

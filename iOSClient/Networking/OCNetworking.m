@@ -132,20 +132,29 @@
 #pragma mark ===== download =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (NSURLSessionTask *)downloadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath success:(void (^)(int64_t length))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication downloadFileSession:fileNameServerUrl toDestiny:fileNameLocalPath defaultPriority:YES onCommunication:communication progress:^(NSProgress *progress) {
+    NSURLSessionTask *sessionTask = [communication downloadFileSession:fileNameServerUrl toDestiny:fileNameLocalPath defaultPriority:YES onCommunication:communication progress:^(NSProgress *progress) {
 
         //float percent = roundf (progress.fractionCompleted * 100);
 
     } successRequest:^(NSURLResponse *response, NSURL *filePath) {
 
-        success();
+        int64_t totalUnitCount = 0;
+        
+        NSDictionary *fields = [(NSHTTPURLResponse*)response allHeaderFields];
+
+        NSString *contentLength = [fields objectForKey:@"Content-Length"];
+        if(contentLength) {
+            totalUnitCount = (int64_t) [contentLength longLongValue];
+        }
+        
+        success(totalUnitCount);
         
     } failureRequest:^(NSURLResponse *response, NSError *error) {
         
@@ -166,12 +175,58 @@
         
         failure(message, errorCode);
     }];
+    
+    return sessionTask;
 }
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== upload =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (NSURLSessionTask *)uploadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath success:(void(^)(NSString *fileID, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    NSURLSessionTask *sessionTask = [communication uploadFileSession:fileNameLocalPath toDestiny:fileNameServerUrl onCommunication:communication progress:^(NSProgress *progress) {
+        //float percent = roundf (progress.fractionCompleted * 100);
+    } successRequest:^(NSURLResponse *response, NSString *redirectedServer) {
+    
+        NSDictionary *fields = [(NSHTTPURLResponse*)response allHeaderFields];
+
+        NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+        NSString *etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+        NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
+        
+        success(fileID, etag, date);
+        
+    } failureRequest:^(NSURLResponse *response, NSString *redirectedServer, NSError *error) {
+        
+        NSString *message;
+        NSInteger errorCode;
+        
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+        errorCode = httpResponse.statusCode;
+        
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        failure(message, errorCode);
+        
+    } failureBeforeRequest:^(NSError *error) {
+        failure(@"", error.code);
+    }];
+    
+    return sessionTask;
+}
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== downloadThumbnail =====
 #pragma --------------------------------------------------------------------------------------------
@@ -848,7 +903,7 @@
         
     } errorBeforeRequest:^(NSError *error) {
         
-         NSString *message;
+        NSString *message;
         
         if (([_metadataNet.fileName isEqualToString:autoUploadFileName] == YES && [_metadataNet.serverUrl isEqualToString:autoUploadDirectory] == YES))
             message = nil;
@@ -870,6 +925,48 @@
         }
         
         [self complete];
+    }];
+}
+
+- (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *fileID, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    NSString *serverFileUrl = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication createFolder:serverFileUrl onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+
+        if (![[[NCManageDatabase sharedInstance] getAccountActive].account isEqualToString:account]) {
+            
+            failure(NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil), k_CCErrorUserNotAvailble);
+            
+        } else {
+            
+            NSDictionary *fields = [response allHeaderFields];
+            
+            NSString *fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
+            NSDate *date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
+            
+            success(fileID, date);
+        }
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+
+        failure(@"", error.code);
+
+    } errorBeforeRequest:^(NSError *error) {
+        
+        NSString *message;
+    
+        if (error.code == OCErrorForbidenCharacters)
+            message = NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
+        else
+            message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
+        
+        failure(message, error.code);
     }];
 }
 

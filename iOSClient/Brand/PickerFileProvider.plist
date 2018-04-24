@@ -17,17 +17,21 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.20.9</string>
+	<string>2.21.0</string>
 	<key>CFBundleVersion</key>
-	<string>00002</string>
+	<string>00001</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionFileProviderDocumentGroup</key>
 		<string>group.it.twsweb.Crypto-Cloud</string>
+		<key>NSExtensionFileProviderSupportsEnumeration</key>
+		<true/>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.fileprovider-nonui</string>
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).FileProvider</string>
 	</dict>
+	<key>NSExtensionFileProviderSupportsEnumeration</key>
+	<true/>
 </dict>
 </plist>

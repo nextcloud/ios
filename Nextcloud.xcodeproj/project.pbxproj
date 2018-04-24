@@ -225,6 +225,8 @@
 		F743448A1E127FF2001CC831 /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F74344921E128EB0001CC831 /* Picker.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344901E128E8F001CC831 /* Picker.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F74344931E128EB4001CC831 /* PickerFileProvider.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F74344911E128E96001CC831 /* PickerFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F7496B7D208F548E004B299C /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7496B7B208F548E004B299C /* FileProviderEnumerator.swift */; };
+		F7496B7E208F548E004B299C /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7496B7C208F548E004B299C /* FileProviderItem.swift */; };
 		F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
@@ -919,6 +921,13 @@
 		F74344911E128E96001CC831 /* PickerFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
+		F7496B7B208F548E004B299C /* FileProviderEnumerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderEnumerator.swift; sourceTree = "<group>"; };
+		F7496B7C208F548E004B299C /* FileProviderItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
+		F7496B7F208F55F5004B299C /* OLDFileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OLDFileProvider.swift; sourceTree = "<group>"; };
+		F7496B80208F5651004B299C /* Picker.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Picker.plist; sourceTree = "<group>"; };
+		F7496B81208F5651004B299C /* iOSClient.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = iOSClient.plist; sourceTree = "<group>"; };
+		F7496B82208F5652004B299C /* PickerFileProvider.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PickerFileProvider.plist; sourceTree = "<group>"; };
+		F7496B83208F5652004B299C /* Share.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Share.plist; sourceTree = "<group>"; };
 		F74D3DBD1BAC1941000BAE4B /* OCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCNetworking.h; sourceTree = "<group>"; };
 		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
 		F75037431DBFA91A008FB480 /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
@@ -2151,7 +2160,10 @@
 			isa = PBXGroup;
 			children = (
 				F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */,
+				F7496B7B208F548E004B299C /* FileProviderEnumerator.swift */,
+				F7496B7C208F548E004B299C /* FileProviderItem.swift */,
 				F74344241E1264EE001CC831 /* FileProvider.swift */,
+				F7496B7F208F55F5004B299C /* OLDFileProvider.swift */,
 			);
 			path = PickerFileProvider;
 			sourceTree = "<group>";
@@ -2772,6 +2784,10 @@
 				F7C742E61E7BD71A00D9C973 /* PickerFileProvider.entitlements */,
 				F7C742D01E7BD35B00D9C973 /* Share.entitlements */,
 				F7C742D41E7BD44400D9C973 /* Picker.entitlements */,
+				F7496B81208F5651004B299C /* iOSClient.plist */,
+				F7496B80208F5651004B299C /* Picker.plist */,
+				F7496B82208F5652004B299C /* PickerFileProvider.plist */,
+				F7496B83208F5652004B299C /* Share.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -3755,6 +3771,7 @@
 				F7BB50E41F2238D500C47094 /* AFURLSessionManager.m in Sources */,
 				F7BB50F91F2239C800C47094 /* BKShiftingView.m in Sources */,
 				F7BB50F21F22395D00C47094 /* UICKeyChainStore.m in Sources */,
+				F7496B7E208F548E004B299C /* FileProviderItem.swift in Sources */,
 				F7BB50D01F22388600C47094 /* OCRichObjectStrings.m in Sources */,
 				F7BB50C91F22386400C47094 /* OCActivity.m in Sources */,
 				F7BB50AF1F22370300C47094 /* NCManageDatabase.swift in Sources */,
@@ -3762,6 +3779,7 @@
 				F7BB50BB1F22374E00C47094 /* OCNetworking.m in Sources */,
 				F7BB50C11F22378E00C47094 /* CCHud.m in Sources */,
 				F7BB50DE1F2238B700C47094 /* UtilsFramework.m in Sources */,
+				F7496B7D208F548E004B299C /* FileProviderEnumerator.swift in Sources */,
 				F7BB50D61F22389900C47094 /* OCHTTPRequestOperation.m in Sources */,
 				F75131661FA5EFF4002BB4D1 /* NCNetworkingSync.m in Sources */,
 				F7BB50BD1F22376000C47094 /* CCCertificate.m in Sources */,
