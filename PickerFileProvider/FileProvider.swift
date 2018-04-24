@@ -315,7 +315,7 @@ class FileProvider: NSFileProviderExtension {
                     
                         let itemDirectory = NSFileProviderItemIdentifier(directory.fileID)
                         NSFileProviderManager.default.signalEnumerator(for: itemDirectory, completionHandler: { (error) in
-                        //
+                            print("send signal")
                         })
                     }
                     
