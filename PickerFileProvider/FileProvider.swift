@@ -46,13 +46,12 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
             
+            // Only iOS 11
+            
         } else {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
-                do {
-                    try FileManager.default.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
-                } catch {
-                }
+                try? FileManager.default.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
             })
         }
     }
