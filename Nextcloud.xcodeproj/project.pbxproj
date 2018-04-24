@@ -923,7 +923,6 @@
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
 		F7496B7B208F548E004B299C /* FileProviderEnumerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderEnumerator.swift; sourceTree = "<group>"; };
 		F7496B7C208F548E004B299C /* FileProviderItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
-		F7496B7F208F55F5004B299C /* OLDFileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OLDFileProvider.swift; sourceTree = "<group>"; };
 		F7496B80208F5651004B299C /* Picker.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Picker.plist; sourceTree = "<group>"; };
 		F7496B81208F5651004B299C /* iOSClient.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = iOSClient.plist; sourceTree = "<group>"; };
 		F7496B82208F5652004B299C /* PickerFileProvider.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PickerFileProvider.plist; sourceTree = "<group>"; };
@@ -2163,7 +2162,6 @@
 				F7496B7B208F548E004B299C /* FileProviderEnumerator.swift */,
 				F7496B7C208F548E004B299C /* FileProviderItem.swift */,
 				F74344241E1264EE001CC831 /* FileProvider.swift */,
-				F7496B7F208F55F5004B299C /* OLDFileProvider.swift */,
 			);
 			path = PickerFileProvider;
 			sourceTree = "<group>";
