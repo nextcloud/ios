@@ -324,16 +324,12 @@ class FileProvider: NSFileProviderExtension {
                     // item
                     _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
                     
+                    // 
                     self.uploading = self.uploading.filter() { $0 != identifier.rawValue }
                     
-                    if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl)) {
-                    
-                        let itemDirectory = NSFileProviderItemIdentifier(directory.fileID)
-                        NSFileProviderManager.default.signalEnumerator(for: itemDirectory, completionHandler: { (error) in
-                            print("send signal")
-                        })
-                    }
-                    
+                    // Refresh UI
+                    self.refreshCurrentEnumerator(serverUrl: serverUrl)
+                
                 }, failure: { (message, errorCode) in
                     
                     self.uploading = self.uploading.filter() { $0 != identifier.rawValue }
@@ -712,5 +708,31 @@ class FileProvider: NSFileProviderExtension {
         }, failure: { (message, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
+    }
+    
+    //
+    //
+    //
+    //
+    
+    func refreshCurrentEnumerator(serverUrl: String) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else {
+            return
+        }
+        
+        if serverUrl == homeServerUrl {
+            NSFileProviderManager.default.signalEnumerator(for: .rootContainer, completionHandler: { (error) in
+                print("send signal rootContainer")
+            })
+        } else {
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl)) {
+                let itemDirectory = NSFileProviderItemIdentifier(directory.fileID)
+                NSFileProviderManager.default.signalEnumerator(for: itemDirectory, completionHandler: { (error) in
+                    print("send signal")
+                })
+            }
+        }
     }
 }
