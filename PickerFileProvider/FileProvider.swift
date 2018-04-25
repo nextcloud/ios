@@ -324,7 +324,7 @@ class FileProvider: NSFileProviderExtension {
                     // item
                     _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
                     
-                    // 
+                    //
                     self.uploading = self.uploading.filter() { $0 != identifier.rawValue }
                     
                     // Refresh UI
@@ -710,10 +710,10 @@ class FileProvider: NSFileProviderExtension {
         })
     }
     
-    //
-    //
-    //
-    //
+    // --------------------------------------------------------------------------------------------
+    //  MARK: - User Function
+    // --------------------------------------------------------------------------------------------
+
     
     func refreshCurrentEnumerator(serverUrl: String) {
         
