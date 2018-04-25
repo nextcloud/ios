@@ -71,6 +71,43 @@ class FileProvider: NSFileProviderExtension {
         }
     }
     
+    // MARK: - Enumeration
+    
+    override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else {
+            throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
+        }
+                
+        /*
+        let maybeEnumerator: NSFileProviderEnumerator? = nil
+
+        if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
+            // TODO: instantiate an enumerator for the container root
+            maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+        } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
+            // TODO: instantiate an enumerator for the working set
+            maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+        } else {
+            // TODO: determine if the item is a directory or a file
+            // - for a directory, instantiate an enumerator of its subitems
+            // - for a file, instantiate an enumerator that observes changes to the file
+            maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+        }
+        guard let enumerator = maybeEnumerator else {
+            throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
+        }
+        return enumerator
+        */
+        
+        let maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+        
+        return maybeEnumerator
+    }
+    
+    // MARK: - Item
+
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         
         /* ONLY iOS 11*/
@@ -123,7 +160,7 @@ class FileProvider: NSFileProviderExtension {
             }
         }
         
-        // TODO: implement the actual lookup
+        // implement the actual lookup
         throw NSFileProviderError(.noSuchItem)
     }
     
@@ -426,7 +463,7 @@ class FileProvider: NSFileProviderExtension {
         
         // Called after the last claim to the file has been released. At this point, it is safe for the file provider to remove the content file.
         
-        // TODO: look up whether the file has local changes
+        // look up whether the file has local changes
         let fileHasLocalChanges = false
         
         if !fileHasLocalChanges {
@@ -439,29 +476,13 @@ class FileProvider: NSFileProviderExtension {
             
             // write out a placeholder to facilitate future property lookups
             self.providePlaceholder(at: url, completionHandler: { error in
-                // TODO: handle any error, do any necessary cleanup
+                // handle any error, do any necessary cleanup
             })
         }
     }
     
     // MARK: - Actions
-    
-    /* TODO: implement the actions for items here
-     each of the actions follows the same pattern:
-     - make a note of the change in the local model
-     - schedule a server request as a background task to inform the server of the change
-     - call the completion block with the modified item in its post-modification state
-     */
-    
-    // MARK: - Enumeration
-    
-    override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
-        
-        let maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
-        
-        return maybeEnumerator
-    }
-    
+
     override func fetchThumbnails(for itemIdentifiers: [NSFileProviderItemIdentifier], requestedSize size: CGSize, perThumbnailCompletionHandler: @escaping (NSFileProviderItemIdentifier, Data?, Error?) -> Void, completionHandler: @escaping (Error?) -> Void) -> Progress {
         
         /* ONLY iOS 11*/
