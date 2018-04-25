@@ -710,6 +710,36 @@ class FileProvider: NSFileProviderExtension {
         })
     }
     
+    override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] rename")
+        completionHandler(nil, nil)
+    }
+    
+    override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] setfavourite")
+        completionHandler(nil, nil)
+    }
+    
+    override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] setLastUsedDate")
+        completionHandler(nil, nil)
+    }
+    
+    override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] setTagData")
+        completionHandler(nil, nil)
+    }
+    
+    override func trashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] trashitem")
+        completionHandler(nil, nil)
+    }
+    
+    override func untrashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] untrashitem")
+        completionHandler(nil, nil)
+    }
+    
     // --------------------------------------------------------------------------------------------
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
