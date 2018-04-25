@@ -204,6 +204,8 @@ class FileProvider: NSFileProviderExtension {
         return itemIdentifier
     }
     
+    // MARK: - Managing Shared Files
+    
     override func providePlaceholder(at url: URL, completionHandler: @escaping (Error?) -> Void) {
         
         if #available(iOSApplicationExtension 11.0, *) {
@@ -481,8 +483,8 @@ class FileProvider: NSFileProviderExtension {
         }
     }
     
-    // MARK: - Actions
-
+    // MARK: - Accessing Thumbnails
+    
     override func fetchThumbnails(for itemIdentifiers: [NSFileProviderItemIdentifier], requestedSize size: CGSize, perThumbnailCompletionHandler: @escaping (NSFileProviderItemIdentifier, Data?, Error?) -> Void, completionHandler: @escaping (Error?) -> Void) -> Progress {
         
         /* ONLY iOS 11*/
@@ -546,6 +548,8 @@ class FileProvider: NSFileProviderExtension {
         return progress
     }
     
+    // MARK: - Actions
+
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
 
         /* ONLY iOS 11*/
