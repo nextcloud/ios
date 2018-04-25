@@ -714,7 +714,6 @@ class FileProvider: NSFileProviderExtension {
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
 
-    
     func refreshCurrentEnumerator(serverUrl: String) {
         
         /* ONLY iOS 11*/
