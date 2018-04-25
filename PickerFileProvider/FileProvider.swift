@@ -567,6 +567,44 @@ class FileProvider: NSFileProviderExtension {
         })
     }
     
+    override func deleteItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (Error?) -> Void) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else {
+            return
+        }
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
+            completionHandler(NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            completionHandler(NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
+            
+            let fileNamePath = directoryUser + "/" + metadata.fileID
+            try? FileManager.default.removeItem(atPath: fileNamePath)
+            try? FileManager.default.removeItem(atPath: fileNamePath + ".ico")
+            
+            if metadata.directory {
+                let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
+                NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!)
+            }
+            
+            NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
+            
+            completionHandler(nil)
+            
+        }, failure: { (error, errorCode) in
+            completionHandler(NSFileProviderError(.serverUnreachable))
+        })
+    }
+    
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
