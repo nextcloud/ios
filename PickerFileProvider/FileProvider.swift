@@ -536,14 +536,25 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        guard let directoryParent = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, parentItemIdentifier.rawValue)) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
+        var serverUrl = ""
+        
+        if parentItemIdentifier == .rootContainer {
             
-        ocNetworking?.createFolder(directoryName, serverUrl: directoryParent.serverUrl, account: account, success: { (fileID, date) in
+            serverUrl = homeServerUrl
+            
+        } else {
+            
+            guard let directoryParent = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, parentItemIdentifier.rawValue)) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+            
+            serverUrl = directoryParent.serverUrl
+        }
+        
+        ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: account, success: { (fileID, date) in
                 
-            guard let newTableDirectory = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID, permissions: nil, serverUrl: directoryParent.serverUrl+"/"+directoryName) else {
+            guard let newTableDirectory = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID, permissions: nil, serverUrl: serverUrl+"/"+directoryName) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -558,7 +569,7 @@ class FileProvider: NSFileProviderExtension {
             metadata.fileNameView = directoryName
             metadata.typeFile = k_metadataTypeFile_directory
                 
-            let item = FileProviderItem(metadata: metadata, serverUrl: directoryParent.serverUrl)
+            let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                 
             completionHandler(item, nil)
                 
