@@ -1120,6 +1120,46 @@
     }];
 }
 
+- (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication moveFileOrFolder:fileName toDestiny:fileNameTo onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+
+        success();
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        NSString *message = [CCError manageErrorOC:response.statusCode error:error];
+        
+        failure(message, error.code);
+        
+    } errorBeforeRequest:^(NSError *error) {
+        
+        NSString *message;
+        
+        if (error.code == OCErrorMovingTheDestinyAndOriginAreTheSame) {
+            message = NSLocalizedStringFromTable(@"_error_folder_destiny_is_the_same_", @"Error", nil);
+        } else if (error.code == OCErrorMovingFolderInsideHimself) {
+            message = NSLocalizedStringFromTable(@"_error_folder_destiny_is_the_same_", @"Error", nil);
+        } else if (error.code == OCErrorMovingDestinyNameHaveForbiddenCharacters) {
+            message = NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
+        } else {
+            message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
+        }
+        
+        failure(message, error.code);
+    }];
+}
+
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== ReadFile =====
 #pragma --------------------------------------------------------------------------------------------
