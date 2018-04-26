@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 19,
+            schemaVersion: 20,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -69,6 +69,7 @@ class NCManageDatabase: NSObject {
             // 17 : Version 2.20.4
             // 18 : Version 2.20.6
             // 19 : Version 2.20.7
+            // 20 : Version 2.21.0
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -2699,5 +2700,77 @@ class NCManageDatabase: NSObject {
         return Array(results)
     }
 
+    //MARK: -
+    //MARK: Table Tag
+    
+    @objc func addTag(_ fileID: String ,tagIOS: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                // Add new
+                let addObject = tableTag()
+                    
+                addObject.account = tableAccount.account
+                addObject.fileID = fileID
+                addObject.tagIOS = tagIOS
+                
+                realm.add(addObject, update: true)
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func deleteTag(_ fileID: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableTag.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        realm.delete(result)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func getTags(predicate: NSPredicate) -> [tableTag] {
+        
+        let realm = try! Realm()
+        
+        let results = realm.objects(tableTag.self).filter(predicate)
+        
+        return Array(results.map { tableTag.init(value:$0) })
+    }
+    
+    @objc func getTag(predicate: NSPredicate) -> tableTag? {
+        
+        let realm = try! Realm()
+        
+        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
+            return nil
+        }
+        
+        return tableTag.init(value: result)
+    }
+    
     //MARK: -
 }

@@ -276,3 +276,14 @@ class tableShare: Object {
     @objc dynamic var shareLink = ""
     @objc dynamic var shareUserAndGroup = ""
 }
+
+class tableTag: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var fileID = ""
+    @objc dynamic var tagIOS = ""
+    
+    override static func primaryKey() -> String {
+        return "fileID"
+    }
+}
