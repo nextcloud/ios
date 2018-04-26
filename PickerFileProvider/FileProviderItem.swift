@@ -67,6 +67,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var isDownloaded: Bool = true                                   // A Boolean value that indicates whether the item has been downloaded from your remote server
     var downloadingError: Error?                                    // An error that occurred while downloading the item
 
+    var tagData: Data?                                              // Tag
+    
     var isDirectory = false;
     
     init(metadata: tableMetadata, serverUrl: String) {
@@ -124,6 +126,11 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true
             }
+        }
+        
+        // Tag
+        if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "account = %@ AND fileID = %@", metadata.account, metadata.fileID)) {
+            tagData = tableTag.tagIOS.data(using: .utf8)
         }
     }
 }

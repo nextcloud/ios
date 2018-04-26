@@ -699,8 +699,24 @@ class FileProvider: NSFileProviderExtension {
     }
     
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        print("[LOG] setTagData")
-        completionHandler(nil, nil)
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else {
+            return
+        }
+        
+        if tagData != nil {
+            // Add Tag
+            guard let tag = String(data: tagData!, encoding: .utf8) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+            NCManageDatabase.sharedInstance.addTag(itemIdentifier.rawValue, tagIOS: tag)
+            
+        } else {
+            // Remove Tag
+            NCManageDatabase.sharedInstance.deleteTag(itemIdentifier.rawValue)
+        }
     }
     
     override func trashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
