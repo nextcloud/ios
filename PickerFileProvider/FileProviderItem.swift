@@ -106,14 +106,16 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // Verify file exists on cache
         if (!metadata.directory) {
             
-            let filePath = "\(directoryUser)/\(metadata.fileID)"
-            
-            if FileManager().fileExists(atPath: filePath) {
-                self.isDownloaded = true
-                self.isMostRecentVersionDownloaded = true;
-            } else {
+            let identifierPathUrl = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent(metadata.fileID)
+            let filePath = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
+            let fileSize = (try! FileManager.default.attributesOfItem(atPath: filePath)[FileAttributeKey.size] as! NSNumber).uint64Value
+
+            if fileSize == 0 {
                 self.isDownloaded = false
-                self.isMostRecentVersionDownloaded = false;
+                self.isMostRecentVersionDownloaded = false
+            } else {
+                self.isDownloaded = true
+                self.isMostRecentVersionDownloaded = true
             }
         }
     }
