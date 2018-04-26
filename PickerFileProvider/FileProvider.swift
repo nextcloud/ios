@@ -725,7 +725,7 @@ class FileProvider: NSFileProviderExtension {
         var error: NSError?
         var directoryPredicate: NSPredicate
         var size = 0 as Double
-            
+        
         if parentItemIdentifier == .rootContainer {
             directoryPredicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
         } else {
@@ -803,7 +803,7 @@ class FileProvider: NSFileProviderExtension {
             print("error: \(error)")
         }
     
-        // upload
+        // upload (NO SESSION ?!?!?)
         _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, communication: CCNetworking.shared().sharedOCCommunication(), success: { (fileID, etag, date) in
                 
             let metadata = tableMetadata()
