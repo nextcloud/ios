@@ -282,7 +282,7 @@ class FileProvider: NSFileProviderExtension {
                     return
                 }
                 
-                _ = ocNetworking?.downloadFileNameServerUrl("\(directory.serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght) in
+                let task = ocNetworking?.downloadFileNameServerUrl("\(directory.serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght) in
                     
                     if (lenght > 0) {
                         
@@ -311,6 +311,12 @@ class FileProvider: NSFileProviderExtension {
                 }, failure: { (message, errorCode) in
                     completionHandler(NSFileProviderError(.serverUnreachable))
                 })
+                
+                if task != nil {
+                    NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier)) { (error) in
+                        print("Registe download task")
+                    }
+                }
                 
             } else {
                 
