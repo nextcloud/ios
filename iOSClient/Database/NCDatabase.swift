@@ -281,7 +281,7 @@ class tableTag: Object {
     
     @objc dynamic var account = ""
     @objc dynamic var fileID = ""
-    @objc dynamic var tagIOS = ""
+    @objc dynamic var tagIOS: Data? = nil
     
     override static func primaryKey() -> String {
         return "fileID"

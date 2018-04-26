@@ -130,7 +130,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         
         // Tag
         if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "account = %@ AND fileID = %@", metadata.account, metadata.fileID)) {
-            tagData = tableTag.tagIOS.data(using: .utf8)
+            tagData = tableTag.tagIOS
         }
     }
 }

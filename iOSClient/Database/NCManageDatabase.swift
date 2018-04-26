@@ -2703,7 +2703,7 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Tag
     
-    @objc func addTag(_ fileID: String ,tagIOS: String) {
+    @objc func addTag(_ fileID: String ,tagIOS: Data?) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -2720,7 +2720,7 @@ class NCManageDatabase: NSObject {
                 addObject.account = tableAccount.account
                 addObject.fileID = fileID
                 addObject.tagIOS = tagIOS
-                
+    
                 realm.add(addObject, update: true)
             }
         } catch let error {
@@ -2765,7 +2765,7 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
+        guard let result = realm.objects(tableTag.self).filter(predicate).first else {
             return nil
         }
         
