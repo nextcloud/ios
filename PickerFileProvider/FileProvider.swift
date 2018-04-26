@@ -327,17 +327,17 @@ class FileProvider: NSFileProviderExtension {
             assert(pathComponents.count > 2)
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
 
-            if (uploading.contains(identifier.rawValue) == true) {
-                return
-            }
-            
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
                 
                 guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                     return
                 }
                 
-                uploading.append(identifier.rawValue)
+                if (uploading.contains(serverUrl+"/"+fileName) == true) {
+                    return
+                } else {
+                    uploading.append(serverUrl+"/"+fileName)
+                }
                 
                 _ =  ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, success: { (fileID, etag, date) in
                     
@@ -363,15 +363,15 @@ class FileProvider: NSFileProviderExtension {
                     // item
                     _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
                     
-                    //
-                    self.uploading = self.uploading.filter() { $0 != identifier.rawValue }
+                    // remove file uploading
+                    self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
                     
                     // Refresh UI
                     self.refreshCurrentEnumerator(serverUrl: serverUrl)
                 
                 }, failure: { (message, errorCode) in
-                    
-                    self.uploading = self.uploading.filter() { $0 != identifier.rawValue }
+                    // remove file uploading
+                    self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
                 })
             }
             
@@ -689,7 +689,18 @@ class FileProvider: NSFileProviderExtension {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-            
+        
+        let serverUrl = directoryParent.serverUrl
+        
+        // Verify if upload is aready
+        if (uploading.contains(serverUrl+"/"+fileName) == true) {
+            completionHandler(nil, NSFileProviderError(.filenameCollision))
+            return
+        } else {
+            uploading.append(serverUrl+"/"+fileName)
+        }
+        
+        // Copy file here
         if fileURL.startAccessingSecurityScopedResource() == false {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -713,8 +724,12 @@ class FileProvider: NSFileProviderExtension {
         }
             
         fileURL.stopAccessingSecurityScopedResource()
+        
+        // exists with same name ? add + 1
+        
 
-        _ = ocNetworking?.uploadFileNameServerUrl(directoryParent.serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, success: { (fileID, etag, date) in
+        // upload
+        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, success: { (fileID, etag, date) in
                 
             let metadata = tableMetadata()
                 
@@ -756,11 +771,16 @@ class FileProvider: NSFileProviderExtension {
             try? FileManager.default.copyItem(atPath:  fileNameLocalPath.path, toPath: toPath)
 
             // add item
-            let item = FileProviderItem(metadata: metadataDB, serverUrl: directoryParent.serverUrl)
-                
+            let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
+            
+            // remove file uploading
+            self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
+            
             completionHandler(item, nil)
 
         }, failure: { (message, errorCode) in
+            // remove file uploading
+            self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
