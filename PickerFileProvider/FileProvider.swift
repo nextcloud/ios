@@ -707,6 +707,13 @@ class FileProvider: NSFileProviderExtension {
         
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(itemIdentifier.rawValue, tagIOS: tagData)
+        
+        guard let item = try? item(for: itemIdentifier) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        completionHandler(item, nil)
     }
     
     override func trashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
