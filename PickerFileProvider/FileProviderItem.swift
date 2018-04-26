@@ -108,8 +108,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
             let identifierPathUrl = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent(metadata.fileID)
             let filePath = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
-            let fileSize = (try! FileManager.default.attributesOfItem(atPath: filePath)[FileAttributeKey.size] as! NSNumber).uint64Value
-
+            var fileSize = 0 as Double
+            
+            do {
+                let attributes = try FileManager.default.attributesOfItem(atPath: filePath)
+                fileSize = attributes[FileAttributeKey.size] as! Double
+            } catch let error {
+                print("error: \(error)")
+            }
+            
             if fileSize == 0 {
                 self.isDownloaded = false
                 self.isMostRecentVersionDownloaded = false

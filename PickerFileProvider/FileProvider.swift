@@ -66,7 +66,11 @@ class FileProvider: NSFileProviderExtension {
         } else {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
-                try? FileManager.default.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
+                do {
+                    try FileManager.default.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
+                } catch let error {
+                    print("error: \(error)")
+                }
             })
         }
     }
@@ -145,10 +149,18 @@ class FileProvider: NSFileProviderExtension {
                             
                         if !FileManager.default.fileExists(atPath: toPath) {
 
-                            try? FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
-        
+                            do {
+                                try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
+                            } catch let error {
+                                print("error: \(error)")
+                            }
+                            
                             if FileManager.default.fileExists(atPath: atPath) {
-                                try? FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+                                do {
+                                    try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+                                } catch let error {
+                                    print("error: \(error)")
+                                }
                             } else {
                                 FileManager.default.createFile(atPath: toPath, contents: nil, attributes: nil)
                             }
@@ -221,6 +233,7 @@ class FileProvider: NSFileProviderExtension {
                 try NSFileProviderManager.writePlaceholder(at: placeholderURL,withMetadata: fileProviderItem)
                 completionHandler(nil)
             } catch let error {
+                print("error: \(error)")
                 completionHandler(error)
             }
             
@@ -232,7 +245,8 @@ class FileProvider: NSFileProviderExtension {
             let metadata = [AnyHashable(URLResourceKey.fileSizeKey): fileSize]
             do {
                 try NSFileProviderExtension.writePlaceholder(at: placeholderURL, withMetadata: metadata as! [URLResourceKey : Any])
-            } catch {
+            } catch let error {
+                print("error: \(error)")
             }
             completionHandler(nil)
         }
@@ -247,7 +261,7 @@ class FileProvider: NSFileProviderExtension {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: url.path)
                 fileSize = attr[FileAttributeKey.size] as! UInt64
-            } catch {
+            } catch let error {
                 print("Error: \(error)")
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
@@ -273,8 +287,16 @@ class FileProvider: NSFileProviderExtension {
                     if (lenght > 0) {
                         
                         // copy download file to url
-                        try? FileManager.default.removeItem(atPath: url.path)
-                        try? FileManager.default.copyItem(atPath: "\(directoryUser)/\(metadata.fileID)", toPath: url.path)
+                        do {
+                            try FileManager.default.removeItem(atPath: url.path)
+                        } catch let error {
+                            print("error: \(error)")
+                        }
+                        do {
+                            try FileManager.default.copyItem(atPath: "\(directoryUser)/\(metadata.fileID)", toPath: url.path)
+                        } catch let error {
+                            print("error: \(error)")
+                        }
                         // create thumbnail
                         CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
                     
@@ -305,8 +327,8 @@ class FileProvider: NSFileProviderExtension {
             do {
                 _ = try fileData.write(to: url, options: NSData.WritingOptions())
                 completionHandler(nil)
-            } catch let error as NSError {
-                print("error writing file to URL")
+            } catch let error {
+                print("error: \(error)")
                 completionHandler(error)
             }
         }
@@ -343,8 +365,16 @@ class FileProvider: NSFileProviderExtension {
                     
                     let toPath = "\(directoryUser)/\(metadata.fileID)"
 
-                    try? FileManager.default.removeItem(atPath: toPath)
-                    try? FileManager.default.copyItem(atPath:  url.path, toPath: toPath)
+                    do {
+                        try FileManager.default.removeItem(atPath: toPath)
+                    } catch let error {
+                        print("error: \(error)")
+                    }
+                    do {
+                        try FileManager.default.copyItem(atPath:  url.path, toPath: toPath)
+                    } catch let error {
+                        print("error: \(error)")
+                    }
                     // create thumbnail
                     CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
                     
@@ -353,7 +383,8 @@ class FileProvider: NSFileProviderExtension {
                     do {
                         let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
                         metadata.size = attributes[FileAttributeKey.size] as! Double
-                    } catch {
+                    } catch let error {
+                        print("error: \(error)")
                     }
                     
                     guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
@@ -415,14 +446,14 @@ class FileProvider: NSFileProviderExtension {
                 // copy sourceURL on directoryUser
                 do {
                     try FileManager.default.removeItem(atPath: destinationDirectoryUser)
-                } catch _ {
-                    print("file do not exists")
+                } catch let error {
+                    print("error: \(error)")
                 }
                 
                 do {
                     try FileManager.default.copyItem(atPath: url.path, toPath: destinationDirectoryUser)
-                } catch _ {
-                    print("file do not exists")
+                } catch let error {
+                    print("error: \(error)")
                     self.stopProvidingItem(at: url)
                     return
                 }
@@ -441,13 +472,13 @@ class FileProvider: NSFileProviderExtension {
                 
                 do {
                     try FileManager.default.removeItem(atPath: destinationDirectoryUser)
-                } catch _ {
-                    print("file do not exists")
+                } catch let error {
+                    print("error: \(error)")
                 }
                 do {
                     try FileManager.default.copyItem(atPath: url.path, toPath: destinationDirectoryUser)
-                } catch _ {
-                    print("file do not exists")
+                } catch let error {
+                    print("error: \(error)")
                     self.stopProvidingItem(at: url)
                     return
                 }
@@ -472,8 +503,8 @@ class FileProvider: NSFileProviderExtension {
             // remove the existing file to free up space
             do {
                 _ = try FileManager.default.removeItem(at: url)
-            } catch {
-                // Handle error
+            } catch let error {
+                print("error: \(error)")
             }
             
             // write out a placeholder to facilitate future property lookups
@@ -511,7 +542,8 @@ class FileProvider: NSFileProviderExtension {
                             let url = URL.init(fileURLWithPath: "\(directoryUser)/\(item.rawValue).ico")
                             let data = try Data.init(contentsOf: url)
                             perThumbnailCompletionHandler(item, data, nil)
-                        } catch {
+                        } catch let error {
+                            print("error: \(error)")
                             perThumbnailCompletionHandler(item, nil, NSFileProviderError(.noSuchItem))
                         }
                             
@@ -619,8 +651,16 @@ class FileProvider: NSFileProviderExtension {
         ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
             
             let fileNamePath = directoryUser + "/" + metadata.fileID
-            try? FileManager.default.removeItem(atPath: fileNamePath)
-            try? FileManager.default.removeItem(atPath: fileNamePath + ".ico")
+            do {
+                try FileManager.default.removeItem(atPath: fileNamePath)
+            } catch let error {
+                print("error: \(error)")
+            }
+            do {
+                try FileManager.default.removeItem(atPath: fileNamePath + ".ico")
+            } catch let error {
+                print("error: \(error)")
+            }
             
             if metadata.directory {
                 let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
@@ -736,14 +776,14 @@ class FileProvider: NSFileProviderExtension {
                 
             do {
                 try FileManager.default.removeItem(atPath: fileNameLocalPath.path)
-            } catch _ {
-                print("file do not exists")
+            } catch let error {
+                print("error: \(error)")
             }
                 
             do {
                 try FileManager.default.copyItem(atPath: url.path, toPath: fileNameLocalPath.path)
-            } catch _ {
-                print("file do not exists")
+            } catch let error {
+                print("error: \(error)")
             }
         }
             
@@ -767,7 +807,8 @@ class FileProvider: NSFileProviderExtension {
             do {
                 let attributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
                 metadata.size = attributes[FileAttributeKey.size] as! Double
-            } catch {
+            } catch let error {
+                print("error: \(error)")
             }
                 
             CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
@@ -785,13 +826,21 @@ class FileProvider: NSFileProviderExtension {
                 do {
                     try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
                 } catch let error {
-                    print("error creating filepath: \(error)")
+                    print("error: \(error)")
                 }
             }
-                
-            try? FileManager.default.removeItem(atPath: toPath)
-            try? FileManager.default.copyItem(atPath:  fileNameLocalPath.path, toPath: toPath)
-
+            
+            do {
+                try FileManager.default.removeItem(atPath: toPath)
+            } catch let error {
+                print("error: \(error)")
+            }
+            do {
+                try FileManager.default.copyItem(atPath:  fileNameLocalPath.path, toPath: toPath)
+            } catch let error {
+                print("error: \(error)")
+            }
+            
             // add item
             let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
             
