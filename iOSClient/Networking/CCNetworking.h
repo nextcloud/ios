@@ -49,7 +49,9 @@
 
 // Sessions - Task
 - (OCCommunication *)sharedOCCommunication;
-- (OCCommunication *)sharedOCCommunicationExtension;
+- (OCCommunication *)sharedOCCommunicationExtensionDownload:(NSString *)identifier;
+- (OCCommunication *)sharedOCCommunicationExtensionUpload:(NSString *)identifier;
+
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
 
 - (void)invalidateAndCancelAllSession;

@@ -282,7 +282,7 @@ class FileProvider: NSFileProviderExtension {
                     return
                 }
                 
-                _ = ocNetworking?.downloadFileNameServerUrl("\(directory.serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtension(), success: { (lenght) in
+                _ = ocNetworking?.downloadFileNameServerUrl("\(directory.serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght) in
                     
                     if (lenght > 0) {
                         
@@ -361,7 +361,7 @@ class FileProvider: NSFileProviderExtension {
                     uploading.append(serverUrl+"/"+fileName)
                 }
                 
-                _ =  ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtension(), success: { (fileID, etag, date) in
+                _ =  ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
                     
                     let toPath = "\(directoryUser)/\(metadata.fileID)"
 
@@ -536,7 +536,7 @@ class FileProvider: NSFileProviderExtension {
                     let fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: accountUrl)
                     let fileNameLocal = metadata.fileID
 
-                    ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileName: fileName, fileNameLocal: fileNameLocal, communication: CCNetworking.shared().sharedOCCommunicationExtension(), success: {
+                    ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileName: fileName, fileNameLocal: fileNameLocal, success: {
 
                         do {
                             let url = URL.init(fileURLWithPath: "\(directoryUser)/\(item.rawValue).ico")
@@ -605,7 +605,7 @@ class FileProvider: NSFileProviderExtension {
             serverUrl = directoryParent.serverUrl
         }
         
-        ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: account, communication: CCNetworking.shared().sharedOCCommunicationExtension(), success: { (fileID, date) in
+        ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: account, success: { (fileID, date) in
                 
             guard let newTableDirectory = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID, permissions: nil, serverUrl: serverUrl+"/"+directoryName) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -648,7 +648,7 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, communication: CCNetworking.shared().sharedOCCommunicationExtension(), success: {
+        ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
             
             let fileNamePath = directoryUser + "/" + metadata.fileID
             do {
@@ -791,7 +791,7 @@ class FileProvider: NSFileProviderExtension {
         
        
         // upload
-        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, communication: CCNetworking.shared().sharedOCCommunicationExtension(), success: { (fileID, etag, date) in
+        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
                 
             let metadata = tableMetadata()
                 

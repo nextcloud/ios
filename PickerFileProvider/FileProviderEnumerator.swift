@@ -91,7 +91,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             
             // Read Folder
-            ocNetworking?.readFolder(withServerUrl: serverUrl, depth: "1", account: account, communication: CCNetworking.shared().sharedOCCommunicationExtension(),success: { (metadatas, metadataFolder, directoryID) in
+            ocNetworking?.readFolder(withServerUrl: serverUrl, depth: "1", account: account, success: { (metadatas, metadataFolder, directoryID) in
                 
                 if (metadatas != nil) {
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", account, directoryID!), clearDateReadDirectoryID: directoryID!)

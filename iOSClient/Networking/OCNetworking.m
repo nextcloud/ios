@@ -290,8 +290,10 @@
     }];
 }
 
-- (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileName:(NSString *)fileName fileNameLocal:(NSString *)fileNameLocal communication:(OCCommunication *)communication success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileName:(NSString *)fileName fileNameLocal:(NSString *)fileNameLocal success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+
     __block NSString *ext;
     NSInteger width = 0, height = 0;
     
@@ -396,8 +398,10 @@
     }];
 }
 
-- (void)readFolderWithServerUrl:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account communication:(OCCommunication *)communication success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)readFolderWithServerUrl:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -921,10 +925,12 @@
     }];
 }
 
-- (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account communication:(OCCommunication *)communication success:(void(^)(NSString *fileID, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
-{    
+- (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *fileID, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
     NSString *serverFileUrl = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
     
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
@@ -1004,10 +1010,12 @@
     }];
 }
 
-- (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl communication:(OCCommunication *)communication success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {    
     NSString *serverFileUrl = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
     
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
