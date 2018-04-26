@@ -87,7 +87,6 @@
 #pragma mark =====  CCMetadataNet =====
 #pragma --------------------------------------------------------------------------------------------
 
-
 @interface CCMetadataNet : NSObject <NSCopying>
 
 @property (nonatomic, strong) NSString *account;
@@ -131,5 +130,3 @@
 - (id)copyWithZone:(NSZone *)zone;
 
 @end
-
-
