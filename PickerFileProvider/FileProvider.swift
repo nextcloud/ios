@@ -282,7 +282,7 @@ class FileProvider: NSFileProviderExtension {
                     return
                 }
                 
-                _ = ocNetworking?.downloadFileNameServerUrl("\(directory.serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunication(), success: { (lenght) in
+                _ = ocNetworking?.downloadFileNameServerUrl("\(directory.serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", success: { (lenght) in
                     
                     if (lenght > 0) {
                         
@@ -361,7 +361,7 @@ class FileProvider: NSFileProviderExtension {
                     uploading.append(serverUrl+"/"+fileName)
                 }
                 
-                _ =  ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunication(), success: { (fileID, etag, date) in
+                _ =  ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, success: { (fileID, etag, date) in
                     
                     let toPath = "\(directoryUser)/\(metadata.fileID)"
 
@@ -791,7 +791,7 @@ class FileProvider: NSFileProviderExtension {
         
        
         // upload
-        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, communication: CCNetworking.shared().sharedOCCommunication(), success: { (fileID, etag, date) in
+        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, success: { (fileID, etag, date) in
                 
             let metadata = tableMetadata()
                 
