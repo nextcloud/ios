@@ -674,7 +674,7 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        let fileName = fileURL.lastPathComponent
+        var fileName = fileURL.lastPathComponent
         let fileCoordinator = NSFileCoordinator()
         var error: NSError?
         var directoryPredicate: NSPredicate
@@ -692,6 +692,36 @@ class FileProvider: NSFileProviderExtension {
         
         let serverUrl = directoryParent.serverUrl
         
+        // Copy file here
+        if fileURL.startAccessingSecurityScopedResource() == false {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        // exists with same name ? add + 1
+        if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", account, fileName, directoryParent.directoryID)) != nil {
+            
+            var name = NSString(string: fileName).deletingPathExtension
+            let ext = NSString(string: fileName).pathExtension
+            
+            let characters = Array(name)
+            
+            if characters.count < 2 {
+                fileName = name + " " + "1" + "." + ext
+            } else {
+                let space = characters[characters.count-2]
+                let numChar = characters[characters.count-1]
+                var num = Int(String(numChar))
+                if (space == " " && num != nil) {
+                    name = String(name.dropLast())
+                    num = num! + 1
+                    fileName = name + "\(num!)" + "." + ext
+                } else {
+                    fileName = name + " " + "1" + "." + ext
+                }
+            }
+        }
+        
         // Verify if upload is aready
         if (uploading.contains(serverUrl+"/"+fileName) == true) {
             completionHandler(nil, NSFileProviderError(.filenameCollision))
@@ -700,13 +730,7 @@ class FileProvider: NSFileProviderExtension {
             uploading.append(serverUrl+"/"+fileName)
         }
         
-        // Copy file here
-        if fileURL.startAccessingSecurityScopedResource() == false {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-            
-        let fileNameLocalPath = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileURL.lastPathComponent)!
+        let fileNameLocalPath = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)!
             
         fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
                 
@@ -725,9 +749,7 @@ class FileProvider: NSFileProviderExtension {
             
         fileURL.stopAccessingSecurityScopedResource()
         
-        // exists with same name ? add + 1
-        
-
+       
         // upload
         _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, success: { (fileID, etag, date) in
                 
@@ -775,8 +797,11 @@ class FileProvider: NSFileProviderExtension {
             
             // remove file uploading
             self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
-            
+                        
             completionHandler(item, nil)
+            
+            // Refresh UI
+            self.refreshCurrentEnumerator(serverUrl: serverUrl)
 
         }, failure: { (message, errorCode) in
             // remove file uploading
@@ -796,16 +821,19 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        if serverUrl == homeServerUrl {
-            NSFileProviderManager.default.signalEnumerator(for: .rootContainer, completionHandler: { (error) in
-                print("send signal rootContainer")
-            })
-        } else {
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl)) {
-                let itemDirectory = NSFileProviderItemIdentifier(directory.fileID)
-                NSFileProviderManager.default.signalEnumerator(for: itemDirectory, completionHandler: { (error) in
-                    print("send signal")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+
+            if serverUrl == homeServerUrl {
+                NSFileProviderManager.default.signalEnumerator(for: .rootContainer, completionHandler: { (error) in
+                    print("send signal rootContainer")
                 })
+            } else {
+                if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl)) {
+                    let itemDirectory = NSFileProviderItemIdentifier(directory.fileID)
+                    NSFileProviderManager.default.signalEnumerator(for: itemDirectory, completionHandler: { (error) in
+                        print("send signal")
+                    })
+                }
             }
         }
     }

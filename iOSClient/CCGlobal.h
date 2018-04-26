@@ -43,6 +43,7 @@ extern NSString *const flowEndpoint;
 //dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
 
 //DispatchQueue.main.async
+//DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
 //DispatchQueue.global().async
 
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
