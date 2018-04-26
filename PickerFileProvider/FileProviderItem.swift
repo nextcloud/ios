@@ -37,7 +37,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         if (self.isDirectory) {
             return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting ]
         } else {
-            return [ .allowsReading, .allowsDeleting ]
+            return [ .allowsReading, .allowsDeleting, .allowsWriting ]
         }
     }
     
