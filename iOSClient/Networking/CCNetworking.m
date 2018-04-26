@@ -300,6 +300,7 @@
     if (sharedOCCommunicationExtensionDownload == nil || [extensionDownloadIdentifier isEqualToString:identifier] == false)
     {
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:identifier];
+        config.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
         config.HTTPMaximumConnectionsPerHost = 1;
         config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         config.timeoutIntervalForRequest = k_timeout_upload;
