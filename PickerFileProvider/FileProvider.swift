@@ -724,6 +724,7 @@ class FileProvider: NSFileProviderExtension {
         let fileCoordinator = NSFileCoordinator()
         var error: NSError?
         var directoryPredicate: NSPredicate
+        var size = 0 as Double
             
         if parentItemIdentifier == .rootContainer {
             directoryPredicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
@@ -795,73 +796,81 @@ class FileProvider: NSFileProviderExtension {
             
         fileURL.stopAccessingSecurityScopedResource()
         
-        // upload
-        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
+        do {
+            let attributes = try FileManager.default.attributesOfItem(atPath: fileNameLocalPath.path)
+            size = attributes[FileAttributeKey.size] as! Double
+        } catch let error {
+            print("error: \(error)")
+        }
+        
+        if (size == 0) {
+            
+            
+            
+        } else {
+            
+            // upload
+            _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
                 
-            let metadata = tableMetadata()
+                let metadata = tableMetadata()
                 
-            metadata.account = account
-            metadata.date = date! as NSDate
-            metadata.directory = false
-            metadata.directoryID = directoryParent.directoryID
-            metadata.etag = etag!
-            metadata.fileID = fileID!
-            metadata.fileName = fileName
-            metadata.fileNameView = fileName
+                metadata.account = account
+                metadata.date = date! as NSDate
+                metadata.directory = false
+                metadata.directoryID = directoryParent.directoryID
+                metadata.etag = etag!
+                metadata.fileID = fileID!
+                metadata.fileName = fileName
+                metadata.fileNameView = fileName
+                metadata.size = size
 
-            do {
-                let attributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
-                metadata.size = attributes[FileAttributeKey.size] as! Double
-            } catch let error {
-                print("error: \(error)")
-            }
+                CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
                 
-            CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
-                
-            guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
+                guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                    completionHandler(nil, NSFileProviderError(.noSuchItem))
+                    return
+                }
 
-            // Copy on ItemIdentifier path
-            let identifierPathUrl = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent(metadata.fileID)
-            let toPath = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
+                // Copy on ItemIdentifier path
+                let identifierPathUrl = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent(metadata.fileID)
+                let toPath = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
                 
-            if !FileManager.default.fileExists(atPath: identifierPathUrl.path) {
+                if !FileManager.default.fileExists(atPath: identifierPathUrl.path) {
+                    do {
+                        try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
+                    } catch let error {
+                        print("error: \(error)")
+                    }
+                }
+                
                 do {
-                    try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
+                    try FileManager.default.removeItem(atPath: toPath)
                 } catch let error {
                     print("error: \(error)")
                 }
-            }
-            
-            do {
-                try FileManager.default.removeItem(atPath: toPath)
-            } catch let error {
-                print("error: \(error)")
-            }
-            do {
-                try FileManager.default.copyItem(atPath:  fileNameLocalPath.path, toPath: toPath)
-            } catch let error {
-                print("error: \(error)")
-            }
-            
-            // add item
-            let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
-            
-            // remove file uploading
-            self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
-                        
-            completionHandler(item, nil)
-            
-            // Refresh UI
-            self.refreshCurrentEnumerator(serverUrl: serverUrl)
+                do {
+                    try FileManager.default.copyItem(atPath:  fileNameLocalPath.path, toPath: toPath)
+                } catch let error {
+                    print("error: \(error)")
+                }
+                
+                // add item
+                let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
+                
+                // remove file uploading
+                self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
+                
+                completionHandler(item, nil)
+                
+                // Refresh UI
+                self.refreshCurrentEnumerator(serverUrl: serverUrl)
 
-        }, failure: { (message, errorCode) in
-            // remove file uploading
-            self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
-            completionHandler(nil, NSFileProviderError(.serverUnreachable))
-        })
+            }, failure: { (message, errorCode) in
+                // remove file uploading
+                self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
+                completionHandler(nil, NSFileProviderError(.serverUnreachable))
+            })
+        }
     }
     
     // --------------------------------------------------------------------------------------------
