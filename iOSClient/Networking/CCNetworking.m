@@ -294,12 +294,11 @@
 
 - (OCCommunication *)sharedOCCommunicationExtensionUpload:(NSString *)identifier
 {
-    static OCCommunication *sharedOCCommunicationExtensionDownload = nil;
-    static NSString *extensionDownloadIdentifier =k_upload_session_extension;
+    static OCCommunication *sharedOCCommunicationExtensionUpload = nil;
+    static NSString *extensionUploadIdentifier =k_upload_session_extension;
     
-    if (sharedOCCommunicationExtensionDownload == nil || [extensionDownloadIdentifier isEqualToString:identifier] == false)
+    if (sharedOCCommunicationExtensionUpload == nil || [extensionUploadIdentifier isEqualToString:identifier] == false)
     {
-        /*
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:identifier];
         config.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
         config.HTTPMaximumConnectionsPerHost = 1;
@@ -307,14 +306,6 @@
         config.timeoutIntervalForRequest = k_timeout_upload;
         config.sessionSendsLaunchEvents = YES;
         config.allowsCellularAccess = YES;
-        */
-        
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration defaultSessionConfiguration];
-        config.allowsCellularAccess = YES;
-        config.discretionary = NO;
-        config.HTTPMaximumConnectionsPerHost = 1;
-        config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        config.timeoutIntervalForRequest = k_timeout_upload;
         
         OCURLSessionManager *sessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:config];
         [sessionManager.operationQueue setMaxConcurrentOperationCount:1];
@@ -322,11 +313,11 @@
             return NSURLSessionAuthChallengePerformDefaultHandling;
         }];
         
-        extensionDownloadIdentifier = identifier;
-        sharedOCCommunicationExtensionDownload = [[OCCommunication alloc] initWithUploadSessionManager:sessionManager andDownloadSessionManager:nil andNetworkSessionManager:nil];
+        extensionUploadIdentifier = identifier;
+        sharedOCCommunicationExtensionUpload = [[OCCommunication alloc] initWithUploadSessionManager:sessionManager andDownloadSessionManager:nil andNetworkSessionManager:nil];
     }
     
-    return sharedOCCommunicationExtensionDownload;
+    return sharedOCCommunicationExtensionUpload;
 }
 
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription
