@@ -79,31 +79,31 @@ class FileProvider: NSFileProviderExtension {
         guard #available(iOS 11, *) else {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
         }
-                
-        /*
-        let maybeEnumerator: NSFileProviderEnumerator? = nil
+        
+        var maybeEnumerator: NSFileProviderEnumerator? = nil
 
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
-            // TODO: instantiate an enumerator for the container root
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
-            // TODO: instantiate an enumerator for the working set
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
         } else {
-            // TODO: determine if the item is a directory or a file
+            // determine if the item is a directory or a file
             // - for a directory, instantiate an enumerator of its subitems
             // - for a file, instantiate an enumerator that observes changes to the file
-            maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+            let item = try self.item(for: containerItemIdentifier)
+            
+            if item.typeIdentifier == kUTTypeFolder as String {
+                maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+            } else {
+                maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+            }
         }
+        
         guard let enumerator = maybeEnumerator else {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
         }
+       
         return enumerator
-        */
-        
-        let maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
-        
-        return maybeEnumerator
     }
     
     // MARK: - Item
@@ -637,6 +637,36 @@ class FileProvider: NSFileProviderExtension {
         })
     }
     
+    override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] rename")
+        completionHandler(nil, nil)
+    }
+    
+    override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] setfavourite")
+        completionHandler(nil, nil)
+    }
+    
+    override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] setLastUsedDate")
+        completionHandler(nil, nil)
+    }
+    
+    override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] setTagData")
+        completionHandler(nil, nil)
+    }
+    
+    override func trashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] trashitem")
+        completionHandler(nil, nil)
+    }
+    
+    override func untrashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        print("[LOG] untrashitem")
+        completionHandler(nil, nil)
+    }
+    
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
@@ -733,36 +763,6 @@ class FileProvider: NSFileProviderExtension {
         }, failure: { (message, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
-    }
-    
-    override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        print("[LOG] rename")
-        completionHandler(nil, nil)
-    }
-    
-    override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        print("[LOG] setfavourite")
-        completionHandler(nil, nil)
-    }
-    
-    override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        print("[LOG] setLastUsedDate")
-        completionHandler(nil, nil)
-    }
-    
-    override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        print("[LOG] setTagData")
-        completionHandler(nil, nil)
-    }
-    
-    override func trashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        print("[LOG] trashitem")
-        completionHandler(nil, nil)
-    }
-    
-    override func untrashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        print("[LOG] untrashitem")
-        completionHandler(nil, nil)
     }
     
     // --------------------------------------------------------------------------------------------
