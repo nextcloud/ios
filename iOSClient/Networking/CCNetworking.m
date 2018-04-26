@@ -267,7 +267,7 @@
 - (OCCommunication *)sharedOCCommunicationExtensionDownload:(NSString *)identifier
 {
     static OCCommunication *sharedOCCommunicationExtensionDownload = nil;
-    static NSString *extensionDownloadIdentifier = @"com.nextcloud.download.session.extension";
+    static NSString *extensionDownloadIdentifier = k_download_session_extension;
     
     if (sharedOCCommunicationExtensionDownload == nil || [extensionDownloadIdentifier isEqualToString:identifier] == false)
     {
@@ -296,7 +296,7 @@
 - (OCCommunication *)sharedOCCommunicationExtensionUpload:(NSString *)identifier
 {
     static OCCommunication *sharedOCCommunicationExtensionDownload = nil;
-    static NSString *extensionDownloadIdentifier = @"com.nextcloud.upload.session.extension";
+    static NSString *extensionDownloadIdentifier =k_upload_session_extension;
     
     if (sharedOCCommunicationExtensionDownload == nil || [extensionDownloadIdentifier isEqualToString:identifier] == false)
     {

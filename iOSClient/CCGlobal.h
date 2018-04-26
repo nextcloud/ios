@@ -106,6 +106,10 @@ extern NSString *const flowEndpoint;
 #define k_upload_session_wwan                           @"it.twsweb.Crypto-Cloud.upload.sessionwwan"
 #define k_upload_session_foreground                     @"it.twsweb.Crypto-Cloud.upload.sessionforeground"
 
+// Session DFownload Upload Extension
+#define k_download_session_extension                    @"com.nextcloud.download.session.extension"
+#define k_upload_session_extension                      @"com.nextcloud.upload.session.extension"
+
 // OperationQueue
 #define k_queue                                         @"it.twsweb.Crypto-Cloud.queue"
 #define k_download_queue                                @"it.twsweb.Crypto-Cloud.download.queue"
