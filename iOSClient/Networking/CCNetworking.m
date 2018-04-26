@@ -271,7 +271,6 @@
     
     if (sharedOCCommunicationExtensionDownload == nil || [extensionDownloadIdentifier isEqualToString:identifier] == false)
     {
-        // Download
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:identifier];
         config.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
         config.HTTPMaximumConnectionsPerHost = 1;
@@ -300,14 +299,12 @@
     
     if (sharedOCCommunicationExtensionDownload == nil || [extensionDownloadIdentifier isEqualToString:identifier] == false)
     {
-        // Download
         NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:identifier];
-        config.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
         config.HTTPMaximumConnectionsPerHost = 1;
         config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         config.timeoutIntervalForRequest = k_timeout_upload;
         config.sessionSendsLaunchEvents = YES;
-        [config setAllowsCellularAccess:YES];
+        config.allowsCellularAccess = YES;
         
         OCURLSessionManager *sessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:config];
         [sessionManager.operationQueue setMaxConcurrentOperationCount:1];
