@@ -51,7 +51,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func invalidate() {
-        // TODO: perform invalidation of server connection if necessary
+        // perform invalidation of server connection if necessary
     }
 
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
@@ -128,26 +128,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
     }
     
-    func selectItems(numPage: Int, account: String, serverUrl: String, metadatas: [tableMetadata]) -> [NSFileProviderItemProtocol] {
-        
-        var items: [NSFileProviderItemProtocol] = []
-        let start = numPage * self.recordForPage + 1
-        let stop = start + (self.recordForPage - 1)
-        var counter = 0
-
-        for metadata in metadatas {
-            counter += 1
-            if (counter >= start && counter <= stop) {
-                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-                items.append(item)
-            }
-        }
-    
-        return items
-    }
-    
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
-        /* TODO:
+        /*
          - query the server for updates since the passed-in sync anchor
          
          If this is an enumerator for the active set:
@@ -168,5 +150,27 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         let anchor = NSFileProviderSyncAnchor(serverUrl.data(using: .utf8)!)
         completionHandler(anchor)
+    }
+    
+    // --------------------------------------------------------------------------------------------
+    //  MARK: - User Function
+    // --------------------------------------------------------------------------------------------
+
+    func selectItems(numPage: Int, account: String, serverUrl: String, metadatas: [tableMetadata]) -> [NSFileProviderItemProtocol] {
+        
+        var items: [NSFileProviderItemProtocol] = []
+        let start = numPage * self.recordForPage + 1
+        let stop = start + (self.recordForPage - 1)
+        var counter = 0
+        
+        for metadata in metadatas {
+            counter += 1
+            if (counter >= start && counter <= stop) {
+                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+                items.append(item)
+            }
+        }
+        
+        return items
     }
 }
