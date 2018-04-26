@@ -47,7 +47,7 @@
 
 - (void)settingAccount;
 
-// Sessions - Task
+// Sessions
 - (OCCommunication *)sharedOCCommunication;
 - (OCCommunication *)sharedOCCommunicationExtensionDownload:(NSString *)identifier;
 - (OCCommunication *)sharedOCCommunicationExtensionUpload:(NSString *)identifier;
