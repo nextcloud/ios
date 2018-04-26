@@ -264,6 +264,59 @@
     return sharedOCCommunication;
 }
 
+- (OCCommunication *)sharedOCCommunicationExtension
+{
+    static OCCommunication* sharedOCCommunicationExtension = nil;
+    
+    if (sharedOCCommunicationExtension == nil)
+    {
+        // Network
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        configuration.allowsCellularAccess = YES;
+        configuration.discretionary = NO;
+        configuration.HTTPMaximumConnectionsPerHost = k_maxConcurrentOperation;
+        configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        
+        OCURLSessionManager *networkSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configuration];
+        [networkSessionManager.operationQueue setMaxConcurrentOperationCount: k_maxConcurrentOperation];
+        networkSessionManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        
+        // Download
+        NSURLSessionConfiguration *configurationDownload = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"x"];
+        configurationDownload.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
+        configurationDownload.HTTPMaximumConnectionsPerHost = 1;
+        configurationDownload.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        configurationDownload.timeoutIntervalForRequest = k_timeout_upload;
+        configurationDownload.sessionSendsLaunchEvents = YES;
+        [configurationDownload setAllowsCellularAccess:YES];
+        
+        OCURLSessionManager *downloadSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configurationDownload];
+        [downloadSessionManager.operationQueue setMaxConcurrentOperationCount:1];
+        [downloadSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
+            return NSURLSessionAuthChallengePerformDefaultHandling;
+        }];
+        
+        // Upload
+        NSURLSessionConfiguration *configurationUpload = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@"xx"];;
+        configurationUpload.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
+        configurationUpload.HTTPMaximumConnectionsPerHost = 1;
+        configurationUpload.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
+        configurationUpload.timeoutIntervalForRequest = k_timeout_upload;
+        configurationUpload.allowsCellularAccess = YES;
+        
+        OCURLSessionManager *uploadSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configurationUpload];
+        [uploadSessionManager.operationQueue setMaxConcurrentOperationCount:1];
+        [uploadSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
+            return NSURLSessionAuthChallengePerformDefaultHandling;
+        }];
+        
+        sharedOCCommunicationExtension = [[OCCommunication alloc] initWithUploadSessionManager:uploadSessionManager andDownloadSessionManager:downloadSessionManager andNetworkSessionManager:networkSessionManager];
+    }
+    
+    return sharedOCCommunicationExtension;
+}
+
+
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription
 {
     if ([sessionDescription isEqualToString:k_download_session]) return [self sessionDownload];
