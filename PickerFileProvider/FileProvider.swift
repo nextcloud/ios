@@ -811,7 +811,7 @@ class FileProvider: NSFileProviderExtension {
             metadata.fileID = fileID!
             metadata.fileName = fileName
             metadata.fileNameView = fileName
-            metadata.size = size
+            metadata.size = 0
 
             CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
                 
@@ -835,18 +835,20 @@ class FileProvider: NSFileProviderExtension {
             // remove file uploading
             self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
             
-            // add queue upload
-            let metadataNet = CCMetadataNet()
-            metadataNet.account = account
-            metadataNet.assetLocalIdentifier = ""
-            metadataNet.fileName = fileName
-            metadataNet.path = "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileNameView)"
-            metadataNet.selector = selectorUploadFile
-            metadataNet.selectorPost = ""
-            metadataNet.serverUrl = serverUrl
-            metadataNet.session = k_upload_session
-            metadataNet.taskStatus = Int(k_taskStatusResume)
-            _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+            // add queue upload if size > 0
+            if (size > 0) {
+                let metadataNet = CCMetadataNet()
+                metadataNet.account = account
+                metadataNet.assetLocalIdentifier = ""
+                metadataNet.fileName = fileName
+                metadataNet.path = "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileNameView)"
+                metadataNet.selector = selectorUploadFile
+                metadataNet.selectorPost = ""
+                metadataNet.serverUrl = serverUrl
+                metadataNet.session = k_upload_session
+                metadataNet.taskStatus = Int(k_taskStatusResume)
+                _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+            }
             
             completionHandler(item, nil)
             
