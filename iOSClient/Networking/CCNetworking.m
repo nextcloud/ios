@@ -1525,7 +1525,7 @@
     [metadataNet setKeyCipher: self.keyCipher];
     [metadataNet setOptions: self.options];
     [metadataNet setPassword: self.password];
-    [metadataNet setPathFolder: self.pathFolder];
+    [metadataNet setPath: self.path];
     [metadataNet setPriority: self.priority];
     [metadataNet setServerUrl: self.serverUrl];
     [metadataNet setServerUrlTo: self.serverUrlTo];

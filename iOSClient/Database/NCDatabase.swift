@@ -262,6 +262,7 @@ class tableQueueUpload: Object {
     @objc dynamic var date = NSDate()
     @objc dynamic var fileName = ""
     @objc dynamic var lock: Bool = false
+    @objc dynamic var path: String?
     @objc dynamic var selector = ""
     @objc dynamic var selectorPost = ""
     @objc dynamic var serverUrl = ""

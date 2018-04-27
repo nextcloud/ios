@@ -287,16 +287,8 @@ class FileProvider: NSFileProviderExtension {
                     if (lenght > 0) {
                         
                         // copy download file to url
-                        do {
-                            try FileManager.default.removeItem(atPath: url.path)
-                        } catch let error {
-                            print("error: \(error)")
-                        }
-                        do {
-                            try FileManager.default.copyItem(atPath: "\(directoryUser)/\(metadata.fileID)", toPath: url.path)
-                        } catch let error {
-                            print("error: \(error)")
-                        }
+                        _ = self.copyFile("\(directoryUser)/\(metadata.fileID)", toPath: url.path)
+                        
                         // create thumbnail
                         CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
                     
@@ -369,18 +361,8 @@ class FileProvider: NSFileProviderExtension {
                 
                 _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
                     
-                    let toPath = "\(directoryUser)/\(metadata.fileID)"
-
-                    do {
-                        try FileManager.default.removeItem(atPath: toPath)
-                    } catch let error {
-                        print("error: \(error)")
-                    }
-                    do {
-                        try FileManager.default.copyItem(atPath:  url.path, toPath: toPath)
-                    } catch let error {
-                        print("error: \(error)")
-                    }
+                    _ = self.copyFile(url.path, toPath: "\(directoryUser)/\(metadata.fileID)")
+                    
                     // create thumbnail
                     CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
                     
@@ -450,19 +432,7 @@ class FileProvider: NSFileProviderExtension {
                 let destinationDirectoryUser = "\(directoryUser!)/\(uploadID)"
                 
                 // copy sourceURL on directoryUser
-                do {
-                    try FileManager.default.removeItem(atPath: destinationDirectoryUser)
-                } catch let error {
-                    print("error: \(error)")
-                }
-                
-                do {
-                    try FileManager.default.copyItem(atPath: url.path, toPath: destinationDirectoryUser)
-                } catch let error {
-                    print("error: \(error)")
-                    self.stopProvidingItem(at: url)
-                    return
-                }
+                _ = self.copyFile(url.path, toPath: destinationDirectoryUser)
                 
                 // Prepare for send Metadata
                 metadata!.sessionID = uploadID
@@ -476,19 +446,8 @@ class FileProvider: NSFileProviderExtension {
                 let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
                 let destinationDirectoryUser = "\(directoryUser!)/\(fileName)"
                 
-                do {
-                    try FileManager.default.removeItem(atPath: destinationDirectoryUser)
-                } catch let error {
-                    print("error: \(error)")
-                }
-                do {
-                    try FileManager.default.copyItem(atPath: url.path, toPath: destinationDirectoryUser)
-                } catch let error {
-                    print("error: \(error)")
-                    self.stopProvidingItem(at: url)
-                    return
-                }
-                
+                _ = self.copyFile(url.path, toPath: destinationDirectoryUser)
+
                 CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             }
             
@@ -738,6 +697,7 @@ class FileProvider: NSFileProviderExtension {
         var error: NSError?
         var directoryPredicate: NSPredicate
         var size = 0 as Double
+        var fileNamePathUpload: URL?
         
         if parentItemIdentifier == .rootContainer {
             directoryPredicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
@@ -758,6 +718,7 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
+        /*
         // exists with same name ? add + 1
         if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", account, fileName, directoryParent.directoryID)) != nil {
             
@@ -781,6 +742,7 @@ class FileProvider: NSFileProviderExtension {
                 }
             }
         }
+        */
         
         // Verify if upload is aready
         if (uploading.contains(serverUrl+"/"+fileName) == true) {
@@ -790,21 +752,17 @@ class FileProvider: NSFileProviderExtension {
             uploading.append(serverUrl+"/"+fileName)
         }
         
-        let fileNameLocalPath = NSURL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(fileName)!
-            
+        // Create dir for Upload
+        do {
+            try FileManager.default.createDirectory(atPath: groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Upload").path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            NSLog("Unable to create directory \(error.debugDescription)")
+        }
+        
+        let fileNameLocalPath = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Upload").appendingPathComponent(fileName)
+        
         fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
-                
-            do {
-                try FileManager.default.removeItem(atPath: fileNameLocalPath.path)
-            } catch let error {
-                print("error: \(error)")
-            }
-                
-            do {
-                try FileManager.default.copyItem(atPath: url.path, toPath: fileNameLocalPath.path)
-            } catch let error {
-                print("error: \(error)")
-            }
+            _ = self.copyFile( url.path, toPath: fileNameLocalPath.path)
         }
             
         fileURL.stopAccessingSecurityScopedResource()
@@ -815,9 +773,22 @@ class FileProvider: NSFileProviderExtension {
         } catch let error {
             print("error: \(error)")
         }
+        
+        // Upload file 0 len
+        if (size == 0) {
+            fileNamePathUpload = fileNameLocalPath
+        } else {
+            fileNamePathUpload = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Upload").appendingPathComponent(fileName+".000")
+            do {
+                try FileManager.default.removeItem(atPath: fileNamePathUpload!.path)
+            } catch let error {
+                print("error: \(error)")
+            }
+            FileManager.default.createFile(atPath: fileNamePathUpload!.path, contents: nil, attributes: nil)
+        }
     
         // upload (NO SESSION ?!?!?)
-        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath.path, communication: CCNetworking.shared().sharedOCCommunication(), success: { (fileID, etag, date) in
+        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNamePathUpload?.path, communication: CCNetworking.shared().sharedOCCommunication(), success: { (fileID, etag, date) in
                 
             let metadata = tableMetadata()
                 
@@ -850,23 +821,27 @@ class FileProvider: NSFileProviderExtension {
                 }
             }
             
-            do {
-                try FileManager.default.removeItem(atPath: toPath)
-            } catch let error {
-                print("error: \(error)")
-            }
-            do {
-                try FileManager.default.copyItem(atPath:  fileNameLocalPath.path, toPath: toPath)
-            } catch let error {
-                print("error: \(error)")
-            }
+            _ = self.copyFile(fileNameLocalPath.path, toPath: toPath)
             
             // add item
             let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
             
             // remove file uploading
             self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
-                        
+            
+            // add queue upload
+            let metadataNet = CCMetadataNet()
+            metadataNet.account = account
+            metadataNet.assetLocalIdentifier = ""
+            metadataNet.fileName = fileName
+            metadataNet.path = toPath
+            metadataNet.selector = selectorUploadFile
+            metadataNet.selectorPost = ""
+            metadataNet.serverUrl = serverUrl
+            metadataNet.session = k_upload_session
+            metadataNet.taskStatus = Int(k_taskStatusResume)
+            _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+            
             completionHandler(item, nil)
             
             // Refresh UI
@@ -905,5 +880,23 @@ class FileProvider: NSFileProviderExtension {
                 }
             }
         }
+    }
+    
+    func copyFile(_ atPath: String, toPath: String) -> Error? {
+        
+        var errorResult: Error?
+        
+        do {
+            try FileManager.default.removeItem(atPath: toPath)
+        } catch let error {
+            print("error: \(error)")
+        }
+        do {
+            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+        } catch let error {
+            errorResult = error
+        }
+        
+        return errorResult
     }
 }

@@ -828,7 +828,6 @@
 + (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath
 {
     if ([[NSFileManager defaultManager] fileExistsAtPath:atPath]) {
-        
         [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
         [[NSFileManager defaultManager] copyItemAtPath:atPath toPath:toPath error:nil];
         [[NSFileManager defaultManager] removeItemAtPath:atPath error:nil];
@@ -838,7 +837,6 @@
 + (void)copyFileAtPath:(NSString *)atPath toPath:(NSString *)toPath
 {
     if ([[NSFileManager defaultManager] fileExistsAtPath:atPath]) {
-        
         [[NSFileManager defaultManager] removeItemAtPath:toPath error:nil];
         [[NSFileManager defaultManager] copyItemAtPath:atPath toPath:toPath error:nil];
     }

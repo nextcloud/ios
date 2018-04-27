@@ -112,7 +112,7 @@
 @property (nonatomic, strong) NSString *keyCipher;
 @property (nonatomic, strong) id options;
 @property (nonatomic, strong) NSString *password;
-@property (nonatomic, strong) NSString *pathFolder;
+@property (nonatomic, strong) NSString *path;
 @property NSInteger priority;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *serverUrlTo;

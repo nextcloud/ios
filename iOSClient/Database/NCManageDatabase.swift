@@ -2208,6 +2208,7 @@ class NCManageDatabase: NSObject {
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.fileName = metadataNet.fileName
+                        addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -2250,6 +2251,7 @@ class NCManageDatabase: NSObject {
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.fileName = metadataNet.fileName
+                        addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
@@ -2288,6 +2290,7 @@ class NCManageDatabase: NSObject {
         metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
         metadataNet.fileName = result.fileName
+        metadataNet.path = result.path
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost
         metadataNet.serverUrl = result.serverUrl
@@ -2325,6 +2328,7 @@ class NCManageDatabase: NSObject {
         metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
         metadataNet.fileName = result.fileName
+        metadataNet.path = result.path
         metadataNet.selector = result.selector
         metadataNet.selectorPost = result.selectorPost
         metadataNet.serverUrl = result.serverUrl
