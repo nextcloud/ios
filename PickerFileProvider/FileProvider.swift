@@ -393,10 +393,12 @@ class FileProvider: NSFileProviderExtension {
                         
                     } else {
                         print("File already exists in queue")
-                        return
                     }
                     
-                    self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: url.path, metadata: metadata)
+                    // Upload on cloud
+                    if NCManageDatabase.sharedInstance.queueUploadLockPath(url.path) != nil {
+                        self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: url.path, metadata: metadata)
+                    }
                 }
             }
             
@@ -844,12 +846,9 @@ class FileProvider: NSFileProviderExtension {
     
     func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, metadata: tableMetadata) {
         
-        guard let _ = NCManageDatabase.sharedInstance.queueUploadLockPath(fileNameLocalPath) else {
-            return
-        }
-        
         _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
             
+            // Remove file on queueUpload
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
             
             _ = self.copyFile(fileNameLocalPath, toPath: "\(directoryUser)/\(metadata.fileID)")
@@ -877,6 +876,7 @@ class FileProvider: NSFileProviderExtension {
             self.refreshCurrentEnumerator(serverUrl: serverUrl)
             
         }, failure: { (message, errorCode) in
+            // unlock queueUpload
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: fileNameLocalPath)
         })
     }
