@@ -123,6 +123,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isDownloaded = false
                 self.isMostRecentVersionDownloaded = false
             } else {
+                self.documentSize = NSNumber(value:fileSize)
                 self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true
             }
