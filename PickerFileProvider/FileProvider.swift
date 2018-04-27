@@ -392,37 +392,6 @@ class FileProvider: NSFileProviderExtension {
                         print("File already exists in queue")
                     }
                 }
-                /*
-                _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
-                    
-                    _ = self.copyFile(url.path, toPath: "\(directoryUser)/\(metadata.fileID)")
-                    
-                    // create thumbnail
-                    CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
-                    
-                    metadata.date = date! as NSDate
-                  
-                    do {
-                        let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
-                        metadata.size = attributes[FileAttributeKey.size] as! Double
-                    } catch let error {
-                        print("error: \(error)")
-                    }
-                    
-                    guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                        return
-                    }
-                    
-                    // item
-                    _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
-                    
-                    // Refresh UI
-                    self.refreshCurrentEnumerator(serverUrl: serverUrl)
-                
-                }, failure: { (message, errorCode) in
-                    // remove file uploading
-                })
-                */
             }
             
         } else {
@@ -906,3 +875,37 @@ class FileProvider: NSFileProviderExtension {
         return errorResult
     }
 }
+
+
+/*
+ _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
+ 
+ _ = self.copyFile(url.path, toPath: "\(directoryUser)/\(metadata.fileID)")
+ 
+ // create thumbnail
+ CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
+ 
+ metadata.date = date! as NSDate
+ 
+ do {
+ let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
+ metadata.size = attributes[FileAttributeKey.size] as! Double
+ } catch let error {
+ print("error: \(error)")
+ }
+ 
+ guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+ return
+ }
+ 
+ // item
+ _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
+ 
+ // Refresh UI
+ self.refreshCurrentEnumerator(serverUrl: serverUrl)
+ 
+ }, failure: { (message, errorCode) in
+ // remove file uploading
+ })
+ */
+
