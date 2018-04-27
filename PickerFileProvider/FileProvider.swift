@@ -572,14 +572,7 @@ class FileProvider: NSFileProviderExtension {
         }
         
         ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: account, success: { (fileID, date) in
-            
-            /*
-            guard let newTableDirectory = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID, permissions: nil, serverUrl: serverUrl+"/"+directoryName) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            */
-            
+    
             let metadata = tableMetadata()
                 
             metadata.account = account
@@ -589,11 +582,13 @@ class FileProvider: NSFileProviderExtension {
             metadata.fileName = directoryName
             metadata.fileNameView = directoryName
             metadata.typeFile = k_metadataTypeFile_directory
-                
+            
+            //TODO: add metadata directory on DB
+            
             let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                 
             completionHandler(item, nil)
-                
+            
         }, failure: { (message, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
@@ -828,7 +823,7 @@ class FileProvider: NSFileProviderExtension {
             completionHandler(item, nil)
             
             // Refresh UI
-            self.refreshCurrentEnumerator(serverUrl: serverUrl)
+            self.refreshEnumerator(serverUrl: serverUrl)
 
         }, failure: { (message, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
@@ -868,7 +863,7 @@ class FileProvider: NSFileProviderExtension {
             _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
             
             // Refresh UI
-            self.refreshCurrentEnumerator(serverUrl: serverUrl)
+            self.refreshEnumerator(serverUrl: serverUrl)
             
         }, failure: { (message, errorCode) in
             // unlock queueUpload
@@ -884,7 +879,7 @@ class FileProvider: NSFileProviderExtension {
         }
     }
     
-    func refreshCurrentEnumerator(serverUrl: String) {
+    func refreshEnumerator(serverUrl: String) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
