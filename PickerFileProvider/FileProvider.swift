@@ -33,7 +33,11 @@ var accountPassword = ""
 var accountUrl = ""
 var homeServerUrl = ""
 var directoryUser = ""
+
+// Directory
 var groupURL: URL?
+var fileProviderStorageURL: URL?
+var uploadURL: URL?
 
 class FileProvider: NSFileProviderExtension {
     
@@ -58,6 +62,22 @@ class FileProvider: NSFileProviderExtension {
         ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
         
         groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+        fileProviderStorageURL = groupURL!.appendingPathComponent("File Provider Storage")
+        uploadURL = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Upload")
+        
+        // Create dir File Provider Storage
+        do {
+            try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            NSLog("Unable to create directory \(error.debugDescription)")
+        }
+        
+        // Create dir for Upload
+        do {
+            try FileManager.default.createDirectory(atPath: uploadURL!.path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            NSLog("Unable to create directory \(error.debugDescription)")
+        }
         
         if #available(iOSApplicationExtension 11.0, *) {
             
@@ -143,7 +163,7 @@ class FileProvider: NSFileProviderExtension {
                     
                     if (!metadata.directory) {
                         
-                        let identifierPathUrl = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent(metadata.fileID)
+                        let identifierPathUrl = fileProviderStorageURL!.appendingPathComponent(metadata.fileID)
                         let toPath = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
                         let atPath = "\(directoryUser)/\(metadata.fileID)"
                             
@@ -718,7 +738,6 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        /*
         // exists with same name ? add + 1
         if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", account, fileName, directoryParent.directoryID)) != nil {
             
@@ -742,7 +761,6 @@ class FileProvider: NSFileProviderExtension {
                 }
             }
         }
-        */
         
         // Verify if upload is aready
         if (uploading.contains(serverUrl+"/"+fileName) == true) {
@@ -752,14 +770,7 @@ class FileProvider: NSFileProviderExtension {
             uploading.append(serverUrl+"/"+fileName)
         }
         
-        // Create dir for Upload
-        do {
-            try FileManager.default.createDirectory(atPath: groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Upload").path, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            NSLog("Unable to create directory \(error.debugDescription)")
-        }
-        
-        let fileNameLocalPath = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Upload").appendingPathComponent(fileName)
+        let fileNameLocalPath = uploadURL!.appendingPathComponent(fileName)
         
         fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
             _ = self.copyFile( url.path, toPath: fileNameLocalPath.path)
@@ -778,7 +789,7 @@ class FileProvider: NSFileProviderExtension {
         if (size == 0) {
             fileNamePathUpload = fileNameLocalPath
         } else {
-            fileNamePathUpload = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Upload").appendingPathComponent(fileName+".000")
+            fileNamePathUpload = uploadURL!.appendingPathComponent(fileName+".000")
             do {
                 try FileManager.default.removeItem(atPath: fileNamePathUpload!.path)
             } catch let error {
@@ -808,20 +819,15 @@ class FileProvider: NSFileProviderExtension {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
-
-            // Copy on ItemIdentifier path
-            let identifierPathUrl = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent(metadata.fileID)
-            let toPath = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
-                
-            if !FileManager.default.fileExists(atPath: identifierPathUrl.path) {
-                do {
-                    try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
-                } catch let error {
-                    print("error: \(error)")
-                }
-            }
             
-            _ = self.copyFile(fileNameLocalPath.path, toPath: toPath)
+            // Create dir <base storage directory>/<item identifier>
+            do {
+                try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path, withIntermediateDirectories: true, attributes: nil)
+            } catch let error {
+                print("error: \(error)")
+            }
+             // copy <base storage directory>/<item identifier>/<item file name>
+            _ = self.copyFile(fileNameLocalPath.path, toPath: "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileNameView)")
             
             // add item
             let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
@@ -834,7 +840,7 @@ class FileProvider: NSFileProviderExtension {
             metadataNet.account = account
             metadataNet.assetLocalIdentifier = ""
             metadataNet.fileName = fileName
-            metadataNet.path = toPath
+            metadataNet.path = "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileNameView)"
             metadataNet.selector = selectorUploadFile
             metadataNet.selectorPost = ""
             metadataNet.serverUrl = serverUrl
