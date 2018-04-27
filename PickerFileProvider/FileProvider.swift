@@ -572,17 +572,19 @@ class FileProvider: NSFileProviderExtension {
         }
         
         ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: account, success: { (fileID, date) in
-                
+            
+            /*
             guard let newTableDirectory = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID, permissions: nil, serverUrl: serverUrl+"/"+directoryName) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
-                
+            */
+            
             let metadata = tableMetadata()
                 
             metadata.account = account
             metadata.directory = true
-            metadata.directoryID = newTableDirectory.directoryID
+            metadata.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)!
             metadata.fileID = fileID!
             metadata.fileName = directoryName
             metadata.fileNameView = directoryName
