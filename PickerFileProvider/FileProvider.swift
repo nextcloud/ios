@@ -390,7 +390,7 @@ class FileProvider: NSFileProviderExtension {
                     
                     // Upload on cloud
                     if NCManageDatabase.sharedInstance.queueUploadLockPath(url.path) != nil {
-                        self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: url.path, metadata: metadata)
+                        self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: url.path, metadata: metadata, identifier: identifier)
                     }
                 }
             }
@@ -837,7 +837,7 @@ class FileProvider: NSFileProviderExtension {
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
     
-    func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, metadata: tableMetadata) {
+    func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, metadata: tableMetadata, identifier: NSFileProviderItemIdentifier) {
         
         let task = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
             
@@ -875,7 +875,7 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
             if task != nil {
-                NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.etag)) { (error) in
+                NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in
                     print("Registe download task")
                 }
             }
