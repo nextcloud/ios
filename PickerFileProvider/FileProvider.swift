@@ -162,26 +162,19 @@ class FileProvider: NSFileProviderExtension {
                     if (!metadata.directory) {
                         
                         let identifierPathUrl = fileProviderStorageURL!.appendingPathComponent(metadata.fileID)
-                        let toPath = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
                         let atPath = "\(directoryUser)/\(metadata.fileID)"
+                        let toPath = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
+                        
+                        do {
+                            try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
+                        } catch let error {
+                            print("error: \(error)")
+                        }
                             
-                        if !FileManager.default.fileExists(atPath: toPath) {
-
-                            do {
-                                try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
-                            } catch let error {
-                                print("error: \(error)")
-                            }
-                            
-                            if FileManager.default.fileExists(atPath: atPath) {
-                                do {
-                                    try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
-                                } catch let error {
-                                    print("error: \(error)")
-                                }
-                            } else {
-                                FileManager.default.createFile(atPath: toPath, contents: nil, attributes: nil)
-                            }
+                        if FileManager.default.fileExists(atPath: atPath) {
+                            _ = self.copyFile(atPath, toPath: toPath)
+                        } else {
+                            FileManager.default.createFile(atPath: toPath, contents: nil, attributes: nil)
                         }
                     }
                     
