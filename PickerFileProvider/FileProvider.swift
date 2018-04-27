@@ -371,6 +371,28 @@ class FileProvider: NSFileProviderExtension {
                     return
                 }
             
+                DispatchQueue.main.async {
+
+                    let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, url.path))
+                
+                    if queue?.count == 0 {
+                    
+                        let metadataNet = CCMetadataNet()
+                        metadataNet.account = account
+                        metadataNet.assetLocalIdentifier = ""
+                        metadataNet.fileName = fileName
+                        metadataNet.path = url.path
+                        metadataNet.selector = selectorUploadFile
+                        metadataNet.selectorPost = ""
+                        metadataNet.serverUrl = serverUrl
+                        metadataNet.session = k_upload_session
+                        metadataNet.taskStatus = Int(k_taskStatusResume)
+                        _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+                    } else {
+                        print("File already exists in queue")
+                    }
+                }
+                /*
                 _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
                     
                     _ = self.copyFile(url.path, toPath: "\(directoryUser)/\(metadata.fileID)")
@@ -400,6 +422,7 @@ class FileProvider: NSFileProviderExtension {
                 }, failure: { (message, errorCode) in
                     // remove file uploading
                 })
+                */
             }
             
         } else {
