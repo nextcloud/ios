@@ -37,11 +37,9 @@ var directoryUser = ""
 // Directory
 var groupURL: URL?
 var fileProviderStorageURL: URL?
-var uploadURL: URL?
+var importDocumentURL: URL?
 
 class FileProvider: NSFileProviderExtension {
-    
-    var uploading = [String]()
     
     override init() {
         
@@ -63,7 +61,7 @@ class FileProvider: NSFileProviderExtension {
         
         groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         fileProviderStorageURL = groupURL!.appendingPathComponent("File Provider Storage")
-        uploadURL = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Upload")
+        importDocumentURL = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Import Document")
         
         // Create dir File Provider Storage
         do {
@@ -74,7 +72,7 @@ class FileProvider: NSFileProviderExtension {
         
         // Create dir for Upload
         do {
-            try FileManager.default.createDirectory(atPath: uploadURL!.path, withIntermediateDirectories: true, attributes: nil)
+            try FileManager.default.createDirectory(atPath: importDocumentURL!.path, withIntermediateDirectories: true, attributes: nil)
         } catch let error as NSError {
             NSLog("Unable to create directory \(error.debugDescription)")
         }
@@ -372,13 +370,7 @@ class FileProvider: NSFileProviderExtension {
                 guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                     return
                 }
-                
-                if (uploading.contains(serverUrl+"/"+fileName) == true) {
-                    return
-                } else {
-                    uploading.append(serverUrl+"/"+fileName)
-                }
-                
+            
                 _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
                     
                     _ = self.copyFile(url.path, toPath: "\(directoryUser)/\(metadata.fileID)")
@@ -402,15 +394,11 @@ class FileProvider: NSFileProviderExtension {
                     // item
                     _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
                     
-                    // remove file uploading
-                    self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
-                    
                     // Refresh UI
                     self.refreshCurrentEnumerator(serverUrl: serverUrl)
                 
                 }, failure: { (message, errorCode) in
                     // remove file uploading
-                    self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
                 })
             }
             
@@ -762,15 +750,7 @@ class FileProvider: NSFileProviderExtension {
             }
         }
         
-        // Verify if upload is aready
-        if (uploading.contains(serverUrl+"/"+fileName) == true) {
-            completionHandler(nil, NSFileProviderError(.filenameCollision))
-            return
-        } else {
-            uploading.append(serverUrl+"/"+fileName)
-        }
-        
-        let fileNameLocalPath = uploadURL!.appendingPathComponent(fileName)
+        let fileNameLocalPath = importDocumentURL!.appendingPathComponent(fileName)
         
         fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
             _ = self.copyFile( url.path, toPath: fileNameLocalPath.path)
@@ -789,7 +769,7 @@ class FileProvider: NSFileProviderExtension {
         if (size == 0) {
             fileNamePathUpload = fileNameLocalPath
         } else {
-            fileNamePathUpload = uploadURL!.appendingPathComponent(fileName+".000")
+            fileNamePathUpload = importDocumentURL!.appendingPathComponent(fileName+".000")
             do {
                 try FileManager.default.removeItem(atPath: fileNamePathUpload!.path)
             } catch let error {
@@ -832,9 +812,6 @@ class FileProvider: NSFileProviderExtension {
             // add item
             let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
             
-            // remove file uploading
-            self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
-            
             // add queue upload if size > 0
             if (size > 0) {
                 let metadataNet = CCMetadataNet()
@@ -856,8 +833,6 @@ class FileProvider: NSFileProviderExtension {
             self.refreshCurrentEnumerator(serverUrl: serverUrl)
 
         }, failure: { (message, errorCode) in
-            // remove file uploading
-            self.uploading = self.uploading.filter() { $0 != serverUrl+"/"+fileName }
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
