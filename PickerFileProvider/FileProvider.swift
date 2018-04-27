@@ -839,7 +839,7 @@ class FileProvider: NSFileProviderExtension {
     
     func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, metadata: tableMetadata) {
         
-        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
+        let task = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
             
             // Remove file on queueUpload
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
@@ -872,6 +872,14 @@ class FileProvider: NSFileProviderExtension {
             // unlock queueUpload
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: fileNameLocalPath)
         })
+        
+        if #available(iOSApplicationExtension 11.0, *) {
+            if task != nil {
+                NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.etag)) { (error) in
+                    print("Registe download task")
+                }
+            }
+        }
     }
     
     func refreshCurrentEnumerator(serverUrl: String) {
