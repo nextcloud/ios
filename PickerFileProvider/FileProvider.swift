@@ -378,6 +378,7 @@ class FileProvider: NSFileProviderExtension {
                     if queue?.count == 0 {
                     
                         let metadataNet = CCMetadataNet()
+                        
                         metadataNet.account = account
                         metadataNet.assetLocalIdentifier = ""
                         metadataNet.fileName = fileName
@@ -387,10 +388,15 @@ class FileProvider: NSFileProviderExtension {
                         metadataNet.serverUrl = serverUrl
                         metadataNet.session = k_upload_session
                         metadataNet.taskStatus = Int(k_taskStatusResume)
+                        
                         _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+                        
                     } else {
                         print("File already exists in queue")
+                        return
                     }
+                    
+                    self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: url.path, metadata: metadata)
                 }
             }
             
@@ -806,7 +812,9 @@ class FileProvider: NSFileProviderExtension {
             
             // add queue upload if size > 0
             if (size > 0) {
+                
                 let metadataNet = CCMetadataNet()
+                
                 metadataNet.account = account
                 metadataNet.assetLocalIdentifier = ""
                 metadataNet.fileName = fileName
@@ -816,6 +824,7 @@ class FileProvider: NSFileProviderExtension {
                 metadataNet.serverUrl = serverUrl
                 metadataNet.session = k_upload_session
                 metadataNet.taskStatus = Int(k_taskStatusResume)
+                
                 _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
             }
             
@@ -832,7 +841,46 @@ class FileProvider: NSFileProviderExtension {
     // --------------------------------------------------------------------------------------------
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
-
+    
+    func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, metadata: tableMetadata) {
+        
+        guard let _ = NCManageDatabase.sharedInstance.queueUploadLockPath(fileNameLocalPath) else {
+            return
+        }
+        
+        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
+            
+            NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
+            
+            _ = self.copyFile(fileNameLocalPath, toPath: "\(directoryUser)/\(metadata.fileID)")
+            
+            // create thumbnail
+            CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
+            
+            metadata.date = date! as NSDate
+            
+            do {
+                let attributes = try FileManager.default.attributesOfItem(atPath: fileNameLocalPath)
+                metadata.size = attributes[FileAttributeKey.size] as! Double
+            } catch let error {
+                print("error: \(error)")
+            }
+            
+            guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                return
+            }
+            
+            // item
+            _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
+            
+            // Refresh UI
+            self.refreshCurrentEnumerator(serverUrl: serverUrl)
+            
+        }, failure: { (message, errorCode) in
+            NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: fileNameLocalPath)
+        })
+    }
+    
     func refreshCurrentEnumerator(serverUrl: String) {
         
         /* ONLY iOS 11*/
@@ -875,37 +923,3 @@ class FileProvider: NSFileProviderExtension {
         return errorResult
     }
 }
-
-
-/*
- _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
- 
- _ = self.copyFile(url.path, toPath: "\(directoryUser)/\(metadata.fileID)")
- 
- // create thumbnail
- CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
- 
- metadata.date = date! as NSDate
- 
- do {
- let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
- metadata.size = attributes[FileAttributeKey.size] as! Double
- } catch let error {
- print("error: \(error)")
- }
- 
- guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
- return
- }
- 
- // item
- _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
- 
- // Refresh UI
- self.refreshCurrentEnumerator(serverUrl: serverUrl)
- 
- }, failure: { (message, errorCode) in
- // remove file uploading
- })
- */
-

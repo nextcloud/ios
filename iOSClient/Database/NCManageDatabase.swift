@@ -2310,7 +2310,7 @@ class NCManageDatabase: NSObject {
         return metadataNet
     }
     
-    @objc func getQueueUploadPathLock() -> CCMetadataNet? {
+    @objc func queueUploadLockPath(_ path: String) -> CCMetadataNet? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -2320,7 +2320,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false AND path != nil", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first else {
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false AND path == %@", tableAccount.account, path).sorted(byKeyPath: "date", ascending: true).first else {
             realm.cancelWrite()
             return nil
         }
@@ -2406,23 +2406,32 @@ class NCManageDatabase: NSObject {
         return metadataNet
     }
     
-    @objc func unlockQueueUpload(assetLocalIdentifier: String) {
+    @objc func unlockQueueUpload(assetLocalIdentifier: String?, path: String?) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
         }
-        
+    
+        var result: tableQueueUpload?
         let realm = try! Realm()
 
         realm.beginWrite()
         
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
+        if assetLocalIdentifier != nil {
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier!).first
+        }
+        
+        if path != nil {
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND path = %@", tableAccount.account, path!).first
+        }
+        
+        if result == nil {
             realm.cancelWrite()
             return
         }
         
         // UnLock
-        result.lock = false
+        result!.lock = false
         
         do {
             try realm.commitWrite()

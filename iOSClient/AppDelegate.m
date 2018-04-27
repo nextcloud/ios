@@ -1538,9 +1538,8 @@
      
          // Unlock
          for (tableMetadata *metadata in tableMetadatasInLock) {
-     
              if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
-                 [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
+                 [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier path:nil];
          }
      }
 }
