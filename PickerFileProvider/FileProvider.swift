@@ -817,7 +817,7 @@ class FileProvider: NSFileProviderExtension {
                 metadataNet.account = account
                 metadataNet.assetLocalIdentifier = ""
                 metadataNet.fileName = fileName
-                metadataNet.path = "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileNameView)"
+                metadataNet.path = importDocumentURL!.path + "/" + metadata.fileNameView
                 metadataNet.selector = selectorUploadFile
                 metadataNet.selectorPost = ""
                 metadataNet.serverUrl = serverUrl
