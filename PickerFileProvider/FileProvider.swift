@@ -710,7 +710,8 @@ class FileProvider: NSFileProviderExtension {
         
         let serverUrl = directoryParent.serverUrl
         
-        // Copy file here
+        // ----------------------------------- Copy file here
+        
         if fileURL.startAccessingSecurityScopedResource() == false {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -748,6 +749,8 @@ class FileProvider: NSFileProviderExtension {
             
         fileURL.stopAccessingSecurityScopedResource()
         
+        // --------------------------------------------------
+
         do {
             let attributes = try FileManager.default.attributesOfItem(atPath: fileNameLocalPath.path)
             size = attributes[FileAttributeKey.size] as! Double
