@@ -1448,13 +1448,7 @@
         metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUpload];
         if (metadataNet) {
             
-            if (metadataNet.path == nil) {
-                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
-            } else {
-                NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
-                [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
-                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
-            }
+            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             
             counterNewUpload++;
         }
@@ -1482,13 +1476,7 @@
             metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUploadAll];
             if (metadataNet) {
                 
-                if (metadataNet.path == nil) {
-                    [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
-                } else {
-                    NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
-                    [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
-                    [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
-                }
+                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
                 
                 counterNewUpload++;
             }
@@ -1509,7 +1497,7 @@
             } else {
                 NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
                 [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
-                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
+                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
             }
             counterNewUpload++;
         }
