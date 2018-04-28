@@ -710,7 +710,7 @@ class FileProvider: NSFileProviderExtension {
         
         let serverUrl = directoryParent.serverUrl
         
-        // ----------------------------------- Copy file here
+        // --------------------------------------------- Copy file here
         
         if fileURL.startAccessingSecurityScopedResource() == false {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -749,8 +749,10 @@ class FileProvider: NSFileProviderExtension {
             
         fileURL.stopAccessingSecurityScopedResource()
         
-        // --------------------------------------------------
+        // ------------------------------------------------------------
 
+        // ---------------------------------------------- Create file 0
+        
         do {
             let attributes = try FileManager.default.attributesOfItem(atPath: fileNameLocalPath.path)
             size = attributes[FileAttributeKey.size] as! Double
@@ -770,8 +772,10 @@ class FileProvider: NSFileProviderExtension {
             }
             FileManager.default.createFile(atPath: fileNamePathUpload!.path, contents: nil, attributes: nil)
         }
+        
+        // ------------------------------------------------------------
     
-        // upload (NO SESSION ?!?!?)
+        // upload (NO SESSION)
         _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNamePathUpload?.path, communication: CCNetworking.shared().sharedOCCommunication(), success: { (fileID, etag, date) in
                 
             let metadata = tableMetadata()
