@@ -2200,7 +2200,7 @@ class NCManageDatabase: NSObject {
             do {
                 try realm.write {
                     
-                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
+                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND path = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.path ,metadataNet.selector).first == nil {
                         
                         // Add new
                         let addObject = tableQueueUpload()
@@ -2243,7 +2243,7 @@ class NCManageDatabase: NSObject {
                 
                 for metadataNet in metadatasNet {
                     
-                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
+                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND path = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.path, metadataNet.selector).first == nil {
                         
                         // Add new
                         let addObject = tableQueueUpload()
