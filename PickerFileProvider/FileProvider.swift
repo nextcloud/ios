@@ -583,7 +583,14 @@ class FileProvider: NSFileProviderExtension {
             metadata.fileNameView = directoryName
             metadata.typeFile = k_metadataTypeFile_directory
             
+            //
             guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+            
+            //
+            guard let _ = NCManageDatabase.sharedInstance.addDirectory(encrypted: false, favorite: false, fileID: fileID!, permissions: nil, serverUrl: serverUrl + "/" + directoryName) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
