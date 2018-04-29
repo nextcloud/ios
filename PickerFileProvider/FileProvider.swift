@@ -64,11 +64,10 @@ class FileProvider: NSFileProviderExtension {
         ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
         
         groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-        fileProviderStorageURL = groupURL!.appendingPathComponent("File Provider Storage")
-        importDocumentURL = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Import Document")
-        changeDocumentURL = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Change Document")
+        fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+        importDocumentURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage).appendingPathComponent(k_fileProviderStorageImportDocument)
+        changeDocumentURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage).appendingPathComponent(k_fileProviderStorageChangeDocument)
 
-        
         // Create dir File Provider Storage
         do {
             try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
