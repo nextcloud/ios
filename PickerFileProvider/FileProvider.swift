@@ -184,13 +184,15 @@ class FileProvider: NSFileProviderExtension {
                         }
                             
                         if FileManager.default.fileExists(atPath: atPath) {
-                            
-                            let atDate = (try! FileManager.default.attributesOfItem(atPath: atPath)[FileAttributeKey.modificationDate] as! Date)
-                            let toDate = (try! FileManager.default.attributesOfItem(atPath: toPath)[FileAttributeKey.modificationDate] as! Date)
-
-                            if atDate > toDate {
+                            if FileManager.default.fileExists(atPath: toPath) {
+                                let atDate = (try! FileManager.default.attributesOfItem(atPath: atPath)[FileAttributeKey.modificationDate] as! Date)
+                                let toDate = (try! FileManager.default.attributesOfItem(atPath: toPath)[FileAttributeKey.modificationDate] as! Date)
+                                if atDate > toDate {
+                                    _ = self.copyFile(atPath, toPath: toPath)
+                                }
+                            } else {
                                 _ = self.copyFile(atPath, toPath: toPath)
-                            }                            
+                            }
                         } else {
                             FileManager.default.createFile(atPath: toPath, contents: nil, attributes: nil)
                         }
