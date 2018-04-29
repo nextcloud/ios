@@ -910,6 +910,7 @@ class FileProvider: NSFileProviderExtension {
         })
         
         if (task != nil) {
+            
             uploadingIdentifier.append(identifier.rawValue)
             
             if #available(iOSApplicationExtension 11.0, *) {
