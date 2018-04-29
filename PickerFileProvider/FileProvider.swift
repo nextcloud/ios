@@ -38,6 +38,7 @@ var directoryUser = ""
 var groupURL: URL?
 var fileProviderStorageURL: URL?
 var importDocumentURL: URL?
+var changeDocumentURL: URL?
 
 class FileProvider: NSFileProviderExtension {
     
@@ -62,6 +63,8 @@ class FileProvider: NSFileProviderExtension {
         groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         fileProviderStorageURL = groupURL!.appendingPathComponent("File Provider Storage")
         importDocumentURL = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Import Document")
+        changeDocumentURL = groupURL!.appendingPathComponent("File Provider Storage").appendingPathComponent("Change Document")
+
         
         // Create dir File Provider Storage
         do {
@@ -73,6 +76,13 @@ class FileProvider: NSFileProviderExtension {
         // Create dir for Upload
         do {
             try FileManager.default.createDirectory(atPath: importDocumentURL!.path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            NSLog("Unable to create directory \(error.debugDescription)")
+        }
+        
+        // Create dir for change document
+        do {
+            try FileManager.default.createDirectory(atPath: changeDocumentURL!.path, withIntermediateDirectories: true, attributes: nil)
         } catch let error as NSError {
             NSLog("Unable to create directory \(error.debugDescription)")
         }
@@ -347,17 +357,21 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
             
+            let fileName = url.lastPathComponent
+            let pathComponents = url.pathComponents
+            let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
+
+            assert(pathComponents.count > 2)
+            let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+            
             let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
             NSLog("[LOG] Item changed at URL %@ %lu", url as NSURL, fileSize)
             if (fileSize == 0) {
                 return
+            } else {
+                _ = self.copyFile(url.path, toPath: changeDocumentPath)
             }
             
-            let fileName = url.lastPathComponent
-            let pathComponents = url.pathComponents
-            assert(pathComponents.count > 2)
-            let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
                 
                 guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
@@ -375,7 +389,7 @@ class FileProvider: NSFileProviderExtension {
                         metadataNet.account = account
                         metadataNet.assetLocalIdentifier = CCUtility.createRandomString(20)
                         metadataNet.fileName = fileName
-                        metadataNet.path = url.path
+                        metadataNet.path = changeDocumentPath
                         metadataNet.selector = selectorUploadFile
                         metadataNet.selectorPost = ""
                         metadataNet.serverUrl = serverUrl
@@ -390,7 +404,7 @@ class FileProvider: NSFileProviderExtension {
                     
                     // Upload on cloud
                     if NCManageDatabase.sharedInstance.queueUploadLockPath(url.path) != nil {
-                        self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: url.path, metadata: metadata, identifier: identifier)
+                        self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
                     }
                 }
             }
@@ -858,10 +872,8 @@ class FileProvider: NSFileProviderExtension {
             // Remove file on queueUpload
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
             
-            _ = self.copyFile(fileNameLocalPath, toPath: "\(directoryUser)/\(metadata.fileID)")
-            
-            // create thumbnail
-            CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
+            _ = self.copyFile(fileNameLocalPath, toPath: directoryUser+"/"+metadata.fileID)
+            _ = self.copyFile(fileNameLocalPath, toPath: fileProviderStorageURL!.path+"/"+metadata.fileID+"/"+fileName)
             
             metadata.date = date! as NSDate
             
@@ -875,6 +887,9 @@ class FileProvider: NSFileProviderExtension {
             guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
                 return
             }
+            
+            // create thumbnail
+            CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
             
             // item
             _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
