@@ -358,6 +358,11 @@ class FileProvider: NSFileProviderExtension {
             assert(pathComponents.count > 2)
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
 
+            // get item
+            guard let item = try? item(for: identifier) else {
+                return
+            }
+            
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
                 
                 guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
@@ -492,9 +497,9 @@ class FileProvider: NSFileProviderExtension {
         let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
         var counterProgress: Int64 = 0
             
-        for item in itemIdentifiers {
+        for itemIdentifier in itemIdentifiers {
                 
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, item.rawValue))  {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue))  {
                     
                 if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video) {
                         
@@ -505,12 +510,12 @@ class FileProvider: NSFileProviderExtension {
                     ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileName: fileName, fileNameLocal: fileNameLocal, success: {
 
                         do {
-                            let url = URL.init(fileURLWithPath: "\(directoryUser)/\(item.rawValue).ico")
+                            let url = URL.init(fileURLWithPath: "\(directoryUser)/\(itemIdentifier.rawValue).ico")
                             let data = try Data.init(contentsOf: url)
-                            perThumbnailCompletionHandler(item, data, nil)
+                            perThumbnailCompletionHandler(itemIdentifier, data, nil)
                         } catch let error {
                             print("error: \(error)")
-                            perThumbnailCompletionHandler(item, nil, NSFileProviderError(.noSuchItem))
+                            perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.noSuchItem))
                         }
                             
                         counterProgress += 1
@@ -520,7 +525,7 @@ class FileProvider: NSFileProviderExtension {
                             
                     }, failure: { (message, errorCode) in
 
-                        perThumbnailCompletionHandler(item, nil, NSFileProviderError(.serverUnreachable))
+                        perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
                             
                         counterProgress += 1
                         if (counterProgress == progress.totalUnitCount) {
