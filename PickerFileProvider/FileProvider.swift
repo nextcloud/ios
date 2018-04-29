@@ -875,8 +875,12 @@ class FileProvider: NSFileProviderExtension {
             // Remove file on queueUpload
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
             
+            // Copy file *directoryUser *fileProviderStorage
             _ = self.copyFile(fileNameLocalPath, toPath: directoryUser+"/"+metadata.fileID)
             _ = self.copyFile(fileNameLocalPath, toPath: fileProviderStorageURL!.path+"/"+metadata.fileID+"/"+fileName)
+            
+            // Remove file *changeDocument
+            _ = self.deleteFile(fileNameLocalPath)
             
             metadata.date = date! as NSDate
             
@@ -945,6 +949,21 @@ class FileProvider: NSFileProviderExtension {
         }
         do {
             try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+        } catch let error {
+            errorResult = error
+        }
+        
+        return errorResult
+    }
+    
+    func deleteFile(_ atPath: String) -> Error? {
+        
+        var errorResult: Error?
+
+        let url = URL(string: atPath)
+        
+        do {
+            _ = try FileManager.default.removeItem(at: url!)
         } catch let error {
             errorResult = error
         }
