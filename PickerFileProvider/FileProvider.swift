@@ -888,9 +888,6 @@ class FileProvider: NSFileProviderExtension {
                 return
             }
             
-            // create thumbnail
-            CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
-            
             // item
             _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
             

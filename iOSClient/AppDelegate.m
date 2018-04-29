@@ -1404,7 +1404,7 @@
 - (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent
 {
     CCMetadataNet *metadataNet;
-    
+        
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         metadataNet = [[NCManageDatabase sharedInstance] getQueueUpload];
