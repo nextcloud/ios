@@ -40,6 +40,9 @@ var fileProviderStorageURL: URL?
 var importDocumentURL: URL?
 var changeDocumentURL: URL?
 
+// Array file in Upload
+var uploadingIdentifier = [String]()
+
 class FileProvider: NSFileProviderExtension {
     
     override init() {
@@ -888,6 +891,9 @@ class FileProvider: NSFileProviderExtension {
                 return
             }
             
+            // remove identifier from array upload
+            uploadingIdentifier = uploadingIdentifier.filter() { $0 != identifier.rawValue }
+            
             // item
             _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
             
@@ -899,19 +905,8 @@ class FileProvider: NSFileProviderExtension {
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: fileNameLocalPath)
         })
         
-        if #available(iOSApplicationExtension 11.0, *) {
-            if task != nil {
-                NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in
-                    print("Registe download task")
-                }
-            }
-        }
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            // get item
-            guard let item = try? self.item(for: identifier) else {
-                return
-            }
+        if (task != nil) {
+            uploadingIdentifier.append(identifier.rawValue)
         }
     }
     

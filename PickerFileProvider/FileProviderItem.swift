@@ -69,8 +69,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     var tagData: Data?                                              // Tag
     
-    var isDirectory = false;
-    
+    var isDirectory = false
+
     init(metadata: tableMetadata, serverUrl: String) {
         
         self.contentModificationDate = metadata.date as Date
@@ -79,6 +79,12 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         self.filename = metadata.fileNameView
         self.itemIdentifier = NSFileProviderItemIdentifier("\(metadata.fileID)")
         self.isDirectory = metadata.directory
+
+        //
+        if uploadingIdentifier.contains(metadata.fileID) {
+            self.isUploading = true
+            self.isUploaded = false
+        }
 
         // parentItemIdentifier
         if #available(iOSApplicationExtension 11.0, *) {
