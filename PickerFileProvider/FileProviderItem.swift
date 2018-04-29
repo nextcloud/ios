@@ -80,12 +80,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         self.itemIdentifier = NSFileProviderItemIdentifier("\(metadata.fileID)")
         self.isDirectory = metadata.directory
 
-        //
-        if uploadingIdentifier.contains(metadata.fileID) {
-            self.isUploading = true
-            self.isUploaded = false
-        }
-
         // parentItemIdentifier
         if #available(iOSApplicationExtension 11.0, *) {
             
@@ -132,6 +126,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.documentSize = NSNumber(value:fileSize)
                 self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true
+            }
+            
+            // Upload
+            if uploadingIdentifier.contains(metadata.fileID) {
+                self.isUploading = true
+                self.isUploaded = false
+            } else {
+                self.isUploading = false
+                self.isUploaded = true
             }
         }
         
