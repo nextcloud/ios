@@ -184,7 +184,13 @@ class FileProvider: NSFileProviderExtension {
                         }
                             
                         if FileManager.default.fileExists(atPath: atPath) {
-                            _ = self.copyFile(atPath, toPath: toPath)
+                            
+                            let atDate = (try! FileManager.default.attributesOfItem(atPath: atPath)[FileAttributeKey.modificationDate] as! Date)
+                            let toDate = (try! FileManager.default.attributesOfItem(atPath: toPath)[FileAttributeKey.modificationDate] as! Date)
+
+                            if atDate > toDate {
+                                _ = self.copyFile(atPath, toPath: toPath)
+                            }                            
                         } else {
                             FileManager.default.createFile(atPath: toPath, contents: nil, attributes: nil)
                         }
@@ -367,11 +373,11 @@ class FileProvider: NSFileProviderExtension {
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             
             let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
-            NSLog("[LOG] Item changed at URL %@ %lu", url as NSURL, fileSize)
             if (fileSize == 0) {
                 return
             } else {
                 _ = self.copyFile(url.path, toPath: changeDocumentPath)
+                _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path+"/"+identifier.rawValue+"/"+fileName)
             }
             
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
@@ -379,7 +385,7 @@ class FileProvider: NSFileProviderExtension {
                 guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                     return
                 }
-            
+                
                 DispatchQueue.main.async {
 
                     let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, url.path))
