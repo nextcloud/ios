@@ -358,11 +358,6 @@ class FileProvider: NSFileProviderExtension {
             assert(pathComponents.count > 2)
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
 
-            // get item
-            guard let item = try? item(for: identifier) else {
-                return
-            }
-            
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
                 
                 guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
@@ -897,6 +892,13 @@ class FileProvider: NSFileProviderExtension {
                 NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in
                     print("Registe download task")
                 }
+            }
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            // get item
+            guard let item = try? self.item(for: identifier) else {
+                return
             }
         }
     }

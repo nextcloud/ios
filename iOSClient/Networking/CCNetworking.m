@@ -686,7 +686,7 @@
     
     float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:directoryID];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName directoryID:directoryID];
     
     if (metadata) {
         
@@ -1155,7 +1155,7 @@
     
     float progress = (float) totalBytesSent / (float)totalBytesExpectedToSend;
 
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataFromFileName:fileName directoryID:directoryID];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName directoryID:directoryID];
     
     if (metadata) {
             

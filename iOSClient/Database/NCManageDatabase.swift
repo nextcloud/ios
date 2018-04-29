@@ -1851,7 +1851,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getMetadataFromFileName(_ fileName: String, directoryID: String) -> tableMetadata? {
+    @objc func getMetadataInSessionFromFileName(_ fileName: String, directoryID: String) -> tableMetadata? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -1860,7 +1860,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@ AND fileName = %@", tableAccount.account, directoryID, fileName).first else {
+        guard let result = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", tableAccount.account, directoryID, fileName).first else {
             return nil
         }
         
