@@ -390,7 +390,7 @@ class FileProvider: NSFileProviderExtension {
                         let metadataNet = CCMetadataNet()
                         
                         metadataNet.account = account
-                        metadataNet.assetLocalIdentifier = CCUtility.createRandomString(20)
+                        metadataNet.assetLocalIdentifier = "Change Document" + CCUtility.createRandomString(20)
                         metadataNet.fileName = fileName
                         metadataNet.path = changeDocumentPath
                         metadataNet.selector = selectorUploadFile
@@ -842,7 +842,7 @@ class FileProvider: NSFileProviderExtension {
                 let metadataNet = CCMetadataNet()
                 
                 metadataNet.account = account
-                metadataNet.assetLocalIdentifier = CCUtility.createRandomString(20)
+                metadataNet.assetLocalIdentifier = "Import Document" + CCUtility.createRandomString(20)
                 metadataNet.fileName = fileName
                 metadataNet.path = importDocumentURL!.path + "/" + metadata.fileNameView
                 metadataNet.selector = selectorUploadFile

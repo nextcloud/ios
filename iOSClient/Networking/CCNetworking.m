@@ -1263,6 +1263,8 @@
             }
         }
         
+        // Delete on [File Provider]
+        
         // Actvity
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
     }
