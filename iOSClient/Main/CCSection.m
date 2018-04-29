@@ -81,6 +81,7 @@
     long counterSessionUpload = 0;
     NSMutableArray *copyRecords = [NSMutableArray new];
     NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
+    NSMutableArray *fileInUpload = [NSMutableArray new];
     
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
     
@@ -93,7 +94,20 @@
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     NSMutableArray *metadataFilesFavorite = [NSMutableArray new];
     
+    // fileName in Upload [PickerFileProvider]
     for (tableMetadata* metadata in records) {
+        if ([metadata.session containsString:@"upload"]) {
+            [fileInUpload addObject:metadata.fileName];
+        }
+    }
+    
+    for (tableMetadata* metadata in records) {
+        
+        // remove duplicate in Upload [PickerFileProvider]
+        if (fileInUpload.count > 0 && ![metadata.session containsString:@"upload"]) {
+            if ([fileInUpload containsObject:metadata.fileName])
+                continue;
+        }
         
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
             
