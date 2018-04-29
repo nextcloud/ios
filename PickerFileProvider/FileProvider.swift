@@ -403,7 +403,7 @@ class FileProvider: NSFileProviderExtension {
                     }
                     
                     // Upload on cloud
-                    if NCManageDatabase.sharedInstance.queueUploadLockPath(url.path) != nil {
+                    if NCManageDatabase.sharedInstance.queueUploadLockPath(changeDocumentPath) != nil {
                         self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
                     }
                 }
