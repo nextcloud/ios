@@ -911,6 +911,12 @@ class FileProvider: NSFileProviderExtension {
         
         if (task != nil) {
             uploadingIdentifier.append(identifier.rawValue)
+            
+            if #available(iOSApplicationExtension 11.0, *) {
+                NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in
+                    print("Registe download task")
+                }
+            }
         }
     }
     
@@ -959,11 +965,9 @@ class FileProvider: NSFileProviderExtension {
     func deleteFile(_ atPath: String) -> Error? {
         
         var errorResult: Error?
-
-        let url = URL(string: atPath)
         
         do {
-            _ = try FileManager.default.removeItem(at: url!)
+            try FileManager.default.removeItem(atPath: atPath)
         } catch let error {
             errorResult = error
         }
