@@ -29,7 +29,9 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
     
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
+        
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
+        
         super.init()
     }
     
@@ -38,6 +40,26 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
     }
     
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
+        
+        var items: [NSFileProviderItemProtocol] = []
+
+         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, enumeratedItemIdentifier.rawValue)) else {
+            observer.finishEnumerating(upTo: nil)
+            return
+        }
+        
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            observer.finishEnumerating(upTo: nil)
+            return
+        }
+        
+        let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+        items.append(item)
+        
+        observer.didEnumerate(items)
+        observer.finishEnumerating(upTo: nil)
+    
+
         /* TODO:
          - inspect the page to determine whether this is an initial or a follow-up request
          
@@ -63,6 +85,5 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
          - inform the observer when you have finished enumerating up to a subsequent sync anchor
          */
     }
-    
 }
 
