@@ -29,9 +29,7 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
     
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
-        
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
-        
         super.init()
     }
     
