@@ -129,15 +129,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
     
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
-        /*
-         - query the server for updates since the passed-in sync anchor
-         
-         If this is an enumerator for the active set:
-         - note the changes in your local database
-         
-         - inform the observer about item deletions and updates (modifications + insertions)
-         - inform the observer when you have finished enumerating up to a subsequent sync anchor
-         */
         
         observer.finishEnumeratingChanges(upTo: anchor, moreComing: false)
     }
