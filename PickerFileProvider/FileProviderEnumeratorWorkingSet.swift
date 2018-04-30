@@ -49,6 +49,26 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
          - inform the observer about the items returned by the server (possibly multiple times)
          - inform the observer that you are finished with this page
          */
+        
+        var items: [NSFileProviderItemProtocol] = []
+        
+        let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", account))
+        
+        for tag in tags {
+            
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, tag.fileID))  {
+                
+                guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+                    continue
+                }
+                
+                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+                items.append(item)
+            }
+        }
+        
+        observer.didEnumerate(items)
+        observer.finishEnumerating(upTo: nil)
     }
     
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
