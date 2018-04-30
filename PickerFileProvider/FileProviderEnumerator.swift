@@ -38,21 +38,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
             if (enumeratedItemIdentifier == .rootContainer) {
                 serverUrl = homeServerUrl
-            } else if (enumeratedItemIdentifier == .workingSet) {
-                serverUrl = "workingSet"
             } else {
                 if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, enumeratedItemIdentifier.rawValue))  {
-                    
-                    if metadata.directory == true {
-                        
-                        if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID))  {
-                            serverUrl = directorySource.serverUrl + "/" + metadata.fileName
-                        }
-                        
-                    } else {
-                        
-                        print("è un file")
-                        
+                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID))  {
+                        serverUrl = directorySource.serverUrl + "/" + metadata.fileName
                     }
                 }
             }
