@@ -174,9 +174,21 @@ class FileProvider: NSFileProviderExtension {
                     if (!metadata.directory) {
                         
                         let identifierPathUrl = fileProviderStorageURL!.appendingPathComponent(metadata.fileID)
-                        let atPath = "\(directoryUser)/\(metadata.fileID)"
-                        let toPath = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
+                        //let fileDirectoryUser = "\(directoryUser)/\(metadata.fileID)"
+                        let fileIdentifier = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
                         
+                        do {
+                            try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
+                        } catch let error {
+                            print("error: \(error)")
+                        }
+                        
+                        if FileManager.default.fileExists(atPath: fileIdentifier)  == false {
+                            FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
+                        }
+
+                        
+                        /*
                         do {
                             try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
                         } catch let error {
@@ -196,6 +208,7 @@ class FileProvider: NSFileProviderExtension {
                         } else {
                             FileManager.default.createFile(atPath: toPath, contents: nil, attributes: nil)
                         }
+                        */
                     }
                     
                     return FileProviderItem(metadata: metadata, serverUrl: directory.serverUrl)
