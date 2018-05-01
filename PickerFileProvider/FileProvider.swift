@@ -673,6 +673,8 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
+        refreshEnumerator(identifier: itemIdentifier, serverUrl: "WorkingSet")
+        
         completionHandler(item, nil)
     }
     
@@ -894,22 +896,25 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        
         updateItem = try? self.item(for: identifier)
        
-        if serverUrl == homeServerUrl {
-            NSFileProviderManager.default.signalEnumerator(for: .rootContainer, completionHandler: { (error) in
-                print("send signal rootContainer")
-            })
-        } else if serverUrl == "WorkingSet" {
-            NSFileProviderManager.default.signalEnumerator(for: .workingSet, completionHandler: { (error) in
-                print("send signal workingSet")
-            })
-        } else {
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl)) {
-                let itemDirectory = NSFileProviderItemIdentifier(directory.fileID)
-                NSFileProviderManager.default.signalEnumerator(for: itemDirectory, completionHandler: { (error) in
-                    print("send signal")
+            if serverUrl == homeServerUrl {
+                NSFileProviderManager.default.signalEnumerator(for: .rootContainer, completionHandler: { (error) in
+                    print("send signal rootContainer")
                 })
+            } else if serverUrl == "WorkingSet" {
+                NSFileProviderManager.default.signalEnumerator(for: .workingSet, completionHandler: { (error) in
+                    print("send signal workingSet")
+                })
+            } else {
+                if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl)) {
+                    let itemDirectory = NSFileProviderItemIdentifier(directory.fileID)
+                    NSFileProviderManager.default.signalEnumerator(for: itemDirectory, completionHandler: { (error) in
+                        print("send signal")
+                    })
+                }
             }
         }
     }
