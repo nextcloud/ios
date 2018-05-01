@@ -135,6 +135,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 print("error: \(error)")
             }
             
+            // Download
             if fileSize == 0 {
                 self.isDownloaded = false
                 self.isMostRecentVersionDownloaded = false
