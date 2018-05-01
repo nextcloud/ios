@@ -43,6 +43,9 @@ var changeDocumentURL: URL?
 // Array file in Upload
 var uploadingIdentifier = [String]()
 
+//
+var updateItem: NSFileProviderItem?
+
 class FileProvider: NSFileProviderExtension {
     
     override init() {
