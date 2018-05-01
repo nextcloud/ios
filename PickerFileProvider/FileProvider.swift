@@ -829,9 +829,6 @@ class FileProvider: NSFileProviderExtension {
             
             completionHandler(item, nil)
             
-            // Refresh UI
-            self.refreshEnumerator(serverUrl: serverUrl)
-
         }, failure: { (message, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
