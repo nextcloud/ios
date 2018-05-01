@@ -39,12 +39,26 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
         
         var items: [NSFileProviderItemProtocol] = []
         
+        // Tag
         let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", account))
-        
         for tag in tags {
             
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, tag.fileID))  {
                 
+                guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+                    continue
+                }
+                
+                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+                items.append(item)
+            }
+        }
+        
+        // Favorite
+        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND favorite = true", account), sorted: "fileName", ascending: true)
+        if metadatas != nil {
+            for metadata in metadatas! {
+            
                 guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                     continue
                 }
