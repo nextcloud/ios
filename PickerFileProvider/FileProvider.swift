@@ -866,7 +866,7 @@ class FileProvider: NSFileProviderExtension {
             _ = self.deleteFile(fileNameLocalPath)
             
             // Refresh
-            self.refreshEnumerator(serverUrl: serverUrl)
+            self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
             
         }, failure: { (message, errorCode) in
             // remove identifier from array upload
@@ -887,13 +887,15 @@ class FileProvider: NSFileProviderExtension {
         }
     }
     
-    func refreshEnumerator(serverUrl: String) {
+    func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
             return
         }
         
+        updateItem = try? self.item(for: identifier)
+       
         if serverUrl == homeServerUrl {
             NSFileProviderManager.default.signalEnumerator(for: .rootContainer, completionHandler: { (error) in
                 print("send signal rootContainer")
