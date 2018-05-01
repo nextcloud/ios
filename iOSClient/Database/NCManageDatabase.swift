@@ -2850,7 +2850,8 @@ class NCManageDatabase: NSObject {
     @objc func getTags(predicate: NSPredicate) -> [tableTag] {
         
         let realm = try! Realm()
-        
+        realm.refresh()
+
         let results = realm.objects(tableTag.self).filter(predicate)
         
         return Array(results.map { tableTag.init(value:$0) })
@@ -2859,6 +2860,7 @@ class NCManageDatabase: NSObject {
     @objc func getTag(predicate: NSPredicate) -> tableTag? {
         
         let realm = try! Realm()
+        realm.refresh()
         
         guard let result = realm.objects(tableTag.self).filter(predicate).first else {
             return nil
