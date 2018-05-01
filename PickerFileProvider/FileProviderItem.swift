@@ -25,9 +25,6 @@ import FileProvider
 
 class FileProviderItem: NSObject, NSFileProviderItem {
 
-    // TODO: implement an initializer to create an item from your extension's backing model
-    // TODO: implement the accessors to return the values from your extension's backing model
-
     // Providing Required Properties
     var itemIdentifier: NSFileProviderItemIdentifier                // The item's persistent identifier
     var filename: String = ""                                       // The item's filename
