@@ -40,10 +40,7 @@ var fileProviderStorageURL: URL?
 var importDocumentURL: URL?
 var changeDocumentURL: URL?
 
-// Array file in Upload
-var uploadingIdentifier = [String]()
-
-//
+// Item for refresh
 var updateItem: NSFileProviderItem?
 
 class FileProvider: NSFileProviderExtension {
@@ -354,12 +351,12 @@ class FileProvider: NSFileProviderExtension {
                     return
                 }
                 
-                DispatchQueue.main.async {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
 
                     // Copy file to Change Directory
                     _ = self.copyFile(url.path, toPath: changeDocumentPath)
                     
-                    let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, url.path))
+                    let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, changeDocumentPath))
                 
                     if queue?.count == 0 {
                     
@@ -861,9 +858,6 @@ class FileProvider: NSFileProviderExtension {
             
             _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
-            // remove identifier from array upload
-            uploadingIdentifier = uploadingIdentifier.filter() { $0 != identifier.rawValue }
-
             // Remove file *changeDocument
             _ = self.deleteFile(fileNameLocalPath)
             
@@ -871,15 +865,11 @@ class FileProvider: NSFileProviderExtension {
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
             
         }, failure: { (message, errorCode) in
-            // remove identifier from array upload
-            uploadingIdentifier = uploadingIdentifier.filter() { $0 != identifier.rawValue }
             // unlock queueUpload
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: fileNameLocalPath)
         })
         
         if (task != nil) {
-            
-            uploadingIdentifier.append(identifier.rawValue)
             
             if #available(iOSApplicationExtension 11.0, *) {
                 NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in

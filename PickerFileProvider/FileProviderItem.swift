@@ -108,6 +108,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             let identifierPathUrl = fileProviderStorageURL!.appendingPathComponent(metadata.fileID)
             let fileIdentifier = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
             let fileDirectoryUser = "\(directoryUser)/\(metadata.fileID)"
+            let changeDocumentPath = changeDocumentURL!.path + "/" + metadata.fileNameView
             var fileSize = 0 as Double
 
             do {
@@ -146,12 +147,13 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             }
             
             // Upload
-            if uploadingIdentifier.contains(metadata.fileID) {
-                self.isUploading = true
-                self.isUploaded = false
-            } else {
+            let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, changeDocumentPath))
+            if queue?.count == 0 {
                 self.isUploading = false
                 self.isUploaded = true
+            } else {
+                self.isUploading = true
+                self.isUploaded = false
             }
         }
         
