@@ -133,11 +133,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
     
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        
         guard let serverUrl = serverUrl else {
             return
         }
-        
         let anchor = NSFileProviderSyncAnchor(serverUrl.data(using: .utf8)!)
         completionHandler(anchor)
     }
