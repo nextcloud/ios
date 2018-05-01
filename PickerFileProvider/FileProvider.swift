@@ -174,7 +174,6 @@ class FileProvider: NSFileProviderExtension {
                     if (!metadata.directory) {
                         
                         let identifierPathUrl = fileProviderStorageURL!.appendingPathComponent(metadata.fileID)
-                        //let fileDirectoryUser = "\(directoryUser)/\(metadata.fileID)"
                         let fileIdentifier = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
                         
                         do {
@@ -186,29 +185,6 @@ class FileProvider: NSFileProviderExtension {
                         if FileManager.default.fileExists(atPath: fileIdentifier)  == false {
                             FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
                         }
-
-                        
-                        /*
-                        do {
-                            try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
-                        } catch let error {
-                            print("error: \(error)")
-                        }
-                            
-                        if FileManager.default.fileExists(atPath: atPath) {
-                            if FileManager.default.fileExists(atPath: toPath) {
-                                let atDate = (try! FileManager.default.attributesOfItem(atPath: atPath)[FileAttributeKey.modificationDate] as! Date)
-                                let toDate = (try! FileManager.default.attributesOfItem(atPath: toPath)[FileAttributeKey.modificationDate] as! Date)
-                                if atDate > toDate {
-                                    _ = self.copyFile(atPath, toPath: toPath)
-                                }
-                            } else {
-                                _ = self.copyFile(atPath, toPath: toPath)
-                            }
-                        } else {
-                            FileManager.default.createFile(atPath: toPath, contents: nil, attributes: nil)
-                        }
-                        */
                     }
                     
                     return FileProviderItem(metadata: metadata, serverUrl: directory.serverUrl)
