@@ -865,9 +865,6 @@ class FileProvider: NSFileProviderExtension {
             // Remove file on queueUpload
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
             
-            // Remove file *changeDocument
-            _ = self.deleteFile(fileNameLocalPath)
-            
             metadata.date = date! as NSDate
             
             do {
@@ -877,18 +874,13 @@ class FileProvider: NSFileProviderExtension {
                 print("error: \(error)")
             }
             
-            guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                return
-            }
+            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
             // remove identifier from array upload
             uploadingIdentifier = uploadingIdentifier.filter() { $0 != identifier.rawValue }
-            
-            // item
-            _ = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
-            
-            // Refresh UI
-            self.refreshEnumerator(serverUrl: serverUrl)
+
+            // Remove file *changeDocument
+            _ = self.deleteFile(fileNameLocalPath)
             
         }, failure: { (message, errorCode) in
             // remove identifier from array upload
