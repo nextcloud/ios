@@ -170,23 +170,6 @@ class FileProvider: NSFileProviderExtension {
         
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
                 if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID)) {
-                    
-                    if (!metadata.directory) {
-                        
-                        let identifierPathUrl = fileProviderStorageURL!.appendingPathComponent(metadata.fileID)
-                        let fileIdentifier = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
-                        
-                        do {
-                            try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
-                        } catch let error {
-                            print("error: \(error)")
-                        }
-                        
-                        if FileManager.default.fileExists(atPath: fileIdentifier)  == false {
-                            FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
-                        }
-                    }
-                    
                     return FileProviderItem(metadata: metadata, serverUrl: directory.serverUrl)
                 }
             }
