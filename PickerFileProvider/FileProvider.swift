@@ -862,6 +862,9 @@ class FileProvider: NSFileProviderExtension {
             // Remove file *changeDocument
             _ = self.deleteFile(fileNameLocalPath)
             
+            // Refresh
+            self.refreshEnumerator(serverUrl: serverUrl)
+            
         }, failure: { (message, errorCode) in
             // remove identifier from array upload
             uploadingIdentifier = uploadingIdentifier.filter() { $0 != identifier.rawValue }
