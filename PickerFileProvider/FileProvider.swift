@@ -362,14 +362,6 @@ class FileProvider: NSFileProviderExtension {
             assert(pathComponents.count > 2)
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             
-            let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
-            if (fileSize == 0) {
-                return
-            } else {
-                _ = self.copyFile(url.path, toPath: changeDocumentPath)
-                _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path+"/"+identifier.rawValue+"/"+fileName)
-            }
-            
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
                 
                 guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
@@ -378,6 +370,9 @@ class FileProvider: NSFileProviderExtension {
                 
                 DispatchQueue.main.async {
 
+                    // Copy file to Change Directory
+                    _ = self.copyFile(url.path, toPath: changeDocumentPath)
+                    
                     let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, url.path))
                 
                     if queue?.count == 0 {
@@ -870,10 +865,6 @@ class FileProvider: NSFileProviderExtension {
             // Remove file on queueUpload
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
             
-            // Copy file *directoryUser *fileProviderStorage
-            _ = self.copyFile(fileNameLocalPath, toPath: directoryUser+"/"+metadata.fileID)
-            _ = self.copyFile(fileNameLocalPath, toPath: fileProviderStorageURL!.path+"/"+metadata.fileID+"/"+fileName)
-            
             // Remove file *changeDocument
             _ = self.deleteFile(fileNameLocalPath)
             
@@ -900,6 +891,8 @@ class FileProvider: NSFileProviderExtension {
             self.refreshEnumerator(serverUrl: serverUrl)
             
         }, failure: { (message, errorCode) in
+            // remove identifier from array upload
+            uploadingIdentifier = uploadingIdentifier.filter() { $0 != identifier.rawValue }
             // unlock queueUpload
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: fileNameLocalPath)
         })
