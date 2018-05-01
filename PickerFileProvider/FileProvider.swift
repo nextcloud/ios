@@ -307,7 +307,6 @@ class FileProvider: NSFileProviderExtension {
                 fileSize = attr[FileAttributeKey.size] as! UInt64
             } catch let error {
                 print("Error: \(error)")
-                completionHandler(NSFileProviderError(.noSuchItem))
             }
             
             // Do not exists
