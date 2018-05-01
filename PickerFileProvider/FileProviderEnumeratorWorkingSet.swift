@@ -57,4 +57,13 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
         observer.didEnumerate(items)
         observer.finishEnumerating(upTo: nil)
     }
+    
+    func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
+        observer.finishEnumeratingChanges(upTo: anchor, moreComing: false)
+    }
+    
+    func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
+        let anchor = NSFileProviderSyncAnchor("WorkingSet".data(using: .utf8)!)
+        completionHandler(anchor)
+    }
 }
