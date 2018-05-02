@@ -355,11 +355,6 @@ class FileProvider: NSFileProviderExtension {
                 // Copy file to Change Directory
                 _ = self.copyFile(url.path, toPath: changeDocumentPath)
                 
-                let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, changeDocumentPath))
-                if (queue?.count)! > 0 {
-                    return
-                }
-                
                 metadataNet.account = account
                 metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + CCUtility.createRandomString(20)
                 metadataNet.fileName = fileName
@@ -371,6 +366,9 @@ class FileProvider: NSFileProviderExtension {
                 metadataNet.taskStatus = Int(k_taskStatusResume)
                 
                 _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+                
+                // Refresh
+                self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
             }
             
         } else {
