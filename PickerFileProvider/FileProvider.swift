@@ -43,7 +43,7 @@ var changeDocumentURL: URL?
 // Item for refresh
 var listUpdateItems = [NSFileProviderItem]()
 
-class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingDelegate {
+class FileProvider: NSFileProviderExtension {
     
     override init() {
         
@@ -61,7 +61,7 @@ class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingD
         homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
         directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
 
-        ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
+        ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
         
         groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
