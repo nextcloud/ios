@@ -129,9 +129,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
     
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
-        if updateItem != nil {
-            observer.didUpdate([updateItem!])
-        }
+        observer.didUpdate(listUpdateItems)
         observer.finishEnumeratingChanges(upTo: anchor, moreComing: false)
     }
     

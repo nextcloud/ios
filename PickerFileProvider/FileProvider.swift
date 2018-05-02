@@ -41,7 +41,7 @@ var importDocumentURL: URL?
 var changeDocumentURL: URL?
 
 // Item for refresh
-var updateItem: NSFileProviderItem?
+var listUpdateItems = [NSFileProviderItem]()
 
 class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingDelegate {
     
@@ -879,7 +879,10 @@ class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingD
             return
         }
         
-        updateItem = try? self.item(for: identifier)
+        let item = try? self.item(for: identifier)
+        if item != nil {
+            listUpdateItems.append(item!)
+        }
        
         if serverUrl == homeServerUrl {
             NSFileProviderManager.default.signalEnumerator(for: .rootContainer, completionHandler: { (error) in
