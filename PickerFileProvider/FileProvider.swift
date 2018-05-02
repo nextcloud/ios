@@ -371,7 +371,11 @@ class FileProvider: NSFileProviderExtension {
                 self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
                 
                 // Upload
-                self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
+                //self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
+                
+                self.startProvidingItem(at: url) { (error) in
+                    print("...")
+                }
             }
             
         } else {
