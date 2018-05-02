@@ -2200,18 +2200,7 @@ class NCManageDatabase: NSObject {
             do {
                 try realm.write {
                     
-                    var result: tableQueueUpload?
-                    
-                    if metadataNet.path == nil {
-                        
-                        result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier ,metadataNet.selector).first
-                        
-                    } else {
-                        
-                        result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND path = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.path ,metadataNet.selector).first
-                    }
-                    
-                    if result == nil {
+                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
                         
                         // Add new
                         let addObject = tableQueueUpload()
@@ -2254,18 +2243,7 @@ class NCManageDatabase: NSObject {
                 
                 for metadataNet in metadatasNet {
                     
-                    var result: tableQueueUpload?
-                    
-                    if metadataNet.path == nil {
-                        
-                        result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier ,metadataNet.selector).first
-                        
-                    } else {
-                        
-                        result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND path = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.path ,metadataNet.selector).first
-                    }
-                    
-                    if result == nil {
+                    if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
                         
                         // Add new
                         let addObject = tableQueueUpload()

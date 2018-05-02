@@ -356,7 +356,7 @@ class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingD
                 _ = self.copyFile(url.path, toPath: changeDocumentPath)
                 
                 metadataNet.account = account
-                metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + CCUtility.createRandomString(20)
+                metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + identifier.rawValue
                 metadataNet.fileName = fileName
                 metadataNet.path = changeDocumentPath
                 metadataNet.selector = selectorUploadFile
@@ -806,7 +806,7 @@ class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingD
                 let metadataNet = CCMetadataNet()
                 
                 metadataNet.account = account
-                metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + CCUtility.createRandomString(20)
+                metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + fileID!
                 metadataNet.fileName = fileName
                 metadataNet.path = importDocumentURL!.path + "/" + metadata.fileNameView
                 metadataNet.selector = selectorUploadFile
