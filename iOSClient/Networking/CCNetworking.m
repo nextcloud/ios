@@ -1263,7 +1263,16 @@
             }
         }
         
-        // Delete on [File Provider]
+        // Delete [File Provider Storage / Change Document / fileName ]
+        if ([metadata.assetLocalIdentifier containsString:@"File Provider Storage"]) {
+            
+            NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
+            NSURL *dirFileProviderStorage = [dirGroup URLByAppendingPathComponent:k_assetLocalIdentifierFileProviderStorage];
+            NSURL *dirChangeDocument = [dirFileProviderStorage URLByAppendingPathComponent:k_fileProviderStorageChangeDocument];
+            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", dirChangeDocument.path, metadata.fileName];
+            
+            [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
+        }
         
         // Actvity
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
