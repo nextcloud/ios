@@ -43,7 +43,7 @@ var changeDocumentURL: URL?
 // Item for refresh
 var updateItem: NSFileProviderItem?
 
-class FileProvider: NSFileProviderExtension {
+class FileProvider: NSFileProviderExtension, OCNetworkingDelegate {
     
     override init() {
         
@@ -61,7 +61,7 @@ class FileProvider: NSFileProviderExtension {
         homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
         directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
 
-        ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
+        ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
         
         groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
         fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
@@ -369,6 +369,9 @@ class FileProvider: NSFileProviderExtension {
                 
                 // Refresh
                 self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
+                
+                // Upload
+                self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
             }
             
         } else {
@@ -853,6 +856,8 @@ class FileProvider: NSFileProviderExtension {
         }, failure: { (message, errorCode) in
             // unlock queueUpload
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: fileNameLocalPath)
+            // Refresh
+            self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
         })
         
         if (task != nil) {
