@@ -317,11 +317,11 @@ class FileProvider: NSFileProviderExtension {
                 
                 let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, changeDocumentPath))
                 if queue?.count == 0 {
-                    // Upload
-                    self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
-                } else {
                     // Refresh
                     self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
+                } else {
+                    // Upload
+                    self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
                 }
                 
                 // Exists
