@@ -2310,46 +2310,6 @@ class NCManageDatabase: NSObject {
         return metadataNet
     }
     
-    @objc func queueUploadLockPath(_ path: String) -> CCMetadataNet? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
-        let realm = try! Realm()
-        
-        realm.beginWrite()
-        
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false AND path == %@", tableAccount.account, path).sorted(byKeyPath: "date", ascending: true).first else {
-            realm.cancelWrite()
-            return nil
-        }
-        
-        let metadataNet = CCMetadataNet()
-        
-        metadataNet.account = result.account
-        metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
-        metadataNet.fileName = result.fileName
-        metadataNet.path = result.path
-        metadataNet.selector = result.selector
-        metadataNet.selectorPost = result.selectorPost
-        metadataNet.serverUrl = result.serverUrl
-        metadataNet.session = result.session
-        metadataNet.taskStatus = Int(k_taskStatusResume)
-        
-        // Lock
-        result.lock = true
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return nil
-        }
-        
-        return metadataNet
-    }
-    
     @objc func getQueueUploadInLock() -> [tableQueueUpload]? {
         
         guard let tableAccount = self.getAccountActive() else {
