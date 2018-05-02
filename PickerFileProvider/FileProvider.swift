@@ -341,6 +341,7 @@ class FileProvider: NSFileProviderExtension {
             let fileName = url.lastPathComponent
             let pathComponents = url.pathComponents
             let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
+            let metadataNet = CCMetadataNet()
 
             assert(pathComponents.count > 2)
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
@@ -359,7 +360,6 @@ class FileProvider: NSFileProviderExtension {
                     return
                 }
                 
-                let metadataNet = CCMetadataNet()
                 metadataNet.account = account
                 metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + CCUtility.createRandomString(20)
                 metadataNet.fileName = fileName
@@ -369,35 +369,8 @@ class FileProvider: NSFileProviderExtension {
                 metadataNet.serverUrl = serverUrl
                 metadataNet.session = k_upload_session
                 metadataNet.taskStatus = Int(k_taskStatusResume)
-                _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
                 
-                let ocNetworkingX = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
-                _ = ocNetworkingX?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: changeDocumentPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
-                    
-                    // Remove file on queueUpload
-                    NCManageDatabase.sharedInstance.deleteQueueUpload(path: changeDocumentPath)
-                    
-                    metadata.date = date! as NSDate
-                    
-                    do {
-                        let attributes = try FileManager.default.attributesOfItem(atPath: changeDocumentPath)
-                        metadata.size = attributes[FileAttributeKey.size] as! Double
-                    } catch let error {
-                        print("error: \(error)")
-                    }
-                    
-                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    
-                    // Remove file *changeDocument
-                    _ = self.deleteFile(changeDocumentPath)
-                    
-                    // Refresh
-                    self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
-                    
-                }, failure: { (message, errorCode) in
-                    // unlock queueUpload
-                    NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: changeDocumentPath)
-                })
+                _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
             }
             
         } else {
@@ -855,25 +828,7 @@ class FileProvider: NSFileProviderExtension {
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
     
-    /*
     func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, metadata: tableMetadata, identifier: NSFileProviderItemIdentifier) {
-        
-        let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, fileNameLocalPath))
-        if (queue?.count)! > 0 {
-            return
-        }
-        
-        let metadataNet = CCMetadataNet()
-        metadataNet.account = account
-        metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + CCUtility.createRandomString(20)
-        metadataNet.fileName = fileName
-        metadataNet.path = fileNameLocalPath
-        metadataNet.selector = selectorUploadFile
-        metadataNet.selectorPost = ""
-        metadataNet.serverUrl = serverUrl
-        metadataNet.session = k_upload_session
-        metadataNet.taskStatus = Int(k_taskStatusResume)
-        _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
         
         let task = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
             
@@ -911,7 +866,6 @@ class FileProvider: NSFileProviderExtension {
             }
         }
     }
-    */
     
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         

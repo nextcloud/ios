@@ -138,9 +138,7 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSURLSessionTask *sessionTask = [communication downloadFileSession:fileNameServerUrl toDestiny:fileNameLocalPath defaultPriority:YES onCommunication:communication progress:^(NSProgress *progress) {
-
         //float percent = roundf (progress.fractionCompleted * 100);
-
     } successRequest:^(NSURLResponse *response, NSURL *filePath) {
 
         int64_t totalUnitCount = 0;
