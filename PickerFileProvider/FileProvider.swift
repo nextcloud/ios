@@ -687,7 +687,7 @@ class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingD
         var directoryPredicate: NSPredicate
         var size = 0 as Double
         var fileNamePathUpload: URL?
-        
+
         if parentItemIdentifier == .rootContainer {
             directoryPredicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
         } else {
@@ -766,7 +766,7 @@ class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingD
         
         // ------------------------------------------------------------
     
-        // upload (NO SESSION)
+        // upload
         _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNamePathUpload?.path, communication: CCNetworking.shared().sharedOCCommunication(), success: { (fileID, etag, date) in
                 
             let metadata = tableMetadata()
@@ -818,8 +818,10 @@ class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingD
                 _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
             }
             
+            self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+
             completionHandler(item, nil)
-            
+
         }, failure: { (message, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
