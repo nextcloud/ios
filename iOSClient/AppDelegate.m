@@ -1527,14 +1527,14 @@
     NSInteger counterUploadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
     NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getQueueUploadInLock];
      
-     if (counterUploadInSession == 0 && [tableMetadatasInLock count] > 0) {
+    if (counterUploadInSession == 0 && [tableMetadatasInLock count] > 0) {
      
-         // Unlock
-         for (tableMetadata *metadata in tableMetadatasInLock) {
-             if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
-                 [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier path:nil];
-         }
-     }
+        // Unlock
+        for (tableMetadata *metadata in tableMetadatasInLock) {
+            if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
+                [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier path:nil];
+        }
+    }
 }
 
 - (void)verifyUploadInErrorOrWait
