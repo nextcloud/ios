@@ -43,7 +43,7 @@ var changeDocumentURL: URL?
 // Item for refresh
 var updateItem: NSFileProviderItem?
 
-class FileProvider: NSFileProviderExtension, OCNetworkingDelegate {
+class FileProvider: NSFileProviderExtension, OCNetworkingDelegate, CCNetworkingDelegate {
     
     override init() {
         
