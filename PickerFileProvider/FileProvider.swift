@@ -259,7 +259,19 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
 
+            let pathComponents = url.pathComponents
+            let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             var fileSize : UInt64 = 0
+            
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue)) else {
+                completionHandler(NSFileProviderError(.noSuchItem))
+                return
+            }
+            
+            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+                completionHandler(NSFileProviderError(.noSuchItem))
+                return
+            }
             
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: url.path)
@@ -270,21 +282,8 @@ class FileProvider: NSFileProviderExtension {
             
             // Do not exists
             if fileSize == 0 {
-                
-                let pathComponents = url.pathComponents
-                let identifier = pathComponents[pathComponents.count - 2]
-                
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier)) else {
-                    completionHandler(NSFileProviderError(.noSuchItem))
-                    return
-                }
-                
-                guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID)) else {
-                    completionHandler(NSFileProviderError(.noSuchItem))
-                    return
-                }
-                
-                let task = ocNetworking?.downloadFileNameServerUrl("\(directory.serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght) in
+            
+                let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght) in
                     
                     if (lenght > 0) {
                         
@@ -307,13 +306,15 @@ class FileProvider: NSFileProviderExtension {
                 })
                 
                 if task != nil {
-                    NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier)) { (error) in
+                    NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in
                         print("Registe download task")
                     }
                 }
                 
             } else {
                 
+                // Refresh
+                self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
                 // Exists
                 completionHandler(nil)
             }
@@ -366,9 +367,6 @@ class FileProvider: NSFileProviderExtension {
                 metadataNet.taskStatus = Int(k_taskStatusResume)
                 
                 _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
-                
-                // Refresh
-                self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
                 
                 // Upload
                 self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
