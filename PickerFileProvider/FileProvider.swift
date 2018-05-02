@@ -259,8 +259,10 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
 
+            let fileName = url.lastPathComponent
             let pathComponents = url.pathComponents
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+            let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
             var fileSize : UInt64 = 0
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue)) else {
@@ -313,8 +315,15 @@ class FileProvider: NSFileProviderExtension {
                 
             } else {
                 
-                // Refresh
-                self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
+                let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@", account, changeDocumentPath))
+                if queue?.count == 0 {
+                    // Upload
+                    self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
+                } else {
+                    // Refresh
+                    self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
+                }
+                
                 // Exists
                 completionHandler(nil)
             }
