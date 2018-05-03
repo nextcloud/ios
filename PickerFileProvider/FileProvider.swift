@@ -374,11 +374,10 @@ class FileProvider: NSFileProviderExtension {
             metadataNet.session = k_upload_session
             metadataNet.taskStatus = Int(k_taskStatusResume)
                 
-            //_ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+            _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
                 
             // Upload
-            //self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
-            //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
+            self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
 
         } else {
             
@@ -874,8 +873,6 @@ class FileProvider: NSFileProviderExtension {
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
             
         }, failure: { (message, errorCode) in
-            // unlock queueUpload
-            NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: fileNameLocalPath)
             // Remove from dictionary
             listUpload.removeValue(forKey: identifier.rawValue)
             // Refresh
