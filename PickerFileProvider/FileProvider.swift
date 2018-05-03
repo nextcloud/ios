@@ -378,7 +378,8 @@ class FileProvider: NSFileProviderExtension {
                 
             // Upload
             //self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
-            
+            //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
+
         } else {
             
             let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
@@ -828,8 +829,9 @@ class FileProvider: NSFileProviderExtension {
                 _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
             }
             
-            self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
-
+            if (size > 0) { // MICROSOFT 365 
+                self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+            }
             completionHandler(item, nil)
 
         }, failure: { (message, errorCode) in
