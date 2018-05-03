@@ -350,30 +350,34 @@ class FileProvider: NSFileProviderExtension {
             assert(pathComponents.count > 2)
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
-                
-                guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                    return
-                }
-                
-                // Copy file to Change Directory
-                _ = self.copyFile(url.path, toPath: changeDocumentPath)
-                
-                metadataNet.account = account
-                metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + identifier.rawValue
-                metadataNet.fileName = fileName
-                metadataNet.path = changeDocumentPath
-                metadataNet.selector = selectorUploadFile
-                metadataNet.selectorPost = ""
-                metadataNet.serverUrl = serverUrl
-                metadataNet.session = k_upload_session
-                metadataNet.taskStatus = Int(k_taskStatusResume)
-                
-                _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
-                
-                // Upload
-                self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  else {
+                return
             }
+            
+            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+                return
+            }
+            
+            // Refresh
+            self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
+            
+            // Copy file to Change Directory
+            _ = self.copyFile(url.path, toPath: changeDocumentPath)
+                
+            metadataNet.account = account
+            metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + identifier.rawValue
+            metadataNet.fileName = fileName
+            metadataNet.path = changeDocumentPath
+            metadataNet.selector = selectorUploadFile
+            metadataNet.selectorPost = ""
+            metadataNet.serverUrl = serverUrl
+            metadataNet.session = k_upload_session
+            metadataNet.taskStatus = Int(k_taskStatusResume)
+                
+            //_ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+                
+            // Upload
+            //self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
             
         } else {
             
@@ -592,12 +596,12 @@ class FileProvider: NSFileProviderExtension {
         }
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
+            completionHandler(nil)
             return
         }
         
         guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
+            completionHandler(nil)
             return
         }
         
@@ -626,7 +630,12 @@ class FileProvider: NSFileProviderExtension {
             completionHandler(nil)
             
         }, failure: { (error, errorCode) in
-            completionHandler(NSFileProviderError(.serverUnreachable))
+            
+            if errorCode == 404 {
+                completionHandler(nil)
+            } else {
+                completionHandler(NSFileProviderError(.serverUnreachable))
+            }
         })
     }
     
