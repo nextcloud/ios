@@ -670,19 +670,21 @@ class FileProvider: NSFileProviderExtension {
         guard #available(iOS 11, *) else {
             return
         }
-        
-        // clear list update items
-        listUpdateItems.removeAll()
-        
+                
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(itemIdentifier.rawValue, tagIOS: tagData)
         
-        guard let item = try? item(for: itemIdentifier) else {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue))  else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
         
-        refreshEnumerator(identifier: itemIdentifier, serverUrl: "WorkingSet")
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
         
         completionHandler(item, nil)
     }
