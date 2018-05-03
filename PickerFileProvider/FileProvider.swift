@@ -40,10 +40,9 @@ var fileProviderStorageURL: URL?
 var importDocumentURL: URL?
 var changeDocumentURL: URL?
 
-// Item for refresh
+// List
 var listUpdateItems = [NSFileProviderItem]()
-
-
+var listUpload = [String:URLSessionTask]()
 
 class FileProvider: NSFileProviderExtension {
     
@@ -835,10 +834,16 @@ class FileProvider: NSFileProviderExtension {
     
     func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, metadata: tableMetadata, identifier: NSFileProviderItemIdentifier) {
         
+        if let task = listUpload[identifier.rawValue] {
+            task.cancel()
+        }
+        
         let task = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
             
             // Remove file on queueUpload
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
+            // Remove from dictionary
+            listUpload.removeValue(forKey: identifier.rawValue)
             
             metadata.date = date! as NSDate
             
@@ -860,18 +865,20 @@ class FileProvider: NSFileProviderExtension {
         }, failure: { (message, errorCode) in
             // unlock queueUpload
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: fileNameLocalPath)
+            // Remove from dictionary
+            listUpload.removeValue(forKey: identifier.rawValue)
             // Refresh
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
         })
         
         if (task != nil) {
-            
+            listUpload[identifier.rawValue] = task
             if #available(iOSApplicationExtension 11.0, *) {
                 NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in
                     print("Registe download task")
                 }
             }
-        }
+        }        
     }
     
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
