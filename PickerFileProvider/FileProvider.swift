@@ -539,6 +539,9 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
+        // clear list update items
+        listUpdateItems.removeAll()
+        
         var serverUrl = ""
         
         if parentItemIdentifier == .rootContainer {
@@ -594,6 +597,9 @@ class FileProvider: NSFileProviderExtension {
         guard #available(iOS 11, *) else {
             return
         }
+        
+        // clear list update items
+        listUpdateItems.removeAll()
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
             completionHandler(nil)
@@ -660,6 +666,9 @@ class FileProvider: NSFileProviderExtension {
         guard #available(iOS 11, *) else {
             return
         }
+        
+        // clear list update items
+        listUpdateItems.removeAll()
         
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(itemIdentifier.rawValue, tagIOS: tagData)

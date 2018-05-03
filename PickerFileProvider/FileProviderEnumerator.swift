@@ -61,6 +61,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
         if #available(iOSApplicationExtension 11.0, *) {
             
+            // clear list update items
+            listUpdateItems.removeAll()
+            
             guard let serverUrl = serverUrl else {
                 observer.finishEnumerating(upTo: nil)
                 return
@@ -100,6 +103,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         observer.didEnumerate(items)
                     }
                 }
+                
                 if (items.count == self.recordForPage) {
                     let providerPage = NSFileProviderPage("1".data(using: .utf8)!)
                     observer.finishEnumerating(upTo: providerPage)

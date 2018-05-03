@@ -39,6 +39,9 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
         
         var items: [NSFileProviderItemProtocol] = []
         
+        // clear list update items
+        listUpdateItems.removeAll()
+        
         // Tag
         let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", account))
         for tag in tags {
