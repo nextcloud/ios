@@ -259,7 +259,7 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
 
-            let fileName = url.lastPathComponent
+            //let fileName = url.lastPathComponent
             let pathComponents = url.pathComponents
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             //let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
@@ -881,6 +881,9 @@ class FileProvider: NSFileProviderExtension {
                 }
             }
         }
+        
+        // Refresh
+        self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
     }
     
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
