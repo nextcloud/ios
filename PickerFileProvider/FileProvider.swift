@@ -43,6 +43,8 @@ var changeDocumentURL: URL?
 // Item for refresh
 var listUpdateItems = [NSFileProviderItem]()
 
+
+
 class FileProvider: NSFileProviderExtension {
     
     override init() {
@@ -314,18 +316,7 @@ class FileProvider: NSFileProviderExtension {
                 }
                 
             } else {
-                
-                /*
-                let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND path = %@ AND lock = false", account, changeDocumentPath))
-                if queue?.count == 0 {
-                    // Refresh
-                    self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
-                } else {
-                    // Upload
-                    self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
-                }
-                */
-                
+
                 // Exists
                 completionHandler(nil)
                 // Refresh
