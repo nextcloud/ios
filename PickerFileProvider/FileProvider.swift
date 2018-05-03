@@ -881,9 +881,6 @@ class FileProvider: NSFileProviderExtension {
                 }
             }
         }
-        
-        // Refresh
-        self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
     }
     
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
@@ -895,7 +892,15 @@ class FileProvider: NSFileProviderExtension {
         
         let item = try? self.item(for: identifier)
         if item != nil {
-            listUpdateItems.append(item!)
+            var found = false
+            for updateItem in listUpdateItems {
+                if updateItem.itemIdentifier.rawValue == identifier.rawValue {
+                    found = true
+                }
+            }
+            if !found {
+                listUpdateItems.append(item!)
+            }
         }
        
         if serverUrl == homeServerUrl {
