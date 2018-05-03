@@ -1263,14 +1263,22 @@
             }
         }
         
-        // Delete [File Provider Storage / Change Document / fileName ]
+        // Delete [File Provider Storage / Change Document / fileName ] [File Provider Storage / Import Document / fileName ]
         if ([metadata.assetLocalIdentifier containsString:@"File Provider Storage"]) {
+            
+            NSString *fileNamePath;
             
             NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
             NSURL *dirFileProviderStorage = [dirGroup URLByAppendingPathComponent:k_assetLocalIdentifierFileProviderStorage];
-            NSURL *dirChangeDocument = [dirFileProviderStorage URLByAppendingPathComponent:k_fileProviderStorageChangeDocument];
-            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", dirChangeDocument.path, metadata.fileName];
             
+            NSURL *dirChangeDocument = [dirFileProviderStorage URLByAppendingPathComponent:k_fileProviderStorageChangeDocument];
+            fileNamePath = [NSString stringWithFormat:@"%@/%@", dirChangeDocument.path, metadata.fileName];
+            [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
+            
+            NSURL *dirImportDocument = [dirFileProviderStorage URLByAppendingPathComponent:k_fileProviderStorageImportDocument];
+            fileNamePath = [NSString stringWithFormat:@"%@/%@", dirImportDocument.path, metadata.fileName];
+            [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
+            fileNamePath = [NSString stringWithFormat:@"%@/%@.000", dirImportDocument.path, metadata.fileName];
             [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
         }
         

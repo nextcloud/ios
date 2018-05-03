@@ -362,7 +362,7 @@ class FileProvider: NSFileProviderExtension {
             // Refresh
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
             
-            // Copy file to Change Document & if exists on Import Documentr
+            // Copy file to Change Document & if exists on Import Document
             _ = self.copyFile(url.path, toPath: changeDocumentPath)
             if FileManager.default.fileExists(atPath: importDocumentPath) {
                 _ = self.copyFile(url.path, toPath: importDocumentPath)
