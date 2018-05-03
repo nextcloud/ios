@@ -345,6 +345,7 @@ class FileProvider: NSFileProviderExtension {
             let fileName = url.lastPathComponent
             let pathComponents = url.pathComponents
             let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
+            let importDocumentPath = importDocumentURL!.path + "/" + fileName
             let metadataNet = CCMetadataNet()
 
             assert(pathComponents.count > 2)
@@ -361,8 +362,11 @@ class FileProvider: NSFileProviderExtension {
             // Refresh
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
             
-            // Copy file to Change Directory
+            // Copy file to Change Document & if exists on Import Documentr
             _ = self.copyFile(url.path, toPath: changeDocumentPath)
+            if FileManager.default.fileExists(atPath: importDocumentPath) {
+                _ = self.copyFile(url.path, toPath: importDocumentPath)
+            }
                 
             metadataNet.account = account
             metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + identifier.rawValue
