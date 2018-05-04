@@ -157,14 +157,16 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isUploading = true
                 self.isUploaded = false
             }
+            
+        } else {
+            
+            // Favorite FOLDER
+            favoriteRank = NCManageDatabase.sharedInstance.getTableMetadatasFavoriteRank(metadata.fileID)
         }
         
         // Tag
         if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "account = %@ AND fileID = %@", metadata.account, metadata.fileID)) {
             tagData = tableTag.tagIOS
         }
-     
-        // Favorite
-        favoriteRank = NCManageDatabase.sharedInstance.getTableMetadatasFavoriteRank(metadata.fileID)
     }
 }
