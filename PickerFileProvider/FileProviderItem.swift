@@ -66,6 +66,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     var tagData: Data?                                              // Tag
     
+    var favoriteRank: NSNumber?                                     // Favorite
+    
     var isDirectory = false
 
     init(metadata: tableMetadata, serverUrl: String) {
@@ -161,5 +163,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "account = %@ AND fileID = %@", metadata.account, metadata.fileID)) {
             tagData = tableTag.tagIOS
         }
+     
+        // Favorite
+        favoriteRank = NCManageDatabase.sharedInstance.getTableMetadatasFavoriteRank(metadata.fileID)
     }
 }
