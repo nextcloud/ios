@@ -160,8 +160,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
         } else {
             
-            // Favorite FOLDER
-            favoriteRank = NCManageDatabase.sharedInstance.getTableMetadatasFavoriteRank(metadata.fileID)
+            favoriteRank = listFavoriteRank[metadata.fileID]
         }
         
         // Tag

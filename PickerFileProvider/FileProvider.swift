@@ -42,6 +42,7 @@ var changeDocumentURL: URL?
 
 // List
 var listUpdateItems = [NSFileProviderItem]()
+var listFavoriteRank = [String:NSNumber]()
 
 class FileProvider: NSFileProviderExtension {
     

@@ -39,8 +39,9 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
         
         var items: [NSFileProviderItemProtocol] = []
         
-        // clear list update items
+        // clear list
         listUpdateItems.removeAll()
+        listFavoriteRank.removeAll()
         
         // Tag
         let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", account))
@@ -57,8 +58,8 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
             }
         }
         
-        // Favorite
-        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND favorite = true", account), sorted: "fileNameView", ascending: true)
+        // Favorite Directory
+        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directory = true AND favorite = true", account), sorted: "fileNameView", ascending: true)
         if metadatas != nil {
             for metadata in metadatas! {
             
@@ -66,6 +67,7 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
                     continue
                 }
                 
+                listFavoriteRank[metadata.fileID] = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteRank(metadata.fileID)
                 let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                 items.append(item)
             }

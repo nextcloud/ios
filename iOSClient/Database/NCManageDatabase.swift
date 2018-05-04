@@ -1936,7 +1936,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getTableMetadatasFavoriteRank(_ fileID: String) -> NSNumber {
+    @objc func getTableMetadatasDirectoryFavoriteRank(_ fileID: String) -> NSNumber {
         
         guard let tableAccount = self.getAccountActive() else {
             return 0
@@ -1948,7 +1948,7 @@ class NCManageDatabase: NSObject {
         var rank = 0 as NSNumber
         var counter = 0 as Int64
         
-        let results = realm.objects(tableMetadata.self).filter("account = %@ AND favorite = true", tableAccount.account).sorted(byKeyPath: "fileNameView", ascending: true)
+        let results = realm.objects(tableMetadata.self).filter("account = %@ AND directory = true AND favorite = true", tableAccount.account).sorted(byKeyPath: "fileNameView", ascending: true)
         
         for result in results {
             counter += 1
