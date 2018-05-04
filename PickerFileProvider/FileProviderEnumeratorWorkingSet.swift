@@ -58,7 +58,7 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
         }
         
         // Favorite
-        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND favorite = true", account), sorted: "fileName", ascending: true)
+        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND favorite = true", account), sorted: "fileNameView", ascending: true)
         if metadatas != nil {
             for metadata in metadatas! {
             
