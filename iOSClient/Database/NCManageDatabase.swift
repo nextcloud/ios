@@ -1936,29 +1936,27 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getTableMetadatasDirectoryFavoriteRank(_ fileID: String) -> NSNumber {
+    @objc func getTableMetadatasDirectoryFavoriteIdentifierRank() -> [String:NSNumber] {
         
+        var listIdentifierRank = [String:NSNumber]()
+
         guard let tableAccount = self.getAccountActive() else {
-            return 0
+            return listIdentifierRank
         }
         
         let realm = try! Realm()
         realm.refresh()
         
-        var rank = 0 as NSNumber
         var counter = 0 as Int64
         
         let results = realm.objects(tableMetadata.self).filter("account = %@ AND directory = true AND favorite = true", tableAccount.account).sorted(byKeyPath: "fileNameView", ascending: true)
         
         for result in results {
             counter += 1
-            if result.fileID == fileID {
-                rank = NSNumber(value: Int64(counter))
-                break
-            }
+            listIdentifierRank[result.fileID] = NSNumber(value: Int64(counter))
         }
         
-        return rank
+        return listIdentifierRank
     }
     
     @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String, activeUrl: String) -> Bool {

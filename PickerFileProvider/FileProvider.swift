@@ -42,7 +42,7 @@ var changeDocumentURL: URL?
 
 // List
 var listUpdateItems = [NSFileProviderItem]()
-var listFavoriteRank = [String:NSNumber]()
+var listFavoriteIdentifierRank = [String:NSNumber]()
 
 class FileProvider: NSFileProviderExtension {
     
@@ -700,20 +700,15 @@ class FileProvider: NSFileProviderExtension {
     
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
 
+        completionHandler(nil, nil)
+
+        /*
+        
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
             return
         }
-        
-        // clear list update items
-        listUpdateItems.removeAll()
-        
-        var favorite = false
-        
-        if (favoriteRank != nil) {
-            favorite = true
-        }
-        
+                
         guard let item = try? item(for: itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -722,6 +717,7 @@ class FileProvider: NSFileProviderExtension {
         // Call the completion handler before performing any network activity or other long-running tasks. Defer these tasks to the background.
         completionHandler(item, nil)
 
+        
         DispatchQueue(label: "com.nextcloud", qos: .background, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
@@ -746,6 +742,7 @@ class FileProvider: NSFileProviderExtension {
                 })
             }
         }
+        */
     }
     
     override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {

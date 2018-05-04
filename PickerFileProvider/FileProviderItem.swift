@@ -160,7 +160,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
         } else {
             
-            favoriteRank = listFavoriteRank[metadata.fileID]
+            favoriteRank = listFavoriteIdentifierRank[metadata.fileID]
         }
         
         // Tag
