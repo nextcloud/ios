@@ -45,9 +45,7 @@ var listUpdateItems = [NSFileProviderItem]()
 
 class FileProvider: NSFileProviderExtension {
     
-    var listDownload = [String:URLSessionTask]()
     var listUpload = [String:URLSessionTask]()
-
     
     override init() {
         
@@ -298,7 +296,6 @@ class FileProvider: NSFileProviderExtension {
                     
                 // copy download file to url
                 _ = self.copyFile("\(directoryUser)/\(metadata.fileID)", toPath: url.path)
-                    
                 completionHandler(nil)
                     
             }, failure: { (message, errorCode) in
