@@ -288,19 +288,10 @@ class FileProvider: NSFileProviderExtension {
             
                 let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght) in
                     
-                    if (lenght > 0) {
-                        
-                        // copy download file to url
-                        _ = self.copyFile("\(directoryUser)/\(metadata.fileID)", toPath: url.path)
-                        
-                        // create thumbnail
-                        CCGraphics.createNewImage(from: metadata.fileID, directoryUser: directoryUser, fileNameTo: metadata.fileID, extension: (metadata.fileNameView as NSString).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writePreview: true, optimizedFileName: CCUtility.getOptimizedPhoto())
+                    NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     
-                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                        if (metadata.typeFile == k_metadataTypeFile_image) {
-                            CCExifGeo.sharedInstance().setExifLocalTableEtag(metadata, directoryUser: directoryUser, activeAccount: account)
-                        }
-                    }
+                    // copy download file to url
+                    _ = self.copyFile("\(directoryUser)/\(metadata.fileID)", toPath: url.path)
                     
                     completionHandler(nil)
                     
