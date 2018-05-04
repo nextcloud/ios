@@ -96,6 +96,9 @@ class FileProvider: NSFileProviderExtension {
             
             // Only iOS 11
             
+            listUpdateItems.removeAll()
+            listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+            
         } else {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
@@ -705,6 +708,8 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
+        var favorite = false
+        
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -725,43 +730,36 @@ class FileProvider: NSFileProviderExtension {
                 let newRank = listFavoriteIdentifierRank.count + 1
                 listFavoriteIdentifierRank[itemIdentifier.rawValue] = NSNumber(value: Int64(newRank))
             }
+            favorite = true
         }
         
         // Call the completion handler before performing any network activity or other long-running tasks. Defer these tasks to the background
         let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
         completionHandler(item, nil)
         
-        /*
-         guard let item = try? item(for: itemIdentifier) else {
-         completionHandler(nil, NSFileProviderError(.noSuchItem))
-         return
-         }
+        // Change Status ? Call API Nextcloud Network
+        if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
          
-        DispatchQueue(label: "com.nextcloud", qos: .background, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
-            
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
+            DispatchQueue(label: "com.nextcloud", qos: .background, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
                 
-                ocNetworking?.settingFavorite(metadata.fileName, serverUrl: serverUrl, favorite: true, success: {
+                ocNetworking?.settingFavorite(metadata.fileName, serverUrl: serverUrl, favorite: favorite, success: {
                     
+                    // Change DB
                     metadata.favorite = favorite
                     _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    
+                    // Refresh Favorite Identifier Rank
+                    listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+                    
+                    // Refresh Item
+                    self.refreshEnumerator(identifier: itemIdentifier, serverUrl: serverUrl)
+                    
                     
                 }, failure: { (errorMessage, errorCode) in
                     print("errorMessage")
                 })
             }
         }
-        */
     }
     
     override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
