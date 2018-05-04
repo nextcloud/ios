@@ -189,7 +189,6 @@ class FileProvider: NSFileProviderExtension {
         }
             
         // resolve the given identifier to a file on disk
-            
         guard let item = try? item(for: identifier) else {
             return nil
         }
@@ -298,7 +297,7 @@ class FileProvider: NSFileProviderExtension {
                 _ = self.copyFile("\(directoryUser)/\(metadata.fileID)", toPath: url.path)
                 completionHandler(nil)
                     
-            }, failure: { (message, errorCode) in
+            }, failure: { (errorMessage, errorCode) in
                 completionHandler(NSFileProviderError(.serverUnreachable))
             })
                 
@@ -492,7 +491,7 @@ class FileProvider: NSFileProviderExtension {
                             completionHandler(nil)
                         }
                             
-                    }, failure: { (message, errorCode) in
+                    }, failure: { (errorMessage, errorCode) in
 
                         perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
                             
@@ -576,7 +575,7 @@ class FileProvider: NSFileProviderExtension {
                 
             completionHandler(item, nil)
             
-        }, failure: { (message, errorCode) in
+        }, failure: { (errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
@@ -592,12 +591,12 @@ class FileProvider: NSFileProviderExtension {
         listUpdateItems.removeAll()
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
-            completionHandler(nil)
+            completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
         
         guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            completionHandler(nil)
+            completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
         
@@ -625,7 +624,7 @@ class FileProvider: NSFileProviderExtension {
             
             completionHandler(nil)
             
-        }, failure: { (error, errorCode) in
+        }, failure: { (errorMessage, errorCode) in
             
             if errorCode == 404 {
                 completionHandler(nil)
@@ -636,6 +635,64 @@ class FileProvider: NSFileProviderExtension {
     }
     
     override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else {
+            return
+        }
+        
+        // clear list update items
+        listUpdateItems.removeAll()
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl = %@", serverUrl)) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        // resolve the given identifier to a file on disk
+        guard let item = try? item(for: itemIdentifier) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        let fileName = serverUrl + "/" + item.filename
+        let fileNameTo = serverUrl + "/" + itemName
+        
+        ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
+            
+            metadata.fileName = itemName
+            metadata.fileNameView = itemName
+            
+            guard let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+            
+            if metadata.directory {
+                
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileName, serverUrlTo: fileNameTo, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted)
+
+            } else {
+                
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName)
+            }
+            
+            completionHandler(item, nil)
+            
+        }, failure: { (errorMessage, errorCode) in
+            completionHandler(nil, NSFileProviderError(.serverUnreachable))
+        })
+        
         print("[LOG] rename")
         completionHandler(nil, nil)
     }
@@ -834,7 +891,7 @@ class FileProvider: NSFileProviderExtension {
             }
             completionHandler(item, nil)
 
-        }, failure: { (message, errorCode) in
+        }, failure: { (errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
@@ -873,7 +930,7 @@ class FileProvider: NSFileProviderExtension {
             // Refresh
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
             
-        }, failure: { (message, errorCode) in
+        }, failure: { (errorMessage, errorCode) in
             // Remove from dictionary
             self.listUpload.removeValue(forKey: identifier.rawValue)
             // Refresh

@@ -111,7 +111,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     observer.finishEnumerating(upTo: nil)
                 }
                 
-            }, failure: { (message, errorCode) in
+            }, failure: { (errorMessage, errorCode) in
                 
                 // select item from database
                 if (metadatas != nil) {
