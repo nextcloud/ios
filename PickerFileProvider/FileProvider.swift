@@ -698,8 +698,53 @@ class FileProvider: NSFileProviderExtension {
     }
     
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        print("[LOG] setfavourite")
-        completionHandler(nil, nil)
+
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else {
+            return
+        }
+        
+        // clear list update items
+        listUpdateItems.removeAll()
+        
+        var favorite = false
+        
+        if (favoriteRank != nil) {
+            favorite = true
+        }
+        
+        guard let item = try? item(for: itemIdentifier) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        // Call the completion handler before performing any network activity or other long-running tasks. Defer these tasks to the background.
+        completionHandler(item, nil)
+
+        DispatchQueue(label: "com.nextcloud", qos: .background, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
+            
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+            
+            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+            
+            if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
+                
+                ocNetworking?.settingFavorite(metadata.fileName, serverUrl: serverUrl, favorite: true, success: {
+                    
+                    metadata.favorite = favorite
+                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    
+                }, failure: { (errorMessage, errorCode) in
+                    print("errorMessage")
+                })
+            }
+        }
     }
     
     override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
@@ -732,6 +777,7 @@ class FileProvider: NSFileProviderExtension {
         completionHandler(item, nil)
     }
     
+    /*
     override func trashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         print("[LOG] trashitem")
         completionHandler(nil, nil)
@@ -741,6 +787,7 @@ class FileProvider: NSFileProviderExtension {
         print("[LOG] untrashitem")
         completionHandler(nil, nil)
     }
+    */
     
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         

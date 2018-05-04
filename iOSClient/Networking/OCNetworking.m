@@ -714,6 +714,32 @@
     }];
 }
 
+- (void)settingFavorite:(NSString *)fileName serverUrl:(NSString *)serverUrl favorite:(BOOL)favorite success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    NSString *server = [_activeUrl stringByAppendingString:dav];
+    NSString *fileOrFolderPath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+
+    [communication settingFavoriteServer:server andFileOrFolderPath:fileOrFolderPath favorite:favorite withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
+        
+        success();
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        NSString *message = [CCError manageErrorOC:response.statusCode error:error];
+        
+        failure(message, error.code);
+    }];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Listing Favorites =====
 #pragma --------------------------------------------------------------------------------------------
