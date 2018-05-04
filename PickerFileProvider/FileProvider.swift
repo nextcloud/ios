@@ -42,9 +42,12 @@ var changeDocumentURL: URL?
 
 // List
 var listUpdateItems = [NSFileProviderItem]()
-var listUpload = [String:URLSessionTask]()
 
 class FileProvider: NSFileProviderExtension {
+    
+    var listDownload = [String:URLSessionTask]()
+    var listUpload = [String:URLSessionTask]()
+
     
     override init() {
         
@@ -260,11 +263,24 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
 
+            var fileSize : UInt64 = 0
+
+            do {
+                let attr = try FileManager.default.attributesOfItem(atPath: url.path)
+                fileSize = attr[FileAttributeKey.size] as! UInt64
+            } catch let error {
+                print("Error: \(error)")
+            }
+            
+            if fileSize > 0 {
+                completionHandler(nil)
+                return
+            }
+            
             //let fileName = url.lastPathComponent
             let pathComponents = url.pathComponents
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             //let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
-            var fileSize : UInt64 = 0
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue)) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
@@ -276,43 +292,25 @@ class FileProvider: NSFileProviderExtension {
                 return
             }
             
-            do {
-                let attr = try FileManager.default.attributesOfItem(atPath: url.path)
-                fileSize = attr[FileAttributeKey.size] as! UInt64
-            } catch let error {
-                print("Error: \(error)")
-            }
-            
-            // Do not exists
-            if fileSize == 0 {
-            
-                let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght) in
+            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght) in
                     
-                    NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                     
-                    // copy download file to url
-                    _ = self.copyFile("\(directoryUser)/\(metadata.fileID)", toPath: url.path)
+                // copy download file to url
+                _ = self.copyFile("\(directoryUser)/\(metadata.fileID)", toPath: url.path)
                     
-                    completionHandler(nil)
-                    
-                }, failure: { (message, errorCode) in
-                    completionHandler(NSFileProviderError(.serverUnreachable))
-                })
-                
-                if task != nil {
-                    NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in
-                        print("Registe download task")
-                    }
-                }
-                
-            } else {
-
-                // Exists
                 completionHandler(nil)
-                // Refresh
-                self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
+                    
+            }, failure: { (message, errorCode) in
+                completionHandler(NSFileProviderError(.serverUnreachable))
+            })
+                
+            if task != nil {
+                NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in
+                    print("Registe download task")
+                }
             }
-            
+                
         } else {
             
             guard let fileData = try? Data(contentsOf: url) else {
@@ -859,7 +857,7 @@ class FileProvider: NSFileProviderExtension {
             // Remove file on queueUpload
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
             // Remove from dictionary
-            listUpload.removeValue(forKey: identifier.rawValue)
+            self.listUpload.removeValue(forKey: identifier.rawValue)
             
             metadata.date = date! as NSDate
             
@@ -880,7 +878,7 @@ class FileProvider: NSFileProviderExtension {
             
         }, failure: { (message, errorCode) in
             // Remove from dictionary
-            listUpload.removeValue(forKey: identifier.rawValue)
+            self.listUpload.removeValue(forKey: identifier.rawValue)
             // Refresh
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
         })
