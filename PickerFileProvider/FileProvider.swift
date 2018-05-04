@@ -754,7 +754,6 @@ class FileProvider: NSFileProviderExtension {
                     // Refresh Item
                     self.refreshEnumerator(identifier: itemIdentifier, serverUrl: serverUrl)
                     
-                    
                 }, failure: { (errorMessage, errorCode) in
                     print("errorMessage")
                 })
