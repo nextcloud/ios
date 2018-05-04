@@ -700,24 +700,43 @@ class FileProvider: NSFileProviderExtension {
     
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
 
-        completionHandler(nil, nil)
-
-        /*
-        
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
             return
         }
-                
-        guard let item = try? item(for: itemIdentifier) else {
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-        
-        // Call the completion handler before performing any network activity or other long-running tasks. Defer these tasks to the background.
-        completionHandler(item, nil)
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
 
+        // Refresh Favorite Identifier Rank
+        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+
+        if favoriteRank == nil {
+            listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+        } else {
+            let rank = listFavoriteIdentifierRank[itemIdentifier.rawValue]
+            if rank == nil {
+                let newRank = listFavoriteIdentifierRank.count + 1
+                listFavoriteIdentifierRank[itemIdentifier.rawValue] = NSNumber(value: Int64(newRank))
+            }
+        }
         
+        // Call the completion handler before performing any network activity or other long-running tasks. Defer these tasks to the background
+        let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+        completionHandler(item, nil)
+        
+        /*
+         guard let item = try? item(for: itemIdentifier) else {
+         completionHandler(nil, NSFileProviderError(.noSuchItem))
+         return
+         }
+         
         DispatchQueue(label: "com.nextcloud", qos: .background, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
