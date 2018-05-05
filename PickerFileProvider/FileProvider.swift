@@ -386,7 +386,7 @@ class FileProvider: NSFileProviderExtension {
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
                 
             // Upload
-            self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
+            //self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
 
         } else {
             
