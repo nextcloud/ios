@@ -99,6 +99,13 @@ class FileProvider: NSFileProviderExtension {
             listUpdateItems.removeAll()
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             
+            // Timer
+            
+            let timer = Timer.init(timeInterval: 5, repeats: true, block: { (Timer) in
+                print("s")
+            })
+            RunLoop.main.add(timer, forMode: .defaultRunLoopMode)
+            
         } else {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
