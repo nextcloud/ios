@@ -102,7 +102,16 @@ class FileProvider: NSFileProviderExtension {
             // Timer
             
             let timer = Timer.init(timeInterval: 5, repeats: true, block: { (Timer) in
-                print("s")
+                
+                if let metadataNet = NCManageDatabase.sharedInstance.getQueueUploadLock(selector: selectorUploadFile) {
+                    
+                    let fileNameLocalPath = directoryUser + "/" + metadataNet.fileName
+                    _ = self.copyFile(metadataNet.path, toPath: fileNameLocalPath)
+                    
+                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND serverUrl = %@", account, metadataNet.fileName, metadataNet.serverUrl))
+                    
+                    self.uploadCloud(metadataNet.fileName, serverUrl: metadataNet.serverUrl, fileNameLocalPath: fileNameLocalPath, metadata: metadata!, identifier: NSFileProviderItemIdentifier(rawValue: metadata!.fileID))
+                }
             })
             RunLoop.main.add(timer, forMode: .defaultRunLoopMode)
             
