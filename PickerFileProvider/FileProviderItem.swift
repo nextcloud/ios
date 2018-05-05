@@ -160,7 +160,14 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
         } else {
             
-            favoriteRank = listFavoriteIdentifierRank[metadata.fileID]
+            if #available(iOSApplicationExtension 11.0, *) {
+                let rank = listFavoriteIdentifierRank[metadata.fileID]
+                if (rank == nil) {
+                    favoriteRank = NSNumber(value: Int64(NSFileProviderFavoriteRankUnranked))
+                } else {
+                    favoriteRank = listFavoriteIdentifierRank[metadata.fileID]
+                }
+            }
         }
         
         // Tag

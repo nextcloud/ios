@@ -727,8 +727,7 @@ class FileProvider: NSFileProviderExtension {
         } else {
             let rank = listFavoriteIdentifierRank[itemIdentifier.rawValue]
             if rank == nil {
-                let newRank = listFavoriteIdentifierRank.count + 1
-                listFavoriteIdentifierRank[itemIdentifier.rawValue] = NSNumber(value: Int64(newRank))
+                listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank//NSNumber(value: Int64(newRank))
             }
             favorite = true
         }
