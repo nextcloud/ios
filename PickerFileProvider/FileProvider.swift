@@ -44,9 +44,10 @@ var changeDocumentURL: URL?
 var listUpdateItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
 
+var listUpload = [String:URLSessionTask]()
+var timer: Timer?
+
 class FileProvider: NSFileProviderExtension {
-    
-    var listUpload = [String:URLSessionTask]()
     
     override init() {
         
@@ -98,19 +99,20 @@ class FileProvider: NSFileProviderExtension {
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             
             // Timer for upload
-            let timer = Timer.init(timeInterval: 5, repeats: true, block: { (Timer) in
-                if let metadataNet = NCManageDatabase.sharedInstance.getQueueUpload() {
-                    if metadataNet.path != nil {
-                        if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNet.serverUrl) {
-                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNet.fileName, directoryID)) {
-                                self.uploadCloud(metadataNet.fileName, serverUrl: metadataNet.serverUrl, path: metadataNet.path, identifier: NSFileProviderItemIdentifier(rawValue: metadata.fileID))
+            if timer == nil {
+                timer = Timer.init(timeInterval: 5, repeats: true, block: { (Timer) in
+                    if let metadataNet = NCManageDatabase.sharedInstance.getQueueUpload() {
+                        if metadataNet.path != nil {
+                            if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNet.serverUrl) {
+                                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNet.fileName, directoryID)) {
+                                    self.uploadCloud(metadataNet.fileName, serverUrl: metadataNet.serverUrl, path: metadataNet.path, identifier: NSFileProviderItemIdentifier(rawValue: metadata.fileID))
+                                }
                             }
                         }
                     }
-                }
-            })
-            RunLoop.main.add(timer, forMode: .defaultRunLoopMode)
-            
+                })
+                RunLoop.main.add(timer!, forMode: .defaultRunLoopMode)
+            }
         } else {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
@@ -990,7 +992,7 @@ class FileProvider: NSFileProviderExtension {
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: path)
             
             // Remove from dictionary
-            self.listUpload.removeValue(forKey: identifier.rawValue)
+            listUpload.removeValue(forKey: identifier.rawValue)
             
             // Remove file *changeDocument
             _ = self.deleteFile(fileNameLocalPath)
@@ -1016,7 +1018,7 @@ class FileProvider: NSFileProviderExtension {
             
         }, failure: { (errorMessage, errorCode) in            
             // Remove from dictionary
-            self.listUpload.removeValue(forKey: identifier.rawValue)
+            listUpload.removeValue(forKey: identifier.rawValue)
             // Refresh
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
         })
