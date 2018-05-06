@@ -980,7 +980,9 @@ class FileProvider: NSFileProviderExtension {
         }
         
         let fileNameLocalPath = directoryUser + "/" + fileName
-        _ = self.copyFile(path, toPath: fileNameLocalPath)
+        if self.copyFile(path, toPath: fileNameLocalPath) != nil {
+            return
+        }
         
         let task = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
             
