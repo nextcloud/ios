@@ -110,6 +110,8 @@ class FileProvider: NSFileProviderExtension {
                             }
                         }
                     }
+                    
+                    //TODO: Very progress task
                 })
                 RunLoop.main.add(timer!, forMode: .defaultRunLoopMode)
             }
@@ -986,12 +988,6 @@ class FileProvider: NSFileProviderExtension {
         
         let task = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
             
-            // Remove file on queueUpload
-            NCManageDatabase.sharedInstance.deleteQueueUpload(path: path)
-            
-            // Remove from dictionary
-            listUpload.removeValue(forKey: identifier.rawValue)
-            
             // Update DB
             if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) {
                 if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, fileName, directoryID)) {
@@ -1007,23 +1003,24 @@ class FileProvider: NSFileProviderExtension {
                 }
             }
             
+            // Remove file on queueUpload
+            NCManageDatabase.sharedInstance.deleteQueueUpload(path: path)
+            
+            // Remove from dictionary
+            listUpload.removeValue(forKey: identifier.rawValue)
+            
             // Remove file *changeDocument
             _ = self.deleteFile(fileNameLocalPath)
-            
-            // Refresh
-            self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
             
         }, failure: { (errorMessage, errorCode) in            
             // Remove from dictionary
             listUpload.removeValue(forKey: identifier.rawValue)
-            // Refresh
-            self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
         })
         
         if task != nil {
             listUpload[identifier.rawValue] = task
             if #available(iOSApplicationExtension 11.0, *) {
-                NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in }
+//                NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in }
             }
         }        
     }
