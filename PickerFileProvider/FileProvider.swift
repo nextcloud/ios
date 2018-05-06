@@ -94,25 +94,19 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
             
-            // Only iOS 11
-            
             listUpdateItems.removeAll()
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             
-            // Timer
-            
+            // Timer for upload
             let timer = Timer.init(timeInterval: 5, repeats: true, block: { (Timer) in
-                
-                if let metadataNet = NCManageDatabase.sharedInstance.getQueueUploadLock(selector: selectorUploadFile) {
-                    
-                    let fileNameLocalPath = directoryUser + "/" + metadataNet.fileName
-                    _ = self.copyFile(metadataNet.path, toPath: fileNameLocalPath)
-                    
-                    let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNet.serverUrl)
-                    
-                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNet.fileName, directoryID!))
-                    
-                    self.uploadCloud(metadataNet.fileName, serverUrl: metadataNet.serverUrl, fileNameLocalPath: fileNameLocalPath, identifier: NSFileProviderItemIdentifier(rawValue: metadata!.fileID))
+                if let metadataNet = NCManageDatabase.sharedInstance.getQueueUpload() {
+                    if metadataNet.path != nil {
+                        if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNet.serverUrl) {
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNet.fileName, directoryID)) {
+                                self.uploadCloud(metadataNet.fileName, serverUrl: metadataNet.serverUrl, path: metadataNet.path, identifier: NSFileProviderItemIdentifier(rawValue: metadata.fileID))
+                            }
+                        }
+                    }
                 }
             })
             RunLoop.main.add(timer, forMode: .defaultRunLoopMode)
@@ -978,7 +972,10 @@ class FileProvider: NSFileProviderExtension {
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
     
-    func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, identifier: NSFileProviderItemIdentifier) {
+    func uploadCloud(_ fileName: String, serverUrl: String, path: String, identifier: NSFileProviderItemIdentifier) {
+        
+        let fileNameLocalPath = directoryUser + "/" + fileName
+        _ = self.copyFile(path, toPath: fileNameLocalPath)
         
         if let task = listUpload[identifier.rawValue] {
             task.cancel()
