@@ -994,12 +994,8 @@ class FileProvider: NSFileProviderExtension {
             // Remove from dictionary
             listUpload.removeValue(forKey: identifier.rawValue)
             
-            // Remove file *changeDocument
-            _ = self.deleteFile(fileNameLocalPath)
-            
             // Update DB
             if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) {
-            
                 if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, fileName, directoryID)) {
             
                     metadata.date = date! as NSDate
@@ -1012,6 +1008,9 @@ class FileProvider: NSFileProviderExtension {
                     _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
                 }
             }
+            
+            // Remove file *changeDocument
+            _ = self.deleteFile(fileNameLocalPath)
             
             // Refresh
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
