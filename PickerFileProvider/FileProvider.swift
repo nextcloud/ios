@@ -108,7 +108,9 @@ class FileProvider: NSFileProviderExtension {
                     let fileNameLocalPath = directoryUser + "/" + metadataNet.fileName
                     _ = self.copyFile(metadataNet.path, toPath: fileNameLocalPath)
                     
-                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND serverUrl = %@", account, metadataNet.fileName, metadataNet.serverUrl))
+                    let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNet.serverUrl)
+                    
+                    let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNet.fileName, directoryID!))
                     
                     self.uploadCloud(metadataNet.fileName, serverUrl: metadataNet.serverUrl, fileNameLocalPath: fileNameLocalPath, metadata: metadata!, identifier: NSFileProviderItemIdentifier(rawValue: metadata!.fileID))
                 }
