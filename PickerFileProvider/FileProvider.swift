@@ -987,7 +987,7 @@ class FileProvider: NSFileProviderExtension {
         let task = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
             
             // Remove file on queueUpload
-            NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
+            NCManageDatabase.sharedInstance.deleteQueueUpload(path: path)
             
             // Remove from dictionary
             self.listUpload.removeValue(forKey: identifier.rawValue)
