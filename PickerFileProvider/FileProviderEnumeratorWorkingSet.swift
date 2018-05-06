@@ -59,6 +59,7 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
         }
         
         // Favorite Directory
+        /*
         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
         for (identifier, _) in listFavoriteIdentifierRank {
             
@@ -71,6 +72,7 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
             let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
             items.append(item)
         }
+        */
         
         observer.didEnumerate(items)
         observer.finishEnumerating(upTo: nil)

@@ -724,6 +724,9 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
+        completionHandler(nil, nil)
+        return
+        
         var favorite = false
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
