@@ -974,12 +974,13 @@ class FileProvider: NSFileProviderExtension {
     
     func uploadCloud(_ fileName: String, serverUrl: String, path: String, identifier: NSFileProviderItemIdentifier) {
         
+        // Upload already exists
+        if listUpload[identifier.rawValue] != nil {
+            return
+        }
+        
         let fileNameLocalPath = directoryUser + "/" + fileName
         _ = self.copyFile(path, toPath: fileNameLocalPath)
-        
-        if let task = listUpload[identifier.rawValue] {
-            task.cancel()
-        }
         
         let task = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
             
@@ -1011,7 +1012,7 @@ class FileProvider: NSFileProviderExtension {
             // Refresh
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
             
-        }, failure: { (errorMessage, errorCode) in
+        }, failure: { (errorMessage, errorCode) in            
             // Remove from dictionary
             self.listUpload.removeValue(forKey: identifier.rawValue)
             // Refresh
