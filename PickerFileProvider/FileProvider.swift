@@ -112,7 +112,7 @@ class FileProvider: NSFileProviderExtension {
                     
                     let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNet.fileName, directoryID!))
                     
-                    self.uploadCloud(metadataNet.fileName, serverUrl: metadataNet.serverUrl, fileNameLocalPath: fileNameLocalPath, metadata: metadata!, identifier: NSFileProviderItemIdentifier(rawValue: metadata!.fileID))
+                    self.uploadCloud(metadataNet.fileName, serverUrl: metadataNet.serverUrl, fileNameLocalPath: fileNameLocalPath, identifier: NSFileProviderItemIdentifier(rawValue: metadata!.fileID))
                 }
             })
             RunLoop.main.add(timer, forMode: .defaultRunLoopMode)
@@ -386,10 +386,7 @@ class FileProvider: NSFileProviderExtension {
             metadataNet.taskStatus = Int(k_taskStatusResume)
                 
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
-                
-            // Upload
-            //self.uploadCloud(fileName, serverUrl: serverUrl, fileNameLocalPath: changeDocumentPath, metadata: metadata, identifier: identifier)
-
+            
         } else {
             
             let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
@@ -981,7 +978,7 @@ class FileProvider: NSFileProviderExtension {
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
     
-    func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, metadata: tableMetadata, identifier: NSFileProviderItemIdentifier) {
+    func uploadCloud(_ fileName: String, serverUrl: String, fileNameLocalPath: String, identifier: NSFileProviderItemIdentifier) {
         
         if let task = listUpload[identifier.rawValue] {
             task.cancel()
@@ -991,22 +988,28 @@ class FileProvider: NSFileProviderExtension {
             
             // Remove file on queueUpload
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: fileNameLocalPath)
+            
             // Remove from dictionary
             self.listUpload.removeValue(forKey: identifier.rawValue)
             
-            metadata.date = date! as NSDate
-            
-            do {
-                let attributes = try FileManager.default.attributesOfItem(atPath: fileNameLocalPath)
-                metadata.size = attributes[FileAttributeKey.size] as! Double
-            } catch let error {
-                print("error: \(error)")
-            }
-            
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-            
             // Remove file *changeDocument
             _ = self.deleteFile(fileNameLocalPath)
+            
+            // Update DB
+            if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) {
+            
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, fileName, directoryID)) {
+            
+                    metadata.date = date! as NSDate
+                    do {
+                        let attributes = try FileManager.default.attributesOfItem(atPath: fileNameLocalPath)
+                        metadata.size = attributes[FileAttributeKey.size] as! Double
+                    } catch let error {
+                        print("error: \(error)")
+                    }
+                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                }
+            }
             
             // Refresh
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
