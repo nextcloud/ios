@@ -320,9 +320,7 @@ class FileProvider: NSFileProviderExtension {
             })
                 
             if task != nil {
-                NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in
-                    print("Registe download task")
-                }
+                NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
             }
                 
         } else {
@@ -1022,12 +1020,10 @@ class FileProvider: NSFileProviderExtension {
             self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
         })
         
-        if (task != nil) {
+        if task != nil {
             listUpload[identifier.rawValue] = task
             if #available(iOSApplicationExtension 11.0, *) {
-                NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in
-                    print("Registe download task")
-                }
+                NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in }
             }
         }        
     }
