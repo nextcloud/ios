@@ -898,8 +898,6 @@ class FileProvider: NSFileProviderExtension {
             
         fileURL.stopAccessingSecurityScopedResource()
         
-        // ------------------------------------------------------------
-
         // ---------------------------------------------- Create file 0
         
         do {
