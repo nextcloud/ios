@@ -44,7 +44,7 @@ var changeDocumentURL: URL?
 var listUpdateItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
 
-var listUpload = [String:URLSessionTask]()
+var uploadIdentifierTask = [String:URLSessionTask]()
 var timer: Timer?
 
 class FileProvider: NSFileProviderExtension {
@@ -101,17 +101,24 @@ class FileProvider: NSFileProviderExtension {
             // Timer for upload
             if timer == nil {
                 timer = Timer.init(timeInterval: 5, repeats: true, block: { (Timer) in
-                    if let metadataNet = NCManageDatabase.sharedInstance.getQueueUpload() {
-                        if metadataNet.path != nil {
-                            if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNet.serverUrl) {
-                                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNet.fileName, directoryID)) {
-                                    self.uploadCloud(metadataNet.fileName, serverUrl: metadataNet.serverUrl, path: metadataNet.path, identifier: NSFileProviderItemIdentifier(rawValue: metadata.fileID))
-                                }
+                    
+                    let metadataNet = NCManageDatabase.sharedInstance.getQueueUpload()
+                    
+                    if  metadataNet != nil && metadataNet!.path != nil && uploadIdentifierTask.count == 0 {
+                        if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNet!.serverUrl) {
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNet!.fileName, directoryID)) {
+                                self.uploadCloud(metadataNet!.fileName, serverUrl: metadataNet!.serverUrl, path: metadataNet!.path, identifier: NSFileProviderItemIdentifier(rawValue: metadata.fileID))
                             }
                         }
                     }
                     
                     //TODO: Very progress task
+                    if uploadIdentifierTask.count > 0 {
+                        let task = uploadIdentifierTask.first
+                        if (task != nil) {
+                            print("x")
+                        }
+                    }
                 })
                 RunLoop.main.add(timer!, forMode: .defaultRunLoopMode)
             }
@@ -976,11 +983,6 @@ class FileProvider: NSFileProviderExtension {
     
     func uploadCloud(_ fileName: String, serverUrl: String, path: String, identifier: NSFileProviderItemIdentifier) {
         
-        // Upload already exists
-        if listUpload[identifier.rawValue] != nil {
-            return
-        }
-        
         let fileNameLocalPath = directoryUser + "/" + fileName
         if self.copyFile(path, toPath: fileNameLocalPath) != nil {
             return
@@ -1007,18 +1009,18 @@ class FileProvider: NSFileProviderExtension {
             NCManageDatabase.sharedInstance.deleteQueueUpload(path: path)
             
             // Remove from dictionary
-            listUpload.removeValue(forKey: identifier.rawValue)
+            uploadIdentifierTask.removeValue(forKey: identifier.rawValue)
             
             // Remove file *changeDocument
             _ = self.deleteFile(fileNameLocalPath)
             
         }, failure: { (errorMessage, errorCode) in            
             // Remove from dictionary
-            listUpload.removeValue(forKey: identifier.rawValue)
+            uploadIdentifierTask.removeValue(forKey: identifier.rawValue)
         })
         
         if task != nil {
-            listUpload[identifier.rawValue] = task
+            uploadIdentifierTask[identifier.rawValue] = task
             if #available(iOSApplicationExtension 11.0, *) {
 //                NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in }
             }

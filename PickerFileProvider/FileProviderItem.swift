@@ -150,6 +150,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             }
             
             // Upload
+            /*
             let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND (path = %@ || path = %@)", account, changeDocumentPath, importDocumentPath))
             if queue?.count == 0 {
                 self.isUploading = false
@@ -158,6 +159,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isUploading = true
                 self.isUploaded = false
             }
+            */
             
         } else {
             
