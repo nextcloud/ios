@@ -43,10 +43,10 @@ var changeDocumentURL: URL?
 // List
 var listUpdateItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
+var fileNamePathImport = [String]()
 
 var uploadMetadataNet: CCMetadataNet?
-var timer: Timer?
-var fileNamePathImport = [String]()
+var timerUpload: Timer?
 
 class FileProvider: NSFileProviderExtension {
     
@@ -101,9 +101,9 @@ class FileProvider: NSFileProviderExtension {
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             
             // Timer for upload
-            if timer == nil {
+            if timerUpload == nil {
                 
-                timer = Timer.init(timeInterval: 1, repeats: true, block: { (Timer) in
+                timerUpload = Timer.init(timeInterval: 1, repeats: true, block: { (Timer) in
                     
                     let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUpload()
                     
@@ -146,7 +146,7 @@ class FileProvider: NSFileProviderExtension {
                         }
                     }
                 })
-                RunLoop.main.add(timer!, forMode: .defaultRunLoopMode)
+                RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
             }
         } else {
             
@@ -576,8 +576,8 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        // clear list update items
         listUpdateItems.removeAll()
+        fileNamePathImport.removeAll()
         
         var serverUrl = ""
         
@@ -635,8 +635,8 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        // clear list update items
         listUpdateItems.removeAll()
+        fileNamePathImport.removeAll()
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
             completionHandler(nil)
@@ -689,8 +689,8 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        // clear list update items
         listUpdateItems.removeAll()
+        fileNamePathImport.removeAll()
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -751,6 +751,9 @@ class FileProvider: NSFileProviderExtension {
         guard #available(iOS 11, *) else {
             return
         }
+        
+        listUpdateItems.removeAll()
+        fileNamePathImport.removeAll()
         
         completionHandler(nil, nil)
         
@@ -817,7 +820,10 @@ class FileProvider: NSFileProviderExtension {
         guard #available(iOS 11, *) else {
             return
         }
-                
+        
+        listUpdateItems.removeAll()
+        fileNamePathImport.removeAll()
+        
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(itemIdentifier.rawValue, tagIOS: tagData)
         
