@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 20,
+            schemaVersion: 21,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -70,6 +70,7 @@ class NCManageDatabase: NSObject {
             // 18 : Version 2.20.6
             // 19 : Version 2.20.7
             // 20 : Version 2.21.0
+            // 21 : Version 2.21.3
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -1446,7 +1447,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setLocalFile(fileID: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?) {
+    @objc func setLocalFile(fileID: String, date: NSDate?, exifDate: NSDate?, exifLatitude: String?, exifLongitude: String?, fileName: String?, etag: String?, etagFPE: String?) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -1476,6 +1477,12 @@ class NCManageDatabase: NSObject {
                 }
                 if let fileName = fileName {
                     result.fileName = fileName
+                }
+                if let etag = etag {
+                    result.etag = etag
+                }
+                if let etagFPE = etagFPE {
+                    result.etagFPE = etagFPE
                 }
             }
         } catch let error {
@@ -2230,6 +2237,7 @@ class NCManageDatabase: NSObject {
                         
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addObject.errorCode = metadataNet.errorCode
                         addObject.fileName = metadataNet.fileName
                         addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
@@ -2273,6 +2281,7 @@ class NCManageDatabase: NSObject {
                         
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addObject.errorCode = metadataNet.errorCode
                         addObject.fileName = metadataNet.fileName
                         addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
@@ -2312,6 +2321,7 @@ class NCManageDatabase: NSObject {
         
         metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
+        metadataNet.errorCode = result.errorCode
         metadataNet.fileName = result.fileName
         metadataNet.path = result.path
         metadataNet.selector = result.selector
@@ -2378,6 +2388,7 @@ class NCManageDatabase: NSObject {
         
         metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
+        metadataNet.errorCode = result.errorCode
         metadataNet.fileName = result.fileName
         metadataNet.path = result.path
         metadataNet.selector = result.selector

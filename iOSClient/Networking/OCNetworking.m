@@ -132,7 +132,7 @@
 #pragma mark ===== download =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (NSURLSessionTask *)downloadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void (^)(int64_t length))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (NSURLSessionTask *)downloadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void (^)(int64_t length, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
@@ -142,6 +142,12 @@
     } successRequest:^(NSURLResponse *response, NSURL *filePath) {
 
         int64_t totalUnitCount = 0;
+        NSDate *date = [NSDate date];
+        NSDateFormatter *dateFormatter = [NSDateFormatter new];
+        NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+        [dateFormatter setLocale:enUSPOSIXLocale];
+        [dateFormatter setDateFormat:@"EEE, dd MMM y HH:mm:ss zzz"];
+        NSError *error;
         
         NSDictionary *fields = [(NSHTTPURLResponse*)response allHeaderFields];
 
@@ -149,8 +155,17 @@
         if(contentLength) {
             totalUnitCount = (int64_t) [contentLength longLongValue];
         }
+        NSString *etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+        NSString *dateString = [fields objectForKey:@"Date"];
+        if (dateString) {
+            if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
+                date = [NSDate date];
+            }
+        } else {
+            date = [NSDate date];
+        }
         
-        success(totalUnitCount);
+        success(totalUnitCount, etag, date);
         
     } failureRequest:^(NSURLResponse *response, NSError *error) {
         

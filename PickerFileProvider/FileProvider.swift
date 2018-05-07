@@ -342,12 +342,20 @@ class FileProvider: NSFileProviderExtension {
                 return
             }
             
-            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght) in
-                    
-                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                    
+            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght, etag, date) in
+                
                 // copy download file to url
                 _ = self.copyFile("\(directoryUser)/\(metadata.fileID)", toPath: url.path)
+            
+                // update DB Local
+                metadata.date = date! as NSDate
+                metadata.etag = etag!
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
+                
+                // Update DB Metadata
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+
                 completionHandler(nil)
                     
             }, failure: { (errorMessage, errorCode) in
@@ -732,7 +740,7 @@ class FileProvider: NSFileProviderExtension {
 
             } else {
                 
-                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName)
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
             }
             
             completionHandler(item, nil)

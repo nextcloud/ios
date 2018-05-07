@@ -261,7 +261,7 @@ class CCActions: NSObject {
             
         } else {
             
-            NCManageDatabase.sharedInstance.setLocalFile(fileID: metadataNet.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: metadataNet.fileNameTo)
+            NCManageDatabase.sharedInstance.setLocalFile(fileID: metadataNet.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: metadataNet.fileNameTo, etag: nil, etagFPE: nil)
         }
         
         metadataNet.delegate?.renameSuccess(metadataNet)

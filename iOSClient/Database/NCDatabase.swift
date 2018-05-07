@@ -179,6 +179,7 @@ class tableLocalFile: Object {
     @objc dynamic var account = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var etag = ""
+    @objc dynamic var etagFPE = ""
     @objc dynamic var exifDate = NSDate()
     @objc dynamic var exifLatitude = ""
     @objc dynamic var exifLongitude = ""
@@ -260,6 +261,7 @@ class tableQueueUpload: Object {
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var date = NSDate()
+    @objc dynamic var errorCode: Int = 0
     @objc dynamic var fileName = ""
     @objc dynamic var lock: Bool = false
     @objc dynamic var path: String?
