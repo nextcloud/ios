@@ -46,6 +46,7 @@ var listFavoriteIdentifierRank = [String:NSNumber]()
 
 var uploadMetadataNet: CCMetadataNet?
 var timer: Timer?
+var fileNamePathImport = [String]()
 
 class FileProvider: NSFileProviderExtension {
     
@@ -96,6 +97,7 @@ class FileProvider: NSFileProviderExtension {
         if #available(iOSApplicationExtension 11.0, *) {
             
             listUpdateItems.removeAll()
+            fileNamePathImport.removeAll()
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             
             // Timer for upload
@@ -880,29 +882,7 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        // exists with same name ? add + 1
-        if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", account, fileName, directoryParent.directoryID)) != nil {
-            
-            var name = NSString(string: fileName).deletingPathExtension
-            let ext = NSString(string: fileName).pathExtension
-            
-            let characters = Array(name)
-            
-            if characters.count < 2 {
-                fileName = name + " " + "1" + "." + ext
-            } else {
-                let space = characters[characters.count-2]
-                let numChar = characters[characters.count-1]
-                var num = Int(String(numChar))
-                if (space == " " && num != nil) {
-                    name = String(name.dropLast())
-                    num = num! + 1
-                    fileName = name + "\(num!)" + "." + ext
-                } else {
-                    fileName = name + " " + "1" + "." + ext
-                }
-            }
-        }
+        fileName = createFileName(fileName, directoryID: directoryParent.directoryID, serverUrl: serverUrl)
         
         let fileNameLocalPath = importDocumentURL!.appendingPathComponent(fileName)
         
@@ -996,6 +976,7 @@ class FileProvider: NSFileProviderExtension {
             completionHandler(item, nil)
 
         }, failure: { (errorMessage, errorCode) in
+            
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
@@ -1071,5 +1052,45 @@ class FileProvider: NSFileProviderExtension {
         }
         
         return errorResult
+    }
+    
+    func createFileName(_ fileName: String, directoryID: String, serverUrl: String) -> String {
+    
+        var resultFileName = fileName
+        var exitLoop = false
+        
+        while exitLoop == false {
+            
+            if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", account, resultFileName, directoryID)) != nil || fileNamePathImport.contains(serverUrl+"/"+resultFileName) {
+                
+                var name = NSString(string: resultFileName).deletingPathExtension
+                let ext = NSString(string: resultFileName).pathExtension
+                
+                let characters = Array(name)
+                
+                if characters.count < 2 {
+                    resultFileName = name + " " + "1" + "." + ext
+                } else {
+                    let space = characters[characters.count-2]
+                    let numChar = characters[characters.count-1]
+                    var num = Int(String(numChar))
+                    if (space == " " && num != nil) {
+                        name = String(name.dropLast())
+                        num = num! + 1
+                        resultFileName = name + "\(num!)" + "." + ext
+                    } else {
+                        resultFileName = name + " " + "1" + "." + ext
+                    }
+                }
+                
+            } else {
+                exitLoop = true
+            }
+        }
+        
+        // add fileNamePathImport
+        fileNamePathImport.append(serverUrl+"/"+resultFileName)
+        
+        return resultFileName
     }
 }
