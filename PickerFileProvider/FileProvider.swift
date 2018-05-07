@@ -314,7 +314,21 @@ class FileProvider: NSFileProviderExtension {
         if #available(iOSApplicationExtension 11.0, *) {
 
             var fileSize : UInt64 = 0
+            let pathComponents = url.pathComponents
+            let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+            var localEtag = ""
+            var localEtagFPE = ""
 
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue)) else {
+                completionHandler(NSFileProviderError(.noSuchItem))
+                return
+            }
+            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))
+            if tableLocalFile != nil {
+                localEtag = tableLocalFile!.etag
+                localEtagFPE = tableLocalFile!.etagFPE
+            }
+            
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: url.path)
                 fileSize = attr[FileAttributeKey.size] as! UInt64
@@ -322,18 +336,16 @@ class FileProvider: NSFileProviderExtension {
                 print("Error: \(error)")
             }
             
-            if fileSize > 0 {
+            if fileSize > 0 && metadata.etag == localEtag {
+                
+                // Verify last version on "Local Table"
+                if localEtag != localEtagFPE {
+                    if self.copyFile("\(directoryUser)/\(identifier.rawValue)", toPath: url.path) == nil {
+                        NCManageDatabase.sharedInstance.setLocalFile(fileID: identifier.rawValue, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: nil, etagFPE: localEtag)
+                    }
+                }
+                
                 completionHandler(nil)
-                return
-            }
-            
-            //let fileName = url.lastPathComponent
-            let pathComponents = url.pathComponents
-            let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-            //let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
-            
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue)) else {
-                completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
             
