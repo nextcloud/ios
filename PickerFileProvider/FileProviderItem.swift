@@ -110,8 +110,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             let identifierPathUrl = fileProviderStorageURL!.appendingPathComponent(metadata.fileID)
             let fileIdentifier = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
             let fileDirectoryUser = "\(directoryUser)/\(metadata.fileID)"
-            let changeDocumentPath = changeDocumentURL!.path + "/" + metadata.fileNameView
-            let importDocumentPath = importDocumentURL!.path + "/" + metadata.fileNameView
+            //let changeDocumentPath = changeDocumentURL!.path + "/" + metadata.fileNameView
+            //let importDocumentPath = importDocumentURL!.path + "/" + metadata.fileNameView
             var fileSize = 0 as Double
 
             do {

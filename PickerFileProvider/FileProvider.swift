@@ -111,7 +111,9 @@ class FileProvider: NSFileProviderExtension {
                                 
                                 if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
-                                    let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(metadataNetQueue!.fileName), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in
+                                    let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(metadataNetQueue!.fileName), success: { (fileID, etag, date) in
+                                        print("success")
+                                    }, failure: { (errorMessage, errorCode) in
                                         print("failure")
                                     })
                                 
@@ -130,11 +132,14 @@ class FileProvider: NSFileProviderExtension {
                     
                     // Verify running task
                     if uploadMetadataNet != nil && uploadMetadataNet?.task != nil {
-                        if uploadMetadataNet?.task.state != URLSessionTask.State.running {
-                            // Remove file on queueUpload
-                            NCManageDatabase.sharedInstance.deleteQueueUpload(path: uploadMetadataNet!.path)
+                        let task = uploadMetadataNet!.task
+                        if task!.state != URLSessionTask.State.running {
+                            // remove only if NO error
+                            if task!.error == nil {
+                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: uploadMetadataNet!.path)
+                            }
+                            // delete
                             _ = self.deleteFile(directoryUser + "/" + uploadMetadataNet!.fileName)
-                            
                             uploadMetadataNet = nil
                         }
                     }
@@ -632,12 +637,12 @@ class FileProvider: NSFileProviderExtension {
         listUpdateItems.removeAll()
         
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
+            completionHandler(nil)
             return
         }
         
         guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
+            completionHandler(nil)
             return
         }
         
