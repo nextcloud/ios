@@ -976,9 +976,8 @@ class FileProvider: NSFileProviderExtension {
                 _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
             }
             
-            if (size > 0) { // MICROSOFT 365 
-                self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
-            }
+            self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+            
             completionHandler(item, nil)
 
         }, failure: { (errorMessage, errorCode) in
