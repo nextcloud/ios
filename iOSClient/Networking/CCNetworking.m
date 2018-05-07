@@ -1556,6 +1556,7 @@
     [metadataNet setShareeType: self.shareeType];
     [metadataNet setSharePermission: self.sharePermission];
     [metadataNet setSize: self.size];
+    [metadataNet setTask: self.task];
     [metadataNet setTaskStatus: self.taskStatus];
     
     return metadataNet;

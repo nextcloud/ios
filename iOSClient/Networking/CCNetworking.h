@@ -124,6 +124,7 @@
 @property NSInteger shareeType;
 @property NSInteger sharePermission;
 @property long size;
+@property (nonatomic, strong) NSURLSessionTask *task;
 @property NSInteger taskStatus;
 
 - (id)initWithAccount:(NSString *)withAccount;

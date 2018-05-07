@@ -44,7 +44,7 @@ var changeDocumentURL: URL?
 var listUpdateItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
 
-var uploadIdentifierTask = [String:URLSessionTask]()
+var uploadMetadataNet: CCMetadataNet?
 var timer: Timer?
 
 class FileProvider: NSFileProviderExtension {
@@ -100,23 +100,42 @@ class FileProvider: NSFileProviderExtension {
             
             // Timer for upload
             if timer == nil {
-                timer = Timer.init(timeInterval: 5, repeats: true, block: { (Timer) in
+                
+                timer = Timer.init(timeInterval: 1, repeats: true, block: { (Timer) in
                     
-                    let metadataNet = NCManageDatabase.sharedInstance.getQueueUpload()
+                    let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUpload()
                     
-                    if  metadataNet != nil && metadataNet!.path != nil && uploadIdentifierTask.count == 0 {
-                        if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNet!.serverUrl) {
-                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNet!.fileName, directoryID)) {
-                                self.uploadCloud(metadataNet!.fileName, serverUrl: metadataNet!.serverUrl, path: metadataNet!.path, identifier: NSFileProviderItemIdentifier(rawValue: metadata.fileID))
+                    if  metadataNetQueue != nil && metadataNetQueue!.path != nil && uploadMetadataNet == nil {
+                        if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNetQueue!.serverUrl) {
+                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNetQueue!.fileName, directoryID)) {
+                                
+                                if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
+
+                                    let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(metadataNetQueue!.fileName), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in
+                                        print("failure")
+                                    })
+                                
+                                    if task != nil {
+                                        metadataNetQueue!.task = task
+                                        metadataNetQueue!.fileID = metadata.fileID
+                                        uploadMetadataNet = metadataNetQueue!
+                                    }
+                                } else {
+                                    // file not present, delete record Upload Queue
+                                    NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
+                                }
                             }
                         }
                     }
                     
-                    //TODO: Very progress task
-                    if uploadIdentifierTask.count > 0 {
-                        let task = uploadIdentifierTask.first
-                        if (task != nil) {
-                            print("x")
+                    // Verify running task
+                    if uploadMetadataNet != nil && uploadMetadataNet?.task != nil {
+                        if uploadMetadataNet?.task.state != URLSessionTask.State.running {
+                            // Remove file on queueUpload
+                            NCManageDatabase.sharedInstance.deleteQueueUpload(path: uploadMetadataNet!.path)
+                            _ = self.deleteFile(directoryUser + "/" + uploadMetadataNet!.fileName)
+                            
+                            uploadMetadataNet = nil
                         }
                     }
                 })
@@ -980,52 +999,6 @@ class FileProvider: NSFileProviderExtension {
     // --------------------------------------------------------------------------------------------
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
-    
-    func uploadCloud(_ fileName: String, serverUrl: String, path: String, identifier: NSFileProviderItemIdentifier) {
-        
-        let fileNameLocalPath = directoryUser + "/" + fileName
-        if self.copyFile(path, toPath: fileNameLocalPath) != nil {
-            return
-        }
-        
-        let task = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNameLocalPath, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(fileName), success: { (fileID, etag, date) in
-            
-            // Update DB
-            if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) {
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, fileName, directoryID)) {
-            
-                    metadata.date = date! as NSDate
-                    do {
-                        let attributes = try FileManager.default.attributesOfItem(atPath: fileNameLocalPath)
-                        metadata.size = attributes[FileAttributeKey.size] as! Double
-                    } catch let error {
-                        print("error: \(error)")
-                    }
-                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                }
-            }
-            
-            // Remove file on queueUpload
-            NCManageDatabase.sharedInstance.deleteQueueUpload(path: path)
-            
-            // Remove from dictionary
-            uploadIdentifierTask.removeValue(forKey: identifier.rawValue)
-            
-            // Remove file *changeDocument
-            _ = self.deleteFile(fileNameLocalPath)
-            
-        }, failure: { (errorMessage, errorCode) in            
-            // Remove from dictionary
-            uploadIdentifierTask.removeValue(forKey: identifier.rawValue)
-        })
-        
-        if task != nil {
-            uploadIdentifierTask[identifier.rawValue] = task
-            if #available(iOSApplicationExtension 11.0, *) {
-//                NSFileProviderManager.default.register(task!, forItemWithIdentifier: identifier) { (error) in }
-            }
-        }        
-    }
     
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         
