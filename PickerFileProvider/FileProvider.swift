@@ -950,7 +950,7 @@ class FileProvider: NSFileProviderExtension {
             } catch let error {
                 print("error: \(error)")
             }
-             // copy <base storage directory>/<item identifier>/<item file name>
+            // copy <base storage directory>/<item identifier>/<item file name>
             _ = self.copyFile(fileNameLocalPath.path, toPath: "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileNameView)")
             
             // add item
