@@ -751,10 +751,8 @@ class FileProvider: NSFileProviderExtension {
         }
         
         completionHandler(nil, nil)
-        return
         
-        var favorite = false
-        
+        /*
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -803,6 +801,7 @@ class FileProvider: NSFileProviderExtension {
                 })
             }
         }
+        */
     }
     
     override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
