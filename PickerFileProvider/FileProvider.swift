@@ -706,6 +706,74 @@ class FileProvider: NSFileProviderExtension {
         })
     }
     
+    override func reparentItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemWithIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, newName: String?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else {
+            return
+        }
+        
+        listUpdateItems.removeAll()
+        fileNamePathImport.removeAll()
+        
+        guard let itemFrom = try? item(for: itemIdentifier) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let metadataFrom = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let serverUrlFrom = NCManageDatabase.sharedInstance.getServerUrl(metadataFrom.directoryID) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let directoryTableFrom = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl = %@", serverUrlFrom)) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let itemTo = try? item(for: parentItemIdentifier) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let metadataTo = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, parentItemIdentifier.rawValue)) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let serverUrlTo = NCManageDatabase.sharedInstance.getServerUrl(metadataTo.directoryID) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let directoryTableTo = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl = %@", serverUrlTo)) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+    
+        let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
+        var fileNameTo = ""
+        if newName == nil {
+            fileNameTo = serverUrlTo + "/" + itemTo.filename
+        } else {
+            fileNameTo = serverUrlTo + "/" + newName!
+        }
+        
+        ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
+            
+            completionHandler(nil, nil)
+            
+        }, failure: { (errorMessage, errorCode) in
+            completionHandler(nil, NSFileProviderError(.serverUnreachable))
+        })
+    }
+    
     override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
@@ -764,9 +832,6 @@ class FileProvider: NSFileProviderExtension {
         }, failure: { (errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
-        
-        print("[LOG] rename")
-        completionHandler(nil, nil)
     }
     
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {

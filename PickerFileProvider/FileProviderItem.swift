@@ -32,9 +32,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var capabilities: NSFileProviderItemCapabilities {              // The item's capabilities
         
         if (self.isDirectory) {
-            return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
+            return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
         } else {
-            return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming ]
+            return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
         }
     }
     
