@@ -1024,13 +1024,8 @@
         else
             metadata.thumbnailExists = NO;
         
-        // Type compress
-        if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
-            metadata.typeFile = k_metadataTypeFile_compress;
-            metadata.iconName = @"file_compress";
-        }
         // Type image
-        else if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
+        if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
             metadata.typeFile = k_metadataTypeFile_image;
             metadata.iconName = @"file_photo";
         }
@@ -1070,7 +1065,11 @@
             if ([typeFile isEqualToString:@"public.html"]) {
                 metadata.iconName = @"file_code";
             }
-            
+        }
+        // Type compress
+        else if (UTTypeConformsTo(fileUTI, kUTTypeZipArchive) && [(__bridge NSString *)fileUTI containsString:@"org.openxmlformats"] == NO && [(__bridge NSString *)fileUTI containsString:@"oasis"] == NO) {
+            metadata.typeFile = k_metadataTypeFile_compress;
+            metadata.iconName = @"file_compress";
         } else {
             
             // Type unknown
