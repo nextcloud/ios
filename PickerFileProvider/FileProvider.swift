@@ -354,6 +354,10 @@ class FileProvider: NSFileProviderExtension {
                 return
             }
             
+            // delete prev file + ico on Directory User
+            _ = self.deleteFile("\(directoryUser)/\(metadata.fileID)")
+            _ = self.deleteFile("\(directoryUser)/\(metadata.fileID).ico")
+
             let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght, etag, date) in
                 
                 // copy download file to url
