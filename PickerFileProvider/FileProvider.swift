@@ -748,12 +748,8 @@ class FileProvider: NSFileProviderExtension {
             directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo)!
         }
         
-        if newName == nil {
-            fileNameTo = serverUrlTo + "/" + itemFrom.filename
-        } else {
-            fileNameTo = serverUrlTo + "/" + newName!
-        }
-        
+        fileNameTo = serverUrlTo + "/" + itemFrom.filename
+    
         ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
             
             if metadataFrom.directory {
