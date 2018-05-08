@@ -718,6 +718,7 @@ class FileProvider: NSFileProviderExtension {
         
         var serverUrlTo = ""
         var fileNameTo = ""
+        var directoryIDTo = ""
         
         guard let itemFrom = try? item(for: itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -734,6 +735,8 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
+        let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
+
         if parentItemIdentifier == NSFileProviderItemIdentifier.rootContainer {
             serverUrlTo = homeServerUrl
         } else {
@@ -741,10 +744,10 @@ class FileProvider: NSFileProviderExtension {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
-            serverUrlTo = NCManageDatabase.sharedInstance.getServerUrl(metadataTo.directoryID)!
+            serverUrlTo = NCManageDatabase.sharedInstance.getServerUrl(metadataTo.directoryID)! + "/" + metadataTo.fileName
+            directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo)!
         }
         
-        let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
         if newName == nil {
             fileNameTo = serverUrlTo + "/" + itemFrom.filename
         } else {
@@ -753,13 +756,20 @@ class FileProvider: NSFileProviderExtension {
         
         ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
             
-            if (metadataFrom.directory) {
+            if metadataFrom.directory {
                 
             } else {
                 
+                NCManageDatabase.sharedInstance.moveMetadata(fileName: metadataFrom.fileName, directoryID: metadataFrom.directoryID, directoryIDTo: directoryIDTo)
             }
             
-            completionHandler(nil, nil)
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+            
+            let item = FileProviderItem(metadata: metadata, serverUrl: serverUrlTo)
+            completionHandler(item, nil)
             
         }, failure: { (errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
