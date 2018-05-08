@@ -716,6 +716,9 @@ class FileProvider: NSFileProviderExtension {
         listUpdateItems.removeAll()
         fileNamePathImport.removeAll()
         
+        var serverUrlTo = ""
+        var fileNameTo = ""
+        
         guard let itemFrom = try? item(for: itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -731,41 +734,30 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        guard let directoryTableFrom = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl = %@", serverUrlFrom)) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
+        if parentItemIdentifier == NSFileProviderItemIdentifier.rootContainer {
+            serverUrlTo = homeServerUrl
+        } else {
+            guard let metadataTo = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, parentItemIdentifier.rawValue)) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+            serverUrlTo = NCManageDatabase.sharedInstance.getServerUrl(metadataTo.directoryID)!
         }
         
-        guard let itemTo = try? item(for: parentItemIdentifier) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-        guard let metadataTo = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, parentItemIdentifier.rawValue)) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-        guard let serverUrlTo = NCManageDatabase.sharedInstance.getServerUrl(metadataTo.directoryID) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-        guard let directoryTableTo = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl = %@", serverUrlTo)) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
-    
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
-        var fileNameTo = ""
         if newName == nil {
-            fileNameTo = serverUrlTo + "/" + itemTo.filename
+            fileNameTo = serverUrlTo + "/" + itemFrom.filename
         } else {
             fileNameTo = serverUrlTo + "/" + newName!
         }
         
         ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
+            
+            if (metadataFrom.directory) {
+                
+            } else {
+                
+            }
             
             completionHandler(nil, nil)
             
