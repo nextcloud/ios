@@ -316,9 +316,19 @@ class FileProvider: NSFileProviderExtension {
             var fileSize : UInt64 = 0
             let pathComponents = url.pathComponents
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+            let fileName = url.lastPathComponent
             var localEtag = ""
             var localEtagFPE = ""
-
+            let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
+            let importDocumentPath = importDocumentURL!.path + "/" + fileName
+            
+            // Verify is in Upload
+            let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND (path = %@ || path = %@)", account, changeDocumentPath, importDocumentPath))
+            if queue != nil && queue!.count > 0{
+                completionHandler(nil)
+                return
+            }
+            
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue)) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
