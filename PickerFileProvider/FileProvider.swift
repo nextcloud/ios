@@ -114,7 +114,17 @@ class FileProvider: NSFileProviderExtension {
                                 if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
                                     let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
-                                        print("success")
+                                        
+                                        // update DB Local
+                                        metadata.date = date! as NSDate
+                                        metadata.etag = etag!
+                                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                                        NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
+                                        _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadata.fileID)
+
+                                        // Update DB Metadata
+                                        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                                        
                                     }, failure: { (errorMessage, errorCode) in
                                         print("failure")
                                     })
