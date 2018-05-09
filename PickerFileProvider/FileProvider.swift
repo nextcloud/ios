@@ -949,6 +949,8 @@ class FileProvider: NSFileProviderExtension {
         
         let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
         
+        self.refreshEnumerator(identifier: itemIdentifier, serverUrl: "WorkingSet")
+        
         completionHandler(item, nil)
     }
     
