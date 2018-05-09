@@ -124,7 +124,7 @@
 
 - (void)closeShareViewController
 {
-    [self.extensionContext completeRequestReturningItems:@[] completionHandler:nil];
+    [self.extensionContext completeRequestReturningItems:self.extensionContext.inputItems completionHandler:nil];
 }
 
 //
