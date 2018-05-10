@@ -96,8 +96,6 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
             
-            listUpdateItems.removeAll()
-            fileNamePathImport.removeAll()
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             
             // Timer for upload
@@ -620,9 +618,6 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        listUpdateItems.removeAll()
-        fileNamePathImport.removeAll()
-        
         var serverUrl = ""
         
         if parentItemIdentifier == .rootContainer {
@@ -679,9 +674,6 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        listUpdateItems.removeAll()
-        fileNamePathImport.removeAll()
-        
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
             completionHandler(nil)
             return
@@ -732,9 +724,6 @@ class FileProvider: NSFileProviderExtension {
         guard #available(iOS 11, *) else {
             return
         }
-        
-        listUpdateItems.removeAll()
-        fileNamePathImport.removeAll()
         
         var serverUrlTo = ""
         var fileNameTo = ""
@@ -802,9 +791,6 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        listUpdateItems.removeAll()
-        fileNamePathImport.removeAll()
-        
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -861,9 +847,6 @@ class FileProvider: NSFileProviderExtension {
         guard #available(iOS 11, *) else {
             return
         }
-        
-        listUpdateItems.removeAll()
-        fileNamePathImport.removeAll()
         
         completionHandler(nil, nil)
         
@@ -930,9 +913,6 @@ class FileProvider: NSFileProviderExtension {
         guard #available(iOS 11, *) else {
             return
         }
-        
-        listUpdateItems.removeAll()
-        fileNamePathImport.removeAll()
         
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(itemIdentifier.rawValue, tagIOS: tagData)
@@ -1107,19 +1087,6 @@ class FileProvider: NSFileProviderExtension {
             return
         }
         
-        let item = try? self.item(for: identifier)
-        if item != nil {
-            var found = false
-            for updateItem in listUpdateItems {
-                if updateItem.itemIdentifier.rawValue == identifier.rawValue {
-                    found = true
-                }
-            }
-            if !found {
-                listUpdateItems.append(item!)
-            }
-        }
-       
         if serverUrl == homeServerUrl {
             NSFileProviderManager.default.signalEnumerator(for: .rootContainer, completionHandler: { (error) in
                 print("send signal rootContainer")

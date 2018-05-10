@@ -60,10 +60,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         var metadatas: [tableMetadata]?
 
         if #available(iOSApplicationExtension 11.0, *) {
-            
-            // clear list update items
-            listUpdateItems.removeAll()
-            
+                        
             guard let serverUrl = serverUrl else {
                 observer.finishEnumerating(upTo: nil)
                 return

@@ -179,5 +179,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "account = %@ AND fileID = %@", metadata.account, metadata.fileID)) {
             tagData = tableTag.tagIOS
         }
+        
+        // Removed (if exists) this Item from listUpdate
+        var counter = 0
+        for updateItem in listUpdateItems {
+            if updateItem.itemIdentifier.rawValue == itemIdentifier.rawValue {
+                listUpdateItems.remove(at: counter)
+                break;
+            }
+            counter += 1
+        }
     }
 }
