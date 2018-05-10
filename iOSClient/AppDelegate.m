@@ -1407,7 +1407,7 @@
         
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUpload];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithPath:false];
         if (metadataNet) {
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, metadataNet.serverUrl]];
             if (directory != nil)
@@ -1489,7 +1489,7 @@
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUpload];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithPath:false];
         if (metadataNet) {
             
             if (metadataNet.path == nil)  {

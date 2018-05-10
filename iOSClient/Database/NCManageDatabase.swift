@@ -2371,30 +2371,38 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableQueueUpload.init(value:$0) })
     }
     
-    @objc func getQueueUpload() -> CCMetadataNet? {
+    @objc func getQueueUpload(withPath: Bool) -> CCMetadataNet? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
         }
         
+        var result: tableQueueUpload?
+
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first else {
+        if withPath {
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false AND path != nil", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first
+        } else {
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first
+        }
+        
+        if result == nil {
             return nil
         }
         
         let metadataNet = CCMetadataNet()
         
-        metadataNet.account = result.account
-        metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
-        metadataNet.errorCode = result.errorCode
-        metadataNet.fileName = result.fileName
-        metadataNet.path = result.path
-        metadataNet.selector = result.selector
-        metadataNet.selectorPost = result.selectorPost
-        metadataNet.serverUrl = result.serverUrl
-        metadataNet.session = result.session
+        metadataNet.account = result!.account
+        metadataNet.assetLocalIdentifier = result!.assetLocalIdentifier
+        metadataNet.errorCode = result!.errorCode
+        metadataNet.fileName = result!.fileName
+        metadataNet.path = result!.path
+        metadataNet.selector = result!.selector
+        metadataNet.selectorPost = result!.selectorPost
+        metadataNet.serverUrl = result!.serverUrl
+        metadataNet.session = result!.session
         metadataNet.taskStatus = Int(k_taskStatusResume)
         
         return metadataNet

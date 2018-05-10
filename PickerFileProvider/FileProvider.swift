@@ -63,42 +63,21 @@ class FileProvider: NSFileProviderExtension {
             // Timer for upload
             if timerUpload == nil {
                 
-                timerUpload = Timer.init(timeInterval: 1, repeats: true, block: { (Timer) in
+                timerUpload = Timer.init(timeInterval: 0.5, repeats: true, block: { (Timer) in
                     
-                    let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUpload()
-                    
+                    let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUpload(withPath: true)
                     if  metadataNetQueue != nil && metadataNetQueue!.path != nil && uploadMetadataNet == nil {
-                        if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(metadataNetQueue!.serverUrl) {
-                            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, metadataNetQueue!.fileName, directoryID)) {
-                                
-                                if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
+                        
+                        if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
-                                    let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in
-                                        
-                                        // update DB Local
-                                        metadata.date = date! as NSDate
-                                        metadata.etag = etag!
-                                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                                        NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: date! as NSDate, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
-                                        _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadata.fileID)
-
-                                        // Update DB Metadata
-                                        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                                        
-                                    }, failure: { (errorMessage, errorCode) in
-                                        print("failure")
-                                    })
-                                
-                                    if task != nil {
-                                        metadataNetQueue!.task = task
-                                        metadataNetQueue!.fileID = metadata.fileID
-                                        uploadMetadataNet = metadataNetQueue!
-                                    }
-                                } else {
-                                    // file not present, delete record Upload Queue
-                                    NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
-                                }
+                            let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in })
+                            if task != nil {
+                                uploadMetadataNet = metadataNetQueue!
+                                uploadMetadataNet!.task = task
                             }
+                        } else {
+                            // file not present, delete record Upload Queue
+                            NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
                         }
                     }
                     
@@ -106,18 +85,36 @@ class FileProvider: NSFileProviderExtension {
                     if uploadMetadataNet != nil && uploadMetadataNet?.task != nil {
                         let task = uploadMetadataNet!.task
                         if task!.state != URLSessionTask.State.running {
-                            // remove only if NO error
-                            if task!.error == nil {
+                           
+                            let httpResponse = task!.response as! HTTPURLResponse
+
+                            if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
+                            
                                 NCManageDatabase.sharedInstance.deleteQueueUpload(path: uploadMetadataNet!.path)
+
+                                let fields = httpResponse.allHeaderFields
+                                
+                                let etag = (fields["OC-ETag"] as! String).replacingOccurrences(of: "\"", with: "")
+                                let fileID = fields["OC-FileId"] as! String
+                                
+                                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
+                                    metadata.etag = etag
+                                    NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                                    NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
+                                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                                    _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + fileID)
+                                }
+                            } else {
+                                // Error
                             }
-                            // delete
-                            _ = self.deleteFile(directoryUser + "/" + uploadMetadataNet!.fileName)
+                                
                             uploadMetadataNet = nil
                         }
                     }
                 })
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
             }
+            
         } else {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
@@ -1141,7 +1138,9 @@ class FileProvider: NSFileProviderExtension {
     }
 }
 
-// Setup Active Accont
+// --------------------------------------------------------------------------------------------
+//  MARK: - Setup Active Accont
+// --------------------------------------------------------------------------------------------
 
 func setupActiveAccount() {
     
