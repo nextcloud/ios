@@ -70,6 +70,7 @@ class FileProvider: NSFileProviderExtension {
                         
                         if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
+                            // *** Don't capture closure success/failure : is not affidable in extension ... problem of lib  ***
                             let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in })
                             if task != nil {
                                 uploadMetadataNet = metadataNetQueue!
@@ -81,7 +82,7 @@ class FileProvider: NSFileProviderExtension {
                         }
                     }
                     
-                    // Verify running task
+                    // Verify running task 
                     if uploadMetadataNet != nil && uploadMetadataNet?.task != nil {
                         let task = uploadMetadataNet!.task
                         if task!.state != URLSessionTask.State.running {
@@ -104,6 +105,7 @@ class FileProvider: NSFileProviderExtension {
                                     _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
                                     _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + fileID)
                                 }
+                                
                             } else {
                                 // Error
                             }
