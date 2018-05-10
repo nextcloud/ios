@@ -54,45 +54,7 @@ class FileProvider: NSFileProviderExtension {
         
         super.init()
         
-        guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
-            return
-        }
-        
-        account = activeAccount.account
-        accountUser = activeAccount.user
-        accountUserID = activeAccount.userID
-        accountPassword = activeAccount.password
-        accountUrl = activeAccount.url
-        homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
-        directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
-
-        ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
-        
-        groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-        fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
-        importDocumentURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage).appendingPathComponent(k_fileProviderStorageImportDocument)
-        changeDocumentURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage).appendingPathComponent(k_fileProviderStorageChangeDocument)
-
-        // Create dir File Provider Storage
-        do {
-            try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            NSLog("Unable to create directory \(error.debugDescription)")
-        }
-        
-        // Create dir for Upload
-        do {
-            try FileManager.default.createDirectory(atPath: importDocumentURL!.path, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            NSLog("Unable to create directory \(error.debugDescription)")
-        }
-        
-        // Create dir for change document
-        do {
-            try FileManager.default.createDirectory(atPath: changeDocumentURL!.path, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            NSLog("Unable to create directory \(error.debugDescription)")
-        }
+        setupActiveAccount()
         
         if #available(iOSApplicationExtension 11.0, *) {
             
@@ -1080,6 +1042,8 @@ class FileProvider: NSFileProviderExtension {
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
     
+    
+    
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         
         /* ONLY iOS 11*/
@@ -1174,5 +1138,50 @@ class FileProvider: NSFileProviderExtension {
         fileNamePathImport.append(serverUrl+"/"+resultFileName)
         
         return resultFileName
+    }
+}
+
+// Setup Active Accont
+
+func setupActiveAccount() {
+    
+    guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
+        return
+    }
+    
+    account = activeAccount.account
+    accountUser = activeAccount.user
+    accountUserID = activeAccount.userID
+    accountPassword = activeAccount.password
+    accountUrl = activeAccount.url
+    homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
+    directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
+    
+    ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
+    
+    groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+    fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+    importDocumentURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage).appendingPathComponent(k_fileProviderStorageImportDocument)
+    changeDocumentURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage).appendingPathComponent(k_fileProviderStorageChangeDocument)
+    
+    // Create dir File Provider Storage
+    do {
+        try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
+    } catch let error as NSError {
+        NSLog("Unable to create directory \(error.debugDescription)")
+    }
+    
+    // Create dir for Upload
+    do {
+        try FileManager.default.createDirectory(atPath: importDocumentURL!.path, withIntermediateDirectories: true, attributes: nil)
+    } catch let error as NSError {
+        NSLog("Unable to create directory \(error.debugDescription)")
+    }
+    
+    // Create dir for change document
+    do {
+        try FileManager.default.createDirectory(atPath: changeDocumentURL!.path, withIntermediateDirectories: true, attributes: nil)
+    } catch let error as NSError {
+        NSLog("Unable to create directory \(error.debugDescription)")
     }
 }

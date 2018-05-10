@@ -80,6 +80,9 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
     }
     
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
+        
+        setupActiveAccount()
+        
         let anchor = NSFileProviderSyncAnchor("WorkingSet".data(using: .utf8)!)
         completionHandler(anchor)
     }
