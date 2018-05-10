@@ -82,7 +82,7 @@ class FileProvider: NSFileProviderExtension {
                         }
                     }
                     
-                    // Verify running task 
+                    // Verify running task
                     if uploadMetadataNet != nil && uploadMetadataNet?.task != nil {
                         let task = uploadMetadataNet!.task
                         if task!.state != URLSessionTask.State.running {
@@ -98,18 +98,21 @@ class FileProvider: NSFileProviderExtension {
                                 let etag = (fields["OC-ETag"] as! String).replacingOccurrences(of: "\"", with: "")
                                 let fileID = fields["OC-FileId"] as! String
                                 
-                                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
-                                    metadata.etag = etag
-                                    NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                                    NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
-                                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                                    _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + fileID)
+                                if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(uploadMetadataNet!.serverUrl) {
+                                    if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, uploadMetadataNet!.fileName, directoryID)) {
+                                        metadata.etag = etag
+                                        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+                                        NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
+                                        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                                        _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + fileID)
+                                    }
                                 }
                                 
                             } else {
                                 // Error
                             }
-                                
+                            
+                            
                             uploadMetadataNet = nil
                         }
                     }
