@@ -101,7 +101,7 @@ class FileProvider: NSFileProviderExtension {
                                 if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(uploadMetadataNet!.serverUrl) {
                                     if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, uploadMetadataNet!.fileName, directoryID)) {
                                         
-                                        let tempFileID = metadata.fileID
+                                        let prevFileID = metadata.fileID
                                         metadata.etag = etag
                                         metadata.fileID = fileID
                                         metadata.status = Double(k_metadataStatusNormal)
@@ -110,17 +110,21 @@ class FileProvider: NSFileProviderExtension {
                                         let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata)
                                         _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + fileID)
                                         
-                                        // remove tempID
-                                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, tempFileID), clearDateReadDirectoryID: nil)
-                                        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, tempFileID))
+                                        // if prevFileID is a .temp remove
+                                        if String(prevFileID.suffix(5)) == ".temp" {
                                         
-                                        // rename Directory
-                                        do {
-                                            let atPath = fileProviderStorageURL!.path + "/" + tempFileID
-                                            let toPath = fileProviderStorageURL!.path + "/" + fileID
-                                            try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                                        } catch let error as NSError {
-                                            NSLog("Unable to create directory \(error.debugDescription)")
+                                            // remove tempID
+                                            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID), clearDateReadDirectoryID: nil)
+                                            NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
+                                        
+                                            // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
+                                            do {
+                                                let atPath = fileProviderStorageURL!.path + "/" + prevFileID
+                                                let toPath = fileProviderStorageURL!.path + "/" + fileID
+                                                try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                                            } catch let error as NSError {
+                                                NSLog("Unable to create directory \(error.debugDescription)")
+                                            }
                                         }
                                         
                                         let item = FileProviderItem(metadata: metadataDB!, serverUrl: uploadMetadataNet!.serverUrl)
