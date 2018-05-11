@@ -1501,6 +1501,20 @@
     
     // ------------------------- <selector Upload File File Provider Extension> -------------------------
     
+    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1 && [[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+        
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile withPath:true];
+        if (metadataNet) {
+            
+            NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
+            [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
+            [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
+            counterNewUpload++;
+        }
+        
+        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
+    }
+    
     // Start Timer
     _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
 }
