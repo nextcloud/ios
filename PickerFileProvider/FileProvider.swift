@@ -110,8 +110,8 @@ class FileProvider: NSFileProviderExtension {
                                         let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata)
                                         _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + fileID)
                                         
-                                        // if prevFileID is a .temp remove
-                                        if String(prevFileID.suffix(5)) == ".temp" {
+                                        // if prevFileID is a k_uploadSessionID remove
+                                        if prevFileID.contains(k_uploadSessionID) {
                                         
                                             // remove tempID
                                             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID), clearDateReadDirectoryID: nil)
@@ -314,7 +314,7 @@ class FileProvider: NSFileProviderExtension {
             var localEtagFPE = ""
             
             // If identifier is a temp return
-            if String(identifier.rawValue.suffix(5)) == ".temp" {
+            if identifier.rawValue.contains(k_uploadSessionID) {
                 completionHandler(nil)
                 return
             }
@@ -981,7 +981,7 @@ class FileProvider: NSFileProviderExtension {
         metadata.directory = false
         metadata.directoryID = directoryParent.directoryID
         metadata.etag = "000"
-        metadata.fileID = CCUtility.createRandomString(10) + ".temp"
+        metadata.fileID = k_uploadSessionID + CCUtility.createRandomString(16)
         metadata.fileName = fileName
         metadata.fileNameView = fileName
         metadata.session = k_upload_session_extension
