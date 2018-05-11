@@ -2452,6 +2452,28 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func unlockAllQueueUploadInPath() {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                let results = realm.objects(tableQueueUpload.self).filter("account = %@ AND path != nil", tableAccount.account)
+                
+                for result in results {
+                    result.lock = false;
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     @objc func deleteQueueUpload(assetLocalIdentifier: String, selector: String) {
         
         guard let tableAccount = self.getAccountActive() else {

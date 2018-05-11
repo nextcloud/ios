@@ -45,7 +45,7 @@ var listUpdateItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
 var fileNamePathImport = [String]()
 
-var uploadMetadataNet: CCMetadataNet?
+var uploadMetadataNetInProgress: CCMetadataNet?
 var timerUpload: Timer?
 
 class FileProvider: NSFileProviderExtension {
@@ -65,47 +65,50 @@ class FileProvider: NSFileProviderExtension {
                 
                 timerUpload = Timer.init(timeInterval: 0.5, repeats: true, block: { (Timer) in
                     
-                    let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUpload(withPath: true)
-                    if  metadataNetQueue != nil && uploadMetadataNet == nil {
+                    if uploadMetadataNetInProgress == nil {
                         
-                        if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
+                        let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUploadLock(selector: selectorUploadFile, withPath: true)
+                        if  metadataNetQueue != nil {
+                            
+                            if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
-                            // *** Don't capture clousure success/failure : is not affidable in extension ... problem of lib ***
-                            let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in })
-                            if task != nil {
-                                uploadMetadataNet = metadataNetQueue!
-                                uploadMetadataNet!.task = task
+                                // *** Don't capture clousure success/failure : is not affidable in extension ... problem of lib ***
+                                let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in })
+                                if task != nil {
+                                    uploadMetadataNetInProgress = metadataNetQueue!
+                                    uploadMetadataNetInProgress!.task = task
+                                }
+                            } else {
+                                // file not present, delete record Upload Queue
+                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
                             }
-                        } else {
-                            // file not present, delete record Upload Queue
-                            NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
                         }
                     }
                     
                     // Verify running task
-                    if uploadMetadataNet != nil && uploadMetadataNet?.task != nil {
-                        let task = uploadMetadataNet!.task
+                    if uploadMetadataNetInProgress != nil && uploadMetadataNetInProgress?.task != nil {
+                        let task = uploadMetadataNetInProgress!.task
                         if task!.state != URLSessionTask.State.running {
                            
                             let httpResponse = task!.response as! HTTPURLResponse
 
                             if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
                             
-                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: uploadMetadataNet!.path)
+                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: uploadMetadataNetInProgress!.path)
 
                                 let fields = httpResponse.allHeaderFields
                                 
                                 let etag = (fields["OC-ETag"] as! String).replacingOccurrences(of: "\"", with: "")
                                 let fileID = fields["OC-FileId"] as! String
                                 
-                                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, uploadMetadataNet!.fileName, uploadMetadataNet!.directoryID)) {
+                                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, uploadMetadataNetInProgress!.fileName, uploadMetadataNetInProgress!.directoryID)) {
                                         
                                     let prevFileID = metadata.fileID
                                         
                                     metadata.etag = etag
                                     metadata.fileID = fileID
                                     do {
-                                        let attr = try FileManager.default.attributesOfItem(atPath: directoryUser + "/" + uploadMetadataNet!.fileName)
+                                        let attr = try FileManager.default.attributesOfItem(atPath: directoryUser + "/" + uploadMetadataNetInProgress!.fileName)
                                         metadata.size = attr[FileAttributeKey.size] as! Double
                                     } catch { }
                                     metadata.session = ""
@@ -114,7 +117,7 @@ class FileProvider: NSFileProviderExtension {
                                     NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                                     NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
                                     let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                                    _ = self.copyFile(uploadMetadataNet!.path, toPath: directoryUser + "/" + fileID)
+                                    _ = self.copyFile(uploadMetadataNetInProgress!.path, toPath: directoryUser + "/" + fileID)
                                         
                                     // if prevFileID is a k_uploadSessionID remove
                                     if prevFileID.contains(k_uploadSessionID) {
@@ -133,19 +136,22 @@ class FileProvider: NSFileProviderExtension {
                                         }
                                     }
                                         
-                                    let item = FileProviderItem(metadata: metadataDB!, serverUrl: uploadMetadataNet!.serverUrl)
-                                    self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: uploadMetadataNet!.serverUrl)
+                                    let item = FileProviderItem(metadata: metadataDB!, serverUrl: uploadMetadataNetInProgress!.serverUrl)
+                                    self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: uploadMetadataNetInProgress!.serverUrl)
                                 }
                                 
                             } else {
-                                // Error
+                                // Http Error unlock
+                                NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: uploadMetadataNetInProgress!.path)
                             }
                             
-                            uploadMetadataNet = nil
+                            uploadMetadataNetInProgress = nil
                         }
+                        
                     } else {
-                       
-                        // remove All
+                        
+                        // NO running task
+                        NCManageDatabase.sharedInstance.unlockAllQueueUploadInPath()
                     }
                 })
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
