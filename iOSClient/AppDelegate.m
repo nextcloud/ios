@@ -1499,7 +1499,7 @@
         counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
     }
     
-    // ------------------------- <selector Upload File File Provider Extension> -------------------------
+    // ------------------------- <selector Upload With PATH File File Provider Extension> -------------------------
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1 && [[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         

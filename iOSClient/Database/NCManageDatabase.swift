@@ -2317,7 +2317,7 @@ class NCManageDatabase: NSObject {
         if withPath {
             result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false AND path != nil", tableAccount.account, selector).sorted(byKeyPath: "date", ascending: true).first
         } else {
-            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).sorted(byKeyPath: "date", ascending: true).first
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false AND path == nil", tableAccount.account, selector).sorted(byKeyPath: "date", ascending: true).first
         }
         
         if result == nil {
@@ -2394,7 +2394,7 @@ class NCManageDatabase: NSObject {
         if withPath {
             result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false AND path != nil", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first
         } else {
-            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false AND path == nil", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first
         }
         
         if result == nil {

@@ -66,7 +66,7 @@ class FileProvider: NSFileProviderExtension {
                 timerUpload = Timer.init(timeInterval: 0.5, repeats: true, block: { (Timer) in
                     
                     let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUpload(withPath: true)
-                    if  metadataNetQueue != nil && metadataNetQueue!.path != nil && uploadMetadataNet == nil {
+                    if  metadataNetQueue != nil && uploadMetadataNet == nil {
                         
                         if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
@@ -91,7 +91,7 @@ class FileProvider: NSFileProviderExtension {
 
                             if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
                             
-                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
+                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: uploadMetadataNet!.path)
 
                                 let fields = httpResponse.allHeaderFields
                                 
@@ -105,7 +105,7 @@ class FileProvider: NSFileProviderExtension {
                                     metadata.etag = etag
                                     metadata.fileID = fileID
                                     do {
-                                        let attr = try FileManager.default.attributesOfItem(atPath: directoryUser + "/" + metadataNetQueue!.fileName)
+                                        let attr = try FileManager.default.attributesOfItem(atPath: directoryUser + "/" + uploadMetadataNet!.fileName)
                                         metadata.size = attr[FileAttributeKey.size] as! Double
                                     } catch { }
                                     metadata.session = ""
@@ -114,7 +114,7 @@ class FileProvider: NSFileProviderExtension {
                                     NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                                     NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
                                     let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                                    _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + fileID)
+                                    _ = self.copyFile(uploadMetadataNet!.path, toPath: directoryUser + "/" + fileID)
                                         
                                     // if prevFileID is a k_uploadSessionID remove
                                     if prevFileID.contains(k_uploadSessionID) {
@@ -143,6 +143,9 @@ class FileProvider: NSFileProviderExtension {
                             
                             uploadMetadataNet = nil
                         }
+                    } else {
+                       
+                        // remove All
                     }
                 })
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
