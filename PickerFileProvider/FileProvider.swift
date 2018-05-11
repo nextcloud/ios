@@ -1019,6 +1019,7 @@ class FileProvider: NSFileProviderExtension {
         if (size > 0) {
             
             let metadataNet = CCMetadataNet()
+            
             metadataNet.account = account
             metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + metadata.fileID
             metadataNet.fileName = fileName
@@ -1028,6 +1029,7 @@ class FileProvider: NSFileProviderExtension {
             metadataNet.serverUrl = serverUrl
             metadataNet.session = k_upload_session
             metadataNet.taskStatus = Int(k_taskStatusResume)
+            
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
         }
         // self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
