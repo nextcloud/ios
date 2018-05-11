@@ -981,9 +981,10 @@ class FileProvider: NSFileProviderExtension {
         metadata.directory = false
         metadata.directoryID = directoryParent.directoryID
         metadata.etag = "000"
-        metadata.fileID = metadata.directoryID + fileName + ".temp"
+        metadata.fileID = CCUtility.createRandomString(10) + ".temp"
         metadata.fileName = fileName
         metadata.fileNameView = fileName
+        metadata.session = k_upload_session_extension
         metadata.size = size
         metadata.status = Double(k_metadataStatusHide)
 
