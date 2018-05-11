@@ -70,7 +70,7 @@ class FileProvider: NSFileProviderExtension {
                         
                         if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
-                            // *** Don't capture closure success/failure : is not affidable in extension ... problem of lib  ***
+                            // *** Don't capture clousure success/failure : is not affidable in extension ... problem of lib ***
                             let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in })
                             if task != nil {
                                 uploadMetadataNet = metadataNetQueue!
@@ -100,18 +100,37 @@ class FileProvider: NSFileProviderExtension {
                                 
                                 if let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(uploadMetadataNet!.serverUrl) {
                                     if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, uploadMetadataNet!.fileName, directoryID)) {
+                                        
+                                        let tempFileID = metadata.fileID
                                         metadata.etag = etag
+                                        metadata.fileID = fileID
+                                        metadata.status = Double(k_metadataStatusNormal)
                                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                                         NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
-                                        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                                        let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata)
                                         _ = self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + fileID)
+                                        
+                                        // remove tempID
+                                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, tempFileID), clearDateReadDirectoryID: nil)
+                                        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, tempFileID))
+                                        
+                                        // rename Directory
+                                        do {
+                                            let atPath = fileProviderStorageURL!.path + "/" + tempFileID
+                                            let toPath = fileProviderStorageURL!.path + "/" + fileID
+                                            try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                                        } catch let error as NSError {
+                                            NSLog("Unable to create directory \(error.debugDescription)")
+                                        }
+                                        
+                                        let item = FileProviderItem(metadata: metadataDB!, serverUrl: uploadMetadataNet!.serverUrl)
+                                        self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: uploadMetadataNet!.serverUrl)
                                     }
                                 }
                                 
                             } else {
                                 // Error
                             }
-                            
                             
                             uploadMetadataNet = nil
                         }
@@ -285,21 +304,10 @@ class FileProvider: NSFileProviderExtension {
         
         if #available(iOSApplicationExtension 11.0, *) {
 
-            var fileSize : UInt64 = 0
             let pathComponents = url.pathComponents
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-            let fileName = url.lastPathComponent
             var localEtag = ""
             var localEtagFPE = ""
-            let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
-            let importDocumentPath = importDocumentURL!.path + "/" + fileName
-            
-            // Verify is in Upload
-            let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND (path = %@ || path = %@)", account, changeDocumentPath, importDocumentPath))
-            if queue != nil && queue!.count > 0{
-                completionHandler(nil)
-                return
-            }
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue)) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
@@ -311,14 +319,7 @@ class FileProvider: NSFileProviderExtension {
                 localEtagFPE = tableLocalFile!.etagFPE
             }
             
-            do {
-                let attr = try FileManager.default.attributesOfItem(atPath: url.path)
-                fileSize = attr[FileAttributeKey.size] as! UInt64
-            } catch let error {
-                print("Error: \(error)")
-            }
-            
-            if fileSize > 0 && metadata.etag == localEtag {
+            if (localEtagFPE != "") {
                 
                 // Verify last version on "Local Table"
                 if localEtag != localEtagFPE {
@@ -922,7 +923,6 @@ class FileProvider: NSFileProviderExtension {
         var error: NSError?
         var directoryPredicate: NSPredicate
         var size = 0 as Double
-        var fileNamePathUpload: URL?
 
         if parentItemIdentifier == .rootContainer {
             directoryPredicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
@@ -937,7 +937,7 @@ class FileProvider: NSFileProviderExtension {
         
         let serverUrl = directoryParent.serverUrl
         
-        // --------------------------------------------- Copy file here
+        // --------------------------------------------- Copy file here with security access
         
         if fileURL.startAccessingSecurityScopedResource() == false {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -954,7 +954,7 @@ class FileProvider: NSFileProviderExtension {
             
         fileURL.stopAccessingSecurityScopedResource()
         
-        // ---------------------------------------------- Create file 0
+        // ---------------------------------------------------------------------------------
         
         do {
             let attributes = try FileManager.default.attributesOfItem(atPath: fileNameLocalPath.path)
@@ -963,94 +963,78 @@ class FileProvider: NSFileProviderExtension {
             print("error: \(error)")
         }
         
-        // Upload file 0 len
-        if (size == 0) {
-            fileNamePathUpload = fileNameLocalPath
-        } else {
-            fileNamePathUpload = importDocumentURL!.appendingPathComponent(fileName+".000")
-            do {
-                try FileManager.default.removeItem(atPath: fileNamePathUpload!.path)
-            } catch let error {
-                print("error: \(error)")
-            }
-            FileManager.default.createFile(atPath: fileNamePathUpload!.path, contents: nil, attributes: nil)
+        let metadata = tableMetadata()
+                
+        metadata.account = account
+        metadata.date = NSDate()
+        metadata.directory = false
+        metadata.directoryID = directoryParent.directoryID
+        metadata.etag = "000"
+        metadata.fileID = metadata.directoryID + fileName
+        metadata.fileName = fileName
+        metadata.fileNameView = fileName
+        metadata.size = size
+        metadata.status = Double(k_metadataStatusHide)
+
+        CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
+                
+        guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
         }
         
-        // ------------------------------------------------------------
-    
-        // upload
-        _ = ocNetworking?.uploadFileNameServerUrl(serverUrl+"/"+fileName, fileNameLocalPath: fileNamePathUpload?.path, communication: CCNetworking.shared().sharedOCCommunication(), success: { (fileID, etag, date) in
-                
-            let metadata = tableMetadata()
-                
-            metadata.account = account
-            metadata.date = date! as NSDate
-            metadata.directory = false
-            metadata.directoryID = directoryParent.directoryID
-            metadata.etag = etag!
-            metadata.fileID = fileID!
-            metadata.fileName = fileName
-            metadata.fileNameView = fileName
-            metadata.size = 0
-
-            CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
-                
-            guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
+        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
+        NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
             
-            // Create dir <base storage directory>/<item identifier>
-            do {
-                try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path, withIntermediateDirectories: true, attributes: nil)
-            } catch let error {
-                print("error: \(error)")
-            }
-            // copy <base storage directory>/<item identifier>/<item file name>
-            _ = self.copyFile(fileNameLocalPath.path, toPath: "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileNameView)")
-            
-            // add item
-            let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
-            
-            // add queue upload if size > 0
-            if (size > 0) {
-                
-                let metadataNet = CCMetadataNet()
-                
-                metadataNet.account = account
-                metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + fileID!
-                metadataNet.fileName = fileName
-                metadataNet.path = importDocumentURL!.path + "/" + metadata.fileNameView
-                metadataNet.selector = selectorUploadFile
-                metadataNet.selectorPost = ""
-                metadataNet.serverUrl = serverUrl
-                metadataNet.session = k_upload_session
-                metadataNet.taskStatus = Int(k_taskStatusResume)
-                
-                _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
-            }
-            
-            self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
-            
-            completionHandler(item, nil)
-
-        }, failure: { (errorMessage, errorCode) in
-            
-            completionHandler(nil, NSFileProviderError(.serverUnreachable))
-        })
+        // Create dir <base storage directory>/<item identifier>
+        do {
+            try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error {
+            print("error: \(error)")
+        }
+        // copy <base storage directory>/<item identifier>/<item file name>
+        _ = self.copyFile(fileNameLocalPath.path, toPath: "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileName)")
+        
+        // ---------- Send the file to Nextcloud ----------
+        
+        let metadataNet = CCMetadataNet()
+        metadataNet.account = account
+        metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + metadata.fileID
+        metadataNet.fileName = fileName
+        metadataNet.path = importDocumentURL!.path + "/" + metadata.fileNameView
+        metadataNet.selector = selectorUploadFile
+        metadataNet.selectorPost = ""
+        metadataNet.serverUrl = serverUrl
+        metadataNet.session = k_upload_session
+        metadataNet.taskStatus = Int(k_taskStatusResume)
+        _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+        
+        let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
+        completionHandler(item, nil)
     }
     
     // --------------------------------------------------------------------------------------------
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
     
-    
-    
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
             return
+        }
+        
+        let item = try? self.item(for: identifier)
+        if item != nil {
+            var found = false
+            for updateItem in listUpdateItems {
+                if updateItem.itemIdentifier.rawValue == identifier.rawValue {
+                    found = true
+                }
+            }
+            if !found {
+                listUpdateItems.append(item!)
+            }
         }
         
         if serverUrl == homeServerUrl {

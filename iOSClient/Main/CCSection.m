@@ -109,6 +109,11 @@
                 continue;
         }
         
+        // if hide, do not insert
+        if (metadata.status == k_metadataStatusHide) {
+            continue;
+        }
+        
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
             
             [copyRecords insertObject:metadata atIndex:0];

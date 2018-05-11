@@ -109,27 +109,17 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
             let identifierPathUrl = fileProviderStorageURL!.appendingPathComponent(metadata.fileID)
             let fileIdentifier = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
-            let fileDirectoryUser = "\(directoryUser)/\(metadata.fileID)"
-            //let changeDocumentPath = changeDocumentURL!.path + "/" + metadata.fileNameView
-            //let importDocumentPath = importDocumentURL!.path + "/" + metadata.fileNameView
             var fileSize = 0 as Double
-
+         
             do {
                 try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
             } catch let error {
                 print("error: \(error)")
             }
-                
+            
+            // If do not exists create file with size = 0
             if FileManager.default.fileExists(atPath: fileIdentifier)  == false {
-                if FileManager.default.fileExists(atPath: fileDirectoryUser) {
-                    do {
-                        try FileManager.default.copyItem(atPath: fileDirectoryUser, toPath: fileIdentifier)
-                    } catch {
-                        FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
-                    }
-                } else {
-                    FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
-                }
+                FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
             }
             
             do {
