@@ -1504,16 +1504,11 @@
                 
                 if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
                     
-                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileName = %@ AND directoryID = %@ AND session != %@", self.activeAccount, metadataNet.fileName, metadataNet.directoryID, k_upload_session_extension]];
-                    
-                    if (metadata == nil ) {
-                        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile];
-                        NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
-                    
-                        [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
-                        [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
-                        counterNewUpload++;
-                    }
+                    metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile];
+                    NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
+                    [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
+                    [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
+                    counterNewUpload++;
                 }
             }
         }
