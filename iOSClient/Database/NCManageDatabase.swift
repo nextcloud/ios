@@ -2321,6 +2321,7 @@ class NCManageDatabase: NSObject {
         
         metadataNet.account = result.account
         metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
+        metadataNet.directoryID = self.getDirectoryID(result.serverUrl)
         metadataNet.errorCode = result.errorCode
         metadataNet.fileName = result.fileName
         metadataNet.path = result.path
@@ -2397,6 +2398,7 @@ class NCManageDatabase: NSObject {
         metadataNet.account = result!.account
         metadataNet.assetLocalIdentifier = result!.assetLocalIdentifier
         metadataNet.errorCode = result!.errorCode
+        metadataNet.directoryID = self.getDirectoryID(result!.serverUrl)
         metadataNet.fileName = result!.fileName
         metadataNet.path = result!.path
         metadataNet.selector = result!.selector
