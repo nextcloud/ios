@@ -309,10 +309,17 @@ class FileProvider: NSFileProviderExtension {
             var localEtag = ""
             var localEtagFPE = ""
             
+            // If identifier is a temp return
+            if String(identifier.rawValue.suffix(5)) == ".temp" {
+                completionHandler(nil)
+                return
+            }
+            
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue)) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
+            
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))
             if tableLocalFile != nil {
                 localEtag = tableLocalFile!.etag
@@ -970,7 +977,7 @@ class FileProvider: NSFileProviderExtension {
         metadata.directory = false
         metadata.directoryID = directoryParent.directoryID
         metadata.etag = "000"
-        metadata.fileID = metadata.directoryID + fileName
+        metadata.fileID = metadata.directoryID + fileName + ".temp"
         metadata.fileName = fileName
         metadata.fileNameView = fileName
         metadata.size = size
@@ -1008,6 +1015,8 @@ class FileProvider: NSFileProviderExtension {
         metadataNet.session = k_upload_session
         metadataNet.taskStatus = Int(k_taskStatusResume)
         _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+        
+       // self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
         
         let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
         completionHandler(item, nil)
