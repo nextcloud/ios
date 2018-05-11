@@ -102,9 +102,16 @@ class FileProvider: NSFileProviderExtension {
                                     if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, uploadMetadataNet!.fileName, directoryID)) {
                                         
                                         let prevFileID = metadata.fileID
+                                        
                                         metadata.etag = etag
                                         metadata.fileID = fileID
+                                        do {
+                                            let attr = try FileManager.default.attributesOfItem(atPath: metadataNetQueue!.path)
+                                            metadata.size = attr[FileAttributeKey.size] as! Double
+                                        } catch { }
+                                        metadata.session = ""
                                         metadata.status = Double(k_metadataStatusNormal)
+                                        
                                         NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
                                         NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
                                         let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata)
