@@ -106,7 +106,7 @@ class FileProvider: NSFileProviderExtension {
                                         metadata.etag = etag
                                         metadata.fileID = fileID
                                         do {
-                                            let attr = try FileManager.default.attributesOfItem(atPath: metadataNetQueue!.path)
+                                            let attr = try FileManager.default.attributesOfItem(atPath: directoryUser + "/" + metadataNetQueue!.fileName)
                                             metadata.size = attr[FileAttributeKey.size] as! Double
                                         } catch { }
                                         metadata.session = ""
@@ -988,7 +988,7 @@ class FileProvider: NSFileProviderExtension {
         metadata.directory = false
         metadata.directoryID = directoryParent.directoryID
         metadata.etag = "000"
-        metadata.fileID = k_uploadSessionID + CCUtility.createRandomString(16)
+        metadata.fileID = k_uploadSessionID + directoryParent.directoryID + fileName
         metadata.fileName = fileName
         metadata.fileNameView = fileName
         metadata.session = k_upload_session_extension
@@ -1014,21 +1014,23 @@ class FileProvider: NSFileProviderExtension {
         // copy <base storage directory>/<item identifier>/<item file name>
         _ = self.copyFile(fileNameLocalPath.path, toPath: "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileName)")
         
-        // ---------- Send the file to Nextcloud ----------
+        // ---------- Send the file to Nextcloud if size > 0 [Office 365] ----------
         
-        let metadataNet = CCMetadataNet()
-        metadataNet.account = account
-        metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + metadata.fileID
-        metadataNet.fileName = fileName
-        metadataNet.path = importDocumentURL!.path + "/" + metadata.fileNameView
-        metadataNet.selector = selectorUploadFile
-        metadataNet.selectorPost = ""
-        metadataNet.serverUrl = serverUrl
-        metadataNet.session = k_upload_session
-        metadataNet.taskStatus = Int(k_taskStatusResume)
-        _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
-        
-       // self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+        if (size > 0) {
+            
+            let metadataNet = CCMetadataNet()
+            metadataNet.account = account
+            metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + metadata.fileID
+            metadataNet.fileName = fileName
+            metadataNet.path = importDocumentURL!.path + "/" + metadata.fileNameView
+            metadataNet.selector = selectorUploadFile
+            metadataNet.selectorPost = ""
+            metadataNet.serverUrl = serverUrl
+            metadataNet.session = k_upload_session
+            metadataNet.taskStatus = Int(k_taskStatusResume)
+            _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+        }
+        // self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
         
         let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
         completionHandler(item, nil)
