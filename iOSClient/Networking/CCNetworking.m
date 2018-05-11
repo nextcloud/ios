@@ -1278,8 +1278,6 @@
             NSURL *dirImportDocument = [dirFileProviderStorage URLByAppendingPathComponent:k_fileProviderStorageImportDocument];
             fileNamePath = [NSString stringWithFormat:@"%@/%@", dirImportDocument.path, metadata.fileName];
             [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
-            fileNamePath = [NSString stringWithFormat:@"%@/%@.000", dirImportDocument.path, metadata.fileName];
-            [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
         }
         
         // Actvity
