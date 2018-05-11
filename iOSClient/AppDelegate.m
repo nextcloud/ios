@@ -1493,11 +1493,17 @@
         if (metadataNet) {
             
             if (metadataNet.path == nil)  {
+                
                 metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile];
                 [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
                 counterNewUpload++;
+                
             } else {
+                
+                // File Provider Extension [use of path]
+                
                 if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+                    
                     metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile];
                     NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
                     [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];

@@ -91,7 +91,7 @@ class FileProvider: NSFileProviderExtension {
 
                             if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
                             
-                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: uploadMetadataNet!.path)
+                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
 
                                 let fields = httpResponse.allHeaderFields
                                 
