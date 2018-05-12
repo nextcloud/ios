@@ -50,7 +50,6 @@
 // Sessions
 - (OCCommunication *)sharedOCCommunication;
 - (OCCommunication *)sharedOCCommunicationExtensionDownload:(NSString *)identifier;
-- (OCCommunication *)sharedOCCommunicationExtensionUpload:(NSString *)identifier;
 
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
 

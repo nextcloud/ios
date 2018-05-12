@@ -313,34 +313,6 @@
     return sharedOCCommunicationExtensionDownload;
 }
 
-- (OCCommunication *)sharedOCCommunicationExtensionUpload:(NSString *)identifier
-{
-    static OCCommunication *sharedOCCommunicationExtensionUpload = nil;
-    static NSString *extensionUploadIdentifier =k_upload_session_extension;
-    
-    if (sharedOCCommunicationExtensionUpload == nil || [extensionUploadIdentifier isEqualToString:identifier] == false)
-    {
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:identifier];
-        config.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
-        config.HTTPMaximumConnectionsPerHost = 1;
-        config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        config.timeoutIntervalForRequest = k_timeout_upload;
-        config.sessionSendsLaunchEvents = YES;
-        config.allowsCellularAccess = YES;
-        
-        OCURLSessionManager *sessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:config];
-        [sessionManager.operationQueue setMaxConcurrentOperationCount:1];
-        [sessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
-            return NSURLSessionAuthChallengePerformDefaultHandling;
-        }];
-        
-        extensionUploadIdentifier = identifier;
-        sharedOCCommunicationExtensionUpload = [[OCCommunication alloc] initWithUploadSessionManager:sessionManager andDownloadSessionManager:nil andNetworkSessionManager:nil];
-    }
-    
-    return sharedOCCommunicationExtensionUpload;
-}
-
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription
 {
     if ([sessionDescription isEqualToString:k_download_session]) return [self sessionDownload];
@@ -350,6 +322,7 @@
     if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
     if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
     if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
+    if ([sessionDescription isEqualToString:k_upload_session_extension]) return [self sessionUploadExtension];
 
     return nil;
 }
@@ -363,6 +336,7 @@
     [[self sessionUpload] invalidateAndCancel];
     [[self sessionWWanUpload] invalidateAndCancel];
     [[self sessionUploadForeground] invalidateAndCancel];
+    [[self sessionUploadExtension] invalidateAndCancel];
 }
 
 - (void)settingSessionsDownload:(BOOL)download upload:(BOOL)upload taskStatus:(NSInteger)taskStatus activeAccount:(NSString *)activeAccount activeUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
@@ -414,6 +388,13 @@
         }];
         
         [[self sessionUploadForeground] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+            for (NSURLSessionTask *task in uploadTasks)
+                if (taskStatus == k_taskStatusCancel) [task cancel];
+                else if (taskStatus == k_taskStatusSuspend) [task suspend];
+                else if (taskStatus == k_taskStatusResume) [task resume];
+        }];
+        
+        [[self sessionUploadExtension] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in uploadTasks)
                 if (taskStatus == k_taskStatusCancel) [task cancel];
                 else if (taskStatus == k_taskStatusSuspend) [task suspend];
