@@ -925,7 +925,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         metadata.fileID = k_uploadSessionID + directoryParent.directoryID + fileName
         metadata.fileName = fileName
         metadata.fileNameView = fileName
-        metadata.session = k_upload_session_extension
         metadata.size = size
         metadata.status = Double(k_metadataStatusHide)
 
