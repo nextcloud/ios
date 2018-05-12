@@ -262,6 +262,7 @@ class tableQueueUpload: Object {
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var errorCode: Int = 0
+    @objc dynamic var fileID: String?
     @objc dynamic var fileName = ""
     @objc dynamic var lock: Bool = false
     @objc dynamic var path: String?

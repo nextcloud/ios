@@ -1036,6 +1036,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             metadataNet.account = account
             metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + metadata.fileID
+            metadataNet.fileID = k_uploadSessionID + directoryParent.directoryID + fileName
             metadataNet.fileName = fileName
             metadataNet.path = importDocumentURL!.path + "/" + metadata.fileNameView
             metadataNet.selector = selectorUploadFile
