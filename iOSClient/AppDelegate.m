@@ -1508,7 +1508,7 @@
             
             NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
             [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
-            [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
+            [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier fileID:metadataNet.fileID session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
             counterNewUpload++;
         }
         

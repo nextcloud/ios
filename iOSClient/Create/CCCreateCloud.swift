@@ -633,7 +633,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
             let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(fileNameSave)", contents: data, attributes: nil)
             
             if success {
-                CCNetworking.shared().uploadFile(fileNameSave, serverUrl: self.serverUrl, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
+                CCNetworking.shared().uploadFile(fileNameSave, serverUrl: self.serverUrl, assetLocalIdentifier: nil, fileID: "", session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
             } else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             }

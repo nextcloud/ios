@@ -72,7 +72,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                             
                             if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
-                                CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
+                                CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, fileID: metadataNetQueue!.fileID ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                                 /*
                                 // *** Don't capture clousure success/failure : is not affidable in extension ... problem of lib ***
                                 let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in })
@@ -509,7 +509,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 _ = self.copyFile(url.path, toPath: destinationDirectoryUser)
 
-                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, fileID: "", session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             }
 
             self.stopProvidingItem(at: url)
