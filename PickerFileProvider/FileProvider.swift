@@ -48,7 +48,7 @@ var fileNamePathImport = [String]()
 var uploadMetadataNetInProgress: CCMetadataNet?
 var timerUpload: Timer?
 
-class FileProvider: NSFileProviderExtension {
+class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
     override init() {
         
@@ -72,12 +72,16 @@ class FileProvider: NSFileProviderExtension {
                             
                             if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
+                                CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
+                                /*
                                 // *** Don't capture clousure success/failure : is not affidable in extension ... problem of lib ***
                                 let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in })
                                 if task != nil {
                                     uploadMetadataNetInProgress = metadataNetQueue!
                                     uploadMetadataNetInProgress!.task = task
                                 }
+                                */
+                                
                             } else {
                                 // file not present, delete record Upload Queue
                                 NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
@@ -85,6 +89,7 @@ class FileProvider: NSFileProviderExtension {
                         }
                     }
                     
+                    /*
                     // Verify running task
                     if uploadMetadataNetInProgress != nil && uploadMetadataNetInProgress?.task != nil {
                         let task = uploadMetadataNetInProgress!.task
@@ -153,6 +158,8 @@ class FileProvider: NSFileProviderExtension {
                         // NO running task
                         NCManageDatabase.sharedInstance.unlockAllQueueUploadInPath()
                     }
+                    */
+                    
                 })
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
             }
@@ -443,7 +450,7 @@ class FileProvider: NSFileProviderExtension {
             metadataNet.selector = selectorUploadFile
             metadataNet.selectorPost = ""
             metadataNet.serverUrl = serverUrl
-            metadataNet.session = k_upload_session
+            metadataNet.session = k_upload_session_extension
             metadataNet.taskStatus = Int(k_taskStatusResume)
                 
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
@@ -1034,7 +1041,7 @@ class FileProvider: NSFileProviderExtension {
             metadataNet.selector = selectorUploadFile
             metadataNet.selectorPost = ""
             metadataNet.serverUrl = serverUrl
-            metadataNet.session = k_upload_session
+            metadataNet.session = k_upload_session_extension
             metadataNet.taskStatus = Int(k_taskStatusResume)
             
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
@@ -1156,6 +1163,14 @@ class FileProvider: NSFileProviderExtension {
         fileNamePathImport.append(serverUrl+"/"+resultFileName)
         
         return resultFileName
+    }
+    
+    // --------------------------------------------------------------------------------------------
+    //  MARK: - Upload delegate
+    // --------------------------------------------------------------------------------------------
+    
+    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
+        print("x")
     }
 }
 
