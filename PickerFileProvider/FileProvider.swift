@@ -1054,6 +1054,30 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     }
     
     // --------------------------------------------------------------------------------------------
+    //  MARK: - Upload delegate
+    // --------------------------------------------------------------------------------------------
+    
+    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
+        
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
+            
+            NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
+            
+            // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
+            do {
+                let atPath = fileProviderStorageURL!.path + "/" + assetLocalIdentifier.replacingOccurrences(of: k_assetLocalIdentifierFileProviderStorage, with: "")
+                let toPath = fileProviderStorageURL!.path + "/" + fileID
+                try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+            } catch let error as NSError {
+                NSLog("Unable to create directory \(error.debugDescription)")
+            }
+            
+            let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+            self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+        }
+    }
+    
+    // --------------------------------------------------------------------------------------------
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
     
@@ -1164,14 +1188,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         fileNamePathImport.append(serverUrl+"/"+resultFileName)
         
         return resultFileName
-    }
-    
-    // --------------------------------------------------------------------------------------------
-    //  MARK: - Upload delegate
-    // --------------------------------------------------------------------------------------------
-    
-    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
-        print("x")
     }
 }
 
