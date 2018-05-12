@@ -72,6 +72,9 @@
     [self sessionWWanUpload];
     [self sessionUploadForeground];
     
+    // *** NOT Initialize ONLY for EXTENSION !!!!! ***
+    // [self sessionUploadExtension];
+    
     [self sharedOCCommunication];
     
     [self settingAccount];
