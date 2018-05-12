@@ -981,22 +981,25 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
             
-            let prevFileID = assetLocalIdentifier.replacingOccurrences(of: k_assetLocalIdentifierFileProviderStorage, with: "")
+            if (errorCode == 0) {
+                
+                let prevFileID = assetLocalIdentifier.replacingOccurrences(of: k_assetLocalIdentifierFileProviderStorage, with: "")
             
-            NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
-            NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
+                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
 
-            // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
-            do {
-                let atPath = fileProviderStorageURL!.path + "/" + prevFileID
-                let toPath = fileProviderStorageURL!.path + "/" + fileID
-                try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-            } catch let error as NSError {
-                NSLog("Unable to create directory \(error.debugDescription)")
-            }
+                // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
+                do {
+                    let atPath = fileProviderStorageURL!.path + "/" + prevFileID
+                    let toPath = fileProviderStorageURL!.path + "/" + fileID
+                    try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                } catch let error as NSError {
+                    NSLog("Unable to create directory \(error.debugDescription)")
+                }
             
-            let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-            self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+                self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+            }
         }
     }
     
