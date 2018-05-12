@@ -45,7 +45,6 @@ var listUpdateItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
 var fileNamePathImport = [String]()
 
-var uploadMetadataNetInProgress: CCMetadataNet?
 var timerUpload: Timer?
 
 class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
@@ -65,7 +64,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoDownloadUpload), repeats: true, block: { (Timer) in
                     
-                    if uploadMetadataNetInProgress == nil {
+                    let queueInLock = NCManageDatabase.sharedInstance.getQueueUploadInLock()
+                    if queueInLock != nil && queueInLock!.count == 0 {
                         
                         let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUploadLock(selector: selectorUploadFile, withPath: true)
                         if  metadataNetQueue != nil {

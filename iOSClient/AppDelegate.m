@@ -1508,6 +1508,13 @@
             
             NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
             [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
+            
+            // Convert k_upload_session_extension -> k_upload_session
+            if ([metadataNet.session isEqualToString:k_upload_session_extension]) {
+                metadataNet.fileID = @"";
+                metadataNet.session = k_upload_session;
+            }
+            
             [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier fileID:metadataNet.fileID session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
             counterNewUpload++;
         }
