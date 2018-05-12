@@ -167,7 +167,8 @@
         configuration.discretionary = NO;
         configuration.HTTPMaximumConnectionsPerHost = 1;
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
-        
+        configuration.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
+
         sessionUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
         sessionUpload.sessionDescription = k_upload_session;
     }
