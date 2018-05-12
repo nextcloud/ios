@@ -63,7 +63,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             // Timer for upload
             if timerUpload == nil {
                 
-                timerUpload = Timer.init(timeInterval: 0.5, repeats: true, block: { (Timer) in
+                timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoDownloadUpload), repeats: true, block: { (Timer) in
                     
                     if uploadMetadataNetInProgress == nil {
                         
@@ -73,14 +73,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                             if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
 
                                 CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, fileID: metadataNetQueue!.fileID ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
-                                /*
-                                // *** Don't capture clousure success/failure : is not affidable in extension ... problem of lib ***
-                                let task = ocNetworking?.uploadFileNameServerUrl(metadataNetQueue!.serverUrl+"/"+metadataNetQueue!.fileName, fileNameLocalPath: directoryUser + "/" + metadataNetQueue!.fileName, communication: CCNetworking.shared().sharedOCCommunicationExtensionUpload(k_upload_session_extension), success: { (fileID, etag, date) in }, failure: { (errorMessage, errorCode) in })
-                                if task != nil {
-                                    uploadMetadataNetInProgress = metadataNetQueue!
-                                    uploadMetadataNetInProgress!.task = task
-                                }
-                                */
                                 
                             } else {
                                 // file not present, delete record Upload Queue
@@ -88,78 +80,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                             }
                         }
                     }
-                    
-                    /*
-                    // Verify running task
-                    if uploadMetadataNetInProgress != nil && uploadMetadataNetInProgress?.task != nil {
-                        let task = uploadMetadataNetInProgress!.task
-                        if task!.state != URLSessionTask.State.running {
-                           
-                            let httpResponse = task!.response as! HTTPURLResponse
-
-                            if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
-                            
-                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: uploadMetadataNetInProgress!.path)
-
-                                let fields = httpResponse.allHeaderFields
-                                
-                                let etag = (fields["OC-ETag"] as! String).replacingOccurrences(of: "\"", with: "")
-                                let fileID = fields["OC-FileId"] as! String
-                                
-                                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileName = %@ AND directoryID = %@", account, uploadMetadataNetInProgress!.fileName, uploadMetadataNetInProgress!.directoryID)) {
-                                        
-                                    let prevFileID = metadata.fileID
-                                        
-                                    metadata.etag = etag
-                                    metadata.fileID = fileID
-                                    do {
-                                        let attr = try FileManager.default.attributesOfItem(atPath: directoryUser + "/" + uploadMetadataNetInProgress!.fileName)
-                                        metadata.size = attr[FileAttributeKey.size] as! Double
-                                    } catch { }
-                                    metadata.session = ""
-                                    metadata.status = Double(k_metadataStatusNormal)
-                                        
-                                    NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-                                    NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: etag, etagFPE: etag)
-                                    let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                                    _ = self.copyFile(uploadMetadataNetInProgress!.path, toPath: directoryUser + "/" + fileID)
-                                        
-                                    // if prevFileID is a k_uploadSessionID remove
-                                    if prevFileID.contains(k_uploadSessionID) {
-                                        
-                                        // remove tempID
-                                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID), clearDateReadDirectoryID: nil)
-                                        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
-                                        
-                                        // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
-                                        do {
-                                            let atPath = fileProviderStorageURL!.path + "/" + prevFileID
-                                            let toPath = fileProviderStorageURL!.path + "/" + fileID
-                                            try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                                        } catch let error as NSError {
-                                            NSLog("Unable to create directory \(error.debugDescription)")
-                                        }
-                                    }
-                                        
-                                    let item = FileProviderItem(metadata: metadataDB!, serverUrl: uploadMetadataNetInProgress!.serverUrl)
-                                    self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: uploadMetadataNetInProgress!.serverUrl)
-                                }
-                                
-                            } else {
-                                // Http Error unlock
-                                NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: nil, path: uploadMetadataNetInProgress!.path)
-                            }
-                            
-                            uploadMetadataNetInProgress = nil
-                        }
-                        
-                    } else {
-                        
-                        // NO running task
-                        NCManageDatabase.sharedInstance.unlockAllQueueUploadInPath()
-                    }
-                    */
-                    
                 })
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
             }
@@ -1061,11 +981,14 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
             
-            NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
+            let prevFileID = assetLocalIdentifier.replacingOccurrences(of: k_assetLocalIdentifierFileProviderStorage, with: "")
             
+            NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
+            NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
+
             // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
             do {
-                let atPath = fileProviderStorageURL!.path + "/" + assetLocalIdentifier.replacingOccurrences(of: k_assetLocalIdentifierFileProviderStorage, with: "")
+                let atPath = fileProviderStorageURL!.path + "/" + prevFileID
                 let toPath = fileProviderStorageURL!.path + "/" + fileID
                 try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
             } catch let error as NSError {
