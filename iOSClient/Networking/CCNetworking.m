@@ -232,7 +232,7 @@
         configuration.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
         
         sessionUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
-        sessionUpload.sessionDescription = k_upload_session;
+        sessionUpload.sessionDescription = k_upload_session_extension;
     }
     return sessionUpload;
 }
@@ -538,7 +538,7 @@
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         
-        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND sessionTaskIdentifier = %i",session.sessionDescription, task.taskIdentifier]];
+        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND sessionTaskIdentifier = %i", session.sessionDescription, task.taskIdentifier]];
         
         if (!metadata)
             metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID = %@ AND fileName = %@", directoryID, fileName]];

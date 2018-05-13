@@ -969,8 +969,10 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 let prevFileID = assetLocalIdentifier.replacingOccurrences(of: k_assetLocalIdentifierFileProviderStorage, with: "")
             
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
-                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
-
+                if (prevFileID != fileID) {
+                    NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
+                }
+                
                 // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
                 do {
                     let atPath = fileProviderStorageURL!.path + "/" + prevFileID
