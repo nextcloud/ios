@@ -325,7 +325,6 @@
     if ([sessionDescription isEqualToString:k_upload_session]) return [self sessionUpload];
     if ([sessionDescription isEqualToString:k_upload_session_wwan]) return [self sessionWWanUpload];
     if ([sessionDescription isEqualToString:k_upload_session_foreground]) return [self sessionUploadForeground];
-    if ([sessionDescription isEqualToString:k_upload_session_extension]) return [self sessionUploadExtension];
 
     return nil;
 }
@@ -339,7 +338,6 @@
     [[self sessionUpload] invalidateAndCancel];
     [[self sessionWWanUpload] invalidateAndCancel];
     [[self sessionUploadForeground] invalidateAndCancel];
-    [[self sessionUploadExtension] invalidateAndCancel];
 }
 
 - (void)settingSessionsDownload:(BOOL)download upload:(BOOL)upload taskStatus:(NSInteger)taskStatus activeAccount:(NSString *)activeAccount activeUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
@@ -391,13 +389,6 @@
         }];
         
         [[self sessionUploadForeground] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            for (NSURLSessionTask *task in uploadTasks)
-                if (taskStatus == k_taskStatusCancel) [task cancel];
-                else if (taskStatus == k_taskStatusSuspend) [task suspend];
-                else if (taskStatus == k_taskStatusResume) [task resume];
-        }];
-        
-        [[self sessionUploadExtension] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
             for (NSURLSessionTask *task in uploadTasks)
                 if (taskStatus == k_taskStatusCancel) [task cancel];
                 else if (taskStatus == k_taskStatusSuspend) [task suspend];
