@@ -65,7 +65,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoDownloadUpload), repeats: true, block: { (Timer) in
                     
                     let tasks = CCNetworking.shared().getUploadTasksExtensionSession()
-                    if tasks == nil {
+                    if tasks!.count == 0 {
                         let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", account, selectorUploadFile))
                         if records != nil && records!.count > 0 {
                             NCManageDatabase.sharedInstance.unlockAllQueueUploadInPath()

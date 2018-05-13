@@ -429,7 +429,7 @@
 
 - (NSArray *)getUploadTasksExtensionSession
 {
-    __block NSArray *tasks;
+    __block NSArray *tasks = [NSArray new];
     [[self sessionUploadExtension] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
         tasks =  uploadTasks;
     }];
