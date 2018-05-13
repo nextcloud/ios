@@ -1127,6 +1127,10 @@
          }
     }
 
+    if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadStart:serverUrl:)]) {
+        [[self getDelegate:sessionID] uploadStart:metadata.fileID serverUrl:serverUrl];
+    }
+    
 #ifndef EXTENSION
     [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateApplicationIconBadgeNumber];
 #endif

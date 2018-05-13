@@ -990,6 +990,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
             }
         }
+        
+        uploadFile()
+    }
+    
+    func uploadStart(_ fileID: String!, serverUrl: String!) {
+        // start
     }
     
     func uploadFile() {
