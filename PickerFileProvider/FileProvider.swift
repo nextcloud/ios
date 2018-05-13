@@ -973,17 +973,20 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 let prevFileID = assetLocalIdentifier.replacingOccurrences(of: k_assetLocalIdentifierFileProviderStorage, with: "")
             
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
-                if (prevFileID != fileID) {
-                    NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
-                }
                 
-                // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
-                do {
-                    let atPath = fileProviderStorageURL!.path + "/" + prevFileID
-                    let toPath = fileProviderStorageURL!.path + "/" + fileID
-                    try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                } catch let error as NSError {
-                    NSLog("Unable to create directory \(error.debugDescription)")
+                // Change fileID 
+                if (prevFileID != fileID) {
+                    
+                    NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
+                
+                    // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
+                    do {
+                        let atPath = fileProviderStorageURL!.path + "/" + prevFileID
+                        let toPath = fileProviderStorageURL!.path + "/" + fileID
+                        try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
+                    } catch let error as NSError {
+                        NSLog("Unable to create directory \(error.debugDescription)")
+                    }
                 }
             
                 let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
@@ -995,7 +998,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     }
     
     func uploadStart(_ fileID: String!, serverUrl: String!) {
-        // start
+        
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
+            
+            let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+            self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+        }
     }
     
     func uploadFile() {
