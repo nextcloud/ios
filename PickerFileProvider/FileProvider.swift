@@ -1014,11 +1014,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
     func uploadStart(_ fileID: String!, serverUrl: String!) {
         
+        /*
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
             
             let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
             self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
         }
+        */
     }
     
     func uploadFile() {
