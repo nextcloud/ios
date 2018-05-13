@@ -65,6 +65,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoDownloadUpload), repeats: true, block: { (Timer) in
                     self.uploadFile()
                 })
+                
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
             }
             
@@ -358,6 +359,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             metadataNet.taskStatus = Int(k_taskStatusResume)
                 
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+            
+            self.uploadFile()
             
         } else {
             
@@ -950,7 +953,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
         }
-        // self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+
+        self.uploadFile()
         
         let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
         completionHandler(item, nil)
