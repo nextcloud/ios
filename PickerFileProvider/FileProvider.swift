@@ -63,23 +63,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             if timerUpload == nil {
                 
                 timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoDownloadUpload), repeats: true, block: { (Timer) in
-                    
-                    let queueInLock = NCManageDatabase.sharedInstance.getQueueUploadInLock()
-                    if queueInLock != nil && queueInLock!.count == 0 {
-                        
-                        let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUploadLock(selector: selectorUploadFile, withPath: true)
-                        if  metadataNetQueue != nil {
-                            
-                            if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
-
-                                CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, fileID: metadataNetQueue!.fileID ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
-                                
-                            } else {
-                                // file not present, delete record Upload Queue
-                                NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
-                            }
-                        }
-                    }
+                    self.uploadFile()
                 })
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
             }
@@ -973,7 +957,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     }
     
     // --------------------------------------------------------------------------------------------
-    //  MARK: - Upload delegate
+    //  MARK: - Upload
     // --------------------------------------------------------------------------------------------
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
@@ -998,6 +982,26 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
                 let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                 self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+            }
+        }
+    }
+    
+    func uploadFile() {
+        
+        let queueInLock = NCManageDatabase.sharedInstance.getQueueUploadInLock()
+        if queueInLock != nil && queueInLock!.count == 0 {
+            
+            let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUploadLock(selector: selectorUploadFile, withPath: true)
+            if  metadataNetQueue != nil {
+                
+                if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
+                    
+                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, fileID: metadataNetQueue!.fileID ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
+                    
+                } else {
+                    // file not present, delete record Upload Queue
+                    NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
+                }
             }
         }
     }
