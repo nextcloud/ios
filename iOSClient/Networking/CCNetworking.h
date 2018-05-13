@@ -52,6 +52,7 @@
 - (OCCommunication *)sharedOCCommunicationExtensionDownload:(NSString *)identifier;
 
 - (NSURLSession *)getSessionfromSessionDescription:(NSString *)sessionDescription;
+- (NSArray *)getUploadTasksExtensionSession;
 
 - (void)invalidateAndCancelAllSession;
 - (void)settingSessionsDownload:(BOOL)download upload:(BOOL)upload taskStatus:(NSInteger)taskStatus activeAccount:(NSString *)activeAccount activeUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;

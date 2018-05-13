@@ -427,6 +427,16 @@
     }];
 }
 
+- (NSArray *)getUploadTasksExtensionSession
+{
+    __block NSArray *tasks;
+    [[self sessionUploadExtension] getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+        tasks =  uploadTasks;
+    }];
+    
+    return tasks;
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== URLSession download/upload =====
 #pragma --------------------------------------------------------------------------------------------
