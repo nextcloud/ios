@@ -1106,9 +1106,12 @@
              // *** PLAIN ***
              [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
              
-             // OK remove record on tableQueueUpload
-             [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-             
+             // OK remove record on tableQueueUpload but NOT for EXTENSION Upload
+             if ([metadata.session isEqualToString:k_upload_session_extension] == NO) {
+                 
+                 [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+             }
+
 #ifndef EXTENSION
              // Next tableQueueUpload
              [(AppDelegate *)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
