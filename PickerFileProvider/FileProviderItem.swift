@@ -76,13 +76,12 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         self.creationDate = metadata.date as Date
         self.documentSize = NSNumber(value: metadata.size)
         self.filename = metadata.fileNameView
-        self.itemIdentifier = NSFileProviderItemIdentifier("\(metadata.fileID)")
         self.isDirectory = metadata.directory
 
         // parentItemIdentifier
         if #available(iOSApplicationExtension 11.0, *) {
             
-            self.parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer
+            self.parentItemIdentifier = NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
             
             // NOT .rootContainer
             if (serverUrl != homeServerUrl) {
@@ -93,11 +92,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 }
             }
             
+            // itemIdentifier
+            self.itemIdentifier = NSFileProviderItemIdentifier(metadata.fileID)
+            
         } else {
             // < iOS 11
             self.parentItemIdentifier = NSFileProviderItemIdentifier("")
+            self.itemIdentifier = NSFileProviderItemIdentifier("")
         }
-        
+
         // typeIdentifier
         if let fileType = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata) {
             self.typeIdentifier = fileType 
@@ -107,12 +110,12 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // Verify file exists on cache
         if (!metadata.directory) {
             
-            let identifierPathUrl = fileProviderStorageURL!.appendingPathComponent(metadata.fileID)
-            let fileIdentifier = "\(identifierPathUrl.path)/\(metadata.fileNameView)"
+            let identifierPath = fileProviderStorageURL!.path + "/" + metadata.fileID
+            let fileIdentifier = identifierPath + "/" + metadata.fileNameView
             var fileSize = 0 as Double
          
             do {
-                try FileManager.default.createDirectory(atPath: identifierPathUrl.path, withIntermediateDirectories: true, attributes: nil)
+                try FileManager.default.createDirectory(atPath: identifierPath, withIntermediateDirectories: true, attributes: nil)
             } catch let error {
                 print("error: \(error)")
             }
