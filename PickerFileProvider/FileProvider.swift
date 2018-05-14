@@ -967,10 +967,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
         }
 
-        self.uploadFile()
+        let ii = NSFileProviderItemIdentifier(fileURL.lastPathComponent)
         
-        let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
+        let item = FileProviderItemNC(metadata: metadataDB, serverUrl: serverUrl, ii: ii)
+        //let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
         completionHandler(item, nil)
+        
+        // self.uploadFile()
     }
     
     // --------------------------------------------------------------------------------------------

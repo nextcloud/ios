@@ -129,6 +129,7 @@
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
+		F730A64F20A9E58100551B2B /* FileProviderItemNC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F730A64E20A9E58100551B2B /* FileProviderItemNC.swift */; };
 		F732B3371E8045A1002B7D75 /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F732B3351E8045A1002B7D75 /* SwiftWebVC.strings */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -808,6 +809,7 @@
 		F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHKActionSheetViewController.m; sourceTree = "<group>"; };
 		F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TruncateToWidth.h"; sourceTree = "<group>"; };
 		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
+		F730A64E20A9E58100551B2B /* FileProviderItemNC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderItemNC.swift; sourceTree = "<group>"; };
 		F7320931201B812F008A0888 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7320932201B812F008A0888 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F7320933201B812F008A0888 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
@@ -2166,6 +2168,7 @@
 				F7496B7B208F548E004B299C /* FileProviderEnumerator.swift */,
 				F75EAC4C20974B470071FF95 /* FileProviderEnumeratorWorkingSet.swift */,
 				F75EAC4E20974B5E0071FF95 /* FileProviderEnumeratorFile.swift */,
+				F730A64E20A9E58100551B2B /* FileProviderItemNC.swift */,
 				F7496B7C208F548E004B299C /* FileProviderItem.swift */,
 				F74344241E1264EE001CC831 /* FileProvider.swift */,
 			);
@@ -3765,6 +3768,7 @@
 				F7BB50CA1F22386700C47094 /* OCCapabilities.m in Sources */,
 				F7BB50CE1F22388000C47094 /* OCNotifications.m in Sources */,
 				F7BB50CC1F22387900C47094 /* OCExternalSites.m in Sources */,
+				F730A64F20A9E58100551B2B /* FileProviderItemNC.swift in Sources */,
 				F7BB50EA1F2238FB00C47094 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F7F878B11FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F75EAC4D20974B470071FF95 /* FileProviderEnumeratorWorkingSet.swift in Sources */,
