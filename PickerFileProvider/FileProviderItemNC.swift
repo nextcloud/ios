@@ -37,7 +37,7 @@ class FileProviderItemNC: NSObject, NSFileProviderItem {
     }
     
     var documentSize: NSNumber? {
-        return 112000
+        return 0
     }
     
     var contentModificationDate: Date? {
