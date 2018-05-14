@@ -967,7 +967,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
         }
 
-        let ii = NSFileProviderItemIdentifier(fileURL.lastPathComponent)
+        let ii = NSFileProviderItemIdentifier(metadata.fileID + "/" + fileURL.lastPathComponent)
         
         let item = FileProviderItemNC(metadata: metadataDB, serverUrl: serverUrl, ii: ii)
         //let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
