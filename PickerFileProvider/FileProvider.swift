@@ -56,6 +56,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         setupActiveAccount()
         
+        verifyUploadQueueInLock()
+        
         if #available(iOSApplicationExtension 11.0, *) {
             
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
@@ -115,9 +117,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
         }
        
-        // verify 
-        self.verifyUploadQueueInLock()
-        
         return enumerator
     }
     
