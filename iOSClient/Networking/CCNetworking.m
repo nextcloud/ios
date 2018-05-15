@@ -971,9 +971,9 @@
         
     } else {
     
-        if ([metadata.session isEqualToString:k_upload_session_extension] == NO) {
-            [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
-        }
+#ifndef EXTENSION
+        [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
+#endif
         [self uploadURLSessionMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadata] serverUrl:serverUrl sessionID:uploadID taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
     }
 }
@@ -1114,13 +1114,10 @@
              // *** PLAIN ***
              [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
              
-             // OK remove record on tableQueueUpload but NOT for EXTENSION Upload
-             if ([metadata.session isEqualToString:k_upload_session_extension] == NO) {
-                 
-                 [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-             }
-
 #ifndef EXTENSION
+             // OK remove record on tableQueueUpload but NOT for EXTENSION Upload
+             [[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
+             
              // Next tableQueueUpload
              [(AppDelegate *)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
 #endif
@@ -1247,6 +1244,8 @@
         if (metadata.directory == NO)
             [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
         
+#ifndef EXTENSION
+        
         // EXIF
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
@@ -1254,7 +1253,7 @@
         // Create ICON
         if (metadata.directory == NO)
             [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
-        
+
         // Optimization
         if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO)
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID] error:nil];
@@ -1274,23 +1273,7 @@
                 }];
             }
         }
-        
-        // Delete [File Provider Storage / Change Document / fileName ] [File Provider Storage / Import Document / fileName ]
-        if ([metadata.assetLocalIdentifier containsString:@"File Provider Storage"]) {
-            
-            NSString *fileNamePath;
-            
-            NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
-            NSURL *dirFileProviderStorage = [dirGroup URLByAppendingPathComponent:k_assetLocalIdentifierFileProviderStorage];
-            
-            NSURL *dirChangeDocument = [dirFileProviderStorage URLByAppendingPathComponent:k_fileProviderStorageChangeDocument];
-            fileNamePath = [NSString stringWithFormat:@"%@/%@", dirChangeDocument.path, metadata.fileName];
-            [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
-            
-            NSURL *dirImportDocument = [dirFileProviderStorage URLByAppendingPathComponent:k_fileProviderStorageImportDocument];
-            fileNamePath = [NSString stringWithFormat:@"%@/%@", dirImportDocument.path, metadata.fileName];
-            [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
-        }
+#endif
         
         // Actvity
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
