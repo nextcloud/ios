@@ -960,6 +960,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             if (errorCode == 0) {
                 
+                let sourcePath = fileProviderStorageURL!.path + "/" + fileName
+                let destinationPath = fileProviderStorageURL!.path + "/" + fileID + "/" + fileName
+                
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
                 
                 do {
@@ -967,12 +970,18 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 } catch { }
                 
                 do {
-                    try FileManager.default.removeItem(atPath: fileProviderStorageURL!.path + "/" + fileID + "/" + fileName)
+                    try FileManager.default.removeItem(atPath: destinationPath)
                 } catch { }
                 do {
-                    try FileManager.default.copyItem(atPath: fileProviderStorageURL!.path + "/" + fileName, toPath: fileProviderStorageURL!.path + "/" + fileID + "/" + fileName)
+                    try FileManager.default.copyItem(atPath: sourcePath, toPath: destinationPath)
+                    
                     let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                     self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                    
+                    do {
+                        try FileManager.default.removeItem(atPath: sourcePath)
+                    } catch { }
+                    
                 } catch { }
             }
         }
