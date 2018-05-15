@@ -968,7 +968,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 do {
                     try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path + "/" + fileID, withIntermediateDirectories: true, attributes: nil)
                 } catch { }
-                
                 do {
                     try FileManager.default.removeItem(atPath: destinationPath)
                 } catch { }
@@ -977,10 +976,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                     
                     let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                     self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
-                    
-                    do {
-                        try FileManager.default.removeItem(atPath: sourcePath)
-                    } catch { }
                     
                 } catch { }
             }
