@@ -964,15 +964,16 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 do {
                     try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path + "/" + fileID, withIntermediateDirectories: true, attributes: nil)
-                } catch let error {
-                    print("error: \(error)")
-                }
+                } catch { }
                 
-                _ = copyFile(fileProviderStorageURL!.path + "/" + fileName, toPath: fileProviderStorageURL!.path + "/" + fileID + "/" + fileName)
-                _ = deleteFile(fileProviderStorageURL!.path + "/" + fileName)
-                
-                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-                self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                do {
+                    try FileManager.default.removeItem(atPath: fileProviderStorageURL!.path + "/" + fileID + "/" + fileName)
+                } catch { }
+                do {
+                    try FileManager.default.copyItem(atPath: fileProviderStorageURL!.path + "/" + fileName, toPath: fileProviderStorageURL!.path + "/" + fileID + "/" + fileName)
+                    let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+                    self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                } catch { }
             }
         }
         
