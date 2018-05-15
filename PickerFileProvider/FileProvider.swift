@@ -607,6 +607,11 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             } catch let error {
                 print("error: \(error)")
             }
+            do {
+                try FileManager.default.removeItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID)
+            } catch let error {
+                print("error: \(error)")
+            }
             
             if metadata.directory {
                 let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
@@ -867,6 +872,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var error: NSError?
         var directoryPredicate: NSPredicate
         var size = 0 as Double
+        let metadata = tableMetadata()
 
         if parentItemIdentifier == .rootContainer {
             directoryPredicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
@@ -880,7 +886,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         }
         
         let serverUrl = directoryParent.serverUrl
-        
+ 
         // --------------------------------------------- Copy file here with security access
         
         if fileURL.startAccessingSecurityScopedResource() == false {
@@ -892,13 +898,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
         fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
             _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path + "/" + fileName)
+            _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path + "/" + fileURL.lastPathComponent)
         }
             
         fileURL.stopAccessingSecurityScopedResource()
         
         // ---------------------------------------------------------------------------------
         
-        // ---------- Send the file to Nextcloud if size > 0 [Office 365] ----------
         do {
             let attributes = try FileManager.default.attributesOfItem(atPath: fileProviderStorageURL!.path + "/" + fileName)
             size = attributes[FileAttributeKey.size] as! Double
@@ -906,27 +912,18 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             print("error: \(error)")
         }
         
-        // ------- TEMP ----- //
-        let metadata = tableMetadata()
-        
+        // Metadata TEMP
         metadata.account = account
         metadata.date = NSDate()
         metadata.directory = false
         metadata.directoryID = directoryParent.directoryID
         metadata.etag = ""
         metadata.fileID = FILEID_IMPORT_METADATA_TEMP
-        metadata.fileName = fileURL.lastPathComponent
-        metadata.fileNameView = fileURL.lastPathComponent
         metadata.size = size
         metadata.status = Double(k_metadataStatusHide)
-        
+        metadata.fileName = fileURL.lastPathComponent
+        metadata.fileNameView = fileURL.lastPathComponent
         CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
-        
-        guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        // ------------------ //
         
         if (size > 0) {
             
@@ -945,8 +942,16 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
             
             self.uploadFile()
-        }
             
+        } else {
+            
+            // OFFICE 365 LEN = 0
+        }
+        
+        guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
         let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
         completionHandler(item, nil)
     }
