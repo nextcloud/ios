@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 22,
+            schemaVersion: 21,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -71,7 +71,6 @@ class NCManageDatabase: NSObject {
             // 19 : Version 2.20.7
             // 20 : Version 2.21.0
             // 21 : Version 2.21.3
-            // 22 : Version 2.21.5
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -2239,9 +2238,6 @@ class NCManageDatabase: NSObject {
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.errorCode = metadataNet.errorCode
-                        if metadataNet.fileID != nil {
-                            addObject.fileID = metadataNet.fileID
-                        }
                         addObject.fileName = metadataNet.fileName
                         addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
@@ -2286,9 +2282,6 @@ class NCManageDatabase: NSObject {
                         addObject.account = tableAccount.account
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.errorCode = metadataNet.errorCode
-                        if metadataNet.fileID != nil {
-                            addObject.fileID = metadataNet.fileID
-                        }
                         addObject.fileName = metadataNet.fileName
                         addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
@@ -2338,9 +2331,6 @@ class NCManageDatabase: NSObject {
         metadataNet.assetLocalIdentifier = result!.assetLocalIdentifier
         metadataNet.directoryID = self.getDirectoryID(result!.serverUrl)
         metadataNet.errorCode = result!.errorCode
-        if result!.fileID != nil {
-            metadataNet.fileID = result!.fileID
-        }
         metadataNet.fileName = result!.fileName
         metadataNet.path = result!.path
         metadataNet.selector = result!.selector
@@ -2417,9 +2407,6 @@ class NCManageDatabase: NSObject {
         metadataNet.assetLocalIdentifier = result!.assetLocalIdentifier
         metadataNet.errorCode = result!.errorCode
         metadataNet.directoryID = self.getDirectoryID(result!.serverUrl)
-        if result!.fileID != nil {
-            metadataNet.fileID = result!.fileID
-        }
         metadataNet.fileName = result!.fileName
         metadataNet.path = result!.path
         metadataNet.selector = result!.selector

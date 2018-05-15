@@ -37,13 +37,14 @@ var directoryUser = ""
 // Directory
 var groupURL: URL?
 var fileProviderStorageURL: URL?
-var importDocumentURL: URL?
-var changeDocumentURL: URL?
 
 // List
 var listUpdateItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
 var fileNamePathImport = [String]()
+
+// Metadata Temp for Import
+let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 
 var timerUpload: Timer?
 
@@ -337,8 +338,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             let fileName = url.lastPathComponent
             let pathComponents = url.pathComponents
-            let changeDocumentPath = changeDocumentURL!.path + "/" + fileName
-            let importDocumentPath = importDocumentURL!.path + "/" + fileName
             let metadataNet = CCMetadataNet()
 
             assert(pathComponents.count > 2)
@@ -352,19 +351,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            // Refresh
-            self.refreshEnumerator(identifier: identifier, serverUrl: serverUrl)
-            
             // Copy file to Change Document & if exists on Import Document
-            _ = self.copyFile(url.path, toPath: changeDocumentPath)
-            if FileManager.default.fileExists(atPath: importDocumentPath) {
-                _ = self.copyFile(url.path, toPath: importDocumentPath)
-            }
-                
+            _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path + "/" + fileName)
+            
             metadataNet.account = account
             metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + identifier.rawValue
             metadataNet.fileName = fileName
-            metadataNet.path = changeDocumentPath
+            metadataNet.path = fileProviderStorageURL!.path + "/" + fileName
             metadataNet.selector = selectorUploadFile
             metadataNet.selectorPost = ""
             metadataNet.serverUrl = serverUrl
@@ -429,7 +422,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 _ = self.copyFile(url.path, toPath: destinationDirectoryUser)
 
-                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, fileID: "", session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             }
 
             self.stopProvidingItem(at: url)
@@ -870,7 +863,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        var fileName = fileURL.lastPathComponent
         let fileCoordinator = NSFileCoordinator()
         var error: NSError?
         var directoryPredicate: NSPredicate
@@ -896,68 +888,54 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        fileName = createFileName(fileName, directoryID: directoryParent.directoryID, serverUrl: serverUrl)
-        
-        let fileNameLocalPath = importDocumentURL!.appendingPathComponent(fileName)
-        
+        let fileName = createFileName(fileURL.lastPathComponent, directoryID: directoryParent.directoryID, serverUrl: serverUrl)
+                
         fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
-            _ = self.copyFile( url.path, toPath: fileNameLocalPath.path)
+            _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path + "/" + fileName)
         }
             
         fileURL.stopAccessingSecurityScopedResource()
         
         // ---------------------------------------------------------------------------------
         
+        // ---------- Send the file to Nextcloud if size > 0 [Office 365] ----------
         do {
-            let attributes = try FileManager.default.attributesOfItem(atPath: fileNameLocalPath.path)
+            let attributes = try FileManager.default.attributesOfItem(atPath: fileProviderStorageURL!.path + "/" + fileName)
             size = attributes[FileAttributeKey.size] as! Double
         } catch let error {
             print("error: \(error)")
         }
         
+        // ------- TEMP ----- //
         let metadata = tableMetadata()
-                
+        
         metadata.account = account
         metadata.date = NSDate()
         metadata.directory = false
         metadata.directoryID = directoryParent.directoryID
-        metadata.etag = "000"
-        metadata.fileID = k_uploadSessionID + directoryParent.directoryID + fileName
-        metadata.fileName = fileName
-        metadata.fileNameView = fileName
+        metadata.etag = ""
+        metadata.fileID = FILEID_IMPORT_METADATA_TEMP
+        metadata.fileName = fileURL.lastPathComponent
+        metadata.fileNameView = fileURL.lastPathComponent
         metadata.size = size
         metadata.status = Double(k_metadataStatusHide)
-
+        
         CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
-                
+        
         guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-        
-        NCManageDatabase.sharedInstance.addLocalFile(metadata: metadata)
-        NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
-            
-        // Create dir <base storage directory>/<item identifier>
-        do {
-            try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path, withIntermediateDirectories: true, attributes: nil)
-        } catch let error {
-            print("error: \(error)")
-        }
-        // copy <base storage directory>/<item identifier>/<item file name>
-        _ = self.copyFile(fileNameLocalPath.path, toPath: "\(fileProviderStorageURL!.appendingPathComponent(metadata.fileID).path)/\(metadata.fileName)")
-        
-        // ---------- Send the file to Nextcloud if size > 0 [Office 365] ----------
+        // ------------------ //
         
         if (size > 0) {
             
             let metadataNet = CCMetadataNet()
             
             metadataNet.account = account
-            metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + metadata.fileID
-            metadataNet.fileID = k_uploadSessionID + directoryParent.directoryID + fileName
+            metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + k_uploadSessionID + directoryParent.directoryID + fileName
             metadataNet.fileName = fileName
-            metadataNet.path = importDocumentURL!.path + "/" + metadata.fileNameView
+            metadataNet.path = fileProviderStorageURL!.path + "/" + fileName
             metadataNet.selector = selectorUploadFile
             metadataNet.selectorPost = ""
             metadataNet.serverUrl = serverUrl
@@ -965,15 +943,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             metadataNet.taskStatus = Int(k_taskStatusResume)
             
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+            
+            self.uploadFile()
         }
-
-        let ii = NSFileProviderItemIdentifier(metadata.fileID + "/" + fileURL.lastPathComponent)
-        
-        let item = FileProviderItemNC(metadata: metadataDB, serverUrl: serverUrl, ii: ii)
-        //let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
+            
+        let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
         completionHandler(item, nil)
-        
-        // self.uploadFile()
     }
     
     // --------------------------------------------------------------------------------------------
@@ -988,42 +963,23 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             if (errorCode == 0) {
                 
-                let prevFileID = assetLocalIdentifier.replacingOccurrences(of: k_assetLocalIdentifierFileProviderStorage, with: "")
-            
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
                 
-                // Change fileID 
-                if (prevFileID != fileID) {
-                    
-                    NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, prevFileID))
-                
-                    // rename Directory : <base storage directory>/prevFileID/<item file name> to <base storage directory>/fileID/<item file name>
-                    do {
-                        let atPath = fileProviderStorageURL!.path + "/" + prevFileID
-                        let toPath = fileProviderStorageURL!.path + "/" + fileID
-                        try FileManager.default.moveItem(atPath: atPath, toPath: toPath)
-                    } catch let error as NSError {
-                        NSLog("Unable to create directory \(error.debugDescription)")
-                    }
+                do {
+                    try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path + "/" + fileID, withIntermediateDirectories: true, attributes: nil)
+                } catch let error {
+                    print("error: \(error)")
                 }
-            
+                
+                _ = copyFile(fileProviderStorageURL!.path + "/" + fileName, toPath: fileProviderStorageURL!.path + "/" + fileID + "/" + fileName)
+                _ = deleteFile(fileProviderStorageURL!.path + "/" + fileName)
+                
                 let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                 self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
             }
         }
         
         uploadFile()
-    }
-    
-    func uploadStart(_ fileID: String!, serverUrl: String!) {
-        
-        /*
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
-            
-            let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-            self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
-        }
-        */
     }
     
     func uploadFile() {
@@ -1036,7 +992,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
                     
-                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, fileID: metadataNetQueue!.fileID ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
+                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                     
                 } else {
                     // file not present, delete record Upload Queue
@@ -1182,26 +1138,10 @@ func setupActiveAccount() {
     
     groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
     fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
-    importDocumentURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage).appendingPathComponent(k_fileProviderStorageImportDocument)
-    changeDocumentURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage).appendingPathComponent(k_fileProviderStorageChangeDocument)
     
     // Create dir File Provider Storage
     do {
         try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
-    } catch let error as NSError {
-        NSLog("Unable to create directory \(error.debugDescription)")
-    }
-    
-    // Create dir for Upload
-    do {
-        try FileManager.default.createDirectory(atPath: importDocumentURL!.path, withIntermediateDirectories: true, attributes: nil)
-    } catch let error as NSError {
-        NSLog("Unable to create directory \(error.debugDescription)")
-    }
-    
-    // Create dir for change document
-    do {
-        try FileManager.default.createDirectory(atPath: changeDocumentURL!.path, withIntermediateDirectories: true, attributes: nil)
     } catch let error as NSError {
         NSLog("Unable to create directory \(error.debugDescription)")
     }
