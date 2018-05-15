@@ -746,7 +746,10 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 
             } else {
                 
-                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
+                do {
+                    try FileManager.default.moveItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + item.filename, toPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + itemName)
+                    NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
+                } catch { }
             }
             
             completionHandler(item, nil)
