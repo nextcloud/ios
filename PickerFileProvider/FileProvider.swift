@@ -65,18 +65,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoDownloadUpload), repeats: true, block: { (Timer) in
                     
-                    // record in lock ??
-                    /*
-                    let tasks = CCNetworking.shared().getUploadTasksExtensionSession()
-                    if tasks!.count == 0 {
-                        let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", account, selectorUploadFile))
-                        if records != nil && records!.count > 0 {
-                            NCManageDatabase.sharedInstance.unlockAllQueueUploadInPath()
-                        }
-                    }
-                    */
-                    
-                    //
                     self.uploadFile()
                 })
                 
@@ -127,6 +115,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
         }
        
+        // verify 
+        self.verifyUploadQueueInLock()
+        
         return enumerator
     }
     
@@ -1005,15 +996,16 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                     NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
                 }
             }
-            
-        } else {
-            
-            let tasks = CCNetworking.shared().getUploadTasksExtensionSession()
-            if tasks!.count == 0 {
-                let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", account, selectorUploadFile))
-                if records != nil && records!.count > 0 {
-                    NCManageDatabase.sharedInstance.unlockAllQueueUploadInPath()
-                }
+        }
+    }
+    
+    func verifyUploadQueueInLock() {
+        
+        let tasks = CCNetworking.shared().getUploadTasksExtensionSession()
+        if tasks!.count == 0 {
+            let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", account, selectorUploadFile))
+            if records != nil && records!.count > 0 {
+                NCManageDatabase.sharedInstance.unlockAllQueueUploadInPath()
             }
         }
     }
