@@ -943,9 +943,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             metadataNet.taskStatus = Int(k_taskStatusResume)
             
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
-            
-            self.uploadFile()
-            
+                        
         } else {
             
             // OFFICE 365 LEN = 0
