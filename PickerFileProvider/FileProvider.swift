@@ -1007,6 +1007,16 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                     NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
                 }
             }
+            
+        } else {
+            
+            let tasks = CCNetworking.shared().getUploadTasksExtensionSession()
+            if tasks!.count == 0 {
+                let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", account, selectorUploadFile))
+                if records != nil && records!.count > 0 {
+                    NCManageDatabase.sharedInstance.unlockAllQueueUploadInPath()
+                }
+            }
         }
     }
     
