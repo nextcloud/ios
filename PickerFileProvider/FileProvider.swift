@@ -723,16 +723,11 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        // resolve the given identifier to a file on disk
-        guard let item = try? item(for: itemIdentifier) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
+        let fileNameFrom = metadata.fileNameView
+        let fileNamePathFrom = serverUrl + "/" + fileNameFrom
+        let fileNamePathTo = serverUrl + "/" + itemName
         
-        let fileName = serverUrl + "/" + item.filename
-        let fileNameTo = serverUrl + "/" + itemName
-        
-        ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
+        ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, success: {
             
             metadata.fileName = itemName
             metadata.fileNameView = itemName
@@ -744,16 +739,17 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             if metadata.directory {
                 
-                NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileName, serverUrlTo: fileNameTo, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted)
+                NCManageDatabase.sharedInstance.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted)
 
             } else {
                 
                 do {
-                    try fileManagerExtension.moveItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + item.filename, toPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + itemName)
+                    try fileManagerExtension.moveItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + fileNameFrom, toPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + itemName)
                     NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
                 } catch { }
             }
             
+            let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
             completionHandler(item, nil)
             
         }, failure: { (errorMessage, errorCode) in
