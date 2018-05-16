@@ -671,9 +671,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             serverUrlTo = NCManageDatabase.sharedInstance.getServerUrl(metadataTo.directoryID)! + "/" + metadataTo.fileName
-            directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo)!
         }
         
+        directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo)!
         fileNameTo = serverUrlTo + "/" + itemFrom.filename
     
         ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
