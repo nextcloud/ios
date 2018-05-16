@@ -959,29 +959,34 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
-        NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: assetLocalIdentifier, selector: selector)
+        let serialQueue = DispatchQueue(label: "uploadFileSuccessFailure")
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
+        serialQueue.sync {
+        
+            NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: assetLocalIdentifier, selector: selector)
             
-            if (errorCode == 0) {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
                 
-                let sourcePath = fileProviderStorageURL!.path + "/" + fileName
-                let destinationPath = fileProviderStorageURL!.path + "/" + fileID + "/" + fileName
-                
-                NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
-                
-                do {
-                    try fileManagerExtension.createDirectory(atPath: fileProviderStorageURL!.path + "/" + fileID, withIntermediateDirectories: true, attributes: nil)
-                } catch { }
-                
-                _ = copyFile(sourcePath, toPath: destinationPath)
-                
-                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-                self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                if (errorCode == 0) {
+                    
+                    let sourcePath = fileProviderStorageURL!.path + "/" + fileName
+                    let destinationPath = fileProviderStorageURL!.path + "/" + fileID + "/" + fileName
+                    
+                    NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
+                    
+                    do {
+                        try fileManagerExtension.createDirectory(atPath: fileProviderStorageURL!.path + "/" + fileID, withIntermediateDirectories: true, attributes: nil)
+                    } catch { }
+                    
+                    _ = moveFile(sourcePath, toPath: destinationPath)
+                    
+                    let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+                    self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                }
             }
+            
+            uploadFile()
         }
-        
-        uploadFile()
     }
     
     func uploadFile() {
@@ -1075,6 +1080,24 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         return errorResult
     }
     
+    func moveFile(_ atPath: String, toPath: String) -> Error? {
+        
+        var errorResult: Error?
+        
+        do {
+            try fileManagerExtension.removeItem(atPath: toPath)
+        } catch let error {
+            print("error: \(error)")
+        }
+        do {
+            try fileManagerExtension.moveItem(atPath: atPath, toPath: toPath)
+        } catch let error {
+            errorResult = error
+        }
+        
+        return errorResult
+    }
+    
     func deleteFile(_ atPath: String) -> Error? {
         
         var errorResult: Error?
@@ -1090,7 +1113,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
     func createFileName(_ fileName: String, directoryID: String, serverUrl: String) -> String {
     
-        let serialQueue = DispatchQueue(label: "myqueue")
+        let serialQueue = DispatchQueue(label: "queueCreateFileName")
         var resultFileName = fileName
 
         serialQueue.sync {
