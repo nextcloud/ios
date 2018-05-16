@@ -121,7 +121,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             }
             
             // If do not exists create file with size = 0
-            if fileManagerExtension.fileExists(atPath: fileIdentifier)  == false {
+            if fileManagerExtension.fileExists(atPath: fileIdentifier) == false {
                 fileManagerExtension.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
             }
             

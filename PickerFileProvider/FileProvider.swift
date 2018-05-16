@@ -984,10 +984,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                 self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    _ = self.deleteFile(sourcePath)
-                }
             }
         }
         
