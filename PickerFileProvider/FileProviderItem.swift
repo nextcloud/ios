@@ -121,12 +121,12 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             }
             
             // If do not exists create file with size = 0
-            if FileManager.default.fileExists(atPath: fileIdentifier)  == false {
-                FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
+            if fileManagerExtension.fileExists(atPath: fileIdentifier)  == false {
+                fileManagerExtension.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
             }
             
             do {
-                let attributes = try FileManager.default.attributesOfItem(atPath: fileIdentifier)
+                let attributes = try fileManagerExtension.attributesOfItem(atPath: fileIdentifier)
                 fileSize = attributes[FileAttributeKey.size] as! Double
             } catch let error {
                 print("error: \(error)")

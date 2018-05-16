@@ -47,18 +47,17 @@ var fileNamePathImport = [String]()
 let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 
 var timerUpload: Timer?
+var timerCheck: Timer?
+
+var fileManagerExtension = FileManager()
 
 class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
-    var fileManager = FileManager()
-
     override init() {
         
         super.init()
         
         setupActiveAccount()
-        
-        verifyUploadQueueInLock()
         
         if #available(iOSApplicationExtension 11.0, *) {
             
@@ -75,11 +74,22 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
             }
             
+            // Timer for check
+            if timerCheck == nil {
+                
+                timerCheck = Timer.init(timeInterval: TimeInterval((k_timerProcessAutoDownloadUpload*2)+(k_timerProcessAutoDownloadUpload/2)+1), repeats: true, block: { (Timer) in
+                    
+                    self.verifyUploadQueueInLock()
+                })
+                
+                RunLoop.main.add(timerCheck!, forMode: .defaultRunLoopMode)
+            }
+            
         } else {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
                 do {
-                    try fileManager.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
+                    try fileManagerExtension.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
                 } catch let error {
                     print("error: \(error)")
                 }
@@ -362,7 +372,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
             
-            let fileSize = (try! fileManager.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
+            let fileSize = (try! fileManagerExtension.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
             NSLog("[LOG] Item changed at URL %@ %lu", url as NSURL, fileSize)
             
             guard let account = NCManageDatabase.sharedInstance.getAccountActive() else {
@@ -433,7 +443,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         if !fileHasLocalChanges {
             // remove the existing file to free up space
             do {
-                _ = try fileManager.removeItem(at: url)
+                _ = try fileManagerExtension.removeItem(at: url)
             } catch let error {
                 print("error: \(error)")
             }
@@ -590,17 +600,17 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             let fileNamePath = directoryUser + "/" + metadata.fileID
             do {
-                try self.fileManager.removeItem(atPath: fileNamePath)
+                try fileManagerExtension.removeItem(atPath: fileNamePath)
             } catch let error {
                 print("error: \(error)")
             }
             do {
-                try self.fileManager.removeItem(atPath: fileNamePath + ".ico")
+                try fileManagerExtension.removeItem(atPath: fileNamePath + ".ico")
             } catch let error {
                 print("error: \(error)")
             }
             do {
-                try self.fileManager.removeItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID)
+                try fileManagerExtension.removeItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID)
             } catch let error {
                 print("error: \(error)")
             }
@@ -739,7 +749,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             } else {
                 
                 do {
-                    try self.fileManager.moveItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + item.filename, toPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + itemName)
+                    try fileManagerExtension.moveItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + item.filename, toPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + itemName)
                     NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
                 } catch { }
             }
@@ -901,7 +911,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         // ---------------------------------------------------------------------------------
         
         do {
-            let attributes = try fileManager.attributesOfItem(atPath: fileProviderStorageURL!.path + "/" + fileName)
+            let attributes = try fileManagerExtension.attributesOfItem(atPath: fileProviderStorageURL!.path + "/" + fileName)
             size = attributes[FileAttributeKey.size] as! Double
         } catch let error {
             print("error: \(error)")
@@ -967,7 +977,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
                 
                 do {
-                    try fileManager.createDirectory(atPath: fileProviderStorageURL!.path + "/" + fileID, withIntermediateDirectories: true, attributes: nil)
+                    try fileManagerExtension.createDirectory(atPath: fileProviderStorageURL!.path + "/" + fileID, withIntermediateDirectories: true, attributes: nil)
                 } catch { }
                 
                 _ = copyFile(sourcePath, toPath: destinationPath)
@@ -975,7 +985,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                 self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
                 
-                _ = deleteFile(sourcePath)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    _ = self.deleteFile(sourcePath)
+                }
             }
         }
         
@@ -1060,12 +1072,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var errorResult: Error?
         
         do {
-            try fileManager.removeItem(atPath: toPath)
+            try fileManagerExtension.removeItem(atPath: toPath)
         } catch let error {
             print("error: \(error)")
         }
         do {
-            try fileManager.copyItem(atPath: atPath, toPath: toPath)
+            try fileManagerExtension.copyItem(atPath: atPath, toPath: toPath)
         } catch let error {
             errorResult = error
         }
@@ -1078,7 +1090,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var errorResult: Error?
         
         do {
-            try fileManager.removeItem(atPath: atPath)
+            try fileManagerExtension.removeItem(atPath: atPath)
         } catch let error {
             errorResult = error
         }
