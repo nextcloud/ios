@@ -50,6 +50,8 @@ var timerUpload: Timer?
 
 class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
+    var fileManager = FileManager()
+
     override init() {
         
         super.init()
@@ -77,7 +79,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
                 do {
-                    try FileManager.default.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
+                    try fileManager.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
                 } catch let error {
                     print("error: \(error)")
                 }
@@ -360,7 +362,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
             
-            let fileSize = (try! FileManager.default.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
+            let fileSize = (try! fileManager.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
             NSLog("[LOG] Item changed at URL %@ %lu", url as NSURL, fileSize)
             
             guard let account = NCManageDatabase.sharedInstance.getAccountActive() else {
@@ -431,7 +433,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         if !fileHasLocalChanges {
             // remove the existing file to free up space
             do {
-                _ = try FileManager.default.removeItem(at: url)
+                _ = try fileManager.removeItem(at: url)
             } catch let error {
                 print("error: \(error)")
             }
@@ -588,17 +590,17 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             let fileNamePath = directoryUser + "/" + metadata.fileID
             do {
-                try FileManager.default.removeItem(atPath: fileNamePath)
+                try self.fileManager.removeItem(atPath: fileNamePath)
             } catch let error {
                 print("error: \(error)")
             }
             do {
-                try FileManager.default.removeItem(atPath: fileNamePath + ".ico")
+                try self.fileManager.removeItem(atPath: fileNamePath + ".ico")
             } catch let error {
                 print("error: \(error)")
             }
             do {
-                try FileManager.default.removeItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID)
+                try self.fileManager.removeItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID)
             } catch let error {
                 print("error: \(error)")
             }
@@ -737,7 +739,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             } else {
                 
                 do {
-                    try FileManager.default.moveItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + item.filename, toPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + itemName)
+                    try self.fileManager.moveItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + item.filename, toPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + itemName)
                     NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
                 } catch { }
             }
@@ -891,7 +893,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
         fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
             _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path + "/" + fileName)
-            _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path + "/" + fileURL.lastPathComponent)
+//            _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path + "/" + fileURL.lastPathComponent)
         }
             
         fileURL.stopAccessingSecurityScopedResource()
@@ -899,7 +901,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         // ---------------------------------------------------------------------------------
         
         do {
-            let attributes = try FileManager.default.attributesOfItem(atPath: fileProviderStorageURL!.path + "/" + fileName)
+            let attributes = try fileManager.attributesOfItem(atPath: fileProviderStorageURL!.path + "/" + fileName)
             size = attributes[FileAttributeKey.size] as! Double
         } catch let error {
             print("error: \(error)")
@@ -965,18 +967,15 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
                 
                 do {
-                    try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path + "/" + fileID, withIntermediateDirectories: true, attributes: nil)
+                    try fileManager.createDirectory(atPath: fileProviderStorageURL!.path + "/" + fileID, withIntermediateDirectories: true, attributes: nil)
                 } catch { }
-                do {
-                    try FileManager.default.removeItem(atPath: destinationPath)
-                } catch { }
-                do {
-                    try FileManager.default.copyItem(atPath: sourcePath, toPath: destinationPath)
-                    
-                    let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-                    self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
-                    
-                } catch { }
+                
+                _ = copyFile(sourcePath, toPath: destinationPath)
+                
+                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
+                self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                
+                _ = deleteFile(sourcePath)
             }
         }
         
@@ -1061,12 +1060,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var errorResult: Error?
         
         do {
-            try FileManager.default.removeItem(atPath: toPath)
+            try fileManager.removeItem(atPath: toPath)
         } catch let error {
             print("error: \(error)")
         }
         do {
-            try FileManager.default.copyItem(atPath: atPath, toPath: toPath)
+            try fileManager.copyItem(atPath: atPath, toPath: toPath)
         } catch let error {
             errorResult = error
         }
@@ -1079,7 +1078,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var errorResult: Error?
         
         do {
-            try FileManager.default.removeItem(atPath: atPath)
+            try fileManager.removeItem(atPath: atPath)
         } catch let error {
             errorResult = error
         }
