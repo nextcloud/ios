@@ -109,8 +109,8 @@
                 continue;
         }
         
-        // if hide, do not insert
-        if (metadata.status == k_metadataStatusHide) {
+        // *** LIST : DO NOT INSERT ***
+        if (metadata.status == k_metadataStatusHide || [metadata.session isEqualToString:k_upload_session_extension] ) {
             continue;
         }
         
