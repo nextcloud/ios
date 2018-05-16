@@ -571,7 +571,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
-                
             completionHandler(item, nil)
             
         }, failure: { (errorMessage, errorCode) in
@@ -844,10 +843,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         }
         
         let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-        
-        self.refreshEnumerator(identifier: itemIdentifier, serverUrl: "WorkingSet")
-        
         completionHandler(item, nil)
+
+        self.refreshEnumerator(identifier: itemIdentifier, serverUrl: "WorkingSet")        
     }
     
     /*
