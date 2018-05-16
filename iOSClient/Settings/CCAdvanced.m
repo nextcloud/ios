@@ -364,6 +364,8 @@
         
         [self emptyDocumentsDirectory];
         
+        [self emptyGroupFileProviderStorage];
+        
         NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
         for (NSString *file in tmpDirectory)
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
@@ -511,6 +513,18 @@
 #pragma mark == Utility ==
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)emptyGroupFileProviderStorage
+{
+    NSString *file;
+    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:k_assetLocalIdentifierFileProviderStorage] path];
+    
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
+    
+    while (file = [enumerator nextObject])
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
+}
+
 - (void)emptyGroupApplicationSupport
 {
     NSString *file;
@@ -522,6 +536,7 @@
     while (file = [enumerator nextObject])
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
 }
+
 
 - (void)emptyLibraryDirectory
 {

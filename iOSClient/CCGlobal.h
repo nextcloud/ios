@@ -280,8 +280,6 @@ extern NSString *const flowEndpoint;
 
 //
 #define k_assetLocalIdentifierFileProviderStorage       @"File Provider Storage"
-#define k_fileProviderStorageImportDocument             @"Import Document"
-#define k_fileProviderStorageChangeDocument             @"Change Document"
 
 
 // -----------------------------------------------------------------------------------------------------------
