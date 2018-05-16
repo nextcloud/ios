@@ -386,6 +386,9 @@
     self.photoBrowser.autoPlayOnAppear = NO;
     self.photoBrowser.delayToHideElements = 15;
     
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
+        self.photoBrowser.enableSwipeToDismiss = NO;
+    
     if (self.traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact) {
         
         [self addChildViewController:self.photoBrowser];
@@ -864,10 +867,13 @@
 
 - (void)handleSwipeUpDown
 {
+    // REMOVE IT'S UNUSABLE
+    /*
     self.navigationController.navigationBarHidden = false;  // iOS App is unusable after swipe up or down with PDF in fullscreen #526
 
     [self removeAllView];
     [self.navigationController popViewControllerAnimated:YES];
+    */
 }
 
 #pragma --------------------------------------------------------------------------------------------
