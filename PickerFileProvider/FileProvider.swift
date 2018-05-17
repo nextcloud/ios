@@ -893,15 +893,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         let fileName = createFileName(fileURL.lastPathComponent, directoryID: directoryParent.directoryID, serverUrl: serverUrl)
         let fileNamePathDirectory = fileProviderStorageURL!.path + "/" + FILEID_IMPORT_METADATA_TEMP + directoryParent.directoryID + fileName
         
-        fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
+        do {
+            try FileManager.default.createDirectory(atPath: fileNamePathDirectory, withIntermediateDirectories: true, attributes: nil)
+        } catch  { }
             
-            do {
-                try FileManager.default.createDirectory(atPath: fileNamePathDirectory, withIntermediateDirectories: true, attributes: nil)
-            } catch  { }
-            
-            _ = self.copyFile(url.path, toPath: fileNamePathDirectory + "/" + fileName)
-        }
-            
+        _ = self.moveFile(fileURL.path, toPath: fileNamePathDirectory + "/" + fileName)
+        
         fileURL.stopAccessingSecurityScopedResource()
         
         // ---------------------------------------------------------------------------------
