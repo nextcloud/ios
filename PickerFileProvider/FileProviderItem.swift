@@ -162,7 +162,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         }
         
         // Removed (if exists) this Item from listUpdate
-        /*
         var counter = 0
         for updateItem in listUpdateItems {
             if updateItem.itemIdentifier.rawValue == itemIdentifier.rawValue {
@@ -171,6 +170,5 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             }
             counter += 1
         }
-        */
     }
 }
