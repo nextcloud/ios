@@ -110,21 +110,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // Verify file exists on cache
         if (!metadata.directory) {
             
-            let identifierPath = fileProviderStorageURL!.path + "/" + metadata.fileID
-            let fileIdentifier = identifierPath + "/" + metadata.fileNameView
+            let fileIdentifier = fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + metadata.fileNameView
             var fileSize = 0 as Double
          
-            do {
-                try FileManager.default.createDirectory(atPath: identifierPath, withIntermediateDirectories: true, attributes: nil)
-            } catch let error {
-                print("error: \(error)")
-            }
-            
-            // If do not exists create file with size = 0
-            if fileManagerExtension.fileExists(atPath: fileIdentifier) == false {
-                fileManagerExtension.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
-            }
-            
             do {
                 let attributes = try fileManagerExtension.attributesOfItem(atPath: fileIdentifier)
                 fileSize = attributes[FileAttributeKey.size] as! Double
@@ -171,6 +159,16 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // Tag
         if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "account = %@ AND fileID = %@", metadata.account, metadata.fileID)) {
             tagData = tableTag.tagIOS
+        }
+        
+        // Removed (if exists) this Item from listUpdate
+        var counter = 0
+        for updateItem in listUpdateItems {
+            if updateItem.itemIdentifier.rawValue == itemIdentifier.rawValue {
+                listUpdateItems.remove(at: counter)
+                break;
+            }
+            counter += 1
         }
     }
 }

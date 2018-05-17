@@ -47,7 +47,6 @@ var fileNamePathImport = [String]()
 let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 
 var timerUpload: Timer?
-var timerCheck: Timer?
 
 var fileManagerExtension = FileManager()
 
@@ -58,6 +57,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         super.init()
         
         setupActiveAccount()
+        
+        verifyUploadQueueInLock()
         
         if #available(iOSApplicationExtension 11.0, *) {
             
@@ -72,17 +73,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 })
                 
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
-            }
-            
-            // Timer for check
-            if timerCheck == nil {
-                
-                timerCheck = Timer.init(timeInterval: TimeInterval((k_timerProcessAutoDownloadUpload*2)+(k_timerProcessAutoDownloadUpload/2)+1), repeats: true, block: { (Timer) in
-                    
-                    self.verifyUploadQueueInLock()
-                })
-                
-                RunLoop.main.add(timerCheck!, forMode: .defaultRunLoopMode)
             }
             
         } else {
@@ -252,6 +242,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 
             let pathComponents = url.pathComponents
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+            var fileSize = 0 as Double
             var localEtag = ""
             var localEtagFPE = ""
             
@@ -281,8 +272,17 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                     }
                 }
                 
-                completionHandler(nil)
-                return
+                do {
+                    let attributes = try fileManagerExtension.attributesOfItem(atPath: url.path)
+                    fileSize = attributes[FileAttributeKey.size] as! Double
+                } catch let error {
+                    print("error: \(error)")
+                }
+                
+                if (fileSize > 0) {
+                    completionHandler(nil)
+                    return
+                }
             }
             
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
@@ -969,9 +969,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
                 
                 // Rename directory file
-                _ = moveFile(fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: fileProviderStorageURL!.path + "/" + fileID)
+                if fileManagerExtension.fileExists(atPath: fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
+                    _ = moveFile(fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: fileProviderStorageURL!.path + "/" + fileID)
+                } else {
+                    print("aia")
+                }
                 
-                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
                 
                 let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                 self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
@@ -1027,10 +1031,17 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        listUpdateItems.removeAll()
         let item = try? self.item(for: identifier)
         if item != nil {
-            listUpdateItems.append(item!)
+            var found = false
+            for updateItem in listUpdateItems {
+                if updateItem.itemIdentifier.rawValue == identifier.rawValue {
+                    found = true
+                }
+            }
+            if !found {
+                listUpdateItems.append(item!)
+            }
         }
         
         if serverUrl == homeServerUrl {
@@ -1174,5 +1185,20 @@ func setupActiveAccount() {
         try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
     } catch let error as NSError {
         NSLog("Unable to create directory \(error.debugDescription)")
+    }
+}
+
+func createFileIdentifier(itemIdentifier: String, fileName: String) {
+    
+    let identifierPath = fileProviderStorageURL!.path + "/" + itemIdentifier
+    let fileIdentifier = identifierPath + "/" + fileName
+    
+    do {
+        try fileManagerExtension.createDirectory(atPath: identifierPath, withIntermediateDirectories: true, attributes: nil)
+    } catch { }
+    
+    // If do not exists create file with size = 0
+    if fileManagerExtension.fileExists(atPath: fileIdentifier) == false {
+        fileManagerExtension.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
     }
 }

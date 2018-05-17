@@ -49,6 +49,8 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
                     continue
                 }
                 
+                // Create FS
+                createFileIdentifier(itemIdentifier: metadata.fileID, fileName: metadata.fileNameView)
                 let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
                 items.append(item)
             }
@@ -65,6 +67,8 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                 continue
             }
+            // Create FS
+            createFileIdentifier(itemIdentifier: metadata.fileID, fileName: metadata.fileNameView)
             let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
             items.append(item)
         }
