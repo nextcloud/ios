@@ -947,6 +947,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
+        
         let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
         completionHandler(item, nil)
     }
