@@ -2418,32 +2418,23 @@ class NCManageDatabase: NSObject {
         return metadataNet
     }
     
-    @objc func unlockQueueUpload(assetLocalIdentifier: String?, path: String?) {
+    @objc func unlockQueueUpload(assetLocalIdentifier: String) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
         }
     
-        var result: tableQueueUpload?
         let realm = try! Realm()
 
         realm.beginWrite()
         
-        if assetLocalIdentifier != nil {
-            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier!).first
-        }
-        
-        if path != nil {
-            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND path = %@", tableAccount.account, path!).first
-        }
-        
-        if result == nil {
+        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@", tableAccount.account, assetLocalIdentifier).first else {
             realm.cancelWrite()
             return
         }
-        
+      
         // UnLock
-        result!.lock = false
+        result.lock = false
         
         do {
             try realm.commitWrite()
