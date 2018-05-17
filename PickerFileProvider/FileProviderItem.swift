@@ -114,7 +114,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             var fileSize = 0 as Double
          
             do {
-                let attributes = try fileManagerExtension.attributesOfItem(atPath: fileIdentifier)
+                let attributes = try FileManager.default.attributesOfItem(atPath: fileIdentifier)
                 fileSize = attributes[FileAttributeKey.size] as! Double
             } catch let error {
                 print("error: \(error)")

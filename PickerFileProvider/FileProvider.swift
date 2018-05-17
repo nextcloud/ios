@@ -48,10 +48,10 @@ let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 
 var timerUpload: Timer?
 
-var fileManagerExtension = FileManager()
-
 class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
+    var fileManager = FileManager()
+
     override init() {
         
         super.init()
@@ -79,7 +79,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
                 do {
-                    try fileManagerExtension.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
+                    try fileManager.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
                 } catch let error {
                     print("error: \(error)")
                 }
@@ -273,7 +273,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 }
                 
                 do {
-                    let attributes = try fileManagerExtension.attributesOfItem(atPath: url.path)
+                    let attributes = try fileManager.attributesOfItem(atPath: url.path)
                     fileSize = attributes[FileAttributeKey.size] as! Double
                 } catch let error {
                     print("error: \(error)")
@@ -369,7 +369,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
             
-            let fileSize = (try! fileManagerExtension.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
+            let fileSize = (try! fileManager.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
             NSLog("[LOG] Item changed at URL %@ %lu", url as NSURL, fileSize)
             
             guard let account = NCManageDatabase.sharedInstance.getAccountActive() else {
@@ -440,7 +440,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         if !fileHasLocalChanges {
             // remove the existing file to free up space
             do {
-                _ = try fileManagerExtension.removeItem(at: url)
+                _ = try fileManager.removeItem(at: url)
             } catch let error {
                 print("error: \(error)")
             }
@@ -596,17 +596,17 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             let fileNamePath = directoryUser + "/" + metadata.fileID
             do {
-                try fileManagerExtension.removeItem(atPath: fileNamePath)
+                try self.fileManager.removeItem(atPath: fileNamePath)
             } catch let error {
                 print("error: \(error)")
             }
             do {
-                try fileManagerExtension.removeItem(atPath: fileNamePath + ".ico")
+                try self.fileManager.removeItem(atPath: fileNamePath + ".ico")
             } catch let error {
                 print("error: \(error)")
             }
             do {
-                try fileManagerExtension.removeItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID)
+                try self.fileManager.removeItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID)
             } catch let error {
                 print("error: \(error)")
             }
@@ -740,7 +740,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             } else {
                 
                 do {
-                    try fileManagerExtension.moveItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + fileNameFrom, toPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + itemName)
+                    try self.fileManager.moveItem(atPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + fileNameFrom, toPath: fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + itemName)
                     NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
                 } catch { }
             }
@@ -864,8 +864,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        let fileCoordinator = NSFileCoordinator()
-        var error: NSError?
         var directoryPredicate: NSPredicate
         var size = 0 as Double
         let metadata = tableMetadata()
@@ -904,7 +902,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         // ---------------------------------------------------------------------------------
         
         do {
-            let attributes = try fileManagerExtension.attributesOfItem(atPath: fileNamePathDirectory + "/" + fileName)
+            let attributes = try fileManager.attributesOfItem(atPath: fileNamePathDirectory + "/" + fileName)
             size = attributes[FileAttributeKey.size] as! Double
         } catch let error {
             print("error: \(error)")
@@ -964,7 +962,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) {
                 
                 // Rename directory file
-                if fileManagerExtension.fileExists(atPath: fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
+                if fileManager.fileExists(atPath: fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
                     _ = moveFile(fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: fileProviderStorageURL!.path + "/" + fileID)
                 }
                 
@@ -1060,12 +1058,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var errorResult: Error?
         
         do {
-            try fileManagerExtension.removeItem(atPath: toPath)
+            try fileManager.removeItem(atPath: toPath)
         } catch let error {
             print("error: \(error)")
         }
         do {
-            try fileManagerExtension.copyItem(atPath: atPath, toPath: toPath)
+            try fileManager.copyItem(atPath: atPath, toPath: toPath)
         } catch let error {
             errorResult = error
         }
@@ -1078,12 +1076,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var errorResult: Error?
         
         do {
-            try fileManagerExtension.removeItem(atPath: toPath)
+            try fileManager.removeItem(atPath: toPath)
         } catch let error {
             print("error: \(error)")
         }
         do {
-            try fileManagerExtension.moveItem(atPath: atPath, toPath: toPath)
+            try fileManager.moveItem(atPath: atPath, toPath: toPath)
         } catch let error {
             errorResult = error
         }
@@ -1096,7 +1094,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var errorResult: Error?
         
         do {
-            try fileManagerExtension.removeItem(atPath: atPath)
+            try fileManager.removeItem(atPath: atPath)
         } catch let error {
             errorResult = error
         }
@@ -1187,11 +1185,11 @@ func createFileIdentifier(itemIdentifier: String, fileName: String) {
     let fileIdentifier = identifierPath + "/" + fileName
     
     do {
-        try fileManagerExtension.createDirectory(atPath: identifierPath, withIntermediateDirectories: true, attributes: nil)
+        try FileManager.default.createDirectory(atPath: identifierPath, withIntermediateDirectories: true, attributes: nil)
     } catch { }
     
     // If do not exists create file with size = 0
-    if fileManagerExtension.fileExists(atPath: fileIdentifier) == false {
-        fileManagerExtension.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
+    if FileManager.default.fileExists(atPath: fileIdentifier) == false {
+        FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
     }
 }
