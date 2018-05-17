@@ -247,7 +247,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             var localEtagFPE = ""
             
             // If identifier is a temp return
-            if identifier.rawValue.contains(k_uploadSessionID) {
+            if identifier.rawValue.contains(FILEID_IMPORT_METADATA_TEMP) {
                 completionHandler(nil)
                 return
             }
@@ -353,13 +353,10 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            // Copy file to Change Document & if exists on Import Document
-            _ = self.copyFile(url.path, toPath: fileProviderStorageURL!.path + "/" + fileName)
-            
             metadataNet.account = account
-            metadataNet.assetLocalIdentifier = k_assetLocalIdentifierFileProviderStorage + identifier.rawValue
+            metadataNet.assetLocalIdentifier = FILEID_IMPORT_METADATA_TEMP + metadata.directoryID + fileName
             metadataNet.fileName = fileName
-            metadataNet.path = fileProviderStorageURL!.path + "/" + fileName
+            metadataNet.path = url.path
             metadataNet.selector = selectorUploadFile
             metadataNet.selectorPost = ""
             metadataNet.serverUrl = serverUrl
@@ -971,8 +968,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 // Rename directory file
                 if fileManagerExtension.fileExists(atPath: fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
                     _ = moveFile(fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: fileProviderStorageURL!.path + "/" + fileID)
-                } else {
-                    print("aia")
                 }
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
