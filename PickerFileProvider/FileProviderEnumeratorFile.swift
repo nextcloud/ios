@@ -38,13 +38,17 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
         
         var items: [NSFileProviderItemProtocol] = []
+        let fileID = enumeratedItemIdentifier.rawValue
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, enumeratedItemIdentifier.rawValue)) else {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) else {
             observer.finishEnumerating(upTo: nil)
             return
         }
         
-        createFileIdentifierOnFileSystem(itemIdentifier: metadata.fileID, fileName: metadata.fileNameView)        
+        if metadata.directory == false {
+            createFileIdentifierOnFileSystem(itemIdentifier: metadata.fileID, fileName: metadata.fileNameView)
+        }
+        
         let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
         if parentItemIdentifier != nil {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)

@@ -45,7 +45,10 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
             
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, tag.fileID))  {
                 
-                createFileIdentifierOnFileSystem(itemIdentifier: metadata.fileID, fileName: metadata.fileNameView)                
+                if metadata.directory == false {
+                    createFileIdentifierOnFileSystem(itemIdentifier: metadata.fileID, fileName: metadata.fileNameView)
+                }
+
                 let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)

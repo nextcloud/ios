@@ -150,7 +150,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
         
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
+            let fileID = identifier.rawValue
+            
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))  {
                 let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
@@ -244,6 +246,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 
             let pathComponents = url.pathComponents
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+            let fileID = identifier.rawValue
             var fileSize = 0 as Double
             var localEtag = ""
             var localEtagFPE = ""
@@ -254,12 +257,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue)) else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
             
-            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))
+            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))
             if tableLocalFile != nil {
                 localEtag = tableLocalFile!.etag
                 localEtagFPE = tableLocalFile!.etagFPE
@@ -346,8 +349,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 
             assert(pathComponents.count > 2)
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+            let fileID = identifier.rawValue
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))  else {
                 return
             }
             
@@ -467,8 +471,10 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var counterProgress: Int64 = 0
             
         for itemIdentifier in itemIdentifiers {
-                
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue))  {
+            
+            let fileID = itemIdentifier.rawValue
+            
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))  {
                     
                 if (metadata.typeFile == k_metadataTypeFile_image || metadata.typeFile == k_metadataTypeFile_video) {
                         
@@ -537,7 +543,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
             
-            guard let directoryParent = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, parentItemIdentifier.rawValue)) else {
+            let fileID = parentItemIdentifier.rawValue
+            
+            guard let directoryParent = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -589,7 +597,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
+        let fileID = itemIdentifier.rawValue
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) else {
             completionHandler(nil)
             return
         }
@@ -645,6 +655,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
+        let fileIDFrom = itemIdentifier.rawValue
+        let fileIDTo = parentItemIdentifier.rawValue
+        
         var serverUrlTo = ""
         var fileNameTo = ""
         var directoryIDTo = ""
@@ -654,7 +667,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let metadataFrom = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
+        guard let metadataFrom = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileIDFrom)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -669,7 +682,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         if parentItemIdentifier == NSFileProviderItemIdentifier.rootContainer {
             serverUrlTo = homeServerUrl
         } else {
-            guard let metadataTo = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, parentItemIdentifier.rawValue)) else {
+            guard let metadataTo = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileIDTo)) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -691,7 +704,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 NCManageDatabase.sharedInstance.moveMetadata(fileName: metadataFrom.fileName, directoryID: metadataFrom.directoryID, directoryIDTo: directoryIDTo)
             }
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileIDFrom)) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -716,7 +729,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
+        let fileID = itemIdentifier.rawValue
+
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -843,10 +858,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
+        let fileID = itemIdentifier.rawValue
+
         // Add, Remove (nil)
-        NCManageDatabase.sharedInstance.addTag(itemIdentifier.rawValue, tagIOS: tagData)
+        NCManageDatabase.sharedInstance.addTag(fileID, tagIOS: tagData)
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue))  else {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))  else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
