@@ -885,6 +885,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var size = 0 as Double
         let metadata = tableMetadata()
 
+        // get serverUrl
+        
         if parentItemIdentifier == .rootContainer {
             directoryPredicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
         } else {
