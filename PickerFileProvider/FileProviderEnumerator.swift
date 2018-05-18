@@ -156,10 +156,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         var counter = 0
         
         for metadata in metadatas {
+            
             // E2EE Remove
             if metadata.e2eEncrypted || metadata.status == Double(k_metadataStatusHide) || metadata.session != "" {
                 continue
             }
+            
             counter += 1
             if (counter >= start && counter <= stop) {
                 
