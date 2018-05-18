@@ -70,44 +70,20 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     
     var isDirectory = false
 
-    init(metadata: tableMetadata, serverUrl: String) {
+    init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
+        
+        self.itemIdentifier = NSFileProviderItemIdentifier(metadata.fileID)
+        self.parentItemIdentifier = parentItemIdentifier
         
         self.contentModificationDate = metadata.date as Date
         self.creationDate = metadata.date as Date
         self.documentSize = NSNumber(value: metadata.size)
         self.filename = metadata.fileNameView
         self.isDirectory = metadata.directory
-
-        // parentItemIdentifier
-        if #available(iOSApplicationExtension 11.0, *) {
-            
-            self.parentItemIdentifier = NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
-            
-            // NOT .rootContainer
-            if (serverUrl != homeServerUrl) {
-                if let directoryParent = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", metadata.account, metadata.directoryID))  {
-                    if let metadataParent = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", metadata.account, directoryParent.fileID))  {
-                        self.parentItemIdentifier = NSFileProviderItemIdentifier(metadataParent.fileID)
-                    }
-                }
-            }
-            
-            // itemIdentifier
-            self.itemIdentifier = NSFileProviderItemIdentifier(metadata.fileID)
-            
-        } else {
-            // < iOS 11
-            self.parentItemIdentifier = NSFileProviderItemIdentifier("")
-            self.itemIdentifier = NSFileProviderItemIdentifier("")
-        }
-
-        // typeIdentifier
-        if let fileType = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata) {
-            self.typeIdentifier = fileType 
-        }
+        self.typeIdentifier = CCUtility.insertTypeFileIconName(metadata.fileNameView, metadata: metadata)
         self.versionIdentifier = metadata.etag.data(using: .utf8)
         
-        // Verify file exists on cache
+        // This is a file
         if (!metadata.directory) {
             
             let fileIdentifier = fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + metadata.fileNameView
@@ -129,18 +105,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true
             }
-            
-            // Upload
-            /*
-            let queue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND (path = %@ || path = %@)", account, changeDocumentPath, importDocumentPath))
-            if queue?.count == 0 {
-                self.isUploading = false
-                self.isUploaded = true
-            } else {
-                self.isUploading = true
-                self.isUploaded = false
-            }
-            */
             
         } else {
             

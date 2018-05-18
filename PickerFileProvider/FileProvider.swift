@@ -145,14 +145,16 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 metadata.fileNameView = NCBrandOptions.sharedInstance.brand
                 metadata.typeFile = k_metadataTypeFile_directory
                     
-                return FileProviderItem(metadata: metadata, serverUrl: homeServerUrl)
+                return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
             }
             
         } else {
         
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier.rawValue))  {
-                if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID)) {
-                    return FileProviderItem(metadata: metadata, serverUrl: directory.serverUrl)
+                let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+                if parentItemIdentifier != nil {
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
+                    return item
                 }
             }
         }
@@ -567,8 +569,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
-            completionHandler(item, nil)
+            let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadataDB.directoryID)
+            if parentItemIdentifier != nil {
+                let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!)
+                completionHandler(item, nil)
+            } else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+            }
             
         }, failure: { (errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
@@ -689,8 +696,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            let item = FileProviderItem(metadata: metadata, serverUrl: serverUrlTo)
-            completionHandler(item, nil)
+            let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+            if parentItemIdentifier != nil {
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
+                completionHandler(item, nil)
+            } else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+            }
             
         }, failure: { (errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
@@ -745,8 +757,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 } catch { }
             }
             
-            let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-            completionHandler(item, nil)
+            let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+            if parentItemIdentifier != nil {
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
+                completionHandler(item, nil)
+            } else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+            }
             
         }, failure: { (errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
@@ -834,14 +851,14 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+        let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+        if parentItemIdentifier != nil {
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
+            completionHandler(item, nil)
+        } else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
         }
         
-        let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-        completionHandler(item, nil)
-
         self.refreshEnumerator(identifier: itemIdentifier, serverUrl: "WorkingSet")        
     }
     
@@ -943,7 +960,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        let item = FileProviderItem(metadata: metadataDB, serverUrl: serverUrl)
+        let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier)
         completionHandler(item, nil)
     }
     
@@ -968,8 +985,11 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
                 
-                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-                self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+                if parentItemIdentifier != nil {
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
+                    self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                } 
             }
             
         } else {
@@ -1149,7 +1169,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 }
 
 // --------------------------------------------------------------------------------------------
-//  MARK: - Setup Active Accont
+//  MARK: -
 // --------------------------------------------------------------------------------------------
 
 func setupActiveAccount() {
@@ -1179,7 +1199,7 @@ func setupActiveAccount() {
     }
 }
 
-func createFileIdentifier(itemIdentifier: String, fileName: String) {
+func createFileIdentifierOnFileSystem(itemIdentifier: String, fileName: String) {
     
     let identifierPath = fileProviderStorageURL!.path + "/" + itemIdentifier
     let fileIdentifier = identifierPath + "/" + fileName
@@ -1192,4 +1212,21 @@ func createFileIdentifier(itemIdentifier: String, fileName: String) {
     if FileManager.default.fileExists(atPath: fileIdentifier) == false {
         FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
     }
+}
+
+func getDirectoryParent(metadataDirectoryID: String) -> NSFileProviderItemIdentifier? {
+    
+    if #available(iOSApplicationExtension 11.0, *) {
+        if let directoryParent = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadataDirectoryID))  {
+            if directoryParent.serverUrl == homeServerUrl {
+                return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
+            } else {
+                if let metadataParent = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, directoryParent.fileID))  {
+                    return NSFileProviderItemIdentifier(metadataParent.fileID)
+                }
+            }
+        }
+    }
+    
+    return nil
 }

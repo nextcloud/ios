@@ -162,10 +162,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             counter += 1
             if (counter >= start && counter <= stop) {
-                // create FS
-                createFileIdentifier(itemIdentifier: metadata.fileID, fileName: metadata.fileNameView)
-                let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-                items.append(item)
+                
+                createFileIdentifierOnFileSystem(itemIdentifier: metadata.fileID, fileName: metadata.fileNameView)
+                let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+                if parentItemIdentifier != nil {
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
+                    items.append(item)
+                }
             }
         }
         
