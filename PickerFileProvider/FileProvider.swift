@@ -256,14 +256,14 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             var localEtag = ""
             var localEtagFPE = ""
             
-            // If identifier is a temp return
-            if identifier.rawValue.contains(FILEID_IMPORT_METADATA_TEMP) {
-                completionHandler(nil)
+            guard let metadata = getMetadataFromItemIdentifier(identifier) else {
+                completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
             
-            guard let metadata = getMetadataFromItemIdentifier(identifier) else {
-                completionHandler(NSFileProviderError(.noSuchItem))
+            // Upload ?
+            if metadata.fileID.contains(k_uploadSessionID) {
+                completionHandler(nil)
                 return
             }
             
