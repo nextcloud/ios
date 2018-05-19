@@ -38,9 +38,8 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
         
         var items: [NSFileProviderItemProtocol] = []
-        let fileID = enumeratedItemIdentifier.rawValue
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) else {
+        guard let metadata = getMetadataFromItemIdentifier(enumeratedItemIdentifier) else {
             observer.finishEnumerating(upTo: nil)
             return
         }

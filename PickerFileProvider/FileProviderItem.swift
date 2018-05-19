@@ -72,8 +72,11 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         
-        self.itemIdentifier = NSFileProviderItemIdentifier(metadata.fileID)
+        // parentItemIdentifier = NSFileProviderRootContainerItemIdentifier / tableDirectory.fileID
         self.parentItemIdentifier = parentItemIdentifier
+        
+        // ItemIdentifier = metadata.fileID
+        self.itemIdentifier = NSFileProviderItemIdentifier(metadata.fileID)
         
         self.contentModificationDate = metadata.date as Date
         self.creationDate = metadata.date as Date

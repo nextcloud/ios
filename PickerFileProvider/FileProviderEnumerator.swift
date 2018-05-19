@@ -40,11 +40,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 serverUrl = homeServerUrl
             } else {
                 
-                let fileID = enumeratedItemIdentifier.rawValue
-                
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))  {
-                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID))  {
-                        serverUrl = directorySource.serverUrl + "/" + metadata.fileName
+                let metadata = getMetadataFromItemIdentifier(enumeratedItemIdentifier)
+                if metadata != nil  {
+                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata!.directoryID))  {
+                        serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
                     }
                 }
             }
