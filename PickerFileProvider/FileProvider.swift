@@ -1184,10 +1184,23 @@ func setupActiveAccount() {
     }
 }
 
-func createFileIdentifierOnFileSystem(itemIdentifier: String, fileName: String) {
+func getMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
     
-    let identifierPath = fileProviderStorageURL!.path + "/" + itemIdentifier
-    let fileIdentifier = identifierPath + "/" + fileName
+    let fileID = itemIdentifier.rawValue
+    
+    return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))
+}
+
+func cretateItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
+    
+    return NSFileProviderItemIdentifier(metadata.fileID)
+}
+
+func createFileIdentifierOnFileSystem(metadata: tableMetadata) {
+    
+    let itemIdentifier = cretateItemIdentifier(metadata: metadata)
+    let identifierPath = fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue
+    let fileIdentifier = identifierPath + "/" + metadata.fileName
     
     do {
         try FileManager.default.createDirectory(atPath: identifierPath, withIntermediateDirectories: true, attributes: nil)
@@ -1217,12 +1230,6 @@ func getDirectoryParent(_ metadata: tableMetadata) -> NSFileProviderItemIdentifi
     return nil
 }
 
-func getMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
-    
-    let fileID = itemIdentifier.rawValue
-    
-    return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))
-}
 
 func getDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier) -> tableDirectory? {
     

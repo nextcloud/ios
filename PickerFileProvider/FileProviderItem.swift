@@ -72,11 +72,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         
-        // parentItemIdentifier = NSFileProviderRootContainerItemIdentifier / tableDirectory.fileID
         self.parentItemIdentifier = parentItemIdentifier
-        
-        // ItemIdentifier = metadata.fileID
-        self.itemIdentifier = NSFileProviderItemIdentifier(metadata.fileID)
+        self.itemIdentifier = cretateItemIdentifier(metadata: metadata)
         
         self.contentModificationDate = metadata.date as Date
         self.creationDate = metadata.date as Date
@@ -89,7 +86,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // This is a file
         if (!metadata.directory) {
             
-            let fileIdentifier = fileProviderStorageURL!.path + "/" + metadata.fileID + "/" + metadata.fileNameView
+            let fileIdentifier = fileProviderStorageURL!.path + "/" + self.itemIdentifier.rawValue + "/" + metadata.fileNameView
             var fileSize = 0 as Double
          
             do {

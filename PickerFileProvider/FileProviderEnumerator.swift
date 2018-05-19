@@ -168,7 +168,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             if (counter >= start && counter <= stop) {
                 
                 if metadata.directory == false {
-                    createFileIdentifierOnFileSystem(itemIdentifier: metadata.fileID, fileName: metadata.fileNameView)
+                    createFileIdentifierOnFileSystem(metadata: metadata)
                 }
 
                 let parentItemIdentifier = getDirectoryParent(metadata)
