@@ -159,7 +159,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             let metadata = getMetadataFromItemIdentifier(identifier)
             if  metadata != nil {
-                let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata!.directoryID)
+                let parentItemIdentifier = getDirectoryParent(metadata!)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier!)
                     return item
@@ -569,7 +569,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadataDB.directoryID)
+            let parentItemIdentifier = getDirectoryParent(metadataDB)
             if parentItemIdentifier != nil {
                 let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!)
                 completionHandler(item, nil)
@@ -689,7 +689,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+            let parentItemIdentifier = getDirectoryParent(metadata)
             if parentItemIdentifier != nil {
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                 completionHandler(item, nil)
@@ -750,7 +750,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 } catch { }
             }
             
-            let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+            let parentItemIdentifier = getDirectoryParent(metadata)
             if parentItemIdentifier != nil {
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                 completionHandler(item, nil)
@@ -844,7 +844,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(metadata.fileID, tagIOS: tagData)
         
-        let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+        let parentItemIdentifier = getDirectoryParent(metadata)
         if parentItemIdentifier != nil {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
             completionHandler(item, nil)
@@ -970,7 +970,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
                 
-                let parentItemIdentifier = getDirectoryParent(metadataDirectoryID: metadata.directoryID)
+                let parentItemIdentifier = getDirectoryParent(metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                     self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
@@ -1199,15 +1199,16 @@ func createFileIdentifierOnFileSystem(itemIdentifier: String, fileName: String) 
     }
 }
 
-func getDirectoryParent(metadataDirectoryID: String) -> NSFileProviderItemIdentifier? {
+func getDirectoryParent(_ metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
     
     if #available(iOSApplicationExtension 11.0, *) {
-        if let directoryParent = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadataDirectoryID))  {
-            if directoryParent.serverUrl == homeServerUrl {
+        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID))  {
+            if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
             } else {
-                if let metadataParent = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, directoryParent.fileID))  {
-                    return NSFileProviderItemIdentifier(metadataParent.fileID)
+                // get the metadata.FileID of parent Directory
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, directory.fileID))  {
+                    return NSFileProviderItemIdentifier(metadata.fileID)
                 }
             }
         }
