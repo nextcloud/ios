@@ -205,29 +205,24 @@ class CCActions: NSObject {
             return
         }
         
-        DispatchQueue.global(qos: .userInitiated).async {
+        // Verify if exists the fileName TO
         
-            // Verify if exists the fileName TO
-            var items: NSArray?
-        
-            guard NCNetworkingSync.sharedManager().readFile("\(String(describing: serverUrl))/\(fileName)", user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, items: &items) != nil else {
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: self.appDelegate.activeUser, withUserID: self.appDelegate.activeUserID, withPassword: self.appDelegate.activePassword, withUrl: self.appDelegate.activeUrl)
+
+        ocNetworking?.readFile(withServerUrl: serverUrl, fileName: fileName, account: self.appDelegate.activeAccount, success: { (metadata) in
                 
-                DispatchQueue.main.async {
-                    
-                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
+            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
                 
-                    let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
-                        (result : UIAlertAction) -> Void in
-                    }
-                
-                    alertController.addAction(okAction)
-                
-                    delegate.present(alertController, animated: true, completion: nil)
-                }
-                
-                return;
+            let okAction = UIAlertAction(title: "OK", style: UIAlertActionStyle.default) {
+                (result : UIAlertAction) -> Void in
             }
-        
+                
+            alertController.addAction(okAction)
+                
+            delegate.present(alertController, animated: true, completion: nil)
+                
+        }, failure: { (message, errorCode) in
+                
             metadataNet.action = actionMoveFileOrFolder
             metadataNet.delegate = delegate
             metadataNet.fileID = metadata.fileID
@@ -237,9 +232,9 @@ class CCActions: NSObject {
             metadataNet.selector = selectorRename
             metadataNet.serverUrl = serverUrl
             metadataNet.serverUrlTo = serverUrl
-            
+                
             self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-        }
+        })
     }
     
     @objc func renameSuccess(_ metadataNet: CCMetadataNet) {

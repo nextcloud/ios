@@ -666,30 +666,23 @@
     // account.dateSearchContentTypeImageVideo
     
     NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
-
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    
+    [ocNetworking readFileWithServerUrl:startDirectory fileName:nil account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
         
-        NSArray *items;
-        NSError *error = [[NCNetworkingSync sharedManager] readFile:startDirectory user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword items:&items];
-        
-        if (error == nil && items.count > 0) {
-        
-            OCFileDto *fileStartDirectory = items[0];
+        if (![metadata.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]]) {
             
-            if (![fileStartDirectory.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]]) {
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:fileStartDirectory.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
-                    [self searchInProgress:YES];
-                    [self editingModeNO];
-                });
-            } else {
-                [self reloadDatasourceFromSearch:YES];
-            }
+            [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
+            [self searchInProgress:YES];
+            [self editingModeNO];
+            
         } else {
             [self reloadDatasourceFromSearch:YES];
         }
-    });
+        
+    } failure:^(NSString *message, NSInteger errorCode) {
+        [self reloadDatasourceFromSearch:YES];
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------

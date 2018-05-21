@@ -1987,32 +1987,24 @@
     NSString *directoryIDTo = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlTo];
     if (!directoryIDTo) return;
     
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        
-        NSArray *items;
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
 
-        NSError *error = [[NCNetworkingSync sharedManager] readFile:[NSString stringWithFormat:@"%@/%@", serverUrlTo, metadata.fileName] user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword items:&items];
+    [ocNetworking readFileWithServerUrl:serverUrlTo fileName:metadata.fileName account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
     
-        if(!error) {
-                
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                    
-                UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
-                UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
-                }];
-                [alert addAction:ok];
-                [self presentViewController:alert animated:YES completion:nil];
-            
-                // End Select Table View
-                [self tableViewSelect:NO];
-            
-                // reload Datasource
-                [self readFileReloadFolder];
-            });
-            
-            return;
-        }
-            
+        UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+        }];
+        [alert addAction:ok];
+        [self presentViewController:alert animated:YES completion:nil];
+        
+        // End Select Table View
+        [self tableViewSelect:NO];
+        
+        // reload Datasource
+        [self readFileReloadFolder];
+        
+    } failure:^(NSString *message, NSInteger errorCode) {
+    
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
         
         metadataNet.action = actionMoveFileOrFolder;
@@ -2027,15 +2019,13 @@
         metadataNet.selector = selectorMove;
         metadataNet.serverUrl = serverUrl;
         metadataNet.serverUrlTo = serverUrlTo;
-            
+        
         [_queueSelector addObject:metadataNet.selector];
-            
+        
         [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-    
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
-        });
-    });
+        
+        [_hud visibleHudTitle:[NSString stringWithFormat:NSLocalizedString(@"_move_file_n_", nil), ofFile - numFile + 1, ofFile] mode:MBProgressHUDModeIndeterminate color:nil];
+    }];
 }
 
 // DELEGATE : Move
