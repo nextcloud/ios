@@ -49,22 +49,29 @@ let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 var timerUpload: Timer?
 
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
+                                                            STRUCT item
+   -----------------------------------------------------------------------------------------------------------------------------------------------
  
-                                itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue
-                                parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue
  
-                                                                    ↓
+    itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue            --> root
+    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> root
  
-                                itemIdentifier = self.metadata.fileID (ex. 00ABC1)                              --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
-                                parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
+                                    ↓
  
-                                                                    ↓
+    itemIdentifier = self.metadata.fileID (ex. 00ABC1)                              --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+    parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
+ 
+                                    ↓
 
-                                 itemIdentifier = self.metadata.fileID                                          --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
-                                 parentItemIdentifier = parent itemIdentifier (00ABC1)                          --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
+    itemIdentifier = self.metadata.fileID (ex. 00CCC)                               --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+    parentItemIdentifier = parent itemIdentifier (00ABC1)                           --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
  
-// -----------------------------------------------------------------------------------------------------------------------------------------------
-*/
+                                    ↓
+ 
+    itemIdentifier = self.metadata.fileID (ex. 000DD)                               --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+    parentItemIdentifier = parent itemIdentifier (00CCC)                            --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
+ 
+// -------------------------------------------------------------------------------------------------------------------------------------------- */
 
 class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
