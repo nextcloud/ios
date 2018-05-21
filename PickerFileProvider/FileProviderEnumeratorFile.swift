@@ -48,7 +48,7 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
             createFileIdentifierOnFileSystem(metadata: metadata)
         }
         
-        let parentItemIdentifier = getDirectoryParent(metadata)
+        let parentItemIdentifier = getParentItemIdentifier(metadata)
         if parentItemIdentifier != nil {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
             items.append(item)
