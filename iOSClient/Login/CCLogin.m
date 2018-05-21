@@ -369,6 +369,65 @@
 
 - (void)loginCloudUrl:(NSString *)url user:(NSString *)user password:(NSString *)password
 {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:user withUserID:user withPassword:password withUrl:nil];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.login.enabled = NO;
+        self.loadingBaseUrl.hidden = NO;
+    });
+    
+    [ocNetworking checkServer:[NSString stringWithFormat:@"%@%@", url, webDAV] success:^{
+        
+        // account
+        NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
+        
+        if (_loginType == loginModifyPasswordUser) {
+            
+            // Change Password
+            tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:password];
+            
+            // Setting appDelegate active account
+            [appDelegate settingActiveAccount:tbAccount.account activeUrl:tbAccount.url activeUser:tbAccount.user activeUserID:tbAccount.userID activePassword:tbAccount.password];
+            
+            [self.delegate loginSuccess:_loginType];
+            
+            [self dismissViewControllerAnimated:YES completion:nil];
+            
+        } else {
+            
+            [[NCManageDatabase sharedInstance] deleteAccount:account];
+            [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password loginFlow:false];
+            
+            tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:account];
+            
+            // Setting appDelegate active account
+            [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
+            
+            [self.delegate loginSuccess:_loginType];
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [self dismissViewControllerAnimated:YES completion:nil];
+            });
+        }
+                
+    } failure:^(NSString *message, NSInteger errorCode) {
+        
+        if (errorCode != NSURLErrorServerCertificateUntrusted) {
+            
+            NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil), message];
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:messageAlert preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            
+            [alertController addAction:okAction];
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+        
+        self.login.enabled = YES;
+        self.loadingBaseUrl.hidden = YES;
+    }];
+    
+    /*
     NSError *error = [[NCNetworkingSync sharedManager] checkServer:[NSString stringWithFormat:@"%@%@", url, webDAV] user:user userID:user password:password];
 
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -428,6 +487,7 @@
         self.login.enabled = YES;
         self.loadingBaseUrl.hidden = YES;
     });
+    */
 }
 
 #pragma --------------------------------------------------------------------------------------------

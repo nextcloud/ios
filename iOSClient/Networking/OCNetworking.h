@@ -42,6 +42,7 @@
 @property (nonatomic, assign) BOOL isExecuting;
 @property (nonatomic, assign) BOOL isFinished;
 
+- (void)checkServer:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 - (NSURLSessionTask *)downloadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void (^)(int64_t length, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 - (NSURLSessionTask *)uploadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void(^)(NSString *fileID, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 - (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileName:(NSString *)fileName fileNameLocal:(NSString *)fileNameLocal success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;

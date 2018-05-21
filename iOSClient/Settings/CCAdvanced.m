@@ -479,6 +479,8 @@
             
             [CCUtility deleteAllChainStore];
             
+            [self emptyGroupFileProviderStorage];
+
             [self emptyDocumentsDirectory];
             
             [self emptyLibraryDirectory];
