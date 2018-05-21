@@ -48,12 +48,27 @@ let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 
 var timerUpload: Timer?
 
-// -------------------------------------------------------------------------------------------
-//
-// parentItemIdentifier = NSFileProviderRootContainerItemIdentifier / tableDirectory.fileID
-// ItemIdentifier       = metadata.fileID
-//
-// -------------------------------------------------------------------------------------------
+/* -----------------------------------------------------------------------------------------------------------------------------------------------
+ 
+                                itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue
+                                parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue
+ 
+                                                                    |
+                                                                    |
+                                                                    |
+ 
+                                itemIdentifier = self.metadata.fileID (ex. 00ABC1)                              --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+                                parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
+ 
+                                                                    |
+                                                                    |
+                                                                    |
+
+                                 itemIdentifier = self.metadata.fileID                                          --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
+                                 parentItemIdentifier = parent itemIdentifier (00ABC1)                          --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
+ 
+// -----------------------------------------------------------------------------------------------------------------------------------------------
+*/
 
 class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
@@ -157,9 +172,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
             
-            let metadata = getMetadataFromItemIdentifier(identifier)
+            let metadata = getTableMetadataFromItemIdentifier(identifier)
             if  metadata != nil {
-                let parentItemIdentifier = getParentItemIdentifier(metadata!)
+                let parentItemIdentifier = getParentItemIdentifier(metadata: metadata!)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier!)
                     return item
@@ -256,7 +271,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             var localEtag = ""
             var localEtagFPE = ""
             
-            guard let metadata = getMetadataFromItemIdentifier(identifier) else {
+            guard let metadata = getTableMetadataFromItemIdentifier(identifier) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
@@ -355,7 +370,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             assert(pathComponents.count > 2)
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             
-            guard let metadata = getMetadataFromItemIdentifier(identifier) else {
+            guard let metadata = getTableMetadataFromItemIdentifier(identifier) else {
                 return
             }
             
@@ -476,7 +491,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
         for itemIdentifier in itemIdentifiers {
             
-            let metadata = getMetadataFromItemIdentifier(itemIdentifier)
+            let metadata = getTableMetadataFromItemIdentifier(itemIdentifier)
             if metadata != nil {
                     
                 if (metadata!.typeFile == k_metadataTypeFile_image || metadata!.typeFile == k_metadataTypeFile_video) {
@@ -538,7 +553,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let tableDirectory = getDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
+        guard let tableDirectory = getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -569,7 +584,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            let parentItemIdentifier = getParentItemIdentifier(metadataDB)
+            let parentItemIdentifier = getParentItemIdentifier(metadata: metadataDB)
             if parentItemIdentifier != nil {
                 let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!)
                 completionHandler(item, nil)
@@ -591,7 +606,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         DispatchQueue.main.async {
             
-            guard let metadata = getMetadataFromItemIdentifier(itemIdentifier) else {
+            guard let metadata = getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 completionHandler(nil)
                 return
             }
@@ -653,7 +668,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let metadataFrom = getMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadataFrom = getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -667,7 +682,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
 
-        guard let tableDirectoryTo = getDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
+        guard let tableDirectoryTo = getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -692,7 +707,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            let parentItemIdentifier = getParentItemIdentifier(metadata)
+            let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
             if parentItemIdentifier != nil {
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                 completionHandler(item, nil)
@@ -712,7 +727,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let metadata = getMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadata = getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -747,14 +762,14 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 
             } else {
                 
-                let itemIdentifier = cretateItemIdentifier(metadata: metadata)
+                let itemIdentifier = getItemIdentifier(metadata: metadata)
                 
                 _ = self.moveFile(fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + fileNameFrom, toPath: fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + itemName)
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
             }
             
-            let parentItemIdentifier = getParentItemIdentifier(metadata)
+            let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
             if parentItemIdentifier != nil {
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                 completionHandler(item, nil)
@@ -840,7 +855,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
-        guard let metadata = getMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadata = getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -848,7 +863,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(metadata.fileID, tagIOS: tagData)
         
-        let parentItemIdentifier = getParentItemIdentifier(metadata)
+        let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
         if parentItemIdentifier != nil {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
             completionHandler(item, nil)
@@ -887,7 +902,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         DispatchQueue.main.async {
             
-            guard let tableDirectory = getDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
+            guard let tableDirectory = getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -979,13 +994,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 // Rename directory file
                 if fileManager.fileExists(atPath: fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
-                    let itemIdentifier = cretateItemIdentifier(metadata: metadata)
+                    let itemIdentifier = getItemIdentifier(metadata: metadata)
                     _ = moveFile(fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
                 }
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
                 
-                let parentItemIdentifier = getParentItemIdentifier(metadata)
+                let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                     self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
@@ -1062,7 +1077,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         } else {
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl)) {
                 if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, directory.fileID)) {
-                    let itemIdentifier = cretateItemIdentifier(metadata: metadata)
+                    let itemIdentifier = getItemIdentifier(metadata: metadata)
                     NSFileProviderManager.default.signalEnumerator(for: itemIdentifier, completionHandler: { (error) in
                         print("send signal")
                     })
@@ -1197,20 +1212,20 @@ func setupActiveAccount() {
     }
 }
 
-func getMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
+func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
     
     let fileID = itemIdentifier.rawValue
     return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))
 }
 
-func cretateItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
+func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
         
     return NSFileProviderItemIdentifier(metadata.fileID)
 }
 
 func createFileIdentifierOnFileSystem(metadata: tableMetadata) {
     
-    let itemIdentifier = cretateItemIdentifier(metadata: metadata)
+    let itemIdentifier = getItemIdentifier(metadata: metadata)
     let identifierPath = fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue
     let fileIdentifier = identifierPath + "/" + metadata.fileName
     
@@ -1224,7 +1239,7 @@ func createFileIdentifierOnFileSystem(metadata: tableMetadata) {
     }
 }
 
-func getParentItemIdentifier(_ metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
+func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
     
     /* ONLY iOS 11*/
     guard #available(iOS 11, *) else {
@@ -1237,7 +1252,7 @@ func getParentItemIdentifier(_ metadata: tableMetadata) -> NSFileProviderItemIde
         } else {
             // get the metadata.FileID of parent Directory
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, directory.fileID))  {
-                let identifier = cretateItemIdentifier(metadata: metadata)
+                let identifier = getItemIdentifier(metadata: metadata)
                 return identifier
             }
         }
@@ -1246,7 +1261,7 @@ func getParentItemIdentifier(_ metadata: tableMetadata) -> NSFileProviderItemIde
     return nil
 }
 
-func getDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier) -> tableDirectory? {
+func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier) -> tableDirectory? {
     
     /* ONLY iOS 11*/
     guard #available(iOS 11, *) else {
@@ -1259,7 +1274,7 @@ func getDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProvider
         predicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
     } else {
 
-        guard let metadata = getMetadataFromItemIdentifier(parentItemIdentifier) else {
+        guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else {
             return nil
         }
         predicate = NSPredicate(format: "account = %@ AND fileID = %@", account, metadata.fileID)

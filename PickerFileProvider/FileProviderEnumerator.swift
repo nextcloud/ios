@@ -40,7 +40,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 serverUrl = homeServerUrl
             } else {
                 
-                let metadata = getMetadataFromItemIdentifier(enumeratedItemIdentifier)
+                let metadata = getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
                 if metadata != nil  {
                     if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata!.directoryID))  {
                         serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
@@ -171,7 +171,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     createFileIdentifierOnFileSystem(metadata: metadata)
                 }
 
-                let parentItemIdentifier = getParentItemIdentifier(metadata)
+                let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                     items.append(item)

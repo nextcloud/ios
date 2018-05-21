@@ -39,7 +39,7 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
         
         var items: [NSFileProviderItemProtocol] = []
         
-        guard let metadata = getMetadataFromItemIdentifier(enumeratedItemIdentifier) else {
+        guard let metadata = getTableMetadataFromItemIdentifier(enumeratedItemIdentifier) else {
             observer.finishEnumerating(upTo: nil)
             return
         }
@@ -48,7 +48,7 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
             createFileIdentifierOnFileSystem(metadata: metadata)
         }
         
-        let parentItemIdentifier = getParentItemIdentifier(metadata)
+        let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
         if parentItemIdentifier != nil {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
             items.append(item)
