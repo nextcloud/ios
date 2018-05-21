@@ -46,7 +46,9 @@ var fileNamePathImport = [String]()
 // Metadata Temp for Import
 let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 
+// Timer for Upload (queue)
 var timerUpload: Timer?
+
 
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
                                                             STRUCT item
@@ -71,7 +73,9 @@ var timerUpload: Timer?
     itemIdentifier = metadata.fileID (ex. 000DD)                                    --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
     parentItemIdentifier = parent itemIdentifier (00CCC)                            --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
  
-// -------------------------------------------------------------------------------------------------------------------------------------------- */
+   -------------------------------------------------------------------------------------------------------------------------------------------- */
+
+
 
 class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
