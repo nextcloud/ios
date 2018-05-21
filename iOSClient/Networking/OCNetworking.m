@@ -1238,100 +1238,6 @@
 
 - (void)readFile
 {
-    /*OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    NSString *fileName;
-    
-    if (_metadataNet.fileName) {
-        fileName = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
-    } else {
-        _metadataNet.fileName = @".";
-        fileName = _metadataNet.serverUrl;
-    }
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
-        
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
-                [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
-            
-            [self complete];
-            return;
-        }
-        
-        BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:_metadataNet.serverUrl account:_metadataNet.account];
-
-        if ([recordAccount.account isEqualToString:_metadataNet.account] && [items count] > 0) {
-            
-            tableMetadata *metadata = [tableMetadata new];
-            
-            OCFileDto *itemDto = [items objectAtIndex:0];
-            
-            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_metadataNet.serverUrl];
-            if (directoryID) {
-            
-                NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-                NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
-
-                NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
-        
-                metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:_metadataNet.fileName serverUrl:_metadataNet.serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
-                        
-                if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
-                    [self.delegate readFileSuccessFailure:_metadataNet metadata:metadata message:nil errorCode:0];
-                
-            } else {
-                
-                if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
-                    [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:@"Directory not found" errorCode:k_CCErrorInternalError];
-            }
-        }
-        
-        // BUG 1038
-        if ([items count] == 0) {
-       
-#ifndef EXTENSION
-            AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-            [appDelegate messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-#endif
-            if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
-                [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:@"Read File WebDAV : [items NULL] please fix" errorCode:k_CCErrorInternalError];
-        }
-        
-        [self complete];
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        
-        _metadataNet.errorRetry++;
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if ([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)] && [recordAccount.account isEqualToString:_metadataNet.account]) {
-            
-            if (errorCode == 503)
-                [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
-            else
-                [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
-        }
-
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        [self complete];
-    }];
-    */
     [self readFileWithServerUrl:_metadataNet.serverUrl fileName:_metadataNet.fileName account:_metadataNet.account success:^(tableMetadata *metadata) {
         
         if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
@@ -1345,7 +1251,6 @@
              [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:message errorCode:errorCode];
 
         [self complete];
-
     }];
 }
 
