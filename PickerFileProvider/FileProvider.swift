@@ -53,16 +53,12 @@ var timerUpload: Timer?
                                 itemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue
                                 parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue
  
-                                                                    |
-                                                                    |
-                                                                    |
+                                                                    ↓
  
                                 itemIdentifier = self.metadata.fileID (ex. 00ABC1)                              --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
                                 parentItemIdentifier = NSFileProviderItemIdentifier.rootContainer.rawValue      --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
  
-                                                                    |
-                                                                    |
-                                                                    |
+                                                                    ↓
 
                                  itemIdentifier = self.metadata.fileID                                          --> func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier
                                  parentItemIdentifier = parent itemIdentifier (00ABC1)                          --> func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier?
