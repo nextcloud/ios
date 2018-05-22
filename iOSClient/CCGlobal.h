@@ -265,6 +265,7 @@ extern NSString *const flowEndpoint;
 #define k_activityDebugActionUploadShare                @"Upload Share"
 #define k_activityDebugActionAutoUpload                 @"Auto Upload"
 #define k_activityDebugActionReadFolder                 @"Read Folder"
+#define k_activityDebugActionCreateFolder               @"Create Folder"
 #define k_activityDebugActionDeleteFileFolder           @"Delete File-Folder"
 #define k_activityDebugActionGetNotification            @"Get Notification Server"
 #define k_activityDebugActionPushProxy                  @"Subscribing Push Proxy"
