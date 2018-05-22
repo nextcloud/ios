@@ -497,7 +497,7 @@
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
@@ -608,7 +608,7 @@
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
@@ -730,7 +730,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -787,7 +787,7 @@
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         failure(message, errorCode);
@@ -910,7 +910,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -923,81 +923,20 @@
 
 - (void)createFolder
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    NSString *nameFolderURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
-    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication createFolder:nameFolderURL onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [self createFolder:_metadataNet.fileName serverUrl:_metadataNet.serverUrl account:_metadataNet.account success:^(NSString *fileID, NSDate *date) {
         
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)])
-                [self.delegate createFolderSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
-            
-            [self complete];
-            return;
-        }
-        
-        NSDictionary *fields = [response allHeaderFields];
-
-        _metadataNet.fileID = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-FileId"]];
-        _metadataNet.date = [CCUtility dateEnUsPosixFromCloud:[fields objectForKey:@"Date"]];
+        _metadataNet.fileID = fileID;
+        _metadataNet.date = date;
         
         if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)])
             [self.delegate createFolderSuccessFailure:_metadataNet message:nil errorCode:0];
-       
+        
         [self complete];
-
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message;
+    } failure:^(NSString *message, NSInteger errorCode) {
         
-        if (([_metadataNet.fileName isEqualToString:autoUploadFileName] == YES && [_metadataNet.serverUrl isEqualToString:autoUploadDirectory] == YES))
-            message = nil;
-        else
-            message = [CCError manageErrorOC:response.statusCode error:error];
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-
         if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)])
             [self.delegate createFolderSuccessFailure:_metadataNet message:message errorCode:errorCode];
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        [self complete];
-        
-    } errorBeforeRequest:^(NSError *error) {
-        
-        NSString *message;
-        
-        if (([_metadataNet.fileName isEqualToString:autoUploadFileName] == YES && [_metadataNet.serverUrl isEqualToString:autoUploadDirectory] == YES))
-            message = nil;
-        else {
-            
-            if (error.code == OCErrorForbidenCharacters)
-                message = NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
-            else
-                message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
-        }
-        
-        // Error
-        if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)]) {
-            
-            if (error.code == 503)
-                [self.delegate createFolderSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:error.code];
-            else
-                [self.delegate createFolderSuccessFailure:_metadataNet message:message errorCode:error.code];
-        }
         
         [self complete];
     }];
@@ -1006,7 +945,9 @@
 - (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *fileID, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     NSString *serverFileUrl = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
-    
+    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
@@ -1030,16 +971,35 @@
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
 
-        failure(@"", error.code);
+        NSString *message;
+        
+        if (([fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory]))
+            message = nil;
+        else
+            message = [CCError manageErrorOC:response.statusCode error:error];
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+
+        failure(message, errorCode);
 
     } errorBeforeRequest:^(NSError *error) {
         
         NSString *message;
     
-        if (error.code == OCErrorForbidenCharacters)
-            message = NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
-        else
-            message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
+        if (([fileName isEqualToString:autoUploadFileName] && [serverUrl isEqualToString:autoUploadDirectory]))
+            message = nil;
+        else {
+            if (error.code == OCErrorForbidenCharacters)
+                message = NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
+            else
+                message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
+        }
         
         failure(message, error.code);
     }];
@@ -1123,7 +1083,7 @@
         *message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
     
     // Request trusted certificated
-    if ([error code] == NSURLErrorServerCertificateUntrusted)
+    if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
         [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
     
     // Activity
@@ -1166,7 +1126,7 @@
             [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1299,7 +1259,7 @@
         }
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1334,7 +1294,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1370,7 +1330,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1410,7 +1370,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1451,7 +1411,7 @@
         }
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1488,7 +1448,7 @@
         }
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1537,7 +1497,7 @@
         }
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1588,7 +1548,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1639,7 +1599,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1678,7 +1638,7 @@
         }
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1731,7 +1691,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
@@ -1783,7 +1743,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1836,7 +1796,7 @@
             }
             
             // Request trusted certificated
-            if ([error code] == NSURLErrorServerCertificateUntrusted)
+            if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
                 [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
             // Activity
@@ -1861,7 +1821,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
@@ -1915,7 +1875,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -1966,7 +1926,7 @@
         }
 
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
 
         // Activity
@@ -2007,7 +1967,7 @@
             [self.delegate getEndToEndPublicKeysFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -2041,7 +2001,7 @@
             [self.delegate getEndToEndPrivateKeyCipherFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -2078,7 +2038,7 @@
             [self.delegate signEndToEndPublicKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -2113,7 +2073,7 @@
             [self.delegate storeEndToEndPrivateKeyCipherFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -2145,7 +2105,7 @@
             [self.delegate deleteEndToEndPublicKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -2177,7 +2137,7 @@
             [self.delegate deleteEndToEndPrivateKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
@@ -2211,7 +2171,7 @@
             [self.delegate getEndToEndServerPublicKeyFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         
         // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         [self complete];
