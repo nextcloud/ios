@@ -208,8 +208,8 @@ class CCActions: NSObject {
         // Verify if exists the fileName TO
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: self.appDelegate.activeUser, withUserID: self.appDelegate.activeUserID, withPassword: self.appDelegate.activePassword, withUrl: self.appDelegate.activeUrl)
-
-        ocNetworking?.readFile(withServerUrl: serverUrl, fileName: fileName, account: self.appDelegate.activeAccount, success: { (metadata) in
+        
+        ocNetworking?.readFile(fileName, serverUrl: serverUrl, account: self.appDelegate.activeAccount, success: { (metadata) in
                 
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
                 

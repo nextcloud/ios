@@ -668,7 +668,7 @@
     NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    [ocNetworking readFileWithServerUrl:startDirectory fileName:nil account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
+    [ocNetworking readFile:nil serverUrl:startDirectory account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
         
         if (![metadata.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]]) {
             

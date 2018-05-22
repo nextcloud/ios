@@ -1989,7 +1989,7 @@
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
 
-    [ocNetworking readFileWithServerUrl:serverUrlTo fileName:metadata.fileName account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
+    [ocNetworking readFile:metadata.fileName serverUrl:serverUrlTo account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
     
         UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {

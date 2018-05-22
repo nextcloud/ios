@@ -348,7 +348,7 @@
 
 - (void)readFolder
 {
-    [self readFolderWithServerUrl:_metadataNet.serverUrl depth:_metadataNet.depth account:_metadataNet.account success:^(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID) {
+    [self readFolder:_metadataNet.serverUrl depth:_metadataNet.depth account:_metadataNet.account success:^(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID) {
         
         _metadataNet.directoryID = directoryID;
         
@@ -366,7 +366,7 @@
     }];
 }
 
-- (void)readFolderWithServerUrl:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
@@ -513,7 +513,7 @@
 
 - (void)readFile
 {
-    [self readFileWithServerUrl:_metadataNet.serverUrl fileName:_metadataNet.fileName account:_metadataNet.account success:^(tableMetadata *metadata) {
+    [self readFile:_metadataNet.fileName serverUrl:_metadataNet.serverUrl account:_metadataNet.account success:^(tableMetadata *metadata) {
         
         if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
             [self.delegate readFileSuccessFailure:_metadataNet metadata:metadata message:nil errorCode:0];
@@ -529,7 +529,7 @@
     }];
 }
 
-- (void)readFileWithServerUrl:(NSString *)serverUrl fileName:(NSString *)fileName account:(NSString *)account success:(void(^)(tableMetadata *metadata))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)readFile:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(tableMetadata *metadata))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
