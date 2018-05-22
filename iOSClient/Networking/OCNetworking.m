@@ -1011,38 +1011,17 @@
 
 - (void)deleteFileOrFolder
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    NSString *serverFileUrl = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication deleteFileOrFolder:serverFileUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [self deleteFileOrFolder:_metadataNet.fileName serverUrl:_metadataNet.serverUrl success:^{
         
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
-                [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
-            
-            [self complete];
-            return;
-        }
-        
-        if ([_metadataNet.selector rangeOfString:selectorDelete].location != NSNotFound && [self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
-            [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:@"" errorCode:0];
+        if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
+            [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:nil errorCode:0];
         
         [self complete];
         
-    } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+    } failure:^(NSString *message, NSInteger errorCode) {
         
-        NSString *message = [NSString new];
-        NSInteger errorCode = [self deleteFileOrFolderFailureServerUrl:_metadataNet.serverUrl response:response error:error message:&message];
-        
-        if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)]) {
+        if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
             [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:message errorCode:errorCode];
-        }
         
         [self complete];
     }];
@@ -1050,46 +1029,40 @@
 
 - (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {    
-    NSString *serverFileUrl = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
+    NSString *serverFilePath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
     
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication deleteFileOrFolder:serverFileUrl onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication deleteFileOrFolder:serverFilePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         success();
         
     } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
-        NSString *message = [NSString new];
-        NSInteger errorCode = [self deleteFileOrFolderFailureServerUrl:serverUrl response:response error:error message:&message];
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        // Activity
+        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionDeleteFileFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         failure(message, errorCode);
     }];
-}
-
-- (NSInteger)deleteFileOrFolderFailureServerUrl:(NSString *)serverUrl response:(NSHTTPURLResponse *)response error:(NSError *)error message:(NSString **)message
-{
-    NSInteger errorCode = response.statusCode;
-    if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-        errorCode = error.code;
-    
-    // Error
-    if (errorCode == 503)
-        *message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
-    else
-        *message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-    
-    // Request trusted certificated
-    if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
-        [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-    
-    // Activity
-    [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionDeleteFileFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-    
-    return errorCode;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1098,62 +1071,24 @@
 
 - (void)moveFileOrFolder
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
+    NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrlTo, _metadataNet.fileNameTo];
     
-    NSString *origineURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
-    NSString *destinazioneURL = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrlTo, _metadataNet.fileNameTo];
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication moveFileOrFolder:origineURL toDestiny:destinazioneURL onCommunication:communication withForbiddenCharactersSupported:YES successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [self moveFileOrFolder:fileNamePath fileNameTo:fileNameToPath success:^{
         
         if ([_metadataNet.selector isEqualToString:selectorRename] && [self.delegate respondsToSelector:@selector(renameSuccess:)])
             [self.delegate renameSuccess:_metadataNet];
         
-        if ([_metadataNet.selector rangeOfString:selectorMove].location != NSNotFound && [self.delegate respondsToSelector:@selector(moveSuccess:)])
+        if ([_metadataNet.selector isEqualToString:selectorMove] && [self.delegate respondsToSelector:@selector(moveSuccess:)])
             [self.delegate moveSuccess:_metadataNet];
         
         [self complete];
         
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
+    } failure:^(NSString *message, NSInteger errorCode) {
         
         if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)])
-            [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:[CCError manageErrorOC:response.statusCode error:error] errorCode:errorCode];
+            [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:message errorCode:errorCode];
 
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        [self complete];
-        
-    } errorBeforeRequest:^(NSError *error) {
-        
-        NSString *message;
-        
-        if (error.code == OCErrorMovingTheDestinyAndOriginAreTheSame) {
-            message = NSLocalizedStringFromTable(@"_error_folder_destiny_is_the_same_", @"Error", nil);
-        } else if (error.code == OCErrorMovingFolderInsideHimself) {
-            message = NSLocalizedStringFromTable(@"_error_folder_destiny_is_the_same_", @"Error", nil);
-        } else if (error.code == OCErrorMovingDestinyNameHaveForbiddenCharacters) {
-            message = NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
-        } else {
-            message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
-        }
-        
-        // Error
-        if ([self.delegate respondsToSelector:@selector(renameMoveFileOrFolderFailure:message:errorCode:)]) {
-            
-            if (error.code == 503)
-                [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:error.code];
-            else
-                [self.delegate renameMoveFileOrFolderFailure:_metadataNet message:message errorCode:error.code];
-        }
-        
         [self complete];
     }];
 }
