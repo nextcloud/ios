@@ -325,11 +325,11 @@
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
+            NSString *message;
+
             NSInteger errorCode = response.statusCode;
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
-            
-            NSString *message = [NSString new];
             
             // Error
             if (errorCode == 503)
