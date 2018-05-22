@@ -275,63 +275,19 @@
 
 - (void)downloadThumbnail
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    __block NSString *ext;
-    NSInteger width = 0, height = 0;
-    
-    NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
-    NSString *dimOfThumbnail = (NSString *)_metadataNet.options;
-    
-    if ([dimOfThumbnail.lowercaseString isEqualToString:@"xs"])      { width = 32;   height = 32;  ext = @"ico"; }
-    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"s"])  { width = 64;   height = 64;  ext = @"ico"; }
-    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"m"])  { width = 128;  height = 128; ext = @"ico"; }
-    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"l"])  { width = 640;  height = 640; ext = @"pvw"; }
-    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"xl"]) { width = 1024; height = 1024; ext = @"pvw"; }
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileID, ext]]) {
+    [self downloadThumbnailWithDimOfThumbnail:(NSString *)_metadataNet.options fileName:_metadataNet.fileName fileNameLocal:_metadataNet.fileID success:^{
         
         if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)])
             [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:nil errorCode:0];
         
         [self complete];
         
-        return;
-    }
-
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication getRemoteThumbnailByServer:[_activeUrl stringByAppendingString:@"/"] ofFilePath:_metadataNet.fileName withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
+    } failure:^(NSString *message, NSInteger errorCode) {
         
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        
-        if ([recordAccount.account isEqualToString:_metadataNet.account] && [thumbnail length] > 0) {
-        
-            UIImage *thumbnailImage = [UIImage imageWithData:thumbnail];
-            NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
-            
-            [CCGraphics saveIcoWithEtag:_metadataNet.fileID image:thumbnailImage writeToFile:[NSString stringWithFormat:@"%@/%@.%@", directoryUser, _metadataNet.fileID, ext] copy:NO move:NO fromPath:nil toPath:nil];
-
-            if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
-                [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:nil errorCode:0];
-            
-        } else {
-            
-            if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail])
-                [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
-        }
-        
-        [self complete];
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message = [NSString new];
-        NSInteger errorCode = [self downloadThumbnailFailureResponse:response error:error message:&message];
-        
-        if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)] && [_metadataNet.action isEqualToString:actionDownloadThumbnail]) {
+        if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)]) {
             [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:message errorCode:errorCode];
         }
-       
+        
         [self complete];
     }];
 }
@@ -343,14 +299,13 @@
     __block NSString *ext;
     NSInteger width = 0, height = 0;
     
-    NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
-    
     if ([dimOfThumbnail.lowercaseString isEqualToString:@"xs"])      { width = 32;   height = 32;  ext = @"ico"; }
     else if ([dimOfThumbnail.lowercaseString isEqualToString:@"s"])  { width = 64;   height = 64;  ext = @"ico"; }
     else if ([dimOfThumbnail.lowercaseString isEqualToString:@"m"])  { width = 128;  height = 128; ext = @"ico"; }
     else if ([dimOfThumbnail.lowercaseString isEqualToString:@"l"])  { width = 640;  height = 640; ext = @"pvw"; }
     else if ([dimOfThumbnail.lowercaseString isEqualToString:@"xl"]) { width = 1024; height = 1024; ext = @"pvw"; }
     
+    NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
     NSString *fileNamePathLocal = [NSString stringWithFormat:@"%@/%@.%@", directoryUser, fileNameLocal, ext];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePathLocal]) {
@@ -370,27 +325,21 @@
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
+            NSInteger errorCode = response.statusCode;
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                errorCode = error.code;
+            
             NSString *message = [NSString new];
-            NSInteger errorCode = [self downloadThumbnailFailureResponse:response error:error message:&message];
+            
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
             failure(message, errorCode);
         }];
     }
-}
-
-- (NSInteger)downloadThumbnailFailureResponse:(NSHTTPURLResponse *)response error:(NSError *)error message:(NSString **)message
-{
-    NSInteger errorCode = response.statusCode;
-    if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-        errorCode = error.code;
-    
-    // Error
-    if (errorCode == 503)
-        *message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
-    else
-        *message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-    
-    return errorCode;
 }
 
 #pragma --------------------------------------------------------------------------------------------
