@@ -478,6 +478,7 @@
 {
     NSString *fileID;
     __block NSInteger errorCodeCreateFolder = 0;
+    NSError *error;
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
     NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
     NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
@@ -510,7 +511,10 @@
     while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER))
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
 
+    if (errorCodeCreateFolder != 0)
+        return false;
     
+    /*
     NSError *error = [[NCNetworkingSync sharedManager] createFolder:autoUploadPath user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID];
     
     if (error == nil) {
@@ -529,6 +533,7 @@
 
         return false;
     }
+    */
     
     // Create if request the subfolders
     if (useSubFolder) {
