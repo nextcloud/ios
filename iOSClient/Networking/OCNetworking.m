@@ -507,6 +507,116 @@
     }];
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== ReadFile =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)readFile
+{
+    [self readFileWithServerUrl:_metadataNet.serverUrl fileName:_metadataNet.fileName account:_metadataNet.account success:^(tableMetadata *metadata) {
+        
+        if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
+            [self.delegate readFileSuccessFailure:_metadataNet metadata:metadata message:nil errorCode:0];
+        
+        [self complete];
+        
+    } failure:^(NSString *message, NSInteger errorCode) {
+        
+        if ([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
+            [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:message errorCode:errorCode];
+        
+        [self complete];
+    }];
+}
+
+- (void)readFileWithServerUrl:(NSString *)serverUrl fileName:(NSString *)fileName account:(NSString *)account success:(void(^)(tableMetadata *metadata))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    NSString *fileNamePath;
+
+    if (fileName) {
+        fileNamePath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
+    } else {
+        fileName= @".";
+        fileNamePath = serverUrl;
+    }
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication readFile:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
+        
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:account]) {
+            
+            failure(NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil), k_CCErrorUserNotAvailble);
+            
+        } else {
+            
+            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
+            
+            if ([items count] > 0) {
+                
+                tableMetadata *metadata = [tableMetadata new];
+                
+                OCFileDto *itemDto = [items objectAtIndex:0];
+                
+                NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+                if (directoryID) {
+                    
+                    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+                    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
+                    
+                    NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
+                    
+                    metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
+                    
+                    success(metadata);
+                    
+                } else {
+                    
+                    failure(NSLocalizedStringFromTable(@"Directory not found", @"Error", nil), k_CCErrorInternalError);
+                }
+            }
+            
+            // BUG 1038 item == 0
+            else {
+                
+#ifndef EXTENSION
+                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                
+                [appDelegate messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+#endif
+                failure(NSLocalizedStringFromTable(@"Read File WebDAV : [items NULL] please fix", @"Server error", nil), k_CCErrorInternalError);
+            }
+        }
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        // Activity
+        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        
+        failure(message, errorCode);
+    }];
+}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Search =====
@@ -633,48 +743,17 @@
 
 - (void)settingFavorite
 {
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    NSString *path = [_activeUrl stringByAppendingString:dav];
-
-    [communication settingFavoriteServer:path andFileOrFolderPath:_metadataNet.fileName favorite:[_metadataNet.options boolValue] withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
-        
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)])
-                [self.delegate settingFavoriteSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
-            
-            [self complete];
-            return;
-        }
+    [self settingFavorite:_metadataNet.fileName serverUrl:_metadataNet.serverUrl favorite:[_metadataNet.options boolValue] success:^{
         
         if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)])
             [self.delegate settingFavoriteSuccessFailure:_metadataNet message:nil errorCode:0];
         
         [self complete];
         
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
+    } failure:^(NSString *message, NSInteger errorCode) {
         
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate settingFavoriteSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
-            else
-                [self.delegate settingFavoriteSuccessFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-        }
-
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)])
+             [self.delegate settingFavoriteSuccessFailure:_metadataNet message:message errorCode:errorCode];
         
         [self complete];
     }];
@@ -688,21 +767,30 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSString *server = [_activeUrl stringByAppendingString:dav];
-    NSString *fileOrFolderPath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
 
-    [communication settingFavoriteServer:server andFileOrFolderPath:fileOrFolderPath favorite:favorite withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
+    [communication settingFavoriteServer:server andFileOrFolderPath:fileName favorite:favorite withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
         
         success();
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
+        NSString *message;
+        
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
-        NSString *message = [CCError manageErrorOC:response.statusCode error:error];
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        failure(message, error.code);
+        // Request trusted certificated
+        if ([error code] == NSURLErrorServerCertificateUntrusted)
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        
+        failure(message, errorCode);
     }];
 }
 
@@ -1146,116 +1234,6 @@
         }
         
         failure(message, error.code);
-    }];
-}
-
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== ReadFile =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)readFile
-{
-    [self readFileWithServerUrl:_metadataNet.serverUrl fileName:_metadataNet.fileName account:_metadataNet.account success:^(tableMetadata *metadata) {
-        
-        if([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
-            [self.delegate readFileSuccessFailure:_metadataNet metadata:metadata message:nil errorCode:0];
-        
-        [self complete];
-
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-         if ([self.delegate respondsToSelector:@selector(readFileSuccessFailure:metadata:message:errorCode:)])
-             [self.delegate readFileSuccessFailure:_metadataNet metadata:nil message:message errorCode:errorCode];
-
-        [self complete];
-    }];
-}
-
-- (void)readFileWithServerUrl:(NSString *)serverUrl fileName:(NSString *)fileName account:(NSString *)account success:(void(^)(tableMetadata *metadata))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
-{
-    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
- 
-    if (fileName) {
-        fileName = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
-    } else {
-        fileName = @".";
-        fileName = serverUrl;
-    }
-    
-    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
-    [communication setUserAgent:[CCUtility getUserAgent]];
-    
-    [communication readFile:fileName onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
-        
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:account]) {
-            
-            failure(NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil), k_CCErrorUserNotAvailble);
-            
-        } else {
-            
-            BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
-
-            if ([items count] > 0) {
-                
-                tableMetadata *metadata = [tableMetadata new];
-                
-                OCFileDto *itemDto = [items objectAtIndex:0];
-                
-                NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-                if (directoryID) {
-                    
-                    NSString *autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-                    NSString *autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:_activeUrl];
-                    
-                    NSString *directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
-                    
-                    metadata = [CCUtility trasformedOCFileToCCMetadata:itemDto fileName:fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account directoryUser:directoryUser isFolderEncrypted:isFolderEncrypted];
-                    
-                    success(metadata);
-                    
-                } else {
-                    
-                    failure(NSLocalizedStringFromTable(@"Directory not found", @"Error", nil), k_CCErrorInternalError);
-                }
-            }
-            
-            // BUG 1038 item == 0
-            else {
-                
-#ifndef EXTENSION
-                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-                
-                [appDelegate messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-#endif
-                failure(NSLocalizedStringFromTable(@"Read File WebDAV : [items NULL] please fix", @"Server error", nil), k_CCErrorInternalError);
-            }
-        }
-        
-    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
-        
-        NSString *message;
-        
-        NSInteger errorCode = response.statusCode;
-        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-            errorCode = error.code;
-        
-        // Error
-        if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
-        else
-            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-        
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
-        // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionReadFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-        
-        failure(message, errorCode);
     }];
 }
 

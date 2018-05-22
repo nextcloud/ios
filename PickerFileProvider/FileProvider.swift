@@ -829,7 +829,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
          
             DispatchQueue(label: "com.nextcloud", qos: .background, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
-                
+         
+                //NSString *fileOrFolderPath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+
                 ocNetworking?.settingFavorite(metadata.fileName, serverUrl: serverUrl, favorite: favorite, success: {
                     
                     // Change DB
