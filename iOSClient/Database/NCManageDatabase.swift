@@ -1396,6 +1396,74 @@ class NCManageDatabase: NSObject {
     }
 
     //MARK: -
+    //MARK: Table Identifier
+    
+    @objc func addIdentifier(_ identifier: String, fileName: String, serverUrl: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        if realm.isInWriteTransaction {
+            
+            print("[LOG] Could not write to database, tableIdentifier is already in write transaction")
+            return
+            
+        } else {
+            
+            do {
+                try realm.write {
+                    
+                    let path = serverUrl + "/" + fileName
+                    
+                    if realm.objects(tableIdentifier.self).filter("account = %@ AND path = %@", tableAccount.account, path).first == nil {
+                        
+                        // Add new
+                        let addObject = tableIdentifier()
+                        
+                        addObject.account = tableAccount.account
+                        addObject.fileName = fileName
+                        addObject.identifier = identifier
+                        addObject.path = path
+                        addObject.serverUrl = serverUrl
+                        
+                        realm.add(addObject)
+                    }
+                }
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
+            }
+        }
+    }
+    
+    @objc func getIdentifier(fileName: String, serverUrl: String?, directoryID: String?) -> String? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        var serverUrlQuery = ""
+        
+        if serverUrl == nil {
+            serverUrlQuery = self.getServerUrl(directoryID)!
+        } else {
+            serverUrlQuery = serverUrl!
+        }
+        
+        guard let result = realm.objects(tableIdentifier.self).filter("account = %@ AND fileName = %@ AND serverUrl = %@", tableAccount.account, fileName, serverUrlQuery).first else {
+            return nil
+        }
+        
+        return result.identifier
+    }
+
+    
+    //MARK: -
     //MARK: Table LocalFile
     
     @objc func addLocalFile(metadata: tableMetadata) {
@@ -2240,6 +2308,7 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.errorCode = metadataNet.errorCode
                         addObject.fileName = metadataNet.fileName
+                        addObject.fileName = metadataNet.fileNameView
                         addObject.identifier = metadataNet.identifier
                         addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
@@ -2289,6 +2358,7 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.errorCode = metadataNet.errorCode
                         addObject.fileName = metadataNet.fileName
+                        addObject.fileName = metadataNet.fileNameView
                         addObject.identifier = metadataNet.identifier
                         addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
@@ -2355,6 +2425,7 @@ class NCManageDatabase: NSObject {
         metadataNet.errorCode = result!.errorCode
         metadataNet.directoryID = self.getDirectoryID(result!.serverUrl)
         metadataNet.fileName = result!.fileName
+        metadataNet.fileNameView = result!.fileNameView
         metadataNet.identifier = result!.identifier
         metadataNet.path = result!.path
         metadataNet.selector = result!.selector
@@ -2415,6 +2486,7 @@ class NCManageDatabase: NSObject {
         metadataNet.errorCode = result!.errorCode
         metadataNet.identifier = result!.identifier
         metadataNet.fileName = result!.fileName
+        metadataNet.fileNameView = result!.fileNameView
         metadataNet.path = result!.path
         metadataNet.selector = result!.selector
         metadataNet.selectorPost = result!.selectorPost

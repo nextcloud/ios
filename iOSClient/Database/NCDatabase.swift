@@ -174,6 +174,19 @@ class tableGPS: Object {
     @objc dynamic var placemarkThoroughfare = ""
 }
 
+class tableIdentifier: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var identifier = ""
+    @objc dynamic var path = ""
+    @objc dynamic var serverUrl = ""
+    
+    override static func primaryKey() -> String {
+        return "path"
+    }
+}
+
 class tableLocalFile: Object {
     
     @objc dynamic var account = ""
@@ -264,6 +277,7 @@ class tableQueueUpload: Object {
     @objc dynamic var date = NSDate()
     @objc dynamic var errorCode: Int = 0
     @objc dynamic var fileName = ""
+    @objc dynamic var fileNameView = ""
     @objc dynamic var identifier = ""
     @objc dynamic var lock: Bool = false
     @objc dynamic var path: String?
