@@ -1398,44 +1398,42 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Identifier
     
-    @objc func addIdentifier(_ identifier: String, fileName: String, serverUrl: String) {
+    func addIdentifier(_ identifier: String?, fileName: String, serverUrl: String, realm: Realm) -> String {
+        
+        var returnIdentifier = ""
+        
+        if identifier == nil {
+            returnIdentifier = CCUtility.generateRandomIdentifier()
+        } else {
+            returnIdentifier = identifier!
+        }
         
         guard let tableAccount = self.getAccountActive() else {
-            return
+            return returnIdentifier
         }
         
-        let realm = try! Realm()
+        let path = serverUrl + "/" + fileName
         
-        if realm.isInWriteTransaction {
-            
-            print("[LOG] Could not write to database, tableIdentifier is already in write transaction")
-            return
+        let recordIdentifier = realm.objects(tableIdentifier.self).filter("account = %@ AND path = %@", tableAccount.account, path).first
+        
+        if recordIdentifier == nil {
+                        
+            // Add new
+            let addObject = tableIdentifier()
+                        
+            addObject.account = tableAccount.account
+            addObject.fileName = fileName
+            addObject.identifier = returnIdentifier
+            addObject.path = path
+            addObject.serverUrl = serverUrl
+                        
+            realm.add(addObject)
             
         } else {
-            
-            do {
-                try realm.write {
-                    
-                    let path = serverUrl + "/" + fileName
-                    
-                    if realm.objects(tableIdentifier.self).filter("account = %@ AND path = %@", tableAccount.account, path).first == nil {
-                        
-                        // Add new
-                        let addObject = tableIdentifier()
-                        
-                        addObject.account = tableAccount.account
-                        addObject.fileName = fileName
-                        addObject.identifier = identifier
-                        addObject.path = path
-                        addObject.serverUrl = serverUrl
-                        
-                        realm.add(addObject)
-                    }
-                }
-            } catch let error {
-                print("[LOG] Could not write to database: ", error)
-            }
+            returnIdentifier = recordIdentifier!.identifier
         }
+        
+        return returnIdentifier
     }
     
     @objc func getIdentifier(fileName: String, serverUrl: String?, directoryID: String?) -> String? {
@@ -2281,18 +2279,19 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Queue Upload
     
-    @objc func addQueueUpload(metadataNet: CCMetadataNet) -> Bool {
+    @objc func addQueueUpload(metadataNet: CCMetadataNet) -> tableQueueUpload? {
         
         guard let tableAccount = self.getAccountActive() else {
-            return false
+            return nil
         }
         
+        var addObject :tableQueueUpload?
         let realm = try! Realm()
 
         if realm.isInWriteTransaction {
             
             print("[LOG] Could not write to database, addQueueUpload is already in write transaction")
-            return false
+            return nil
             
         } else {
             
@@ -2301,39 +2300,45 @@ class NCManageDatabase: NSObject {
                     
                     if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
                         
-                        // Add new
-                        let addObject = tableQueueUpload()
+                        // add identifier
+                        let identifier = self.addIdentifier(metadataNet.identifier, fileName: metadataNet.fileName, serverUrl: metadataNet.serverUrl, realm: realm)
                         
-                        addObject.account = tableAccount.account
-                        addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
-                        addObject.errorCode = metadataNet.errorCode
-                        addObject.fileName = metadataNet.fileName
-                        addObject.fileName = metadataNet.fileNameView
-                        addObject.identifier = metadataNet.identifier
-                        addObject.path = metadataNet.path
-                        addObject.selector = metadataNet.selector
+                        // Add new
+                        addObject = tableQueueUpload()
+                        
+                        addObject!.account = tableAccount.account
+                        addObject!.assetLocalIdentifier = metadataNet.assetLocalIdentifier
+                        addObject!.errorCode = metadataNet.errorCode
+                        addObject!.fileName = metadataNet.fileName
+                        addObject!.fileNameView = metadataNet.fileName
+                        if let fileNameView = metadataNet.fileNameView {
+                            addObject!.fileNameView = fileNameView
+                        }
+                        addObject!.identifier = identifier
+                        addObject!.path = metadataNet.path
+                        addObject!.selector = metadataNet.selector
                         
                         if let selectorPost = metadataNet.selectorPost {
-                            addObject.selectorPost = selectorPost
+                            addObject!.selectorPost = selectorPost
                         }
                         
-                        addObject.serverUrl = metadataNet.serverUrl
-                        addObject.session = metadataNet.session
-                        addObject.sessionError = metadataNet.sessionError
-                        addObject.sessionID = metadataNet.sessionID
-                        addObject.sessionTaskIdentifier = metadataNet.sessionTaskIdentifier
-                        addObject.size = metadataNet.size
+                        addObject!.serverUrl = metadataNet.serverUrl
+                        addObject!.session = metadataNet.session
+                        addObject!.sessionError = metadataNet.sessionError
+                        addObject!.sessionID = metadataNet.sessionID
+                        addObject!.sessionTaskIdentifier = metadataNet.sessionTaskIdentifier
+                        addObject!.size = metadataNet.size
                         
-                        realm.add(addObject)
+                        realm.add(addObject!)
                     }
                 }
             } catch let error {
                 print("[LOG] Could not write to database: ", error)
-                return false
+                return nil
             }
         }
         
-        return true
+        return tableQueueUpload.init(value: addObject!)
     }
     
     @objc func addQueueUpload(metadatasNet: [CCMetadataNet]) {
@@ -2351,6 +2356,9 @@ class NCManageDatabase: NSObject {
                     
                     if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
                         
+                        // add identifier
+                        let identifier = self.addIdentifier(metadataNet.identifier, fileName: metadataNet.fileName, serverUrl: metadataNet.serverUrl, realm: realm)
+                        
                         // Add new
                         let addObject = tableQueueUpload()
                         
@@ -2358,8 +2366,11 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.errorCode = metadataNet.errorCode
                         addObject.fileName = metadataNet.fileName
-                        addObject.fileName = metadataNet.fileNameView
-                        addObject.identifier = metadataNet.identifier
+                        addObject.fileNameView = metadataNet.fileName
+                        if let fileNameView = metadataNet.fileNameView {
+                            addObject.fileNameView = fileNameView
+                        }
+                        addObject.identifier = identifier
                         addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
                         

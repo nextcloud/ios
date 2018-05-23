@@ -414,7 +414,6 @@
         }
         
         metadataNet.fileName = fileName;
-        metadataNet.identifier = [CCUtility generateRandomIdentifier];
         metadataNet.selector = selector;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;
@@ -450,7 +449,7 @@
 {
     @synchronized(self) {
         
-        if ([[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet]) {
+        if ([[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet] != nil) {
         
             [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileNameView fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
         

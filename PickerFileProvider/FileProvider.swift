@@ -388,7 +388,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             metadataNet.account = account
             metadataNet.assetLocalIdentifier = FILEID_IMPORT_METADATA_TEMP + metadata.directoryID + fileName
             metadataNet.fileName = fileName
-            metadataNet.identifier = CCUtility.generateRandomIdentifier()
             metadataNet.path = url.path
             metadataNet.selector = selectorUploadFile
             metadataNet.selectorPost = ""
@@ -970,7 +969,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 metadataNet.account = account
                 metadataNet.assetLocalIdentifier = FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
                 metadataNet.fileName = fileName
-                metadataNet.identifier = CCUtility.generateRandomIdentifier()
                 metadataNet.path = fileNamePathDirectory + "/" + fileName
                 metadataNet.selector = selectorUploadFile
                 metadataNet.selectorPost = ""
