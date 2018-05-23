@@ -1730,6 +1730,13 @@ class NCManageDatabase: NSObject {
 
         do {
             try realm.write {
+                
+                // modify identifier
+                let serverUrl = self.getServerUrl(metadata.directoryID)!
+                let identifier = self.addIdentifier(nil, fileName: metadata.fileName, serverUrl: serverUrl, realm: realm)
+                
+                metadata.identifier = identifier
+
                 realm.add(metadata, update: true)
             }
         } catch let error {
