@@ -69,7 +69,9 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>00008</string>
+	<string>00009</string>
+	<key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>
+	<true/>
 	<key>Fabric</key>
 	<dict>
 		<key>APIKey</key>
@@ -142,7 +144,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>
-	<true/>
 </dict>
 </plist>
