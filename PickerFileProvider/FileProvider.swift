@@ -1029,7 +1029,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         let queueInLock = NCManageDatabase.sharedInstance.getQueueUploadInLock()
         if queueInLock != nil && queueInLock!.count == 0 {
             
-            let metadataNetQueue = NCManageDatabase.sharedInstance.getQueueUploadLock(selector: selectorUploadFile, withPath: true)
+            let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, withPath: true)
             if  metadataNetQueue != nil {
                 
                 if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
@@ -1050,7 +1050,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         if tasks!.count == 0 {
             let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", account, selectorUploadFile))
             if records != nil && records!.count > 0 {
-                NCManageDatabase.sharedInstance.unlockAllQueueUploadInPath()
+                NCManageDatabase.sharedInstance.unlockAllQueueUploadWithPath()
             }
         }
     }

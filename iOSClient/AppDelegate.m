@@ -1445,7 +1445,7 @@
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUpload withPath:false];
+        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUpload withPath:false];
         if (metadataNet) {
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
@@ -1473,7 +1473,7 @@
         
         if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
             
-            metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadAutoUploadAll withPath:false];
+            metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUploadAll withPath:false];
             if (metadataNet) {
                 
                 [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
@@ -1489,7 +1489,7 @@
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile withPath:false];
+        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadFile withPath:false];
         if (metadataNet) {
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
@@ -1503,7 +1503,7 @@
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1 && [[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadLockWithSelector:selectorUploadFile withPath:true];
+        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadFile withPath:true];
         if (metadataNet) {
             
             NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
