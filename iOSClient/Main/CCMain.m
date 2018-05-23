@@ -1360,6 +1360,7 @@
         
         metadataNet.assetLocalIdentifier = asset.localIdentifier;
         metadataNet.fileName = fileName;
+        metadataNet.identifier = [CCUtility generateRandomIdentifier];
         metadataNet.session = session;
         metadataNet.selector = selectorUploadFile;
         metadataNet.selectorPost = nil;

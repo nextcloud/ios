@@ -414,6 +414,7 @@
         }
         
         metadataNet.fileName = fileName;
+        metadataNet.identifier = [CCUtility generateRandomIdentifier];
         metadataNet.selector = selector;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;

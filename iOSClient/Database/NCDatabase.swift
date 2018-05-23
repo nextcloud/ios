@@ -207,6 +207,7 @@ class tableMetadata: Object {
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
     @objc dynamic var iconName = ""
+    @objc dynamic var identifier = ""
     @objc dynamic var permissions = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
@@ -263,6 +264,7 @@ class tableQueueUpload: Object {
     @objc dynamic var date = NSDate()
     @objc dynamic var errorCode: Int = 0
     @objc dynamic var fileName = ""
+    @objc dynamic var identifier = ""
     @objc dynamic var lock: Bool = false
     @objc dynamic var path: String?
     @objc dynamic var selector = ""

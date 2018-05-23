@@ -1533,6 +1533,7 @@
     [metadataNet setFileName: self.fileName];
     [metadataNet setFileNameTo: self.fileNameTo];
     [metadataNet setFileNameView: self.fileNameView];
+    [metadataNet setIdentifier: self.identifier];
     [metadataNet setKey: self.key];
     [metadataNet setKeyCipher: self.keyCipher];
     [metadataNet setOptions: self.options];

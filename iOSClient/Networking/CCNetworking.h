@@ -107,6 +107,7 @@
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic, strong) NSString *fileNameTo;
 @property (nonatomic, strong) NSString *fileNameView;
+@property (nonatomic, strong) NSString *identifier;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *keyCipher;
 @property (nonatomic, strong) id options;

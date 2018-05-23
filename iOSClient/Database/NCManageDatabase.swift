@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 21,
+            schemaVersion: 22,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -71,6 +71,7 @@ class NCManageDatabase: NSObject {
             // 19 : Version 2.20.7
             // 20 : Version 2.21.0
             // 21 : Version 2.21.3
+            // 22 : Version 2.21.9
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -2239,6 +2240,7 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.errorCode = metadataNet.errorCode
                         addObject.fileName = metadataNet.fileName
+                        addObject.identifier = metadataNet.identifier
                         addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
                         
@@ -2283,6 +2285,7 @@ class NCManageDatabase: NSObject {
                         addObject.assetLocalIdentifier = metadataNet.assetLocalIdentifier
                         addObject.errorCode = metadataNet.errorCode
                         addObject.fileName = metadataNet.fileName
+                        addObject.identifier = metadataNet.identifier
                         addObject.path = metadataNet.path
                         addObject.selector = metadataNet.selector
                         
