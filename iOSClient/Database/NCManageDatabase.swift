@@ -2250,6 +2250,10 @@ class NCManageDatabase: NSObject {
                         
                         addObject.serverUrl = metadataNet.serverUrl
                         addObject.session = metadataNet.session
+                        addObject.sessionError = metadataNet.sessionError
+                        addObject.sessionID = metadataNet.sessionID
+                        addObject.sessionTaskIdentifier = metadataNet.sessionTaskIdentifier
+                        addObject.size = metadataNet.size
                         
                         realm.add(addObject)
                     }
@@ -2295,7 +2299,11 @@ class NCManageDatabase: NSObject {
                         
                         addObject.serverUrl = metadataNet.serverUrl
                         addObject.session = metadataNet.session
-                        
+                        addObject.sessionError = metadataNet.sessionError
+                        addObject.sessionID = metadataNet.sessionID
+                        addObject.sessionTaskIdentifier = metadataNet.sessionTaskIdentifier
+                        addObject.size = metadataNet.size
+
                         realm.add(addObject)
                     }
                 }
@@ -2347,11 +2355,16 @@ class NCManageDatabase: NSObject {
         metadataNet.errorCode = result!.errorCode
         metadataNet.directoryID = self.getDirectoryID(result!.serverUrl)
         metadataNet.fileName = result!.fileName
+        metadataNet.identifier = result!.identifier
         metadataNet.path = result!.path
         metadataNet.selector = result!.selector
         metadataNet.selectorPost = result!.selectorPost
         metadataNet.serverUrl = result!.serverUrl
         metadataNet.session = result!.session
+        metadataNet.sessionError = result!.sessionError
+        metadataNet.sessionID = result!.sessionID
+        metadataNet.sessionTaskIdentifier = result!.sessionTaskIdentifier
+        metadataNet.size = result!.size
         metadataNet.taskStatus = Int(k_taskStatusResume)
         
         return metadataNet
@@ -2400,12 +2413,17 @@ class NCManageDatabase: NSObject {
         metadataNet.assetLocalIdentifier = result!.assetLocalIdentifier
         metadataNet.directoryID = self.getDirectoryID(result!.serverUrl)
         metadataNet.errorCode = result!.errorCode
+        metadataNet.identifier = result!.identifier
         metadataNet.fileName = result!.fileName
         metadataNet.path = result!.path
         metadataNet.selector = result!.selector
         metadataNet.selectorPost = result!.selectorPost
         metadataNet.serverUrl = result!.serverUrl
         metadataNet.session = result!.session
+        metadataNet.sessionError = result!.sessionError
+        metadataNet.sessionID = result!.sessionID
+        metadataNet.sessionTaskIdentifier = result!.sessionTaskIdentifier
+        metadataNet.size = result!.size
         metadataNet.taskStatus = Int(k_taskStatusResume)
         
         // Lock

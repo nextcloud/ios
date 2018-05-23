@@ -216,7 +216,7 @@
     
         NSString *fileName = [self.filesName objectAtIndex:0];
         
-        [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl assetLocalIdentifier:nil session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
+        [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl identifier:[CCUtility generateRandomIdentifier] assetLocalIdentifier:nil session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
         
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
     }
@@ -248,7 +248,7 @@
     [self.hud progress:progress];
 }
 
-- (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
+- (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID identifier:(NSString *)identifier assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     [self.hud hideHud];
 

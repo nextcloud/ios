@@ -271,6 +271,10 @@ class tableQueueUpload: Object {
     @objc dynamic var selectorPost = ""
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
+    @objc dynamic var sessionError = ""
+    @objc dynamic var sessionID = ""
+    @objc dynamic var sessionTaskIdentifier: Int = -1
+    @objc dynamic var size: Double = 0
 }
 
 class tableShare: Object {

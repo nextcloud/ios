@@ -395,7 +395,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
  
     //  MARK: - Upload 
     
-    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
+    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, identifier: String! ,assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         hud.hideHud()
         
@@ -480,7 +480,7 @@ extension DocumentPickerViewController {
                     
                         // Upload fileName to Cloud
                     
-                        CCNetworking.shared().uploadFile(fileName, serverUrl: self!.serverUrl, assetLocalIdentifier: nil, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusResume), selector: "", selectorPost: "", errorCode: 0, delegate: self)
+                        CCNetworking.shared().uploadFile(fileName, serverUrl: self!.serverUrl, identifier: CCUtility.generateRandomIdentifier(),assetLocalIdentifier: nil, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusResume), selector: "", selectorPost: "", errorCode: 0, delegate: self)
                         
                         self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brandElement)
                     }

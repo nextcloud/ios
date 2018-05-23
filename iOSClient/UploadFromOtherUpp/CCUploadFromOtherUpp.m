@@ -173,7 +173,7 @@
 
 -(void)upload
 {
-    [[CCNetworking sharedNetworking] uploadFile:appDelegate.fileNameUpload serverUrl:serverUrlLocal assetLocalIdentifier:nil session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+    [[CCNetworking sharedNetworking] uploadFile:appDelegate.fileNameUpload serverUrl:serverUrlLocal identifier:[CCUtility generateRandomIdentifier] assetLocalIdentifier:nil session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

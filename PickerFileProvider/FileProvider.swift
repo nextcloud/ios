@@ -394,6 +394,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             metadataNet.selectorPost = ""
             metadataNet.serverUrl = serverUrl
             metadataNet.session = k_upload_session_extension
+            metadataNet.sessionError = ""
+            metadataNet.sessionID = ""
             metadataNet.taskStatus = Int(k_taskStatusResume)
                 
             _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
@@ -454,7 +456,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 _ = self.copyFile(url.path, toPath: destinationDirectoryUser)
 
-                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, identifier: CCUtility.generateRandomIdentifier(), assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             }
 
             self.stopProvidingItem(at: url)
@@ -974,6 +976,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 metadataNet.selectorPost = ""
                 metadataNet.serverUrl = serverUrl
                 metadataNet.session = k_upload_session_extension
+                metadataNet.sessionError = ""
+                metadataNet.sessionID = ""
                 metadataNet.taskStatus = Int(k_taskStatusResume)
                 
                 _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
@@ -993,7 +997,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     //  MARK: - Upload
     // --------------------------------------------------------------------------------------------
     
-    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
+    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, identifier: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier), clearDateReadDirectoryID: nil)
 
@@ -1036,7 +1040,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 if self.copyFile(metadataNetQueue!.path, toPath: directoryUser + "/" + metadataNetQueue!.fileName) == nil {
                     
-                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
+                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, identifier: metadataNetQueue!.identifier, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                     
                 } else {
                     // file not present, delete record Upload Queue
