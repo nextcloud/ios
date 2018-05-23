@@ -1,12 +1,27 @@
 //
-//  NCNetworkingSync.m
-//  Nextcloud
+//  NCNetworkingEndToEnd.m
+//  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 29/10/17.
-//  Copyright © 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 TWS. All rights reserved.
+//
+//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#import "NCNetworkingSync.h"
+#import "NCNetworkingEndToEnd.h"
 #import "CCUtility.h"
 #import "CCCertificate.h"
 #import "NCBridgeSwift.h"
@@ -20,14 +35,14 @@
  
 *********************************************************************************/
 
-@implementation NCNetworkingSync
+@implementation NCNetworkingEndToEnd
 
-+ (NCNetworkingSync *)sharedManager {
-    static NCNetworkingSync *sharedManager;
++ (NCNetworkingEndToEnd *)sharedManager {
+    static NCNetworkingEndToEnd *sharedManager;
     @synchronized(self)
     {
         if (!sharedManager) {
-            sharedManager = [NCNetworkingSync new];
+            sharedManager = [NCNetworkingEndToEnd new];
         }
         return sharedManager;
     }
@@ -37,7 +52,7 @@
 #pragma mark ============================
 #pragma --------------------------------------------------------------------------------------------
 
-- (NSError *)createFolder:(NSString *)folderPathName user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID
+- (NSError *)createEndToEndFolder:(NSString *)folderPathName user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -544,7 +559,7 @@
         return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:NSLocalizedString(@"_e2e_error_not_enabled_", nil) forKey:NSLocalizedDescriptionKey]];
     
     // get Metadata for select updateEndToEndMetadata or storeEndToEndMetadata
-    error = [[NCNetworkingSync sharedManager] getEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID metadata:&metadata];
+    error = [self getEndToEndMetadata:user userID:userID password:password url:url fileID:directory.fileID metadata:&metadata];
     if (error.code != 404 && error != nil) {
         return error;
     }
@@ -563,9 +578,9 @@
     
     // send Metadata
     if (error == nil)
-        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON unlock:NO];
+        error = [self updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON unlock:NO];
     else if (error.code == 404)
-        error = [[NCNetworkingSync sharedManager] storeEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON unlock:NO];
+        error = [self storeEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON unlock:NO];
     
     return error;
 }
@@ -586,11 +601,11 @@
         if (!e2eMetadataJSON)
             return [NSError errorWithDomain:@"com.nextcloud.nextcloud" code:k_CCErrorInternalError userInfo:[NSDictionary dictionaryWithObject:NSLocalizedString(@"_e2e_error_encode_metadata_", nil) forKey:NSLocalizedDescriptionKey]];
         
-        error = [[NCNetworkingSync sharedManager] updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON unlock:YES];
+        error = [self updateEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID metadata:e2eMetadataJSON unlock:YES];
     
     } else {
     
-        [[NCNetworkingSync sharedManager] deleteEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID unlock:YES];
+        [self deleteEndToEndMetadata:user userID:userID password:password url:url serverUrl:serverUrl fileID:directory.fileID unlock:YES];
     }
     
     return error;

@@ -25,7 +25,7 @@
 #import "AppDelegate.h"
 #import "CCUtility.h"
 #import "NCBridgeSwift.h"
-#import "NCNetworkingSync.h"
+#import "NCNetworkingEndToEnd.h"
 
 @interface CCLogin () <CCLoginDelegateWeb>
 {
