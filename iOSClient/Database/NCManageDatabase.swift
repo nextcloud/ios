@@ -1705,11 +1705,11 @@ class NCManageDatabase: NSObject {
         
                 for metadata in metadatas {
                     
-                    metadata.directoryID = directoryIDTo
-                    let serverUrl = self.getServerUrl(directoryIDTo)!
-                    
                     // modify identifier
+                    let serverUrl = self.getServerUrl(directoryIDTo)!
                     let identifier = self.addIdentifier(nil, fileName: metadata.fileName, serverUrl: serverUrl, realm: realm)
+                    
+                    metadata.directoryID = directoryIDTo
                     metadata.identifier = identifier
                 }
             }
