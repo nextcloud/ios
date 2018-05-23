@@ -52,7 +52,7 @@
 #pragma mark ============================
 #pragma --------------------------------------------------------------------------------------------
 
-- (NSError *)createEndToEndFolder:(NSString *)folderPathName user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID
+- (void)createEndToEndFolder:(NSString *)folderPathName user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url encrypted:(BOOL)encrypted fileID:(NSString **)fileID error:(NSError **)error
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -112,7 +112,7 @@
         [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:k_timeout_webdav]];
     
     *fileID = returnFileID;
-    return returnError;
+    *error = returnError;
 }
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2EE End-to-End Encryption =====

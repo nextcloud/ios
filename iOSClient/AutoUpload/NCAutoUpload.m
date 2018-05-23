@@ -477,10 +477,11 @@
 - (BOOL)createAutoUploadFolderPhotosWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
     NSString *fileID;
+    NSError *error;
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
     BOOL encrypted = [CCUtility isFolderEncrypted:autoUploadPath account:appDelegate.activeAccount];
   
-    NSError *error = [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:autoUploadPath user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID];
+    [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:autoUploadPath user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID error:&error];
     
     if (error == nil) {
         
@@ -506,7 +507,7 @@
             
             NSString *folderPathName = [NSString stringWithFormat:@"%@/%@", autoUploadPath, dateSubFolder];
             
-            error = [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:folderPathName user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID];
+            [[NCNetworkingEndToEnd sharedManager] createEndToEndFolder:folderPathName user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl encrypted:encrypted fileID:&fileID error:&error];
             
             if ( error == nil) {
                 
