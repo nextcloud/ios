@@ -1402,7 +1402,7 @@ class NCManageDatabase: NSObject {
         
         var returnIdentifier = ""
         
-        if identifier == nil {
+        if identifier == nil || identifier == "" {
             returnIdentifier = CCUtility.generateRandomIdentifier()
         } else {
             returnIdentifier = identifier!
@@ -1587,11 +1587,17 @@ class NCManageDatabase: NSObject {
         }
         
         let directoryID = metadata.directoryID
+        let serverUrl = self.getServerUrl(directoryID)
         
         let realm = try! Realm()
 
         do {
             try realm.write {
+                
+                // add identifier
+                let identifier = self.addIdentifier(metadata.identifier, fileName: metadata.fileName, serverUrl: serverUrl!, realm: realm)
+                metadata.identifier = identifier
+                
                 realm.add(metadata, update: true)
             }
         } catch let error {
@@ -1615,10 +1621,22 @@ class NCManageDatabase: NSObject {
         }
         
         let realm = try! Realm()
+        var serverUrlIdentifier = ""
 
         do {
             try realm.write {
                 for metadata in metadatas {
+                    
+                    if serverUrl == nil {
+                        serverUrlIdentifier = self.getServerUrl(metadata.directoryID)!
+                    } else {
+                        serverUrlIdentifier = serverUrl!
+                    }
+                    
+                    // add identifier
+                    let identifier = self.addIdentifier(metadata.identifier, fileName: metadata.fileName, serverUrl: serverUrlIdentifier, realm: realm)
+                    metadata.identifier = identifier
+                    
                     realm.add(metadata, update: true)
                 }
             }
@@ -1683,10 +1701,16 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
             
-                let results = realm.objects(tableMetadata.self).filter("account = %@ AND fileName = %@ AND directoryID = %@", tableAccount.account, fileName, directoryID)
+                let metadatas = realm.objects(tableMetadata.self).filter("account = %@ AND fileName = %@ AND directoryID = %@", tableAccount.account, fileName, directoryID)
         
-                for result in results {
-                    result.directoryID = directoryIDTo
+                for metadata in metadatas {
+                    
+                    metadata.directoryID = directoryIDTo
+                    let serverUrl = self.getServerUrl(directoryIDTo)!
+                    
+                    // modify identifier
+                    let identifier = self.addIdentifier(nil, fileName: metadata.fileName, serverUrl: serverUrl, realm: realm)
+                    metadata.identifier = identifier
                 }
             }
         } catch let error {
