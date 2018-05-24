@@ -301,6 +301,7 @@
         [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
         [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
         [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
+        [[NCManageDatabase sharedInstance] clearTable:[tableIdentifier class] account:account];
         [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
         [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
         [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
