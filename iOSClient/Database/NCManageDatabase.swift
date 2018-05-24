@@ -1706,6 +1706,7 @@ class NCManageDatabase: NSObject {
                 for metadata in metadatas {
                     
                     // modify identifier
+                    //TODO: modify all identifier
                     let serverUrl = self.getServerUrl(directoryIDTo)!
                     let identifier = self.addIdentifier(metadata.identifier, fileName: metadata.fileName, serverUrl: serverUrl, account: tableAccount.account ,realm: realm)
                     
