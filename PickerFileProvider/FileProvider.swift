@@ -909,6 +909,19 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         let fileCoordinator = NSFileCoordinator()
         var error: NSError?
         
+        do {
+            let attributes = try self.fileManager.attributesOfItem(atPath: fileURL.path)
+            size = attributes[FileAttributeKey.size] as! Double
+            let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
+            if typeFile == FileAttributeType.typeDirectory {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+        } catch {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
         DispatchQueue.main.async {
             
             guard let tableDirectory = getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
@@ -939,13 +952,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             fileURL.stopAccessingSecurityScopedResource()
             
             // ---------------------------------------------------------------------------------
-            
-            do {
-                let attributes = try self.fileManager.attributesOfItem(atPath: fileNamePathDirectory + "/" + fileName)
-                size = attributes[FileAttributeKey.size] as! Double
-            } catch let error {
-                print("error: \(error)")
-            }
             
             // Metadata TEMP
             metadata.account = account
