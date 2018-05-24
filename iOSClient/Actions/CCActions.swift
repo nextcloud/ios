@@ -226,6 +226,7 @@ class CCActions: NSObject {
                 
             metadataNet.action = actionMoveFileOrFolder
             metadataNet.delegate = delegate
+            metadataNet.directory = metadata.directory
             metadataNet.fileID = metadata.fileID
             metadataNet.fileName = metadata.fileName
             metadataNet.fileNameTo = fileName
@@ -239,10 +240,11 @@ class CCActions: NSObject {
     }
     
     @objc func renameSuccess(_ metadataNet: CCMetadataNet) {
+                
+        // Rename metadata
+        NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: metadataNet.fileNameTo, fileID: metadataNet.fileID)
         
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID = %@", metadataNet.fileID))
-        
-        if metadata?.directory == true {
+        if metadataNet.directory == true {
             
             let directory = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileName)
             let directoryTo = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileNameTo)

@@ -1398,9 +1398,10 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Identifier
     
-    func addIdentifier(_ identifier: String?, fileName: String, serverUrl: String, realm: Realm) -> String {
+    func addIdentifier(_ identifier: String?, fileName: String, serverUrl: String, account: String,realm: Realm) -> String {
         
         var returnIdentifier = ""
+        let path = serverUrl + "/" + fileName
         
         if identifier == nil || identifier == "" {
             returnIdentifier = CCUtility.generateRandomIdentifier()
@@ -1408,30 +1409,29 @@ class NCManageDatabase: NSObject {
             returnIdentifier = identifier!
         }
         
-        guard let tableAccount = self.getAccountActive() else {
-            return returnIdentifier
+        let result = realm.objects(tableIdentifier.self).filter("account = %@ AND (identifier = %@ || path = %@)", account, returnIdentifier, path).first
+        
+        // identifier already exists without modify
+        if result != nil && result!.path == path {
+            return result!.identifier
         }
         
-        let path = serverUrl + "/" + fileName
-        
-        let recordIdentifier = realm.objects(tableIdentifier.self).filter("account = %@ AND path = %@", tableAccount.account, path).first
-        
-        if recordIdentifier == nil {
-                        
-            // Add new
-            let addObject = tableIdentifier()
-                        
-            addObject.account = tableAccount.account
-            addObject.fileName = fileName
-            addObject.identifier = returnIdentifier
-            addObject.path = path
-            addObject.serverUrl = serverUrl
-                        
-            realm.add(addObject)
-            
-        } else {
-            returnIdentifier = recordIdentifier!.identifier
+        // identifier already exists but exists modify (new fileName and/or serverUrl)
+        if result != nil {
+            returnIdentifier = result!.identifier
+            realm.delete(result!)
         }
+        
+        // Add new
+        let addObject = tableIdentifier()
+        
+        addObject.account = account
+        addObject.fileName = fileName
+        addObject.identifier = returnIdentifier
+        addObject.path = serverUrl + "/" + fileName
+        addObject.serverUrl = serverUrl
+        
+        realm.add(addObject)
         
         return returnIdentifier
     }
@@ -1578,7 +1578,7 @@ class NCManageDatabase: NSObject {
     
     @objc func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
             
-        guard self.getAccountActive() != nil else {
+        guard let tableAccount = self.getAccountActive() else {
             return nil
         }
         
@@ -1595,7 +1595,7 @@ class NCManageDatabase: NSObject {
             try realm.write {
                 
                 // add identifier
-                let identifier = self.addIdentifier(metadata.identifier, fileName: metadata.fileName, serverUrl: serverUrl!, realm: realm)
+                let identifier = self.addIdentifier(metadata.identifier, fileName: metadata.fileName, serverUrl: serverUrl!, account:tableAccount.account, realm: realm)
                 metadata.identifier = identifier
                 
                 realm.add(metadata, update: true)
@@ -1616,7 +1616,7 @@ class NCManageDatabase: NSObject {
     
     @objc func addMetadatas(_ metadatas: [tableMetadata], serverUrl: String?) -> [tableMetadata]? {
         
-        guard self.getAccountActive() != nil else {
+        guard let tableAccount = self.getAccountActive() else {
             return nil
         }
         
@@ -1634,7 +1634,7 @@ class NCManageDatabase: NSObject {
                     }
                     
                     // add identifier
-                    let identifier = self.addIdentifier(metadata.identifier, fileName: metadata.fileName, serverUrl: serverUrlIdentifier, realm: realm)
+                    let identifier = self.addIdentifier(metadata.identifier, fileName: metadata.fileName, serverUrl: serverUrlIdentifier, account: tableAccount.account, realm: realm)
                     metadata.identifier = identifier
                     
                     realm.add(metadata, update: true)
@@ -1707,7 +1707,7 @@ class NCManageDatabase: NSObject {
                     
                     // modify identifier
                     let serverUrl = self.getServerUrl(directoryIDTo)!
-                    let identifier = self.addIdentifier(nil, fileName: metadata.fileName, serverUrl: serverUrl, realm: realm)
+                    let identifier = self.addIdentifier(metadata.identifier, fileName: metadata.fileName, serverUrl: serverUrl, account: tableAccount.account ,realm: realm)
                     
                     metadata.directoryID = directoryIDTo
                     metadata.identifier = identifier
@@ -1722,6 +1722,41 @@ class NCManageDatabase: NSObject {
         self.setDateReadDirectory(directoryID: directoryIDTo)
     }
     
+    @objc func renameMetadata(fileNameTo: String, fileID: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        var directoryID = ""
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                let metadatas = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID)
+                
+                for metadata in metadatas {
+                    
+                    directoryID = metadata.directoryID
+                    
+                    // modify identifier
+                    let serverUrl = self.getServerUrl(directoryID)!
+                    let identifier = self.addIdentifier(metadata.identifier, fileName: fileNameTo, serverUrl: serverUrl, account:tableAccount.account ,realm: realm)
+                    
+                    metadata.fileName = fileNameTo
+                    metadata.fileNameView = fileNameTo
+                    metadata.identifier = identifier
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
+        
+        self.setDateReadDirectory(directoryID: directoryID)
+    }
+    
     @objc func updateMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         
         let directoryID = metadata.directoryID
@@ -1733,7 +1768,7 @@ class NCManageDatabase: NSObject {
                 
                 // modify identifier
                 let serverUrl = self.getServerUrl(metadata.directoryID)!
-                let identifier = self.addIdentifier(nil, fileName: metadata.fileName, serverUrl: serverUrl, realm: realm)
+                let identifier = self.addIdentifier(metadata.identifier, fileName: metadata.fileName, serverUrl: serverUrl, account: metadata.account, realm: realm)
                 
                 metadata.identifier = identifier
 
@@ -2332,7 +2367,7 @@ class NCManageDatabase: NSObject {
                     if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
                         
                         // add identifier
-                        let identifier = self.addIdentifier(metadataNet.identifier, fileName: metadataNet.fileName, serverUrl: metadataNet.serverUrl, realm: realm)
+                        let identifier = self.addIdentifier(metadataNet.identifier, fileName: metadataNet.fileName, serverUrl: metadataNet.serverUrl, account:tableAccount.account, realm: realm)
                         
                         // Add new
                         addObject = tableQueueUpload()
@@ -2388,7 +2423,7 @@ class NCManageDatabase: NSObject {
                     if realm.objects(tableQueueUpload.self).filter("account = %@ AND assetLocalIdentifier = %@ AND selector = %@", tableAccount.account, metadataNet.assetLocalIdentifier, metadataNet.selector).first == nil {
                         
                         // add identifier
-                        let identifier = self.addIdentifier(metadataNet.identifier, fileName: metadataNet.fileName, serverUrl: metadataNet.serverUrl, realm: realm)
+                        let identifier = self.addIdentifier(metadataNet.identifier, fileName: metadataNet.fileName, serverUrl: metadataNet.serverUrl, account: tableAccount.account ,realm: realm)
                         
                         // Add new
                         let addObject = tableQueueUpload()

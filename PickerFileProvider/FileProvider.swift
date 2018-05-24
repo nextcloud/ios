@@ -757,13 +757,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, success: {
             
-            metadata.fileName = itemName
-            metadata.fileNameView = itemName
-            
-            guard let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
+            // Rename metadata
+            NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, fileID: metadata.fileID)
             
             if metadata.directory {
                 

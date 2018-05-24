@@ -1850,7 +1850,7 @@
 
 - (void)renameSuccess:(CCMetadataNet *)metadataNet
 {
-    [self readFolder:metadataNet.serverUrl];
+    [self reloadDatasource:metadataNet.serverUrl];
 }
 
 - (void)renameFile:(NSArray *)arguments
