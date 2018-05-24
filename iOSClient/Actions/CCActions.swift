@@ -242,7 +242,7 @@ class CCActions: NSObject {
     @objc func renameSuccess(_ metadataNet: CCMetadataNet) {
                 
         // Rename metadata
-        NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: metadataNet.fileNameTo, fileID: metadataNet.fileID)
+        _ = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: metadataNet.fileNameTo, fileID: metadataNet.fileID)
         
         if metadataNet.directory == true {
             

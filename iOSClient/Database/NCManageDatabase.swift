@@ -1702,7 +1702,6 @@ class NCManageDatabase: NSObject {
             try realm.write {
             
                 let metadatas = realm.objects(tableMetadata.self).filter("account = %@ AND fileName = %@ AND directoryID = %@", tableAccount.account, fileName, directoryID)
-        
                 for metadata in metadatas {
                     
                     // modify identifier
@@ -1723,39 +1722,41 @@ class NCManageDatabase: NSObject {
         self.setDateReadDirectory(directoryID: directoryIDTo)
     }
     
-    @objc func renameMetadata(fileNameTo: String, fileID: String) {
+    @objc func renameMetadata(fileNameTo: String, fileID: String) -> tableMetadata? {
         
         guard let tableAccount = self.getAccountActive() else {
-            return
+            return nil
         }
         
-        var directoryID = ""
+        var result :tableMetadata?
         let realm = try! Realm()
         
         do {
             try realm.write {
                 
-                let metadatas = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID)
-                
-                for metadata in metadatas {
-                    
-                    directoryID = metadata.directoryID
+                result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first
+                if result != nil {
                     
                     // modify identifier
-                    let serverUrl = self.getServerUrl(directoryID)!
-                    let identifier = self.addIdentifier(metadata.identifier, fileName: fileNameTo, serverUrl: serverUrl, account:tableAccount.account ,realm: realm)
+                    let serverUrl = self.getServerUrl(result!.directoryID)!
+                    let identifier = self.addIdentifier(result!.identifier, fileName: fileNameTo, serverUrl: serverUrl, account:tableAccount.account ,realm: realm)
                     
-                    metadata.fileName = fileNameTo
-                    metadata.fileNameView = fileNameTo
-                    metadata.identifier = identifier
+                    result!.fileName = fileNameTo
+                    result!.fileNameView = fileNameTo
+                    result!.identifier = identifier
                 }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return
+            return nil
         }
         
-        self.setDateReadDirectory(directoryID: directoryID)
+        if result == nil {
+            return nil
+        }
+        
+        self.setDateReadDirectory(directoryID: result!.directoryID)
+        return tableMetadata.init(value: result!)
     }
     
     @objc func updateMetadata(_ metadata: tableMetadata) -> tableMetadata? {

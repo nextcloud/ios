@@ -758,7 +758,10 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, success: {
             
             // Rename metadata
-            NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, fileID: metadata.fileID)
+            guard let metadata = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, fileID: metadata.fileID) else {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
             
             if metadata.directory {
                 
@@ -772,7 +775,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
             }
-            
+                        
             let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
             if parentItemIdentifier != nil {
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
