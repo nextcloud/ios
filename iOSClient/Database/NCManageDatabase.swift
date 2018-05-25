@@ -2398,7 +2398,7 @@ class NCManageDatabase: NSObject {
                         addObject!.size = metadataNet.size
                         
                         realm.add(addObject!)
-                    }
+                    } else {}
                 }
             } catch let error {
                 print("[LOG] Could not write to database: ", error)
@@ -2406,7 +2406,11 @@ class NCManageDatabase: NSObject {
             }
         }
         
-        return tableQueueUpload.init(value: addObject!)
+        if addObject != nil {
+            return tableQueueUpload.init(value: addObject!)
+        } else {
+            return nil
+        }
     }
     
     @objc func addQueueUpload(metadatasNet: [CCMetadataNet]) {
