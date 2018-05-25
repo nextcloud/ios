@@ -852,11 +852,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         */
     }
     
-    override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        print("[LOG] setLastUsedDate")
-        completionHandler(nil, nil)
-    }
-    
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
@@ -909,19 +904,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         let fileCoordinator = NSFileCoordinator()
         var error: NSError?
         
-        do {
-            let attributes = try self.fileManager.attributesOfItem(atPath: fileURL.path)
-            size = attributes[FileAttributeKey.size] as! Double
-            let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
-            if typeFile == FileAttributeType.typeDirectory {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-        } catch {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
         DispatchQueue.main.async {
             
             guard let tableDirectory = getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
@@ -950,6 +932,19 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             fileURL.stopAccessingSecurityScopedResource()
+            
+            do {
+                let attributes = try self.fileManager.attributesOfItem(atPath: fileNamePathDirectory + "/" + fileName)
+                size = attributes[FileAttributeKey.size] as! Double
+                let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
+                if typeFile == FileAttributeType.typeDirectory {
+                    completionHandler(nil, NSFileProviderError(.noSuchItem))
+                    return
+                }
+            } catch {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
             
             // ---------------------------------------------------------------------------------
             
