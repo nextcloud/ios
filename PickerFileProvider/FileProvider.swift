@@ -166,6 +166,11 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
         }
 
+        // Check account
+        if setupActiveAccount() == false {
+            throw NSFileProviderError(.notAuthenticated)
+        }
+        
         if identifier == .rootContainer {
             
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)) {
@@ -192,6 +197,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                     let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier!)
                     return item
                 }
+            } else {
+                throw NSFileProviderError(.noSuchItem)
             }
         }
         
