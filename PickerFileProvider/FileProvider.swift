@@ -166,9 +166,11 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
         }
 
+        // Looking up the matched item; crash if nothing matched.
+        
         // Check account
         if setupActiveAccount() == false {
-            throw NSFileProviderError(.notAuthenticated)
+            assert(false, "not account available return nil!")
         }
         
         if identifier == .rootContainer {
@@ -186,6 +188,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 metadata.typeFile = k_metadataTypeFile_directory
                     
                 return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
+                
+            } else {
+                assert(false, "directory not found, item with \(identifier) return nil!")
             }
             
         } else {
@@ -196,14 +201,14 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier!)
                     return item
+                } else {
+                    assert(false, "parentItemIdentifier not found, item with \(identifier) return nil!")
                 }
             } else {
-                throw NSFileProviderError(.noSuchItem)
+                assert(false, "metadata not found, item with \(identifier) return nil!")
             }
         }
-        
-        // implement the actual lookup
-        throw NSFileProviderError(.noSuchItem)
+        //throw NSFileProviderError(.noSuchItem)
     }
     
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
@@ -1266,6 +1271,16 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 
 func setupActiveAccount() -> Bool {
     
+    groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+    fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+    
+    // Create dir File Provider Storage
+    do {
+        try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
+    } catch let error as NSError {
+        NSLog("Unable to create directory \(error.debugDescription)")
+    }
+    
     guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
         return false
     }
@@ -1279,16 +1294,6 @@ func setupActiveAccount() -> Bool {
     directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
     
     ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
-    
-    groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-    fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
-    
-    // Create dir File Provider Storage
-    do {
-        try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
-    } catch let error as NSError {
-        NSLog("Unable to create directory \(error.debugDescription)")
-    }
     
     return true
 }
