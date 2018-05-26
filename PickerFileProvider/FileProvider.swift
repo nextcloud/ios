@@ -43,6 +43,9 @@ var listUpdateItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
 var fileNamePathImport = [String]()
 
+// Archor for Enumerator
+var currentArchor: UInt64 = 0
+
 // Metadata Temp for Import
 let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 
@@ -1061,6 +1064,24 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     // --------------------------------------------------------------------------------------------
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
+    
+    // Convinent method to signal the enumeration for containers.
+    //
+    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else {
+            return
+        }
+        
+        for containerItemIdentifier in containerItemIdentifiers {
+            NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
+                if let error = error {
+                    print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
+                }
+            }
+        }
+    }
     
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         

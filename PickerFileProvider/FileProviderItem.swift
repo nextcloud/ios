@@ -23,6 +23,17 @@
 
 import FileProvider
 
+// Unenumerated changes. Record the changes that have not be enumerated
+//
+struct UnenumChanges: OptionSet, Codable {
+    let rawValue: Int
+    
+    static let containerUpdate = UnenumChanges(rawValue: 1 << 0)
+    static let containerDelete = UnenumChanges(rawValue: 1 << 1)
+    static let workingSetUpdate = UnenumChanges(rawValue: 1 << 2)
+    static let workingSetDelete = UnenumChanges(rawValue: 1 << 3)
+}
+
 class FileProviderItem: NSObject, NSFileProviderItem {
 
     // Providing Required Properties
@@ -65,10 +76,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var downloadingError: Error?                                    // An error that occurred while downloading the item
 
     var tagData: Data?                                              // Tag
-    
     var favoriteRank: NSNumber?                                     // Favorite
     
     var isDirectory = false
+    var unenumChanges: UnenumChanges = []
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         
