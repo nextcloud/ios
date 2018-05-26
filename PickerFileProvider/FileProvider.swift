@@ -208,7 +208,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 assert(false, "metadata not found, item with \(identifier) return nil!")
             }
         }
-        //throw NSFileProviderError(.noSuchItem)
+        
+        throw NSFileProviderError(.noSuchItem)
     }
     
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
