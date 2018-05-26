@@ -61,6 +61,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         var items: [NSFileProviderItemProtocol] = []
         var metadatas: [tableMetadata]?
 
+        // Check account
+        if setupActiveAccount() == false {
+            observer.finishEnumerating(upTo: nil)
+            return
+        }
+        
         if #available(iOSApplicationExtension 11.0, *) {
                         
             guard let serverUrl = serverUrl else {

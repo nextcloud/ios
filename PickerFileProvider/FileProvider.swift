@@ -88,8 +88,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         super.init()
         
-        setupActiveAccount()
-        
         verifyUploadQueueInLock()
         
         if #available(iOSApplicationExtension 11.0, *) {
@@ -126,6 +124,11 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
             throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
+        }
+        
+        // Check account
+        if setupActiveAccount() == false {
+            throw  NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
         }
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
@@ -280,6 +283,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             var fileSize = 0 as Double
             var localEtag = ""
             var localEtagFPE = ""
+            
+            // Check account
+            if setupActiveAccount() == false {
+                completionHandler(NSFileProviderError(.notAuthenticated))
+                return
+            }
             
             guard let metadata = getTableMetadataFromItemIdentifier(identifier) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
@@ -500,7 +509,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 
         let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
         var counterProgress: Int64 = 0
-            
+        
+        // Check account
+        if setupActiveAccount() == false {
+            completionHandler(NSFileProviderError(.notAuthenticated))
+            return Progress(totalUnitCount:0)
+        }
+        
         for itemIdentifier in itemIdentifiers {
             
             let metadata = getTableMetadataFromItemIdentifier(itemIdentifier)
@@ -565,6 +580,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             return
         }
         
+        // Check account
+        if setupActiveAccount() == false {
+            completionHandler(nil, NSFileProviderError(.notAuthenticated))
+            return
+        }
+        
         guard let tableDirectory = getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -613,6 +634,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
+            return
+        }
+        
+        // Check account
+        if setupActiveAccount() == false {
+            completionHandler(NSFileProviderError(.notAuthenticated))
             return
         }
         
@@ -672,6 +699,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
+            return
+        }
+        
+        // Check account
+        if setupActiveAccount() == false {
+            completionHandler(nil, NSFileProviderError(.notAuthenticated))
             return
         }
         
@@ -736,6 +769,12 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else {
+            return
+        }
+        
+        // Check account
+        if setupActiveAccount() == false {
+            completionHandler(nil, NSFileProviderError(.notAuthenticated))
             return
         }
         
@@ -1218,10 +1257,10 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 //  MARK: -
 // --------------------------------------------------------------------------------------------
 
-func setupActiveAccount() {
+func setupActiveAccount() -> Bool {
     
     guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
-        return
+        return false
     }
     
     account = activeAccount.account
@@ -1243,6 +1282,8 @@ func setupActiveAccount() {
     } catch let error as NSError {
         NSLog("Unable to create directory \(error.debugDescription)")
     }
+    
+    return true
 }
 
 func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
