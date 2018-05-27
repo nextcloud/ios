@@ -64,8 +64,8 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
     }
     
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        let anchor = NSFileProviderSyncAnchor(enumeratedItemIdentifier.rawValue.data(using: .utf8)!)
-        completionHandler(anchor)
+        let data = "\(currentAnchor)".data(using: .utf8)
+        completionHandler(NSFileProviderSyncAnchor(data!))
     }
 }
 

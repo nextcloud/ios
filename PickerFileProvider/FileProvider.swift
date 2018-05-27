@@ -43,8 +43,8 @@ var listUpdateItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
 var fileNamePathImport = [String]()
 
-// Archor for Enumerator
-var currentArchor: UInt64 = 0
+// Anchor for enumerator
+var currentAnchor: UInt64 = 0
 
 // Metadata Temp for Import
 let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
