@@ -84,10 +84,6 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        let updated: UnenumChanges, deleted: UnenumChanges
-        updated = enumeratedItemIdentifier == .workingSet ? .workingSetUpdate : .containerUpdate
-        deleted = enumeratedItemIdentifier == .workingSet ? .workingSetDelete : .containerDelete
-        
         observer.didUpdate(listUpdateItems)
         observer.finishEnumeratingChanges(upTo: anchor, moreComing: false)
     }
