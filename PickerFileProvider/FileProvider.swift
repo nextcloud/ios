@@ -124,9 +124,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
-        }
+        guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
         
         // Check account
         if setupActiveAccount() == false {
@@ -164,9 +162,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
-        }
+        guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
 
         // Looking up the matched item; crash if nothing matched.
         
@@ -217,9 +213,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return nil
-        }
+        guard #available(iOS 11, *) else { return nil }
             
         // resolve the given identifier to a file on disk
         guard let item = try? item(for: identifier) else {
@@ -518,9 +512,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func fetchThumbnails(for itemIdentifiers: [NSFileProviderItemIdentifier], requestedSize size: CGSize, perThumbnailCompletionHandler: @escaping (NSFileProviderItemIdentifier, Data?, Error?) -> Void, completionHandler: @escaping (Error?) -> Void) -> Progress {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return Progress(totalUnitCount:0)
-        }
+        guard #available(iOS 11, *) else { return Progress(totalUnitCount:0) }
 
         let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
         var counterProgress: Int64 = 0
@@ -591,9 +583,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
 
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return
-        }
+        guard #available(iOS 11, *) else { return }
         
         // Check account
         if setupActiveAccount() == false {
@@ -648,9 +638,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func deleteItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (Error?) -> Void) {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return
-        }
+        guard #available(iOS 11, *) else { return }
         
         // Check account
         if setupActiveAccount() == false {
@@ -713,9 +701,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func reparentItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemWithIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, newName: String?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return
-        }
+        guard #available(iOS 11, *) else { return }
         
         // Check account
         if setupActiveAccount() == false {
@@ -783,9 +769,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return
-        }
+        guard #available(iOS 11, *) else { return }
         
         // Check account
         if setupActiveAccount() == false {
@@ -849,9 +833,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
 
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return
-        }
+        guard #available(iOS 11, *) else { return }
         
         completionHandler(nil, nil)
         
@@ -912,9 +894,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return
-        }
+        guard #available(iOS 11, *) else { return }
         
         guard let metadata = getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -952,9 +932,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return
-        }
+        guard #available(iOS 11, *) else { return }
         
         var size = 0 as Double
         let metadata = tableMetadata()
@@ -1124,10 +1102,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return
-        }
-        
+        guard #available(iOS 11, *) else { return }
+    
         for containerItemIdentifier in containerItemIdentifiers {
             
             listEnumerator.insert(containerItemIdentifier.rawValue)
@@ -1143,9 +1119,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            return
-        }
+        guard #available(iOS 11, *) else { return }
         
         let item = try? self.item(for: identifier)
         if item != nil {
@@ -1334,9 +1308,7 @@ func createFileIdentifierOnFileSystem(metadata: tableMetadata) {
 func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
     
     /* ONLY iOS 11*/
-    guard #available(iOS 11, *) else {
-         return NSFileProviderItemIdentifier("")
-    }
+    guard #available(iOS 11, *) else { return NSFileProviderItemIdentifier("") }
     
     if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID))  {
         if directory.serverUrl == homeServerUrl {
@@ -1356,9 +1328,7 @@ func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdent
 func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier) -> tableDirectory? {
     
     /* ONLY iOS 11*/
-    guard #available(iOS 11, *) else {
-        return nil
-    }
+    guard #available(iOS 11, *) else { return nil }
     
     var predicate: NSPredicate
 
