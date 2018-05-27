@@ -40,8 +40,8 @@ var fileProviderStorageURL: URL?
 
 // List
 var listUpdateItems = [NSFileProviderItem]()
-var listEnumerator = Set<String>()
-    
+var listDeleteItems = [NSFileProviderItem]()
+
 var listFavoriteIdentifierRank = [String:NSNumber]()
 var fileNamePathImport = [String]()
 
@@ -1105,8 +1105,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         guard #available(iOS 11, *) else { return }
     
         for containerItemIdentifier in containerItemIdentifiers {
-            
-            listEnumerator.insert(containerItemIdentifier.rawValue)
             
             NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
                 if let error = error {
