@@ -67,10 +67,12 @@ extension FileProviderExtension {
             
         }, failure: { (errorMessage, errorCode) in
             
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-
-            fileProviderSignalUpdateItem.append(item)
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            // remove item on fileProviderSignalDeleteItemIdentifier
+            if let index = fileProviderSignalDeleteItemIdentifier.index(of: itemIdentifier) {
+                fileProviderSignalDeleteItemIdentifier.remove(at: index)
+            }
+            
+            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
         })
     }
     
@@ -84,6 +86,7 @@ extension FileProviderExtension {
         guard #available(iOS 11, *) else { return }
         
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier)) {
+            
             let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
