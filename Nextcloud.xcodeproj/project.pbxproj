@@ -208,7 +208,6 @@
 		F73D71641F2674A400E233EB /* NCText.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73D71631F2674A400E233EB /* NCText.storyboard */; };
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
 		F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */; };
-		F74344251E1264EE001CC831 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
 		F74344561E12784A001CC831 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F74344591E12786C001CC831 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
@@ -232,6 +231,8 @@
 		F74E432720B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
 		F74E432820B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
 		F74E432920B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
+		F74F9F5020BC3678009FB1AF /* FileProviderData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74F9F4F20BC3678009FB1AF /* FileProviderData.swift */; };
+		F74F9F5220BC3681009FB1AF /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74F9F5120BC3681009FB1AF /* FileProviderExtension.swift */; };
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
@@ -240,8 +241,6 @@
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */; };
-		F75EAC4D20974B470071FF95 /* FileProviderEnumeratorWorkingSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75EAC4C20974B470071FF95 /* FileProviderEnumeratorWorkingSet.swift */; };
-		F75EAC4F20974B5E0071FF95 /* FileProviderEnumeratorFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75EAC4E20974B5E0071FF95 /* FileProviderEnumeratorFile.swift */; };
 		F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */; };
 		F75EDFBF1E8C116D00E6F369 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */; };
 		F762CAF71EACB66200B38484 /* XLFormBaseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CAA41EACB66200B38484 /* XLFormBaseCell.m */; };
@@ -918,7 +917,6 @@
 		F73D71631F2674A400E233EB /* NCText.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCText.storyboard; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
 		F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPickerViewController.swift; sourceTree = "<group>"; };
-		F74344241E1264EE001CC831 /* FileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProvider.swift; sourceTree = "<group>"; };
 		F74344901E128E8F001CC831 /* Picker.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Picker.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F74344911E128E96001CC831 /* PickerFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
@@ -933,6 +931,8 @@
 		F74D3DBE1BAC1941000BAE4B /* OCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCNetworking.m; sourceTree = "<group>"; };
 		F74E432420B5547700C2E54C /* NCNetworkingEndToEnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCNetworkingEndToEnd.h; sourceTree = "<group>"; };
 		F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCNetworkingEndToEnd.m; sourceTree = "<group>"; };
+		F74F9F4F20BC3678009FB1AF /* FileProviderData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderData.swift; sourceTree = "<group>"; };
+		F74F9F5120BC3681009FB1AF /* FileProviderExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
 		F75037431DBFA91A008FB480 /* ALView+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ALView+PureLayout.h"; sourceTree = "<group>"; };
 		F75037441DBFA91A008FB480 /* ALView+PureLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ALView+PureLayout.m"; sourceTree = "<group>"; };
 		F75037451DBFA91A008FB480 /* NSArray+PureLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSArray+PureLayout.h"; sourceTree = "<group>"; };
@@ -1039,8 +1039,6 @@
 		F75B923F1ECAE55F00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Intro.strings; sourceTree = "<group>"; };
 		F75B92401ECAE55F00199C96 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Error.strings; sourceTree = "<group>"; };
 		F75CDBF51DF063AD00116AD0 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; name = .gitignore; path = ../.gitignore; sourceTree = "<group>"; };
-		F75EAC4C20974B470071FF95 /* FileProviderEnumeratorWorkingSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderEnumeratorWorkingSet.swift; sourceTree = "<group>"; };
-		F75EAC4E20974B5E0071FF95 /* FileProviderEnumeratorFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderEnumeratorFile.swift; sourceTree = "<group>"; };
 		F75EDFBC1E8C112F00E6F369 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		F75EDFBE1E8C116D00E6F369 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		F762CAA31EACB66200B38484 /* XLFormBaseCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XLFormBaseCell.h; sourceTree = "<group>"; };
@@ -2162,12 +2160,11 @@
 		F74344211E1264EE001CC831 /* PickerFileProvider */ = {
 			isa = PBXGroup;
 			children = (
-				F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */,
+				F74F9F5120BC3681009FB1AF /* FileProviderExtension.swift */,
+				F74F9F4F20BC3678009FB1AF /* FileProviderData.swift */,
 				F7496B7B208F548E004B299C /* FileProviderEnumerator.swift */,
-				F75EAC4C20974B470071FF95 /* FileProviderEnumeratorWorkingSet.swift */,
-				F75EAC4E20974B5E0071FF95 /* FileProviderEnumeratorFile.swift */,
 				F7496B7C208F548E004B299C /* FileProviderItem.swift */,
-				F74344241E1264EE001CC831 /* FileProvider.swift */,
+				F7F54CAB1E5AFF1E00E19C62 /* PickerFileProvider-Bridging-Header.h */,
 			);
 			path = PickerFileProvider;
 			sourceTree = "<group>";
@@ -3757,6 +3754,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7BB50D91F2238A300C47094 /* OCXMLParser.m in Sources */,
+				F74F9F5220BC3681009FB1AF /* FileProviderExtension.swift in Sources */,
 				F7BB50D11F22388900C47094 /* OCSharedDto.m in Sources */,
 				F7BB50CB1F22386900C47094 /* OCCommunication.m in Sources */,
 				F7BB50D31F22388E00C47094 /* OCUserProfile.m in Sources */,
@@ -3767,12 +3765,10 @@
 				F7BB50CC1F22387900C47094 /* OCExternalSites.m in Sources */,
 				F7BB50EA1F2238FB00C47094 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F7F878B11FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
-				F75EAC4D20974B470071FF95 /* FileProviderEnumeratorWorkingSet.swift in Sources */,
 				F7BB50F71F2239BF00C47094 /* BKPasscodeLockScreenManager.m in Sources */,
 				F7BB50DB1F2238A900C47094 /* OCXMLShareByLinkParser.m in Sources */,
 				F7BB50E21F2238D000C47094 /* AFURLRequestSerialization.m in Sources */,
 				F7BB50BC1F22375D00C47094 /* CCBKPasscode.m in Sources */,
-				F75EAC4F20974B5E0071FF95 /* FileProviderEnumeratorFile.swift in Sources */,
 				F7BB50D81F2238A000C47094 /* OCXMLListParser.m in Sources */,
 				F7BB50E41F2238D500C47094 /* AFURLSessionManager.m in Sources */,
 				F7BB50F91F2239C800C47094 /* BKShiftingView.m in Sources */,
@@ -3795,7 +3791,6 @@
 				F7BB50C01F22378B00C47094 /* CCError.m in Sources */,
 				F7BB50E01F2238CA00C47094 /* AFNetworkReachabilityManager.m in Sources */,
 				F7BB50F81F2239C400C47094 /* BKPasscodeViewController.m in Sources */,
-				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
 				F7BB50BA1F22374A00C47094 /* CCNetworking.m in Sources */,
 				F7BB50DD1F2238B100C47094 /* NSString+Encode.m in Sources */,
 				F7BB50D51F22389600C47094 /* NSDate+RFC1123.m in Sources */,
@@ -3811,6 +3806,7 @@
 				F7BB50F41F2239B600C47094 /* BKPasscodeDummyViewController.m in Sources */,
 				F7BB50C41F22379800C47094 /* NSString+TruncateToWidth.m in Sources */,
 				F7BB50E31F2238D200C47094 /* AFURLResponseSerialization.m in Sources */,
+				F74F9F5020BC3678009FB1AF /* FileProviderData.swift in Sources */,
 				F782952F1F962EF900A572F5 /* NCEndToEndEncryption.m in Sources */,
 				F7BB50EB1F22391000C47094 /* MBProgressHUD.m in Sources */,
 				F7BB50D21F22388B00C47094 /* OCShareUser.m in Sources */,

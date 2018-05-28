@@ -23,17 +23,6 @@
 
 import FileProvider
 
-// Unenumerated changes. Record the changes that have not be enumerated
-//
-struct UnenumChanges: OptionSet, Codable {
-    let rawValue: Int
-    
-    static let containerUpdate = UnenumChanges(rawValue: 1 << 0)
-    static let containerDelete = UnenumChanges(rawValue: 1 << 1)
-    static let workingSetUpdate = UnenumChanges(rawValue: 1 << 2)
-    static let workingSetDelete = UnenumChanges(rawValue: 1 << 3)
-}
-
 class FileProviderItem: NSObject, NSFileProviderItem {
 
     // Providing Required Properties
@@ -79,12 +68,11 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var favoriteRank: NSNumber?                                     // Favorite
     
     var isDirectory = false
-    var unenumChanges: UnenumChanges = []
 
-    init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
+    init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, providerData: FileProviderData) {
         
         self.parentItemIdentifier = parentItemIdentifier
-        self.itemIdentifier = getItemIdentifier(metadata: metadata)
+        self.itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
         
         self.contentModificationDate = metadata.date as Date
         self.creationDate = metadata.date as Date
@@ -97,7 +85,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // This is a file
         if (!metadata.directory) {
             
-            let fileIdentifier = fileProviderStorageURL!.path + "/" + self.itemIdentifier.rawValue + "/" + metadata.fileNameView
+            let fileIdentifier = providerData.fileProviderStorageURL!.path + "/" + self.itemIdentifier.rawValue + "/" + metadata.fileNameView
             var fileSize = 0 as Double
          
             do {
@@ -117,6 +105,14 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isMostRecentVersionDownloaded = true
             }
             
+            // Upload
+            if metadata.fileID.contains(k_uploadSessionID) {
+                self.isDownloaded = true
+                self.isMostRecentVersionDownloaded = true
+                self.isUploading = true
+                self.isUploaded = false
+            }
+            
         } else {
             
             /*
@@ -134,16 +130,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // Tag
         if let tableTag = NCManageDatabase.sharedInstance.getTag(predicate: NSPredicate(format: "account = %@ AND fileID = %@", metadata.account, metadata.fileID)) {
             tagData = tableTag.tagIOS
-        }
-        
-        // Removed (if exists) this Item from listUpdate
-        var counter = 0
-        for updateItem in listUpdateItems {
-            if updateItem.itemIdentifier.rawValue == itemIdentifier.rawValue {
-                listUpdateItems.remove(at: counter)
-                break;
-            }
-            counter += 1
         }
     }
 }
