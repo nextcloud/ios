@@ -104,7 +104,7 @@ extension FileProviderExtension {
         deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
 
         // return immediately
-        fileProviderSignalDeleteItemIdentifier.append(itemIdentifier)
+        fileProviderSignalDeleteItemIdentifier[itemIdentifier] = parentItemIdentifier //.append(itemIdentifier)
         self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
         
         completionHandler(nil)

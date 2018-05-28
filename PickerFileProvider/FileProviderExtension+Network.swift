@@ -87,7 +87,7 @@ extension FileProviderExtension {
             let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
-            fileProviderSignalDeleteItemIdentifier.append(item.itemIdentifier)
+            fileProviderSignalDeleteItemIdentifier[item.itemIdentifier] = parentItemIdentifier! // .append(item.itemIdentifier)
             signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
         
