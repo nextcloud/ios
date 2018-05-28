@@ -91,65 +91,23 @@ extension FileProviderExtension {
             return
         }
         
-        DispatchQueue.main.async {
-            
-            guard let metadata = self.providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
-                completionHandler(NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                completionHandler( NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            guard let parentIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata) else {
-                completionHandler( NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
-                
-                let fileNamePath = self.providerData.directoryUser + "/" + metadata.fileID
-                do {
-                    try self.fileManager.removeItem(atPath: fileNamePath)
-                } catch let error {
-                    print("error: \(error)")
-                }
-                do {
-                    try self.fileManager.removeItem(atPath: fileNamePath + ".ico")
-                } catch let error {
-                    print("error: \(error)")
-                }
-                do {
-                    try self.fileManager.removeItem(atPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
-                } catch let error {
-                    print("error: \(error)")
-                }
-                
-                if metadata.directory {
-                    let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
-                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!)
-                }
-                
-                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
-                
-                fileProviderSignalDeleteItemIdentifier.removeAll()
-                fileProviderSignalDeleteItemIdentifier.append(itemIdentifier)
-                self.signalEnumerator(for: [parentIdentifier, .workingSet])
-                
-                completionHandler(nil)
-                
-            }, failure: { (errorMessage, errorCode) in
-                
-                if errorCode == 404 {
-                    completionHandler(nil)
-                } else {
-                    completionHandler(NSFileProviderError(.serverUnreachable))
-                }
-            })
+        guard let metadata = self.providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            completionHandler(NSFileProviderError(.noSuchItem))
+            return
         }
+            
+        guard let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata) else {
+            completionHandler( NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
+
+        // return immediately
+        fileProviderSignalDeleteItemIdentifier.append(itemIdentifier)
+        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        
+        completionHandler(nil)
     }
     
     override func reparentItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemWithIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, newName: String?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
@@ -363,7 +321,6 @@ extension FileProviderExtension {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
-            fileProviderSignalUpdateItem.removeAll()
             fileProviderSignalUpdateItem.append(item)
             signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             

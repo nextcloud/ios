@@ -94,6 +94,7 @@
 		F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F70023001EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
+		F701E04320BC5B41004629E1 /* FileProviderExtension+Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = F701E04220BC5B41004629E1 /* FileProviderExtension+Network.swift */; };
 		F70944BD1F86364000AE4541 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70944BC1F86364000AE4541 /* MainInterface.storyboard */; };
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
@@ -742,6 +743,7 @@
 		F700229E1EC4C9100080073F /* OCConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCConstants.h; sourceTree = "<group>"; };
 		F700229F1EC4C9100080073F /* UtilsFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UtilsFramework.h; sourceTree = "<group>"; };
 		F70022A01EC4C9100080073F /* UtilsFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UtilsFramework.m; sourceTree = "<group>"; };
+		F701E04220BC5B41004629E1 /* FileProviderExtension+Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileProviderExtension+Network.swift"; sourceTree = "<group>"; };
 		F70211F51BAC56E9003FC03E /* CCCellMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCCellMain.m; sourceTree = "<group>"; };
 		F70211F61BAC56E9003FC03E /* CCCellMain.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CCCellMain.xib; sourceTree = "<group>"; };
 		F70211F71BAC56E9003FC03E /* CCCellMainTransfer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCCellMainTransfer.h; sourceTree = "<group>"; };
@@ -2165,6 +2167,7 @@
 			isa = PBXGroup;
 			children = (
 				F74F9F5120BC3681009FB1AF /* FileProviderExtension.swift */,
+				F701E04220BC5B41004629E1 /* FileProviderExtension+Network.swift */,
 				F74F9F5320BC3D7E009FB1AF /* FileProviderExtension+Actions.swift */,
 				F74F9F5520BC3E52009FB1AF /* FileProviderExtension+Thumbnail.swift */,
 				F74F9F4F20BC3678009FB1AF /* FileProviderData.swift */,
@@ -3784,6 +3787,7 @@
 				F7496B7E208F548E004B299C /* FileProviderItem.swift in Sources */,
 				F7BB50D01F22388600C47094 /* OCRichObjectStrings.m in Sources */,
 				F7BB50C91F22386400C47094 /* OCActivity.m in Sources */,
+				F701E04320BC5B41004629E1 /* FileProviderExtension+Network.swift in Sources */,
 				F7BB50AF1F22370300C47094 /* NCManageDatabase.swift in Sources */,
 				F7BB50FA1F2239CB00C47094 /* BKTouchIDManager.m in Sources */,
 				F7BB50BB1F22374E00C47094 /* OCNetworking.m in Sources */,
