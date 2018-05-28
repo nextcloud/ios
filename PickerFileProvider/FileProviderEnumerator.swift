@@ -26,7 +26,7 @@ import FileProvider
 class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
-    let recordForPage = 15
+    let recordForPage = 20
     var serverUrl: String?
     var providerData: FileProviderData
     
