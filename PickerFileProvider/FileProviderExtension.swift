@@ -64,6 +64,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     var fileManager = FileManager()
     var providerData = FileProviderData()
 
+    //
+    var outstandingDownloadTasks = [URL: URLSessionTask]()
+
     // Metadata Temp for Import
     let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
     
@@ -337,6 +340,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
 
             let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(providerData.directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght, etag, date) in
                 
+                // remove Task
+                self.outstandingDownloadTasks.removeValue(forKey: url)
+
                 // copy download file to url
                 _ = self.copyFile("\(self.providerData.directoryUser)/\(metadata.fileID)", toPath: url.path)
             
@@ -350,12 +356,24 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
 
                 completionHandler(nil)
+                return
                     
             }, failure: { (errorMessage, errorCode) in
-                completionHandler(NSFileProviderError(.serverUnreachable))
-            })
                 
+                // remove task
+                self.outstandingDownloadTasks.removeValue(forKey: url)
+                
+                if errorCode == Int(CFNetworkErrors.cfurlErrorCancelled.rawValue) {
+                    completionHandler(NSFileProviderError(.noSuchItem))
+                } else {
+                    completionHandler(NSFileProviderError(.serverUnreachable))
+                }
+                return
+            })
+            
+            // Add and register task
             if task != nil {
+                outstandingDownloadTasks[url] = task
                 NSFileProviderManager.default.register(task!, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { (error) in }
             }
                 
@@ -492,6 +510,12 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             self.providePlaceholder(at: url, completionHandler: { error in
                 // handle any error, do any necessary cleanup
             })
+        }
+        
+        // Download task
+        if let downloadTask = outstandingDownloadTasks[url] {
+            downloadTask.cancel()
+            outstandingDownloadTasks.removeValue(forKey: url)
         }
     }
     
