@@ -27,7 +27,7 @@ import FileProvider
 var timerUpload: Timer?
 
 // Item for signalEnumerator
-var fileProviderSignalDeleteItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+var fileProviderSignalDeleteItemIdentifier = [NSFileProviderItemIdentifier]()
 var fileProviderSignalUpdateItem = [FileProviderItem]()
 
 var currentAnchor: UInt64 = 0

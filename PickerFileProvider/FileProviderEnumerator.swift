@@ -149,11 +149,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
         // Report the trashed items since last signal
         //
-        var itemIdentifiers = [NSFileProviderItemIdentifier]()
-        for (itemIdentifier, _) in fileProviderSignalDeleteItemIdentifier {
-            itemIdentifiers.append(itemIdentifier)
-        }
-        observer.didDeleteItems(withIdentifiers: itemIdentifiers)
+        observer.didDeleteItems(withIdentifiers: fileProviderSignalDeleteItemIdentifier)
         
         // Report the updated items since last signal
         //
