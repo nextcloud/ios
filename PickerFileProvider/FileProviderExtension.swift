@@ -637,12 +637,17 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         DispatchQueue.main.async {
             
             guard let metadata = self.providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
-                completionHandler(nil)
+                completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
             
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                completionHandler(nil)
+                completionHandler( NSFileProviderError(.noSuchItem))
+                return
+            }
+            
+            guard let parentIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata) else {
+                completionHandler( NSFileProviderError(.noSuchItem))
                 return
             }
             
@@ -672,6 +677,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
+                
+                fileProviderSignalDeleteItemIdentifier.removeAll()
+                fileProviderSignalDeleteItemIdentifier.append(itemIdentifier)
+                self.signalEnumerator(for: [parentIdentifier, .workingSet])
                 
                 completionHandler(nil)
                 
