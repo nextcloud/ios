@@ -67,7 +67,7 @@ extension FileProviderExtension {
             
         }, failure: { (errorMessage, errorCode) in
             
-            // remove item on fileProviderSignalDeleteItemIdentifier
+            // remove itemIdentifier on fileProviderSignalDeleteItemIdentifier
             if let index = fileProviderSignalDeleteItemIdentifier.index(of: itemIdentifier) {
                 fileProviderSignalDeleteItemIdentifier.remove(at: index)
             }
