@@ -26,7 +26,7 @@ import FileProvider
 class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
-    let recordForPage = 20
+    let recordForPage = 15
     var serverUrl: String?
     var providerData: FileProviderData
     
@@ -107,7 +107,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             return
         }
             
-        // Read Folder
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
                 
             if (metadatas != nil) {

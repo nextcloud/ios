@@ -62,9 +62,7 @@ class FileProviderData: NSObject {
         accountUrl = activeAccount.url
         homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
         directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
-        
-        ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
-        
+                
         return true
     }
     

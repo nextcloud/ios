@@ -38,6 +38,7 @@ extension FileProviderExtension {
             return
         }
         
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
             
             let fileNamePath = self.providerData.directoryUser + "/" + metadata.fileID

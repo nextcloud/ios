@@ -43,6 +43,7 @@ extension FileProviderExtension {
         
         let serverUrl = tableDirectory.serverUrl
         
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: providerData.account, success: { (fileID, date) in
             
             let metadata = tableMetadata()
@@ -148,6 +149,7 @@ extension FileProviderExtension {
         let directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo)!
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
             
             if metadataFrom.directory {
@@ -208,6 +210,7 @@ extension FileProviderExtension {
         let fileNamePathFrom = serverUrl + "/" + fileNameFrom
         let fileNamePathTo = serverUrl + "/" + itemName
         
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, success: {
             
             // Rename metadata
