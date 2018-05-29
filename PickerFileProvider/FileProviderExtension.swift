@@ -170,9 +170,12 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         var updateItemsWorkingSet = [NSFileProviderItemIdentifier:FileProviderItem]()
 
-        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
         
-        // (ADD) Favorite Directory
+        // **** FAVORITE DIRECTORY ****
+        
+        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+
+        // (ADD)
         for (identifier, _) in listFavoriteIdentifierRank {
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
@@ -187,8 +190,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
             updateItemsWorkingSet[item.itemIdentifier] = item
         }
-        
-        // (REMOVE) Favorite Directory
+        // (REMOVE)
         let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directory = true AND favorite = false", providerData.account), sorted: "fileName", ascending: true)
         if (metadatas != nil && metadatas!.count > 0) {
             for metadata in metadatas! {
@@ -204,7 +206,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
         }
         
-        // Update
+        // Update workingSet
         for (itemIdentifier, item) in updateItemsWorkingSet {
             fileProviderSignalUpdateItem[itemIdentifier] = item
             self.signalEnumerator(for: [.workingSet])
