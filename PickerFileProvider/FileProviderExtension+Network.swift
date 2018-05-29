@@ -87,10 +87,13 @@ extension FileProviderExtension {
         if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier)) {
             
             let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
+            if parentItemIdentifier != nil {
+                
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
-            fileProviderSignalDeleteItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-            signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                fileProviderSignalDeleteItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+                signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            }
         }
         
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier), clearDateReadDirectoryID: nil)
@@ -109,13 +112,14 @@ extension FileProviderExtension {
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
                 
-                let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
-                if parentItemIdentifier != nil {
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-                    
-                    fileProviderSignalUpdateItem[item.itemIdentifier] = item
-                    signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+                    return
                 }
+                
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+                    
+                fileProviderSignalUpdateItem[item.itemIdentifier] = item
+                signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
             
         } else {

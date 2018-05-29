@@ -173,19 +173,17 @@ extension FileProviderExtension {
                 return
             }
             
-            let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata)
-            if parentItemIdentifier != nil {
-                
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: self.providerData)
-                
-                fileProviderSignalUpdateItem[item.itemIdentifier] = item
-                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-                
-                completionHandler(item, nil)
-                
-            } else {
+            guard let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
             }
+            
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
+                
+            fileProviderSignalUpdateItem[item.itemIdentifier] = item
+            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                
+            completionHandler(item, nil)
             
         }, failure: { (errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
@@ -244,86 +242,74 @@ extension FileProviderExtension {
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
             }
             
-            let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata)
-            if parentItemIdentifier != nil {
-                
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: self.providerData)
-                
-                fileProviderSignalUpdateItem[item.itemIdentifier] = item
-                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-                
-                completionHandler(item, nil)
-                
-            } else {
-                
+            guard let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
             }
+            
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
+                
+            fileProviderSignalUpdateItem[item.itemIdentifier] = item
+            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                
+            completionHandler(item, nil)
             
         }, failure: { (errorMessage, errorCode) in
             completionHandler(nil, NSFileProviderError(.serverUnreachable))
         })
     }
     
+    /*
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        completionHandler(nil, nil)
+        // Check account
+        if providerData.setupActiveAccount() == false {
+            completionHandler(nil, NSFileProviderError(.notAuthenticated))
+            return
+        }
         
-        /*
-         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, itemIdentifier.rawValue)) else {
-         completionHandler(nil, NSFileProviderError(.noSuchItem))
-         return
-         }
-         guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-         completionHandler(nil, NSFileProviderError(.noSuchItem))
-         return
-         }
+        guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
          
-         // Refresh Favorite Identifier Rank
-         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
-         
-         if favoriteRank == nil {
-         listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-         } else {
-         let rank = listFavoriteIdentifierRank[itemIdentifier.rawValue]
-         if rank == nil {
-         listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank//NSNumber(value: Int64(newRank))
-         }
-         favorite = true
-         }
-         
-         // Call the completion handler before performing any network activity or other long-running tasks. Defer these tasks to the background
-         let item = FileProviderItem(metadata: metadata, serverUrl: serverUrl)
-         completionHandler(item, nil)
-         
-         // Change Status ? Call API Nextcloud Network
-         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-         
-         DispatchQueue(label: "com.nextcloud", qos: .background, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
-         
-         //NSString *fileOrFolderPath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
-         
-         ocNetworking?.settingFavorite(metadata.fileName, serverUrl: serverUrl, favorite: favorite, success: {
-         
-         // Change DB
-         metadata.favorite = favorite
-         _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-         
-         // Refresh Favorite Identifier Rank
-         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
-         
-         // Refresh Item
-         self.refreshEnumerator(identifier: itemIdentifier, serverUrl: serverUrl)
-         
-         }, failure: { (errorMessage, errorCode) in
-         print("errorMessage")
-         })
-         }
-         }
-         */
+        // Refresh Favorite Identifier Rank
+        var listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+        var favorite = false
+        
+        if favoriteRank == nil {
+            listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+        } else {
+            let rank = listFavoriteIdentifierRank[itemIdentifier.rawValue]
+            if rank == nil {
+                listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank//NSNumber(value: Int64(newRank))
+            }
+            favorite = true
+        }
+        
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+            
+        fileProviderSignalUpdateItem[item.itemIdentifier] = item
+        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            
+        completionHandler(item, nil)
+        
+        // Call the completion handler before performing any network activity or other long-running tasks. Defer these tasks to the background
     }
+    */
     
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
@@ -338,19 +324,17 @@ extension FileProviderExtension {
         // Add, Remove (nil)
         NCManageDatabase.sharedInstance.addTag(metadata.fileID, tagIOS: tagData)
         
-        let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
-        if parentItemIdentifier != nil {
-            
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-            
-            fileProviderSignalUpdateItem[item.itemIdentifier] = item
-            signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-            
-            completionHandler(item, nil)
-            
-        } else {
+        guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
         }
+        
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+            
+        fileProviderSignalUpdateItem[item.itemIdentifier] = item
+        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            
+        completionHandler(item, nil)
     }
     
     override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
@@ -363,18 +347,15 @@ extension FileProviderExtension {
             return
         }
         
-        let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
-        
-        if parentItemIdentifier != nil {
-            
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-            item.lastUsedDate = lastUsedDate
-
-            completionHandler(item, nil)
-            
-        } else {
-            completionHandler(nil, nil)
+        guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
         }
+        
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+        item.lastUsedDate = lastUsedDate
+
+        completionHandler(item, nil)
     }
     
     /*
