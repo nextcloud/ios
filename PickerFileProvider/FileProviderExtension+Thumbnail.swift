@@ -70,6 +70,7 @@ extension FileProviderExtension {
                     }
                 }
             } else {
+                
                 counterProgress += 1
                 if (counterProgress == progress.totalUnitCount) {
                     completionHandler(nil)
