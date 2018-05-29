@@ -71,26 +71,25 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         if enumeratedItemIdentifier == .workingSet {
             
+            var itemIdentifierMetadata = [NSFileProviderItemIdentifier:tableMetadata]()
+            
             // Tag
             let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", providerData.account))
             for tag in tags {
                 
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, tag.fileID))  {
-                    
-                    if metadata.directory == false {
-                        providerData.createFileIdentifierOnFileSystem(metadata: metadata)
-                    }
-                    
-                    let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
-                    if parentItemIdentifier != nil {
-                        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-                        items.append(item)
-                    }
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, tag.fileID))  else {
+                    continue
                 }
+                
+                // create file on File System
+                if metadata.directory == false {
+                    providerData.createFileIdentifierOnFileSystem(metadata: metadata)
+                }
+                    
+                itemIdentifierMetadata[ providerData.getItemIdentifier(metadata: metadata)] = metadata
             }
             
             // Favorite Directory
-            /*
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             for (identifier, _) in listFavoriteIdentifierRank {
              
@@ -98,13 +97,16 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     continue
                 }
                
+                itemIdentifierMetadata[ providerData.getItemIdentifier(metadata: metadata)] = metadata
+            }
+            
+            for (_, metadata) in itemIdentifierMetadata {
                 let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                     items.append(item)
                 }
             }
-            */
             
             observer.didEnumerate(items)
             observer.finishEnumerating(upTo: nil)

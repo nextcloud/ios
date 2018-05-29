@@ -93,13 +93,17 @@ extension FileProviderExtension {
                     
             // Change DB
             metadata.favorite = favorite
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    
-            // Refresh Favorite Identifier Rank
-            //listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)                    
             
         }, failure: { (errorMessage, errorCode) in
-            print("errorMessage")
+            
+            listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
+            
+            fileProviderSignalUpdateItem[item.itemIdentifier] = item
+            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            
         })
     }
     
