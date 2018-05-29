@@ -280,10 +280,6 @@ extension FileProviderExtension {
             return
         }
          
-        // Refresh Favorite Identifier Rank
-        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
-        var favorite = false
-        
         if favoriteRank == nil {
             listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
         } else {
@@ -291,7 +287,6 @@ extension FileProviderExtension {
             if rank == nil {
                 listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank//NSNumber(value: Int64(newRank))
             }
-            favorite = true
         }
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
@@ -301,9 +296,9 @@ extension FileProviderExtension {
             
         completionHandler(item, nil)
         
-        if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            settingFavorite(favorite, withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
-        }
+        //if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
+        //    settingFavorite(favorite, withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
+        //}
     }
     
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {

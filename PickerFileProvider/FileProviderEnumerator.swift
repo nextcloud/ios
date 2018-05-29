@@ -90,6 +90,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             
             // Favorite Directory
+            /*
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             for (identifier, _) in listFavoriteIdentifierRank {
              
@@ -103,6 +104,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     items.append(item)
                 }
             }
+            */
             
             observer.didEnumerate(items)
             observer.finishEnumerating(upTo: nil)

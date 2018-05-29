@@ -115,11 +115,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
         } else {
             
-            
             if #available(iOSApplicationExtension 11.0, *) {
                 let rank = listFavoriteIdentifierRank[metadata.fileID]
                 if (rank == nil) {
-                    favoriteRank = NSNumber(value: Int64(NSFileProviderFavoriteRankUnranked))
+                    favoriteRank = nil
                 } else {
                     favoriteRank = listFavoriteIdentifierRank[metadata.fileID]
                 }

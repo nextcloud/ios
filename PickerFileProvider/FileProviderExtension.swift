@@ -82,8 +82,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         if #available(iOSApplicationExtension 11.0, *) {
             
-            //providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
-            
             // Timer for upload
             if timerUpload == nil {
                 
