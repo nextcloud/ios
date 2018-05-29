@@ -71,7 +71,23 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         if enumeratedItemIdentifier == .workingSet {
             
-            items = selectItemWorkingSet()
+            // Tag
+            let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", providerData.account))
+            for tag in tags {
+                
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, tag.fileID))  {
+                    
+                    if metadata.directory == false {
+                        providerData.createFileIdentifierOnFileSystem(metadata: metadata)
+                    }
+                    
+                    let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
+                    if parentItemIdentifier != nil {
+                        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
+                        items.append(item)
+                    }
+                }
+            }
             
             observer.didEnumerate(items)
             observer.finishEnumerating(upTo: nil)
@@ -207,29 +223,5 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         return items
     }
-    
-    func selectItemWorkingSet() -> [NSFileProviderItemProtocol] {
-        
-        var items: [NSFileProviderItemProtocol] = []
 
-        // Tag
-        let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", providerData.account))
-        for tag in tags {
-            
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, tag.fileID))  {
-                
-                if metadata.directory == false {
-                    providerData.createFileIdentifierOnFileSystem(metadata: metadata)
-                }
-                
-                let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
-                if parentItemIdentifier != nil {
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-                    items.append(item)
-                }
-            }
-        }
-        return items
-    }
-    
 }

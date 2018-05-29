@@ -353,6 +353,30 @@ extension FileProviderExtension {
         }
     }
     
+    override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+        
+        guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
+        let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
+        
+        if parentItemIdentifier != nil {
+            
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
+            item.lastUsedDate = lastUsedDate
+
+            completionHandler(item, nil)
+            
+        } else {
+            completionHandler(nil, nil)
+        }
+    }
+    
     /*
      override func trashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
      print("[LOG] trashitem")
