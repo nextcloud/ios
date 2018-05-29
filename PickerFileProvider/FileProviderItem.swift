@@ -73,10 +73,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         
         self.parentItemIdentifier = parentItemIdentifier
         self.itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-        
-        // update all items
-        itemIdentifierWithParentItemIdentifier[self.itemIdentifier] = self.parentItemIdentifier
-        
+                
         self.contentModificationDate = metadata.date as Date
         self.creationDate = metadata.date as Date
         self.documentSize = NSNumber(value: metadata.size)
