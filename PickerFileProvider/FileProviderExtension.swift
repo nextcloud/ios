@@ -169,7 +169,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         var updateItemsWorkingSet = [NSFileProviderItemIdentifier:FileProviderItem]()
         
-        // **** FAVORITE DIRECTORY ****
+        // ***** Tags *****
+
+        // ***** Favorite *****
         
         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
 

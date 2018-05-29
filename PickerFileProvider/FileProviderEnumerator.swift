@@ -73,7 +73,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             var itemIdentifierMetadata = [NSFileProviderItemIdentifier:tableMetadata]()
             
-            // Tag
+            // ***** Tags *****
             let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", providerData.account))
             for tag in tags {
                 
@@ -86,7 +86,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 itemIdentifierMetadata[providerData.getItemIdentifier(metadata: metadata)] = metadata
             }
             
-            // Favorite Directory
+            // ***** Favorite *****
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             for (identifier, _) in listFavoriteIdentifierRank {
              
