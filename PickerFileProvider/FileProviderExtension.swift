@@ -26,6 +26,9 @@ import FileProvider
 // Timer for Upload (queue)
 var timerUpload: Timer?
 
+// All items
+var itemIdentifierWithParentItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+
 // Item for signalEnumerator
 var fileProviderSignalDeleteItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
 var fileProviderSignalUpdateItem = [NSFileProviderItemIdentifier:FileProviderItem]()
@@ -169,7 +172,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         guard #available(iOS 11, *) else { return }
         
         var updateItemsWorkingSet = [NSFileProviderItemIdentifier:FileProviderItem]()
-
         
         // **** FAVORITE DIRECTORY ****
         
@@ -239,14 +241,29 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
             
-            let metadata = providerData.getTableMetadataFromItemIdentifier(identifier)
-            if  metadata != nil {
-                let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata!)
-                if parentItemIdentifier != nil {
-                    let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-                    return item
+            guard let metadata = providerData.getTableMetadataFromItemIdentifier(identifier) else {
+                guard let parentItemIdentifier = itemIdentifierWithParentItemIdentifier[identifier] else {
+                    throw NSFileProviderError(.noSuchItem)
                 }
+                fileProviderSignalDeleteItemIdentifier[identifier] = identifier
+                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+                
+                throw NSFileProviderError(.noSuchItem)
             }
+            
+            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+                guard let parentItemIdentifier = itemIdentifierWithParentItemIdentifier[identifier] else {
+                    throw NSFileProviderError(.noSuchItem)
+                }
+                fileProviderSignalDeleteItemIdentifier[identifier] = identifier
+                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+                
+                throw NSFileProviderError(.noSuchItem)
+            }
+            
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+            return item
+
         }
         
         throw NSFileProviderError(.noSuchItem)
