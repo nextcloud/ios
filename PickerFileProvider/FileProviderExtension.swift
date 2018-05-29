@@ -113,7 +113,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
         
         // update workingset
-        self.updateWorkingSet()
+        if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
+            self.updateWorkingSet()
+        }
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
 
