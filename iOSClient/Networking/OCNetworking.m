@@ -743,7 +743,7 @@
 
 - (void)settingFavorite
 {
-    [self settingFavorite:_metadataNet.fileName serverUrl:_metadataNet.serverUrl favorite:[_metadataNet.options boolValue] success:^{
+    [self settingFavorite:_metadataNet.fileName favorite:[_metadataNet.options boolValue] success:^{
         
         if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)])
             [self.delegate settingFavoriteSuccessFailure:_metadataNet message:nil errorCode:0];
@@ -759,7 +759,7 @@
     }];
 }
 
-- (void)settingFavorite:(NSString *)fileName serverUrl:(NSString *)serverUrl favorite:(BOOL)favorite success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)settingFavorite:(NSString *)fileName favorite:(BOOL)favorite success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     

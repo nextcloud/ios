@@ -88,8 +88,10 @@ extension FileProviderExtension {
             return
         }
         
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: self.providerData.accountUrl)
+
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.settingFavorite(metadata.fileName, serverUrl: serverUrl, favorite: favorite, success: {
+        ocNetworking?.settingFavorite(fileNamePath, favorite: favorite, success: {
                     
             // Change DB
             metadata.favorite = favorite
