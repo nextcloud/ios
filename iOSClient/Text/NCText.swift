@@ -160,7 +160,7 @@ class NCText: UIViewController, UITextViewDelegate {
                     self.dismiss(animated: true, completion: {
                         
                         // Send file
-                        CCNetworking.shared().uploadFile(metadata.fileNameView, serverUrl: serverUrl, identifier: CCUtility.generateRandomIdentifier() ,assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
+                        CCNetworking.shared().uploadFile(metadata.fileNameView, serverUrl: serverUrl, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
                     })
 

@@ -174,19 +174,6 @@ class tableGPS: Object {
     @objc dynamic var placemarkThoroughfare = ""
 }
 
-class tableIdentifier: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var fileName = ""
-    @objc dynamic var identifier = ""
-    @objc dynamic var path = ""
-    @objc dynamic var serverUrl = ""
-    
-    override static func primaryKey() -> String {
-        return "path"
-    }
-}
-
 class tableLocalFile: Object {
     
     @objc dynamic var account = ""
@@ -220,7 +207,6 @@ class tableMetadata: Object {
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
     @objc dynamic var iconName = ""
-    @objc dynamic var identifier = ""
     @objc dynamic var permissions = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
@@ -278,7 +264,6 @@ class tableQueueUpload: Object {
     @objc dynamic var errorCode: Int = 0
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
-    @objc dynamic var identifier = ""
     @objc dynamic var lock: Bool = false
     @objc dynamic var path: String?
     @objc dynamic var selector = ""

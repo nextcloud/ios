@@ -482,7 +482,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 _ = self.copyFile(url.path, toPath: destinationDirectoryUser)
 
-                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, identifier: CCUtility.generateRandomIdentifier(), assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             }
 
             self.stopProvidingItem(at: url)

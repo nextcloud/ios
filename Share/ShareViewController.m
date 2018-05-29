@@ -216,7 +216,7 @@
     
         NSString *fileName = [self.filesName objectAtIndex:0];
         
-        [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl identifier:[CCUtility generateRandomIdentifier] assetLocalIdentifier:nil session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
+        [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:_serverUrl assetLocalIdentifier:nil session:k_upload_session_foreground taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:self];
         
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
     }

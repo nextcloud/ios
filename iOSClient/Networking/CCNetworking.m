@@ -578,7 +578,7 @@
         } else {
             NSLog(@"[LOG] Remove record ? : metadata not found %@", url);
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate uploadFileSuccessFailure:fileName fileID:@"" identifier:@"" assetLocalIdentifier:@"" serverUrl:serverUrl selector:@"" selectorPost:@"" errorMessage:@"Remove record ? : metadata not found" errorCode:k_CCErrorInternalError];
+                [self.delegate uploadFileSuccessFailure:fileName fileID:@"" assetLocalIdentifier:@"" serverUrl:serverUrl selector:@"" selectorPost:@"" errorMessage:@"Remove record ? : metadata not found" errorCode:k_CCErrorInternalError];
             });
         }
     }
@@ -822,7 +822,7 @@
     PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadataNet.assetLocalIdentifier] options:nil];
     
     if (!result.count) {
-        [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID identifier:metadataNet.identifier assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:@"Error photo/video not found, remove from upload" errorCode:k_CCErrorInternalError];
+        [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:@"Error photo/video not found, remove from upload" errorCode:k_CCErrorInternalError];
         return;
     }
     
@@ -840,7 +840,7 @@
             NSLog(@"cacheAsset: %f", progress);
             
             if (error)
-                [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID identifier:metadataNet.identifier assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description] errorCode:error.code];
+                [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Image request iCloud failed [%@]", error.description] errorCode:error.code];
         };
         
         [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
@@ -862,10 +862,10 @@
             }
                 
             if (error) {
-                [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID identifier:metadataNet.identifier assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
+                [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
             } else {
                 // OOOOOK
-                [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl identifier:metadataNet.identifier assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
             }
         }];
     }
@@ -881,7 +881,7 @@
             NSLog(@"cacheAsset: %f", progress);
             
             if (error)
-                [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID identifier:metadataNet.identifier assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description] errorCode:error.code];
+                [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Video request iCloud failed [%@]", error.description] errorCode:error.code];
         };
         
         [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
@@ -896,12 +896,12 @@
                     
                 if (error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID identifier:metadataNet.identifier assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Video request failed [%@]", error.description] errorCode:error.code];
+                        [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Video request failed [%@]", error.description] errorCode:error.code];
                     });
                 } else {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         // OOOOOK
-                        [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl identifier:metadataNet.identifier assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                        [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
                     });
                 }
             }
@@ -909,12 +909,12 @@
     }
 }
 
-- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl identifier:(NSString *)identifier assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    [self upload:fileName serverUrl:serverUrl identifier:identifier assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+    [self upload:fileName serverUrl:serverUrl assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
 }
 
-- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl identifier:(NSString *)identifier assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
@@ -936,7 +936,6 @@
     metadata.directoryID = directoryID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileName;
-    metadata.identifier = identifier;
     metadata.session = session;
     metadata.sessionID = uploadID;
     metadata.sessionSelector = selector;
@@ -955,7 +954,7 @@
 
             if (errorMessage != nil || fileNameIdentifier == nil) {
                 
-                [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID identifier:identifier assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:k_CCErrorInternalError];
+                [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:k_CCErrorInternalError];
                 
             } else {
         
@@ -1049,7 +1048,7 @@
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount] clearDateReadDirectoryID:nil];
         
         // Error for uploadFileFailure
-        [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileName fileID:@"" identifier:metadata.identifier assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:NSLocalizedString(@"_file_not_present_", nil) errorCode:404];
+        [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileName fileID:@"" assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:NSLocalizedString(@"_file_not_present_", nil) errorCode:404];
         
         return;
     }
@@ -1069,7 +1068,7 @@
         
         NSString *messageError = @"Serious internal error uploadTask not available";
         [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:messageError sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-        [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileNameView fileID:@"" identifier:metadata.identifier assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:messageError errorCode:k_CCErrorInternalError];
+        [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileNameView fileID:@"" assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:messageError errorCode:k_CCErrorInternalError];
         
     } else {
         
@@ -1089,7 +1088,7 @@
 
                         NSString *messageError = [NSString stringWithFormat:@"%@ (%d)", error.localizedDescription, (int)error.code];
                         [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:messageError sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"sessionID = %@ AND account = %@", sessionID, _activeAccount]];
-                        [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileNameView fileID:@"" identifier:metadata.identifier assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:messageError errorCode:k_CCErrorInternalError];
+                        [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileNameView fileID:@"" assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:messageError errorCode:k_CCErrorInternalError];
                         
                     } else {
                     
@@ -1301,12 +1300,12 @@
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID identifier:metadata.identifier assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:errorMessage errorCode:errorCode];
+                [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:errorMessage errorCode:errorCode];
             });
         });
     } else {
         
-        [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID identifier:metadata.identifier assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:errorMessage errorCode:errorCode];
+        [[self getDelegate:sessionID] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:errorMessage errorCode:errorCode];
     }
 }
 
