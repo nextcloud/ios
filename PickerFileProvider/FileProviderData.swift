@@ -85,9 +85,11 @@ class FileProviderData: NSObject {
             try FileManager.default.createDirectory(atPath: identifierPath, withIntermediateDirectories: true, attributes: nil)
         } catch { }
         
-        // If do not exists create file with size = 0
-        if FileManager.default.fileExists(atPath: fileIdentifier) == false {
-            FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
+        if metadata.directory == false {
+            // If do not exists create file with size = 0
+            if FileManager.default.fileExists(atPath: fileIdentifier) == false {
+                FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
+            }
         }
     }
     

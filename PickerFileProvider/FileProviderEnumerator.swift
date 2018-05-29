@@ -81,10 +81,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     continue
                 }
                 
-                // create file on File System
-                if metadata.directory == false {
-                    providerData.createFileIdentifierOnFileSystem(metadata: metadata)
-                }
+                providerData.createFileIdentifierOnFileSystem(metadata: metadata)
                     
                 itemIdentifierMetadata[providerData.getItemIdentifier(metadata: metadata)] = metadata
             }
@@ -229,9 +226,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             counter += 1
             if (counter >= start && counter <= stop) {
                 
-                if metadata.directory == false {
-                    providerData.createFileIdentifierOnFileSystem(metadata: metadata)
-                }
+                providerData.createFileIdentifierOnFileSystem(metadata: metadata)
 
                 let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
