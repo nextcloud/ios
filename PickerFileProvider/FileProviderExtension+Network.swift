@@ -69,9 +69,7 @@ extension FileProviderExtension {
         }, failure: { (errorMessage, errorCode) in
             
             // remove itemIdentifier on fileProviderSignalDeleteItemIdentifier
-            if let index = fileProviderSignalDeleteItemIdentifier.index(of: itemIdentifier) {
-                fileProviderSignalDeleteItemIdentifier.remove(at: index)
-            }
+            fileProviderSignalDeleteItemIdentifier.removeValue(forKey: itemIdentifier)
             
             self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
         })
@@ -91,7 +89,7 @@ extension FileProviderExtension {
             let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
-            fileProviderSignalDeleteItemIdentifier.append(item.itemIdentifier)
+            fileProviderSignalDeleteItemIdentifier[item.itemIdentifier] = item.itemIdentifier
             signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
         
@@ -115,7 +113,7 @@ extension FileProviderExtension {
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                     
-                    fileProviderSignalUpdateItem.append(item)
+                    fileProviderSignalUpdateItem[item.itemIdentifier] = item
                     signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 }
             }

@@ -149,11 +149,19 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
         // Report the trashed items since last signal
         //
-        observer.didDeleteItems(withIdentifiers: fileProviderSignalDeleteItemIdentifier)
+        var itemsDelete = [NSFileProviderItemIdentifier]()
+        for (itemIdentifier, _) in fileProviderSignalDeleteItemIdentifier {
+            itemsDelete.append(itemIdentifier)
+        }
+        observer.didDeleteItems(withIdentifiers: itemsDelete)
         
         // Report the updated items since last signal
         //
-        observer.didUpdate(fileProviderSignalUpdateItem)
+        var itemsUpdate = [FileProviderItem]()
+        for (_, item) in fileProviderSignalUpdateItem {
+            itemsUpdate.append(item)
+        }
+        observer.didUpdate(itemsUpdate)
         
         let data = "\(currentAnchor)".data(using: .utf8)
         observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)        
