@@ -79,7 +79,7 @@ extension FileProviderExtension {
     //  MARK: - Upload
     // --------------------------------------------------------------------------------------------
     
-    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, identifier: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
+    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }

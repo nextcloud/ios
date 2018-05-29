@@ -395,7 +395,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
  
     //  MARK: - Upload 
     
-    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, identifier: String! ,assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
+    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         hud.hideHud()
         
