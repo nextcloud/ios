@@ -100,6 +100,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 itemIdentifierMetadata[ providerData.getItemIdentifier(metadata: metadata)] = metadata
             }
             
+            // create items
             for (_, metadata) in itemIdentifierMetadata {
                 let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {

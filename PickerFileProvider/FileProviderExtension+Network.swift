@@ -97,6 +97,7 @@ extension FileProviderExtension {
             
         }, failure: { (errorMessage, errorCode) in
             
+            // Errore, remove from listFavoriteIdentifierRank
             listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
 
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
