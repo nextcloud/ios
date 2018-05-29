@@ -171,6 +171,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         // ***** Tags *****
 
+        // (ADD)
+        
+        // (REMOVE)
+        
         // ***** Favorite *****
         
         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
