@@ -92,9 +92,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                     
                     // new upload
                     self.uploadFile()
-                    
-                    // update workingset
-                    self.updateWorkingSet()
                 })
                 
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
@@ -118,6 +115,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
+        
+        // update workingset
+        self.updateWorkingSet()
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
 
