@@ -36,9 +36,7 @@ class FileProviderData: NSObject {
     // Directory
     var groupURL: URL?
     var fileProviderStorageURL: URL?
-    
-    //var listFavoriteIdentifierRank = [String:NSNumber]()
-    
+        
     func setupActiveAccount() -> Bool {
         
         groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)

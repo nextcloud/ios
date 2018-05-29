@@ -86,7 +86,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     providerData.createFileIdentifierOnFileSystem(metadata: metadata)
                 }
                     
-                itemIdentifierMetadata[ providerData.getItemIdentifier(metadata: metadata)] = metadata
+                itemIdentifierMetadata[providerData.getItemIdentifier(metadata: metadata)] = metadata
             }
             
             // Favorite Directory

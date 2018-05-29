@@ -81,15 +81,17 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         verifyUploadQueueInLock()
         
         if #available(iOSApplicationExtension 11.0, *) {
-            
-            listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
-            
+                        
             // Timer for upload
             if timerUpload == nil {
                 
                 timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoDownloadUpload), repeats: true, block: { (Timer) in
                     
+                    // new upload
                     self.uploadFile()
+                    
+                    // update workingset
+                    self.updateWorkingSet()
                 })
                 
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
@@ -113,11 +115,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
-        
-        // Check account
-        if providerData.setupActiveAccount() == false {
-            throw  NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-        }
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
 
@@ -161,6 +158,56 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                     print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
                 }
             }
+        }
+    }
+    
+    // MARK: - WorkingSet
+    
+    func updateWorkingSet() {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+        
+        var updateItemsWorkingSet = [NSFileProviderItemIdentifier:FileProviderItem]()
+
+        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+        
+        // (ADD) Favorite Directory
+        for (identifier, _) in listFavoriteIdentifierRank {
+            
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
+                continue
+            }
+            
+            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+                continue
+            }
+            
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+        
+            updateItemsWorkingSet[item.itemIdentifier] = item
+        }
+        
+        // (REMOVE) Favorite Directory
+        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directory = true AND favorite = false", providerData.account), sorted: "fileName", ascending: true)
+        if (metadatas != nil && metadatas!.count > 0) {
+            for metadata in metadatas! {
+                guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+                    continue
+                }
+                
+                let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
+                listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+                
+                updateItemsWorkingSet[item.itemIdentifier] = item
+            }
+        }
+        
+        // Update
+        for (itemIdentifier, item) in updateItemsWorkingSet {
+            fileProviderSignalUpdateItem[itemIdentifier] = item
+            self.signalEnumerator(for: [.workingSet])
         }
     }
     
