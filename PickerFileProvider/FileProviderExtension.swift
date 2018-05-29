@@ -66,7 +66,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     var fileManager = FileManager()
     var providerData = FileProviderData()
 
-    //
     var outstandingDownloadTasks = [URL: URLSessionTask]()
 
     // Metadata Temp for Import
