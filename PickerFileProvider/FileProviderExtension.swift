@@ -30,6 +30,9 @@ var timerUpload: Timer?
 var fileProviderSignalDeleteItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
 var fileProviderSignalUpdateItem = [NSFileProviderItemIdentifier:FileProviderItem]()
 
+// Rank favorite
+var listFavoriteIdentifierRank = [String:NSNumber]()
+
 var currentAnchor: UInt64 = 0
 var fileNamePathImport = [String]()
 

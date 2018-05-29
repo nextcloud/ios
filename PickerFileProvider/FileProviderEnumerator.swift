@@ -89,6 +89,21 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 }
             }
             
+            // Favorite Directory
+            listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+            for (identifier, _) in listFavoriteIdentifierRank {
+             
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
+                    continue
+                }
+               
+                let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
+                if parentItemIdentifier != nil {
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
+                    items.append(item)
+                }
+            }
+            
             observer.didEnumerate(items)
             observer.finishEnumerating(upTo: nil)
             return

@@ -76,6 +76,44 @@ extension FileProviderExtension {
     }
     
     // --------------------------------------------------------------------------------------------
+    //  MARK: - Favorite
+    // --------------------------------------------------------------------------------------------
+    
+    func settingFavorite(_ favorite: Bool, withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata) {
+
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+        
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            return
+        }
+        
+        DispatchQueue(label: "com.nextcloud", qos: .background, attributes: .concurrent, autoreleaseFrequency: .inherit, target: nil).async {
+                
+            //NSString *fileOrFolderPath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+                
+            let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: self.providerData.accountUser, withUserID: self.providerData.accountUserID, withPassword: self.providerData.accountPassword, withUrl: self.providerData.accountUrl)
+            ocNetworking?.settingFavorite(metadata.fileName, serverUrl: serverUrl, favorite: favorite, success: {
+                    
+                // Change DB
+                metadata.favorite = favorite
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    
+                // Refresh Favorite Identifier Rank
+                listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+                                    
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
+
+                fileProviderSignalUpdateItem[item.itemIdentifier] = item
+                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                
+            }, failure: { (errorMessage, errorCode) in
+                print("errorMessage")
+            })
+        }
+    }
+    
+    // --------------------------------------------------------------------------------------------
     //  MARK: - Upload
     // --------------------------------------------------------------------------------------------
     

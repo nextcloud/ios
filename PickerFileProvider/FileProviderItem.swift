@@ -115,7 +115,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
         } else {
             
-            /*
+            
             if #available(iOSApplicationExtension 11.0, *) {
                 let rank = listFavoriteIdentifierRank[metadata.fileID]
                 if (rank == nil) {
@@ -124,7 +124,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                     favoriteRank = listFavoriteIdentifierRank[metadata.fileID]
                 }
             }
-            */
         }
         
         // Tag

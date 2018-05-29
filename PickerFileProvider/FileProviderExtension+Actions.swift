@@ -259,7 +259,6 @@ extension FileProviderExtension {
         })
     }
     
-    /*
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
@@ -276,18 +275,13 @@ extension FileProviderExtension {
             return
         }
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
          
         // Refresh Favorite Identifier Rank
-        var listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
         var favorite = false
         
         if favoriteRank == nil {
@@ -307,9 +301,10 @@ extension FileProviderExtension {
             
         completionHandler(item, nil)
         
-        // Call the completion handler before performing any network activity or other long-running tasks. Defer these tasks to the background
+        if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
+            settingFavorite(favorite, withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
+        }
     }
-    */
     
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
