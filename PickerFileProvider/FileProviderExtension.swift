@@ -113,12 +113,13 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
-
-        if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
-
+        
+        if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
             // update workingset
             self.updateWorkingSet()
+        }
 
+        if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
