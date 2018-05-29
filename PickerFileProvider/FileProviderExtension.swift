@@ -114,8 +114,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
         
+        // update workingset
         if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-            // update workingset
             self.updateWorkingSet()
         }
 
