@@ -118,7 +118,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         // update workingset
         if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-            self.updateWorkingSet()
+            //self.updateWorkingSet()
         }
 
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
@@ -230,7 +230,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         // Update workingSet
         for (itemIdentifier, item) in updateItemsWorkingSet {
-            fileProviderSignalUpdateContainerItem[itemIdentifier] = item
+            fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
             self.signalEnumerator(for: [.workingSet])
         }
     }

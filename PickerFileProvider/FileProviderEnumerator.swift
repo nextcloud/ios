@@ -183,24 +183,46 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         // Report the deleted items
         //
         var itemsDelete = [NSFileProviderItemIdentifier]()
-        for (itemIdentifier, _) in fileProviderSignalDeleteContainerItemIdentifier {
-            itemsDelete.append(itemIdentifier)
+        
+        if enumeratedItemIdentifier == .workingSet {
+            for (itemIdentifier, _) in fileProviderSignalDeleteWorkingSetItemIdentifier {
+                itemsDelete.append(itemIdentifier)
+            }
+            fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
+        } else {
+            for (itemIdentifier, _) in fileProviderSignalDeleteContainerItemIdentifier {
+                itemsDelete.append(itemIdentifier)
+            }
+            fileProviderSignalDeleteContainerItemIdentifier.removeAll()
         }
         
         // Report the updated items
         //
         var itemsUpdate = [FileProviderItem]()
-        for (itemIdentifier, item) in fileProviderSignalUpdateContainerItem {
-            let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
-            if account != nil && account == providerData.account {
-                itemsUpdate.append(item)
-            } else {
-                itemsDelete.append(itemIdentifier)
+        
+        if enumeratedItemIdentifier == .workingSet {
+            for (itemIdentifier, item) in fileProviderSignalUpdateWorkingSetItem {
+                let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
+                if account != nil && account == providerData.account {
+                    itemsUpdate.append(item)
+                } else {
+                    itemsDelete.append(itemIdentifier)
+                }
             }
+            fileProviderSignalUpdateWorkingSetItem.removeAll()
+        } else {
+            for (itemIdentifier, item) in fileProviderSignalUpdateContainerItem {
+                let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
+                if account != nil && account == providerData.account {
+                    itemsUpdate.append(item)
+                } else {
+                    itemsDelete.append(itemIdentifier)
+                }
+            }
+            fileProviderSignalUpdateContainerItem.removeAll()
         }
         
         observer.didDeleteItems(withIdentifiers: itemsDelete)
-        
         observer.didUpdate(itemsUpdate)
         
         let data = "\(currentAnchor)".data(using: .utf8)
