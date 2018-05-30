@@ -115,6 +115,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             
         } else {
             
+            // Favorite directory
             if #available(iOSApplicationExtension 11.0, *) {
                 let rank = listFavoriteIdentifierRank[metadata.fileID]
                 if (rank == nil) {
