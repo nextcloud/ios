@@ -324,7 +324,7 @@ extension FileProviderExtension {
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
             
         fileProviderSignalUpdateItem[item.itemIdentifier] = item
-        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        signalEnumerator(for: [.workingSet])
             
         completionHandler(item, nil)
     }
