@@ -432,8 +432,8 @@ extension FileProviderExtension {
             metadata.fileID = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
             metadata.size = size
             metadata.status = Double(k_metadataStatusHide)
-            metadata.fileName = fileURL.lastPathComponent
-            metadata.fileNameView = fileURL.lastPathComponent
+            metadata.fileName = fileName
+            metadata.fileNameView = fileName
             CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
             
             if (size > 0) {
