@@ -172,7 +172,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         var updateItemsWorkingSet = [NSFileProviderItemIdentifier:FileProviderItem]()
         
-        // ***** Favorite *****
+        // ***** Favorite Files <-> Favorite Nextcloud *****
         
         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
 
