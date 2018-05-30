@@ -52,6 +52,7 @@
 - (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *fileID, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 - (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 - (void)settingFavorite:(NSString *)fileName favorite:(BOOL)favorite success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+- (void)listingFavorites:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSArray *metadatas))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
 @end
 
