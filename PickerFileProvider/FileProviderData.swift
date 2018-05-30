@@ -53,6 +53,10 @@ class FileProviderData: NSObject {
             return false
         }
         
+        if account != "" && account != activeAccount.account {
+            assert(false, "change user")
+        }
+        
         account = activeAccount.account
         accountUser = activeAccount.user
         accountUserID = activeAccount.userID
@@ -62,6 +66,12 @@ class FileProviderData: NSObject {
         directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
                 
         return true
+    }
+    
+    func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
+        
+        let fileID = itemIdentifier.rawValue
+        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))?.account
     }
     
     func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {

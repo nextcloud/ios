@@ -186,14 +186,20 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         for (itemIdentifier, _) in fileProviderSignalDeleteItemIdentifier {
             itemsDelete.append(itemIdentifier)
         }
-        observer.didDeleteItems(withIdentifiers: itemsDelete)
         
         // Report the updated items since last signal
         //
         var itemsUpdate = [FileProviderItem]()
-        for (_, item) in fileProviderSignalUpdateItem {
-            itemsUpdate.append(item)
+        for (itemIdentifier, item) in fileProviderSignalUpdateItem {
+            let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
+            if account != nil && account == providerData.account {
+                itemsUpdate.append(item)
+            } else {
+                itemsDelete.append(itemIdentifier)
+            }
         }
+        
+        observer.didDeleteItems(withIdentifiers: itemsDelete)
         observer.didUpdate(itemsUpdate)
         
         let data = "\(currentAnchor)".data(using: .utf8)
