@@ -180,14 +180,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         guard #available(iOS 11, *) else { return }
     
-        // Report the trashed items since last signal
+        // Report the deleted items
         //
         var itemsDelete = [NSFileProviderItemIdentifier]()
         for (itemIdentifier, _) in fileProviderSignalDeleteItemIdentifier {
             itemsDelete.append(itemIdentifier)
         }
         
-        // Report the updated items since last signal
+        // Report the updated items
         //
         var itemsUpdate = [FileProviderItem]()
         for (itemIdentifier, item) in fileProviderSignalUpdateItem {
@@ -200,6 +200,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
         
         observer.didDeleteItems(withIdentifiers: itemsDelete)
+        
         observer.didUpdate(itemsUpdate)
         
         let data = "\(currentAnchor)".data(using: .utf8)

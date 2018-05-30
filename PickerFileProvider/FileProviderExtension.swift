@@ -190,8 +190,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
 
             updateItemsWorkingSet[item.itemIdentifier] = item
         }
-        // (REMOVE)
-        
+
         // ***** Favorite *****
         
         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
@@ -211,7 +210,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
             updateItemsWorkingSet[item.itemIdentifier] = item
         }
-        /*
         // (REMOVE)
         let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directory = true AND favorite = false", providerData.account), sorted: "fileName", ascending: true)
         if (metadatas != nil && metadatas!.count > 0) {
@@ -227,7 +225,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 updateItemsWorkingSet[item.itemIdentifier] = item
             }
         }
-        */
         
         // Update workingSet
         for (itemIdentifier, item) in updateItemsWorkingSet {
