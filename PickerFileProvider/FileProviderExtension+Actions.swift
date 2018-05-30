@@ -177,17 +177,12 @@ extension FileProviderExtension {
                 return
             }
             
-            guard let parentItemIdentifier = self.providerData.getParentItemIdentifier(metadata: metadata) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-                
-            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            
+            fileProviderSignalUpdateContainerItem[itemIdentifier] = item
+            fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
 
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
                 
             completionHandler(item, nil)
             
