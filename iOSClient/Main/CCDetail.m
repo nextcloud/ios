@@ -317,7 +317,7 @@
             [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"20",@"Sans-Serif",dataFile] baseURL:nil];
         }
         
-    } else if ([_fileNameExtension isEqualToString:@"TXT"]) {
+    } else if ([_fileNameExtension isEqualToString:@"TXT"] || [_fileNameExtension isEqualToString:@"MD"]) {
         
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
