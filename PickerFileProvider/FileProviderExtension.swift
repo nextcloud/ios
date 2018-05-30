@@ -27,8 +27,10 @@ import FileProvider
 var timerUpload: Timer?
 
 // Item for signalEnumerator
-var fileProviderSignalDeleteItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
-var fileProviderSignalUpdateItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+var fileProviderSignalDeleteContainerItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+var fileProviderSignalUpdateContainerItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
 
 // Rank favorite
 var listFavoriteIdentifierRank = [String:NSNumber]()
@@ -228,7 +230,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         // Update workingSet
         for (itemIdentifier, item) in updateItemsWorkingSet {
-            fileProviderSignalUpdateItem[itemIdentifier] = item
+            fileProviderSignalUpdateContainerItem[itemIdentifier] = item
             self.signalEnumerator(for: [.workingSet])
         }
     }

@@ -183,14 +183,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         // Report the deleted items
         //
         var itemsDelete = [NSFileProviderItemIdentifier]()
-        for (itemIdentifier, _) in fileProviderSignalDeleteItemIdentifier {
+        for (itemIdentifier, _) in fileProviderSignalDeleteContainerItemIdentifier {
             itemsDelete.append(itemIdentifier)
         }
         
         // Report the updated items
         //
         var itemsUpdate = [FileProviderItem]()
-        for (itemIdentifier, item) in fileProviderSignalUpdateItem {
+        for (itemIdentifier, item) in fileProviderSignalUpdateContainerItem {
             let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
             if account != nil && account == providerData.account {
                 itemsUpdate.append(item)

@@ -73,7 +73,7 @@ extension FileProviderExtension {
                 
                 let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!, providerData: self.providerData)
                 
-                fileProviderSignalUpdateItem[item.itemIdentifier] = item
+                fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
                 self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 
                 completionHandler(item, nil)
@@ -111,7 +111,7 @@ extension FileProviderExtension {
         deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
 
         // return immediately
-        fileProviderSignalDeleteItemIdentifier[itemIdentifier] = itemIdentifier
+        fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
         self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
         
         completionHandler(nil)
@@ -180,7 +180,7 @@ extension FileProviderExtension {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
                 
-            fileProviderSignalUpdateItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 
             completionHandler(item, nil)
@@ -249,7 +249,7 @@ extension FileProviderExtension {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
                 
-            fileProviderSignalUpdateItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 
             completionHandler(item, nil)
@@ -293,7 +293,7 @@ extension FileProviderExtension {
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
             
-        fileProviderSignalUpdateItem[item.itemIdentifier] = item
+        fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
         signalEnumerator(for: [.workingSet])
             
         completionHandler(item, nil)
@@ -323,7 +323,7 @@ extension FileProviderExtension {
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
             
-        fileProviderSignalUpdateItem[item.itemIdentifier] = item
+        fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
         signalEnumerator(for: [.workingSet])
             
         completionHandler(item, nil)
@@ -455,7 +455,7 @@ extension FileProviderExtension {
             
             let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
             
-            fileProviderSignalUpdateItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             
             completionHandler(item, nil)
