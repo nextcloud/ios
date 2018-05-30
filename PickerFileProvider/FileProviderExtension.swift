@@ -117,7 +117,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         // update workingset
         if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-            //self.updateWorkingSet()
+            self.updateWorkingSet()
         }
 
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
@@ -172,26 +172,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         var updateItemsWorkingSet = [NSFileProviderItemIdentifier:FileProviderItem]()
         
-        // ***** Tags *****
-
-        let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", providerData.account))
-
-        // (ADD)
-        for tag in tags {
-            
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, tag.fileID))  else {
-                continue
-            }
-            
-            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
-                continue
-            }
-            
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-
-            updateItemsWorkingSet[item.itemIdentifier] = item
-        }
-
         // ***** Favorite *****
         
         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
