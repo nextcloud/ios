@@ -164,12 +164,12 @@ extension FileProviderExtension {
                 signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
             
+            uploadFile()
+            
         } else {
             
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
         }
-        
-        uploadFile()
     }
     
     func uploadFile() {
