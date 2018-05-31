@@ -367,6 +367,19 @@ extension FileProviderExtension {
         let fileCoordinator = NSFileCoordinator()
         var error: NSError?
         
+        guard let tableDirectory = self.providerData.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        let serverUrl = tableDirectory.serverUrl
+            
+        // --------------------------------------------- Copy file here with security access
+            
+        if fileURL.startAccessingSecurityScopedResource() == false {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+        
         // typefile directory ? (NOT PERMITTED)
         do {
             let attributes = try self.fileManager.attributesOfItem(atPath: fileURL.path)
@@ -381,19 +394,6 @@ extension FileProviderExtension {
             return
         }
         
-        guard let tableDirectory = self.providerData.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-        let serverUrl = tableDirectory.serverUrl
-            
-        // --------------------------------------------- Copy file here with security access
-            
-        if fileURL.startAccessingSecurityScopedResource() == false {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
-            
         let fileName = self.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID, serverUrl: serverUrl)
         let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
             
