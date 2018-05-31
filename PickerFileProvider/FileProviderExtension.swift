@@ -121,6 +121,12 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
 
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
+            
+            // Check account
+            if providerData.setupActiveAccount() == false {
+                throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
+            }
+            
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
