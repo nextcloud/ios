@@ -357,18 +357,6 @@ extension FileProviderExtension {
         completionHandler(item, nil)
     }
     
-    /*
-     override func trashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-     print("[LOG] trashitem")
-     completionHandler(nil, nil)
-     }
-     
-     override func untrashItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-     print("[LOG] untrashitem")
-     completionHandler(nil, nil)
-     }
-     */
-    
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
         /* ONLY iOS 11*/
@@ -379,6 +367,19 @@ extension FileProviderExtension {
         let fileCoordinator = NSFileCoordinator()
         var error: NSError?
         
+        // typefile directory ? (NOT PERMITTED)
+        do {
+            let attributes = try self.fileManager.attributesOfItem(atPath: fileURL.path)
+            size = attributes[FileAttributeKey.size] as! Double
+            let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
+            if typeFile == FileAttributeType.typeDirectory {
+                completionHandler(nil, NSFileProviderError(.noSuchItem))
+                return
+            }
+        } catch {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
         
         guard let tableDirectory = self.providerData.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
@@ -387,14 +388,12 @@ extension FileProviderExtension {
         let serverUrl = tableDirectory.serverUrl
             
         // --------------------------------------------- Copy file here with security access
-        
-        guard fileURL.startAccessingSecurityScopedResource() else {
-            print("###\(#function):\(fileURL) is not security scoped!")
-            completionHandler(nil, nil)
+            
+        if fileURL.startAccessingSecurityScopedResource() == false {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-        
-    
+            
         let fileName = self.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID, serverUrl: serverUrl)
         let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
             
@@ -402,21 +401,11 @@ extension FileProviderExtension {
             try FileManager.default.createDirectory(atPath: fileNamePathDirectory, withIntermediateDirectories: true, attributes: nil)
         } catch  { }
             
-        fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
+        fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
             _ = self.moveFile(url.path, toPath: fileNamePathDirectory + "/" + fileName)
-                
         }
             
         fileURL.stopAccessingSecurityScopedResource()
-            
-        do {
-            let attributes = try self.fileManager.attributesOfItem(atPath: fileNamePathDirectory + "/" + fileName)
-            size = attributes[FileAttributeKey.size] as! Double
-            let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType            
-        } catch {
-            completionHandler(nil, NSFileProviderError(.noSuchItem))
-            return
-        }
             
         // ---------------------------------------------------------------------------------
             
