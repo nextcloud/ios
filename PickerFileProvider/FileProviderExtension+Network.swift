@@ -168,6 +168,8 @@ extension FileProviderExtension {
             
         } else {
             
+            //TODO: manage error
+            
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
         }
     }
