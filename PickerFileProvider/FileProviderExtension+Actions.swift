@@ -379,96 +379,92 @@ extension FileProviderExtension {
         let fileCoordinator = NSFileCoordinator()
         var error: NSError?
         
-        DispatchQueue.main.async {
-            
-            guard let tableDirectory = self.providerData.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            let serverUrl = tableDirectory.serverUrl
-            
-            // --------------------------------------------- Copy file here with security access
-            
-            if fileURL.startAccessingSecurityScopedResource() == false {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            let fileName = self.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID, serverUrl: serverUrl)
-            let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
-            
-            do {
-                try FileManager.default.createDirectory(atPath: fileNamePathDirectory, withIntermediateDirectories: true, attributes: nil)
-            } catch  { }
-            
-            fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
-                _ = self.moveFile(url.path, toPath: fileNamePathDirectory + "/" + fileName)
-                
-            }
-            
-            fileURL.stopAccessingSecurityScopedResource()
-            
-            do {
-                let attributes = try self.fileManager.attributesOfItem(atPath: fileNamePathDirectory + "/" + fileName)
-                size = attributes[FileAttributeKey.size] as! Double
-                let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
-                if typeFile == FileAttributeType.typeDirectory {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
-                }
-            } catch {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            // ---------------------------------------------------------------------------------
-            
-            // Metadata TEMP
-            metadata.account = self.providerData.account
-            metadata.date = NSDate()
-            metadata.directory = false
-            metadata.directoryID = tableDirectory.directoryID
-            metadata.etag = ""
-            metadata.fileID = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
-            metadata.size = size
-            metadata.status = Double(k_metadataStatusHide)
-            metadata.fileName = fileName
-            metadata.fileNameView = fileName
-            CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
-            
-            if (size > 0) {
-                
-                let metadataNet = CCMetadataNet()
-                
-                metadataNet.account = self.providerData.account
-                metadataNet.assetLocalIdentifier = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
-                metadataNet.fileName = fileName
-                metadataNet.path = fileNamePathDirectory + "/" + fileName
-                metadataNet.selector = selectorUploadFile
-                metadataNet.selectorPost = ""
-                metadataNet.serverUrl = serverUrl
-                metadataNet.session = k_upload_session_extension
-                metadataNet.sessionError = ""
-                metadataNet.sessionID = ""
-                metadataNet.taskStatus = Int(k_taskStatusResume)
-                
-                _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
-            }
-            
-            guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-                return
-            }
-            
-            let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-            
-            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-            
-            completionHandler(item, nil)
+        
+        guard let tableDirectory = self.providerData.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
         }
+        let serverUrl = tableDirectory.serverUrl
+            
+        // --------------------------------------------- Copy file here with security access
+        
+        guard fileURL.startAccessingSecurityScopedResource() else {
+            print("###\(#function):\(fileURL) is not security scoped!")
+            completionHandler(nil, nil)
+            return
+        }
+        
+    
+        let fileName = self.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID, serverUrl: serverUrl)
+        let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+            
+        do {
+            try FileManager.default.createDirectory(atPath: fileNamePathDirectory, withIntermediateDirectories: true, attributes: nil)
+        } catch  { }
+            
+        fileCoordinator.coordinate(readingItemAt: fileURL, options: NSFileCoordinator.ReadingOptions.withoutChanges, error: &error) { (url) in
+            _ = self.moveFile(url.path, toPath: fileNamePathDirectory + "/" + fileName)
+                
+        }
+            
+        fileURL.stopAccessingSecurityScopedResource()
+            
+        do {
+            let attributes = try self.fileManager.attributesOfItem(atPath: fileNamePathDirectory + "/" + fileName)
+            size = attributes[FileAttributeKey.size] as! Double
+            let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType            
+        } catch {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+            
+        // ---------------------------------------------------------------------------------
+            
+        // Metadata TEMP
+        metadata.account = self.providerData.account
+        metadata.date = NSDate()
+        metadata.directory = false
+        metadata.directoryID = tableDirectory.directoryID
+        metadata.etag = ""
+        metadata.fileID = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+        metadata.size = size
+        metadata.status = Double(k_metadataStatusHide)
+        metadata.fileName = fileName
+        metadata.fileNameView = fileName
+        CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
+            
+        if (size > 0) {
+                
+            let metadataNet = CCMetadataNet()
+                
+            metadataNet.account = self.providerData.account
+            metadataNet.assetLocalIdentifier = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+            metadataNet.fileName = fileName
+            metadataNet.path = fileNamePathDirectory + "/" + fileName
+            metadataNet.selector = selectorUploadFile
+            metadataNet.selectorPost = ""
+            metadataNet.serverUrl = serverUrl
+            metadataNet.session = k_upload_session_extension
+            metadataNet.sessionError = ""
+            metadataNet.sessionID = ""
+            metadataNet.taskStatus = Int(k_taskStatusResume)
+                
+            _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+        }
+            
+        guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+            completionHandler(nil, NSFileProviderError(.noSuchItem))
+            return
+        }
+            
+        let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
+            
+        fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+        fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+
+        self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            
+        completionHandler(item, nil)
     }
     
     func createFileName(_ fileName: String, directoryID: String, serverUrl: String) -> String {
