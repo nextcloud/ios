@@ -128,7 +128,7 @@ extension FileProviderExtension {
             return
         }
         
-        if let metadataFileIDImportTemp = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID CONTAINS %@ AND fileName = %@ AND directoryID = %@", FILEID_IMPORT_METADATA_TEMP, metadata.fileName, metadata.directoryID)) {
+        if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID CONTAINS %@ AND fileName = %@ AND directoryID = %@", FILEID_IMPORT_METADATA_TEMP, metadata.fileName, metadata.directoryID)) != nil {
             
             return
         }
