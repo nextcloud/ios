@@ -111,10 +111,17 @@ extension FileProviderExtension {
             return
         }
         
-        //TODO: se è un UPLOAD QUEUE
-        
-        deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
+        //TODO: se è un UPLOAD QUEUE assetlocalidentifier
+        if let uploadQueue = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND assetLocalIdentifier = %@", self.providerData.account, metadata.assetLocalIdentifier)) {
+            
+            NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: metadata.assetLocalIdentifier, selector: metadata.sessionSelector)
 
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "assetLocalIdentifier = %@", metadata.assetLocalIdentifier), clearDateReadDirectoryID: nil)
+
+        } else {
+            deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
+        }
+        
         // return immediately
         queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
