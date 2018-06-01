@@ -111,6 +111,8 @@ extension FileProviderExtension {
             return
         }
         
+        //TODO: se è un UPLOAD QUEUE
+        
         deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
 
         // return immediately
