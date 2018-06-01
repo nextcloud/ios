@@ -1,4 +1,33 @@
-3.4.0 Release notes (2018-04-25)
+3.6.0 Release notes (2018-05-29)
+=============================================================
+
+### Breaking Changes
+
+* None.
+
+### Enhancements
+
+* Improve performance of sync metadata operations and resolving thread-safe
+  references.
+* `shouldCompactOnLaunch` is now supported for compacting the local data of
+  synchronized Realms.
+
+### Bugfixes
+
+* Fix a potential deadlock when a sync session progress callback held the last
+  strong reference to the sync session.
+* Fix some cases where comparisons to `nil` in queries were not properly
+  serialized when subscribing to a query.
+* Don't delete objects added during a migration after a call to `-[RLMMigration
+  deleteDataForClassName:]`.
+* Fix incorrect results and/or crashes when multiple `-[RLMMigration
+  enumerateObjects:block:]` blocks deleted objects of the same type.
+* Fix some edge-cases where `-[RLMMigration enumerateObjects:block:]`
+  enumerated the incorrect objects following deletions.
+* Restore the pre-3.5.0 behavior for Swift optional properties missing an ivar
+  rather than crashing.
+
+3.5.0 Release notes (2018-04-25)
 =============================================================
 
 ### Enhancements
