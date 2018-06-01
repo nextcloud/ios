@@ -73,10 +73,11 @@ extension FileProviderExtension {
                 
                 let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier!, providerData: self.providerData)
                 
-                fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-
-                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                queueTradeSafe.sync(flags: .barrier) {
+                    fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                    fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                    self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                }
                 
                 completionHandler(item, nil)
                 
@@ -113,10 +114,11 @@ extension FileProviderExtension {
         deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
 
         // return immediately
-        fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
-        fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-
-        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        queueTradeSafe.sync(flags: .barrier) {
+            fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
+            fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        }
         
         completionHandler(nil)
     }
@@ -179,11 +181,12 @@ extension FileProviderExtension {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
             
-            fileProviderSignalUpdateContainerItem[itemIdentifier] = item
-            fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
-
-            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
-                
+            queueTradeSafe.sync(flags: .barrier) {
+                fileProviderSignalUpdateContainerItem[itemIdentifier] = item
+                fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
+                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            }
+            
             completionHandler(item, nil)
             
         }, failure: { (errorMessage, errorCode) in
@@ -249,12 +252,13 @@ extension FileProviderExtension {
             }
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-                
-            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-                
+            
+            queueTradeSafe.sync(flags: .barrier) {
+                fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            }
+            
             completionHandler(item, nil)
             
         }, failure: { (errorMessage, errorCode) in
@@ -296,11 +300,12 @@ extension FileProviderExtension {
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
         
-        fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-        fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-
-        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-
+        queueTradeSafe.sync(flags: .barrier) {
+            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        }
+        
         completionHandler(item, nil)
         
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
@@ -328,11 +333,12 @@ extension FileProviderExtension {
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
         
-        fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-        fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-
-        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-
+        queueTradeSafe.sync(flags: .barrier) {
+            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        }
+        
         completionHandler(item, nil)
     }
     
@@ -447,21 +453,21 @@ extension FileProviderExtension {
         }
             
         let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-            
-        fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-        fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-
-        self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-            
+        
+        queueTradeSafe.sync(flags: .barrier) {
+            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        }
+        
         completionHandler(item, nil)
     }
     
     func createFileName(_ fileName: String, directoryID: String, serverUrl: String) -> String {
         
-        let serialQueue = DispatchQueue(label: "queueCreateFileName")
         var resultFileName = fileName
         
-        serialQueue.sync {
+        queueTradeSafe.sync {
             
             var exitLoop = false
             

@@ -69,10 +69,11 @@ extension FileProviderExtension {
         }, failure: { (errorMessage, errorCode) in
             
             // remove itemIdentifier on fileProviderSignalDeleteItemIdentifier
-            fileProviderSignalDeleteContainerItemIdentifier.removeValue(forKey: itemIdentifier)
-            fileProviderSignalDeleteWorkingSetItemIdentifier.removeValue(forKey: itemIdentifier)
-
-            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            queueTradeSafe.async(flags: .barrier) {
+                fileProviderSignalDeleteContainerItemIdentifier.removeValue(forKey: itemIdentifier)
+                fileProviderSignalDeleteWorkingSetItemIdentifier.removeValue(forKey: itemIdentifier)
+                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            }
         })
     }
     
@@ -105,10 +106,11 @@ extension FileProviderExtension {
 
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
             
-            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            queueTradeSafe.async(flags: .barrier) {
+                fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            }
             
         })
     }
@@ -129,10 +131,11 @@ extension FileProviderExtension {
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
-                fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-                fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-
-                signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                queueTradeSafe.async(flags: .barrier) {
+                    fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+                    fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+                    self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                }
             }
         }
         
@@ -157,11 +160,12 @@ extension FileProviderExtension {
                 }
                 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-                    
-                fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-
-                signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                
+                queueTradeSafe.async(flags: .barrier) {
+                    fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                    fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                    self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                }
             }
             
             uploadFile()

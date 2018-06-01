@@ -35,6 +35,9 @@ var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileP
 // Rank favorite
 var listFavoriteIdentifierRank = [String:NSNumber]()
 
+// Queue for trade-safe
+let queueTradeSafe = DispatchQueue(label: "com.nextcloud.fileproviderextension.tradesafe", attributes: .concurrent)
+
 var currentAnchor: UInt64 = 0
 
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -114,11 +117,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
-        
-        // update workingset
-        if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
-            self.updateWorkingSet()
-        }
 
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
             
@@ -126,6 +124,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             if providerData.setupActiveAccount() == false {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
             }
+            
+            // Update WorkingSet
+            self.updateWorkingSet()
             
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
@@ -176,12 +177,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        var updateItemsWorkingSet = [NSFileProviderItemIdentifier:FileProviderItem]()
-        
         // ***** Favorite Files <-> Favorite Nextcloud *****
         
         listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
-
+        
         // (ADD)
         for (identifier, _) in listFavoriteIdentifierRank {
             
@@ -194,8 +193,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-        
-            updateItemsWorkingSet[item.itemIdentifier] = item
+            
+            queueTradeSafe.sync(flags: .barrier) {
+                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            }
         }
         
         // (REMOVE)
@@ -210,15 +211,14 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
                 
-                updateItemsWorkingSet[item.itemIdentifier] = item
+                queueTradeSafe.sync(flags: .barrier) {
+                    fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                }
             }
         }
         
         // Update workingSet
-        for (itemIdentifier, item) in updateItemsWorkingSet {
-            fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
-            self.signalEnumerator(for: [.workingSet])
-        }
+        self.signalEnumerator(for: [.workingSet])
     }
     
     // MARK: - Item
@@ -257,7 +257,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
             return item
-
         }
         
         throw NSFileProviderError(.noSuchItem)

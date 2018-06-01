@@ -39,8 +39,10 @@ class FileProviderData: NSObject {
         
     func setupActiveAccount() -> Bool {
         
-        groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-        fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+        queueTradeSafe.sync(flags: .barrier) {
+            groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+            fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+        }
         
         // Create dir File Provider Storage
         do {
@@ -57,14 +59,16 @@ class FileProviderData: NSObject {
             assert(false, "change user")
         }
         
-        account = activeAccount.account
-        accountUser = activeAccount.user
-        accountUserID = activeAccount.userID
-        accountPassword = activeAccount.password
-        accountUrl = activeAccount.url
-        homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
-        directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
-                
+        queueTradeSafe.sync(flags: .barrier) {
+            account = activeAccount.account
+            accountUser = activeAccount.user
+            accountUserID = activeAccount.userID
+            accountPassword = activeAccount.password
+            accountUrl = activeAccount.url
+            homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
+            directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
+        }
+        
         return true
     }
     
