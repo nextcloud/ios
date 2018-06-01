@@ -119,6 +119,28 @@ extension FileProviderExtension {
     //  MARK: - Upload
     // --------------------------------------------------------------------------------------------
     
+    func uploadStart(_ fileID: String!, serverUrl: String!) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID = %@", fileID)) else {
+            return
+        }
+        
+        guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+            return
+        }
+        
+        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+        
+        queueTradeSafe.async(flags: .barrier) {
+            fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+            fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        }
+    }
+    
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         /* ONLY iOS 11*/
@@ -174,6 +196,22 @@ extension FileProviderExtension {
             
             //TODO: manage error
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
+            
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, fileID)) else {
+                return
+            }
+            
+            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+                return
+            }
+            
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+            
+            queueTradeSafe.sync(flags: .barrier) {
+                fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+                fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            }
             
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", fileID), clearDateReadDirectoryID: nil)
         }
