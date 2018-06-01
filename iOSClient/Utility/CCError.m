@@ -85,7 +85,7 @@
             break;
         default:
             if (withNumberError) return [NSString stringWithFormat:@"%ld", (long)errorCode];
-            else return @"";
+            else return [NSString stringWithFormat:@"Error code %ld", (long)errorCode];;
             break;
     }
 }
