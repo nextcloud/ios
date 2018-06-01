@@ -145,7 +145,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
             if (metadatas != nil) {
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
-                if let metadataDB = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl) {
+                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl)
+                if let metadataDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", self.providerData.account, directoryID!), sorted: "fileName", ascending: true) {
                     items = self.selectItems(numPage: 0, account: self.providerData.account, metadatas: metadataDB)
                     if (items.count > 0) {
                         observer.didEnumerate(items)
@@ -250,7 +251,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         for metadata in metadatas {
             
             // E2EE Remove
-            if metadata.e2eEncrypted || metadata.status == Double(k_metadataStatusHide) || metadata.session != "" {
+            if metadata.e2eEncrypted || metadata.status == Double(k_metadataStatusHide) || (metadata.session != "" && metadata.session != k_download_session_extension && metadata.session != k_upload_session_extension) {
                 continue
             }
             

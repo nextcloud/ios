@@ -173,8 +173,9 @@ extension FileProviderExtension {
         } else {
             
             //TODO: manage error
-            
             NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
+            
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", fileID), clearDateReadDirectoryID: nil)
         }
     }
     
