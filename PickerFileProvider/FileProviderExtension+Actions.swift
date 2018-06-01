@@ -463,12 +463,13 @@ extension FileProviderExtension {
             
         let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
         
+        /*
         queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
-        
+        */
         completionHandler(item, nil)
     }
     
