@@ -128,12 +128,16 @@ extension FileProviderExtension {
             return
         }
         
+        /*
+        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "fileName = %@ AND directoryID = %@", metadata.fileName, metadata.directoryID), sorted: "fileName", ascending: true)
+        */
+        
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             return
         }
-        
+            
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-        
+            
         queueTradeSafe.async(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
