@@ -238,8 +238,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 metadata.directory = true
                 metadata.directoryID = directory.directoryID
                 metadata.fileID = NSFileProviderItemIdentifier.rootContainer.rawValue
-                metadata.fileName = NCBrandOptions.sharedInstance.brand
-                metadata.fileNameView = NCBrandOptions.sharedInstance.brand
+                metadata.fileName = ""
+                metadata.fileNameView = ""
                 metadata.typeFile = k_metadataTypeFile_directory
                     
                 return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue), providerData: providerData)
