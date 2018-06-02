@@ -288,14 +288,13 @@
     return sharedOCCommunication;
 }
 
-- (OCCommunication *)sharedOCCommunicationExtensionDownload:(NSString *)identifier
+- (OCCommunication *)sharedOCCommunicationExtensionDownload
 {
     static OCCommunication *sharedOCCommunicationExtensionDownload = nil;
-    static NSString *extensionDownloadIdentifier = k_download_session_extension;
     
-    if (sharedOCCommunicationExtensionDownload == nil || [extensionDownloadIdentifier isEqualToString:identifier] == false)
+    if (sharedOCCommunicationExtensionDownload == nil)
     {
-        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:identifier];
+        NSURLSessionConfiguration *config = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:k_download_session_extension];
         config.sharedContainerIdentifier = [NCBrandOptions sharedInstance].capabilitiesGroups;
         config.HTTPMaximumConnectionsPerHost = 1;
         config.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
@@ -309,7 +308,6 @@
             return NSURLSessionAuthChallengePerformDefaultHandling;
         }];
         
-        extensionDownloadIdentifier = identifier;
         sharedOCCommunicationExtensionDownload = [[OCCommunication alloc] initWithUploadSessionManager:nil andDownloadSessionManager:sessionManager andNetworkSessionManager:nil];
     }
     

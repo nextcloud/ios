@@ -400,7 +400,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             _ = self.deleteFile("\(providerData.directoryUser)/\(metadata.fileID).ico")
 
             let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(providerData.directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght, etag, date) in
+            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(providerData.directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
                 
                 // remove Task
                 self.outstandingDownloadTasks.removeValue(forKey: url)
