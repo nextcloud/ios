@@ -119,8 +119,8 @@ extension FileProviderExtension {
     //  MARK: - Upload
     // --------------------------------------------------------------------------------------------
     
-    func uploadStart(_ fileID: String!, serverUrl: String!) {
-        
+    func uploadStart(_ fileID: String!, task: URLSessionUploadTask!, serverUrl: String!) {
+     
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
 

@@ -1134,8 +1134,8 @@
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadStart:serverUrl:)]) {
-            [[self getDelegate:sessionID] uploadStart:metadata.fileID serverUrl:serverUrl];
+        if ([[self getDelegate:sessionID] respondsToSelector:@selector(uploadStart:task:serverUrl:)]) {
+            [[self getDelegate:sessionID] uploadStart:metadata.fileID task:uploadTask serverUrl:serverUrl];
         }
     });
     
