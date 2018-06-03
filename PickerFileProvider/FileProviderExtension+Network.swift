@@ -128,21 +128,34 @@ extension FileProviderExtension {
             return
         }
         
-        if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID CONTAINS %@ AND fileName = %@ AND directoryID = %@", FILEID_IMPORT_METADATA_TEMP, metadata.fileName, metadata.directoryID)) != nil {
-            return
-        }
-        
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             return
         }
         
+        if metadata.assetLocalIdentifier != "" {
+            
+            // move directory
+            _ = moveFile(providerData.fileProviderStorageURL!.path + "/" + metadata.assetLocalIdentifier, toPath: providerData.fileProviderStorageURL!.path + "/" + fileID)
+            
+            //
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", metadata.assetLocalIdentifier), clearDateReadDirectoryID: nil)
+            
+            queueTradeSafe.sync(flags: .barrier) {
+                let itemIdentifier = NSFileProviderItemIdentifier(metadata.assetLocalIdentifier)
+                fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
+                fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+            }
+            
+        }
+        
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
 
-        queueTradeSafe.async(flags: .barrier) {
+        queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
+        
+        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
     }
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
@@ -223,7 +236,7 @@ extension FileProviderExtension {
                 
                 if self.copyFile(metadataNetQueue!.path, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
                     
-                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
+                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, fileID: nil, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                     
                 } else {
                     // file not present, delete record Upload Queue
