@@ -91,7 +91,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             // Timer for upload
             if timerUpload == nil {
                 
-                timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoDownloadUpload), repeats: true, block: { (Timer) in
+                timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoUploadExtension), repeats: true, block: { (Timer) in
                     
                     // new upload
                     self.uploadFile()
