@@ -136,8 +136,9 @@ extension FileProviderExtension {
 
         NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(item.itemIdentifier.rawValue)) { (error) in }
         
-        let url = URL(string: providerData.fileProviderStorageURL!.path + "/"  + item.itemIdentifier.rawValue + "/" + item.filename)
-        self.outstandingUploadTasks[url!] = task
+        let urlString = (providerData.fileProviderStorageURL!.path + "/"  + item.itemIdentifier.rawValue + "/" + item.filename).addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
+        let url = URL(string: urlString)!
+        self.outstandingUploadTasks[url] = task
         
         queueTradeSafe.async(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
@@ -161,9 +162,11 @@ extension FileProviderExtension {
         
         // remove task on outstandingUploadTasks
         let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-        let url = URL(string: providerData.fileProviderStorageURL!.path + "/"  + itemIdentifier.rawValue + "/" + fileName)
-        outstandingUploadTasks.removeValue(forKey: url!)
         
+        let urlString = (providerData.fileProviderStorageURL!.path + "/"  + itemIdentifier.rawValue + "/" + fileName).addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
+        let url = URL(string: urlString)!
+        outstandingUploadTasks.removeValue(forKey: url)
+
         if errorCode == 0 {
             
             // importDocument
