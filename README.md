@@ -18,7 +18,7 @@ If you want to [contribute](https://nextcloud.com/contribute/) to Nextcloud, you
 
 ## Contribution Guidelines & License
 
-[GPLv3](https://github.com/nextcloud/ios/blob/master/LICENSE.txt) with [Apple app store exception](https://github.com/nextcloud/ios/blob/master/COPYING.iOS).
+[GPLv3](LICENSE.txt) with [Apple app store exception](COPYING.iOS).
 
 Nextcloud doesn't require a CLA (Contributor License Agreement). The copyright belongs to all the individual contributors. Therefore we recommend that every contributor adds following line to the header of a file, if they changed it substantially:
 
