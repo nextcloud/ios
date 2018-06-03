@@ -188,6 +188,9 @@ extension FileProviderExtension {
             NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
             
             // remove session data
+            metadata.assetLocalIdentifier = ""
+            metadata.session = ""
+            metadata.sessionID = ""
             metadata.sessionSelector = ""
             metadata.sessionSelectorPost = ""
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
@@ -224,6 +227,9 @@ extension FileProviderExtension {
             }
             
             // remove session data
+            metadata.assetLocalIdentifier = ""
+            metadata.session = ""
+            metadata.sessionID = ""
             metadata.sessionSelector = ""
             metadata.sessionSelectorPost = ""
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
