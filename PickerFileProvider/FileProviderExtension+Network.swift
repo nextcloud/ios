@@ -156,8 +156,7 @@ extension FileProviderExtension {
                 return
             }
             
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-            
+            // importDocument
             if assetLocalIdentifier != "" {
                 
                 NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: assetLocalIdentifier, selector: selector)
@@ -168,20 +167,32 @@ extension FileProviderExtension {
                     _ = moveFile(providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
                 }
                 
+                queueTradeSafe.sync(flags: .barrier) {
+                    let itemIdentifier = NSFileProviderItemIdentifier(assetLocalIdentifier)
+                    fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
+                    fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+                }
+                
             } else {
 
-                let filePath = providerData.fileProviderStorageURL!.path + "/" + item.itemIdentifier.rawValue + "/" + metadata.fileName
+            // itemChanged
+                let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
+                
+                let filePath = providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + metadata.fileName
                 _ = self.copyFile(filePath, toPath: providerData.directoryUser + "/" + metadata.fileID)
             }
             
             NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
             
-            queueTradeSafe.async(flags: .barrier) {
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+
+            queueTradeSafe.sync(flags: .barrier) {
                 fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
                 fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
             
+            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+
             uploadFile()
             
         } else {
