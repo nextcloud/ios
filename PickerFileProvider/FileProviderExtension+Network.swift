@@ -204,7 +204,7 @@ extension FileProviderExtension {
                 fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             }
             
-            uploadFile()
+            uploadFileImportDocument()
             
         } else {
             
@@ -212,6 +212,12 @@ extension FileProviderExtension {
             if (selectorPost == selectorPostImportDocument) {
                 
                 NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
+            }
+            
+            // itemChanged
+            if (selectorPost == selectorPostItemChanged) {
+                
+                uploadFileItemChanged(for: metadata, url: url)
             }
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
@@ -225,7 +231,7 @@ extension FileProviderExtension {
         self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
     }
     
-    func uploadFile() {
+    func uploadFileImportDocument() {
         
         let queueInLock = NCManageDatabase.sharedInstance.getQueueUploadInLock()
         if queueInLock != nil && queueInLock!.count == 0 {
@@ -243,6 +249,23 @@ extension FileProviderExtension {
                 }
             }
         }
+    }
+    
+    func uploadFileItemChanged(for metadata: tableMetadata, url: URL) {
+        
+        metadata.assetLocalIdentifier = ""
+        metadata.session = k_upload_session_extension
+        metadata.sessionID = metadata.fileID
+        metadata.sessionSelector = selectorUploadFile
+        metadata.sessionSelectorPost = selectorPostItemChanged
+        
+        guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+            return
+        }
+        
+        _ = self.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileID)
+        
+        CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
     
     func verifyUploadQueueInLock() {

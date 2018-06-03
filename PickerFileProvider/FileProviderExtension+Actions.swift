@@ -456,7 +456,7 @@ extension FileProviderExtension {
         let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
         
         DispatchQueue.main.sync {
-            uploadFile()
+            uploadFileImportDocument()
         }
         
         completionHandler(item, nil)

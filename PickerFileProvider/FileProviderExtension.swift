@@ -94,7 +94,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoUploadExtension), repeats: true, block: { (Timer) in
                     
                     // new upload
-                    self.uploadFile()
+                    self.uploadFileImportDocument()
                 })
                 
                 RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
@@ -472,19 +472,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            metadata.assetLocalIdentifier = ""
-            metadata.session = k_upload_session_extension
-            metadata.sessionID = metadata.fileID
-            metadata.sessionSelector = selectorUploadFile
-            metadata.sessionSelectorPost = selectorPostItemChanged
-            
-            guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
-                return
-            }
-            
-            _ = self.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileID)
-
-            CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
+            uploadFileItemChanged(for: metadata, url: url)
             
         } else {
             
