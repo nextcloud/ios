@@ -111,8 +111,21 @@ extension FileProviderExtension {
             return
         }
         
-        deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata)
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            return
+        }
+        
+        if metadata.sessionSelectorPost != selectorPostImportDocument {
+            
+            deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata, serverUrl: serverUrl)
 
+        } else {
+            
+            // Delete queue upload for ImportDocument
+            NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: metadata.assetLocalIdentifier, selector: metadata.sessionSelector)
+            deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)
+        }
+        
         // return immediately
         queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier

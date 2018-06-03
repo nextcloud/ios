@@ -29,42 +29,15 @@ extension FileProviderExtension {
     //  MARK: - Delete
     // --------------------------------------------------------------------------------------------
     
-    func deleteFile(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata) {
+    func deleteFile(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata, serverUrl: String) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-        
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
             
-            let fileNamePath = self.providerData.directoryUser + "/" + metadata.fileID
-            do {
-                try self.fileManager.removeItem(atPath: fileNamePath)
-            } catch let error {
-                print("error: \(error)")
-            }
-            do {
-                try self.fileManager.removeItem(atPath: fileNamePath + ".ico")
-            } catch let error {
-                print("error: \(error)")
-            }
-            do {
-                try self.fileManager.removeItem(atPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
-            } catch let error {
-                print("error: \(error)")
-            }
-            
-            if metadata.directory {
-                let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
-                NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!)
-            }
-            
-            NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
+            self.deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)
             
         }, failure: { (errorMessage, errorCode) in
             
@@ -75,6 +48,34 @@ extension FileProviderExtension {
                 self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             }
         })
+    }
+    
+    func deleteFileSystem(for metadata: tableMetadata, serverUrl: String, itemIdentifier: NSFileProviderItemIdentifier) {
+        
+        let fileNamePath = self.providerData.directoryUser + "/" + metadata.fileID
+        do {
+            try self.fileManager.removeItem(atPath: fileNamePath)
+        } catch let error {
+            print("error: \(error)")
+        }
+        do {
+            try self.fileManager.removeItem(atPath: fileNamePath + ".ico")
+        } catch let error {
+            print("error: \(error)")
+        }
+        do {
+            try self.fileManager.removeItem(atPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
+        } catch let error {
+            print("error: \(error)")
+        }
+        
+        if metadata.directory {
+            let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
+            NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!)
+        }
+        
+        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
     }
     
     // --------------------------------------------------------------------------------------------
