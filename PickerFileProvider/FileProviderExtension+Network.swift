@@ -204,8 +204,8 @@ extension FileProviderExtension {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
             
             queueTradeSafe.sync(flags: .barrier) {
-                fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-                fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
+                fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             }
         }
         
