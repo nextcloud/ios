@@ -112,7 +112,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             }
             
             // Upload
-            if metadata.fileID.contains(k_uploadSessionID) {
+            if metadata.sessionID != "" {
                 isUpload = true
             }
             if isUpload {
