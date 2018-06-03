@@ -466,13 +466,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
 
             assert(pathComponents.count > 2)
 
-            let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+            let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             
-            guard let metadata = providerData.getTableMetadataFromItemIdentifier(identifier) else {
-                return
-            }
-            
-            uploadFileItemChanged(for: metadata, url: url)
+            uploadFileItemChanged(for: itemIdentifier, url: url)
             
         } else {
             

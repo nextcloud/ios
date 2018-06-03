@@ -217,7 +217,9 @@ extension FileProviderExtension {
             // itemChanged
             if (selectorPost == selectorPostItemChanged) {
                 
-                uploadFileItemChanged(for: metadata, url: url)
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(k_timerProcessAutoUploadExtension)) {
+                    self.uploadFileItemChanged(for: itemIdentifier, url: url)
+                }
             }
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
@@ -251,7 +253,11 @@ extension FileProviderExtension {
         }
     }
     
-    func uploadFileItemChanged(for metadata: tableMetadata, url: URL) {
+    func uploadFileItemChanged(for itemIdentifier: NSFileProviderItemIdentifier, url: URL) {
+        
+        guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            return
+        }
         
         metadata.assetLocalIdentifier = ""
         metadata.session = k_upload_session_extension
