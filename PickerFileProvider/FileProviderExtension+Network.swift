@@ -132,30 +132,13 @@ extension FileProviderExtension {
             return
         }
         
-        if metadata.assetLocalIdentifier != "" {
-            
-            // move directory
-            _ = moveFile(providerData.fileProviderStorageURL!.path + "/" + metadata.assetLocalIdentifier, toPath: providerData.fileProviderStorageURL!.path + "/" + fileID)
-            
-            //
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", metadata.assetLocalIdentifier), clearDateReadDirectoryID: nil)
-            
-            queueTradeSafe.sync(flags: .barrier) {
-                let itemIdentifier = NSFileProviderItemIdentifier(metadata.assetLocalIdentifier)
-                fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
-                fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-            }
-            
-        }
-        
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
 
-        queueTradeSafe.sync(flags: .barrier) {
+        queueTradeSafe.async(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
-        
-        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
     }
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
