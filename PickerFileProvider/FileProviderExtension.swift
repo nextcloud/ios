@@ -459,9 +459,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         if #available(iOSApplicationExtension 11.0, *) {
             
-            let fileName = url.lastPathComponent
             let pathComponents = url.pathComponents
-            let metadataNet = CCMetadataNet()
 
             assert(pathComponents.count > 2)
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
@@ -470,25 +468,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-                return
-            }
-            
-            metadataNet.account = providerData.account
-            metadataNet.assetLocalIdentifier = FILEID_IMPORT_METADATA_TEMP + metadata.directoryID + fileName
-            metadataNet.fileName = fileName
-            metadataNet.path = url.path
-            metadataNet.selector = selectorUploadFile
-            metadataNet.selectorPost = ""
-            metadataNet.serverUrl = serverUrl
-            metadataNet.session = k_upload_session_extension
-            metadataNet.sessionError = ""
-            metadataNet.sessionID = ""
-            metadataNet.taskStatus = Int(k_taskStatusResume)
-                
-            _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
-            
-            self.uploadFile()
+            CCNetworking.shared().uploadFileMetadata(metadata, taskStatus: Int(k_taskStatusResume))
             
         } else {
             
@@ -544,7 +524,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 _ = self.copyFile(url.path, toPath: destinationDirectoryUser)
 
-                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, metadata: nil, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             }
 
             self.stopProvidingItem(at: url)
