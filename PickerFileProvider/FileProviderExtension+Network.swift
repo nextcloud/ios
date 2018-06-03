@@ -207,8 +207,6 @@ extension FileProviderExtension {
                 fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
                 fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
             }
-            
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", fileID), clearDateReadDirectoryID: nil)
         }
         
         self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
