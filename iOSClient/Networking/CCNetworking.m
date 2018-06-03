@@ -918,7 +918,12 @@
     if (!directoryID) return;
     
     //fileID
-    NSString *uploadID =  [k_uploadSessionID stringByAppendingString:[CCUtility createRandomString:16]];
+    NSString *uploadID;
+    if (fileID == nil) {
+        uploadID = [k_uploadSessionID stringByAppendingString:[CCUtility createRandomString:16]];
+    } else {
+        uploadID = fileID;
+    }
     
     //add delegate
     if (delegate)
