@@ -74,6 +74,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
 
     // Metadata Temp for Import
     let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
+    let selectorPostImportDocument = "importDocument"
+    let selectorPostItemChanged = "itemChanged"
     
     override init() {
         
@@ -473,7 +475,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             metadata.session = k_upload_session_extension
             metadata.sessionID = metadata.fileID
             metadata.sessionSelector = selectorUploadFile
-            metadata.sessionSelectorPost = ""
+            metadata.sessionSelectorPost = selectorPostItemChanged
             
             guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
                 return

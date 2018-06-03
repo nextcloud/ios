@@ -417,6 +417,7 @@ extension FileProviderExtension {
             
         // Metadata TEMP
         metadata.account = self.providerData.account
+        metadata.assetLocalIdentifier = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
         metadata.date = NSDate()
         metadata.directory = false
         metadata.directoryID = tableDirectory.directoryID
@@ -437,7 +438,7 @@ extension FileProviderExtension {
             metadataNet.fileName = fileName
             metadataNet.path = fileNamePathDirectory + "/" + fileName
             metadataNet.selector = selectorUploadFile
-            metadataNet.selectorPost = ""
+            metadataNet.selectorPost = selectorPostImportDocument
             metadataNet.serverUrl = serverUrl
             metadataNet.session = k_upload_session_extension
             metadataNet.sessionError = ""

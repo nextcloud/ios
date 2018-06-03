@@ -157,7 +157,7 @@ extension FileProviderExtension {
             }
             
             // importDocument
-            if assetLocalIdentifier != "" {
+            if (selectorPost == selectorPostImportDocument) {
                 
                 NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: assetLocalIdentifier, selector: selector)
                 
@@ -173,13 +173,13 @@ extension FileProviderExtension {
                     fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
                 }
                 
-            } else {
-
+            }
+            
             // itemChanged
-                let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
+            if (selectorPost == selectorPostItemChanged) {
                 
-                let filePath = providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + metadata.fileName
-                _ = self.copyFile(filePath, toPath: providerData.directoryUser + "/" + metadata.fileID)
+                let filePathItemIdentifier = providerData.fileProviderStorageURL!.path + "/" + providerData.getItemIdentifier(metadata: metadata).rawValue + "/" + metadata.fileName
+                _ = self.copyFile(filePathItemIdentifier, toPath: providerData.directoryUser + "/" + metadata.fileID)
             }
             
             NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
