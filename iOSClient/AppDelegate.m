@@ -1337,7 +1337,7 @@
         if ([metadata.session isEqualToString:k_upload_session_wwan])
             metadata.session = k_upload_session;
         
-        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume];
+        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume delegate:nil];
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
         
@@ -1563,7 +1563,7 @@
     
     for (tableMetadata *metadata in metadatas) {
         
-        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus: k_taskStatusResume];
+        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus: k_taskStatusResume delegate:nil];
         
         [directoryIDs addObject:metadata.directoryID];
         

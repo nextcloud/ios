@@ -462,13 +462,26 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             let pathComponents = url.pathComponents
 
             assert(pathComponents.count > 2)
+
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
             
             guard let metadata = providerData.getTableMetadataFromItemIdentifier(identifier) else {
                 return
             }
             
-            CCNetworking.shared().uploadFileMetadata(metadata, taskStatus: Int(k_taskStatusResume))
+            metadata.assetLocalIdentifier = ""
+            metadata.session = k_upload_session_extension
+            metadata.sessionID = metadata.fileID
+            metadata.sessionSelector = selectorUploadFile
+            metadata.sessionSelectorPost = ""
+            
+            guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+                return
+            }
+            
+            _ = self.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileID)
+
+            CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
             
         } else {
             

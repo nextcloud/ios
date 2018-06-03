@@ -150,28 +150,21 @@ extension FileProviderExtension {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier)) {
-            
-            let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
-            if parentItemIdentifier != nil {
-                
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-            
-                queueTradeSafe.async(flags: .barrier) {
-                    fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-                    fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-                    self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-                }
-            }
-        }
-        
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier), clearDateReadDirectoryID: nil)
-        
         if errorCode == 0 {
             
-            NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: assetLocalIdentifier, selector: selector)
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, fileID)) else {
+                return
+            }
             
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, fileID)) {
+            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+                return
+            }
+            
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+            
+            if assetLocalIdentifier != "" {
+                
+                NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: assetLocalIdentifier, selector: selector)
                 
                 // Rename directory file
                 if fileManager.fileExists(atPath: providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
@@ -179,19 +172,18 @@ extension FileProviderExtension {
                     _ = moveFile(providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
                 }
                 
-                NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
-                
-                guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
-                    return
-                }
-                
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-                
-                queueTradeSafe.async(flags: .barrier) {
-                    fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                    fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                    self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
-                }
+            } else {
+
+                let filePath = providerData.fileProviderStorageURL!.path + "/" + item.itemIdentifier.rawValue + "/" + metadata.fileName
+                _ = self.copyFile(filePath, toPath: providerData.directoryUser + "/" + metadata.fileID)
+            }
+            
+            NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
+            
+            queueTradeSafe.async(flags: .barrier) {
+                fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
             
             uploadFile()

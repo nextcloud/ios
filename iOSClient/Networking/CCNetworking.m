@@ -976,11 +976,15 @@
     }
 }
 
-- (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus
+- (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate
 {
     BOOL reSend = NO;
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (!serverUrl) return;
+    
+    //add delegate
+    if (delegate)
+        [_delegates setObject:delegate forKey:metadata.fileID];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.sessionID]]) {
             
