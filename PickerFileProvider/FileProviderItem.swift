@@ -73,6 +73,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     
     var isDirectory = false
     var isUpload = false
+    var isDownload = false
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, providerData: FileProviderData) {
         
@@ -110,11 +111,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isMostRecentVersionDownloaded = true
             }
             
+            // Upload
             if metadata.fileID.contains(k_uploadSessionID) {
                 isUpload = true
             }
-            
-            // Upload
             if isUpload {
                 self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true
