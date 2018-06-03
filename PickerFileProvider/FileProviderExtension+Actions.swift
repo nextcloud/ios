@@ -115,7 +115,7 @@ extension FileProviderExtension {
             return
         }
         
-        if metadata.sessionSelectorPost != selectorPostImportDocument {
+        if metadata.sessionSelectorPost != providerData.selectorPostImportDocument {
             
             deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata, serverUrl: serverUrl)
 
@@ -414,7 +414,7 @@ extension FileProviderExtension {
         }
         
         let fileName = self.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID, serverUrl: serverUrl)
-        let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+        let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
             
         do {
             try FileManager.default.createDirectory(atPath: fileNamePathDirectory, withIntermediateDirectories: true, attributes: nil)
@@ -430,12 +430,12 @@ extension FileProviderExtension {
             
         // Metadata TEMP
         metadata.account = self.providerData.account
-        metadata.assetLocalIdentifier = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+        metadata.assetLocalIdentifier = providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
         metadata.date = NSDate()
         metadata.directory = false
         metadata.directoryID = tableDirectory.directoryID
         metadata.etag = ""
-        metadata.fileID = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+        metadata.fileID = providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
         metadata.size = size
         metadata.status = Double(k_metadataStatusHide)
         metadata.fileName = fileName
@@ -447,11 +447,11 @@ extension FileProviderExtension {
             let metadataNet = CCMetadataNet()
                 
             metadataNet.account = self.providerData.account
-            metadataNet.assetLocalIdentifier = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+            metadataNet.assetLocalIdentifier = providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
             metadataNet.fileName = fileName
             metadataNet.path = fileNamePathDirectory + "/" + fileName
             metadataNet.selector = selectorUploadFile
-            metadataNet.selectorPost = selectorPostImportDocument
+            metadataNet.selectorPost = providerData.selectorPostImportDocument
             metadataNet.serverUrl = serverUrl
             metadataNet.session = k_upload_session_extension
             metadataNet.sessionError = ""

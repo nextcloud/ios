@@ -137,10 +137,6 @@ extension FileProviderExtension {
 
         NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(item.itemIdentifier.rawValue)) { (error) in }
         
-        let urlString = (providerData.fileProviderStorageURL!.path + "/"  + item.itemIdentifier.rawValue + "/" + item.filename).addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
-        let url = URL(string: urlString)!
-        self.outstandingUploadTasks[url] = task
-        
         queueTradeSafe.async(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
@@ -161,17 +157,10 @@ extension FileProviderExtension {
             return
         }
         
-        // remove task on outstandingUploadTasks
-        let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-        
-        let urlString = (providerData.fileProviderStorageURL!.path + "/"  + itemIdentifier.rawValue + "/" + fileName).addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
-        let url = URL(string: urlString)!
-        outstandingUploadTasks.removeValue(forKey: url)
-
         if errorCode == 0 {
             
             // importDocument
-            if (selectorPost == selectorPostImportDocument) {
+            if (selectorPost == providerData.selectorPostImportDocument) {
                 
                 NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: assetLocalIdentifier, selector: selector)
                 
@@ -190,7 +179,7 @@ extension FileProviderExtension {
             }
             
             // itemChanged
-            if (selectorPost == selectorPostItemChanged) {
+            if (selectorPost == providerData.selectorPostItemChanged) {
                 
                 let filePathItemIdentifier = providerData.fileProviderStorageURL!.path + "/" + providerData.getItemIdentifier(metadata: metadata).rawValue + "/" + metadata.fileName
                 _ = self.copyFile(filePathItemIdentifier, toPath: providerData.directoryUser + "/" + metadata.fileID)
@@ -198,7 +187,13 @@ extension FileProviderExtension {
             
             NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
             
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+            // remove
+            metadata.sessionSelector = ""
+            metadata.sessionSelectorPost = ""
+            
+            let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            
+            let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
 
             queueTradeSafe.sync(flags: .barrier) {
                 fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
@@ -210,15 +205,21 @@ extension FileProviderExtension {
         } else {
             
             // importDocument
-            if (selectorPost == selectorPostImportDocument) {
+            if (selectorPost == providerData.selectorPostImportDocument) {
                 
                 NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
             }
             
             // itemChanged
-            if (selectorPost == selectorPostItemChanged) {
+            if (selectorPost == providerData.selectorPostItemChanged) {
+                
+                let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
+                
+                let urlString = (providerData.fileProviderStorageURL!.path + "/"  + itemIdentifier.rawValue + "/" + fileName).addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
+                let url = URL(string: urlString)!
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + Double(k_timerProcessAutoUploadExtension)) {
+                    
                     self.uploadFileItemChanged(for: itemIdentifier, url: url)
                 }
             }
@@ -264,7 +265,7 @@ extension FileProviderExtension {
         metadata.session = k_upload_session_extension
         metadata.sessionID = metadata.fileID
         metadata.sessionSelector = selectorUploadFile
-        metadata.sessionSelectorPost = selectorPostItemChanged
+        metadata.sessionSelectorPost = providerData.selectorPostItemChanged
         
         guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
             return

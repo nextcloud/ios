@@ -112,7 +112,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             }
             
             // Upload
-            if metadata.sessionTaskIdentifier > 0 {
+            if metadata.sessionSelectorPost == providerData.selectorPostImportDocument || metadata.sessionSelectorPost == providerData.selectorPostItemChanged {
                 isUpload = true
                 self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true

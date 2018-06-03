@@ -71,12 +71,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     var providerData = FileProviderData()
 
     var outstandingDownloadTasks = [URL: URLSessionTask]()
-    var outstandingUploadTasks = [URL: URLSessionUploadTask]()
-
-    // Metadata Temp for Import
-    let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
-    let selectorPostImportDocument = "importDocument"
-    let selectorPostItemChanged = "itemChanged"
     
     override init() {
         

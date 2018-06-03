@@ -36,7 +36,14 @@ class FileProviderData: NSObject {
     // Directory
     var groupURL: URL?
     var fileProviderStorageURL: URL?
-        
+    
+    //
+    let selectorPostImportDocument = "importDocument"
+    let selectorPostItemChanged = "itemChanged"
+    
+    // Metadata Temp for Import
+    let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
+    
     func setupActiveAccount() -> Bool {
         
         queueTradeSafe.sync(flags: .barrier) {
