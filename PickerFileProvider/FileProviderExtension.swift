@@ -359,8 +359,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            // Upload ?
-            if metadata.fileID.contains(k_uploadSessionID) {
+            // is Upload
+            if metadata.sessionTaskIdentifier > 0 {
                 completionHandler(nil)
                 return
             }
@@ -574,12 +574,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         if let downloadTask = outstandingDownloadTasks[url] {
             downloadTask.cancel()
             outstandingDownloadTasks.removeValue(forKey: url)
-        }
-        
-        // Upload task
-        if let uploadTask = outstandingUploadTasks[url] {
-            uploadTask.cancel()
-            outstandingUploadTasks.removeValue(forKey: url)
         }
     }
     

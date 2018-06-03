@@ -35,7 +35,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
         } else {
             if isUpload {
-                return [ .allowsReading ]
+                return [ ]
             } else {
                 return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
             }
@@ -72,8 +72,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var favoriteRank: NSNumber?                                     // Favorite
     
     var isDirectory = false
-    var isUpload = false
     var isDownload = false
+    var isUpload = false
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, providerData: FileProviderData) {
         
@@ -112,10 +112,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             }
             
             // Upload
-            if metadata.sessionID != "" {
+            if metadata.sessionTaskIdentifier > 0 {
                 isUpload = true
-            }
-            if isUpload {
                 self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true
                 self.isUploading = true
