@@ -146,15 +146,15 @@ extension FileProviderExtension {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, fileID)) else {
+            return
+        }
+        
+        guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
+            return
+        }
+        
         if errorCode == 0 {
-            
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, fileID)) else {
-                return
-            }
-            
-            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
-                return
-            }
             
             // importDocument
             if (selectorPost == selectorPostImportDocument) {
@@ -191,21 +191,14 @@ extension FileProviderExtension {
                 fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             }
             
-            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
-
             uploadFile()
             
         } else {
             
-            //TODO: manage error
-            NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
-            
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, fileID)) else {
-                return
-            }
-            
-            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
-                return
+            // importDocument
+            if (selectorPost == selectorPostImportDocument) {
+                
+                NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
             }
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
@@ -213,11 +206,12 @@ extension FileProviderExtension {
             queueTradeSafe.sync(flags: .barrier) {
                 fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
                 fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
-                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             }
             
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", fileID), clearDateReadDirectoryID: nil)
         }
+        
+        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
     }
     
     func uploadFile() {
