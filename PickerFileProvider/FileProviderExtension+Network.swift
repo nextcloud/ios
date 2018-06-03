@@ -137,7 +137,7 @@ extension FileProviderExtension {
 
         NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(item.itemIdentifier.rawValue)) { (error) in }
         
-        queueTradeSafe.async(flags: .barrier) {
+        queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
