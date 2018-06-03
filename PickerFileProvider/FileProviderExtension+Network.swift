@@ -136,6 +136,9 @@ extension FileProviderExtension {
 
         NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(item.itemIdentifier.rawValue)) { (error) in }
         
+        let url = URL(string: providerData.fileProviderStorageURL!.path + "/"  + item.itemIdentifier.rawValue + "/" + item.filename)
+        self.outstandingUploadTasks[url!] = task
+        
         queueTradeSafe.async(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
@@ -155,6 +158,11 @@ extension FileProviderExtension {
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             return
         }
+        
+        // remove task on outstandingUploadTasks
+        let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
+        let url = URL(string: providerData.fileProviderStorageURL!.path + "/"  + itemIdentifier.rawValue + "/" + fileName)
+        outstandingUploadTasks.removeValue(forKey: url!)
         
         if errorCode == 0 {
             

@@ -575,6 +575,12 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             downloadTask.cancel()
             outstandingDownloadTasks.removeValue(forKey: url)
         }
+        
+        // Upload task
+        if let uploadTask = outstandingUploadTasks[url] {
+            uploadTask.cancel()
+            outstandingUploadTasks.removeValue(forKey: url)
+        }
     }
     
     // --------------------------------------------------------------------------------------------
