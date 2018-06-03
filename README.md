@@ -6,7 +6,7 @@ height="400">](https://itunes.apple.com/us/app/nextcloud/id1125420102?mt=8)
 
 [![irc](https://img.shields.io/badge/IRC-%23nextcloud--mobile%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=nextcloud-mobile)
 
-Check out https://nextcloud.com and follow us on [twitter.com/nextclouders]https://twitter.com/nextclouders or [twitter.com/NextcloudiOS]https://twitter.com/NextcloudiOS
+Check out https://nextcloud.com and follow us on [twitter.com/nextclouders](https://twitter.com/nextclouders) or [twitter.com/NextcloudiOS](https://twitter.com/NextcloudiOS)
 
 ## How to contribute
 If you want to [contribute](https://nextcloud.com/contribute/) to Nextcloud, you are very welcome:
