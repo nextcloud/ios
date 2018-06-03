@@ -62,7 +62,7 @@
 
 // Upload
 - (void)uploadFileFromAssetLocalIdentifier:(CCMetadataNet *)metadataNet delegate:(id)delegate;
-- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
+- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl metadata:(NSString *)metadata assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
 - (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 // Utility

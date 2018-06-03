@@ -863,7 +863,7 @@
                 [delegate uploadFileSuccessFailure:metadataNet.fileName fileID:metadataNet.fileID assetLocalIdentifier:metadataNet.assetLocalIdentifier serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorMessage:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
             } else {
                 // OOOOOK
-                [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl metadata:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
             }
         }];
     }
@@ -899,7 +899,7 @@
                 } else {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         // OOOOOK
-                        [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
+                        [self upload:metadataNet.fileName serverUrl:metadataNet.serverUrl metadata:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:metadataNet.taskStatus selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:metadataNet.errorCode delegate:delegate];
                     });
                 }
             }
@@ -907,37 +907,43 @@
     }
 }
 
-- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
-    [self upload:fileName serverUrl:serverUrl assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
+    [self upload:fileName serverUrl:serverUrl metadata:metadata assetLocalIdentifier:assetLocalIdentifier session:session taskStatus:taskStatus selector:selector selectorPost:selectorPost errorCode:errorCode delegate:delegate];
 }
 
-- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
+- (void)upload:(NSString *)fileName serverUrl:(NSString *)serverUrl metadata:(tableMetadata *)metadata assetLocalIdentifier:(NSString *)assetLocalIdentifier session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate
 {
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
     
-    //fileID
-    NSString *uploadID =  [k_uploadSessionID stringByAppendingString:[CCUtility createRandomString:16]];
+    if (metadata) {
+        
+        metadata.session = session;
+        metadata.sessionID = metadata.fileID;
+        metadata.sessionSelector = selector;
+        metadata.sessionSelectorPost = selectorPost;
+        
+    } else {
+    
+        metadata = [CCUtility insertFileSystemInMetadata:fileName fileNameView:fileName directory:_directoryUser activeAccount:_activeAccount];
+        
+        metadata.assetLocalIdentifier = assetLocalIdentifier;
+        metadata.date = [NSDate new];
+        metadata.e2eEncrypted = NO;
+        metadata.fileID = [k_uploadSessionID stringByAppendingString:[CCUtility createRandomString:16]];
+        metadata.directoryID = directoryID;
+        metadata.fileName = fileName;
+        metadata.fileNameView = fileName;
+        metadata.session = session;
+        metadata.sessionID = metadata.fileID;
+        metadata.sessionSelector = selector;
+        metadata.sessionSelectorPost = selectorPost;
+    }
     
     //add delegate
     if (delegate)
-        [_delegates setObject:delegate forKey:uploadID];
-    
-    // create Metadata for Upload
-    tableMetadata *metadata = [CCUtility insertFileSystemInMetadata:fileName fileNameView:fileName directory:_directoryUser activeAccount:_activeAccount];
-    
-    metadata.assetLocalIdentifier = assetLocalIdentifier;
-    metadata.date = [NSDate new];
-    metadata.e2eEncrypted = NO;
-    metadata.fileID = uploadID;
-    metadata.directoryID = directoryID;
-    metadata.fileName = fileName;
-    metadata.fileNameView = fileName;
-    metadata.session = session;
-    metadata.sessionID = uploadID;
-    metadata.sessionSelector = selector;
-    metadata.sessionSelectorPost = selectorPost;
+        [_delegates setObject:delegate forKey:metadata.fileID];
     
     // E2EE : ENCRYPTED FILE
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
@@ -952,7 +958,7 @@
 
             if (errorMessage != nil || fileNameIdentifier == nil) {
                 
-                [[self getDelegate:uploadID] uploadFileSuccessFailure:fileName fileID:uploadID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:k_CCErrorInternalError];
+                [[self getDelegate:metadata.fileID] uploadFileSuccessFailure:fileName fileID:metadata.fileID assetLocalIdentifier:assetLocalIdentifier serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:k_CCErrorInternalError];
                 
             } else {
         
@@ -962,7 +968,7 @@
             
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
-                    [self uploadURLSessionMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadata] serverUrl:serverUrl sessionID:uploadID taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
+                    [self uploadURLSessionMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadata] serverUrl:serverUrl sessionID:metadata.fileID taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
                 });
             }
         });
@@ -972,7 +978,7 @@
 #ifndef EXTENSION
         [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
 #endif
-        [self uploadURLSessionMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadata] serverUrl:serverUrl sessionID:uploadID taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
+        [self uploadURLSessionMetadata:[[NCManageDatabase sharedInstance] addMetadata:metadata] serverUrl:serverUrl sessionID:metadata.fileID taskStatus:taskStatus assetLocalIdentifier:assetLocalIdentifier selector:selector];
     }
 }
 
