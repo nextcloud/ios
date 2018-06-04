@@ -58,6 +58,10 @@ class FileProviderData: NSObject {
             NSLog("Unable to create directory \(error.debugDescription)")
         }
         
+        if CCUtility.getDisableFilesApp() {
+            return false
+        }
+        
         guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
             return false
         }

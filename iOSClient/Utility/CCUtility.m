@@ -516,6 +516,17 @@
     [self setEndToEndPublicKeyServer:account publicKey:nil];
 }
 
++ (BOOL)getDisableFilesApp
+{
+    return [[UICKeyChainStore stringForKey:@"disablefilesapp" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setDisableFilesApp:(BOOL)disable
+{
+    NSString *sDisable = (disable) ? @"true" : @"false";
+    [UICKeyChainStore setString:sDisable forKey:@"disablefilesapp" service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====
 #pragma --------------------------------------------------------------------------------------------
