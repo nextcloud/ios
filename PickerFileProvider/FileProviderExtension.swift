@@ -353,8 +353,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            // is Upload
-            if metadata.sessionTaskIdentifier > 0 {
+            // is Upload [Office 365 !!!]
+            if metadata.sessionTaskIdentifier > 0 || metadata.fileID.contains(k_uploadSessionID) {
                 completionHandler(nil)
                 return
             }
