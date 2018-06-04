@@ -42,11 +42,12 @@ extension FileProviderExtension {
         }, failure: { (errorMessage, errorCode) in
             
             // remove itemIdentifier on fileProviderSignalDeleteItemIdentifier
-            queueTradeSafe.async(flags: .barrier) {
+            queueTradeSafe.sync(flags: .barrier) {
                 fileProviderSignalDeleteContainerItemIdentifier.removeValue(forKey: itemIdentifier)
                 fileProviderSignalDeleteWorkingSetItemIdentifier.removeValue(forKey: itemIdentifier)
-                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             }
+            
+            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
         })
     }
     
@@ -107,12 +108,12 @@ extension FileProviderExtension {
 
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
             
-            queueTradeSafe.async(flags: .barrier) {
+            queueTradeSafe.sync(flags: .barrier) {
                 fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
                 fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
             
+            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         })
     }
     
@@ -140,8 +141,9 @@ extension FileProviderExtension {
         queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
+        
+        self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
     }
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {

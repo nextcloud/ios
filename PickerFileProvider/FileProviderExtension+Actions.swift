@@ -76,9 +76,10 @@ extension FileProviderExtension {
                 queueTradeSafe.sync(flags: .barrier) {
                     fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
                     fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                    self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 }
-                
+
+                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+
                 completionHandler(item, nil)
                 
             } else {
@@ -125,9 +126,10 @@ extension FileProviderExtension {
         queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
             fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
         }
-        
+
+        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+
         completionHandler(nil)
     }
     
@@ -192,9 +194,10 @@ extension FileProviderExtension {
             queueTradeSafe.sync(flags: .barrier) {
                 fileProviderSignalUpdateContainerItem[itemIdentifier] = item
                 fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
-                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
             }
-            
+
+            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+
             completionHandler(item, nil)
             
         }, failure: { (errorMessage, errorCode) in
@@ -264,9 +267,10 @@ extension FileProviderExtension {
             queueTradeSafe.sync(flags: .barrier) {
                 fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
                 fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
-            
+
+            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+
             completionHandler(item, nil)
             
         }, failure: { (errorMessage, errorCode) in
@@ -311,9 +315,10 @@ extension FileProviderExtension {
         queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
-        
+
+        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+
         completionHandler(item, nil)
         
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
@@ -344,8 +349,9 @@ extension FileProviderExtension {
         queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
+        
+        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         
         completionHandler(item, nil)
     }
