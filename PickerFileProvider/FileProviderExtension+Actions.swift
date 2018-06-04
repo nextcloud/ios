@@ -115,17 +115,12 @@ extension FileProviderExtension {
             return
         }
         
-        if metadata.sessionSelectorPost != providerData.selectorPostImportDocument {
-            
-            deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata, serverUrl: serverUrl)
-
-        } else {
-            
-            // Delete queue upload for ImportDocument
-            NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: metadata.assetLocalIdentifier, selector: metadata.sessionSelector)
-            deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)
-        }
+        // Delete queue upload for ImportDocument (if exists)
+        NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: metadata.assetLocalIdentifier, selector: metadata.sessionSelector)
         
+        //
+        deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata, serverUrl: serverUrl)
+       
         // return immediately
         queueTradeSafe.sync(flags: .barrier) {
             fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier

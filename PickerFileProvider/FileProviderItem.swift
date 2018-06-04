@@ -120,7 +120,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
                 self.isUploaded = false
             }
             
-            // Upload error
+            // Error ?
             if metadata.sessionError != "" {
                 uploadingError = NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
             }

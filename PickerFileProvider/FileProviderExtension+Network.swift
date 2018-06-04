@@ -226,7 +226,14 @@ extension FileProviderExtension {
                 }
             }
             
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
+            // remove session data
+            metadata.session = ""
+            metadata.sessionID = ""
+            metadata.sessionSelector = ""
+            metadata.sessionSelectorPost = ""
+            let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            
+            let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
             
             queueTradeSafe.sync(flags: .barrier) {
                 fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
