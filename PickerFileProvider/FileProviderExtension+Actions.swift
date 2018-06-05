@@ -472,9 +472,9 @@ extension FileProviderExtension {
             
                 let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
             
-                //uploadFileImportDocument()
-            
                 completionHandler(item, nil)
+
+                self.uploadFileImportDocument()            
             }
         }
     }
