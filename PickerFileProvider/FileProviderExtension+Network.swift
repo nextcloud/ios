@@ -34,7 +34,7 @@ extension FileProviderExtension {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.getAccountUser(), withUserID: providerData.getAccountUserID(), withPassword: providerData.getAccountPassword(), withUrl: providerData.getAccountUrl())
         ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
             
             self.deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)
@@ -53,7 +53,7 @@ extension FileProviderExtension {
     
     func deleteFileSystem(for metadata: tableMetadata, serverUrl: String, itemIdentifier: NSFileProviderItemIdentifier) {
         
-        let fileNamePath = self.providerData.directoryUser + "/" + metadata.fileID
+        let fileNamePath = self.providerData.getDirectoryUser() + "/" + metadata.fileID
         do {
             try self.fileManager.removeItem(atPath: fileNamePath)
         } catch let error {
@@ -92,9 +92,9 @@ extension FileProviderExtension {
             return
         }
         
-        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: self.providerData.accountUrl)
+        let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: self.providerData.getAccountUrl())
 
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.getAccountUser(), withUserID: providerData.getAccountUserID(), withPassword: providerData.getAccountPassword(), withUrl: providerData.getAccountUrl())
         ocNetworking?.settingFavorite(fileNamePath, favorite: favorite, success: {
                     
             // Change DB
@@ -151,7 +151,7 @@ extension FileProviderExtension {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, fileID)) else {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.getAccount(), fileID)) else {
             return
         }
         
@@ -184,7 +184,7 @@ extension FileProviderExtension {
             if (selectorPost == providerData.selectorPostItemChanged) {
                 
                 let filePathItemIdentifier = providerData.fileProviderStorageURL!.path + "/" + providerData.getItemIdentifier(metadata: metadata).rawValue + "/" + metadata.fileName
-                _ = self.copyFile(filePathItemIdentifier, toPath: providerData.directoryUser + "/" + metadata.fileID)
+                _ = self.copyFile(filePathItemIdentifier, toPath: providerData.getDirectoryUser() + "/" + metadata.fileID)
             }
             
             NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
@@ -254,7 +254,7 @@ extension FileProviderExtension {
             let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, withPath: true)
             if  metadataNetQueue != nil {
                 
-                if self.copyFile(metadataNetQueue!.path, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
+                if self.copyFile(metadataNetQueue!.path, toPath: providerData.getDirectoryUser() + "/" + metadataNetQueue!.fileName) == nil {
                     
                     CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, fileID: metadataNetQueue!.assetLocalIdentifier, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                     
@@ -282,7 +282,7 @@ extension FileProviderExtension {
             return
         }
         
-        _ = self.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileID)
+        _ = self.copyFile(url.path, toPath: providerData.getDirectoryUser() + "/" + metadata.fileID)
         
         CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
@@ -291,7 +291,7 @@ extension FileProviderExtension {
         
         let tasks = CCNetworking.shared().getUploadTasksExtensionSession()
         if tasks!.count == 0 {
-            let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", providerData.account, selectorUploadFile))
+            let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", providerData.getAccount(), selectorUploadFile))
             if records != nil && records!.count > 0 {
                 NCManageDatabase.sharedInstance.unlockAllQueueUploadWithPath()
             }
