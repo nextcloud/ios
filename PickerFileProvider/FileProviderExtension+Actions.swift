@@ -43,12 +43,12 @@ extension FileProviderExtension {
         
         let serverUrl = tableDirectory.serverUrl
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.getAccountUser(), withUserID: providerData.getAccountUserID(), withPassword: providerData.getAccountPassword(), withUrl: providerData.getAccountUrl())
-        ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: providerData.getAccount(), success: { (fileID, date) in
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
+        ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: providerData.account, success: { (fileID, date) in
             
             let metadata = tableMetadata()
             
-            metadata.account = self.providerData.getAccount()
+            metadata.account = self.providerData.account
             metadata.directory = true
             metadata.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl)!
             metadata.fileID = fileID!
@@ -171,7 +171,7 @@ extension FileProviderExtension {
         let directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo)!
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.getAccountUser(), withUserID: providerData.getAccountUserID(), withPassword: providerData.getAccountPassword(), withUrl: providerData.getAccountUrl())
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
             
             if metadataFrom.directory {
@@ -184,7 +184,7 @@ extension FileProviderExtension {
                 NCManageDatabase.sharedInstance.moveMetadata(fileName: metadataFrom.fileName, directoryID: metadataFrom.directoryID, directoryIDTo: directoryIDTo)
             }
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", self.providerData.getAccount(), fileIDFrom)) else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", self.providerData.account, fileIDFrom)) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -235,7 +235,7 @@ extension FileProviderExtension {
         let fileNamePathFrom = serverUrl + "/" + fileNameFrom
         let fileNamePathTo = serverUrl + "/" + itemName
         
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.getAccountUser(), withUserID: providerData.getAccountUserID(), withPassword: providerData.getAccountPassword(), withUrl: providerData.getAccountUrl())
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, success: {
             
             // Rename metadata
@@ -430,7 +430,7 @@ extension FileProviderExtension {
         // ---------------------------------------------------------------------------------
             
         // Metadata TEMP
-        metadata.account = self.providerData.getAccount()
+        metadata.account = self.providerData.account
         metadata.assetLocalIdentifier = providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
         metadata.date = NSDate()
         metadata.directory = false
@@ -447,7 +447,7 @@ extension FileProviderExtension {
                 
             let metadataNet = CCMetadataNet()
                 
-            metadataNet.account = self.providerData.getAccount()
+            metadataNet.account = self.providerData.account
             metadataNet.assetLocalIdentifier = providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
             metadataNet.fileName = fileName
             metadataNet.path = fileNamePathDirectory + "/" + fileName
@@ -486,7 +486,7 @@ extension FileProviderExtension {
             
             while exitLoop == false {
                 
-                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", providerData.getAccount(), resultFileName, directoryID)) != nil {
+                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", providerData.account, resultFileName, directoryID)) != nil {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension

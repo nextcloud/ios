@@ -181,7 +181,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         // (ADD)
         for (identifier, _) in listFavoriteIdentifierRank {
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.getAccount(), identifier)) else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
                 continue
             }
             
@@ -197,7 +197,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
         
         // (REMOVE)
-        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directory = true AND favorite = false", providerData.getAccount()), sorted: "fileName", ascending: true)
+        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directory = true AND favorite = false", providerData.account), sorted: "fileName", ascending: true)
         if (metadatas != nil && metadatas!.count > 0) {
             for metadata in metadatas! {
                 guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
@@ -227,11 +227,11 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         if identifier == .rootContainer {
             
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.getAccount(), providerData.getHomeServerUrl())) {
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.account, providerData.homeServerUrl)) {
                     
                 let metadata = tableMetadata()
                     
-                metadata.account = providerData.getAccount()
+                metadata.account = providerData.account
                 metadata.directory = true
                 metadata.directoryID = directory.directoryID
                 metadata.fileID = NSFileProviderItemIdentifier.rootContainer.rawValue
@@ -359,7 +359,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.getAccount(), metadata.fileID))
+            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, metadata.fileID))
             if tableLocalFile != nil {
                 localEtag = tableLocalFile!.etag
                 localEtagFPE = tableLocalFile!.etagFPE
@@ -369,7 +369,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 // Verify last version on "Local Table"
                 if localEtag != localEtagFPE {
-                    if self.copyFile(providerData.getDirectoryUser()+"/"+metadata.fileID, toPath: url.path) == nil {
+                    if self.copyFile(providerData.directoryUser+"/"+metadata.fileID, toPath: url.path) == nil {
                         NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: nil, etagFPE: localEtag)
                     }
                 }
@@ -393,17 +393,17 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             // delete prev file + ico on Directory User
-            _ = self.deleteFile("\(providerData.getDirectoryUser())/\(metadata.fileID)")
-            _ = self.deleteFile("\(providerData.getDirectoryUser())/\(metadata.fileID).ico")
+            _ = self.deleteFile("\(providerData.directoryUser)/\(metadata.fileID)")
+            _ = self.deleteFile("\(providerData.directoryUser)/\(metadata.fileID).ico")
 
-            let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.getAccountUser(), withUserID: providerData.getAccountUserID(), withPassword: providerData.getAccountPassword(), withUrl: providerData.getAccountUrl())
-            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(providerData.getDirectoryUser())/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
+            let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
+            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(providerData.directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
                 
                 // remove Task
                 self.outstandingDownloadTasks.removeValue(forKey: url)
 
                 // copy download file to url
-                _ = self.copyFile("\(self.providerData.getDirectoryUser())/\(metadata.fileID)", toPath: url.path)
+                _ = self.copyFile("\(self.providerData.directoryUser)/\(metadata.fileID)", toPath: url.path)
             
                 // update DB Local
                 metadata.date = date! as NSDate

@@ -32,14 +32,14 @@ extension FileProviderExtension {
                 if (metadata!.typeFile == k_metadataTypeFile_image || metadata!.typeFile == k_metadataTypeFile_video) {
                     
                     let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata!.directoryID)
-                    let fileName = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl, activeUrl: providerData.getAccountUrl())
+                    let fileName = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl, activeUrl: providerData.accountUrl)
                     let fileNameLocal = metadata!.fileID
                     
-                    let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.getAccountUser(), withUserID: providerData.getAccountUserID(), withPassword: providerData.getAccountPassword(), withUrl: providerData.getAccountUrl())
+                    let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
                     ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileName: fileName, fileNameLocal: fileNameLocal, success: {
                         
                         do {
-                            let url = URL.init(fileURLWithPath: self.providerData.getDirectoryUser()+"/"+metadata!.fileID+".ico")
+                            let url = URL.init(fileURLWithPath: self.providerData.directoryUser+"/"+metadata!.fileID+".ico")
                             let data = try Data.init(contentsOf: url)
                             perThumbnailCompletionHandler(itemIdentifier, data, nil)
                         } catch let error {

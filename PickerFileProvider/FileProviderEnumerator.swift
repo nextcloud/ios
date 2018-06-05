@@ -39,12 +39,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if #available(iOSApplicationExtension 11.0, *) {
 
             if (enumeratedItemIdentifier == .rootContainer) {
-                serverUrl = providerData.getHomeServerUrl()
+                serverUrl = providerData.homeServerUrl
             } else {
                 
                 let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
                 if metadata != nil  {
-                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.getAccount(), metadata!.directoryID))  {
+                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, metadata!.directoryID))  {
                         serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
                     }
                 }
@@ -74,10 +74,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             var itemIdentifierMetadata = [NSFileProviderItemIdentifier:tableMetadata]()
             
             // ***** Tags *****
-            let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", providerData.getAccount()))
+            let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", providerData.account))
             for tag in tags {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.getAccount(), tag.fileID))  else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, tag.fileID))  else {
                     continue
                 }
                 
@@ -90,7 +90,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             for (identifier, _) in listFavoriteIdentifierRank {
              
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.getAccount(), identifier)) else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
                     continue
                 }
                
@@ -117,8 +117,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
             
         // Select items from database
-        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.getAccount(), serverUrl))  {
-            metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.getAccount(), directory.directoryID), sorted: "fileName", ascending: true)
+        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.account, serverUrl))  {
+            metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, directory.directoryID), sorted: "fileName", ascending: true)
         }
             
         // Calculate current page
@@ -127,7 +127,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             var numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
                 
             if (metadatas != nil) {
-                items = self.selectItems(numPage: numPage, account: providerData.getAccount(), metadatas: metadatas!)
+                items = self.selectItems(numPage: numPage, account: providerData.account, metadatas: metadatas!)
                 observer.didEnumerate(items)
             }
             if (items.count == self.recordForPage) {
@@ -140,14 +140,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             return
         }
             
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.getAccountUser(), withUserID: providerData.getAccountUserID(), withPassword: providerData.getAccountPassword(), withUrl: providerData.getAccountUrl())
-        ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.getAccount(), success: { (metadatas, metadataFolder, directoryID) in
-                
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
+        ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
+            
             if (metadatas != nil) {
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.getAccount(), directoryID!), clearDateReadDirectoryID: directoryID!)
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
                 _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl)
-                if let metadataDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", self.providerData.getAccount(), directoryID!), sorted: "fileName", ascending: true) {
-                    items = self.selectItems(numPage: 0, account: self.providerData.getAccount(), metadatas: metadataDB)
+                if let metadataDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", self.providerData.account, directoryID!), sorted: "fileName", ascending: true) {
+                    items = self.selectItems(numPage: 0, account: self.providerData.account, metadatas: metadataDB)
                     if (items.count > 0) {
                         observer.didEnumerate(items)
                     }
@@ -165,7 +165,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
             // select item from database
             if (metadatas != nil) {
-                items = self.selectItems(numPage: 0, account: self.providerData.getAccount(), metadatas: metadatas!)
+                items = self.selectItems(numPage: 0, account: self.providerData.account, metadatas: metadatas!)
                 observer.didEnumerate(items)
             }
             if (items.count == self.recordForPage) {
@@ -183,7 +183,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
         var itemsDelete = [NSFileProviderItemIdentifier]()
         var itemsUpdate = [FileProviderItem]()
-        let activeAccount = providerData.getAccount()
         
         // Report the deleted items
         //
@@ -213,7 +212,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             queueTradeSafe.sync() {
                 for (itemIdentifier, item) in fileProviderSignalUpdateWorkingSetItem {
                     let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
-                    if account != nil && account == activeAccount {
+                    if account != nil && account == providerData.account {
                         itemsUpdate.append(item)
                     } else {
                         itemsDelete.append(itemIdentifier)
@@ -227,7 +226,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             queueTradeSafe.sync(flags: .barrier) {
                 for (itemIdentifier, item) in fileProviderSignalUpdateContainerItem {
                     let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
-                    if account != nil && account == activeAccount {
+                    if account != nil && account == providerData.account {
                         itemsUpdate.append(item)
                     } else {
                         itemsDelete.append(itemIdentifier)

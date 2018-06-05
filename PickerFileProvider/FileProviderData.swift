@@ -25,56 +25,13 @@ import FileProvider
 
 class FileProviderData: NSObject {
     
-    private var account = ""
-    private var accountUser = ""
-    private var accountUserID = ""
-    private var accountPassword = ""
-    private var accountUrl = ""
-    private var homeServerUrl = ""
-    private var directoryUser = ""
-    
-    // Return var in trade-safe
-    func getAccount() -> String {
-        var returnString = ""
-        queueTradeSafe.sync { returnString = self.account }
-        return returnString
-    }
-    
-    func getAccountUser() -> String {
-        var returnString = ""
-        queueTradeSafe.sync { returnString = self.accountUser }
-        return returnString
-    }
-    
-    func getAccountUserID() -> String {
-        var returnString = ""
-        queueTradeSafe.sync { returnString = self.accountUserID }
-        return returnString
-    }
-    
-    func getAccountPassword() -> String {
-        var returnString = ""
-        queueTradeSafe.sync { returnString = self.accountPassword }
-        return returnString
-    }
-    
-    func getAccountUrl() -> String {
-        var returnString = ""
-        queueTradeSafe.sync { returnString = self.accountUrl }
-        return returnString
-    }
-    
-    func getHomeServerUrl() -> String {
-        var returnString = ""
-        queueTradeSafe.sync { returnString = self.homeServerUrl }
-        return returnString
-    }
-    
-    func getDirectoryUser() -> String {
-        var returnString = ""
-        queueTradeSafe.sync { returnString = self.directoryUser }
-        return returnString
-    }
+    var account = ""
+    var accountUser = ""
+    var accountUserID = ""
+    var accountPassword = ""
+    var accountUrl = ""
+    var homeServerUrl = ""
+    var directoryUser = ""
     
     // Directory
     var groupURL: URL?
