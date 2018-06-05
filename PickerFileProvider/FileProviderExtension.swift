@@ -72,6 +72,17 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
 
     var outstandingDownloadTasks = [URL: URLSessionTask]()
     
+    lazy var fileCoordinator: NSFileCoordinator = {
+        
+        if #available(iOSApplicationExtension 11.0, *) {
+            let fileCoordinator = NSFileCoordinator()
+            fileCoordinator.purposeIdentifier = NSFileProviderManager.default.providerIdentifier
+            return fileCoordinator
+        } else {
+            return NSFileCoordinator()
+        }
+    }()
+    
     override init() {
         
         super.init()

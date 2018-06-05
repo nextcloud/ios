@@ -384,7 +384,6 @@ extension FileProviderExtension {
         
         var size = 0 as Double
         let metadata = tableMetadata()
-        let fileCoordinator = NSFileCoordinator()
         var error: NSError?
         
         guard let tableDirectory = self.providerData.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier) else {
