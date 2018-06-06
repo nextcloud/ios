@@ -29,18 +29,17 @@ extension FileProviderExtension {
     //  MARK: - Read folder
     // --------------------------------------------------------------------------------------------
     
-    
     func readFolder(itemIdentifier: NSFileProviderItemIdentifier) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
         var serverUrl: String?
-        var parentItemIdentifier: NSFileProviderItemIdentifier?
+        var parentIdentifier: NSFileProviderItemIdentifier?
         
         if (itemIdentifier == .rootContainer) {
             
-            parentItemIdentifier = .rootContainer
+            parentIdentifier = .rootContainer
             serverUrl = providerData.homeServerUrl
             
         } else {
@@ -52,19 +51,36 @@ extension FileProviderExtension {
                 return
             }
             
-            parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
+            parentIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
             serverUrl = directorySource.serverUrl + "/" + metadata.fileName
+        }
+        
+        guard let parentItemIdentifier = parentIdentifier else {
+            return
         }
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
             
-            if (metadatas != nil) {
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
-                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl)
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
+            guard let metadatasUpdate = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl) else {
+                return
             }
             
-            //self.signalEnumerator(for: [parentItemIdentifier!, .workingSet])
+            autoreleasepool {
+                    
+                for metadata in metadatasUpdate {
+                    
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
+                
+                    queueTradeSafe.sync(flags: .barrier) {
+                        fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                        fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                    }
+                }
+                    
+                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            }
             
         }, failure: { (errorMessage, errorCode) in
         })
