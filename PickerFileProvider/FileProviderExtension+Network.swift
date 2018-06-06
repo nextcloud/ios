@@ -26,6 +26,51 @@ import FileProvider
 extension FileProviderExtension {
 
     // --------------------------------------------------------------------------------------------
+    //  MARK: - Read folder
+    // --------------------------------------------------------------------------------------------
+    
+    
+    func readFolder(itemIdentifier: NSFileProviderItemIdentifier) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+        
+        var serverUrl: String?
+        var parentItemIdentifier: NSFileProviderItemIdentifier?
+        
+        if (itemIdentifier == .rootContainer) {
+            
+            parentItemIdentifier = .rootContainer
+            serverUrl = providerData.homeServerUrl
+            
+        } else {
+            
+            guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+                return
+            }
+            guard let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, metadata.directoryID)) else {
+                return
+            }
+            
+            parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
+            serverUrl = directorySource.serverUrl + "/" + metadata.fileName
+        }
+        
+        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
+        ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
+            
+            if (metadatas != nil) {
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
+                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl)
+            }
+            
+            //self.signalEnumerator(for: [parentItemIdentifier!, .workingSet])
+            
+        }, failure: { (errorMessage, errorCode) in
+        })
+    }
+    
+    // --------------------------------------------------------------------------------------------
     //  MARK: - Delete
     // --------------------------------------------------------------------------------------------
     
