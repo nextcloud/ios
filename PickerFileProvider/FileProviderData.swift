@@ -44,6 +44,9 @@ class FileProviderData: NSObject {
     // Metadata Temp for Import
     let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
     
+    // Max item for page
+    let itemForPage = 50
+    
     func setupActiveAccount() -> Bool {
         
         queueTradeSafe.sync(flags: .barrier) {

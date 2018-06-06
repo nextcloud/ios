@@ -26,7 +26,6 @@ import FileProvider
 class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
-    let recordForPage = 20
     var serverUrl: String?
     var providerData: FileProviderData
     
@@ -69,6 +68,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             return
         }
         
+        /*** WorkingSet ***/
         if enumeratedItemIdentifier == .workingSet {
             
             var itemIdentifierMetadata = [NSFileProviderItemIdentifier:tableMetadata]()
@@ -108,73 +108,76 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             observer.didEnumerate(items)
             observer.finishEnumerating(upTo: nil)
-            return
-        }
+            
+        } else {
         
-        guard let serverUrl = serverUrl else {
-            observer.finishEnumerating(upTo: nil)
-            return
-        }
+        /*** ServerUrl ***/
             
-        // Select items from database
-        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.account, serverUrl))  {
-            metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, directory.directoryID), sorted: "fileName", ascending: true)
-        }
-            
-        // Calculate current page
-        if (page != NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage && page != NSFileProviderPage.initialPageSortedByName as NSFileProviderPage) {
-                
-            var numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
-                
-            if (metadatas != nil) {
-                items = self.selectItems(numPage: numPage, account: providerData.account, metadatas: metadatas!)
-                observer.didEnumerate(items)
-            }
-            if (items.count == self.recordForPage) {
-                numPage += 1
-                let providerPage = NSFileProviderPage("\(numPage)".data(using: .utf8)!)
-                observer.finishEnumerating(upTo: providerPage)
-            } else {
+            guard let serverUrl = serverUrl else {
                 observer.finishEnumerating(upTo: nil)
+                return
             }
-            return
-        }
             
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
+            // Select items from database
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.account, serverUrl))  {
+                metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, directory.directoryID), sorted: "fileName", ascending: true)
+            }
             
-            if (metadatas != nil) {
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
-                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl)
-                if let metadataDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", self.providerData.account, directoryID!), sorted: "fileName", ascending: true) {
-                    items = self.selectItems(numPage: 0, account: self.providerData.account, metadatas: metadataDB)
-                    if (items.count > 0) {
-                        observer.didEnumerate(items)
+            // Calculate current page
+            if (page != NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage && page != NSFileProviderPage.initialPageSortedByName as NSFileProviderPage) {
+                
+                var numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
+                
+                if (metadatas != nil) {
+                    items = self.selectItems(numPage: numPage, account: providerData.account, metadatas: metadatas!)
+                    observer.didEnumerate(items)
+                }
+                if (items.count == providerData.itemForPage) {
+                    numPage += 1
+                    let providerPage = NSFileProviderPage("\(numPage)".data(using: .utf8)!)
+                    observer.finishEnumerating(upTo: providerPage)
+                } else {
+                    observer.finishEnumerating(upTo: nil)
+                }
+                return
+            }
+            
+            let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
+            ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
+                
+                if (metadatas != nil) {
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
+                    _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl)
+                    if let metadataDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", self.providerData.account, directoryID!), sorted: "fileName", ascending: true) {
+                        items = self.selectItems(numPage: 0, account: self.providerData.account, metadatas: metadataDB)
+                        if (items.count > 0) {
+                            observer.didEnumerate(items)
+                        }
                     }
                 }
-            }
                 
-            if (items.count == self.recordForPage) {
-                let providerPage = NSFileProviderPage("1".data(using: .utf8)!)
-                observer.finishEnumerating(upTo: providerPage)
-            } else {
-                observer.finishEnumerating(upTo: nil)
-            }
+                if (items.count == self.providerData.itemForPage) {
+                    let providerPage = NSFileProviderPage("1".data(using: .utf8)!)
+                    observer.finishEnumerating(upTo: providerPage)
+                } else {
+                    observer.finishEnumerating(upTo: nil)
+                }
                 
-        }, failure: { (errorMessage, errorCode) in
+            }, failure: { (errorMessage, errorCode) in
                 
-            // select item from database
-            if (metadatas != nil) {
-                items = self.selectItems(numPage: 0, account: self.providerData.account, metadatas: metadatas!)
-                observer.didEnumerate(items)
-            }
-            if (items.count == self.recordForPage) {
-                let providerPage = NSFileProviderPage("1".data(using: .utf8)!)
-                observer.finishEnumerating(upTo: providerPage)
-            } else {
-                observer.finishEnumerating(upTo: nil)
-            }
-        })
+                // select item from database
+                if (metadatas != nil) {
+                    items = self.selectItems(numPage: 0, account: self.providerData.account, metadatas: metadatas!)
+                    observer.didEnumerate(items)
+                }
+                if (items.count == self.providerData.itemForPage) {
+                    let providerPage = NSFileProviderPage("1".data(using: .utf8)!)
+                    observer.finishEnumerating(upTo: providerPage)
+                } else {
+                    observer.finishEnumerating(upTo: nil)
+                }
+            })
+        }
     }
     
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
@@ -257,30 +260,31 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     func selectItems(numPage: Int, account: String, metadatas: [tableMetadata]) -> [NSFileProviderItemProtocol] {
         
         var items: [NSFileProviderItemProtocol] = []
-        let start = numPage * self.recordForPage + 1
-        let stop = start + (self.recordForPage - 1)
+        let start = numPage * providerData.itemForPage + 1
+        let stop = start + (providerData.itemForPage - 1)
         var counter = 0
         
-        for metadata in metadatas {
-            
-            // E2EE Remove
-            if metadata.e2eEncrypted || metadata.status == Double(k_metadataStatusHide) || (metadata.session != "" && metadata.session != k_download_session_extension && metadata.session != k_upload_session_extension) {
-                continue
-            }
-            
-            counter += 1
-            if (counter >= start && counter <= stop) {
+        autoreleasepool {
+            for metadata in metadatas {
                 
-                providerData.createFileIdentifierOnFileSystem(metadata: metadata)
-
-                let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
-                if parentItemIdentifier != nil {
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-                    items.append(item)
+                // E2EE Remove
+                if metadata.e2eEncrypted || metadata.status == Double(k_metadataStatusHide) || (metadata.session != "" && metadata.session != k_download_session_extension && metadata.session != k_upload_session_extension) {
+                    continue
+                }
+                
+                counter += 1
+                if (counter >= start && counter <= stop) {
+                    
+                    providerData.createFileIdentifierOnFileSystem(metadata: metadata)
+                    
+                    let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
+                    if parentItemIdentifier != nil {
+                        let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
+                        items.append(item)
+                    }
                 }
             }
         }
-        
         return items
     }
 

@@ -29,34 +29,28 @@ extension FileProviderExtension {
     //  MARK: - Read folder
     // --------------------------------------------------------------------------------------------
     
-    func readFolder(itemIdentifier: NSFileProviderItemIdentifier) {
+    func readFolder(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
         var serverUrl: String?
-        var parentIdentifier: NSFileProviderItemIdentifier?
+        var counter = 0
         
-        if (itemIdentifier == .rootContainer) {
+        if (enumeratedItemIdentifier == .rootContainer) {
             
-            parentIdentifier = .rootContainer
             serverUrl = providerData.homeServerUrl
             
         } else {
             
-            guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            guard let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier) else {
                 return
             }
             guard let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, metadata.directoryID)) else {
                 return
             }
             
-            parentIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
             serverUrl = directorySource.serverUrl + "/" + metadata.fileName
-        }
-        
-        guard let parentItemIdentifier = parentIdentifier else {
-            return
         }
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
@@ -67,20 +61,22 @@ extension FileProviderExtension {
                 return
             }
             
-            autoreleasepool {
-                    
-                for metadata in metadatasUpdate {
-                    
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-                
-                    queueTradeSafe.sync(flags: .barrier) {
-                        fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                        fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                    }
+            for metadata in metadatasUpdate {
+             
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: enumeratedItemIdentifier, providerData: self.providerData)
+             
+                queueTradeSafe.sync(flags: .barrier) {
+                    fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
                 }
-                    
-                self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
-            }
+             
+                counter += 1
+                if counter >= self.providerData.itemForPage {
+                    //self.signalEnumerator(for: [enumeratedItemIdentifier])
+                    counter = 0
+                }
+             }
+             
+            //self.signalEnumerator(for: [enumeratedItemIdentifier])
             
         }, failure: { (errorMessage, errorCode) in
         })
