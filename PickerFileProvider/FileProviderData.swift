@@ -67,8 +67,7 @@ class FileProviderData: NSObject {
     var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
     var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
 
-    // MARK: - Function
-    //
+    // MARK: - 
     
     func setupActiveAccount() -> Bool {
         
