@@ -87,8 +87,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             
             // ***** Favorite *****
-            listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
-            for (identifier, _) in listFavoriteIdentifierRank {
+            providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+            for (identifier, _) in providerData.listFavoriteIdentifierRank {
              
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
                     continue
@@ -204,30 +204,30 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         // Report the deleted items
         //
         if enumeratedItemIdentifier == .workingSet {
-            queueTradeSafe.sync() {
-                for (itemIdentifier, _) in fileProviderSignalDeleteWorkingSetItemIdentifier {
+            providerData.queueTradeSafe.sync() {
+                for (itemIdentifier, _) in providerData.fileProviderSignalDeleteWorkingSetItemIdentifier {
                     itemsDelete.append(itemIdentifier)
                 }
             }
-            queueTradeSafe.sync(flags: .barrier) {
-                fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
+            providerData.queueTradeSafe.sync(flags: .barrier) {
+                providerData.fileProviderSignalDeleteWorkingSetItemIdentifier.removeAll()
             }
         } else {
-            queueTradeSafe.sync() {
-                for (itemIdentifier, _) in fileProviderSignalDeleteContainerItemIdentifier {
+            providerData.queueTradeSafe.sync() {
+                for (itemIdentifier, _) in providerData.fileProviderSignalDeleteContainerItemIdentifier {
                     itemsDelete.append(itemIdentifier)
                 }
             }
-            queueTradeSafe.sync(flags: .barrier) {
-                fileProviderSignalDeleteContainerItemIdentifier.removeAll()
+            providerData.queueTradeSafe.sync(flags: .barrier) {
+                providerData.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
             }
         }
             
         // Report the updated items
         //
         if enumeratedItemIdentifier == .workingSet {
-            queueTradeSafe.sync() {
-                for (itemIdentifier, item) in fileProviderSignalUpdateWorkingSetItem {
+            providerData.queueTradeSafe.sync() {
+                for (itemIdentifier, item) in providerData.fileProviderSignalUpdateWorkingSetItem {
                     let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
                     if account != nil && account == providerData.account {
                         itemsUpdate.append(item)
@@ -236,12 +236,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     }
                 }
             }
-            queueTradeSafe.sync(flags: .barrier) {
-                fileProviderSignalUpdateWorkingSetItem.removeAll()
+            providerData.queueTradeSafe.sync(flags: .barrier) {
+                providerData.fileProviderSignalUpdateWorkingSetItem.removeAll()
             }
         } else {
-            queueTradeSafe.sync(flags: .barrier) {
-                for (itemIdentifier, item) in fileProviderSignalUpdateContainerItem {
+            providerData.queueTradeSafe.sync(flags: .barrier) {
+                for (itemIdentifier, item) in providerData.fileProviderSignalUpdateContainerItem {
                     let account = providerData.getAccountFromItemIdentifier(itemIdentifier)
                     if account != nil && account == providerData.account {
                         itemsUpdate.append(item)
@@ -250,20 +250,20 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     }
                 }
             }
-            queueTradeSafe.sync(flags: .barrier) {
-                fileProviderSignalUpdateContainerItem.removeAll()
+            providerData.queueTradeSafe.sync(flags: .barrier) {
+                providerData.fileProviderSignalUpdateContainerItem.removeAll()
             }
         }
             
         observer.didDeleteItems(withIdentifiers: itemsDelete)
         observer.didUpdate(itemsUpdate)
             
-        let data = "\(currentAnchor)".data(using: .utf8)
+        let data = "\(providerData.currentAnchor)".data(using: .utf8)
         observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)
     }
     
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        let data = "\(currentAnchor)".data(using: .utf8)
+        let data = "\(providerData.currentAnchor)".data(using: .utf8)
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
     

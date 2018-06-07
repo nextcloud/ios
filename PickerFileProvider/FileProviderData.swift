@@ -50,6 +50,22 @@ class FileProviderData: NSObject {
     // List of etag for serverUrl
     var listServerUrlEtag = [String:String]()
     
+    // Anchor
+    var currentAnchor: UInt64 = 0
+
+    // Rank favorite
+    var listFavoriteIdentifierRank = [String:NSNumber]()
+    
+    // Queue for trade-safe
+    let queueTradeSafe = DispatchQueue(label: "com.nextcloud.fileproviderextension.tradesafe", attributes: .concurrent)
+
+    // Item for signalEnumerator
+    var fileProviderSignalDeleteContainerItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+    var fileProviderSignalUpdateContainerItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+    var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+    var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+
+    
     func setupActiveAccount() -> Bool {
         
         queueTradeSafe.sync(flags: .barrier) {

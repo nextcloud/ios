@@ -26,20 +26,6 @@ import FileProvider
 // Timer for Upload (queue)
 var timerUpload: Timer?
 
-// Item for signalEnumerator
-var fileProviderSignalDeleteContainerItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
-var fileProviderSignalUpdateContainerItem = [NSFileProviderItemIdentifier:FileProviderItem]()
-var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
-var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
-
-// Rank favorite
-var listFavoriteIdentifierRank = [String:NSNumber]()
-
-// Queue for trade-safe
-let queueTradeSafe = DispatchQueue(label: "com.nextcloud.fileproviderextension.tradesafe", attributes: .concurrent)
-
-var currentAnchor: UInt64 = 0
-
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
                                                             STRUCT item
    -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -166,7 +152,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        currentAnchor += 1
+        providerData.currentAnchor += 1
 
         for containerItemIdentifier in containerItemIdentifiers {
             
@@ -187,10 +173,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         // ***** Favorite Files <-> Favorite Nextcloud *****
         
-        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+        providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
         
         // (ADD)
-        for (identifier, _) in listFavoriteIdentifierRank {
+        for (identifier, _) in providerData.listFavoriteIdentifierRank {
             
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
                 continue
@@ -202,8 +188,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
             
-            queueTradeSafe.sync(flags: .barrier) {
-                fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+            providerData.queueTradeSafe.sync(flags: .barrier) {
+                providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             }
         }
         
@@ -216,11 +202,11 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 }
                 
                 let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-                listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+                providerData.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
                 
-                queueTradeSafe.sync(flags: .barrier) {
-                    fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                providerData.queueTradeSafe.sync(flags: .barrier) {
+                    providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                 }
             }
         }
