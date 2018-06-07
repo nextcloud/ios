@@ -46,6 +46,9 @@ class FileProviderData: NSObject {
     
     // Max item for page
     let itemForPage = 20
+
+    // List of etag for serverUrl
+    var listServerUrlEtag = [String:String]()
     
     func setupActiveAccount() -> Bool {
         
