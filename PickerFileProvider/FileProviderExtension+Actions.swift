@@ -252,7 +252,7 @@ extension FileProviderExtension {
                 
                 let itemIdentifier = self.providerData.getItemIdentifier(metadata: metadata)
                 
-                _ = self.moveFile(self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + fileNameFrom, toPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + itemName)
+                _ = self.providerData.moveFile(self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + fileNameFrom, toPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + itemName)
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
             }
@@ -405,7 +405,7 @@ extension FileProviderExtension {
             
                 // typefile directory ? (NOT PERMITTED)
                 do {
-                    let attributes = try self.fileManager.attributesOfItem(atPath: fileURL.path)
+                    let attributes = try self.providerData.fileManager.attributesOfItem(atPath: fileURL.path)
                     size = attributes[FileAttributeKey.size] as! Double
                     let typeFile = attributes[FileAttributeKey.type] as! FileAttributeType
                     if typeFile == FileAttributeType.typeDirectory {
@@ -425,7 +425,7 @@ extension FileProviderExtension {
                 } catch  { }
             
                 self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
-                    _ = self.moveFile(url.path, toPath: fileNamePathDirectory + "/" + fileName)
+                    _ = self.providerData.moveFile(url.path, toPath: fileNamePathDirectory + "/" + fileName)
                 }
             
                 fileURL.stopAccessingSecurityScopedResource()

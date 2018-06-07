@@ -53,7 +53,6 @@ var timerUpload: Timer?
 
 class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     
-    var fileManager = FileManager()
     var providerData = FileProviderData()
 
     var outstandingDownloadTasks = [URL: URLSessionTask]()
@@ -95,7 +94,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             NSFileCoordinator().coordinate(writingItemAt: self.documentStorageURL, options: [], error: nil, byAccessor: { newURL in
                 do {
-                    try fileManager.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
+                    try providerData.fileManager.createDirectory(at: newURL, withIntermediateDirectories: true, attributes: nil)
                 } catch let error {
                     print("error: \(error)")
                 }
@@ -366,13 +365,13 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 // Verify last version on "Local Table"
                 if localEtag != localEtagFPE {
-                    if self.copyFile(providerData.directoryUser+"/"+metadata.fileID, toPath: url.path) == nil {
+                    if providerData.copyFile(providerData.directoryUser+"/"+metadata.fileID, toPath: url.path) == nil {
                         NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: nil, etagFPE: localEtag)
                     }
                 }
                 
                 do {
-                    let attributes = try fileManager.attributesOfItem(atPath: url.path)
+                    let attributes = try providerData.fileManager.attributesOfItem(atPath: url.path)
                     fileSize = attributes[FileAttributeKey.size] as! Double
                 } catch let error {
                     print("error: \(error)")
@@ -390,8 +389,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             // delete prev file + ico on Directory User
-            _ = self.deleteFile("\(providerData.directoryUser)/\(metadata.fileID)")
-            _ = self.deleteFile("\(providerData.directoryUser)/\(metadata.fileID).ico")
+            _ = providerData.deleteFile("\(providerData.directoryUser)/\(metadata.fileID)")
+            _ = providerData.deleteFile("\(providerData.directoryUser)/\(metadata.fileID).ico")
 
             let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
             let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(providerData.directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
@@ -400,7 +399,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 self.outstandingDownloadTasks.removeValue(forKey: url)
 
                 // copy download file to url
-                _ = self.copyFile("\(self.providerData.directoryUser)/\(metadata.fileID)", toPath: url.path)
+                _ = self.providerData.copyFile("\(self.providerData.directoryUser)/\(metadata.fileID)", toPath: url.path)
             
                 // update DB Local
                 metadata.date = date! as NSDate
@@ -463,7 +462,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
         } else {
             
-            let fileSize = (try! fileManager.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
+            let fileSize = (try! providerData.fileManager.attributesOfItem(atPath: url.path)[FileAttributeKey.size] as! NSNumber).uint64Value
             NSLog("[LOG] Item changed at URL %@ %lu", url as NSURL, fileSize)
             
             guard let account = NCManageDatabase.sharedInstance.getAccountActive() else {
@@ -499,7 +498,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 let destinationDirectoryUser = "\(directoryUser!)/\(uploadID)"
                 
                 // copy sourceURL on directoryUser
-                _ = self.copyFile(url.path, toPath: destinationDirectoryUser)
+                _ = providerData.copyFile(url.path, toPath: destinationDirectoryUser)
                 
                 // Prepare for send Metadata
                 metadata!.sessionID = uploadID
@@ -513,7 +512,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
                 let destinationDirectoryUser = "\(directoryUser!)/\(fileName)"
                 
-                _ = self.copyFile(url.path, toPath: destinationDirectoryUser)
+                _ = providerData.copyFile(url.path, toPath: destinationDirectoryUser)
 
                 CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, fileID: nil, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             }
@@ -534,7 +533,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         if !fileHasLocalChanges {
             // remove the existing file to free up space
             do {
-                _ = try fileManager.removeItem(at: url)
+                _ = try providerData.fileManager.removeItem(at: url)
             } catch let error {
                 print("error: \(error)")
             }
@@ -556,52 +555,5 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
     
-    func copyFile(_ atPath: String, toPath: String) -> Error? {
-        
-        var errorResult: Error?
-        
-        do {
-            try fileManager.removeItem(atPath: toPath)
-        } catch let error {
-            print("error: \(error)")
-        }
-        do {
-            try fileManager.copyItem(atPath: atPath, toPath: toPath)
-        } catch let error {
-            errorResult = error
-        }
-        
-        return errorResult
-    }
     
-    func moveFile(_ atPath: String, toPath: String) -> Error? {
-        
-        var errorResult: Error?
-        
-        do {
-            try fileManager.removeItem(atPath: toPath)
-        } catch let error {
-            print("error: \(error)")
-        }
-        do {
-            try fileManager.moveItem(atPath: atPath, toPath: toPath)
-        } catch let error {
-            errorResult = error
-        }
-        
-        return errorResult
-    }
-    
-    func deleteFile(_ atPath: String) -> Error? {
-        
-        var errorResult: Error?
-        
-        do {
-            try fileManager.removeItem(atPath: atPath)
-        } catch let error {
-            errorResult = error
-        }
-        
-        return errorResult
-    }
 }

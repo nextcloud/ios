@@ -25,6 +25,8 @@ import FileProvider
 
 class FileProviderData: NSObject {
     
+    var fileManager = FileManager()
+    
     var account = ""
     var accountUser = ""
     var accountUserID = ""
@@ -65,6 +67,8 @@ class FileProviderData: NSObject {
     var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
     var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
 
+    // MARK: - Function
+    //
     
     func setupActiveAccount() -> Bool {
         
@@ -184,5 +188,62 @@ class FileProviderData: NSObject {
         }
         
         return directory
+    }
+    
+    func copyFile(_ atPath: String, toPath: String) -> Error? {
+        
+        var errorResult: Error?
+        
+        if !fileManager.fileExists(atPath: atPath) {
+            return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
+        }
+        
+        do {
+            try fileManager.removeItem(atPath: toPath)
+        } catch let error {
+            print("error: \(error)")
+        }
+        do {
+            try fileManager.copyItem(atPath: atPath, toPath: toPath)
+        } catch let error {
+            errorResult = error
+        }
+        
+        return errorResult
+    }
+    
+    func moveFile(_ atPath: String, toPath: String) -> Error? {
+        
+        var errorResult: Error?
+        
+        if !fileManager.fileExists(atPath: atPath) {
+            return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
+        }
+        
+        do {
+            try fileManager.removeItem(atPath: toPath)
+        } catch let error {
+            print("error: \(error)")
+        }
+        do {
+            try fileManager.moveItem(atPath: atPath, toPath: toPath)
+        } catch let error {
+            errorResult = error
+        }
+        
+        return errorResult
+    }
+    
+    func deleteFile(_ atPath: String) -> Error? {
+        
+        var errorResult: Error?
+        
+        do {
+            try fileManager.removeItem(atPath: atPath)
+        } catch let error {
+            errorResult = error
+        }
+        
+        return errorResult
     }
 }

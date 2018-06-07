@@ -112,17 +112,17 @@ extension FileProviderExtension {
         
         let fileNamePath = self.providerData.directoryUser + "/" + metadata.fileID
         do {
-            try self.fileManager.removeItem(atPath: fileNamePath)
+            try self.providerData.fileManager.removeItem(atPath: fileNamePath)
         } catch let error {
             print("error: \(error)")
         }
         do {
-            try self.fileManager.removeItem(atPath: fileNamePath + ".ico")
+            try self.providerData.fileManager.removeItem(atPath: fileNamePath + ".ico")
         } catch let error {
             print("error: \(error)")
         }
         do {
-            try self.fileManager.removeItem(atPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
+            try self.providerData.fileManager.removeItem(atPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
         } catch let error {
             print("error: \(error)")
         }
@@ -224,9 +224,9 @@ extension FileProviderExtension {
                 NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: assetLocalIdentifier, selector: selector)
                 
                 // Rename directory file
-                if fileManager.fileExists(atPath: providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
+                if providerData.fileManager.fileExists(atPath: providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
                     let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-                    _ = moveFile(providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
+                    _ = providerData.moveFile(providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
                 }
                 
                 providerData.queueTradeSafe.sync(flags: .barrier) {
@@ -241,7 +241,7 @@ extension FileProviderExtension {
             if (selectorPost == providerData.selectorPostItemChanged) {
                 
                 let filePathItemIdentifier = providerData.fileProviderStorageURL!.path + "/" + providerData.getItemIdentifier(metadata: metadata).rawValue + "/" + metadata.fileName
-                _ = self.copyFile(filePathItemIdentifier, toPath: providerData.directoryUser + "/" + metadata.fileID)
+                _ = self.providerData.copyFile(filePathItemIdentifier, toPath: providerData.directoryUser + "/" + metadata.fileID)
             }
             
             NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
@@ -311,7 +311,7 @@ extension FileProviderExtension {
             let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, withPath: true)
             if  metadataNetQueue != nil {
                 
-                if self.copyFile(metadataNetQueue!.path, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
+                if self.providerData.copyFile(metadataNetQueue!.path, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
                     
                     CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, fileID: metadataNetQueue!.assetLocalIdentifier, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                     
@@ -339,7 +339,7 @@ extension FileProviderExtension {
             return
         }
         
-        _ = self.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileID)
+        _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileID)
         
         CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
