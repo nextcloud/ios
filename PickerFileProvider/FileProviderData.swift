@@ -45,7 +45,7 @@ class FileProviderData: NSObject {
     let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
     
     // Max item for page
-    let itemForPage = 50
+    let itemForPage = 20
     
     func setupActiveAccount() -> Bool {
         
