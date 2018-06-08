@@ -550,10 +550,5 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             outstandingDownloadTasks.removeValue(forKey: url)
         }
     }
-    
-    // --------------------------------------------------------------------------------------------
-    //  MARK: - User Function
-    // --------------------------------------------------------------------------------------------
-    
-    
+
 }
