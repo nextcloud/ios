@@ -262,15 +262,13 @@
                 [self reloadForm];
             }]];
             
-            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-                // iPhone
-                [self presentViewController:alertController animated:YES completion:nil];
-            }else {
-                // iPad
-                // Change Rect to position Popover
-                UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
-                [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:rowDescriptor]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-            }
+            
+            alertController.popoverPresentationController.sourceView = self.view;
+            NSIndexPath *indexPath = [self.form indexPathOfFormRow:rowDescriptor];
+            CGRect cellRect = [self.tableView rectForRowAtIndexPath:indexPath];
+            alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
+            
+            [self presentViewController:alertController animated:YES completion:nil];
             
         } else {
             
