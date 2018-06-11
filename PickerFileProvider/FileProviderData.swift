@@ -25,6 +25,8 @@ import FileProvider
 
 class FileProviderData: NSObject {
     
+    var fileManager = FileManager()
+    
     var account = ""
     var accountUser = ""
     var accountUserID = ""
@@ -36,17 +38,53 @@ class FileProviderData: NSObject {
     // Directory
     var groupURL: URL?
     var fileProviderStorageURL: URL?
-        
+    
+    // metadata Selector
+    let selectorPostImportDocument = "importDocument"
+    let selectorPostItemChanged = "itemChanged"
+    
+    // Metadata Temp for Import
+    let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
+    
+    // Max item for page
+    let itemForPage = 20
+
+    // List of etag for serverUrl
+    var listServerUrlEtag = [String:String]()
+    
+    // Anchor
+    var currentAnchor: UInt64 = 0
+
+    // Rank favorite
+    var listFavoriteIdentifierRank = [String:NSNumber]()
+    
+    // Queue for trade-safe
+    let queueTradeSafe = DispatchQueue(label: "com.nextcloud.fileproviderextension.tradesafe", attributes: .concurrent)
+
+    // Item for signalEnumerator
+    var fileProviderSignalDeleteContainerItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+    var fileProviderSignalUpdateContainerItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+    var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
+    var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
+
+    // MARK: - 
+    
     func setupActiveAccount() -> Bool {
         
-        groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-        fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+        queueTradeSafe.sync(flags: .barrier) {
+            groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+            fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+        }
         
         // Create dir File Provider Storage
         do {
             try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
         } catch let error as NSError {
             NSLog("Unable to create directory \(error.debugDescription)")
+        }
+        
+        if CCUtility.getDisableFilesApp() {
+            return false
         }
         
         guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
@@ -57,14 +95,16 @@ class FileProviderData: NSObject {
             assert(false, "change user")
         }
         
-        account = activeAccount.account
-        accountUser = activeAccount.user
-        accountUserID = activeAccount.userID
-        accountPassword = activeAccount.password
-        accountUrl = activeAccount.url
-        homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
-        directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
-                
+        queueTradeSafe.sync(flags: .barrier) {
+            account = activeAccount.account
+            accountUser = activeAccount.user
+            accountUserID = activeAccount.userID
+            accountPassword = activeAccount.password
+            accountUrl = activeAccount.url
+            homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
+            directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
+        }
+        
         return true
     }
     
@@ -147,5 +187,62 @@ class FileProviderData: NSObject {
         }
         
         return directory
+    }
+    
+    func copyFile(_ atPath: String, toPath: String) -> Error? {
+        
+        var errorResult: Error?
+        
+        if !fileManager.fileExists(atPath: atPath) {
+            return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
+        }
+        
+        do {
+            try fileManager.removeItem(atPath: toPath)
+        } catch let error {
+            print("error: \(error)")
+        }
+        do {
+            try fileManager.copyItem(atPath: atPath, toPath: toPath)
+        } catch let error {
+            errorResult = error
+        }
+        
+        return errorResult
+    }
+    
+    func moveFile(_ atPath: String, toPath: String) -> Error? {
+        
+        var errorResult: Error?
+        
+        if !fileManager.fileExists(atPath: atPath) {
+            return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
+        }
+        
+        do {
+            try fileManager.removeItem(atPath: toPath)
+        } catch let error {
+            print("error: \(error)")
+        }
+        do {
+            try fileManager.moveItem(atPath: atPath, toPath: toPath)
+        } catch let error {
+            errorResult = error
+        }
+        
+        return errorResult
+    }
+    
+    func deleteFile(_ atPath: String) -> Error? {
+        
+        var errorResult: Error?
+        
+        do {
+            try fileManager.removeItem(atPath: atPath)
+        } catch let error {
+            errorResult = error
+        }
+        
+        return errorResult
     }
 }

@@ -34,7 +34,11 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         if (self.isDirectory) {
             return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
         } else {
-            return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
+            if isUpload {
+                return [ ]
+            } else {
+                return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
+            }
         }
     }
     
@@ -68,6 +72,8 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var favoriteRank: NSNumber?                                     // Favorite
     
     var isDirectory = false
+    var isDownload = false
+    var isUpload = false
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, providerData: FileProviderData) {
         
@@ -106,22 +112,28 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             }
             
             // Upload
-            if metadata.fileID.contains(k_uploadSessionID) {
+            if metadata.sessionSelectorPost == providerData.selectorPostImportDocument || metadata.sessionSelectorPost == providerData.selectorPostItemChanged {
+                isUpload = true
                 self.isDownloaded = true
                 self.isMostRecentVersionDownloaded = true
                 self.isUploading = true
                 self.isUploaded = false
             }
             
+            // Error ?
+            if metadata.sessionError != "" {
+                uploadingError = NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
+            }
+            
         } else {
             
             // Favorite directory
             if #available(iOSApplicationExtension 11.0, *) {
-                let rank = listFavoriteIdentifierRank[metadata.fileID]
+                let rank = providerData.listFavoriteIdentifierRank[metadata.fileID]
                 if (rank == nil) {
                     favoriteRank = nil
                 } else {
-                    favoriteRank = listFavoriteIdentifierRank[metadata.fileID]
+                    favoriteRank = providerData.listFavoriteIdentifierRank[metadata.fileID]
                 }
             }
         }

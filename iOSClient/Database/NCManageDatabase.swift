@@ -790,7 +790,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        var result :tableDirectory?
+        var result: tableDirectory?
         let realm = try! Realm()
 
         do {
@@ -2438,8 +2438,6 @@ class NCManageDatabase: NSObject {
         
         let realm = try! Realm()
         
-        realm.beginWrite()
-        
         if withPath {
             result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false AND path != nil", tableAccount.account, selector).sorted(byKeyPath: "date", ascending: true).first
         } else {
@@ -2447,15 +2445,18 @@ class NCManageDatabase: NSObject {
         }
         
         if result == nil {
-            realm.cancelWrite()
             return nil
         }
+        
+        let directoryID = self.getDirectoryID(result!.serverUrl)
+        
+        realm.beginWrite()
         
         let metadataNet = CCMetadataNet()
         
         metadataNet.account = result!.account
         metadataNet.assetLocalIdentifier = result!.assetLocalIdentifier
-        metadataNet.directoryID = self.getDirectoryID(result!.serverUrl)
+        metadataNet.directoryID = directoryID
         metadataNet.errorCode = result!.errorCode
         metadataNet.fileName = result!.fileName
         metadataNet.fileNameView = result!.fileNameView

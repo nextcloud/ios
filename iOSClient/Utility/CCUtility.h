@@ -145,6 +145,9 @@
 
 + (void)clearAllKeysEndToEnd:(NSString *)account;
 
++ (BOOL)getDisableFilesApp;
++ (void)setDisableFilesApp:(BOOL)disable;
+
 // ===== Varius =====
 
 + (NSString *)getUserAgent;
