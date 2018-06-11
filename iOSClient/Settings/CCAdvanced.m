@@ -426,29 +426,23 @@
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
         }]];
         
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            // iPhone
-            [self presentViewController:alertController animated:YES completion:nil];
-        } else {
-            // iPad
-            // Change Rect to position Popover
-            UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
-            [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:sender]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-        }
+        alertController.popoverPresentationController.sourceView = self.view;
+        NSIndexPath *indexPath = [self.form indexPathOfFormRow:sender];
+        CGRect cellRect = [self.tableView rectForRowAtIndexPath:indexPath];
+        alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
+
+        [self presentViewController:alertController animated:YES completion:nil];
     }]];
 
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        // iPhone
-        [self presentViewController:alertController animated:YES completion:nil];
-    } else {
-        // iPad
-        // Change Rect to position Popover
-        UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
-        [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:sender]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    }
+    alertController.popoverPresentationController.sourceView = self.view;
+    NSIndexPath *indexPath = [self.form indexPathOfFormRow:sender];
+    CGRect cellRect = [self.tableView rectForRowAtIndexPath:indexPath];
+    alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (void)recalculateSize
@@ -518,15 +512,12 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        // iPhone
-        [self presentViewController:alertController animated:YES completion:nil];
-    } else {
-        // iPad
-        // Change Rect to position Popover
-        UIPopoverController *popup = [[UIPopoverController alloc] initWithContentViewController:alertController];
-        [popup presentPopoverFromRect:[self.tableView rectForRowAtIndexPath:[self.form indexPathOfFormRow:sender]] inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    }
+    alertController.popoverPresentationController.sourceView = self.view;
+    NSIndexPath *indexPath = [self.form indexPathOfFormRow:sender];
+    CGRect cellRect = [self.tableView rectForRowAtIndexPath:indexPath];
+    alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
