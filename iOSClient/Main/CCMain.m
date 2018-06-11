@@ -2774,9 +2774,7 @@
     NSMutableArray *menuArray = [NSMutableArray new];
     
     for (NSString *account in listAccount) {
-     
-        if ([account isEqualToString:appDelegate.activeAccount]) continue;
-        
+    
         CCMenuItem *item = [[CCMenuItem alloc] init];
         
         item.title = [account stringByTruncatingToWidth:self.view.bounds.size.width - 100 withFont:[UIFont systemFontOfSize:12.0] atEnd:YES];
@@ -2806,9 +2804,17 @@
         
         item.image = avatar;
         item.target = self;
-        item.action = @selector(changeDefaultAccount:);
         
-        [menuArray addObject:item];
+        if ([account isEqualToString:appDelegate.activeAccount]) {
+            
+            item.action = nil;
+            [menuArray insertObject:item atIndex:0];
+            
+        } else {
+        
+            item.action = @selector(changeDefaultAccount:);
+            [menuArray addObject:item];
+        }
     }
     
     // Add + new account
