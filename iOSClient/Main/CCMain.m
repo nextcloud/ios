@@ -3648,14 +3648,11 @@
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Swipe Tablet -> menu =====
+#pragma mark ===== Swipe Tablet -> menu : Favorite, More, Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)swipeTableCell:(MGSwipeTableCell *)cell canSwipe:(MGSwipeDirection)direction
+- (BOOL)canOpenMenuOptions:(tableMetadata *)metadata
 {
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
-    
     if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
         return NO;
     
@@ -3669,6 +3666,13 @@
     return YES;
 }
 
+- (BOOL)swipeTableCell:(MGSwipeTableCell *)cell canSwipe:(MGSwipeDirection)direction
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    
+    return [self canOpenMenuOptions:metadata];
+}
 
 -(void)swipeTableCell:(nonnull MGSwipeTableCell *)cell didChangeSwipeState:(MGSwipeState)state gestureIsActive:(BOOL)gestureIsActive
 {
@@ -3739,14 +3743,17 @@
     if (!serverUrl) return;
     
     NSString *titoloLock, *titleFavorite;
+    UIImage *imageFavorite;
     
     if (_metadata.favorite) {
         
         titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_remove_favorites_", nil)];
+        imageFavorite = [UIImage imageNamed:@"swipeUnfavorite"];
         
     } else {
         
         titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_add_favorites_", nil)];
+        imageFavorite = [UIImage imageNamed:@"swipeUnfavorite"];
     }
     
     if (_metadata.directory) {
@@ -3867,6 +3874,16 @@
                                     }];
         }
         
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[NCBrandColor sharedInstance].brandElement]
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                 height:50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    [self swipeDelete:indexPath];
+                                }];
+        
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
@@ -3944,7 +3961,7 @@
                                         });
                                     }];
         }
-                
+        
         [actionSheet show];
     }
     
@@ -3968,6 +3985,16 @@
                                 handler: nil
         ];
         
+        
+        [actionSheet addButtonWithTitle: titleFavorite
+                                  image: [CCGraphics changeThemingColorImage:imageFavorite color:[NCBrandColor sharedInstance].brandElement]
+                        backgroundColor: [NCBrandColor sharedInstance].backgroundView
+                                 height: 50.0
+                                   type: AHKActionSheetButtonTypeDefault
+                                handler: ^(AHKActionSheet *as) {
+                                    if (_metadata.favorite) [self removeFavorite:_metadata];
+                                    else [self addFavorite:_metadata];
+                                }];
         
         if (!_metadataFolder.e2eEncrypted) {
 
@@ -4033,6 +4060,15 @@
                                         [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
                                     }];
         }
+        
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[NCBrandColor sharedInstance].brandElement]
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                 height:50.0
+                                   type:AHKActionSheetButtonTypeDefault
+                                handler:^(AHKActionSheet *as) {
+                                    [self swipeDelete:indexPath];
+                                }];
         
         if (localFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, _metadata.fileID]]) {
             
