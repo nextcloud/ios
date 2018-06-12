@@ -31,6 +31,7 @@
 @property(nonatomic, weak) IBOutlet UIImageView *favorite;
 @property(nonatomic, weak) IBOutlet UIImageView *local;
 @property(nonatomic, weak) IBOutlet UIImageView *shared;
+@property(nonatomic, weak) IBOutlet UIImageView *threeDots;
 
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;

@@ -4086,6 +4086,16 @@
     }
 }
 
+- (void)handleImageThreeDots:(UITapGestureRecognizer *)gestureRecognizer
+{
+    CGPoint touch = [gestureRecognizer locationInView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touch];
+    
+    _metadata = [self getMetadataFromSectionDataSource:indexPath];
+
+    [self swipeMore:indexPath];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark - ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
@@ -4830,7 +4840,9 @@
     [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
     [cell.stopTaskButton addTarget:self action:@selector(stopTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
 
-    // ======== MGSwipe ========
+    // ----------------------------------------------------------------------------------------------------------
+    // MGSwipe
+    // ----------------------------------------------------------------------------------------------------------
     
     if (metadata.favorite)
         cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeUnfavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000] padding:25]];
@@ -4862,6 +4874,18 @@
     } else if (swipeOffset > 0) {
         [cell showSwipe:MGSwipeDirectionLeftToRight animated:NO];
         [_statusSwipeCell removeObjectForKey:indexPath];
+    }
+    
+    // ----------------------------------------------------------------------------------------------------------
+    // 3 Dots
+    // ----------------------------------------------------------------------------------------------------------
+    
+    if ([self canOpenMenuOptions:metadata]) {
+    
+        UITapGestureRecognizer *tapThreeDots = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleImageThreeDots:)];
+        [tapThreeDots setNumberOfTapsRequired:1];
+        cell.threeDots.userInteractionEnabled = YES;
+        [cell.threeDots addGestureRecognizer:tapThreeDots];
     }
     
     return cell;
