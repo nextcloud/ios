@@ -3648,10 +3648,10 @@
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Swipe Tablet -> menu : Favorite, More, Delete =====
+#pragma mark ===== menu action : Favorite, More, Delete [swipe] =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)canOpenMenuMore:(tableMetadata *)metadata
+- (BOOL)canOpenMenuAction:(tableMetadata *)metadata
 {
     if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
         return NO;
@@ -3671,7 +3671,7 @@
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    return [self canOpenMenuMore:metadata];
+    return [self canOpenMenuAction:metadata];
 }
 
 -(void)swipeTableCell:(nonnull MGSwipeTableCell *)cell didChangeSwipeState:(MGSwipeState)state gestureIsActive:(BOOL)gestureIsActive
@@ -3685,13 +3685,7 @@
     
     if (direction == MGSwipeDirectionRightToLeft) {
         
-        // Delete
-        if (index == 0)
-            [self swipeDelete:indexPath];
-        
-        // More
-        if (index == 1)
-            [self swipeMore:indexPath];
+        [self actionDelete:indexPath];
     }
     
     if (direction == MGSwipeDirectionLeftToRight) {
@@ -3704,7 +3698,7 @@
     return YES;
 }
 
-- (void)swipeDelete:(NSIndexPath *)indexPath
+- (void)actionDelete:(NSIndexPath *)indexPath
 {
     // Directory locked ?
     NSString *lockServerUrl = [CCUtility stringAppendServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID] addFileName:_metadata.fileName];
@@ -3891,7 +3885,7 @@
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
-                                    [self swipeDelete:indexPath];
+                                    [self actionDelete:indexPath];
                                 }];
         
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
@@ -4077,7 +4071,7 @@
                                  height:50.0
                                    type:AHKActionSheetButtonTypeDefault
                                 handler:^(AHKActionSheet *as) {
-                                    [self swipeDelete:indexPath];
+                                    [self actionDelete:indexPath];
                                 }];
         
         if (localFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, _metadata.fileID]]) {
@@ -4867,14 +4861,12 @@
     [favoriteButton centerIconOverText];
     
     //Right
-    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeDelete"] backgroundColor:[UIColor redColor]], [MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeMore"] backgroundColor:[UIColor lightGrayColor] padding:25]];
+    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeDelete"] backgroundColor:[UIColor redColor] padding:25]];
     cell.rightSwipeSettings.transition = MGSwipeTransitionBorder;
     
     //centerIconOverText
     MGSwipeButton *deleteButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:0];
-    MGSwipeButton *moreButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:1];
     [deleteButton centerIconOverText];
-    [moreButton centerIconOverText];
 
     //restore swipeOffset after relod
     CGFloat swipeOffset = [[_statusSwipeCell objectForKey:indexPath] doubleValue];
@@ -4890,7 +4882,7 @@
     // 3 Dots
     // ----------------------------------------------------------------------------------------------------------
     
-    if ([self canOpenMenuMore:metadata]) {
+    if ([self canOpenMenuAction:metadata]) {
     
         UITapGestureRecognizer *tapThreeDots = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleImageThreeDots:)];
         [tapThreeDots setNumberOfTapsRequired:1];
