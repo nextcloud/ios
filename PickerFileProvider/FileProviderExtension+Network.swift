@@ -270,7 +270,7 @@ extension FileProviderExtension {
                 
                 NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + Double(k_timerProcessAutoUploadExtension)) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + providerData.timeReupload) {
                     
                     self.uploadFileImportDocument()
                 }
@@ -284,7 +284,7 @@ extension FileProviderExtension {
                 let urlString = (providerData.fileProviderStorageURL!.path + "/"  + itemIdentifier.rawValue + "/" + fileName).addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
                 let url = URL(string: urlString)!
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + Double(k_timerProcessAutoUploadExtension)) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + providerData.timeReupload) {
                     
                     self.uploadFileItemChanged(for: itemIdentifier, url: url)
                 }

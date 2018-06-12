@@ -67,6 +67,9 @@ class FileProviderData: NSObject {
     var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
     var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
 
+    // Reupload after error
+    let timeReupload: Double = 10
+    
     // MARK: - 
     
     func setupActiveAccount() -> Bool {

@@ -135,7 +135,6 @@ extern NSString *const flowEndpoint;
 
 #define k_timerVerifySession                            10
 #define k_timerProcessAutoDownloadUpload                5
-#define k_timerProcessAutoUploadExtension               10
 #define k_timerUpdateApplicationIconBadgeNumber         3
 
 #define k_maxConcurrentOperation                         10
