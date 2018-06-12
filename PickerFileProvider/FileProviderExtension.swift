@@ -23,9 +23,6 @@
 
 import FileProvider
 
-// Timer for Upload (queue)
-var timerUpload: Timer?
-
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
                                                             STRUCT item
    -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -74,21 +71,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         _ = providerData.setupActiveAccount()
         
-        verifyUploadQueueInLock()
-        
         if #available(iOSApplicationExtension 11.0, *) {
-                        
-            // Timer for upload
-            if timerUpload == nil {
-                
-                timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoUploadExtension), repeats: true, block: { (Timer) in
-                    
-                    // new upload
-                    self.uploadFileImportDocument()
-                })
-                
-                RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
-            }
+            
+            self.uploadFileImportDocument()
             
         } else {
             

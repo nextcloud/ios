@@ -269,6 +269,11 @@ extension FileProviderExtension {
             if (selectorPost == providerData.selectorPostImportDocument) {
                 
                 NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + Double(k_timerProcessAutoUploadExtension)) {
+                    
+                    self.uploadFileImportDocument()
+                }
             }
             
             // itemChanged
@@ -343,16 +348,4 @@ extension FileProviderExtension {
         
         CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
-    
-    func verifyUploadQueueInLock() {
-        
-        let tasks = CCNetworking.shared().getUploadTasksExtensionSession()
-        if tasks!.count == 0 {
-            let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", providerData.account, selectorUploadFile))
-            if records != nil && records!.count > 0 {
-                NCManageDatabase.sharedInstance.unlockAllQueueUploadWithPath()
-            }
-        }
-    }
-
 }
