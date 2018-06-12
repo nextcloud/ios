@@ -3651,7 +3651,7 @@
 #pragma mark ===== Swipe Tablet -> menu : Favorite, More, Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)canOpenMenuOptions:(tableMetadata *)metadata
+- (BOOL)canOpenMenuMore:(tableMetadata *)metadata
 {
     if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
         return NO;
@@ -3671,7 +3671,7 @@
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    return [self canOpenMenuOptions:metadata];
+    return [self canOpenMenuMore:metadata];
 }
 
 -(void)swipeTableCell:(nonnull MGSwipeTableCell *)cell didChangeSwipeState:(MGSwipeState)state gestureIsActive:(BOOL)gestureIsActive
@@ -3811,6 +3811,16 @@
                                    type:AHKActionSheetButtonTypeDisabled
                                 handler:nil
         ];
+        
+        [actionSheet addButtonWithTitle: titleFavorite
+                                  image: [CCGraphics changeThemingColorImage:imageFavorite color:[NCBrandColor sharedInstance].brandElement]
+                        backgroundColor: [NCBrandColor sharedInstance].backgroundView
+                                 height: 50.0
+                                   type: AHKActionSheetButtonTypeDefault
+                                handler: ^(AHKActionSheet *as) {
+                                    if (_metadata.favorite) [self removeFavorite:_metadata];
+                                    else [self addFavorite:_metadata];
+                                }];
         
         if (!lockDirectory && !isFolderEncrypted) {
             
@@ -4880,7 +4890,7 @@
     // 3 Dots
     // ----------------------------------------------------------------------------------------------------------
     
-    if ([self canOpenMenuOptions:metadata]) {
+    if ([self canOpenMenuMore:metadata]) {
     
         UITapGestureRecognizer *tapThreeDots = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleImageThreeDots:)];
         [tapThreeDots setNumberOfTapsRequired:1];
