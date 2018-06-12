@@ -148,7 +148,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
     }
     
-    // MARK: - WorkingSet
+    // MARK: - WorkingSet -> 'favorite'
     
     func updateWorkingSet() {
         
@@ -181,6 +181,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directory = true AND favorite = false", providerData.account), sorted: "fileName", ascending: true)
         if (metadatas != nil && metadatas!.count > 0) {
             for metadata in metadatas! {
+                
                 guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
                     continue
                 }
