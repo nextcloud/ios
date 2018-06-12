@@ -4539,7 +4539,7 @@
     // è una directory
     if (metadata.directory) {
         
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+//        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         
         lunghezzaFile = @" ";
