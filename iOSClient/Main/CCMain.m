@@ -3731,8 +3731,13 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)swipeMore:(NSIndexPath *)indexPath
+- (void)actionMore:(UITapGestureRecognizer *)gestureRecognizer
 {
+    CGPoint touch = [gestureRecognizer locationInView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touch];
+    
+    _metadata = [self getMetadataFromSectionDataSource:indexPath];
+    
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     if (!serverUrl) return;
     
@@ -4088,16 +4093,6 @@
         
         [actionSheet show];
     }
-}
-
-- (void)handleImageThreeDots:(UITapGestureRecognizer *)gestureRecognizer
-{
-    CGPoint touch = [gestureRecognizer locationInView:self.tableView];
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touch];
-    
-    _metadata = [self getMetadataFromSectionDataSource:indexPath];
-
-    [self swipeMore:indexPath];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4848,6 +4843,8 @@
     // MGSwipe
     // ----------------------------------------------------------------------------------------------------------
     
+    // LEFT
+    
     if (metadata.favorite)
         cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeUnfavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000] padding:25]];
     else
@@ -4860,10 +4857,12 @@
     MGSwipeButton *favoriteButton = (MGSwipeButton *)[cell.leftButtons objectAtIndex:0];
     [favoriteButton centerIconOverText];
     
-    //Right
+    // RIGHT
     cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeDelete"] backgroundColor:[UIColor redColor] padding:25]];
-    cell.rightSwipeSettings.transition = MGSwipeTransitionBorder;
     
+    cell.rightExpansion.buttonIndex = 0;
+    cell.rightExpansion.fillOnTrigger = NO;
+
     //centerIconOverText
     MGSwipeButton *deleteButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:0];
     [deleteButton centerIconOverText];
@@ -4884,7 +4883,7 @@
     
     if ([self canOpenMenuAction:metadata]) {
     
-        UITapGestureRecognizer *tapThreeDots = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleImageThreeDots:)];
+        UITapGestureRecognizer *tapThreeDots = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionMore:)];
         [tapThreeDots setNumberOfTapsRequired:1];
         cell.threeDots.userInteractionEnabled = YES;
         [cell.threeDots addGestureRecognizer:tapThreeDots];
