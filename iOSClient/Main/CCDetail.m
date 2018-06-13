@@ -198,7 +198,7 @@
     
     _buttonModifyTxt = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyTxtButtonPressed:)];
     _buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetOpenIn"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
-    _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetShare"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
+    _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
     if ([_fileNameExtension isEqualToString:@"TXT"]) {

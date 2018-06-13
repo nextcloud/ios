@@ -65,7 +65,7 @@
                             <constraint firstAttribute="height" constant="15" id="Oxa-YI-vu7"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="threedots" translatesAutoresizingMaskIntoConstraints="NO" id="aRp-Ql-cyA" userLabel="three dots">
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="aRp-Ql-cyA" userLabel="More">
                         <rect key="frame" x="550" y="-1" width="42" height="60"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="60" id="2ti-Wp-PzP"/>
@@ -103,14 +103,11 @@
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="5Yb-hH-k73"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="dFX-Cb-8IE"/>
                 <outlet property="local" destination="DQR-yN-JaH" id="LBA-Bm-Mz9"/>
+                <outlet property="more" destination="aRp-Ql-cyA" id="vbC-Za-UhD"/>
                 <outlet property="shared" destination="qhJ-el-R92" id="qXO-Vc-N0d"/>
                 <outlet property="status" destination="Fw2-NW-hsK" id="PjC-tV-ROx"/>
-                <outlet property="threeDots" destination="aRp-Ql-cyA" id="8EJ-bQ-REd"/>
             </connections>
             <point key="canvasLocation" x="415" y="169"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="threedots" width="25" height="25"/>
-    </resources>
 </document>

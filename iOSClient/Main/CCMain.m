@@ -3824,7 +3824,7 @@
         if (!lockDirectory && !isFolderEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brandElement]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[NCBrandColor sharedInstance].brandElement]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4008,7 +4008,7 @@
         if (!_metadataFolder.e2eEncrypted) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"]color:[NCBrandColor sharedInstance].brandElement]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"]color:[NCBrandColor sharedInstance].brandElement]
                                 backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
@@ -4665,7 +4665,7 @@
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
             
-            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brandElement];
+            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[NCBrandColor sharedInstance].gray];
             
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
             [tap setNumberOfTapsRequired:1];
@@ -4683,7 +4683,7 @@
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
                 
-            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareMounted"] color:[NCBrandColor sharedInstance].brandElement];
+            cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareMounted"] color:[NCBrandColor sharedInstance].gray];
                 
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
             [tap setNumberOfTapsRequired:1];
@@ -4709,9 +4709,9 @@
             } else {
                 
                 if ([shareLink length] > 0) {
-                    cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareLink"] color:[NCBrandColor sharedInstance].brandElement];
+                    cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] color:[NCBrandColor sharedInstance].gray];
                 } if ([shareUserAndGroup length] > 0) {
-                    cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetShare"] color:[NCBrandColor sharedInstance].brandElement];
+                    cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[NCBrandColor sharedInstance].gray];
                 }
                 
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
@@ -4878,15 +4878,17 @@
     }
     
     // ----------------------------------------------------------------------------------------------------------
-    // 3 Dots
+    // More : 3 Dots
     // ----------------------------------------------------------------------------------------------------------
+    
+    cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] color:[NCBrandColor sharedInstance].gray];
     
     if ([self canOpenMenuAction:metadata]) {
     
-        UITapGestureRecognizer *tapThreeDots = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionMore:)];
-        [tapThreeDots setNumberOfTapsRequired:1];
-        cell.threeDots.userInteractionEnabled = YES;
-        [cell.threeDots addGestureRecognizer:tapThreeDots];
+        UITapGestureRecognizer *tapMore = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionMore:)];
+        [tapMore setNumberOfTapsRequired:1];
+        cell.more.userInteractionEnabled = YES;
+        [cell.more addGestureRecognizer:tapMore];
     }
     
     return cell;

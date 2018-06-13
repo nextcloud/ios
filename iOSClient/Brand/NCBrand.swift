@@ -46,6 +46,7 @@ class NCBrandColor: NSObject {
     @objc public var tabBar:                UIColor = .white
     @objc public var transferBackground:    UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
+    @objc public let gray:                  UIColor = UIColor(red: 152.0/255.0, green: 152.0/255.0, blue: 152.0/255.0, alpha: 1.0)
 
     override init() {
         self.brand = self.customer
