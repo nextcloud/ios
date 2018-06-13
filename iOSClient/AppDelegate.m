@@ -857,8 +857,8 @@
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [UIImage imageNamed:@"tabBarFiles"];
-    item.selectedImage = [UIImage imageNamed:@"tabBarFiles"];
+    item.image = [UIImage imageNamed:@"folder"];
+    item.selectedImage = [UIImage imageNamed:@"folder"];
     
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
