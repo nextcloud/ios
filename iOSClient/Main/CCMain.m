@@ -3127,7 +3127,7 @@
 {
     // ITEM DELETE ------------------------------------------------------------------------------------------------------
     
-    appDelegate.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"deleteSelectedFiles"] color:[NCBrandColor sharedInstance].brandElement] highlightedImage:nil action:^(REMenuItem *item) {
+    appDelegate.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[NCBrandColor sharedInstance].brandElement] highlightedImage:nil action:^(REMenuItem *item) {
             [self deleteFile];
     }];
     
@@ -3833,7 +3833,7 @@
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !_metadata.e2eEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] color:[NCBrandColor sharedInstance].brandElement]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3871,7 +3871,7 @@
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !isFolderEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brandElement]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] color:[NCBrandColor sharedInstance].brandElement]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4025,7 +4025,7 @@
         
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetRename"] color:[NCBrandColor sharedInstance].brandElement]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] color:[NCBrandColor sharedInstance].brandElement]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4058,7 +4058,7 @@
         if (!_metadataFolder.e2eEncrypted) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"actionSheetMove"] color:[NCBrandColor sharedInstance].brandElement]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] color:[NCBrandColor sharedInstance].brandElement]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4851,7 +4851,7 @@
     [favoriteButton centerIconOverText];
     
     // RIGHT
-    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"swipeDelete"] backgroundColor:[UIColor redColor] padding:25]];
+    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
     
     cell.rightExpansion.buttonIndex = 0;
     cell.rightExpansion.fillOnTrigger = NO;

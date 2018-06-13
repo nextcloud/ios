@@ -208,7 +208,7 @@
 {
     UIImage *icon;
     
-    icon = [UIImage imageNamed:@"deleteSelectedFiles"];
+    icon = [UIImage imageNamed:@"delete"];
     UIBarButtonItem *buttonDelete = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(deleteSelectedFiles)];
     
     icon = [UIImage imageNamed:@"openSelectedFiles"];
