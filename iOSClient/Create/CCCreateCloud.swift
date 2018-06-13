@@ -65,11 +65,11 @@ class CreateMenuAdd: NSObject {
         
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "menuUploadPhoto"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "photos"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFotoVideoPlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "menuUploadFile"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFilePlain))
         })
         
