@@ -99,12 +99,12 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
             
             // Check account
-            if providerData.setupActiveAccount() == false {
-                throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-            }
+//            if providerData.setupActiveAccount() == false {
+//                throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
+//            }
             
             // Update WorkingSet
-            self.updateWorkingSet()
+            //self.updateWorkingSet()
             
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
@@ -149,7 +149,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     }
     
     // MARK: - WorkingSet -> 'favorite'
-    
+    /*
     func updateWorkingSet() {
         
         /* ONLY iOS 11*/
@@ -199,6 +199,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         // Update workingSet
         self.signalEnumerator(for: [.workingSet])
     }
+    */
     
     // MARK: - Item
 
