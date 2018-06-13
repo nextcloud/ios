@@ -4595,10 +4595,10 @@
             
             if (metadata.e2eEncrypted) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] color:[UIColor whiteColor]];
+                cell.imageTitleSegue = [UIImage imageNamed:@"lock"];
             } else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory]) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photos"] color:[UIColor whiteColor]];
+                cell.imageTitleSegue = [UIImage imageNamed:@"photos"];
             } else
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
             
@@ -4658,7 +4658,7 @@
             if (metadata.directory) {
                 
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[UIColor whiteColor]];
+                cell.imageTitleSegue = [UIImage imageNamed:@"share"];
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
             
@@ -4676,7 +4676,7 @@
             if (metadata.directory) {
                 
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_external"] color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"titleExternal"];
+                cell.imageTitleSegue = [UIImage imageNamed:@"shareMounted"];
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
                 
@@ -4695,10 +4695,10 @@
                 
                 if ([shareUserAndGroup length] > 0) {
                     cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
-                    cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[UIColor whiteColor]];
+                    cell.imageTitleSegue = [UIImage imageNamed:@"share"];
                 } if ([shareLink length] > 0) {
                     cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brandElement];
-                    cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] color:[UIColor whiteColor]];
+                    cell.imageTitleSegue = [UIImage imageNamed:@"sharebylink"];
                 }
                 
                 cell.shared.userInteractionEnabled = NO;
