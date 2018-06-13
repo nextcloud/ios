@@ -191,7 +191,7 @@
     UIImage *icon;
     icon = [UIImage imageNamed:@"select"];
     UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(editingModeYES)];
-    icon = [UIImage imageNamed:@"folder"];
+    icon = [UIImage imageNamed:@"folderPhotos"];
     UIBarButtonItem *buttonStartDirectoryPhotosTab = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(selectStartDirectoryPhotosTab)];
 
     if ([_sectionDataSource.allRecordsDataSource count] > 0) {
