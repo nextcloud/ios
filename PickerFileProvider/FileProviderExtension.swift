@@ -95,17 +95,15 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
+        
+        // Check account
+        if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
+            if providerData.setupActiveAccount() == false {
+                throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
+            }
+        }
 
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
-            
-            // Check account
-//            if providerData.setupActiveAccount() == false {
-//                throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
-//            }
-            
-            // Update WorkingSet
-            //self.updateWorkingSet()
-            
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
