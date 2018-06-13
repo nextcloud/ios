@@ -4840,7 +4840,7 @@
     [cell.stopTaskButton addTarget:self action:@selector(stopTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
 
     // ----------------------------------------------------------------------------------------------------------
-    // MGSwipe
+    // swipe
     // ----------------------------------------------------------------------------------------------------------
     
     // LEFT
@@ -4878,7 +4878,7 @@
     }
     
     // ----------------------------------------------------------------------------------------------------------
-    // More : 3 Dots
+    // more
     // ----------------------------------------------------------------------------------------------------------
     
     cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] color:[NCBrandColor sharedInstance].gray];
