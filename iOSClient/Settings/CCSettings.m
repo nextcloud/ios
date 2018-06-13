@@ -124,7 +124,7 @@
     NSString *title = [NSString stringWithFormat:@"%@ (%@)",NSLocalizedString(@"_e2e_settings_", nil), NSLocalizedString(@"_experimental_", nil)];
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"e2eEncryption" rowType:XLFormRowDescriptorTypeButton title:title];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[UIImage imageNamed:@"settingsE2EEncryption"] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIImage imageNamed:@"lock"] forKey:@"imageView.image"];
     row.action.viewControllerClass = [NCManageEndToEndEncryption class];
     [section addFormRow:row];
     

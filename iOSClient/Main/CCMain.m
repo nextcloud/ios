@@ -3928,7 +3928,7 @@
         if (!_metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
-                                      image:[UIImage imageNamed:@"encrypted_empty"]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] color:[NCBrandColor sharedInstance].encrypted]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeEncrypted
@@ -3951,7 +3951,7 @@
         if (_metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
-                                      image:[UIImage imageNamed:@"encrypted_empty"]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] color:[NCBrandColor sharedInstance].encrypted]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeEncrypted
@@ -4598,7 +4598,7 @@
             
             if (metadata.e2eEncrypted) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"titleEncrypted"];
+                cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] color:[UIColor whiteColor]];
             } else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory]) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] color:[NCBrandColor sharedInstance].brandElement];
                 cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photos"] color:[UIColor whiteColor]];
