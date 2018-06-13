@@ -2822,7 +2822,7 @@
     
     item.title = NSLocalizedString(@"_add_account_", nil);
     item.argument = @"";
-    item.image = [UIImage imageNamed:@"settingsAccountNextcloud"];
+    item.image = [UIImage imageNamed:@"add"];
     item.target = self;
     item.action = @selector(addNewAccount:);
     
