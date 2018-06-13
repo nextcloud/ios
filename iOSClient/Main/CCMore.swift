@@ -127,7 +127,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                         functionMenu.append(item)
                     }
                     if (table.type == "settings") {
-                        item.icon = "moreSettingsExternalSite"
+                        item.icon = "settings"
                         settingsMenu.append(item)
                     }
                     if (table.type == "quota") {
@@ -140,7 +140,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // ITEM : Settings
         item = OCExternalSites.init()
         item.name = "_settings_"
-        item.icon = "moreSettings"
+        item.icon = "settings"
         item.url = "segueSettings"
         settingsMenu.append(item)
         
