@@ -88,7 +88,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // ITEM : Transfer
         var item = OCExternalSites.init()
         item.name = "_transfers_"
-        item.icon = "moreTransfers"
+        item.icon = "load"
         item.url = "segueTransfers"
         functionMenu.append(item)
         
