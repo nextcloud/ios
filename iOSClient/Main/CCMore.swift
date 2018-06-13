@@ -123,7 +123,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                     item.icon = table.icon
             
                     if (table.type == "link") {
-                        item.icon = "moreExternalSite"
+                        item.icon = "world"
                         functionMenu.append(item)
                     }
                     if (table.type == "settings") {
