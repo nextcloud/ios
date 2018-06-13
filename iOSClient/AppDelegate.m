@@ -875,8 +875,8 @@
     // Photos
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPhotos];
     [item setTitle:NSLocalizedString(@"_photo_camera_", nil)];
-    item.image = [UIImage imageNamed:@"tabBarPhotos"];
-    item.selectedImage = [UIImage imageNamed:@"tabBarPhotos"];
+    item.image = [UIImage imageNamed:@"photos"];
+    item.selectedImage = [UIImage imageNamed:@"photos"];
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];

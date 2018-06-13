@@ -4601,7 +4601,7 @@
                 cell.imageTitleSegue = [UIImage imageNamed:@"titleEncrypted"];
             } else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory]) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderphotocamera"] color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"titlePhotos"];
+                cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photos"] color:[UIColor whiteColor]];
             } else
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
             
@@ -4661,7 +4661,7 @@
             if (metadata.directory) {
                 
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"titleShared_with_me"];
+                cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[UIColor whiteColor]];
                 cell.accessoryType = UITableViewCellAccessoryNone;
             }
             
@@ -4698,10 +4698,10 @@
                 
                 if ([shareUserAndGroup length] > 0) {
                     cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
-                    cell.imageTitleSegue = [UIImage imageNamed:@"titleShared_with_me"];
+                    cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[UIColor whiteColor]];
                 } if ([shareLink length] > 0) {
                     cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brandElement];
-                    cell.imageTitleSegue = [UIImage imageNamed:@"titlePublic"];
+                    cell.imageTitleSegue = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] color:[UIColor whiteColor]];
                 }
                 
                 cell.shared.userInteractionEnabled = NO;

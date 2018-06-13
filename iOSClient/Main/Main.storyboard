@@ -550,7 +550,7 @@
         <scene sceneID="IuY-Iu-oAm">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Photos" image="tabBarPhotos" id="5cw-bP-7It"/>
+                    <tabBarItem key="tabBarItem" title="Photos" image="photos" id="5cw-bP-7It"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ixg-Pw-TNO">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
@@ -797,8 +797,8 @@
         <image name="disclosureIndicator" width="13" height="14"/>
         <image name="favorite" width="25" height="25"/>
         <image name="folder" width="25" height="25"/>
+        <image name="photos" width="25" height="25"/>
         <image name="tabBarMore" width="25" height="25"/>
-        <image name="tabBarPhotos" width="25" height="25"/>
         <image name="tabBarPlus" width="40" height="40"/>
     </resources>
     <inferredMetricsTieBreakers>
