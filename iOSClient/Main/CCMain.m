@@ -3742,17 +3742,14 @@
     if (!serverUrl) return;
     
     NSString *titoloLock, *titleFavorite;
-    UIImage *imageFavorite;
     
     if (_metadata.favorite) {
         
         titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_remove_favorites_", nil)];
-        imageFavorite = [UIImage imageNamed:@"swipeUnfavorite"];
         
     } else {
         
         titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_add_favorites_", nil)];
-        imageFavorite = [UIImage imageNamed:@"swipeUnfavorite"];
     }
     
     if (_metadata.directory) {
@@ -3812,7 +3809,7 @@
         ];
         
         [actionSheet addButtonWithTitle: titleFavorite
-                                  image: [CCGraphics changeThemingColorImage:imageFavorite color:[NCBrandColor sharedInstance].brandElement]
+                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] color:[NCBrandColor sharedInstance].brandElement]
                         backgroundColor: [NCBrandColor sharedInstance].backgroundView
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDefault
@@ -3996,7 +3993,7 @@
         
         
         [actionSheet addButtonWithTitle: titleFavorite
-                                  image: [CCGraphics changeThemingColorImage:imageFavorite color:[NCBrandColor sharedInstance].brandElement]
+                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] color:[NCBrandColor sharedInstance].brandElement]
                         backgroundColor: [NCBrandColor sharedInstance].backgroundView
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDefault
