@@ -95,7 +95,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // ITEM : Activity
         item = OCExternalSites.init()
         item.name = "_activity_"
-        item.icon = "moreActivity"
+        item.icon = "activity"
         item.url = "segueActivity"
         functionMenu.append(item)
         
