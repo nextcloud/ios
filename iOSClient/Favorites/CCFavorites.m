@@ -140,7 +140,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [UIImage imageNamed:@"favoriteNoFiles"];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favoriteNoFiles"] color:[NCBrandColor sharedInstance].graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -566,7 +566,7 @@
         
     // favorite
     if (_serverUrl == nil)
-        cell.favorite.image = [UIImage imageNamed:@"favorite"];
+        cell.favorite.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] color:[NCBrandColor sharedInstance].yellowFavorite];
     
     cell.labelTitle.textColor = [UIColor blackColor];
     
@@ -658,7 +658,8 @@
     //configure left buttons : ONLY Root Favorites : Remove file/folder Favorites
     
     if (_serverUrl == nil) {
-        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_unfavorite_", nil)] icon:[UIImage imageNamed:@"swipeUnfavorite"] backgroundColor:[UIColor colorWithRed:242.0/255.0 green:220.0/255.0 blue:132.0/255.0 alpha:1.000]]];
+        
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
         cell.leftExpansion.buttonIndex = 0;
         cell.leftExpansion.fillOnTrigger = NO;
         

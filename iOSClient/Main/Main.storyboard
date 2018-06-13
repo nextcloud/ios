@@ -500,7 +500,7 @@
         <scene sceneID="YSr-JF-a0V">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Favorites" image="tabBarFavorite" id="o09-67-hwf"/>
+                    <tabBarItem key="tabBarItem" title="Favorites" image="favorite" id="o09-67-hwf"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="MJw-Bn-5le">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
@@ -795,8 +795,8 @@
         <image name="avatar" width="25" height="25"/>
         <image name="backgroundDetail" width="223" height="157"/>
         <image name="disclosureIndicator" width="13" height="14"/>
-        <image name="folder" width="42" height="42"/>
-        <image name="tabBarFavorite" width="25" height="25"/>
+        <image name="favorite" width="25" height="25"/>
+        <image name="folder" width="25" height="25"/>
         <image name="tabBarMore" width="25" height="25"/>
         <image name="tabBarPhotos" width="25" height="25"/>
         <image name="tabBarPlus" width="40" height="40"/>

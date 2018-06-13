@@ -863,8 +863,8 @@
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [UIImage imageNamed:@"tabBarFavorite"];
-    item.selectedImage = [UIImage imageNamed:@"tabBarFavorite"];
+    item.image = [UIImage imageNamed:@"favorite"];
+    item.selectedImage = [UIImage imageNamed:@"favorite"];
     
     // (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
