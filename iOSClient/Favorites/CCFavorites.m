@@ -64,8 +64,7 @@
 {
     [super viewDidLoad];
     
-    // Custom Cell
-    [self.tableView registerNib:[UINib nibWithNibName:@"CCFavoritesCell" bundle:nil] forCellReuseIdentifier:@"Cell"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
 
     // dataSource
     _dataSource = [NSMutableArray new];
@@ -344,39 +343,91 @@
     }
 }
 
-- (void)requestDeleteMetadata:(tableMetadata *)metadata indexPath:(NSIndexPath *)indexPath
+
+- (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
 {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    CGPoint location = [tapGesture locationInView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    
+    tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
+
+    if (metadata)
+        [appDelegate.activeMain openWindowShare:metadata];
+}
+
+#pragma mark -
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== menu action : Favorite, More, Delete [swipe] =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (BOOL)canOpenMenuAction:(tableMetadata *)metadata
+{
+    return YES;
+}
+
+- (BOOL)swipeTableCell:(MGSwipeTableCell *)cell canSwipe:(MGSwipeDirection)direction
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
+    
+    return [self canOpenMenuAction:metadata];
+}
+
+- (BOOL)swipeTableCell:(MGSwipeTableCell *)cell tappedButtonAtIndex:(NSInteger)index direction:(MGSwipeDirection)direction fromExpansion:(BOOL)fromExpansion
+{
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    
+    if (direction == MGSwipeDirectionRightToLeft) {
         
+        [self actionDelete:indexPath];
+    }
+    
+    if (direction == MGSwipeDirectionLeftToRight) {
+        
+        tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
+        [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
+    }
+    
+    return YES;
+}
+
+- (void)actionDelete:(NSIndexPath *)indexPath
+{
+    tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
         [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:nil hudTitled:nil];
         [self reloadDatasource];
     }]];
-        
-        
+    
+    
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
-        
+    
     alertController.popoverPresentationController.sourceView = self.view;
     alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
-        
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         [alertController.view layoutIfNeeded];
-        
+    
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
-- (void)requestMoreMetadata:(tableMetadata *)metadata indexPath:(NSIndexPath *)indexPath
+- (void)actionMore:(UITapGestureRecognizer *)gestureRecognizer
 {
+    CGPoint touch = [gestureRecognizer locationInView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touch];
     UIImage *iconHeader;
     
-    metadata = [_dataSource objectAtIndex:indexPath.row];
+    tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
     
     AHKActionSheet *actionSheet = [[AHKActionSheet alloc] initWithView:self.tabBarController.view title:nil];
     
     actionSheet.animationDuration = 0.2;
-        
+    
     actionSheet.buttonHeight = 50.0;
     actionSheet.cancelButtonHeight = 50.0f;
     actionSheet.separatorHeight = 5.0f;
@@ -405,72 +456,25 @@
     }
     
     [actionSheet addButtonWithTitle: metadata.fileNameView image: iconHeader backgroundColor: [NCBrandColor sharedInstance].tabBar height: 50.0 type: AHKActionSheetButtonTypeDisabled handler: nil
-    ];
-
+     ];
+    
     // Share
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-                                    
-            [appDelegate.activeMain openWindowShare:metadata];
+        
+        [appDelegate.activeMain openWindowShare:metadata];
     }];
-
+    
     // NO Directory
     if (metadata.directory == NO) {
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
-                [self.tableView setEditing:NO animated:YES];
-                [self openWith:metadata];
-            }];
+            [self.tableView setEditing:NO animated:YES];
+            [self openWith:metadata];
+        }];
     }
     
     [actionSheet show];
 }
-
-- (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
-{
-    CGPoint location = [tapGesture locationInView:self.tableView];
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
-    
-    tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
-
-    if (metadata)
-        [appDelegate.activeMain openWindowShare:metadata];
-}
-
-
-#pragma mark -
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Swipe Tablet -> menu =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (BOOL)swipeTableCell:(MGSwipeTableCell *)cell canSwipe:(MGSwipeDirection)direction
-{
-    return YES;
-}
-
-- (BOOL)swipeTableCell:(MGSwipeTableCell *)cell tappedButtonAtIndex:(NSInteger)index direction:(MGSwipeDirection)direction fromExpansion:(BOOL)fromExpansion
-{
-    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    
-    if (direction == MGSwipeDirectionRightToLeft) {
-        
-        // Delete
-        if (index == 0)
-            [self requestDeleteMetadata:[_dataSource objectAtIndex:indexPath.row] indexPath:indexPath];
-        
-        // More
-        if (index == 1)
-            [self requestMoreMetadata:[_dataSource objectAtIndex:indexPath.row] indexPath:indexPath];
-    }
-    
-    if (direction == MGSwipeDirectionLeftToRight) {
-        
-        tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
-        [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
-    }
-    
-    return YES;
-}
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Table ====
@@ -541,7 +545,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CCFavoritesCell *cell = (CCFavoritesCell *)[tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    CCCellMain *cell = (CCCellMain *)[tableView dequeueReusableCellWithIdentifier:@"CellMain" forIndexPath:indexPath];
     tableMetadata *metadata;
     
     // variable base
@@ -634,9 +638,8 @@
     if (metadata.directory) {
         
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
-        //cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-          
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        
     } else {
         
         NSString *date = [CCUtility dateDiff:metadata.date];
@@ -653,10 +656,11 @@
         
     }
     
-    // ======== MGSwipe ========
+    // ----------------------------------------------------------------------------------------------------------
+    // swipe
+    // ----------------------------------------------------------------------------------------------------------
     
-    //configure left buttons : ONLY Root Favorites : Remove file/folder Favorites
-    
+    // LEFT : configure ONLY Root Favorites : Remove file/folder Favorites
     if (_serverUrl == nil) {
         
         cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
@@ -668,15 +672,30 @@
         [favoriteButton centerIconOverText];
     }
     
-    //configure right buttons
-    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_delete_", nil)] icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[UIColor whiteColor]] backgroundColor:[UIColor redColor]], [MGSwipeButton buttonWithTitle:[NSString stringWithFormat:@" %@ ", NSLocalizedString(@"_more_", nil)] icon:[UIImage imageNamed:@"swipeMore"] backgroundColor:[UIColor lightGrayColor]]];
-    cell.rightSwipeSettings.transition = MGSwipeTransitionBorder;
+    
+    // RIGHT
+    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
+    
+    cell.rightExpansion.buttonIndex = 0;
+    cell.rightExpansion.fillOnTrigger = NO;
     
     //centerIconOverText
     MGSwipeButton *deleteButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:0];
-    MGSwipeButton *moreButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:1];
     [deleteButton centerIconOverText];
-    [moreButton centerIconOverText];
+
+    // ----------------------------------------------------------------------------------------------------------
+    // more
+    // ----------------------------------------------------------------------------------------------------------
+    
+    cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] color:[NCBrandColor sharedInstance].gray];
+    
+    if ([self canOpenMenuAction:metadata]) {
+        
+        UITapGestureRecognizer *tapMore = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionMore:)];
+        [tapMore setNumberOfTapsRequired:1];
+        cell.more.userInteractionEnabled = YES;
+        [cell.more addGestureRecognizer:tapMore];
+    }
     
     return cell;
 }

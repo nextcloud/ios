@@ -28,7 +28,7 @@
 #import "TWMessageBarManager.h"
 #import "AHKActionSheet.h"
 #import "MGSwipeTableCell.h"
-#import "CCFavoritesCell.h"
+#import "CCCellMain.h"
 #import "CCUtility.h"
 #import "CCMain.h"
 #import "CCGraphics.h"

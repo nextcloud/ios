@@ -4546,6 +4546,7 @@
     if (metadata.directory) {
         
 //        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessoryType = UITableViewCellAccessoryNone;
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         
         lunghezzaFile = @" ";
