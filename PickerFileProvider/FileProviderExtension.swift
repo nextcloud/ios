@@ -146,59 +146,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
     }
     
-    // MARK: - WorkingSet -> 'favorite'
-    /*
-    func updateWorkingSet() {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
-        // ***** Favorite Files <-> Favorite Nextcloud *****
-        
-        providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
-        
-        // (ADD)
-        for (identifier, _) in providerData.listFavoriteIdentifierRank {
-            
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
-                continue
-            }
-            
-            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
-                continue
-            }
-            
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-            
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            }
-        }
-        
-        // (REMOVE)
-        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directory = true AND favorite = false", providerData.account), sorted: "fileName", ascending: true)
-        if (metadatas != nil && metadatas!.count > 0) {
-            for metadata in metadatas! {
-                
-                guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
-                    continue
-                }
-                
-                let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-                providerData.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-                
-                providerData.queueTradeSafe.sync(flags: .barrier) {
-                    providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                }
-            }
-        }
-        
-        // Update workingSet
-        self.signalEnumerator(for: [.workingSet])
-    }
-    */
-    
     // MARK: - Item
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {

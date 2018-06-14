@@ -111,6 +111,8 @@ class FileProviderData: NSObject {
         return true
     }
     
+    // MARK: -
+    
     func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
         
         let fileID = itemIdentifier.rawValue
@@ -191,6 +193,58 @@ class FileProviderData: NSObject {
         
         return directory
     }
+    
+    // MARK: -
+    
+    func updateFavoriteForWorkingSet() -> Bool {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return false }
+        
+        var updateWorkingSet = false
+        let newFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+        
+        // (ADD)
+        for (identifier, _) in newFavoriteIdentifierRank {
+            
+            if !listFavoriteIdentifierRank.keys.contains(identifier) {
+                
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier)) else {
+                    continue
+                }
+                guard let parentItemIdentifier = getParentItemIdentifier(metadata: metadata) else {
+                    continue
+                }
+                
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self)
+                queueTradeSafe.sync(flags: .barrier) {
+                    fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                }
+                updateWorkingSet = true
+            }
+        }
+        
+        // (REMOVE)
+        for (identifier, _) in listFavoriteIdentifierRank {
+            
+            if !newFavoriteIdentifierRank.keys.contains(identifier) {
+                
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier)) else {
+                    continue
+                }
+                let itemIdentifier = getItemIdentifier(metadata: metadata)
+                
+                queueTradeSafe.sync(flags: .barrier) {
+                    fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+                }
+                updateWorkingSet = true
+            }
+        }
+        
+        return updateWorkingSet
+    }
+    
+    // MARK: -
     
     func copyFile(_ atPath: String, toPath: String) -> Error? {
         
