@@ -104,7 +104,7 @@ extension FileProviderExtension {
                 self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier.removeValue(forKey: itemIdentifier)
             }
             
-            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
         })
     }
     
@@ -170,7 +170,7 @@ extension FileProviderExtension {
                 self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             }
             
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         })
     }
     
@@ -200,7 +200,7 @@ extension FileProviderExtension {
             self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         
-        self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
     }
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
@@ -305,7 +305,7 @@ extension FileProviderExtension {
             }
         }
         
-        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
     }
     
     func uploadFileImportDocument() {

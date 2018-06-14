@@ -78,7 +78,7 @@ extension FileProviderExtension {
                     self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                 }
 
-                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
 
                 completionHandler(item, nil)
                 
@@ -128,7 +128,7 @@ extension FileProviderExtension {
             providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
         }
 
-        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
 
         completionHandler(nil)
     }
@@ -196,7 +196,7 @@ extension FileProviderExtension {
                 self.providerData.fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
             }
 
-            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
 
             completionHandler(item, nil)
             
@@ -269,7 +269,7 @@ extension FileProviderExtension {
                 self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             }
 
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
 
             completionHandler(item, nil)
             
@@ -317,7 +317,7 @@ extension FileProviderExtension {
             providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
 
-        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
 
         completionHandler(item, nil)
         
@@ -351,7 +351,7 @@ extension FileProviderExtension {
             providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         
-        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         
         completionHandler(item, nil)
     }

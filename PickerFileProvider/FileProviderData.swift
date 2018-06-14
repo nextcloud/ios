@@ -196,18 +196,19 @@ class FileProviderData: NSObject {
     
     // MARK: -
     
-    func updateFavoriteForWorkingSet() -> Bool {
+    func updateFavoriteForWorkingSet() {
         
         /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return false }
+        guard #available(iOS 11, *) else { return }
         
         var updateWorkingSet = false
-        let newFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+        let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
+        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
         
         // (ADD)
-        for (identifier, _) in newFavoriteIdentifierRank {
+        for (identifier, _) in listFavoriteIdentifierRank {
             
-            if !listFavoriteIdentifierRank.keys.contains(identifier) {
+            if !oldListFavoriteIdentifierRank.keys.contains(identifier) {
                 
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier)) else {
                     continue
@@ -225,15 +226,15 @@ class FileProviderData: NSObject {
         }
         
         // (REMOVE)
-        for (identifier, _) in listFavoriteIdentifierRank {
+        for (identifier, _) in oldListFavoriteIdentifierRank {
             
-            if !newFavoriteIdentifierRank.keys.contains(identifier) {
+            if !listFavoriteIdentifierRank.keys.contains(identifier) {
                 
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier)) else {
                     continue
                 }
-                let itemIdentifier = getItemIdentifier(metadata: metadata)
                 
+                let itemIdentifier = getItemIdentifier(metadata: metadata)
                 queueTradeSafe.sync(flags: .barrier) {
                     fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
                 }
@@ -241,7 +242,30 @@ class FileProviderData: NSObject {
             }
         }
         
-        return updateWorkingSet
+        if updateWorkingSet {
+            signalEnumerator(for: [.workingSet])
+        }
+    }
+    
+    // MARK: -
+
+    // Convinent method to signal the enumeration for containers.
+    //
+    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+        
+        currentAnchor += 1
+        
+        for containerItemIdentifier in containerItemIdentifiers {
+            
+            NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
+                if let error = error {
+                    print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
+                }
+            }
+        }
     }
     
     // MARK: -

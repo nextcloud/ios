@@ -54,7 +54,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func invalidate() {
-        // perform invalidation of server connection if necessary
+        // 
+        providerData.updateFavoriteForWorkingSet()
     }
 
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
