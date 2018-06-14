@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12121" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12089"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -21,35 +21,35 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="60" y="13" width="436" height="20"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <rect key="frame" x="72" y="16" width="412" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
-                        <rect key="frame" x="60" y="33" width="436" height="15"/>
+                        <rect key="frame" x="72" y="31" width="412" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.63921568627450975" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5" userLabel="File">
-                        <rect key="frame" x="10" y="10" width="40" height="40"/>
+                        <rect key="frame" x="22" y="13" width="40" height="35"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="kM5-Uf-S8Z"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH" userLabel="Image">
-                        <rect key="frame" x="4" y="40" width="15" height="15"/>
+                        <rect key="frame" x="16" y="38" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="bgo-QS-x7k"/>
                             <constraint firstAttribute="width" constant="15" id="g4P-aH-jOh"/>
                         </constraints>
                     </imageView>
                     <progressView opaque="NO" tag="40" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Q4M-4B-abs">
-                        <rect key="frame" x="68" y="52.5" width="430" height="2"/>
+                        <rect key="frame" x="80" y="51.5" width="406" height="2"/>
                     </progressView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eGg-ei-EiX" userLabel="Cancel Task Button">
-                        <rect key="frame" x="498" y="5" width="50" height="50"/>
+                        <rect key="frame" x="486" y="5" width="50" height="50"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="50" id="IOy-Uo-T2K"/>
                             <constraint firstAttribute="height" constant="50" id="Zjh-5E-j3e"/>
@@ -59,7 +59,7 @@
                         </state>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kaz-0H-BSt">
-                        <rect key="frame" x="551" y="5.5" width="50" height="50"/>
+                        <rect key="frame" x="539" y="5.5" width="50" height="50"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="50" id="7rT-Yp-IRn"/>
                             <constraint firstAttribute="width" constant="50" id="Czm-WN-sbo"/>
@@ -69,7 +69,7 @@
                         </state>
                     </button>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dge-D1-XMk" userLabel="Stop Task Button">
-                        <rect key="frame" x="551" y="5" width="50" height="50"/>
+                        <rect key="frame" x="539" y="5" width="50" height="50"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="50" id="5ET-gL-uPM"/>
                             <constraint firstAttribute="height" constant="50" id="Exd-l9-KUV"/>
@@ -85,7 +85,7 @@
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="5" id="Jec-aH-9mf"/>
                     <constraint firstItem="5" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="2" id="JnQ-te-G7i"/>
                     <constraint firstItem="Kaz-0H-BSt" firstAttribute="top" secondItem="eGg-ei-EiX" secondAttribute="top" constant="0.5" id="LDS-P0-NC6"/>
-                    <constraint firstItem="Q4M-4B-abs" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="bottom" constant="19.5" id="M1C-9H-wNb"/>
+                    <constraint firstItem="Q4M-4B-abs" firstAttribute="top" secondItem="QNC-8X-DAC" secondAttribute="bottom" constant="17.5" id="M1C-9H-wNb"/>
                     <constraint firstAttribute="trailingMargin" secondItem="Kaz-0H-BSt" secondAttribute="trailing" constant="-9" id="Mfy-V9-Ezo"/>
                     <constraint firstItem="5" firstAttribute="bottom" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="2" id="N38-yB-Rf0"/>
                     <constraint firstItem="5" firstAttribute="bottom" secondItem="sQq-jC-UEV" secondAttribute="bottomMargin" constant="-1" id="Qp5-KA-Mwc"/>
@@ -98,7 +98,7 @@
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="firstBaseline" secondItem="eGg-ei-EiX" secondAttribute="firstBaseline" id="b1Y-qH-GES"/>
                     <constraint firstItem="Dge-D1-XMk" firstAttribute="firstBaseline" secondItem="Kaz-0H-BSt" secondAttribute="firstBaseline" constant="-1" id="eFj-cr-a0P"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="-4" id="hO0-iD-rKc"/>
-                    <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="32" id="iWl-MU-FCz"/>
+                    <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="topMargin" constant="27" id="iWl-MU-FCz"/>
                     <constraint firstItem="eGg-ei-EiX" firstAttribute="leading" secondItem="Kaz-0H-BSt" secondAttribute="trailing" constant="-103" id="iuz-Vg-6UE"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leadingMargin" constant="2" id="jRD-Qd-3a9"/>
                     <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="41" id="mRY-av-dw7"/>
@@ -121,9 +121,4 @@
             <point key="canvasLocation" x="414" y="244"/>
         </tableViewCell>
     </objects>
-    <simulatedMetricsContainer key="defaultSimulatedMetrics">
-        <simulatedStatusBarMetrics key="statusBar"/>
-        <simulatedOrientationMetrics key="orientation"/>
-        <simulatedScreenMetrics key="destination" type="retina4_7.fullscreen"/>
-    </simulatedMetricsContainer>
 </document>
