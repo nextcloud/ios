@@ -54,7 +54,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func invalidate() {
-        // 
+        // Update the WorkingSet -> Favorite
         providerData.updateFavoriteForWorkingSet()
     }
 
