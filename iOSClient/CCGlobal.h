@@ -236,6 +236,10 @@ extern NSString *const flowEndpoint;
 // Metadata : Status
 #define k_metadataStatusNormal                          0
 #define k_metadataStatusHide                            1
+#define k_metadataStatusInUpload                        2
+#define k_metadataStatusUploading                       3
+#define k_metadataStatusInDownload                      4
+#define k_metadataStatusDownloading                     5
 
 // TabBar button
 #define k_tabBarApplicationIndexFile                    0
