@@ -670,7 +670,7 @@
     
     [ocNetworking readFile:nil serverUrl:startDirectory account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
         
-        if (![metadata.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]]) {
+        if (![metadata.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]] || _sectionDataSource.allRecordsDataSource.count == 0) {
             
             [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
             [self searchInProgress:YES];
