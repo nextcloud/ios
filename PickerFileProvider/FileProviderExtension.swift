@@ -69,6 +69,18 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         super.init()
         
+        // Get group directiry
+        providerData.groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+        providerData.fileProviderStorageURL = providerData.groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+        
+        // Create directory File Provider Storage
+        do {
+            try FileManager.default.createDirectory(atPath: providerData.fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            NSLog("Unable to create directory \(error.debugDescription)")
+        }
+        
+        // Setup account
         _ = providerData.setupActiveAccount()
         
         if #available(iOSApplicationExtension 11.0, *) {

@@ -74,18 +74,6 @@ class FileProviderData: NSObject {
     
     func setupActiveAccount() -> Bool {
         
-        queueTradeSafe.sync(flags: .barrier) {
-            groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-            fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
-        }
-        
-        // Create dir File Provider Storage
-        do {
-            try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            NSLog("Unable to create directory \(error.debugDescription)")
-        }
-        
         if CCUtility.getDisableFilesApp() {
             return false
         }
@@ -94,18 +82,18 @@ class FileProviderData: NSObject {
             return false
         }
         
-        if account != "" && account != activeAccount.account {
+        if account == "" {
+            queueTradeSafe.sync(flags: .barrier) {
+                account = activeAccount.account
+                accountUser = activeAccount.user
+                accountUserID = activeAccount.userID
+                accountPassword = activeAccount.password
+                accountUrl = activeAccount.url
+                homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
+                directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
+            }
+        } else if account != activeAccount.account {
             assert(false, "change user")
-        }
-        
-        queueTradeSafe.sync(flags: .barrier) {
-            account = activeAccount.account
-            accountUser = activeAccount.user
-            accountUserID = activeAccount.userID
-            accountPassword = activeAccount.password
-            accountUrl = activeAccount.url
-            homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
-            directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
         }
         
         return true
