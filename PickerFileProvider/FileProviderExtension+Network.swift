@@ -313,12 +313,12 @@ extension FileProviderExtension {
         let queueInLock = NCManageDatabase.sharedInstance.getQueueUploadInLock()
         if queueInLock != nil && queueInLock!.count == 0 {
             
-            let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile)
+            let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, withPath: true)
             if  metadataNetQueue != nil {
                 
                 if self.providerData.copyFile(metadataNetQueue!.path, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
                     
-                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, fileID: metadataNetQueue!.assetLocalIdentifier, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, path: metadataNetQueue!.path ,session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
+                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, fileID: metadataNetQueue!.assetLocalIdentifier, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                     
                 } else {
                     // file not present, delete record Upload Queue

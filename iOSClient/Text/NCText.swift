@@ -151,8 +151,7 @@ class NCText: UIViewController, UITextViewDelegate {
             if textView.text != loadText {
             
                 let data = textView.text.data(using: .utf8)
-                let path = "\(self.appDelegate.directoryUser!)/\(metadata.fileNameView)"
-                let success = FileManager.default.createFile(atPath: path, contents: data, attributes: nil)
+                let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(metadata.fileNameView)", contents: data, attributes: nil)
             
                 if success {
                 
@@ -161,7 +160,7 @@ class NCText: UIViewController, UITextViewDelegate {
                     self.dismiss(animated: true, completion: {
                         
                         // Send file
-                        CCNetworking.shared().uploadFile(metadata.fileNameView, serverUrl: serverUrl, fileID: nil, assetLocalIdentifier: nil, path: path, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
+                        CCNetworking.shared().uploadFile(metadata.fileNameView, serverUrl: serverUrl, fileID: nil, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
                     })
 

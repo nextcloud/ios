@@ -2372,37 +2372,44 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableQueueUpload.init(value:$0) })
     }
     
-    
-    @objc func getQueueUpload() -> CCMetadataNet? {
+    @objc func getQueueUpload(withPath: Bool) -> CCMetadataNet? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
         }
         
+        var result: tableQueueUpload?
+
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first else {
+        if withPath {
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false AND path != nil", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first
+        } else {
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND lock == false AND path == nil", tableAccount.account).sorted(byKeyPath: "date", ascending: true).first
+        }
+        
+        if result == nil {
             return nil
         }
         
         let metadataNet = CCMetadataNet()
         
-        metadataNet.account = result.account
-        metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
-        metadataNet.errorCode = result.errorCode
-        metadataNet.directoryID = self.getDirectoryID(result.serverUrl)
-        metadataNet.fileName = result.fileName
-        metadataNet.fileNameView = result.fileNameView
-        metadataNet.path = result.path
-        metadataNet.selector = result.selector
-        metadataNet.selectorPost = result.selectorPost
-        metadataNet.serverUrl = result.serverUrl
-        metadataNet.session = result.session
-        metadataNet.sessionError = result.sessionError
-        metadataNet.sessionID = result.sessionID
-        metadataNet.sessionTaskIdentifier = result.sessionTaskIdentifier
-        metadataNet.size = result.size
+        metadataNet.account = result!.account
+        metadataNet.assetLocalIdentifier = result!.assetLocalIdentifier
+        metadataNet.errorCode = result!.errorCode
+        metadataNet.directoryID = self.getDirectoryID(result!.serverUrl)
+        metadataNet.fileName = result!.fileName
+        metadataNet.fileNameView = result!.fileNameView
+        metadataNet.path = result!.path
+        metadataNet.selector = result!.selector
+        metadataNet.selectorPost = result!.selectorPost
+        metadataNet.serverUrl = result!.serverUrl
+        metadataNet.session = result!.session
+        metadataNet.sessionError = result!.sessionError
+        metadataNet.sessionID = result!.sessionID
+        metadataNet.sessionTaskIdentifier = result!.sessionTaskIdentifier
+        metadataNet.size = result!.size
         metadataNet.taskStatus = Int(k_taskStatusResume)
         
         return metadataNet
@@ -2422,43 +2429,51 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableQueueUpload.init(value:$0) })
     }
     
-    @objc func lockQueueUpload(selector: String) -> CCMetadataNet? {
+    @objc func lockQueueUpload(selector: String, withPath: Bool) -> CCMetadataNet? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
         }
         
+        var result: tableQueueUpload?
+        
         let realm = try! Realm()
-    
-        guard let result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false", tableAccount.account, selector).sorted(byKeyPath: "date", ascending: true).first else {
+        
+        if withPath {
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false AND path != nil", tableAccount.account, selector).sorted(byKeyPath: "date", ascending: true).first
+        } else {
+            result = realm.objects(tableQueueUpload.self).filter("account = %@ AND selector = %@ AND lock == false AND path == nil", tableAccount.account, selector).sorted(byKeyPath: "date", ascending: true).first
+        }
+        
+        if result == nil {
             return nil
         }
         
-        let directoryID = self.getDirectoryID(result.serverUrl)
+        let directoryID = self.getDirectoryID(result!.serverUrl)
         
         realm.beginWrite()
         
         let metadataNet = CCMetadataNet()
         
-        metadataNet.account = result.account
-        metadataNet.assetLocalIdentifier = result.assetLocalIdentifier
+        metadataNet.account = result!.account
+        metadataNet.assetLocalIdentifier = result!.assetLocalIdentifier
         metadataNet.directoryID = directoryID
-        metadataNet.errorCode = result.errorCode
-        metadataNet.fileName = result.fileName
-        metadataNet.fileNameView = result.fileNameView
-        metadataNet.path = result.path
-        metadataNet.selector = result.selector
-        metadataNet.selectorPost = result.selectorPost
-        metadataNet.serverUrl = result.serverUrl
-        metadataNet.session = result.session
-        metadataNet.sessionError = result.sessionError
-        metadataNet.sessionID = result.sessionID
-        metadataNet.sessionTaskIdentifier = result.sessionTaskIdentifier
-        metadataNet.size = result.size
+        metadataNet.errorCode = result!.errorCode
+        metadataNet.fileName = result!.fileName
+        metadataNet.fileNameView = result!.fileNameView
+        metadataNet.path = result!.path
+        metadataNet.selector = result!.selector
+        metadataNet.selectorPost = result!.selectorPost
+        metadataNet.serverUrl = result!.serverUrl
+        metadataNet.session = result!.session
+        metadataNet.sessionError = result!.sessionError
+        metadataNet.sessionID = result!.sessionID
+        metadataNet.sessionTaskIdentifier = result!.sessionTaskIdentifier
+        metadataNet.size = result!.size
         metadataNet.taskStatus = Int(k_taskStatusResume)
         
         // Lock
-        result.lock = true
+        result!.lock = true
         
         do {
             try realm.commitWrite()

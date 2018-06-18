@@ -414,7 +414,7 @@
         }
         
         metadataNet.fileName = fileName;
-        metadataNet.path = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, fileName];
+        metadataNet.path = appDelegate.directoryUser;
         metadataNet.selector = selector;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;

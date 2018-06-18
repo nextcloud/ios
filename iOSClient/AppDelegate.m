@@ -1407,7 +1407,7 @@
         
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUpload];
+        metadataNet = [[NCManageDatabase sharedInstance] getQueueUploadWithPath:false];
         if (metadataNet) {
             tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, metadataNet.serverUrl]];
             if (directory != nil)
@@ -1445,7 +1445,7 @@
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUpload];
+        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUpload withPath:false];
         if (metadataNet) {
             
             [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
@@ -1473,7 +1473,7 @@
         
         if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
             
-            metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUploadAll];
+            metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUploadAll withPath:false];
             if (metadataNet) {
                 
                 [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
@@ -1489,22 +1489,33 @@
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadFile];
+        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadFile withPath:false];
         if (metadataNet) {
             
+            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+            counterNewUpload++;
+        }
+        
+        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
+    }
+    
+    // ------------------------- <selector Upload With PATH File File Provider Extension> -------------------------
+    
+    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1 && [[UIApplication sharedApplication] applicationState] != UIApplicationStateBackground) {
+        
+        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadFile withPath:true];
+        if (metadataNet) {
+            
+            NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
+            [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
+            
+            // Convert k_upload_session_extension -> k_upload_session
             if ([metadataNet.session isEqualToString:k_upload_session_extension]) {
-                
-                NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
-                [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
-                
                 metadataNet.fileID = @"";
                 metadataNet.session = k_upload_session;
-                
-                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl fileID:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier path:toPath session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
-            } else {
-                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             }
             
+            [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl fileID:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
             counterNewUpload++;
         }
         
