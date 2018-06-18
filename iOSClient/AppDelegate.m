@@ -104,7 +104,7 @@
     NSURL *dirGroup = [CCUtility getDirectoryGroup];
     
     NSLog(@"[LOG] Start program group -----------------");
-    NSLog(@"%@", dirGroup);    
+    NSLog(@"%@", [dirGroup path]);    
     NSLog(@"[LOG] Start program application -----------");
     NSLog(@"%@", [[CCUtility getDirectoryDocuments] stringByDeletingLastPathComponent]);
     NSLog(@"[LOG] -------------------------------------");
@@ -122,8 +122,13 @@
     // create Directory database Nextcloud
     dir = [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
-    [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
 
+    // create directory Provider Storage
+    dir = [CCUtility getDirectoryProviderStorage];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
+        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    
     NSError *error = nil;
     [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:dir error:&error];
     
