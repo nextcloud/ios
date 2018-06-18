@@ -316,7 +316,7 @@ extension FileProviderExtension {
             let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, session: k_upload_session_extension)
             if  metadataNetQueue != nil {
                 
-                if self.providerData.copyFile(metadataNetQueue!.path, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
+                if self.providerData.copyFile(metadataNetQueue!.path + "/" + metadataNetQueue!.fileName, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
                     
                     CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, fileID: metadataNetQueue!.assetLocalIdentifier, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, path:providerData.directoryUser, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                     

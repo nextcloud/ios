@@ -453,7 +453,7 @@ extension FileProviderExtension {
                     metadataNet.account = self.providerData.account
                     metadataNet.assetLocalIdentifier = self.providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
                     metadataNet.fileName = fileName
-                    metadataNet.path = fileNamePathDirectory + "/" + fileName
+                    metadataNet.path = fileNamePathDirectory
                     metadataNet.selector = selectorUploadFile
                     metadataNet.selectorPost = self.providerData.selectorPostImportDocument
                     metadataNet.serverUrl = serverUrl
