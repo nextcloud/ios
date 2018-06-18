@@ -1505,7 +1505,7 @@
                 metadataNet.fileID = @"";
                 metadataNet.session = k_upload_session;
                 
-                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl fileID:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
+                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl fileID:nil assetLocalIdentifier:metadataNet.assetLocalIdentifier path:self.directoryUser session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:nil];
                 
             } else {
                 
