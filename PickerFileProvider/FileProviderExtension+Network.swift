@@ -193,6 +193,7 @@ extension FileProviderExtension {
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
 
+        // Register for bytesSent
         NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(item.itemIdentifier.rawValue)) { (error) in }
         
         providerData.queueTradeSafe.sync(flags: .barrier) {

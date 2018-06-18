@@ -41,10 +41,7 @@ class FileProviderData: NSObject {
     // metadata Selector Post
     let selectorPostImportDocument = "importDocument"
     let selectorPostItemChanged = "itemChanged"
-    
-    // Metadata Temp for Import
-    let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
-    
+        
     // Max item for page
     let itemForPage = 20
 
