@@ -152,9 +152,6 @@ extern NSString *const flowEndpoint;
 // Search
 #define k_minCharsSearch                                2
 
-// Metadata ed ID
-#define k_uploadSessionID                               @"ID_UPLOAD_"
-
 // Metadata.Net SELECTOR
 #define selectorAddFavorite                             @"addFavorite"
 #define selectorCreateFolder                            @"createFolder"
