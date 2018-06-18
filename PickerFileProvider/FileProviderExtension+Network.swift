@@ -313,7 +313,7 @@ extension FileProviderExtension {
         let queueInLock = NCManageDatabase.sharedInstance.getQueueUploadInLock()
         if queueInLock != nil && queueInLock!.count == 0 {
             
-            let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, withPath: true)
+            let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, session: k_upload_session_extension)
             if  metadataNetQueue != nil {
                 
                 if self.providerData.copyFile(metadataNetQueue!.path, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
