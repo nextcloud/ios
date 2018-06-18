@@ -1499,8 +1499,9 @@
             
             if ([metadataNet.session isEqualToString:k_upload_session_extension]) {
                 
+                NSString *atPath = [NSString stringWithFormat:@"%@/%@", metadataNet.path, metadataNet.fileName];
                 NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
-                [CCUtility copyFileAtPath:metadataNet.path toPath:toPath];
+                [CCUtility copyFileAtPath:atPath toPath:toPath];
                 
                 metadataNet.fileID = @"";
                 metadataNet.session = k_upload_session;
