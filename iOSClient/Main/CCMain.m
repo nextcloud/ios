@@ -1267,6 +1267,11 @@
 #pragma mark ===== Upload new Photos/Videos =====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)uploadStart:(NSString *)fileID task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl
+{
+    // Upload Start
+}
+
 - (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     // Delete record on Table Auto Upload
