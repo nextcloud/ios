@@ -36,7 +36,6 @@ class FileProviderData: NSObject {
     var directoryUser = ""
     
     // Directory
-    var groupURL: URL?
     var fileProviderStorageURL: URL?
     
     // metadata Selector Post

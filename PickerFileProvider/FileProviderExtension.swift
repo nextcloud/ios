@@ -70,8 +70,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         super.init()
         
         // Get group directiry
-        providerData.groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-        providerData.fileProviderStorageURL = providerData.groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+        let groupURL = CCUtility.getDirectoryGroup()!
+        providerData.fileProviderStorageURL = groupURL.appendingPathComponent(k_DirectoryProviderStorage)
         
         // Create directory File Provider Storage
         do {

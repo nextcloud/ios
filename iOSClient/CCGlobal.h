@@ -285,7 +285,7 @@ extern NSString *const flowEndpoint;
 #define k_flow_version_available                        12
 
 //
-#define k_assetLocalIdentifierFileProviderStorage       @"File Provider Storage"
+#define k_DirectoryProviderStorage                      @"File Provider Storage"
 
 
 // -----------------------------------------------------------------------------------------------------------

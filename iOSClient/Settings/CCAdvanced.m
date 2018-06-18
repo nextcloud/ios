@@ -527,8 +527,7 @@
 - (void)emptyGroupFileProviderStorage
 {
     NSString *file;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:k_assetLocalIdentifierFileProviderStorage] path];
+    NSString *dirIniziale = [CCUtility getDirectoryProviderStorage];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
     
@@ -539,7 +538,7 @@
 - (void)emptyGroupApplicationSupport
 {
     NSString *file;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    NSURL *dirGroup = [CCUtility getDirectoryGroup];
     NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];

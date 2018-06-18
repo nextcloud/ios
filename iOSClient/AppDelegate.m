@@ -101,7 +101,7 @@
     }
 
     NSString *dir;
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    NSURL *dirGroup = [CCUtility getDirectoryGroup];
     
     NSLog(@"[LOG] Start program group -----------------");
     NSLog(@"%@", dirGroup);    
