@@ -173,7 +173,9 @@
 
 -(void)upload
 {
-    [[CCNetworking sharedNetworking] uploadFile:appDelegate.fileNameUpload serverUrl:serverUrlLocal fileID:nil assetLocalIdentifier:nil session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+    NSString *path = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, appDelegate.fileNameUpload];
+    
+    [[CCNetworking sharedNetworking] uploadFile:appDelegate.fileNameUpload serverUrl:serverUrlLocal fileID:nil assetLocalIdentifier:nil path:path session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
