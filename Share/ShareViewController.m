@@ -226,11 +226,11 @@
         metadataForUpload.fileNameView = fileName;
         metadataForUpload.path = self.directoryUser;
         metadataForUpload.session = k_upload_session_foreground;
+        metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.status = k_metadataStatusWaitUpload;
         
         // Add Medtadata for upload
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-        // Upload
         [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:self];
         
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];

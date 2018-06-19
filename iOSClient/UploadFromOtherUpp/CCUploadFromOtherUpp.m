@@ -183,12 +183,14 @@
     metadataForUpload.fileNameView = appDelegate.fileNameUpload;
     metadataForUpload.path = appDelegate.directoryUser;
     metadataForUpload.session = k_upload_session;
+    metadataForUpload.sessionSelector = selectorUploadFile;
     metadataForUpload.status = k_metadataStatusWaitUpload;
     
     // Add Medtadata for upload
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-    // Upload
-    [[CCNetworking sharedNetworking] uploadFile:metadata path:appDelegate.directoryUser taskStatus:k_taskStatusResume delegate:self];
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+    
+    [appDelegate.activeMain reloadDatasource:serverUrlLocal];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

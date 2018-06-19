@@ -730,12 +730,14 @@
                     metadataForUpload.fileNameView = fileName;
                     metadataForUpload.path = appDelegate.directoryUser;
                     metadataForUpload.session = k_upload_session;
+                    metadataForUpload.sessionSelector = selectorUploadFile;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
                     
                     // Add Medtadata for upload
                     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                    // Start upload now
                     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                    
+                    [self reloadDatasource];
                     
                 } else {
                     
@@ -1407,10 +1409,12 @@
             
             // Add Medtadata for upload
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-            // Start upload now
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
         }
     }
+    
+    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+
+    [self reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3522,12 +3526,11 @@
                             metadataForUpload.fileNameView = metadata.fileNameView;
                             metadataForUpload.path = appDelegate.directoryUser;
                             metadataForUpload.session = k_upload_session;
+                            metadataForUpload.sessionSelector = selectorUploadFile;
                             metadataForUpload.status = k_metadataStatusWaitUpload;
                             
                             // Add Medtadata for upload
                             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                            // Start upload now
-                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
                         });
                         
                         timer += 0.1;
@@ -3536,6 +3539,10 @@
             }
         }
     }
+    
+    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+
+    [self reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------

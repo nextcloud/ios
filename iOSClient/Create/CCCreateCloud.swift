@@ -619,6 +619,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
             alertController.addAction(overwriteAction)
             
             self.present(alertController, animated: true, completion:nil)
+            
         } else {
             
            dismissAndUpload(fileNameSave)
@@ -644,11 +645,14 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
                 metadataForUpload.fileNameView = fileNameSave
                 metadataForUpload.path = self.appDelegate.directoryUser!
                 metadataForUpload.session = k_upload_session
+                metadataForUpload.sessionSelector = selectorUploadFile
                 metadataForUpload.status = Double(k_metadataStatusWaitUpload)
                 
-                let metadata = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-                CCNetworking.shared().uploadFile(metadata, path: self.appDelegate.directoryUser!, taskStatus: Int(k_taskStatusResume), delegate: self.appDelegate.activeMain)
-                                
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+                self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
+                
+                self.appDelegate.activeMain.reloadDatasource(self.serverUrl)
+                
             } else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             }
