@@ -173,7 +173,22 @@
 
 -(void)upload
 {
-//    [[CCNetworking sharedNetworking] uploadFile:appDelegate.fileNameUpload serverUrl:serverUrlLocal assetLocalIdentifier:nil path:appDelegate.directoryUser session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+    tableMetadata *metadataForUpload = [tableMetadata new];
+    
+    metadataForUpload.account = appDelegate.activeAccount;
+    metadataForUpload.date = [NSDate new];
+    metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlLocal];
+    metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:appDelegate.fileNameUpload];
+    metadataForUpload.fileName = appDelegate.fileNameUpload;
+    metadataForUpload.fileNameView = appDelegate.fileNameUpload;
+    metadataForUpload.path = appDelegate.directoryUser;
+    metadataForUpload.session = k_upload_session;
+    metadataForUpload.status = k_metadataStatusWaitUpload;
+    
+    // Add Medtadata for upload
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+    // Upload
+    [[CCNetworking sharedNetworking] uploadFile:metadata path:appDelegate.directoryUser taskStatus:k_taskStatusResume delegate:self];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

@@ -633,7 +633,22 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
             let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(fileNameSave)", contents: data, attributes: nil)
             
             if success {
-//                CCNetworking.shared().uploadFile(fileNameSave, serverUrl: self.serverUrl, assetLocalIdentifier: nil, path:self.appDelegate.directoryUser!, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
+                
+                let metadataForUpload = tableMetadata()
+                
+                metadataForUpload.account = self.appDelegate.activeAccount
+                metadataForUpload.date = NSDate()
+                metadataForUpload.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
+                metadataForUpload.fileID = metadataForUpload.directoryID + fileNameSave
+                metadataForUpload.fileName = fileNameSave
+                metadataForUpload.fileNameView = fileNameSave
+                metadataForUpload.path = self.appDelegate.directoryUser!
+                metadataForUpload.session = k_upload_session
+                metadataForUpload.status = Double(k_metadataStatusWaitUpload)
+                
+                let metadata = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+                CCNetworking.shared().uploadFile(metadata, path: self.appDelegate.directoryUser!, taskStatus: Int(k_taskStatusResume), delegate: self.appDelegate.activeMain)
+                                
             } else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             }
