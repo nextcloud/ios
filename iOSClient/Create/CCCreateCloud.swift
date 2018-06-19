@@ -654,6 +654,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
                 self.appDelegate.activeMain.reloadDatasource(self.serverUrl)
                 
             } else {
+                
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             }
         })

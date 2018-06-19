@@ -403,6 +403,7 @@
         
         if (![serverUrl isEqualToString:prevServerUrl]) {
             directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+            prevServerUrl = serverUrl;
         }
         
         tableMetadata *metadataForUpload = [tableMetadata new];
