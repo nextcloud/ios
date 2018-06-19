@@ -1276,8 +1276,11 @@
 {
     // Upload Start
     metadata.status = k_metadataStatusUploading;
-    
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+    
+    [self reloadDatasource: serverUrl];
+    
+    [appDelegate updateApplicationIconBadgeNumber];
 }
 
 - (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode

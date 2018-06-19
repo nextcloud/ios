@@ -1482,7 +1482,7 @@
     
     if (counterUpload < k_maxConcurrentOperationUpload) {
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND status = %d", _activeAccount, k_metadataStatusWaitUpload]];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND selector = %@ AND status = %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
         if (metadataForUpload) {
             
             if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
@@ -1491,18 +1491,13 @@
                 NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
                 [CCUtility copyFileAtPath:atPath toPath:toPath];
                 
-                metadataNet.fileID = @"";
-                metadataNet.session = k_upload_session;
-                
-//                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier path:self.directoryUser session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:_activeMain];
-                
-            } else {
-                
-                metadataForUpload.status = k_metadataStatusInUpload;
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                
-                [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
+                metadataForUpload.session = k_upload_session;
             }
+            
+            metadataForUpload.status = k_metadataStatusInUpload;
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+
+            [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
         }
     }
     

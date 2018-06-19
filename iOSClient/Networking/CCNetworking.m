@@ -1043,9 +1043,11 @@
                         
                         NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
                         
-                        // refresh main
-                        if ([self.delegate respondsToSelector:@selector(reloadDatasource:)])
-                            [self.delegate reloadDatasource:serverUrl];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:task:serverUrl:)]) {
+                                [[self getDelegate:metadata.fileID] uploadStart:metadata task:uploadTask serverUrl:serverUrl];
+                            }
+                        });
                     }
                 });
             });
@@ -1062,21 +1064,13 @@
              
              NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
              
-             // refresh main
-             if ([self.delegate respondsToSelector:@selector(reloadDatasource:)])
-                 [self.delegate reloadDatasource:serverUrl];
+             dispatch_async(dispatch_get_main_queue(), ^{
+                 if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:task:serverUrl:)]) {
+                     [[self getDelegate:metadata.fileID] uploadStart:metadata task:uploadTask serverUrl:serverUrl];
+                 }
+             });
          }
     }
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:task:serverUrl:)]) {
-            [[self getDelegate:metadata.fileID] uploadStart:metadata task:uploadTask serverUrl:serverUrl];
-        }
-    });
-    
-#ifndef EXTENSION
-    [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateApplicationIconBadgeNumber];
-#endif
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
