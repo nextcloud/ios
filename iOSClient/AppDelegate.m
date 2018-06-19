@@ -1482,7 +1482,7 @@
     
     if (counterUpload < k_maxConcurrentOperationUpload) {
         
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND selector = %@ AND status = %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND status = %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
         if (metadataForUpload) {
             
             if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
