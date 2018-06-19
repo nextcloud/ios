@@ -1409,6 +1409,7 @@
 - (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent
 {
     CCMetadataNet *metadataNet;
+    tableMetadata *metadataForUpload;
         
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
@@ -1494,10 +1495,10 @@
     
     if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadFile session:nil];
-        if (metadataNet) {
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND status = %d", _activeAccount, k_metadataStatusWaitUpload]];
+        if (metadataForUpload) {
             
-            if ([metadataNet.session isEqualToString:k_upload_session_extension]) {
+            if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
                 
                 NSString *atPath = [NSString stringWithFormat:@"%@/%@", metadataNet.path, metadataNet.fileName];
                 NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
@@ -1509,6 +1510,8 @@
 //                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier path:self.directoryUser session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:_activeMain];
                 
             } else {
+                
+                [[CCNetworking sharedNetworking] uploadFile:metadataForUpload path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
                 
 //                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             }
