@@ -159,8 +159,14 @@ class NCText: UIViewController, UITextViewDelegate {
                 
                     self.dismiss(animated: true, completion: {
                         
-                        // Send file
-//                        CCNetworking.shared().uploadFile(metadata.fileNameView, serverUrl: serverUrl, assetLocalIdentifier: nil, path:self.appDelegate.directoryUser!, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
+                        metadata.path = self.appDelegate.directoryUser!
+                        metadata.session = k_upload_session
+                        metadata.sessionSelector = selectorUploadFile
+                        metadata.status = Double(k_metadataStatusWaitUpload)
+
+                        _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                        self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
+
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
                     })
 
