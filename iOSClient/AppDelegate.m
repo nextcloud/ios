@@ -1442,13 +1442,15 @@
     // ------------------------- <selector Auto Upload> -------------------------
     
     if (counterUpload < k_maxConcurrentOperationUpload) {
-        
+
+        /*
         metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUpload session:nil];
         if (metadataNet) {
             
-//            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+           [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             
         }
+        */
     }
   
     // ------------------------- <selector Auto Upload All> ----------------------
@@ -1467,11 +1469,13 @@
         
         if (counterUpload < k_maxConcurrentOperationUpload) {
             
+            /*
             metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUploadAll session:nil];
             if (metadataNet) {
                 
 //                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             }
+            */
         }
     }
   

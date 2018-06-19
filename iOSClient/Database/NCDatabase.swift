@@ -256,25 +256,6 @@ class tableQueueDownload: Object {
     }
 }
 
-class tableQueueUpload: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var assetLocalIdentifier = ""
-    @objc dynamic var date = NSDate()
-    @objc dynamic var errorCode: Int = 0
-    @objc dynamic var fileName = ""
-    @objc dynamic var fileNameView = ""
-    @objc dynamic var lock: Bool = false
-    @objc dynamic var path: String?
-    @objc dynamic var selector = ""
-    @objc dynamic var selectorPost = ""
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var session = ""
-    @objc dynamic var sessionError = ""
-    @objc dynamic var sessionTaskIdentifier: Int = -1
-    @objc dynamic var size: Double = 0
-}
-
 class tableShare: Object {
     
     @objc dynamic var account = ""

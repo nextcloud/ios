@@ -117,7 +117,6 @@ extension FileProviderExtension {
         }
         
         // Delete queue upload for ImportDocument (if exists)
-        NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: metadata.assetLocalIdentifier, selector: metadata.sessionSelector)
         
         //
         deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata, serverUrl: serverUrl)

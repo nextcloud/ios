@@ -223,8 +223,6 @@ extension FileProviderExtension {
             // importDocument
             if (selectorPost == providerData.selectorPostImportDocument) {
                 
-                NCManageDatabase.sharedInstance.deleteQueueUpload(assetLocalIdentifier: assetLocalIdentifier, selector: selector)
-                
                 // Rename directory file
                 if providerData.fileManager.fileExists(atPath: providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
                     let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
@@ -269,7 +267,7 @@ extension FileProviderExtension {
             // importDocument
             if (selectorPost == providerData.selectorPostImportDocument) {
                 
-                NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
+//                NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + providerData.timeReupload) {
                     
