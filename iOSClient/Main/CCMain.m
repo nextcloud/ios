@@ -4212,7 +4212,7 @@
         
         if (directoryID) {
         
-            NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND status = %i", appDelegate.activeAccount, directoryID, k_metadataStatusNormal] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+            NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND status != %i", appDelegate.activeAccount, directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
                                                   
             _sectionDataSource = [CCSectionDataSourceMetadata new];
             _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy activeAccount:appDelegate.activeAccount];
