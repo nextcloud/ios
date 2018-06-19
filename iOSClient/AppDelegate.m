@@ -1442,15 +1442,16 @@
     // ------------------------- <selector Auto Upload> -------------------------
     
     if (counterUpload < k_maxConcurrentOperationUpload) {
-
-        /*
-        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUpload session:nil];
-        if (metadataNet) {
+        
+        
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND status = %d", _activeAccount, selectorUploadAutoUpload, k_metadataStatusWaitUpload]];
+        if (metadataForUpload) {
             
-           [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+            metadataForUpload.status = k_metadataStatusInUpload;
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
+            [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
         }
-        */
     }
   
     // ------------------------- <selector Auto Upload All> ----------------------
@@ -1469,13 +1470,14 @@
         
         if (counterUpload < k_maxConcurrentOperationUpload) {
             
-            /*
-            metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUploadAll session:nil];
-            if (metadataNet) {
+            metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND status = %d", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusWaitUpload]];
+            if (metadataForUpload) {
                 
-//                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+                metadataForUpload.status = k_metadataStatusInUpload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                
+                [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
             }
-            */
         }
     }
   

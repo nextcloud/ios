@@ -423,7 +423,7 @@
         
         metadataForUpload.date = [NSDate new];
         metadataForUpload.directoryID = directoryID;
-        metadataForUpload.fileID = directoryID;
+        metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
         metadataForUpload.fileName = fileName;
         metadataForUpload.fileNameView = fileName;
         metadataForUpload.path = appDelegate.directoryUser;
