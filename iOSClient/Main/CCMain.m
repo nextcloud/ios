@@ -720,8 +720,22 @@
                 
                 if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
                     
-                    // Upload File
-//                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:serverUrl assetLocalIdentifier: nil path:appDelegate.directoryUser session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+                    tableMetadata *metadataForUpload = [tableMetadata new];
+                    
+                    metadataForUpload.account = appDelegate.activeAccount;
+                    metadataForUpload.date = [NSDate new];
+                    metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+                    metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:fileName];
+                    metadataForUpload.fileName = fileName;
+                    metadataForUpload.fileNameView = fileName;
+                    metadataForUpload.path = appDelegate.directoryUser;
+                    metadataForUpload.session = k_upload_session;
+                    metadataForUpload.status = k_metadataStatusWaitUpload;
+                    
+                    // Add Medtadata for upload
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                    // Start upload now
+                    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
                     
                 } else {
                     
@@ -3512,7 +3526,23 @@
                         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileNameView]];
                         
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-//                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNameView serverUrl:_serverUrl assetLocalIdentifier:nil path:appDelegate.directoryUser session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+                        
+                            tableMetadata *metadataForUpload = [tableMetadata new];
+                        
+                            metadataForUpload.account = appDelegate.activeAccount;
+                            metadataForUpload.date = [NSDate new];
+                            metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:self.serverUrl];
+                            metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:metadata.fileName];
+                            metadataForUpload.fileName = metadata.fileName;
+                            metadataForUpload.fileNameView = metadata.fileNameView;
+                            metadataForUpload.path = appDelegate.directoryUser;
+                            metadataForUpload.session = k_upload_session;
+                            metadataForUpload.status = k_metadataStatusWaitUpload;
+                            
+                            // Add Medtadata for upload
+                            (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                            // Start upload now
+                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
                         });
                         
                         timer += 0.1;
