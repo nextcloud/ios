@@ -419,7 +419,6 @@
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;
         metadataNet.sessionError = @"";
-        metadataNet.sessionID = @"";
         metadataNet.taskStatus = k_taskStatusResume;
         
         [metadataNetFull addObject:metadataNet];

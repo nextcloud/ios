@@ -61,9 +61,8 @@
 - (void)downloadFile:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 
 // Upload
-- (void)uploadFileFromAssetLocalIdentifier:(CCMetadataNet *)metadataNet delegate:(id)delegate;
-- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl assetLocalIdentifier:(NSString *)assetLocalIdentifier path:(NSString *)path session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
-- (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)uploadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+
 
 // Utility
 
@@ -120,7 +119,6 @@
 @property (nonatomic, strong) NSString *selectorPost;
 @property (nonatomic, strong) NSString *session;
 @property (nonatomic, strong) NSString *sessionError;
-@property (nonatomic, strong) NSString *sessionID;
 @property NSInteger sessionTaskIdentifier;
 @property (nonatomic, strong) NSString *share;
 @property NSInteger shareeType;

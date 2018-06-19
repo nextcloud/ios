@@ -1342,7 +1342,7 @@
         if ([metadata.session isEqualToString:k_upload_session_wwan])
             metadata.session = k_upload_session;
         
-        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume delegate:nil];
+//        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume delegate:nil];
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
         
@@ -1453,7 +1453,7 @@
         metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUpload session:nil];
         if (metadataNet) {
             
-            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+//            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             
             counterNewUpload++;
         }
@@ -1481,7 +1481,7 @@
             metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUploadAll session:nil];
             if (metadataNet) {
                 
-                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+//                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
                 
                 counterNewUpload++;
             }
@@ -1506,11 +1506,11 @@
                 metadataNet.fileID = @"";
                 metadataNet.session = k_upload_session;
                 
-                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier path:self.directoryUser session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:_activeMain];
+//                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier path:self.directoryUser session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:_activeMain];
                 
             } else {
                 
-                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+//                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             }
             
             
@@ -1561,7 +1561,7 @@
     
     for (tableMetadata *metadata in metadatas) {
         
-        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus: k_taskStatusResume delegate:nil];
+//        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus: k_taskStatusResume delegate:nil];
         
         [directoryIDs addObject:metadata.directoryID];
         

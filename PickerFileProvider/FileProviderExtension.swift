@@ -418,15 +418,13 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             if metadata != nil {
                 
                 // Update
-                let uploadID = metadata!.directoryID + metadata!.fileID
                 let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
-                let destinationDirectoryUser = "\(directoryUser!)/\(uploadID)"
+                let destinationDirectoryUser = "\(directoryUser!)/\(metadata!.fileName)"
                 
                 // copy sourceURL on directoryUser
                 _ = providerData.copyFile(url.path, toPath: destinationDirectoryUser)
                 
                 // Prepare for send Metadata
-                metadata!.sessionID = uploadID
                 metadata!.session = k_upload_session
                 metadata!.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
                 _ = NCManageDatabase.sharedInstance.updateMetadata(metadata!)
@@ -439,7 +437,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 _ = providerData.copyFile(url.path, toPath: destinationDirectoryUser)
 
-                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, path:directoryUser!, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+//                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, path:directoryUser!, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             }
 
             self.stopProvidingItem(at: url)

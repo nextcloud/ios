@@ -2289,7 +2289,6 @@ class NCManageDatabase: NSObject {
                         addObject!.serverUrl = metadataNet.serverUrl
                         addObject!.session = metadataNet.session
                         addObject!.sessionError = metadataNet.sessionError
-                        addObject!.sessionID = metadataNet.sessionID
                         addObject!.sessionTaskIdentifier = metadataNet.sessionTaskIdentifier
                         addObject!.size = metadataNet.size
                         
@@ -2345,7 +2344,6 @@ class NCManageDatabase: NSObject {
                         addObject.serverUrl = metadataNet.serverUrl
                         addObject.session = metadataNet.session
                         addObject.sessionError = metadataNet.sessionError
-                        addObject.sessionID = metadataNet.sessionID
                         addObject.sessionTaskIdentifier = metadataNet.sessionTaskIdentifier
                         addObject.size = metadataNet.size
 
@@ -2399,7 +2397,6 @@ class NCManageDatabase: NSObject {
         metadataNet.serverUrl = result.serverUrl
         metadataNet.session = result.session
         metadataNet.sessionError = result.sessionError
-        metadataNet.sessionID = result.sessionID
         metadataNet.sessionTaskIdentifier = result.sessionTaskIdentifier
         metadataNet.size = result.size
         metadataNet.taskStatus = Int(k_taskStatusResume)
@@ -2459,7 +2456,6 @@ class NCManageDatabase: NSObject {
         metadataNet.serverUrl = result!.serverUrl
         metadataNet.session = result!.session
         metadataNet.sessionError = result!.sessionError
-        metadataNet.sessionID = result!.sessionID
         metadataNet.sessionTaskIdentifier = result!.sessionTaskIdentifier
         metadataNet.size = result!.size
         metadataNet.taskStatus = Int(k_taskStatusResume)

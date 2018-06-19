@@ -721,7 +721,7 @@
                 if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
                     
                     // Upload File
-                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:serverUrl assetLocalIdentifier: nil path:appDelegate.directoryUser session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+//                    [[CCNetworking sharedNetworking] uploadFile:fileName serverUrl:serverUrl assetLocalIdentifier: nil path:appDelegate.directoryUser session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
                     
                 } else {
                     
@@ -1360,19 +1360,18 @@
         if ([isRecordInSessions count] > 0)
             continue;
         
-        // Prepare record metadataNet
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-        
-        metadataNet.assetLocalIdentifier = asset.localIdentifier;
-        metadataNet.fileName = fileName;
-        metadataNet.path = appDelegate.directoryUser;
-        metadataNet.session = session;
-        metadataNet.sessionError = @"";
-        metadataNet.sessionID = @"";
-        metadataNet.selector = selectorUploadFile;
-        metadataNet.selectorPost = nil;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.taskStatus = k_taskStatusResume;
+        // Prepare record metadata
+        tableMetadata *metadataForUpload = [CCUtility insertFileSystemInMetadata:fileName fileNameView:fileName directory:appDelegate.directoryUser activeAccount:appDelegate.activeAccount];
+
+        metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
+        metadataForUpload.date = [NSDate new];
+        metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
+        metadataForUpload.fileName = fileName;
+        metadataForUpload.fileNameView = fileName;
+        metadataForUpload.path = appDelegate.directoryUser;
+        metadataForUpload.session = session;
+        metadataForUpload.sessionSelector = selectorUploadFile;
+        metadataForUpload.status = k_metadataStatusWaitUpload;
         
         // Check il file already exists
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileNameView = %@", appDelegate.activeAccount, directoryID, fileName]];
@@ -1384,8 +1383,9 @@
                 // NO OVERWITE
             }];
             UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                // Send to Upload Queue
-                (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
+                
+                // Add Medtadata for upload
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                 // Start upload now
                 [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
             }];
@@ -1401,8 +1401,8 @@
                 
         } else {
             
-            // Send to Upload Queue
-            (void)[[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet];
+            // Add Medtadata for upload
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             // Start upload now
             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
         }
@@ -3507,7 +3507,7 @@
                         [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileNameView]];
                         
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNameView serverUrl:_serverUrl assetLocalIdentifier:nil path:appDelegate.directoryUser session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+//                            [[CCNetworking sharedNetworking] uploadFile:metadata.fileNameView serverUrl:_serverUrl assetLocalIdentifier:nil path:appDelegate.directoryUser session:k_upload_session taskStatus:k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
                         });
                         
                         timer += 0.1;

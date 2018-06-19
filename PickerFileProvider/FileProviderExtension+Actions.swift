@@ -459,7 +459,6 @@ extension FileProviderExtension {
                     metadataNet.serverUrl = serverUrl
                     metadataNet.session = k_upload_session_extension
                     metadataNet.sessionError = ""
-                    metadataNet.sessionID = ""
                     metadataNet.taskStatus = Int(k_taskStatusResume)
                     
                     _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)

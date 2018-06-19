@@ -250,7 +250,6 @@ extension FileProviderExtension {
             // remove session data
             metadata.assetLocalIdentifier = ""
             metadata.session = ""
-            metadata.sessionID = ""
             metadata.sessionSelector = ""
             metadata.sessionSelectorPost = ""
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
@@ -293,7 +292,6 @@ extension FileProviderExtension {
             
             // remove session data
             metadata.session = ""
-            metadata.sessionID = ""
             metadata.sessionSelector = ""
             metadata.sessionSelectorPost = ""
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
@@ -319,7 +317,7 @@ extension FileProviderExtension {
                 
                 if self.providerData.copyFile(metadataNetQueue!.path + "/" + metadataNetQueue!.fileName, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
                     
-                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, path:providerData.directoryUser, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
+                    //CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, path:providerData.directoryUser, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                     
                 } else {
                     // file not present, delete record Upload Queue
@@ -337,7 +335,6 @@ extension FileProviderExtension {
         
         metadata.assetLocalIdentifier = ""
         metadata.session = k_upload_session_extension
-        metadata.sessionID = metadata.fileID
         metadata.sessionSelector = selectorUploadFile
         metadata.sessionSelectorPost = providerData.selectorPostItemChanged
         
@@ -347,6 +344,6 @@ extension FileProviderExtension {
         
         _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileID)
         
-        CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
+//        CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
 }

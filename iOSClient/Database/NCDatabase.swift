@@ -211,7 +211,6 @@ class tableMetadata: Object {
     @objc dynamic var permissions = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
-    @objc dynamic var sessionID = ""
     @objc dynamic var sessionSelector = ""
     @objc dynamic var sessionSelectorPost = ""
     @objc dynamic var sessionTaskIdentifier: Int = -1
@@ -272,7 +271,6 @@ class tableQueueUpload: Object {
     @objc dynamic var serverUrl = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
-    @objc dynamic var sessionID = ""
     @objc dynamic var sessionTaskIdentifier: Int = -1
     @objc dynamic var size: Double = 0
 }
