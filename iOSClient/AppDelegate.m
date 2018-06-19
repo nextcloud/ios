@@ -816,10 +816,10 @@
     if (self.maintenanceMode)
         return;
     
-    NSInteger total = 0;
-    
-    // Total
-    total = [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:NO] + [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:YES] + [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:NO] + [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:YES];
+    NSInteger counterDownload = [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:NO] + [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:YES];
+    NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (status = %d || status = %d || status = %d)", self.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+
+    NSInteger total = counterDownload + counterUpload;
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
