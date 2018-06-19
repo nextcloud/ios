@@ -855,9 +855,6 @@
                     NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     
-                    // Update Metadata
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-                    
                     [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", path, metadata.fileName] options:NSDataWritingAtomic error:&error];
                     
                 } else {
@@ -868,11 +865,15 @@
                 if (error) {
                     [delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
                 } else {
+                    
+                    // create Metadata for Upload
+                    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
+                    
                     // OOOOOK
                     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
-                        [self e2eEncryptedFile:metadata serverUrl:serverUrl taskStatus:taskStatus];
+                        [self e2eEncryptedFile:metadataForUpload serverUrl:serverUrl taskStatus:taskStatus];
                     } else {
-                        [self uploadURLSessionMetadata:metadata serverUrl:serverUrl taskStatus:taskStatus];
+                        [self uploadURLSessionMetadata:metadataForUpload serverUrl:serverUrl taskStatus:taskStatus];
                     }
                 }
             }];
@@ -908,11 +909,15 @@
                         });
                     } else {
                         dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            // create Metadata for Upload
+                            tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
+                            
                             // OOOOOK
                             if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
-                                [self e2eEncryptedFile:metadata serverUrl:serverUrl taskStatus:taskStatus];
+                                [self e2eEncryptedFile:metadataForUpload serverUrl:serverUrl taskStatus:taskStatus];
                             } else {
-                                [self uploadURLSessionMetadata:metadata serverUrl:serverUrl taskStatus:taskStatus];
+                                [self uploadURLSessionMetadata:metadataForUpload serverUrl:serverUrl taskStatus:taskStatus];
                             }
                         });
                     }
@@ -921,7 +926,10 @@
         }
     } else {
         
-        [self uploadURLSessionMetadata:metadata serverUrl:serverUrl taskStatus:taskStatus];
+        // create Metadata for Upload
+        tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
+        
+        [self uploadURLSessionMetadata:metadataForUpload serverUrl:serverUrl taskStatus:taskStatus];
     }
 }
 
@@ -1142,10 +1150,7 @@
         errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];
         
     } else {
-    
-        // copy ico in new fileID
-//        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, tempFileID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
-        
+            
         // Replace Metadata
         metadata.assetLocalIdentifier = @"";
         metadata.date = date;
@@ -1155,10 +1160,10 @@
         metadata.session = @"";
         metadata.sessionError = @"";
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+        metadata.status = k_metadataStatusNormal;
         
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", tempFileID] clearDateReadDirectoryID:nil];
-
         
 #ifndef EXTENSION
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -1178,6 +1183,8 @@
         
             // rename file fileName -> fileID
             [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileName]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
+            // remove ico B/N
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, tempFileID] error:nil];
         }
     
         // Local

@@ -1099,29 +1099,22 @@
     return returnFileUTI;
 }
 
-+ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNameView:(NSString *)fileNameView directory:(NSString *)directory activeAccount:(NSString *)activeAccount
++ (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata
 {
-    tableMetadata *metadata = [[tableMetadata alloc] init];
-    
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directory, fileName];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.path, metadata.fileName];
     
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
     
-    metadata.account = activeAccount;
     metadata.date = attributes[NSFileModificationDate];
     
     BOOL isDirectory;
     [[NSFileManager defaultManager] fileExistsAtPath:fileNamePath isDirectory:&isDirectory];
     metadata.directory = isDirectory;
     
-    metadata.fileID = fileName;
-    metadata.directoryID = directory;
-    metadata.fileName = fileName;
-    metadata.fileNameView = fileName;
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
     
-    [self insertTypeFileIconName:fileNameView metadata:metadata];
+    [self insertTypeFileIconName:metadata.fileNameView metadata:metadata];
     
     return metadata;
 }

@@ -1364,8 +1364,9 @@
             continue;
         
         // Prepare record metadata
-        tableMetadata *metadataForUpload = [CCUtility insertFileSystemInMetadata:fileName fileNameView:fileName directory:appDelegate.directoryUser activeAccount:appDelegate.activeAccount];
+        tableMetadata *metadataForUpload = [tableMetadata new];
 
+        metadataForUpload.account = appDelegate.activeAccount;
         metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
         metadataForUpload.date = [NSDate new];
         metadataForUpload.directoryID = directoryID;
