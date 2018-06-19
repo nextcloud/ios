@@ -337,9 +337,10 @@
          return;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    NSMutableArray *metadataNetFull = [NSMutableArray new];
+    NSMutableArray *metadataFull = [NSMutableArray new];
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
-
+    NSString *serverUrl, *prevServerUrl, *directoryID;
+    
     // Check Asset : NEW or FULL
     PHFetchResult *newAssetToUpload = [self getCameraRollAssets:tableAccount selector:selector alignPhotoLibrary:NO];
     
@@ -374,7 +375,6 @@
     
     for (PHAsset *asset in newAssetToUpload) {
         
-        NSString *serverUrl;
         NSDate *assetDate = asset.creationDate;
         PHAssetMediaType assetMediaType = asset.mediaType;
         NSString *session;
@@ -395,43 +395,52 @@
         [formatter setDateFormat:@"MM"];
         NSString *monthString = [formatter stringFromDate:assetDate];
         
+        // get directoryID
         if (tableAccount.autoUploadCreateSubfolder)
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         else
             serverUrl = autoUploadPath;
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+        if (![serverUrl isEqualToString:prevServerUrl]) {
+            directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+        }
         
-        metadataNet.assetLocalIdentifier = asset.localIdentifier;
+        tableMetadata *metadataForUpload = [tableMetadata new];
+        
+        metadataForUpload.account = appDelegate.activeAccount;
+        metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
+        
         if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
             // Option 
             if ([[NCBrandOptions sharedInstance] use_storeLocalAutoUploadAll] == true)
-                metadataNet.selectorPost = nil;
+                metadataForUpload.sessionSelectorPost = @"";
             else
-                metadataNet.selectorPost = selectorUploadRemovePhoto;
+                metadataForUpload.sessionSelectorPost = selectorUploadRemovePhoto;
         } else {
-            metadataNet.selectorPost = nil;
+            metadataForUpload.sessionSelectorPost = @"";
         }
         
-        metadataNet.fileName = fileName;
-        metadataNet.path = appDelegate.directoryUser;
-        metadataNet.selector = selector;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.session = session;
-        metadataNet.sessionError = @"";
-        metadataNet.taskStatus = k_taskStatusResume;
-        
-        [metadataNetFull addObject:metadataNet];
+        metadataForUpload.date = [NSDate new];
+        metadataForUpload.directoryID = directoryID;
+        metadataForUpload.fileID = directoryID;
+        metadataForUpload.fileName = fileName;
+        metadataForUpload.fileNameView = fileName;
+        metadataForUpload.path = appDelegate.directoryUser;
+        metadataForUpload.session = session;
+        metadataForUpload.sessionSelector = selector;
+        metadataForUpload.status = k_metadataStatusWaitUpload;
+
+        [metadataFull addObject:metadataForUpload];
         
         // Update database Auto Upload
         if ([selector isEqualToString:selectorUploadAutoUpload])
-            [self addQueueUploadAndPhotoLibrary:metadataNet asset:asset];
+            [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
     }
     
     // Insert all assets (Full) in tableQueueUpload
-    if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataNetFull count] > 0) {
+    if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
     
-        [[NCManageDatabase sharedInstance] addQueueUploadWithMetadatasNet:metadataNetFull];
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataFull serverUrl:serverUrl];
         
         // Update icon badge number
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -445,23 +454,23 @@
     });
 }
 
-- (void)addQueueUploadAndPhotoLibrary:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset
+- (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset
 {
     @synchronized(self) {
         
-        if ([[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet] != nil) {
+        if ([[NCManageDatabase sharedInstance] addMetadata:metadata] != nil) {
         
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileNameView fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
         
         } else {
     
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileNameView fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, asset already present or db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Auto Upload, asset already present or db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
         }
     
         // Add asset in table Photo Library
-        if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload]) {
+        if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
             if (![[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]]) {
-                [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileNameView fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Photo Library, db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+                [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Photo Library, db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
             }
         }
         

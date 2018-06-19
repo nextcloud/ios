@@ -220,10 +220,7 @@
         if (shortcutItem)
             [self handleShortCutItem:shortcutItem];
     }
-    
-    // Verify Lock
-    [self verifyLockOnLoadAutoUpload];
-    
+        
     // Start Timer
     self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
@@ -1413,9 +1410,9 @@
         
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUpload];
-        if (metadataNet) {
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, metadataNet.serverUrl]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (status = %d || status = %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading]];
+        if (metadata) {
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND e2eEncrypted = 1", self.activeAccount, metadata.directoryID]];
             if (directory != nil)
                 return;
         }
@@ -1508,25 +1505,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Process Verify =====
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)verifyLockOnLoadAutoUpload
-{
-    // Test Maintenance
-    if (self.maintenanceMode || self.activeAccount.length == 0)
-        return;
-    
-    NSInteger counterUploadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
-    NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getQueueUploadInLock];
-     
-    if (counterUploadInSession == 0 && [tableMetadatasInLock count] > 0) {
-     
-        // Unlock
-        for (tableMetadata *metadata in tableMetadatasInLock) {
-            if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
-                [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
-        }
-    }
-}
 
 - (void)verifyUploadInErrorOrWait
 {

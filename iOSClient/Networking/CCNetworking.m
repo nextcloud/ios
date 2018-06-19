@@ -1384,6 +1384,7 @@
 
 - (NSInteger)getNumUploadInProgressWWan:(BOOL)WWan
 {
+    /*
     NSMutableArray *recordsInUpload = [NSMutableArray new];
     
     if (WWan) {
@@ -1408,6 +1409,8 @@
     }
     
     return recordsInUpload.count;
+    */
+    return 0;
 }
 
 @end

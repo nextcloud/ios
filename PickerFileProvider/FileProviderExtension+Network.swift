@@ -183,6 +183,11 @@ extension FileProviderExtension {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
 
+        metadata.status = Double(k_metadataStatusUploading)
+        guard let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
+            return
+        }
+        
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             return
         }
@@ -305,20 +310,19 @@ extension FileProviderExtension {
     
     func uploadFileImportDocument() {
         
-        let queueInLock = NCManageDatabase.sharedInstance.getQueueUploadInLock()
-        if queueInLock != nil && queueInLock!.count == 0 {
+        let tableMetadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND session = %@ AND (status = %d || status = %d)", providerData.account, k_upload_session_extension, k_metadataStatusInUpload, k_metadataStatusUploading), sorted: "fileName", ascending: true)
+        
+        if (tableMetadatas == nil || (tableMetadatas!.count < Int(k_maxConcurrentOperationUpload))) {
             
-            let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, session: k_upload_session_extension)
-            if  metadataNetQueue != nil {
+            let metadataForUpload = tableMetadatas![0]
+            
+            if self.providerData.copyFile(metadataForUpload.path + "/" + metadataForUpload.fileName, toPath: providerData.directoryUser + "/" + metadataForUpload.fileName) == nil {
                 
-                if self.providerData.copyFile(metadataNetQueue!.path + "/" + metadataNetQueue!.fileName, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
-                    
-                    //CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, path:providerData.directoryUser, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
-                    
-                } else {
-                    // file not present, delete record Upload Queue
-                    NCManageDatabase.sharedInstance.deleteQueueUpload(path: metadataNetQueue!.path)
-                }
+                CCNetworking.shared().uploadFile(metadataForUpload, path:  providerData.directoryUser, taskStatus: Int(k_taskStatusResume), delegate: self)
+                
+            } else {
+                
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, metadataForUpload.fileID), clearDateReadDirectoryID: metadataForUpload.directoryID)
             }
         }
     }
@@ -333,13 +337,14 @@ extension FileProviderExtension {
         metadata.session = k_upload_session_extension
         metadata.sessionSelector = selectorUploadFile
         metadata.sessionSelectorPost = providerData.selectorPostItemChanged
-        
+        metadata.status = Double(k_metadataStatusWaitUpload)
+
         guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
             return
         }
         
         _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileID)
         
-//        CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
+        CCNetworking.shared().uploadFile(metadataForUpload, path:  providerData.directoryUser, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
 }

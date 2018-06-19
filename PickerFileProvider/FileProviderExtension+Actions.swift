@@ -440,35 +440,27 @@ extension FileProviderExtension {
                 metadata.directoryID = tableDirectory.directoryID
                 metadata.etag = ""
                 metadata.fileID = tableDirectory.directoryID + fileName
-                metadata.size = size
-                metadata.status = Double(k_metadataStatusHide)
                 metadata.fileName = fileName
                 metadata.fileNameView = fileName
+                metadata.path = fileNamePathDirectory
+                metadata.size = size
+                metadata.status = Double(k_metadataStatusHide)
+               
                 CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
-            
+
                 if (size > 0) {
                     
-                    let metadataNet = CCMetadataNet()
-                    
-                    metadataNet.account = self.providerData.account
-                    metadataNet.assetLocalIdentifier = tableDirectory.directoryID + fileName
-                    metadataNet.fileName = fileName
-                    metadataNet.path = fileNamePathDirectory
-                    metadataNet.selector = selectorUploadFile
-                    metadataNet.selectorPost = self.providerData.selectorPostImportDocument
-                    metadataNet.serverUrl = serverUrl
-                    metadataNet.session = k_upload_session_extension
-                    metadataNet.sessionError = ""
-                    metadataNet.taskStatus = Int(k_taskStatusResume)
-                    
-                    _ = NCManageDatabase.sharedInstance.addQueueUpload(metadataNet: metadataNet)
+                    metadata.session = k_upload_session_extension
+                    metadata.sessionSelector = selectorUploadFile
+                    metadata.sessionSelectorPost = self.providerData.selectorPostImportDocument
+                    metadata.status = Double(k_metadataStatusWaitUpload)
                 }
-            
+                
                 guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
-            
+                            
                 let item = FileProviderItem(metadata: metadataDB, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
             
                 completionHandler(item, nil)
