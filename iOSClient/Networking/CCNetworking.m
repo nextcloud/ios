@@ -462,6 +462,7 @@
     if (!serverUrl) return;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
+    NSString *fileID = [directoryID stringByAppendingString:fileName];
     tableMetadata *metadata;
     
     NSInteger errorCode;
@@ -537,11 +538,7 @@
     
     if ([task isKindOfClass:[NSURLSessionUploadTask class]]) {
         
-        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND sessionTaskIdentifier = %i", session.sessionDescription, task.taskIdentifier]];
-        
-        if (!metadata)
-            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID = %@ AND fileName = %@", directoryID, fileName]];
-
+        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", _activeAccount, fileID]];
         if (metadata) {
             
             NSDictionary *fields = [httpResponse allHeaderFields];
@@ -1076,7 +1073,7 @@
 
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:task:serverUrl:)]) {
-            [[self getDelegate:metadata.fileID] uploadStart:metadata.fileID task:uploadTask serverUrl:serverUrl];
+            [[self getDelegate:metadata.fileID] uploadStart:metadata task:uploadTask serverUrl:serverUrl];
         }
     });
     
@@ -1147,28 +1144,27 @@
     } else {
     
         // copy ico in new fileID
-        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, tempFileID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
+//        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, tempFileID] toPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID]];
         
-        // Add new metadata
-        metadata.fileID = fileID;
-        metadata.etag = etag;
+        // Replace Metadata
+        metadata.assetLocalIdentifier = @"";
         metadata.date = date;
         metadata.e2eEncrypted = false;
+        metadata.etag = etag;
+        metadata.fileID = fileID;
+        metadata.session = @"";
+        metadata.sessionError = @"";
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         
-        // Delete old ID_UPLOAD_XXXXX metadata
+        metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", tempFileID] clearDateReadDirectoryID:nil];
-    
+
+        
 #ifndef EXTENSION
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [appDelegate.listProgressMetadata removeObjectForKey:metadata.fileID];
 #endif
         
-        metadata.session = @"";
-        metadata.sessionError = @"";
-        metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
-    
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, metadata.fileID);
 
         if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {

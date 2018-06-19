@@ -77,7 +77,7 @@
 
 @optional  - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
-@optional - (void)uploadStart:(NSString *)fileID task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl;
+@optional - (void)uploadStart:(tableMetadata *)metadata task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl;
 @optional - (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
 @end

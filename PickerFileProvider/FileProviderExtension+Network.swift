@@ -178,15 +178,11 @@ extension FileProviderExtension {
     //  MARK: - Upload
     // --------------------------------------------------------------------------------------------
     
-    func uploadStart(_ fileID: String!, task: URLSessionUploadTask!, serverUrl: String!) {
+    func uploadStart(_ metadata: tableMetadata!, task: URLSessionUploadTask!, serverUrl: String!) {
      
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
 
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID = %@", fileID)) else {
-            return
-        }
-        
         guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
             return
         }

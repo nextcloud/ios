@@ -1511,11 +1511,11 @@
                 
             } else {
                 
-                [[CCNetworking sharedNetworking] uploadFile:metadataForUpload path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
+                metadataForUpload.status = k_metadataStatusInUpload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                 
-//                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
+                [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
             }
-            
             
             counterNewUpload++;
         }
