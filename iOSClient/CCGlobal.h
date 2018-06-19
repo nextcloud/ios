@@ -137,9 +137,9 @@ extern NSString *const flowEndpoint;
 #define k_timerProcessAutoDownloadUpload                5
 #define k_timerUpdateApplicationIconBadgeNumber         3
 
-#define k_maxConcurrentOperation                         10
-#define k_maxConcurrentOperationDownloadUpload           10
-#define k_maxConcurrentOperationDownloadUploadBackground 1
+#define k_maxConcurrentOperation                        10
+#define k_maxConcurrentOperationDownload                10
+#define k_maxConcurrentOperationUpload                  1
 
 // Error
 #define k_CCErrorTaskNil                                -9999

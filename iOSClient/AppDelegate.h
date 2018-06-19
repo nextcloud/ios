@@ -153,7 +153,7 @@
 
 // Task Networking
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
-- (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent;
+- (void)loadAutoDownloadUpload;
 
 // Maintenance Mode
 - (void)maintenanceMode:(BOOL)mode;

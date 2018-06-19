@@ -735,7 +735,7 @@
                     // Add Medtadata for upload
                     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                     // Start upload now
-                    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+                    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
                     
                 } else {
                     
@@ -1188,16 +1188,7 @@
             [self downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selectorPost selectorPost:nil errorMessage:@"" errorCode:0];
         
         // Auto Download Upload
-        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-            
-            // ONLY BACKGROUND
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
-            
-        } else {
-            
-            // ONLY FOREFROUND
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
-        }
+        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
         
     } else {
         
@@ -1297,16 +1288,7 @@
     if (errorCode == 0) {
         
         // Auto Download Upload
-        if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-            
-            // ONLY BACKGROUND
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
-            
-        } else {
-            
-            // ONLY FOREFROUND
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
-        }
+        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
         
     } else {
         
@@ -1406,7 +1388,7 @@
                 // Add Medtadata for upload
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                 // Start upload now
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
             }];
             
             [alertController addAction:cancelAction];
@@ -1423,7 +1405,7 @@
             // Add Medtadata for upload
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             // Start upload now
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
         }
     }
 }
@@ -3542,7 +3524,7 @@
                             // Add Medtadata for upload
                             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                             // Start upload now
-                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
                         });
                         
                         timer += 0.1;

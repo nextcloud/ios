@@ -811,10 +811,7 @@
 - (void)uploadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate
 {
     //delegate
-    if (delegate)
-        [_delegates setObject:delegate forKey:metadata.fileID];
-    else
-        delegate = self.delegate;
+    [_delegates setObject:delegate forKey:metadata.fileID];
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
@@ -1057,15 +1054,7 @@
     
              // *** PLAIN ***
              [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND account = %@", metadata.fileID, _activeAccount]];
-             
-#ifndef EXTENSION
-             // OK remove record on tableQueueUpload but NOT for EXTENSION Upload
-             //[[NCManageDatabase sharedInstance] deleteQueueUploadWithAssetLocalIdentifier:assetLocalIdentifier selector:selector];
-             
-             // Next tableQueueUpload
-//             [(AppDelegate *)[[UIApplication sharedApplication] delegate] performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
-#endif
-             
+                          
              // Manage uploadTask cancel,suspend,resume
              if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
              else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];

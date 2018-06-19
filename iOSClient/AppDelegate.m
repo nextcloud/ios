@@ -1396,17 +1396,17 @@
         
         // ONLY BACKGROUND
         NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
-        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
         
     } else {
         
         // ONLY FOREFROUND
         NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
-        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     }
 }
 
-- (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent
+- (void)loadAutoDownloadUpload
 {
     CCMetadataNet *metadataNet;
     tableMetadata *metadataForUpload;
@@ -1424,17 +1424,12 @@
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
     
-    NSInteger maxConcurrentDownloadUpload = [maxConcurrent integerValue];
-    
     NSInteger counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
-    NSInteger counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
-    NSInteger counterUploadInLock = [[[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND lock = true", self.activeAccount]] count];
-
-    NSInteger counterNewUpload = 0;
-    
+    NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (status = %d || status = %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+  
     // ------------------------- <selector Auto Download> -------------------------
     
-    while (counterDownloadInSession < maxConcurrentDownloadUpload) {
+    while (counterDownloadInSession < k_maxConcurrentOperationDownload) {
         
         metadataNet = [[NCManageDatabase sharedInstance] getQueueDownload];
         if (metadataNet) {
@@ -1446,27 +1441,23 @@
         
         counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
     }
-    
+  
     // ------------------------- <selector Auto Upload> -------------------------
     
-    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
+    if (counterUpload < k_maxConcurrentOperationUpload) {
         
         metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUpload session:nil];
         if (metadataNet) {
             
 //            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
             
-            counterNewUpload++;
         }
-        
-        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
     }
-    
+  
     // ------------------------- <selector Auto Upload All> ----------------------
     
     // Verify num error k_maxErrorAutoUploadAll after STOP (100)
     NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND sessionTaskIdentifier = %i", _activeAccount, selectorUploadAutoUploadAll, k_taskIdentifierError] sorted:nil ascending:NO];
-    
     NSInteger errorCount = [metadatas count];
     
     if (errorCount >= k_maxErrorAutoUploadAll) {
@@ -1477,23 +1468,19 @@
 
     } else {
         
-        if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
+        if (counterUpload < k_maxConcurrentOperationUpload) {
             
             metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUploadAll session:nil];
             if (metadataNet) {
                 
 //                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
-                
-                counterNewUpload++;
             }
-            
-            counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
         }
     }
-    
+  
     // ------------------------- <selector Upload File> -------------------------
     
-    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
+    if (counterUpload < k_maxConcurrentOperationUpload) {
         
         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND status = %d", _activeAccount, k_metadataStatusWaitUpload]];
         if (metadataForUpload) {
@@ -1516,11 +1503,7 @@
                 
                 [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
             }
-            
-            counterNewUpload++;
         }
-        
-        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
     }
     
     // Start Timer
