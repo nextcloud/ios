@@ -1397,6 +1397,8 @@
 
 - (void)loadAutoDownloadUpload
 {
+    return;
+    
     tableMetadata *metadataForUpload, *metadataForDownload;
         
     // E2EE : not in background

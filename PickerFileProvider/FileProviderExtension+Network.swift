@@ -183,7 +183,7 @@ extension FileProviderExtension {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
 
-        guard let metadataUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %d", account, fileID)) else {
+        guard let metadataUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) else {
             return
         }
         
@@ -322,7 +322,7 @@ extension FileProviderExtension {
             
             if self.providerData.copyFile(metadataForUpload.path + "/" + metadataForUpload.fileName, toPath: providerData.directoryUser + "/" + metadataForUpload.fileName) == nil {
                 
-                CCNetworking.shared().uploadFile(metadataForUpload, path:  providerData.directoryUser, taskStatus: Int(k_taskStatusResume), delegate: self)
+                CCNetworking.shared().uploadFile(metadataForUpload, path: providerData.directoryUser, taskStatus: Int(k_taskStatusResume), delegate: self)
                 
             } else {
                 
