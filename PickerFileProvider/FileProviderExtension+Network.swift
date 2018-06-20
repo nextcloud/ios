@@ -183,12 +183,12 @@ extension FileProviderExtension {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
 
-        guard let metadataDownload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %d", account, fileID)) else {
+        guard let metadataUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %d", account, fileID)) else {
             return
         }
         
-        metadataDownload.status = Int(k_metadataStatusUploading)
-        guard let metadata = NCManageDatabase.sharedInstance.addMetadata(metadataDownload) else {
+        metadataUpload.status = Int(k_metadataStatusUploading)
+        guard let metadata = NCManageDatabase.sharedInstance.addMetadata(metadataUpload) else {
             return
         }
         

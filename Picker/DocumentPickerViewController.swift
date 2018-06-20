@@ -330,6 +330,16 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     
     //  MARK: - Download
 
+    func downloadStart(_ fileID: String!, account: String!, task: URLSessionDownloadTask!, serverUrl: String!) {
+        
+        guard let metadataDownload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %d", account, fileID)) else {
+            return
+        }
+        
+        metadataDownload.status = Int(k_metadataStatusUploading)
+        _ = NCManageDatabase.sharedInstance.addMetadata(metadataDownload)
+    }
+    
     func downloadFileSuccessFailure(_ fileName: String!, fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
         hud.hideHud()
@@ -709,8 +719,15 @@ extension DocumentPickerViewController: UITableViewDataSource {
             } catch {
             }
             
-//            CCNetworking.shared().downloadFile(metadata?.fileName, fileID: metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
-
+            metadata!.session = k_download_session_foreground
+            metadata!.sessionError = ""
+            metadata!.sessionSelector = selectorLoadFileView
+            metadata!.sessionSelectorPost = ""
+            metadata!.status = Int(k_metadataStatusWaitDownload)
+            
+            let metadataForDownload = NCManageDatabase.sharedInstance.addMetadata(metadata!)
+            CCNetworking.shared().downloadFile(metadataForDownload!, path: self.directoryUser, taskStatus: Int(k_taskStatusResume), delegate: self)
+            
             hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brandElement)
             
         } else {
