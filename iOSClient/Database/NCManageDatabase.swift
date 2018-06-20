@@ -1808,7 +1808,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableMetadata.self).filter(predicate).first else {
+        guard let result = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "sessionTaskIdentifier", ascending: false).first else {
             return nil
         }
         
