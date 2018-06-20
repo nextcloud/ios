@@ -133,7 +133,6 @@ extern NSString *const flowEndpoint;
 // Metadata : Status
 #define k_metadataStatusNormal                          0
 #define k_metadataStatusHide                            1
-#define k_metadataStatusNULL                            99999
 
 #define k_metadataStatusWaitUpload                      2
 #define k_metadataStatusInUpload                        3

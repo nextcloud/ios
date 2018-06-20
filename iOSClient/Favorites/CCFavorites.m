@@ -299,16 +299,9 @@
 
 - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
 {
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", account, fileID]];
-    if (metadata) {
+    [self reloadDatasource];
         
-        metadata.status = k_metadataStatusDownloading;
-        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-        
-        [self reloadDatasource];
-        
-        [appDelegate updateApplicationIconBadgeNumber];
-    }
+    [appDelegate updateApplicationIconBadgeNumber];
 }
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode

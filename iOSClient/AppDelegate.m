@@ -1324,7 +1324,7 @@
     
     if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop status:k_metadataStatusNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {

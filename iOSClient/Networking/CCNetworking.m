@@ -508,7 +508,7 @@
         [delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:@"" errorCode:0];
         return;
     }
-        
+    
     [self downloaURLSession:metadata serverUrl:serverUrl taskStatus:taskStatus];
 }
 
@@ -542,12 +542,12 @@
 
     } else {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:downloadTask.taskIdentifier status:k_metadataStatusNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
-        
         // Manage uploadTask cancel,suspend,resume
         if (taskStatus == k_taskStatusCancel) [downloadTask cancel];
         else if (taskStatus == k_taskStatusSuspend) [downloadTask suspend];
         else if (taskStatus == k_taskStatusResume) [downloadTask resume];
+        
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:downloadTask.taskIdentifier status:k_metadataStatusDownloading predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
         
         NSLog(@"[LOG] downloadFileSession %@ Task [%lu]", metadata.fileID, (unsigned long)downloadTask.taskIdentifier);
     }
@@ -920,13 +920,13 @@
                         
                     } else {
                     
-                        // *** E2EE ***
-                        [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier status:k_metadataStatusNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND account = %@", metadata.fileID, _activeAccount]];
-                        
                         // Manage uploadTask cancel,suspend,resume
                         if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
                         else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
                         else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+                        
+                        // *** E2EE ***
+                        [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier status:k_metadataStatusUploading predicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND account = %@", metadata.fileID, _activeAccount]];
                         
                         NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
                         
@@ -941,13 +941,13 @@
             
          } else {
     
-             // *** PLAIN ***
-             [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier status:k_metadataStatusNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND account = %@", metadata.fileID, _activeAccount]];
-                          
              // Manage uploadTask cancel,suspend,resume
              if (taskStatus == k_taskStatusCancel) [uploadTask cancel];
              else if (taskStatus == k_taskStatusSuspend) [uploadTask suspend];
              else if (taskStatus == k_taskStatusResume) [uploadTask resume];
+             
+             // *** PLAIN ***
+             [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:uploadTask.taskIdentifier status:k_metadataStatusUploading predicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND account = %@", metadata.fileID, _activeAccount]];
              
              NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
              

@@ -331,13 +331,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
     //  MARK: - Download
 
     func downloadStart(_ fileID: String!, account: String!, task: URLSessionDownloadTask!, serverUrl: String!) {
-        
-        guard let metadataDownload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %d", account, fileID)) else {
-            return
-        }
-        
-        metadataDownload.status = Int(k_metadataStatusUploading)
-        _ = NCManageDatabase.sharedInstance.addMetadata(metadataDownload)
+        print("Start downloading...")
     }
     
     func downloadFileSuccessFailure(_ fileName: String!, fileID: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {

@@ -1716,10 +1716,7 @@ class NCManageDatabase: NSObject {
         }
         
         result.sessionTaskIdentifier = sessionTaskIdentifier
-        
-        if status != Int(k_metadataStatusNULL) {
-            result.status = status
-        }
+        result.status = status
         
         let directoryID : String? = result.directoryID
         
