@@ -162,7 +162,7 @@ class NCText: UIViewController, UITextViewDelegate {
                         metadata.path = self.appDelegate.directoryUser!
                         metadata.session = k_upload_session
                         metadata.sessionSelector = selectorUploadFile
-                        metadata.status = Double(k_metadataStatusWaitUpload)
+                        metadata.status = Int(k_metadataStatusWaitUpload)
 
                         _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
                         self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)

@@ -646,7 +646,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
                 metadataForUpload.path = self.appDelegate.directoryUser!
                 metadataForUpload.session = k_upload_session
                 metadataForUpload.sessionSelector = selectorUploadFile
-                metadataForUpload.status = Double(k_metadataStatusWaitUpload)
+                metadataForUpload.status = Int(k_metadataStatusWaitUpload)
                 
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
                 self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)

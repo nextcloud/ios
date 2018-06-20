@@ -239,6 +239,7 @@ extern NSString *const flowEndpoint;
 #define k_metadataStatusWaitDownload                    5
 #define k_metadataStatusInDownload                      6
 #define k_metadataStatusDownloading                     7
+#define k_metadataStatusNULL                            99999
 
 // TabBar button
 #define k_tabBarApplicationIndexFile                    0

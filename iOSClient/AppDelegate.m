@@ -1330,7 +1330,7 @@
     
     if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop status:k_metadataStatusNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {
@@ -1343,7 +1343,7 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
 //        [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
     }
@@ -1358,7 +1358,7 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     }
     
     // remove ChangeTask (fileID) from the list

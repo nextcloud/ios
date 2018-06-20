@@ -1686,7 +1686,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    @objc func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, predicate: NSPredicate) {
+    @objc func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, status: Int, predicate: NSPredicate) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -1715,6 +1715,9 @@ class NCManageDatabase: NSObject {
         }
         if sessionTaskIdentifier != Int(k_taskIdentifierNULL) {
             result.sessionTaskIdentifier = sessionTaskIdentifier
+        }
+        if status != Int(k_metadataStatusNULL) {
+            result.status = status
         }
         
         let directoryID : String? = result.directoryID
@@ -1796,38 +1799,6 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setMetadataStatus(fileID: String, status: Double) {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-                
-        let realm = try! Realm()
-
-        realm.beginWrite()
-        
-        guard let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
-            realm.cancelWrite()
-            return
-        }
-        
-        result.status = status
-        
-        let directoryID : String? = result.directoryID
-        
-        do {
-            try realm.commitWrite()
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return
-        }
-        
-        if let directoryID = directoryID {
-            // Update Date Read Directory
-            self.setDateReadDirectory(directoryID: directoryID)
-        }
-    }
-
     @objc func getMetadata(predicate: NSPredicate) -> tableMetadata? {
         
         guard self.getAccountActive() != nil else {

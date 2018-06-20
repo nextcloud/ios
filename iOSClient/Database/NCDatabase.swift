@@ -215,7 +215,7 @@ class tableMetadata: Object {
     @objc dynamic var sessionSelectorPost = ""
     @objc dynamic var sessionTaskIdentifier: Int = -1
     @objc dynamic var size: Double = 0
-    @objc dynamic var status: Double = 0
+    @objc dynamic var status: Int = 0
     @objc dynamic var thumbnailExists: Bool = false
     @objc dynamic var typeFile = ""
     

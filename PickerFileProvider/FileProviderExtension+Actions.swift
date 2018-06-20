@@ -440,7 +440,7 @@ extension FileProviderExtension {
                 metadata.fileNameView = fileName
                 metadata.path = fileNamePathDirectory
                 metadata.size = size
-                metadata.status = Double(k_metadataStatusHide)
+                metadata.status = Int(k_metadataStatusHide)
                
                 CCUtility.insertTypeFileIconName(fileName, metadata: metadata)
 
@@ -449,7 +449,7 @@ extension FileProviderExtension {
                     metadata.session = k_upload_session_extension
                     metadata.sessionSelector = selectorUploadFile
                     metadata.sessionSelectorPost = self.providerData.selectorPostImportDocument
-                    metadata.status = Double(k_metadataStatusWaitUpload)
+                    metadata.status = Int(k_metadataStatusWaitUpload)
                 }
                 
                 guard let metadataDB = NCManageDatabase.sharedInstance.addMetadata(metadata) else {

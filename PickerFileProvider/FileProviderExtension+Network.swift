@@ -187,7 +187,7 @@ extension FileProviderExtension {
             return
         }
         
-        metadataDownload.status = Double(k_metadataStatusUploading)
+        metadataDownload.status = Int(k_metadataStatusUploading)
         guard let metadata = NCManageDatabase.sharedInstance.addMetadata(metadataDownload) else {
             return
         }
@@ -341,7 +341,7 @@ extension FileProviderExtension {
         metadata.session = k_upload_session_extension
         metadata.sessionSelector = selectorUploadFile
         metadata.sessionSelectorPost = providerData.selectorPostItemChanged
-        metadata.status = Double(k_metadataStatusWaitUpload)
+        metadata.status = Int(k_metadataStatusWaitUpload)
 
         guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
             return
