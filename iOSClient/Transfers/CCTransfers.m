@@ -193,22 +193,6 @@
     }
 }
 
-- (void)reloadAllTask
-{
-    if (appDelegate.activeMain == nil)
-        return;
-    
-    for (NSString *key in _sectionDataSource.allRecordsDataSource.allKeys) {
-        
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:key];
-        
-        if ([metadata.session containsString:@"upload"] && (metadata.sessionTaskIdentifier != k_taskIdentifierStop))
-            continue;
-        
-        [appDelegate.activeMain reloadTaskButton:metadata];
-    }
-}
-
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
 {
     if (appDelegate.activeMain == nil)
