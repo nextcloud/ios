@@ -726,7 +726,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             metadata!.status = Int(k_metadataStatusWaitDownload)
             
             let metadataForDownload = NCManageDatabase.sharedInstance.addMetadata(metadata!)
-            CCNetworking.shared().downloadFile(metadataForDownload!, path: self.directoryUser, taskStatus: Int(k_taskStatusResume), delegate: self)
+            CCNetworking.shared().downloadFile(metadataForDownload!, taskStatus: Int(k_taskStatusResume), delegate: self)
             
             hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brandElement)
             

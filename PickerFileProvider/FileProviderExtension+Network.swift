@@ -323,7 +323,7 @@ extension FileProviderExtension {
             
             if self.providerData.copyFile(metadataForUpload.path + "/" + metadataForUpload.fileName, toPath: providerData.directoryUser + "/" + metadataForUpload.fileName) == nil {
                 
-                CCNetworking.shared().uploadFile(metadataForUpload, path: providerData.directoryUser, taskStatus: Int(k_taskStatusResume), delegate: self)
+                CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
                 
             } else {
                 
@@ -351,6 +351,6 @@ extension FileProviderExtension {
         
         _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileName)
         
-        CCNetworking.shared().uploadFile(metadataForUpload, path:  providerData.directoryUser, taskStatus: Int(k_taskStatusResume), delegate: self)
+        CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
 }

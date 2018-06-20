@@ -57,10 +57,10 @@
 - (void)invalidateAndCancelAllSession;
 
 // Download
-- (void)downloadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 
 // Upload
-- (void)uploadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 
 // Utility
 - (NSInteger)getNumDownloadInProgressWWan:(BOOL)WWan;

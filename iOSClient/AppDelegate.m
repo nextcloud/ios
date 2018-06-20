@@ -1333,7 +1333,7 @@
         if ([metadata.session isEqualToString:k_upload_session_wwan])
             metadata.session = k_upload_session;
         
-        [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:self.activeMain];
+        [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:self.activeMain];
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
         
@@ -1425,7 +1425,7 @@
             metadataForDownload.status = k_metadataStatusInDownload;
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
             
-            [[CCNetworking sharedNetworking] downloadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
+            [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
         }  
     }
   
@@ -1440,7 +1440,7 @@
             metadataForUpload.status = k_metadataStatusInUpload;
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
-            [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
+            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
         }
     }
   
@@ -1466,7 +1466,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                 
-                [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
+                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
             }
         }
     }
@@ -1490,7 +1490,7 @@
             metadataForUpload.status = k_metadataStatusInUpload;
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
 
-            [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
+            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
         }
     }
     

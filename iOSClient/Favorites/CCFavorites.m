@@ -745,7 +745,7 @@
                 
                 // Add Metadata for Download
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:_metadata];
-                [[CCNetworking sharedNetworking] downloadFile:metadata path:appDelegate.directoryUser taskStatus:k_taskStatusResume delegate:self];
+                [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:self];
             }
         }
     }

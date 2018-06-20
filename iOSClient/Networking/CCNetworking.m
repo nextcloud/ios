@@ -491,7 +491,7 @@
 #pragma mark =====  Download =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 {
     // add delegate
     [_delegates setObject:delegate forKey:metadata.fileID];
@@ -697,7 +697,7 @@
 #pragma mark =====  Upload =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate
+- (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate
 {
     //delegate
     [_delegates setObject:delegate forKey:metadata.fileID];
@@ -741,11 +741,11 @@
                     NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     
-                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", path, metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileName] options:NSDataWritingAtomic error:&error];
                     
                 } else {
                     
-                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", path, metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileName] options:NSDataWritingAtomic error:&error];
                 }
                 
                 if (error) {
@@ -783,7 +783,7 @@
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
                     
-                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[NSString stringWithFormat:@"%@/%@", path, metadata.fileName]];
+                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileName]];
                     NSError *error = nil;
                     
                     [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];

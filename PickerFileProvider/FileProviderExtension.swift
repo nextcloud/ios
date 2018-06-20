@@ -436,7 +436,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 _ = providerData.copyFile(url.path, toPath: destinationDirectoryUser)
 
-                CCNetworking.shared().uploadFile(metadata!, path: directoryUser!, taskStatus: Int(k_taskStatusResume), delegate: self)
+                CCNetworking.shared().uploadFile(metadata!, taskStatus: Int(k_taskStatusResume), delegate: self)
             }
 
             self.stopProvidingItem(at: url)
