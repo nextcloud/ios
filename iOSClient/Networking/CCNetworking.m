@@ -489,11 +489,7 @@
     
     if ([task isKindOfClass:[NSURLSessionDownloadTask class]]) {
         
-        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND sessionTaskIdentifier = %i",session.sessionDescription, task.taskIdentifier]];
-        
-        if (!metadata)
-            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID = %@ AND fileName = %@", directoryID, fileName, fileName]];
-        
+        metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID = %@ AND fileName = %@", directoryID, fileName]];
         if (metadata) {
             
             NSString *etag = metadata.etag;
@@ -677,14 +673,17 @@
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
-    NSURLRequest *url = [downloadTask currentRequest];
-    NSString *fileName = [[url.URL absoluteString] lastPathComponent];
-    NSString *serverUrl = [self getServerUrlFromUrl:[url.URL absoluteString]];
+    NSString *url = [[[downloadTask currentRequest].URL absoluteString] stringByRemovingPercentEncoding];
+    if (!url)
+        return;
+
+    NSString *fileName = [url lastPathComponent];
+    NSString *serverUrl = [self getServerUrlFromUrl:url];
     if (!serverUrl) return;
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (!directoryID) return;
     
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"session = %@ AND sessionTaskIdentifier = %i",session.sessionDescription, downloadTask.taskIdentifier]];
-    
-    // If the record metadata do not exists, exit
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID = %@ AND fileName = %@", directoryID, fileName]];    
     if (!metadata) {
         
         [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:@"" action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serious error internal download : metadata not found %@", url] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
