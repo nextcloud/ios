@@ -222,6 +222,7 @@ extension FileProviderExtension {
             return
         }
         
+        // OK
         if errorCode == 0 {
             
             // importDocument
@@ -267,11 +268,10 @@ extension FileProviderExtension {
             uploadFileImportDocument()
             
         } else {
+        // Error
             
             // importDocument
             if (selectorPost == providerData.selectorPostImportDocument) {
-                
-//                NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + providerData.timeReupload) {
                     
@@ -297,6 +297,7 @@ extension FileProviderExtension {
             metadata.session = ""
             metadata.sessionSelector = ""
             metadata.sessionSelectorPost = ""
+            metadata.status = Int(k_metadataStatusWaitUpload)
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
             let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
@@ -337,6 +338,7 @@ extension FileProviderExtension {
             return
         }
         
+        metadata.path = providerData.directoryUser
         metadata.assetLocalIdentifier = ""
         metadata.session = k_upload_session_extension
         metadata.sessionSelector = selectorUploadFile
@@ -347,7 +349,7 @@ extension FileProviderExtension {
             return
         }
         
-        _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileID)
+        _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileName)
         
         CCNetworking.shared().uploadFile(metadataForUpload, path:  providerData.directoryUser, taskStatus: Int(k_taskStatusResume), delegate: self)
     }

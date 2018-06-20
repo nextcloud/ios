@@ -1111,7 +1111,6 @@
     } else {
             
         // Replace Metadata
-        metadata.assetLocalIdentifier = @"";
         metadata.date = date;
         metadata.e2eEncrypted = false;
         metadata.etag = etag;
@@ -1122,7 +1121,8 @@
         metadata.status = k_metadataStatusNormal;
         
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", tempFileID] clearDateReadDirectoryID:nil];
+        if (![fileID isEqualToString:tempFileID])
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", tempFileID] clearDateReadDirectoryID:nil];
         
 #ifndef EXTENSION
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
