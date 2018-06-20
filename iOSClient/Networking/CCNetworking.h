@@ -97,8 +97,6 @@
 @property (nonatomic, strong) NSString *directoryID;
 @property (nonatomic, strong) NSString *directoryIDTo;
 @property (nonatomic, strong) NSString *encryptedMetadata;
-@property NSInteger errorCode;
-@property NSInteger errorRetry;
 @property (nonatomic, strong) NSString *etag;
 @property (nonatomic, strong) NSString *expirationTime;
 @property (nonatomic, strong) NSString *fileID;
@@ -115,15 +113,10 @@
 @property (nonatomic, strong) NSString *serverUrlTo;
 @property (nonatomic, strong) NSString *selector;
 @property (nonatomic, strong) NSString *selectorPost;
-@property (nonatomic, strong) NSString *session;
-@property (nonatomic, strong) NSString *sessionError;
-@property NSInteger sessionTaskIdentifier;
 @property (nonatomic, strong) NSString *share;
 @property NSInteger shareeType;
 @property NSInteger sharePermission;
 @property double size;
-@property (nonatomic, strong) NSURLSessionTask *task;
-@property NSInteger taskStatus;
 
 - (id)initWithAccount:(NSString *)withAccount;
 - (id)copyWithZone:(NSZone *)zone;

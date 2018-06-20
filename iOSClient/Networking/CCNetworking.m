@@ -1316,7 +1316,6 @@
     self = [super init];
     
     self.priority = NSOperationQueuePriorityNormal;
-    self.sessionTaskIdentifier = k_taskIdentifierDone;
     
     return self;
 }
@@ -1348,8 +1347,6 @@
     [metadataNet setDirectoryID: self.directoryID];
     [metadataNet setDirectoryIDTo: self.directoryIDTo];
     [metadataNet setEncryptedMetadata: self.encryptedMetadata];
-    [metadataNet setErrorCode: self.errorCode];
-    [metadataNet setErrorRetry: self.errorRetry];
     [metadataNet setEtag:self.etag];
     [metadataNet setExpirationTime: self.expirationTime];
     [metadataNet setFileID: self.fileID];
@@ -1366,15 +1363,10 @@
     [metadataNet setServerUrlTo: self.serverUrlTo];
     [metadataNet setSelector: self.selector];
     [metadataNet setSelectorPost: self.selectorPost];
-    [metadataNet setSession: self.session];
-    [metadataNet setSessionError: self.sessionError];
-    [metadataNet setSessionTaskIdentifier: self.sessionTaskIdentifier];;
     [metadataNet setShare: self.share];
     [metadataNet setShareeType: self.shareeType];
     [metadataNet setSharePermission: self.sharePermission];
     [metadataNet setSize: self.size];
-    [metadataNet setTask: self.task];
-    [metadataNet setTaskStatus: self.taskStatus];
     
     return metadataNet;
 }
