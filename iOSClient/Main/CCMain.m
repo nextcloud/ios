@@ -4891,7 +4891,7 @@
         
         // se non c'è una preview in bianconero metti l'immagine di default
         if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]] == NO)
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploaddisable"] color:[NCBrandColor sharedInstance].brandElement];
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] color:[NCBrandColor sharedInstance].brandElement];
         
         cell.labelTitle.enabled = NO;
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
