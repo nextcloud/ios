@@ -297,6 +297,20 @@
 #pragma mark ==== Download <Delegate> ====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
+{
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", account, fileID]];
+    if (metadata) {
+        
+        metadata.status = k_metadataStatusDownloading;
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        
+        [self reloadDatasource];
+        
+        [appDelegate updateApplicationIconBadgeNumber];
+    }
+}
+
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     if (errorCode == 0) {
@@ -724,7 +738,15 @@
                             
             } else {
             
-//                [[CCNetworking sharedNetworking] downloadFile:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+                _metadata.session = k_download_session;
+                _metadata.sessionError = @"";
+                _metadata.sessionSelector = selectorLoadFileView;
+                _metadata.sessionSelectorPost = @"";
+                _metadata.status = k_metadataStatusWaitDownload;
+                
+                // Add Metadata for Download
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:_metadata];
+                [[CCNetworking sharedNetworking] downloadFile:metadata path:appDelegate.directoryUser taskStatus:k_taskStatusResume delegate:self];
             }
         }
     }

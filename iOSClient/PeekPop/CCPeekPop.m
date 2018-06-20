@@ -80,7 +80,16 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         
         if (serverUrl) {
-//            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self.delegate];
+            
+            _metadata.session = k_download_session;
+            _metadata.sessionError = @"";
+            _metadata.sessionSelector = selectorOpenIn;
+            _metadata.sessionSelectorPost = @"";
+            _metadata.status = k_metadataStatusWaitDownload;
+            
+            // Add Metadata for Download
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:_metadata];
+            [[CCNetworking sharedNetworking] downloadFile:metadata path:appDelegate.directoryUser taskStatus:k_taskStatusResume delegate:self];
         }
     }];
     

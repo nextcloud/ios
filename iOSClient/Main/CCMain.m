@@ -3499,7 +3499,16 @@
             NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
 
             if (serverUrl) {
-//                [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorLoadCopy selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+                
+                metadata.session = k_download_session;
+                metadata.sessionError = @"";
+                metadata.sessionSelector = selectorLoadCopy;
+                metadata.sessionSelectorPost = @"";
+                metadata.status = k_metadataStatusWaitDownload;
+                
+                // Add Metadata for Download
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
             }
         }
     }
