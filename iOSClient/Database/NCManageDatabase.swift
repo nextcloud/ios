@@ -2034,7 +2034,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                let results = realm.objects(tableMetadata.self).filter("account = %@ AND status = %d", tableAccount.account, k_metadataStatusWaitDownload)
+                let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", tableAccount.account, k_metadataStatusWaitDownload, k_metadataStatusDownloadError)
                 
                 for result in results {
                     result.session = ""
@@ -2061,7 +2061,7 @@ class NCManageDatabase: NSObject {
         do {
             try realm.write {
                 
-                let results = realm.objects(tableMetadata.self).filter("account = %@ AND status = %d", tableAccount.account, k_metadataStatusWaitUpload)
+                let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", tableAccount.account, k_metadataStatusWaitUpload, k_metadataStatusUploadError)
                 
                 realm.delete(results)
             }
