@@ -1069,14 +1069,18 @@
 #pragma mark ==== Download ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadStart:(tableMetadata *)metadata task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
+- (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
 {
-    metadata.status = k_metadataStatusDownloading;
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", account, fileID]];
+    if (metadata) {
     
-    [self reloadDatasource: serverUrl];
+        metadata.status = k_metadataStatusDownloading;
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
-    [appDelegate updateApplicationIconBadgeNumber];
+        [self reloadDatasource: serverUrl];
+    
+        [appDelegate updateApplicationIconBadgeNumber];
+    }
 }
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
@@ -1287,14 +1291,18 @@
 #pragma mark ===== Upload new Photos/Videos =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)uploadStart:(tableMetadata *)metadata task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl
+- (void)uploadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl
 {
-    metadata.status = k_metadataStatusUploading;
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND fileID = %@", account, fileID]];
+    if (metadata) {
+        
+        metadata.status = k_metadataStatusUploading;
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
-    [self reloadDatasource: serverUrl];
+        [self reloadDatasource: serverUrl];
     
-    [appDelegate updateApplicationIconBadgeNumber];
+        [appDelegate updateApplicationIconBadgeNumber];
+    }
 }
 
 - (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode

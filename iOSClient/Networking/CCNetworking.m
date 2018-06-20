@@ -646,8 +646,8 @@
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(downloadStart:task:serverUrl:)]) {
-            [[self getDelegate:metadata.fileID] downloadStart:metadata task:downloadTask serverUrl:serverUrl];
+        if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(downloadStart:account:task:serverUrl:)]) {
+            [[self getDelegate:metadata.fileID] downloadStart:metadata.fileID account:metadata.account task:downloadTask serverUrl:serverUrl];
         }
     });
 }
@@ -1021,8 +1021,8 @@
                         NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
                         
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:task:serverUrl:)]) {
-                                [[self getDelegate:metadata.fileID] uploadStart:metadata task:uploadTask serverUrl:serverUrl];
+                            if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
+                                [[self getDelegate:metadata.fileID] uploadStart:metadata.fileID account:metadata.account task:uploadTask serverUrl:serverUrl];
                             }
                         });
                     }
@@ -1042,8 +1042,8 @@
              NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
              
              dispatch_async(dispatch_get_main_queue(), ^{
-                 if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:task:serverUrl:)]) {
-                     [[self getDelegate:metadata.fileID] uploadStart:metadata task:uploadTask serverUrl:serverUrl];
+                 if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
+                     [[self getDelegate:metadata.fileID] uploadStart:metadata.fileID account:metadata.account task:uploadTask serverUrl:serverUrl];
                  }
              });
          }
