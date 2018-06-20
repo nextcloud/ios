@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 24,
+            schemaVersion: 25,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -74,6 +74,7 @@ class NCManageDatabase: NSObject {
             // 22 : Version 2.21.0.9
             // 23 : Version 2.21.0.15
             // 24 : Version 2.21.2.5
+            // 25 : Version 2.21.3.1
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
