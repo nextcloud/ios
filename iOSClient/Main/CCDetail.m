@@ -657,9 +657,18 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
     if (serverUrl) {
+        
         [_hud visibleHudTitle:@"" mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
-
-//        [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorLoadViewImage selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:appDelegate.activeMain];    
+        
+        metadata.session = k_download_session;
+        metadata.sessionError = @"";
+        metadata.sessionSelector = selectorLoadViewImage;
+        metadata.sessionSelectorPost = @"";
+        metadata.status = k_metadataStatusWaitDownload;
+        
+        // Add Metadata for Download
+        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     }
 }
 
