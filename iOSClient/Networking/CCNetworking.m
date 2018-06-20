@@ -589,15 +589,6 @@
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
 
-    // it's in download
-    tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session CONTAINS 'download' AND sessionTaskIdentifier >= 0", metadata.fileID]];
-        
-    if (result) {
-            
-        [delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:@"File already in download" errorCode:k_CCErrorFileAlreadyInDownload];
-        return;
-    }
-        
     // File exists ?
     tableLocalFile *localfile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
         
@@ -659,14 +650,6 @@
             [[self getDelegate:metadata.fileID] downloadStart:metadata task:downloadTask serverUrl:serverUrl];
         }
     });
-    
-    // Refresh datasource if is not a Plist
-    if ([_delegate respondsToSelector:@selector(reloadDatasource:)])
-        [_delegate reloadDatasource:serverUrl];
-        
-#ifndef EXTENSION
-        [(AppDelegate *)[[UIApplication sharedApplication] delegate] updateApplicationIconBadgeNumber];
-#endif
 }
 
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite
@@ -765,6 +748,7 @@
         metadata.sessionError = @"";
         metadata.sessionSelector = @"";
         metadata.sessionSelectorPost = @"";
+        metadata.status = k_metadataStatusNormal;
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
             
         metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];

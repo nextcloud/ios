@@ -1069,6 +1069,16 @@
 #pragma mark ==== Download ====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)downloadStart:(tableMetadata *)metadata task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
+{
+    metadata.status = k_metadataStatusDownloading;
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+    
+    [self reloadDatasource: serverUrl];
+    
+    [appDelegate updateApplicationIconBadgeNumber];
+}
+
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
@@ -1279,7 +1289,6 @@
 
 - (void)uploadStart:(tableMetadata *)metadata task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl
 {
-    // Upload Start
     metadata.status = k_metadataStatusUploading;
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
@@ -5010,8 +5019,16 @@
                 
             } else {
             
-//                [[CCNetworking sharedNetworking] downloadFile:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
-            
+                _metadata.session = k_download_session;
+                _metadata.sessionError = @"";
+                _metadata.sessionSelector = selectorLoadFileView;
+                _metadata.sessionSelectorPost = @"";
+                _metadata.status = k_metadataStatusWaitDownload;
+                
+                // Add Metadata for Download
+                (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
+                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                            
                 NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
                 if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
             }

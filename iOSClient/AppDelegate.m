@@ -273,7 +273,7 @@
         return;
     
     // verify Upload
-    [self verifyUploadInErrorOrWait];
+//    [self verifyUploadInErrorOrWait];
     
     // middelware ping
     if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
@@ -813,7 +813,7 @@
     if (self.maintenanceMode)
         return;
     
-    NSInteger counterDownload = [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:NO] + [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:YES];
+    NSInteger counterDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (status = %d || status = %d || status = %d)", self.activeAccount, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:@"fileName" ascending:true] count];
     NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (status = %d || status = %d || status = %d)", self.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
 
     NSInteger total = counterDownload + counterUpload;
@@ -1425,7 +1425,7 @@
   
     // ------------------------- <selector Auto Download> -------------------------
     
-    while (counterDownload < k_maxConcurrentOperationDownload) {
+    if (counterDownload < k_maxConcurrentOperationDownload) {
         
         metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND status = %d", _activeAccount, k_metadataStatusWaitDownload]];
         if (metadataForDownload) {
@@ -1434,7 +1434,7 @@
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
             
             [[CCNetworking sharedNetworking] downloadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
-        }
+        }  
     }
   
     // ------------------------- <selector Auto Upload> -------------------------
