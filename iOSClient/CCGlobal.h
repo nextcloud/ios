@@ -124,7 +124,6 @@ extern NSString *const flowEndpoint;
 // TaskIdentifier
 #define k_taskIdentifierDone                            -1
 #define k_taskIdentifierStop                            -2
-#define k_taskIdentifierWaitStart                       -3
 #define k_taskIdentifierError                           -99999
 #define k_taskIdentifierNULL                            99999
 
@@ -133,7 +132,17 @@ extern NSString *const flowEndpoint;
 #define k_taskStatusResume                              -2
 #define k_taskStatusSuspend                             -3
 
-#define k_timerVerifySession                            10
+// Metadata : Status
+#define k_metadataStatusNormal                          0
+#define k_metadataStatusHide                            1
+#define k_metadataStatusWaitUpload                      2
+#define k_metadataStatusInUpload                        3
+#define k_metadataStatusUploading                       4
+#define k_metadataStatusWaitDownload                    5
+#define k_metadataStatusInDownload                      6
+#define k_metadataStatusDownloading                     7
+#define k_metadataStatusNULL                            99999
+
 #define k_timerProcessAutoDownloadUpload                5
 #define k_timerUpdateApplicationIconBadgeNumber         3
 
@@ -229,17 +238,6 @@ extern NSString *const flowEndpoint;
 #define k_metadataTypeFile_image                        @"image"
 #define k_metadataTypeFile_unknown                      @"unknow"
 #define k_metadataTypeFile_video                        @"video"
-
-// Metadata : Status
-#define k_metadataStatusNormal                          0
-#define k_metadataStatusHide                            1
-#define k_metadataStatusWaitUpload                      2
-#define k_metadataStatusInUpload                        3
-#define k_metadataStatusUploading                       4
-#define k_metadataStatusWaitDownload                    5
-#define k_metadataStatusInDownload                      6
-#define k_metadataStatusDownloading                     7
-#define k_metadataStatusNULL                            99999
 
 // TabBar button
 #define k_tabBarApplicationIndexFile                    0

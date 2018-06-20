@@ -426,7 +426,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 // Prepare for send Metadata
                 metadata!.session = k_upload_session
-                metadata!.sessionTaskIdentifier = Int(k_taskIdentifierWaitStart)
                 _ = NCManageDatabase.sharedInstance.updateMetadata(metadata!)
                 
             } else {

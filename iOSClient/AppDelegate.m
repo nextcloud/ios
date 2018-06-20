@@ -1333,13 +1333,11 @@
         if ([metadata.session isEqualToString:k_upload_session_wwan] || [metadata.session isEqualToString:k_upload_session_extension])
             metadata.session = k_upload_session;
         
-//        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume delegate:nil];
+        [[CCNetworking sharedNetworking] uploadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:self.activeMain];
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-        
-//        [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusWaitDownload predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
         
