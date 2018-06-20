@@ -371,16 +371,10 @@
 // MULTI THREAD
 - (void)SynchronizeMetadatas:(NSArray *)metadatas withDownload:(BOOL)withDownload
 {
-    NSString *oldDirectoryID, *serverUrl, *fileID;
+    NSString *oldDirectoryID, *serverUrl;
     NSMutableArray *metadataToAdd = [NSMutableArray new];
-    NSMutableArray *metadataNetToAdd = [NSMutableArray new];
 
     for (tableMetadata *metadata in metadatas) {
-        
-        NSString *selector, *selectorPost;
-        CCMetadataNet *metadataNet = [CCMetadataNet new];
-        
-        selector = selectorDownloadSynchronize;
         
         // Clear date for dorce refresh view
         if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
@@ -391,19 +385,17 @@
             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
         }
         
-        fileID = metadata.fileID;
+        metadata.session = k_download_session;
+        metadata.sessionError = @"";
+        metadata.sessionSelector = selectorDownloadSynchronize;
+        metadata.sessionSelectorPost = @"";
+        metadata.status = k_metadataStatusWaitDownload;
+        
         [metadataToAdd addObject:metadata];
-       
-        metadataNet.fileID = fileID;
-        metadataNet.selector = selector;
-        metadataNet.selectorPost = selectorPost;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.session = k_download_session;
-        [metadataNetToAdd addObject:metadataNet];
     }
     
     (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd serverUrl:nil];
-//    [[NCManageDatabase sharedInstance] addQueueDownloadWithMetadatasNet:metadataNetToAdd];
+    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [appDelegate.activeMain reloadDatasource:serverUrl];
