@@ -242,20 +242,6 @@ class tablePhotoLibrary: Object {
     }
 }
 
-class tableQueueDownload: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var fileID = ""
-    @objc dynamic var selector = ""
-    @objc dynamic var selectorPost = ""
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var session = ""
-
-    override static func primaryKey() -> String {
-        return "fileID"
-    }
-}
-
 class tableShare: Object {
     
     @objc dynamic var account = ""

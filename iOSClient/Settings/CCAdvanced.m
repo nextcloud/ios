@@ -353,9 +353,7 @@
     [appDelegate maintenanceMode:YES];
     
     [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
-    
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:appDelegate.activeAccount];
-    
+        
     [appDelegate.netQueue cancelAllOperations];
     [[CCNetworking sharedNetworking] settingSessionsDownload:YES upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
     

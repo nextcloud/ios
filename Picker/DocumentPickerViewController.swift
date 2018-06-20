@@ -709,7 +709,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
             } catch {
             }
             
-            CCNetworking.shared().downloadFile(metadata?.fileName, fileID: metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
+//            CCNetworking.shared().downloadFile(metadata?.fileName, fileID: metadata?.fileID, serverUrl: self.serverUrl, selector: selectorLoadFileView, selectorPost: nil, session: k_download_session_foreground, taskStatus: Int(k_taskStatusResume), delegate: self)
 
             hud.visibleHudTitle(NSLocalizedString("_loading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brandElement)
             

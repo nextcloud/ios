@@ -403,7 +403,7 @@
     }
     
     (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd serverUrl:nil];
-    [[NCManageDatabase sharedInstance] addQueueDownloadWithMetadatasNet:metadataNetToAdd];
+//    [[NCManageDatabase sharedInstance] addQueueDownloadWithMetadatasNet:metadataNetToAdd];
     
     dispatch_async(dispatch_get_main_queue(), ^{
         [appDelegate.activeMain reloadDatasource:serverUrl];

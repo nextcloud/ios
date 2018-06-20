@@ -1345,7 +1345,7 @@
         
         [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
-        [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
+//        [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
     }
     else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
         
@@ -1405,8 +1405,7 @@
 
 - (void)loadAutoDownloadUpload
 {
-    CCMetadataNet *metadataNet;
-    tableMetadata *metadataForUpload;
+    tableMetadata *metadataForUpload, *metadataForDownload;
         
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
@@ -1421,22 +1420,21 @@
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
     
-    NSInteger counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+    NSInteger counterDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (status = %d || status = %d)", self.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:@"fileName" ascending:true] count];
     NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (status = %d || status = %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
   
     // ------------------------- <selector Auto Download> -------------------------
     
-    while (counterDownloadInSession < k_maxConcurrentOperationDownload) {
+    while (counterDownload < k_maxConcurrentOperationDownload) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueDownload];
-        if (metadataNet) {
+        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND status = %d", _activeAccount, k_metadataStatusWaitDownload]];
+        if (metadataForDownload) {
             
-            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileName fileID:metadataNet.fileID serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:self.activeMain];
+            metadataForDownload.status = k_metadataStatusInDownload;
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
             
-        } else
-            break;
-        
-        counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+            [[CCNetworking sharedNetworking] downloadFile:metadata path:self.directoryUser taskStatus:k_taskStatusResume delegate:_activeMain];
+        }
     }
   
     // ------------------------- <selector Auto Upload> -------------------------
@@ -1490,8 +1488,8 @@
             
             if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
                 
-                NSString *atPath = [NSString stringWithFormat:@"%@/%@", metadataNet.path, metadataNet.fileName];
-                NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
+                NSString *atPath = [NSString stringWithFormat:@"%@/%@", metadataForUpload.path, metadataForUpload.fileName];
+                NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataForUpload.fileName];
                 [CCUtility copyFileAtPath:atPath toPath:toPath];
                 
                 metadataForUpload.session = k_upload_session;

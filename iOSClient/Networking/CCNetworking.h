@@ -58,14 +58,12 @@
 - (void)settingSessionsDownload:(BOOL)download upload:(BOOL)upload taskStatus:(NSInteger)taskStatus activeAccount:(NSString *)activeAccount activeUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 // Download
-- (void)downloadFile:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)downloadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 
 // Upload
 - (void)uploadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 
-
 // Utility
-
 - (NSInteger)getNumDownloadInProgressWWan:(BOOL)WWan;
 - (NSInteger)getNumUploadInProgressWWan:(BOOL)WWan;
 
@@ -75,6 +73,7 @@
 
 @optional - (void)reloadDatasource:(NSString *)serverUrl;
 
+@optional - (void)downloadStart:(tableMetadata *)metadata task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl;
 @optional  - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
 @optional - (void)uploadStart:(tableMetadata *)metadata task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl;

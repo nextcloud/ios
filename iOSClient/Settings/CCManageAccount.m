@@ -284,7 +284,6 @@
     [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
     
     // Clear active user

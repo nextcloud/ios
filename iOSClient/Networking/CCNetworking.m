@@ -462,7 +462,6 @@
     if (!serverUrl) return;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
-    NSString *fileID = [directoryID stringByAppendingString:fileName];
     tableMetadata *metadata;
     
     NSInteger errorCode;
@@ -583,31 +582,19 @@
 #pragma mark =====  Download =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadFile:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate
+- (void)downloadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 {
     // add delegate
-    [_delegates setObject:delegate forKey:fileID];
+    [_delegates setObject:delegate forKey:metadata.fileID];
     
-    if (fileID.length == 0) {
-        
-        [[self getDelegate:fileID] downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:NSLocalizedStringFromTable(@"_file_folder_not_exists_", @"Error", nil) errorCode:kOCErrorServerPathNotFound];
-        return;
-    }
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-    
-    if (!metadata) {
-        
-        [delegate downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:NSLocalizedStringFromTable(@"_file_folder_not_exists_", @"Error", nil) errorCode:kOCErrorServerPathNotFound];
-        return;
-    }
-    
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+
     // it's in download
     tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND session CONTAINS 'download' AND sessionTaskIdentifier >= 0", metadata.fileID]];
         
     if (result) {
             
-        [delegate downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:@"File already in download" errorCode:k_CCErrorFileAlreadyInDownload];
+        [delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:@"File already in download" errorCode:k_CCErrorFileAlreadyInDownload];
         return;
     }
         
@@ -618,22 +605,22 @@
             
         [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
             
-        [delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:@"" errorCode:0];
+        [delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost errorMessage:@"" errorCode:0];
         return;
     }
     
-    [[NCManageDatabase sharedInstance] setMetadataSession:session sessionError:@"" sessionSelector:selector sessionSelectorPost:selectorPost sessionTaskIdentifier:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@",metadata.fileID]];
+    [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:@"" sessionSelector:metadata.sessionSelector sessionSelectorPost:metadata.sessionSelectorPost sessionTaskIdentifier:k_taskIdentifierNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
             
-    [self downloaURLSession:metadata.fileName serverUrl:serverUrl fileID:metadata.fileID session:session taskStatus:taskStatus selector:selector];
+    [self downloaURLSession:metadata serverUrl:serverUrl taskStatus:taskStatus];
 }
 
-- (void)downloaURLSession:(NSString *)fileName serverUrl:(NSString *)serverUrl fileID:(NSString *)fileID session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector
+- (void)downloaURLSession:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl taskStatus:(NSInteger)taskStatus
 {
     NSURLSession *sessionDownload;
     NSURL *url;
     NSMutableURLRequest *request;
     
-    NSString *serverFileUrl = [[NSString stringWithFormat:@"%@/%@", serverUrl, fileName] encodeString:NSUTF8StringEncoding];
+    NSString *serverFileUrl = [[NSString stringWithFormat:@"%@/%@", serverUrl, metadata.fileName] encodeString:NSUTF8StringEncoding];
         
     url = [NSURL URLWithString:serverFileUrl];
     request = [NSMutableURLRequest requestWithURL:url];
@@ -643,29 +630,35 @@
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     [request setValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
     
-    if ([session isEqualToString:k_download_session]) sessionDownload = [self sessionDownload];
-    else if ([session isEqualToString:k_download_session_foreground]) sessionDownload = [self sessionDownloadForeground];
-    else if ([session isEqualToString:k_download_session_wwan]) sessionDownload = [self sessionWWanDownload];
+    if ([metadata.session isEqualToString:k_download_session]) sessionDownload = [self sessionDownload];
+    else if ([metadata.session isEqualToString:k_download_session_foreground]) sessionDownload = [self sessionDownloadForeground];
+    else if ([metadata.session isEqualToString:k_download_session_wwan]) sessionDownload = [self sessionWWanDownload];
     
     NSURLSessionDownloadTask *downloadTask = [sessionDownload downloadTaskWithRequest:request];
     
     if (downloadTask == nil) {
         
-        [[NCManageDatabase sharedInstance] addActivityClient:fileName fileID:fileID action:k_activityDebugActionUpload selector:selector note:@"Serious internal error downloadTask not available" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"Serious internal error downloadTask not available" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-        [self.delegate downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector selectorPost:@"" errorMessage:@"Serious internal error downloadTask not available" errorCode:k_CCErrorInternalError];
+        [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileName fileID:metadata.fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:@"Serious internal error downloadTask not available" type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"Serious internal error downloadTask not available" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
+        [self.delegate downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:@"" errorMessage:@"Serious internal error downloadTask not available" errorCode:k_CCErrorInternalError];
 
     } else {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:downloadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:nil sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:downloadTask.taskIdentifier predicate:[NSPredicate predicateWithFormat:@"fileID = %@", metadata.fileID]];
         
         // Manage uploadTask cancel,suspend,resume
         if (taskStatus == k_taskStatusCancel) [downloadTask cancel];
         else if (taskStatus == k_taskStatusSuspend) [downloadTask suspend];
         else if (taskStatus == k_taskStatusResume) [downloadTask resume];
         
-        NSLog(@"[LOG] downloadFileSession %@ Task [%lu]", fileID, (unsigned long)downloadTask.taskIdentifier);
+        NSLog(@"[LOG] downloadFileSession %@ Task [%lu]", metadata.fileID, (unsigned long)downloadTask.taskIdentifier);
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(downloadStart:task:serverUrl:)]) {
+            [[self getDelegate:metadata.fileID] downloadStart:metadata task:downloadTask serverUrl:serverUrl];
+        }
+    });
     
     // Refresh datasource if is not a Plist
     if ([_delegate respondsToSelector:@selector(reloadDatasource:)])
@@ -1371,6 +1364,7 @@
 {
     NSInteger numTableMetadataDownload, numTableQueueDownload;
     
+    /*
     if (WWan) {
         numTableMetadataDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
         numTableQueueDownload = [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
@@ -1378,6 +1372,7 @@
         numTableMetadataDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count];
         numTableQueueDownload = [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_foreground];
     }
+    */
     
     return numTableMetadataDownload + numTableQueueDownload;
 }
