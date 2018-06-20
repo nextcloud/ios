@@ -992,6 +992,7 @@
     metadata.etag = itemDto.etag;
     metadata.size = itemDto.size;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+    metadata.status = k_metadataStatusNormal;
     metadata.typeFile = @"";
     
     [self insertTypeFileIconName:fileNameView metadata:metadata];

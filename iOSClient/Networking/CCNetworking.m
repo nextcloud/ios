@@ -658,8 +658,8 @@
         metadata.sessionError = @"";
         metadata.sessionSelector = @"";
         metadata.sessionSelectorPost = @"";
-        metadata.status = k_metadataStatusNormal;
         metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+        metadata.status = k_metadataStatusNormal;
             
         metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
         [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
@@ -1316,7 +1316,7 @@
     self = [super init];
     
     self.priority = NSOperationQueuePriorityNormal;
-    self.sessionTaskIdentifier = -1;
+    self.sessionTaskIdentifier = k_taskIdentifierDone;
     
     return self;
 }
