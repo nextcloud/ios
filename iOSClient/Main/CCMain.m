@@ -948,7 +948,15 @@
                 
                 if (serverUrl) {
                     
-//                    [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorSave selectorPost:nil session:k_download_session taskStatus: k_taskStatusResume delegate:self];
+                    metadata.session = k_download_session;
+                    metadata.sessionError = @"";
+                    metadata.sessionSelector = selectorSave;
+                    metadata.sessionSelectorPost = @"";
+                    metadata.status = k_metadataStatusWaitDownload;
+                    
+                    // Add Metadata for Download
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
                 }
                 
             }
@@ -2710,7 +2718,16 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         
         if (serverUrl) {
-//            [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorAddFavorite selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+            
+            metadata.session = k_download_session;
+            metadata.sessionError = @"";
+            metadata.sessionSelector = selectorAddFavorite;
+            metadata.sessionSelectorPost = @"";
+            metadata.status = k_metadataStatusWaitDownload;
+            
+            // Add Metadata for Download
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
         }
     }
 }
@@ -2729,7 +2746,15 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (!serverUrl) return;
 
-//    [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self];
+    metadata.session = k_download_session;
+    metadata.sessionError = @"";
+    metadata.sessionSelector = selectorOpenIn;
+    metadata.sessionSelectorPost = @"";
+    metadata.status = k_metadataStatusWaitDownload;
+    
+    // Add Metadata for Download
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if ([self indexPathIsValid:indexPath])
