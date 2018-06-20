@@ -312,7 +312,9 @@ extension FileProviderExtension {
         
         if (tableMetadatas == nil || (tableMetadatas!.count < Int(k_maxConcurrentOperationUpload))) {
             
-            let metadataForUpload = tableMetadatas![0]
+            guard let metadataForUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND session = %@ AND status = %d", providerData.account, k_upload_session_extension, k_metadataStatusWaitUpload)) else {
+                return
+            }
             
             if self.providerData.copyFile(metadataForUpload.path + "/" + metadataForUpload.fileName, toPath: providerData.directoryUser + "/" + metadataForUpload.fileName) == nil {
                 

@@ -1336,7 +1336,7 @@
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {
         
         // V 1.8 if upload_session_wwan change in upload_session
-        if ([metadata.session isEqualToString:k_upload_session_wwan])
+        if ([metadata.session isEqualToString:k_upload_session_wwan] || [metadata.session isEqualToString:k_upload_session_extension])
             metadata.session = k_upload_session;
         
 //        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume delegate:nil];

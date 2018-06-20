@@ -116,9 +116,6 @@ extension FileProviderExtension {
             return
         }
         
-        // Delete queue upload for ImportDocument (if exists)
-        
-        //
         deleteFile(withIdentifier: itemIdentifier, parentItemIdentifier: parentItemIdentifier, metadata: metadata, serverUrl: serverUrl)
        
         // return immediately
