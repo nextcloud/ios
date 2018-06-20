@@ -122,10 +122,8 @@ extern NSString *const flowEndpoint;
 #define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"
 
 // TaskIdentifier
-#define k_taskIdentifierDone                            -1
-#define k_taskIdentifierStop                            -2
-#define k_taskIdentifierError                           -99999
-#define k_taskIdentifierNULL                            99999
+#define k_taskIdentifierDone                            0
+#define k_taskIdentifierStop                            -1
 
 // TaskStatus
 #define k_taskStatusCancel                              -1

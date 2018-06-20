@@ -651,7 +651,7 @@
         // downloadFile Error
         // ----------------------------------------------------------------------------------------------------------
         
-        if (metadata.sessionTaskIdentifier == k_taskIdentifierError) {
+        if (metadata.status == k_metadataStatusDownloadError) {
             
             cell.status.image = [UIImage imageNamed:@"statuserror"];
             
@@ -711,7 +711,7 @@
         // uploadFileError
         // ----------------------------------------------------------------------------------------------------------
         
-        if (metadata.sessionTaskIdentifier == k_taskIdentifierError) {
+        if (metadata.status == k_metadataStatusUploadError) {
             
             cell.labelTitle.enabled = NO;
             cell.status.image = [UIImage imageNamed:@"statuserror"];

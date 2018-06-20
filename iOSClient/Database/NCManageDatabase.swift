@@ -1714,9 +1714,9 @@ class NCManageDatabase: NSObject {
         if let sessionSelectorPost = sessionSelectorPost {
             result.sessionSelectorPost = sessionSelectorPost
         }
-        if sessionTaskIdentifier != Int(k_taskIdentifierNULL) {
-            result.sessionTaskIdentifier = sessionTaskIdentifier
-        }
+        
+        result.sessionTaskIdentifier = sessionTaskIdentifier
+        
         if status != Int(k_metadataStatusNULL) {
             result.status = status
         }
