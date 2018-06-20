@@ -55,7 +55,6 @@
 - (NSArray *)getUploadTasksExtensionSession;
 
 - (void)invalidateAndCancelAllSession;
-- (void)settingSessionsDownload:(BOOL)download upload:(BOOL)upload taskStatus:(NSInteger)taskStatus activeAccount:(NSString *)activeAccount activeUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 // Download
 - (void)downloadFile:(tableMetadata *)metadata path:(NSString *)path taskStatus:(NSInteger)taskStatus delegate:(id)delegate;

@@ -2023,6 +2023,53 @@ class NCManageDatabase: NSObject {
         return false
     }
     
+    @objc func clearMetadatasDownload() {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                let results = realm.objects(tableMetadata.self).filter("account = %@ AND status = %d", tableAccount.account, k_metadataStatusWaitDownload)
+                
+                for result in results {
+                    result.session = ""
+                    result.status = Int(k_metadataStatusNormal)
+                    result.sessionError = ""
+                    result.sessionSelector = ""
+                    result.sessionSelectorPost = ""
+                    result.sessionTaskIdentifier = Int(k_taskIdentifierDone)
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    @objc func clearMetadatasUpload() {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                let results = realm.objects(tableMetadata.self).filter("account = %@ AND status = %d", tableAccount.account, k_metadataStatusWaitUpload)
+                
+                realm.delete(results)
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     //MARK: -
     //MARK: Table Photo Library
     
