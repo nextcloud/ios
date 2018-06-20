@@ -88,8 +88,8 @@
             _metadata.status = k_metadataStatusWaitDownload;
             
             // Add Metadata for Download
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:_metadata];
-            [[CCNetworking sharedNetworking] downloadFile:metadata path:appDelegate.directoryUser taskStatus:k_taskStatusResume delegate:self];
+            (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
+            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
         }
     }];
     
