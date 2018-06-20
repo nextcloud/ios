@@ -1103,7 +1103,7 @@
         // Mark error only if not Cancelled Task
         if (errorCode != kCFURLErrorCancelled)  {
 
-            [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError status:k_metadataStatusNULL predicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND account = %@", tempFileID, _activeAccount]];
+            [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierError status:k_metadataStatusWaitUpload predicate:[NSPredicate predicateWithFormat:@"fileID = %@ AND account = %@", tempFileID, _activeAccount]];
         }
         
         errorMessage = [CCError manageErrorKCF:errorCode withNumberError:YES];

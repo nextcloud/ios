@@ -272,9 +272,6 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    // verify Upload
-//    [self verifyUploadInErrorOrWait];
-    
     // middelware ping
     if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
@@ -1224,9 +1221,6 @@
 {
     NSLog(@"[LOG] Start perform Fetch With Completion Handler");
     
-    // verify Upload
-    [self verifyUploadInErrorOrWait];
-    
     // Verify new photo
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
     
@@ -1504,32 +1498,6 @@
     
     // Start Timer
     _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Process Verify =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)verifyUploadInErrorOrWait
-{
-    // Test Maintenance
-    if (self.maintenanceMode || self.activeAccount.length == 0)
-        return;
-    
-    NSMutableSet *directoryIDs = [NSMutableSet new];
-    
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'upload' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifier = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierWaitStart] sorted:nil ascending:NO];
-    
-    NSLog(@"[LOG] Verify re upload in error n. %lu", (unsigned long)[metadatas count]);
-    
-    for (tableMetadata *metadata in metadatas) {
-        
-//        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus: k_taskStatusResume delegate:nil];
-        
-        [directoryIDs addObject:metadata.directoryID];
-        
-        NSLog(@"[LOG] Re upload file : %@", metadata.fileName);
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
