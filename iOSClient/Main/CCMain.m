@@ -5036,7 +5036,7 @@
     if (!serverUrl) return;
     
     // se è in corso una sessione
-    if (_metadata.status != k_metadataStatusNormal && _metadata.status != k_metadataStatusDownloadError && _metadata.status != k_metadataStatusUploadError)
+    if (_metadata.status != k_metadataStatusNormal)
         return;
     
     // file

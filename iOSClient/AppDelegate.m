@@ -1324,7 +1324,7 @@
     
     if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop status:k_metadataStatusWaitUpload predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {
@@ -1398,6 +1398,7 @@
 - (void)loadAutoDownloadUpload
 {    
     tableMetadata *metadataForUpload, *metadataForDownload;
+    NSInteger counterNewDownloadUpload = 0;
         
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
@@ -1426,6 +1427,7 @@
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
             
             [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+            counterNewDownloadUpload++;
         }  
     }
   
@@ -1441,6 +1443,7 @@
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
             [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+            counterNewDownloadUpload++;
         }
     }
   
@@ -1467,6 +1470,7 @@
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                 
                 [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+                counterNewDownloadUpload++;
             }
         }
     }
@@ -1491,6 +1495,22 @@
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
 
             [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+            counterNewDownloadUpload++;
+        }
+    }
+    
+    // No Download/upload available ? remove errors
+    if (counterNewDownloadUpload == 0) {
+        
+        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", _activeAccount, k_metadataStatusDownloadError, k_metadataStatusUploadError] sorted:nil ascending:NO];
+        for (tableMetadata *metadata in metadatas) {
+            
+            if (metadata.status == k_metadataStatusDownloadError)
+                metadata.status = k_metadataStatusWaitDownload;
+            else if (metadata.status == k_metadataStatusUploadError)
+                metadata.status = k_metadataStatusWaitUpload;
+            
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         }
     }
     
