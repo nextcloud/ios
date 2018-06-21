@@ -275,7 +275,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             // is Upload [Office 365 !!!]
-            if metadata.sessionTaskIdentifier > 0 || metadata.fileID.contains(metadata.directoryID + metadata.fileName) {
+            if metadata.fileID.contains(metadata.directoryID + metadata.fileName) {
                 completionHandler(nil)
                 return
             }
