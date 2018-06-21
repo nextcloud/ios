@@ -602,7 +602,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
             return
         }
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND fileNameView = %@", appDelegate.activeAccount, directoryID, fileNameSave))
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND directoryID == %@ AND fileNameView == %@", appDelegate.activeAccount, directoryID, fileNameSave))
         
         if (metadata != nil) {
             

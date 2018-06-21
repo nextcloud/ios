@@ -240,7 +240,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         if (errorCode == 0) {
         
             // remove all record
-            var predicate = NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", activeAccount, metadataNet.directoryID!)
+            var predicate = NSPredicate(format: "account == %@ AND directoryID == %@ AND session == ''", activeAccount, metadataNet.directoryID!)
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: metadataNet.directoryID!)
             
             for metadata in metadatas as! [tableMetadata] {
@@ -254,7 +254,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
             }
             
-            predicate = NSPredicate(format: "account = %@ AND directoryID = %@", activeAccount, metadataNet.directoryID!)
+            predicate = NSPredicate(format: "account == %@ AND directoryID == %@", activeAccount, metadataNet.directoryID!)
             recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sorted: "fileName", ascending: true)
             
             autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()
@@ -340,7 +340,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         if (errorCode == 0) {
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID!)) else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", activeAccount, fileID!)) else {
                 self.dismissGrantingAccess(to: nil)
                 return
             }
@@ -410,7 +410,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         } else {
            
             // remove file
-            let predicate = NSPredicate(format: "account = %@ AND fileID == %@", activeAccount, fileID)
+            let predicate = NSPredicate(format: "account == %@ AND fileID == %@", activeAccount, fileID)
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: nil)
             
             if errorCode != -999 {
@@ -681,7 +681,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
         // Status Image View
         let lockServerUrl = CCUtility.stringAppendServerUrl(self.serverUrl!, addFileName: metadata.fileName)
                 
-        let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account = %@ AND serverUrl = %@", activeAccount, lockServerUrl!))
+        let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount, lockServerUrl!))
         if tableDirectory != nil {
             if metadata.directory &&  (tableDirectory?.lock)! && (CCUtility.getBlockCode() != nil) {
                 cell.StatusImageView.image = UIImage(named: "passcode")
@@ -738,7 +738,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 passcode = ""
             }
         
-            let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account = %@ AND serverUrl = %@", activeAccount, serverUrlPush))
+            let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate:NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount, serverUrlPush))
             
             if tableDirectory != nil {
                 

@@ -43,7 +43,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
                 let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
                 if metadata != nil  {
-                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, metadata!.directoryID))  {
+                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", providerData.account, metadata!.directoryID))  {
                         serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
                     }
                 }
@@ -75,10 +75,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             var itemIdentifierMetadata = [NSFileProviderItemIdentifier:tableMetadata]()
             
             // ***** Tags *****
-            let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", providerData.account))
+            let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account == %@", providerData.account))
             for tag in tags {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, tag.fileID))  else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", providerData.account, tag.fileID))  else {
                     continue
                 }
                 
@@ -91,7 +91,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             for (identifier, _) in providerData.listFavoriteIdentifierRank {
              
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", providerData.account, identifier)) else {
                     continue
                 }
                
@@ -120,8 +120,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             
             // Select items from database
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.account, serverUrl))  {
-                metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, directory.directoryID), sorted: "fileName", ascending: true)
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", providerData.account, serverUrl))  {
+                metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", providerData.account, directory.directoryID), sorted: "fileName", ascending: true)
             }
             
             // Calculate current page
@@ -167,10 +167,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         if metadatas != nil {
                             
                             // Insert metadata on DB
-                            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
+                            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND directoryID == %@ AND session == ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
                             _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl)
                             
-                            metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", self.providerData.account, directoryID!), sorted: "fileName", ascending: true)
+                            metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", self.providerData.account, directoryID!), sorted: "fileName", ascending: true)
                             self.selectFirstPageItems(metadatasFromDB, observer: observer)
                             
                         } else {

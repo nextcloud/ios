@@ -288,7 +288,7 @@
     
         if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
             
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadataNet.account, metadataNet.serverUrl]];
             
             if ([metadata.etag isEqualToString:directory.etag] == NO) {
                 
@@ -417,8 +417,8 @@
     if (!directoryID) return 0;
     NSPredicate *predicate;
     
-    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND directory == true", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND directory == true AND e2eEncrypted == false", activeAccount, directoryID];
     
     NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
     
@@ -443,8 +443,8 @@
     if (!directoryID)
         return cell;
     
-    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND directory == true", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND directory == true AND e2eEncrypted == false", activeAccount, directoryID];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:indexPath.row];
     
@@ -481,8 +481,8 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return;
     
-    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID == %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND directory == true", activeAccount, directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND directory == true AND e2eEncrypted == false", activeAccount, directoryID];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:index.row];
     
@@ -491,7 +491,7 @@
         
     // Se siamo in presenza di una directory bloccata E è attivo il block E la sessione PASSWORD Lock è senza data ALLORA chiediamo la password per procedere
         
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", activeAccount, lockServerUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", activeAccount, lockServerUrl]];
         
     if (directory.lock && [[CCUtility getBlockCode] length] && controlPasscode) {
             

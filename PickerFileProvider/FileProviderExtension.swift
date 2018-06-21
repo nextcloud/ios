@@ -148,7 +148,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         if identifier == .rootContainer {
             
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.account, providerData.homeServerUrl)) {
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", providerData.account, providerData.homeServerUrl)) {
                     
                 let metadata = tableMetadata()
                     
@@ -280,7 +280,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, metadata.fileID))
+            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "account == %@ AND fileID == %@", providerData.account, metadata.fileID))
             if tableLocalFile != nil {
                 localEtag = tableLocalFile!.etag
                 localEtagFPE = tableLocalFile!.etagFPE

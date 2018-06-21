@@ -100,13 +100,13 @@ class FileProviderData: NSObject {
     func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
         
         let fileID = itemIdentifier.rawValue
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))?.account
+        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", account, fileID))?.account
     }
     
     func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
         
         let fileID = itemIdentifier.rawValue
-        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))
+        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", account, fileID))
     }
 
     func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
@@ -137,12 +137,12 @@ class FileProviderData: NSObject {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return NSFileProviderItemIdentifier("") }
         
-        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID))  {
+        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", account, metadata.directoryID))  {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
             } else {
                 // get the metadata.FileID of parent Directory
-                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, directory.fileID))  {
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", account, directory.fileID))  {
                     let identifier = getItemIdentifier(metadata: metadata)
                     return identifier
                 }
@@ -161,14 +161,14 @@ class FileProviderData: NSObject {
         
         if parentItemIdentifier == .rootContainer {
             
-            predicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, homeServerUrl)
             
         } else {
             
             guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else {
                 return nil
             }
-            predicate = NSPredicate(format: "account = %@ AND fileID = %@", account, metadata.fileID)
+            predicate = NSPredicate(format: "account == %@ AND fileID == %@", account, metadata.fileID)
         }
         
         guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: predicate) else {
@@ -194,7 +194,7 @@ class FileProviderData: NSObject {
             
             if !oldListFavoriteIdentifierRank.keys.contains(identifier) {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier)) else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", account, identifier)) else {
                     continue
                 }
                 guard let parentItemIdentifier = getParentItemIdentifier(metadata: metadata) else {
@@ -214,7 +214,7 @@ class FileProviderData: NSObject {
             
             if !listFavoriteIdentifierRank.keys.contains(identifier) {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier)) else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", account, identifier)) else {
                     continue
                 }
                 

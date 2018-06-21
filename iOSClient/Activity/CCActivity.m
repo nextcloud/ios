@@ -156,9 +156,9 @@
     NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-k_daysOfActivity toDate:[NSDate date] options:0];
         
     if (_verbose)
-        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND date > %@", appDelegate.activeAccount, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account == %@ AND date > %@", appDelegate.activeAccount, sixDaysAgo];
     else
-        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND verbose = %lu AND date > %@", appDelegate.activeAccount, k_activityVerboseDefault, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account == %@ AND verbose == %lu AND date > %@", appDelegate.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
     _sectionDataSource = [[NCManageDatabase sharedInstance] getActivityWithPredicate:predicate];
         
@@ -193,7 +193,7 @@
     
     if (activity.fileID.length > 0) {
      
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", activity.fileID]];
         
         if (metadata && ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload])) {
             
@@ -325,7 +325,7 @@
     
     if (activity.fileID.length > 0) {
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", activity.fileID]];
         
         if (metadata && ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload])) {
             
@@ -349,7 +349,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", activity.fileID]];
     
     BOOL existsFile = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, activity.fileID]];
     

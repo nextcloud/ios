@@ -852,9 +852,9 @@ class NCManageDatabase: NSObject {
         // Delete table Metadata & LocalFile
         for result in results {
             
-            self.deleteMetadata(predicate: NSPredicate(format: "directoryID = %@", result.directoryID), clearDateReadDirectoryID: result.directoryID)
+            self.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@", result.directoryID), clearDateReadDirectoryID: result.directoryID)
             
-            self.deleteLocalFile(predicate: NSPredicate(format: "fileID = %@", result.fileID))
+            self.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", result.fileID))
         }
         
         // Delete table Dirrectory
@@ -912,11 +912,11 @@ class NCManageDatabase: NSObject {
                 var predicate = NSPredicate()
             
                 if let serverUrl = serverUrl {
-                    predicate = NSPredicate(format: "account = %@ AND serverUrl = %@", tableAccount.account, serverUrl)
+                    predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", tableAccount.account, serverUrl)
                 }
                 
                 if let directoryID = directoryID {
-                    predicate = NSPredicate(format: "account = %@ AND directoryID = %@", tableAccount.account, directoryID)
+                    predicate = NSPredicate(format: "account == %@ AND directoryID == %@", tableAccount.account, directoryID)
                 }
             
                 guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
@@ -1884,7 +1884,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND sessionTaskIdentifier != %i", tableAccount.account, k_download_session, k_download_session_foreground, Int(k_taskIdentifierDone))
+        let predicate = NSPredicate(format: "account == %@ AND (session == %@ OR session == %@) AND sessionTaskIdentifier != %i", tableAccount.account, k_download_session, k_download_session_foreground, Int(k_taskIdentifierDone))
         
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
@@ -1895,7 +1895,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
 
-        let predicate = NSPredicate(format: "account = %@ AND session = %@ AND sessionTaskIdentifier != %i", tableAccount.account, k_download_session_wwan, Int(k_taskIdentifierDone))
+        let predicate = NSPredicate(format: "account == %@ AND session == %@ AND sessionTaskIdentifier != %i", tableAccount.account, k_download_session_wwan, Int(k_taskIdentifierDone))
         
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
@@ -1906,7 +1906,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
 
-        let predicate = NSPredicate(format: "account = %@ AND (session = %@ OR session = %@) AND sessionTaskIdentifier != %i", tableAccount.account, k_upload_session, k_upload_session_foreground, Int(k_taskIdentifierDone))
+        let predicate = NSPredicate(format: "account == %@ AND (session == %@ OR session == %@) AND sessionTaskIdentifier != %i", tableAccount.account, k_upload_session, k_upload_session_foreground, Int(k_taskIdentifierDone))
         
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
@@ -1917,7 +1917,7 @@ class NCManageDatabase: NSObject {
             return nil
         }
         
-        let predicate = NSPredicate(format: "account = %@ AND session = %@ AND sessionTaskIdentifier != %i", tableAccount.account, k_upload_session_wwan, Int(k_taskIdentifierDone))
+        let predicate = NSPredicate(format: "account == %@ AND session == %@ AND sessionTaskIdentifier != %i", tableAccount.account, k_upload_session_wwan, Int(k_taskIdentifierDone))
         
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
@@ -1934,14 +1934,14 @@ class NCManageDatabase: NSObject {
         if (startDirectory == CCUtility.getHomeServerUrlActiveUrl(activeUrl)) {
             
             // All directory
-            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND NOT (session CONTAINS 'upload') AND (typeFile = %@ OR typeFile = %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video)).sorted(byKeyPath: "date", ascending: false)
+            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND NOT (session CONTAINS 'upload') AND (typeFile == %@ OR typeFile == %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video)).sorted(byKeyPath: "date", ascending: false)
             return Array(metadatas.map { tableMetadata.init(value:$0) })
             
         } else {
             
-            let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account = %@ AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
+            let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
             let directoriesID = Array(directories.map { $0.directoryID })
-            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account = %@ AND session = '' AND (typeFile = %@ OR typeFile = %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
+            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND session == '' AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
             
             return Array(metadatas.map { tableMetadata.init(value:$0) })
         }
@@ -2136,15 +2136,15 @@ class NCManageDatabase: NSObject {
         
         if (image && video) {
          
-            predicate = NSPredicate(format: "account = %@ AND (mediaType = %i || mediaType = %i)", tableAccount.account, PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND (mediaType == %i OR mediaType == %i)", tableAccount.account, PHAssetMediaType.image.rawValue, PHAssetMediaType.video.rawValue)
             
         } else if (image) {
             
-            predicate = NSPredicate(format: "account = %@ AND mediaType = %i", tableAccount.account, PHAssetMediaType.image.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND mediaType == %i", tableAccount.account, PHAssetMediaType.image.rawValue)
 
         } else if (video) {
             
-            predicate = NSPredicate(format: "account = %@ AND mediaType = %i", tableAccount.account, PHAssetMediaType.video.rawValue)
+            predicate = NSPredicate(format: "account == %@ AND mediaType == %i", tableAccount.account, PHAssetMediaType.video.rawValue)
         }
         
         let results = realm.objects(tablePhotoLibrary.self).filter(predicate)

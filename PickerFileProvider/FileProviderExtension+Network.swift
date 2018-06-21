@@ -46,7 +46,7 @@ extension FileProviderExtension {
             guard let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier) else {
                 return
             }
-            guard let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, metadata.directoryID)) else {
+            guard let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", providerData.account, metadata.directoryID)) else {
                 return
             }
             
@@ -56,7 +56,7 @@ extension FileProviderExtension {
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
             
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND directoryID == %@ AND session == ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
             guard let metadatasUpdate = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl) else {
                 return
             }
@@ -183,7 +183,7 @@ extension FileProviderExtension {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
 
-        guard let metadataUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID)) else {
+        guard let metadataUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", account, fileID)) else {
             return
         }
         
@@ -214,7 +214,7 @@ extension FileProviderExtension {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, fileID)) else {
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", providerData.account, fileID)) else {
             return
         }
         
@@ -313,11 +313,11 @@ extension FileProviderExtension {
     
     func uploadFileImportDocument() {
         
-        let tableMetadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND session = %@ AND (status = %d || status = %d)", providerData.account, k_upload_session_extension, k_metadataStatusInUpload, k_metadataStatusUploading), sorted: "fileName", ascending: true)
+        let tableMetadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d OR status == %d)", providerData.account, k_upload_session_extension, k_metadataStatusInUpload, k_metadataStatusUploading), sorted: "fileName", ascending: true)
         
         if (tableMetadatas == nil || (tableMetadatas!.count < Int(k_maxConcurrentOperationUpload))) {
             
-            guard let metadataForUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND session = %@ AND status = %d", providerData.account, k_upload_session_extension, k_metadataStatusWaitUpload)) else {
+            guard let metadataForUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", providerData.account, k_upload_session_extension, k_metadataStatusWaitUpload)) else {
                 return
             }
             
@@ -327,7 +327,7 @@ extension FileProviderExtension {
                 
             } else {
                 
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, metadataForUpload.fileID), clearDateReadDirectoryID: metadataForUpload.directoryID)
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", providerData.account, metadataForUpload.fileID), clearDateReadDirectoryID: metadataForUpload.directoryID)
             }
         }
     }

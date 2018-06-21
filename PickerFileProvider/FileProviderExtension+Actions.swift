@@ -180,7 +180,7 @@ extension FileProviderExtension {
                 NCManageDatabase.sharedInstance.moveMetadata(fileName: metadataFrom.fileName, directoryID: metadataFrom.directoryID, directoryIDTo: directoryIDTo)
             }
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", self.providerData.account, fileIDFrom)) else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", self.providerData.account, fileIDFrom)) else {
                 completionHandler(nil, NSFileProviderError(.noSuchItem))
                 return
             }
@@ -222,7 +222,7 @@ extension FileProviderExtension {
             return
         }
         
-        guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl = %@", serverUrl)) else {
+        guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl == %@", serverUrl)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
@@ -476,7 +476,7 @@ extension FileProviderExtension {
             
             while exitLoop == false {
                 
-                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", providerData.account, resultFileName, directoryID)) != nil {
+                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileNameView == %@ AND directoryID == %@", providerData.account, resultFileName, directoryID)) != nil {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension
