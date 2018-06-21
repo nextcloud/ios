@@ -414,6 +414,7 @@
         }
         
         metadataNet.fileName = fileName;
+        metadataNet.path = appDelegate.directoryUser;
         metadataNet.selector = selector;
         metadataNet.serverUrl = serverUrl;
         metadataNet.session = session;

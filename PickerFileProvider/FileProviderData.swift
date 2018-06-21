@@ -36,16 +36,12 @@ class FileProviderData: NSObject {
     var directoryUser = ""
     
     // Directory
-    var groupURL: URL?
     var fileProviderStorageURL: URL?
     
-    // metadata Selector
+    // metadata Selector Post
     let selectorPostImportDocument = "importDocument"
     let selectorPostItemChanged = "itemChanged"
-    
-    // Metadata Temp for Import
-    let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
-    
+        
     // Max item for page
     let itemForPage = 20
 
@@ -67,21 +63,12 @@ class FileProviderData: NSObject {
     var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
     var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
 
+    // Reupload after error
+    let timeReupload: Double = 10
+    
     // MARK: - 
     
     func setupActiveAccount() -> Bool {
-        
-        queueTradeSafe.sync(flags: .barrier) {
-            groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
-            fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
-        }
-        
-        // Create dir File Provider Storage
-        do {
-            try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
-        } catch let error as NSError {
-            NSLog("Unable to create directory \(error.debugDescription)")
-        }
         
         if CCUtility.getDisableFilesApp() {
             return false
@@ -91,22 +78,24 @@ class FileProviderData: NSObject {
             return false
         }
         
-        if account != "" && account != activeAccount.account {
+        if account == "" {
+            queueTradeSafe.sync(flags: .barrier) {
+                account = activeAccount.account
+                accountUser = activeAccount.user
+                accountUserID = activeAccount.userID
+                accountPassword = activeAccount.password
+                accountUrl = activeAccount.url
+                homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
+                directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
+            }
+        } else if account != activeAccount.account {
             assert(false, "change user")
-        }
-        
-        queueTradeSafe.sync(flags: .barrier) {
-            account = activeAccount.account
-            accountUser = activeAccount.user
-            accountUserID = activeAccount.userID
-            accountPassword = activeAccount.password
-            accountUrl = activeAccount.url
-            homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
-            directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
         }
         
         return true
     }
+    
+    // MARK: -
     
     func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
         
@@ -188,6 +177,82 @@ class FileProviderData: NSObject {
         
         return directory
     }
+    
+    // MARK: -
+    
+    func updateFavoriteForWorkingSet() {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+        
+        var updateWorkingSet = false
+        let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
+        listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+        
+        // (ADD)
+        for (identifier, _) in listFavoriteIdentifierRank {
+            
+            if !oldListFavoriteIdentifierRank.keys.contains(identifier) {
+                
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier)) else {
+                    continue
+                }
+                guard let parentItemIdentifier = getParentItemIdentifier(metadata: metadata) else {
+                    continue
+                }
+                
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self)
+                queueTradeSafe.sync(flags: .barrier) {
+                    fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                }
+                updateWorkingSet = true
+            }
+        }
+        
+        // (REMOVE)
+        for (identifier, _) in oldListFavoriteIdentifierRank {
+            
+            if !listFavoriteIdentifierRank.keys.contains(identifier) {
+                
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, identifier)) else {
+                    continue
+                }
+                
+                let itemIdentifier = getItemIdentifier(metadata: metadata)
+                queueTradeSafe.sync(flags: .barrier) {
+                    fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
+                }
+                updateWorkingSet = true
+            }
+        }
+        
+        if updateWorkingSet {
+            signalEnumerator(for: [.workingSet])
+        }
+    }
+    
+    // MARK: -
+
+    // Convinent method to signal the enumeration for containers.
+    //
+    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+        
+        currentAnchor += 1
+        
+        for containerItemIdentifier in containerItemIdentifiers {
+            
+            NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
+                if let error = error {
+                    print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
+                }
+            }
+        }
+    }
+    
+    // MARK: -
     
     func copyFile(_ atPath: String, toPath: String) -> Error? {
         

@@ -104,7 +104,7 @@ extension FileProviderExtension {
                 self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier.removeValue(forKey: itemIdentifier)
             }
             
-            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
         })
     }
     
@@ -170,7 +170,7 @@ extension FileProviderExtension {
                 self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             }
             
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         })
     }
     
@@ -193,6 +193,7 @@ extension FileProviderExtension {
         
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
 
+        // Register for bytesSent
         NSFileProviderManager.default.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(item.itemIdentifier.rawValue)) { (error) in }
         
         providerData.queueTradeSafe.sync(flags: .barrier) {
@@ -200,7 +201,7 @@ extension FileProviderExtension {
             self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         
-        self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
     }
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
@@ -269,6 +270,11 @@ extension FileProviderExtension {
             if (selectorPost == providerData.selectorPostImportDocument) {
                 
                 NCManageDatabase.sharedInstance.unlockQueueUpload(assetLocalIdentifier: assetLocalIdentifier)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + providerData.timeReupload) {
+                    
+                    self.uploadFileImportDocument()
+                }
             }
             
             // itemChanged
@@ -279,7 +285,7 @@ extension FileProviderExtension {
                 let urlString = (providerData.fileProviderStorageURL!.path + "/"  + itemIdentifier.rawValue + "/" + fileName).addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
                 let url = URL(string: urlString)!
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + Double(k_timerProcessAutoUploadExtension)) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + providerData.timeReupload) {
                     
                     self.uploadFileItemChanged(for: itemIdentifier, url: url)
                 }
@@ -300,7 +306,7 @@ extension FileProviderExtension {
             }
         }
         
-        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
     }
     
     func uploadFileImportDocument() {
@@ -308,12 +314,12 @@ extension FileProviderExtension {
         let queueInLock = NCManageDatabase.sharedInstance.getQueueUploadInLock()
         if queueInLock != nil && queueInLock!.count == 0 {
             
-            let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, withPath: true)
+            let metadataNetQueue = NCManageDatabase.sharedInstance.lockQueueUpload(selector: selectorUploadFile, session: k_upload_session_extension)
             if  metadataNetQueue != nil {
                 
-                if self.providerData.copyFile(metadataNetQueue!.path, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
+                if self.providerData.copyFile(metadataNetQueue!.path + "/" + metadataNetQueue!.fileName, toPath: providerData.directoryUser + "/" + metadataNetQueue!.fileName) == nil {
                     
-                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, fileID: metadataNetQueue!.assetLocalIdentifier, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
+                    CCNetworking.shared().uploadFile(metadataNetQueue!.fileName, serverUrl: metadataNetQueue!.serverUrl, assetLocalIdentifier: metadataNetQueue!.assetLocalIdentifier, path:providerData.directoryUser, session: metadataNetQueue!.session, taskStatus: metadataNetQueue!.taskStatus, selector: metadataNetQueue!.selector, selectorPost: metadataNetQueue!.selectorPost, errorCode: 0, delegate: self)
                     
                 } else {
                     // file not present, delete record Upload Queue
@@ -343,16 +349,4 @@ extension FileProviderExtension {
         
         CCNetworking.shared().uploadFileMetadata(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
-    
-    func verifyUploadQueueInLock() {
-        
-        let tasks = CCNetworking.shared().getUploadTasksExtensionSession()
-        if tasks!.count == 0 {
-            let records = NCManageDatabase.sharedInstance.getQueueUpload(predicate: NSPredicate(format: "account = %@ AND selector = %@ AND lock == true AND path != nil", providerData.account, selectorUploadFile))
-            if records != nil && records!.count > 0 {
-                NCManageDatabase.sharedInstance.unlockAllQueueUploadWithPath()
-            }
-        }
-    }
-
 }

@@ -88,21 +88,21 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // ITEM : Transfer
         var item = OCExternalSites.init()
         item.name = "_transfers_"
-        item.icon = "moreTransfers"
+        item.icon = "load"
         item.url = "segueTransfers"
         functionMenu.append(item)
         
         // ITEM : Activity
         item = OCExternalSites.init()
         item.name = "_activity_"
-        item.icon = "moreActivity"
+        item.icon = "activity"
         item.url = "segueActivity"
         functionMenu.append(item)
         
         // ITEM : Shares
         item = OCExternalSites.init()
         item.name = "_list_shares_"
-        item.icon = "moreShares"
+        item.icon = "share"
         item.url = "segueShares"
         functionMenu.append(item)
         
@@ -123,11 +123,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                     item.icon = table.icon
             
                     if (table.type == "link") {
-                        item.icon = "moreExternalSite"
+                        item.icon = "world"
                         functionMenu.append(item)
                     }
                     if (table.type == "settings") {
-                        item.icon = "moreSettingsExternalSite"
+                        item.icon = "settings"
                         settingsMenu.append(item)
                     }
                     if (table.type == "quota") {
@@ -140,7 +140,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // ITEM : Settings
         item = OCExternalSites.init()
         item.name = "_settings_"
-        item.icon = "moreSettings"
+        item.icon = "settings"
         item.url = "segueSettings"
         settingsMenu.append(item)
         

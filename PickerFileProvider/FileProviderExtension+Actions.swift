@@ -78,7 +78,7 @@ extension FileProviderExtension {
                     self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
                 }
 
-                self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+                self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
 
                 completionHandler(item, nil)
                 
@@ -128,7 +128,7 @@ extension FileProviderExtension {
             providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
         }
 
-        self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+        self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
 
         completionHandler(nil)
     }
@@ -196,7 +196,7 @@ extension FileProviderExtension {
                 self.providerData.fileProviderSignalUpdateWorkingSetItem[itemIdentifier] = item
             }
 
-            self.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
 
             completionHandler(item, nil)
             
@@ -269,7 +269,7 @@ extension FileProviderExtension {
                 self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
             }
 
-            self.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+            self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
 
             completionHandler(item, nil)
             
@@ -317,7 +317,7 @@ extension FileProviderExtension {
             providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
 
-        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
 
         completionHandler(item, nil)
         
@@ -351,7 +351,7 @@ extension FileProviderExtension {
             providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         
-        signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
+        providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         
         completionHandler(item, nil)
     }
@@ -418,7 +418,7 @@ extension FileProviderExtension {
                 }
             
                 let fileName = self.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID, serverUrl: serverUrl)
-                let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + self.providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+                let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + tableDirectory.directoryID + fileName
             
                 do {
                     try FileManager.default.createDirectory(atPath: fileNamePathDirectory, withIntermediateDirectories: true, attributes: nil)
@@ -434,12 +434,12 @@ extension FileProviderExtension {
             
                 // Metadata TEMP
                 metadata.account = self.providerData.account
-                metadata.assetLocalIdentifier = self.providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+                metadata.assetLocalIdentifier = tableDirectory.directoryID + fileName
                 metadata.date = NSDate()
                 metadata.directory = false
                 metadata.directoryID = tableDirectory.directoryID
                 metadata.etag = ""
-                metadata.fileID = self.providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+                metadata.fileID = tableDirectory.directoryID + fileName
                 metadata.size = size
                 metadata.status = Double(k_metadataStatusHide)
                 metadata.fileName = fileName
@@ -451,9 +451,9 @@ extension FileProviderExtension {
                     let metadataNet = CCMetadataNet()
                     
                     metadataNet.account = self.providerData.account
-                    metadataNet.assetLocalIdentifier = self.providerData.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+                    metadataNet.assetLocalIdentifier = tableDirectory.directoryID + fileName
                     metadataNet.fileName = fileName
-                    metadataNet.path = fileNamePathDirectory + "/" + fileName
+                    metadataNet.path = fileNamePathDirectory
                     metadataNet.selector = selectorUploadFile
                     metadataNet.selectorPost = self.providerData.selectorPostImportDocument
                     metadataNet.serverUrl = serverUrl

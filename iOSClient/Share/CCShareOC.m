@@ -292,17 +292,12 @@
     
     UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:applicationActivities];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-        [self presentViewController:activityController animated:YES completion:nil];
+    activityController.popoverPresentationController.sourceView = self.view;
+    NSIndexPath *indexPath = [self.form indexPathOfFormRow:sender];
+    CGRect cellRect = [self.tableView rectForRowAtIndexPath:indexPath];
+    activityController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        
-        UIPopoverController *popup;
-        
-        popup = [[UIPopoverController alloc] initWithContentViewController:activityController];
-        [popup presentPopoverFromRect:CGRectMake(120, 100, 200, 400) inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
-    }
-
+    [self presentViewController:activityController animated:YES completion:nil];
 }
 
 - (void)shareUserButton:(XLFormRowDescriptor *)rowDescriptor

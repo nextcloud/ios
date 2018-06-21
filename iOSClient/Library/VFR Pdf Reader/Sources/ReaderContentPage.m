@@ -481,7 +481,7 @@
 			}
 			else // Error out with a diagnostic
 			{
-				CGPDFDocumentRelease(_PDFDocRef), _PDFDocRef = NULL;
+                (void)(CGPDFDocumentRelease(_PDFDocRef)), _PDFDocRef = NULL;
 
 				NSAssert(NO, @"CGPDFPageRef == NULL");
 			}
@@ -514,9 +514,9 @@
 
 - (void)dealloc
 {
-	CGPDFPageRelease(_PDFPageRef), _PDFPageRef = NULL;
+    (void)(CGPDFPageRelease(_PDFPageRef)), _PDFPageRef = NULL;
 
-	CGPDFDocumentRelease(_PDFDocRef), _PDFDocRef = NULL;
+    (void)(CGPDFDocumentRelease(_PDFDocRef)), _PDFDocRef = NULL;
 }
 
 #if (READER_DISABLE_RETINA == TRUE) // Option

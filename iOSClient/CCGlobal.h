@@ -135,7 +135,6 @@ extern NSString *const flowEndpoint;
 
 #define k_timerVerifySession                            10
 #define k_timerProcessAutoDownloadUpload                5
-#define k_timerProcessAutoUploadExtension               10
 #define k_timerUpdateApplicationIconBadgeNumber         3
 
 #define k_maxConcurrentOperation                         10
@@ -152,9 +151,6 @@ extern NSString *const flowEndpoint;
 
 // Search
 #define k_minCharsSearch                                2
-
-// Metadata ed ID
-#define k_uploadSessionID                               @"ID_UPLOAD_"
 
 // Metadata.Net SELECTOR
 #define selectorAddFavorite                             @"addFavorite"
@@ -237,6 +233,10 @@ extern NSString *const flowEndpoint;
 // Metadata : Status
 #define k_metadataStatusNormal                          0
 #define k_metadataStatusHide                            1
+#define k_metadataStatusInUpload                        2
+#define k_metadataStatusUploading                       3
+#define k_metadataStatusInDownload                      4
+#define k_metadataStatusDownloading                     5
 
 // TabBar button
 #define k_tabBarApplicationIndexFile                    0
@@ -282,7 +282,7 @@ extern NSString *const flowEndpoint;
 #define k_flow_version_available                        12
 
 //
-#define k_assetLocalIdentifierFileProviderStorage       @"File Provider Storage"
+#define k_DirectoryProviderStorage                      @"File Provider Storage"
 
 
 // -----------------------------------------------------------------------------------------------------------

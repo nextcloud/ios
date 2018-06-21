@@ -182,16 +182,16 @@
     }
     
     if (_isSearchMode) {
-        [CCGraphics addImageToTitle:self.navigationItem.title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loadingTitle"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
+        [CCGraphics addImageToTitle:self.navigationItem.title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
         [self.collectionView reloadData];
         return;
     }
     
     // Button Item
     UIImage *icon;
-    icon = [UIImage imageNamed:@"seleziona"];
+    icon = [UIImage imageNamed:@"select"];
     UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(editingModeYES)];
-    icon = [UIImage imageNamed:@"startDirectoryPhotosTab"];
+    icon = [UIImage imageNamed:@"folderPhotos"];
     UIBarButtonItem *buttonStartDirectoryPhotosTab = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(selectStartDirectoryPhotosTab)];
 
     if ([_sectionDataSource.allRecordsDataSource count] > 0) {
@@ -208,10 +208,10 @@
 {
     UIImage *icon;
     
-    icon = [UIImage imageNamed:@"deleteSelectedFiles"];
+    icon = [UIImage imageNamed:@"delete"];
     UIBarButtonItem *buttonDelete = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(deleteSelectedFiles)];
     
-    icon = [UIImage imageNamed:@"openSelectedFiles"];
+    icon = [UIImage imageNamed:@"openFile"];
     UIBarButtonItem *buttonOpenWith = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(openSelectedFiles)];
     
     UIBarButtonItem *leftButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(editingModeNO)];
@@ -297,7 +297,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photosNoRecord"] color:[NCBrandColor sharedInstance].brandElement];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photosNoRecord"] color:[NCBrandColor sharedInstance].graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -670,7 +670,7 @@
     
     [ocNetworking readFile:nil serverUrl:startDirectory account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
         
-        if (![metadata.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]]) {
+        if (![metadata.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]] || _sectionDataSource.allRecordsDataSource.count == 0) {
             
             [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
             [self searchInProgress:YES];

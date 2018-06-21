@@ -164,12 +164,14 @@
 + (NSString *)createRandomString:(int)numChars;
 + (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType;
 
++ (NSURL *)getDirectoryGroup;
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
-+ (NSString *)getOLDDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryDocuments;
 + (NSString *)getDirectoryAudio;
 + (NSString *)getDirectoryCerificates;
++ (NSString *)getDirectoryProviderStorage;
+
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 
 + (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;

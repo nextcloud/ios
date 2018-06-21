@@ -23,9 +23,6 @@
 
 import FileProvider
 
-// Timer for Upload (queue)
-var timerUpload: Timer?
-
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
                                                             STRUCT item
    -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -72,23 +69,23 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         super.init()
         
+        // Get group directiry
+        let groupURL = CCUtility.getDirectoryGroup()!
+        providerData.fileProviderStorageURL = groupURL.appendingPathComponent(k_DirectoryProviderStorage)
+        
+        // Create directory File Provider Storage
+        do {
+            try FileManager.default.createDirectory(atPath: providerData.fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            NSLog("Unable to create directory \(error.debugDescription)")
+        }
+        
+        // Setup account
         _ = providerData.setupActiveAccount()
         
-        verifyUploadQueueInLock()
-        
         if #available(iOSApplicationExtension 11.0, *) {
-                        
-            // Timer for upload
-            if timerUpload == nil {
-                
-                timerUpload = Timer.init(timeInterval: TimeInterval(k_timerProcessAutoUploadExtension), repeats: true, block: { (Timer) in
-                    
-                    // new upload
-                    self.uploadFileImportDocument()
-                })
-                
-                RunLoop.main.add(timerUpload!, forMode: .defaultRunLoopMode)
-            }
+            
+            self.uploadFileImportDocument()
             
         } else {
             
@@ -110,17 +107,15 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
         
         var maybeEnumerator: NSFileProviderEnumerator? = nil
-
-        if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
-            
-            // Check account
+        
+        // Check account
+        if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
             if providerData.setupActiveAccount() == false {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo:[:])
             }
-            
-            // Update WorkingSet
-            self.updateWorkingSet()
-            
+        }
+
+        if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
@@ -142,76 +137,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         }
        
         return enumerator
-    }
-    
-    // Convinent method to signal the enumeration for containers.
-    //
-    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
-        providerData.currentAnchor += 1
-
-        for containerItemIdentifier in containerItemIdentifiers {
-            
-            NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
-                if let error = error {
-                    print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
-                }
-            }
-        }
-    }
-    
-    // MARK: - WorkingSet
-    
-    func updateWorkingSet() {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
-        // ***** Favorite Files <-> Favorite Nextcloud *****
-        
-        providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
-        
-        // (ADD)
-        for (identifier, _) in providerData.listFavoriteIdentifierRank {
-            
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, identifier)) else {
-                continue
-            }
-            
-            guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
-                continue
-            }
-            
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-            
-            providerData.queueTradeSafe.sync(flags: .barrier) {
-                providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-            }
-        }
-        
-        // (REMOVE)
-        let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directory = true AND favorite = false", providerData.account), sorted: "fileName", ascending: true)
-        if (metadatas != nil && metadatas!.count > 0) {
-            for metadata in metadatas! {
-                guard let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata) else {
-                    continue
-                }
-                
-                let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-                providerData.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
-                
-                providerData.queueTradeSafe.sync(flags: .barrier) {
-                    providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-                }
-            }
-        }
-        
-        // Update workingSet
-        self.signalEnumerator(for: [.workingSet])
     }
     
     // MARK: - Item
@@ -350,7 +275,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             // is Upload [Office 365 !!!]
-            if metadata.sessionTaskIdentifier > 0 || metadata.fileID.contains(k_uploadSessionID) {
+            if metadata.sessionTaskIdentifier > 0 || metadata.fileID.contains(metadata.directoryID + metadata.fileName) {
                 completionHandler(nil)
                 return
             }
@@ -493,7 +418,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             if metadata != nil {
                 
                 // Update
-                let uploadID = k_uploadSessionID + CCUtility.createRandomString(16)
+                let uploadID = metadata!.directoryID + metadata!.fileID
                 let directoryUser = CCUtility.getDirectoryActiveUser(account.user, activeUrl: account.url)
                 let destinationDirectoryUser = "\(directoryUser!)/\(uploadID)"
                 
@@ -514,7 +439,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 _ = providerData.copyFile(url.path, toPath: destinationDirectoryUser)
 
-                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, fileID: nil, assetLocalIdentifier: nil, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
+                CCNetworking.shared().uploadFile(fileName, serverUrl: serverUrl, assetLocalIdentifier: nil, path:directoryUser!, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self)
             }
 
             self.stopProvidingItem(at: url)

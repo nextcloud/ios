@@ -480,7 +480,7 @@ extension DocumentPickerViewController {
                     
                         // Upload fileName to Cloud
                     
-                        CCNetworking.shared().uploadFile(fileName, serverUrl: self!.serverUrl, fileID: nil, assetLocalIdentifier: nil, session: k_upload_session_foreground, taskStatus: Int(k_taskStatusResume), selector: "", selectorPost: "", errorCode: 0, delegate: self)
+                        CCNetworking.shared().uploadFile(fileName, serverUrl: self!.serverUrl, assetLocalIdentifier: nil, path:directoryUser,session: k_upload_session_foreground, taskStatus: Int(k_taskStatusResume), selector: "", selectorPost: "", errorCode: 0, delegate: self)
                         
                         self!.hud.visibleHudTitle(NSLocalizedString("_uploading_", comment: ""), mode: MBProgressHUDMode.determinate, color: NCBrandColor.sharedInstance.brandElement)
                     }
@@ -655,7 +655,7 @@ extension DocumentPickerViewController: UITableViewDataSource {
                 if (metadata.e2eEncrypted) {
                     cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderEncrypted"), color: NCBrandColor.sharedInstance.brandElement)
                 } else if (metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory) {
-                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderphotocamera"), color: NCBrandColor.sharedInstance.brandElement)
+                    cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folderPhotos"), color: NCBrandColor.sharedInstance.brandElement)
                 } else {
                     cell.fileImageView.image = CCGraphics.changeThemingColorImage(UIImage(named: "folder"), color: NCBrandColor.sharedInstance.brandElement)
                 }

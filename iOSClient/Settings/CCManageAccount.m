@@ -59,8 +59,12 @@
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"pickerAccount" rowType:XLFormRowDescriptorTypePicker];
     row.height = 100;
-    row.selectorOptions = listAccount;
-    row.value = appDelegate.activeAccount;
+    if (listAccount.count > 0) {
+        row.selectorOptions = listAccount;
+        row.value = appDelegate.activeAccount;
+    } else {
+        row.selectorOptions = [[NSArray alloc] initWithObjects:@"", nil];
+    }
     [section addFormRow:row];
 
     // Section : USER INFORMATION -------------------------------------------
@@ -114,7 +118,7 @@
         // Modify Account
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountModify"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[UIImage imageNamed:@"rename"] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         row.action.formSelector = @selector(changePassword:);
@@ -127,7 +131,7 @@
             // New Account nextcloud
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-            [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountNextcloud"] forKey:@"imageView.image"];
+            [row.cellConfig setObject:[UIImage imageNamed:@"add"] forKey:@"imageView.image"];
             [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
             [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
             row.action.formSelector = @selector(addAccount:);
@@ -136,10 +140,9 @@
     
         // delete Account
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
-        if (listAccount.count > 0)
-            [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
+        [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:@"settingsAccountDelete"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[UIColor redColor]] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(answerDelAccount:);
         if (listAccount.count == 0) row.disabled = @YES;
@@ -262,13 +265,42 @@
 #pragma mark === Delete Account  ===
 #pragma --------------------------------------------------------------------------------------------
 
--(void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void)deleteAccount:(NSString *)account
 {
-    XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
+    // Verify session in progress
+    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
+        return;
+    }
     
-    [actionSheet dismissWithClickedButtonIndex:buttonIndex animated:YES];
+    [appDelegate.netQueue cancelAllOperations];
     
-    if (buttonIndex == 0 && actionSheet.tag == actionSheetCancellaAccount) {
+    [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
+    
+    // Clear active user
+    [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];
+}
+
+- (void)answerDelAccount:(XLFormRowDescriptor *)sender
+{
+    [self deselectFormRow:sender];
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_want_delete_",nil) message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        
+        XLFormPickerCell *pickerAccount = (XLFormPickerCell *)[[self.form formRowWithTag:@"pickerAccount"] cellForFormController:self];
         
         NSString *accountNow = pickerAccount.rowDescriptor.value;
         
@@ -280,51 +312,17 @@
         else {
             [self addAccountForced];
         }
-    }
-}
-
-- (void)deleteAccount:(NSString *)account
-{
-    // Verify session in progress
-    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
-        [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
-        return;
-    }
+    }]];
     
-    [appDelegate.netQueue cancelAllOperations];
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        [alertController dismissViewControllerAnimated:YES completion:nil];
+    }]];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-
-        [[NCManageDatabase sharedInstance] clearTable:[tableAccount class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:account];
-        [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
-    
-        // Clear active user
-        [appDelegate settingActiveAccount:nil activeUrl:nil activeUser:nil activeUserID:nil activePassword:nil];        
-    });
-}
-
-- (void)answerDelAccount:(XLFormRowDescriptor *)sender
-{
-    [self deselectFormRow:sender];
-    
-    UIActionSheet *actionSheet1 = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"_want_delete_",nil)
-                                                              delegate:self
-                                                     cancelButtonTitle:NSLocalizedString(@"_no_delete_",nil)
-                                                destructiveButtonTitle:NSLocalizedString(@"_yes_delete_",nil)
-                                                     otherButtonTitles:nil];
-    
-    actionSheet1.tag = actionSheetCancellaAccount;
-    [actionSheet1 showInView:self.view.window.rootViewController.view];
+    alertController.popoverPresentationController.sourceView = self.view;
+    NSIndexPath *indexPath = [self.form indexPathOfFormRow:sender];
+    alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
+        
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -364,7 +362,7 @@
 {
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
-    if (listAccount == nil) {
+    if (listAccount.count == 0) {
         [self addAccountForced];
         return;
     }
