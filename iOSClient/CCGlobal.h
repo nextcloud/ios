@@ -134,15 +134,15 @@ extern NSString *const flowEndpoint;
 #define k_metadataStatusNormal                          0
 #define k_metadataStatusHide                            1
 
-#define k_metadataStatusWaitUpload                      2
-#define k_metadataStatusInUpload                        3
-#define k_metadataStatusUploading                       4
-#define k_metadataStatusUploadError                     5
+#define k_metadataStatusWaitDownload                    2
+#define k_metadataStatusInDownload                      3
+#define k_metadataStatusDownloading                     4
+#define k_metadataStatusDownloadError                   5
 
-#define k_metadataStatusWaitDownload                    6
-#define k_metadataStatusInDownload                      7
-#define k_metadataStatusDownloading                     8
-#define k_metadataStatusDownloadError                   9
+#define k_metadataStatusWaitUpload                      6
+#define k_metadataStatusInUpload                        7
+#define k_metadataStatusUploading                       8
+#define k_metadataStatusUploadError                     9
 
 // Timer
 #define k_timerProcessAutoDownloadUpload                5
