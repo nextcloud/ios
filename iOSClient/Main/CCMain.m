@@ -2578,7 +2578,7 @@
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
     metadataNet.action = actionGetUserAndGroup;
-    metadataNet.options = find;
+    metadataNet.optionAny = find;
     metadataNet.selector = selectorGetUserAndGroup;
         
     [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
@@ -2668,7 +2668,7 @@
     
         _dateReadDataSource = nil;
         
-        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
+        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.optionAny boolValue]];
         
         if (_isSearchMode)
             [self readFolder:metadataNet.serverUrl];

@@ -88,7 +88,6 @@
 
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *action;
-@property (nonatomic, strong) NSString *assetLocalIdentifier;
 @property (nonatomic, strong) NSArray *contentType;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, weak) id delegate;
@@ -105,7 +104,8 @@
 @property (nonatomic, strong) NSString *fileNameView;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *keyCipher;
-@property (nonatomic, strong) id options;
+@property (nonatomic, strong) id optionAny;
+@property (nonatomic, strong) NSString *optionString;
 @property (nonatomic, strong) NSString *password;
 @property NSInteger priority;
 @property (nonatomic, strong) NSString *serverUrl;

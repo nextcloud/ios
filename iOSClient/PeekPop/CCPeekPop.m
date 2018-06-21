@@ -132,7 +132,7 @@
     metadataNet.action = actionDownloadThumbnail;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
-    metadataNet.options = @"l";
+    metadataNet.optionAny = @"l";
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selectorDownloadThumbnail;
     metadataNet.serverUrl = serverUrl;

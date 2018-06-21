@@ -1338,7 +1338,6 @@
     
     [metadataNet setAccount: self.account];
     [metadataNet setAction: self.action];
-    [metadataNet setAssetLocalIdentifier: self.assetLocalIdentifier];
     [metadataNet setContentType: self.contentType];
     [metadataNet setDate: self.date];
     [metadataNet setDelegate: self.delegate];
@@ -1355,7 +1354,8 @@
     [metadataNet setFileNameView: self.fileNameView];
     [metadataNet setKey: self.key];
     [metadataNet setKeyCipher: self.keyCipher];
-    [metadataNet setOptions: self.options];
+    [metadataNet setOptionAny: self.optionAny];
+    [metadataNet setOptionString: self.optionString];
     [metadataNet setPassword: self.password];
     [metadataNet setPriority: self.priority];
     [metadataNet setServerUrl: self.serverUrl];

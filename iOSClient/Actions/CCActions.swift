@@ -338,7 +338,7 @@ class CCActions: NSObject {
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
         metadataNet.fileNameView = metadata.fileNameView
-        metadataNet.options = "m"
+        metadataNet.optionAny = "m"
         metadataNet.priority = Operation.QueuePriority.low.rawValue
         metadataNet.selector = selectorDownloadThumbnail;
         metadataNet.serverUrl = serverUrl;
@@ -367,7 +367,7 @@ class CCActions: NSObject {
         metadataNet.delegate = delegate
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
-        metadataNet.options = "\(favorite)"
+        metadataNet.optionAny = "\(favorite)"
         metadataNet.selector = selectorAddFavorite
         metadataNet.serverUrl = serverUrl;
         

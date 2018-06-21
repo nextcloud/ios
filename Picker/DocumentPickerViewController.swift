@@ -310,7 +310,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         metadataNet.action = actionDownloadThumbnail
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: self.serverUrl, activeUrl: activeUrl)
-        metadataNet.options = "m";
+        metadataNet.optionAny = "m";
         metadataNet.selector = selectorDownloadThumbnail;
         metadataNet.serverUrl = self.serverUrl
         

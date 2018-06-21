@@ -184,7 +184,7 @@
 {
     if (errorCode == 0) {
         
-        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.options boolValue]];
+        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.optionAny boolValue]];
         [self reloadDatasource];
         
     } else {

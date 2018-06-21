@@ -87,9 +87,9 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
                 
                 metadataNet.action = actionSetNotificationServer
-                metadataNet.assetLocalIdentifier = "\(notification.idNotification)"
-                metadataNet.options = "DELETE"
-                metadataNet.serverUrl = "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(metadataNet.assetLocalIdentifier!)"
+                metadataNet.optionString = "\(notification.idNotification)"
+                metadataNet.optionAny = "DELETE"
+                metadataNet.serverUrl = "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(metadataNet.optionString!)"
 
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
@@ -116,9 +116,9 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                             let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
                             
                             metadataNet.action = actionSetNotificationServer
-                            metadataNet.assetLocalIdentifier = "\(notification.idNotification)"
+                            metadataNet.optionString = "\(notification.idNotification)"
                             metadataNet.serverUrl =  (actionNotification as! OCNotificationsAction).link
-                            metadataNet.options = (actionNotification as! OCNotificationsAction).type
+                            metadataNet.optionAny = (actionNotification as! OCNotificationsAction).type
                             
                             self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
                         }
@@ -203,7 +203,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             
             let listOfNotifications = appDelegate.listOfNotifications as NSArray as! [OCNotifications]
             
-            if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.assetLocalIdentifier)})  {
+            if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.optionString)})  {
                 appDelegate.listOfNotifications.removeObject(at: index)
             }
             

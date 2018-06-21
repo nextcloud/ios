@@ -275,7 +275,7 @@
 
 - (void)downloadThumbnail
 {
-    [self downloadThumbnailWithDimOfThumbnail:(NSString *)_metadataNet.options fileName:_metadataNet.fileName fileNameLocal:_metadataNet.fileID success:^{
+    [self downloadThumbnailWithDimOfThumbnail:(NSString *)_metadataNet.optionAny fileName:_metadataNet.fileName fileNameLocal:_metadataNet.fileID success:^{
         
         if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)])
             [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:nil errorCode:0];
@@ -743,7 +743,7 @@
 
 - (void)settingFavorite
 {
-    [self settingFavorite:_metadataNet.fileName favorite:[_metadataNet.options boolValue] success:^{
+    [self settingFavorite:_metadataNet.fileName favorite:[_metadataNet.optionAny boolValue] success:^{
         
         if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)])
             [self.delegate settingFavoriteSuccessFailure:_metadataNet message:nil errorCode:0];
@@ -1377,7 +1377,7 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication searchUsersAndGroupsWith:_metadataNet.options forPage:1 with:50 ofServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *itemList, NSString *redirectedServer) {
+    [communication searchUsersAndGroupsWith:_metadataNet.optionAny forPage:1 with:50 ofServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *itemList, NSString *redirectedServer) {
         
         if([self.delegate respondsToSelector:@selector(getUserAndGroupSuccess:items:)])
             [self.delegate getUserAndGroupSuccess:_metadataNet items:itemList];
@@ -1660,7 +1660,7 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSString *type = _metadataNet.options;
+    NSString *type = _metadataNet.optionAny;
     
     [communication setNotificationServer:_metadataNet.serverUrl type:type onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
@@ -1709,7 +1709,7 @@
     communication.kindOfCredential = credentialNotSet;
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSDictionary *parameter = _metadataNet.options;
+    NSDictionary *parameter = _metadataNet.optionAny;
     
     NSString *pushToken = [parameter objectForKey:@"pushToken"];
     NSString *pushTokenHash = [parameter objectForKey:@"pushTokenHash"];
