@@ -4808,8 +4808,6 @@
     if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusDownloadError) {
         
         cell.status.image = [UIImage imageNamed:@"statusdownload"];
-
-        // sessionTaskIdentifier : RELOAD + STOP
         
         [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
