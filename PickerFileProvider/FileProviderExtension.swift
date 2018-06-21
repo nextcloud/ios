@@ -274,9 +274,19 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            // Error ?
-            if metadata.status == k_metadataStatusUploadError {
+            // Error ? reUpload when touch
+            if metadata.status == k_metadataStatusUploadError && metadata.session == k_upload_session_extension {
                 
+                if metadata.sessionSelectorPost == providerData.selectorPostImportDocument {
+                    
+                    metadata.status = Int(k_metadataStatusWaitUpload)
+                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                    
+                    self.uploadFileImportDocument()
+                }
+                
+                completionHandler(nil)
+                return
             }
             
             // is Upload [Office 365 !!!]

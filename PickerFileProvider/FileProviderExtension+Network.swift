@@ -98,13 +98,19 @@ extension FileProviderExtension {
             
         }, failure: { (errorMessage, errorCode) in
             
-            // remove itemIdentifier on fileProviderSignalDeleteItemIdentifier
-            self.providerData.queueTradeSafe.sync(flags: .barrier) {
-                self.providerData.fileProviderSignalDeleteContainerItemIdentifier.removeValue(forKey: itemIdentifier)
-                self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier.removeValue(forKey: itemIdentifier)
-            }
+            // file not found ? delete
+            if errorCode == 404 {
+                
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
             
-            self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+                // remove itemIdentifier on fileProviderSignalDeleteItemIdentifier
+                self.providerData.queueTradeSafe.sync(flags: .barrier) {
+                    self.providerData.fileProviderSignalDeleteContainerItemIdentifier.removeValue(forKey: itemIdentifier)
+                    self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier.removeValue(forKey: itemIdentifier)
+                }
+            
+                self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+            }
         })
     }
     
