@@ -4410,7 +4410,7 @@
         if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
             return NO;
         
-        if (metadata == nil || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
+        if (metadata == nil || metadata.status != k_metadataStatusNormal)
             return NO;
         else
             return YES;
@@ -4805,22 +4805,20 @@
     // downloadFile
     // ----------------------------------------------------------------------------------------------------------
     
-    if ([metadata.session length] > 0 && [metadata.session containsString:@"download"]) {
+    if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusDownloadError) {
         
         cell.status.image = [UIImage imageNamed:@"statusdownload"];
 
         // sessionTaskIdentifier : RELOAD + STOP
-        if (metadata.sessionTaskIdentifier != k_taskIdentifierDone) {
+        
+        [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
             
-            [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
-            
-            cell.cancelTaskButton.hidden = NO;
+        cell.cancelTaskButton.hidden = NO;
 
-            [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
+        [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
             
-            cell.reloadTaskButton.hidden = NO;
+        cell.reloadTaskButton.hidden = NO;
             
-        }
         
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
         
@@ -4832,29 +4830,29 @@
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
         }
-
-        // ----------------------------------------------------------------------------------------------------------
-        // downloadFile Error
-        // ----------------------------------------------------------------------------------------------------------
+    }
+    
+    // ----------------------------------------------------------------------------------------------------------
+    // downloadFile Error
+    // ----------------------------------------------------------------------------------------------------------
         
-        if (metadata.status == k_metadataStatusDownloadError) {
+    if (metadata.status == k_metadataStatusDownloadError) {
             
-            cell.status.image = [UIImage imageNamed:@"statuserror"];
+        cell.status.image = [UIImage imageNamed:@"statuserror"];
             
-            if ([metadata.sessionError length] == 0) {
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_downloaded_",nil)];
-            } else {
-                cell.labelInfoFile.text = metadata.sessionError;
-            }
+        if ([metadata.sessionError length] == 0) {
+            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_downloaded_",nil)];
+        } else {
+            cell.labelInfoFile.text = metadata.sessionError;
         }
-    }    
+    }
     
     // ----------------------------------------------------------------------------------------------------------
     // uploadFile
     // ----------------------------------------------------------------------------------------------------------
     
-    if ([metadata.session length] > 0 && [metadata.session rangeOfString:@"upload"].location != NSNotFound) {
-        
+    if (metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading || metadata.status == k_metadataStatusUploadError) {
+
         cell.status.image = [UIImage imageNamed:@"statusupload"];
         
         [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetask"] forState:UIControlStateNormal];
@@ -4892,21 +4890,21 @@
             cell.progressView.progress = progress;
             cell.progressView.hidden = NO;
         }
-        
-        // ----------------------------------------------------------------------------------------------------------
-        // uploadFileError
-        // ----------------------------------------------------------------------------------------------------------
+    }
     
-        if (metadata.sessionTaskIdentifier == k_metadataStatusUploadError) {
+    // ----------------------------------------------------------------------------------------------------------
+    // uploadFileError
+    // ----------------------------------------------------------------------------------------------------------
+    
+    if (metadata.sessionTaskIdentifier == k_metadataStatusUploadError) {
         
-            cell.labelTitle.enabled = NO;
-            cell.status.image = [UIImage imageNamed:@"statuserror"];
+        cell.labelTitle.enabled = NO;
+        cell.status.image = [UIImage imageNamed:@"statuserror"];
         
-            if ([metadata.sessionError length] == 0) {
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];
-            } else {
-                cell.labelInfoFile.text = metadata.sessionError;
-            }
+        if ([metadata.sessionError length] == 0) {
+            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];
+        } else {
+            cell.labelInfoFile.text = metadata.sessionError;
         }
     }
 
