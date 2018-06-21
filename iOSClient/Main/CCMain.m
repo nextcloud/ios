@@ -2303,6 +2303,11 @@
     }
 }
 
+- (void)cancelAllTask:(id)sender
+{
+    
+}
+
 - (void)cancelTaskButton:(tableMetadata *)metadata reloadTable:(BOOL)reloadTable
 {    
     NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
@@ -4909,6 +4914,10 @@
     [cell.reloadTaskButton addTarget:self action:@selector(reloadTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
     [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
     [cell.stopTaskButton addTarget:self action:@selector(stopTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
+    
+    UILongPressGestureRecognizer *cancelLongGesture = [UILongPressGestureRecognizer new];
+    [cancelLongGesture addTarget:self action:@selector(cancelAllTask:)];
+    [cell.cancelTaskButton addGestureRecognizer:cancelLongGesture];
 
     // ----------------------------------------------------------------------------------------------------------
     // swipe
