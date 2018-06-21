@@ -468,7 +468,7 @@
                     
                 } else {
                     
-                    if ([metadata.sessionError length] > 0 ) {
+                    if (metadata.status == k_metadataStatusDownloadError) {
                         
                         [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
                     }
@@ -493,7 +493,7 @@
                     
                 } else {
                     
-                    if ([metadata.sessionError length] > 0 ) {
+                    if (metadata.status == k_metadataStatusDownloadError) {
                         
                         [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
                     }
@@ -526,7 +526,7 @@
                     
                 } else {
                     
-                    if ([metadata.sessionError length] > 0 ) {
+                    if (metadata.status == k_metadataStatusDownloadError) {
                         
                         [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
                     }
