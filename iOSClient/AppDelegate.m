@@ -1396,9 +1396,7 @@
 }
 
 - (void)loadAutoDownloadUpload
-{
-    return;
-    
+{    
     tableMetadata *metadataForUpload, *metadataForDownload;
     NSInteger counterNewDownloadUpload = 0;
         
