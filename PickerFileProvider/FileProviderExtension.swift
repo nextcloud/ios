@@ -277,12 +277,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             // Error ? reUpload when touch
             if metadata.status == k_metadataStatusUploadError && metadata.session == k_upload_session_extension {
                 
-                if metadata.sessionSelectorPost == providerData.selectorPostImportDocument {
+                if metadata.sessionSelectorPost == providerData.selectorPostImportDocument ||  metadata.sessionSelectorPost == providerData.selectorPostItemChanged {
                     
-                    metadata.status = Int(k_metadataStatusWaitUpload)
-                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-                    
-                    self.uploadFileImportDocument()
+                    self.reUpload(metadata)
                 }
                 
                 completionHandler(nil)

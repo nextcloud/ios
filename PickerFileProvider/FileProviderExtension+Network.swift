@@ -273,32 +273,9 @@ extension FileProviderExtension {
             uploadFileImportDocument()
             
         } else {
-        // Error
+        
+            // Error
             
-            // importDocument
-            if (selectorPost == providerData.selectorPostImportDocument) {
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + providerData.timeReupload) {
-                    
-                    self.uploadFileImportDocument()
-                }
-            }
-            
-            // itemChanged
-            if (selectorPost == providerData.selectorPostItemChanged) {
-                
-                let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-                
-                let urlString = (providerData.fileProviderStorageURL!.path + "/"  + itemIdentifier.rawValue + "/" + fileName).addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
-                let url = URL(string: urlString)!
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + providerData.timeReupload) {
-                    
-                    self.uploadFileItemChanged(for: itemIdentifier, url: url)
-                }
-            }
-            
-            // change status to Upload Error
             metadata.status = Int(k_metadataStatusUploadError)
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
@@ -352,6 +329,14 @@ extension FileProviderExtension {
         }
         
         _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileName)
+        
+        CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
+    }
+    
+    func reUpload(_ metadata: tableMetadata) {
+        
+        metadata.status = Int(k_metadataStatusWaitUpload)
+        let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata)
         
         CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
