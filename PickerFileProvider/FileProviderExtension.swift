@@ -274,6 +274,11 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
+            // Error ?
+            if metadata.status == k_metadataStatusUploadError {
+                
+            }
+            
             // is Upload [Office 365 !!!]
             if metadata.fileID.contains(metadata.directoryID + metadata.fileName) {
                 completionHandler(nil)

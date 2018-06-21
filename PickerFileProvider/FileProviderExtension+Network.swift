@@ -239,7 +239,6 @@ extension FileProviderExtension {
                     self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
                     self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
                 }
-                
             }
             
             // itemChanged
@@ -293,11 +292,8 @@ extension FileProviderExtension {
                 }
             }
             
-            // remove session data
-            metadata.session = ""
-            metadata.sessionSelector = ""
-            metadata.sessionSelectorPost = ""
-            metadata.status = Int(k_metadataStatusWaitUpload)
+            // change status to Upload Error
+            metadata.status = Int(k_metadataStatusUploadError)
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
             let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
