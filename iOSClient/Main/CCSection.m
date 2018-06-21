@@ -81,7 +81,6 @@
     long counterSessionUpload = 0;
     NSMutableArray *copyRecords = [NSMutableArray new];
     NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
-    NSMutableArray *fileInUpload = [NSMutableArray new];
     
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
     
@@ -94,20 +93,7 @@
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     NSMutableArray *metadataFilesFavorite = [NSMutableArray new];
     
-    // fileName in Upload [PickerFileProvider]
     for (tableMetadata* metadata in records) {
-        if ([metadata.session containsString:@"upload"]) {
-            [fileInUpload addObject:metadata.fileName];
-        }
-    }
-    
-    for (tableMetadata* metadata in records) {
-        
-        // remove duplicate in Upload [PickerFileProvider]
-        if (fileInUpload.count > 0 && ![metadata.session containsString:@"upload"]) {
-            if ([fileInUpload containsObject:metadata.fileName])
-                continue;
-        }
         
         // *** LIST : DO NOT INSERT ***
         if (metadata.status == k_metadataStatusHide || [metadata.session isEqualToString:k_upload_session_extension] ) {
@@ -163,7 +149,6 @@
             
             if ([metadata.session containsString:@"wwan"]) dataSection = [@"." stringByAppendingString:metadata.session];
             else dataSection = metadata.session;
-            
         }
         else if ([groupByField isEqualToString:@"none"]) dataSection = @"_none_";
         else if ([groupByField isEqualToString:@"date"]) dataSection = [CCUtility datetimeWithOutTime:metadata.date];

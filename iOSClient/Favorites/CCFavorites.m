@@ -714,7 +714,7 @@
     _metadata = [self setSelfMetadataFromIndexPath:indexPath];
     
     // if is in download [do not touch]
-    if ([_metadata.session length] > 0 && [_metadata.session containsString:@"download"])
+    if (_metadata.status == k_metadataStatusWaitDownload || _metadata.status == k_metadataStatusInDownload || _metadata.status == k_metadataStatusDownloading)
         return;
     
     // File

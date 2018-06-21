@@ -3322,7 +3322,7 @@
     
     if (@selector(copyFile:) == action || @selector(openinFile:) == action) {
         
-        if (_isSelectedMode == NO && _metadata && !_metadata.directory && [_metadata.session length] == 0) return YES;
+        if (_isSelectedMode == NO && _metadata && !_metadata.directory && _metadata.status == k_metadataStatusNormal) return YES;
         else return NO;
     }
     
@@ -3334,7 +3334,7 @@
             
             for (tableMetadata *metadata in selectedMetadatas) {
                 
-                if (!metadata.directory && metadata.session.length == 0)
+                if (!metadata.directory && metadata.status == k_metadataStatusNormal)
                     return YES;
             }
         }
@@ -3740,7 +3740,7 @@
     if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
         return NO;
     
-    if (metadata == nil || metadata.sessionTaskIdentifier != k_taskIdentifierDone)
+    if (metadata == nil || metadata.status != k_metadataStatusNormal)
         return NO;
     
     // E2EE
@@ -4563,7 +4563,7 @@
     if (!serverUrl)
         return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
     
-    if ([metadata.session isEqualToString:@""] || metadata.session == nil) typeCell = @"CellMain";
+    if (metadata.status == k_metadataStatusNormal) typeCell = @"CellMain";
     else typeCell = @"CellMainTransfer";
     
     CCCellMainTransfer *cell = (CCCellMainTransfer *)[tableView dequeueReusableCellWithIdentifier:typeCell forIndexPath:indexPath];
@@ -4894,7 +4894,7 @@
     // uploadFileError
     // ----------------------------------------------------------------------------------------------------------
     
-    if (metadata.sessionTaskIdentifier == k_metadataStatusUploadError) {
+    if (metadata.status == k_metadataStatusUploadError) {
         
         cell.labelTitle.enabled = NO;
         cell.status.image = [UIImage imageNamed:@"statuserror"];
@@ -5036,7 +5036,8 @@
     if (!serverUrl) return;
     
     // se è in corso una sessione
-    if ([_metadata.session length] > 0) return;
+    if (_metadata.status != k_metadataStatusNormal)
+        return;
     
     // file
     if (_metadata.directory == NO) {
