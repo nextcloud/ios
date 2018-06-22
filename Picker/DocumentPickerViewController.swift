@@ -340,7 +340,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         
         if (errorCode == 0) {
             
-            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", activeAccount, fileID!)) else {
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID!)) else {
                 self.dismissGrantingAccess(to: nil)
                 return
             }
@@ -410,7 +410,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         } else {
            
             // remove file
-            let predicate = NSPredicate(format: "account == %@ AND fileID == %@", activeAccount, fileID)
+            let predicate = NSPredicate(format: "fileID == %@", fileID)
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: nil)
             
             if errorCode != -999 {

@@ -78,7 +78,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account == %@", providerData.account))
             for tag in tags {
                 
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", providerData.account, tag.fileID))  else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", tag.fileID))  else {
                     continue
                 }
                 
@@ -91,7 +91,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             for (identifier, _) in providerData.listFavoriteIdentifierRank {
              
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileID == %@", providerData.account, identifier)) else {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", identifier)) else {
                     continue
                 }
                

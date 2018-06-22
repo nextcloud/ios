@@ -1637,17 +1637,13 @@ class NCManageDatabase: NSObject {
     
     @objc func renameMetadata(fileNameTo: String, fileID: String) -> tableMetadata? {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
         var result :tableMetadata?
         let realm = try! Realm()
         
         do {
             try realm.write {
                 
-                result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first
+                result = realm.objects(tableMetadata.self).filter("fileID == %@", fileID).first
                 if result != nil {
                                         
                     result!.fileName = fileNameTo
@@ -1735,15 +1731,11 @@ class NCManageDatabase: NSObject {
     
     @objc func setMetadataFavorite(fileID: String, favorite: Bool) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
         let realm = try! Realm()
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
+        guard let result = realm.objects(tableMetadata.self).filter("fileID == %@", fileID).first else {
             realm.cancelWrite()
             return
         }
@@ -1972,10 +1964,6 @@ class NCManageDatabase: NSObject {
     
     @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String, activeUrl: String) -> Bool {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return false
-        }
-        
         let realm = try! Realm()
         realm.refresh()
         
@@ -1987,7 +1975,7 @@ class NCManageDatabase: NSObject {
         var resultsDelete = [tableMetadata]()
         for fileID in fileIDArrayDB {
             if !(fileIDArraySearch.contains(fileID)) {
-                if let result = realm.objects(tableMetadata.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first {
+                if let result = realm.objects(tableMetadata.self).filter("fileID == %@", fileID).first {
                     resultsDelete.append(result)
                 }
             }
@@ -2486,15 +2474,11 @@ class NCManageDatabase: NSObject {
     
     @objc func deleteTag(_ fileID: String) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
         let realm = try! Realm()
         
         realm.beginWrite()
         
-        guard let result = realm.objects(tableTag.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
+        guard let result = realm.objects(tableTag.self).filter("fileID == %@", fileID).first else {
             realm.cancelWrite()
             return
         }

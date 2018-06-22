@@ -291,7 +291,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "account == %@ AND fileID == %@", providerData.account, metadata.fileID))
+            let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile != nil {
                 localEtag = tableLocalFile!.etag
                 localEtagFPE = tableLocalFile!.etagFPE
