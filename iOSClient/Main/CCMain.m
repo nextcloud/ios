@@ -4605,8 +4605,9 @@
         return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl)
+    if (!serverUrl) {
         return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+    }
     
     if (metadata.status == k_metadataStatusNormal) typeCell = @"CellMain";
     else typeCell = @"CellMainTransfer";
@@ -4951,13 +4952,20 @@
         }
     }
 
-    [cell.reloadTaskButton addTarget:self action:@selector(reloadTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
-    [cell.stopTaskButton addTarget:self action:@selector(stopTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
+    // ----------------------------------------------------------------------------------------------------------
+    // gesture Transfer
+    // ----------------------------------------------------------------------------------------------------------
     
-    UILongPressGestureRecognizer *cancelLongGesture = [UILongPressGestureRecognizer new];
-    [cancelLongGesture addTarget:self action:@selector(cancelAllTask:)];
-    [cell.cancelTaskButton addGestureRecognizer:cancelLongGesture];
+    if ([typeCell isEqualToString:@"CellMainTransfer"]) {
+    
+        [cell.reloadTaskButton addTarget:self action:@selector(reloadTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [cell.stopTaskButton addTarget:self action:@selector(stopTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
+        
+        UILongPressGestureRecognizer *cancelLongGesture = [UILongPressGestureRecognizer new];
+        [cancelLongGesture addTarget:self action:@selector(cancelAllTask:)];
+        [cell.cancelTaskButton addGestureRecognizer:cancelLongGesture];
+    }
 
     // ----------------------------------------------------------------------------------------------------------
     // swipe
@@ -4994,7 +5002,7 @@
     }
     
     // ----------------------------------------------------------------------------------------------------------
-    // more
+    // More
     // ----------------------------------------------------------------------------------------------------------
     
     cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] color:[NCBrandColor sharedInstance].gray];
