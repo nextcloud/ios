@@ -96,7 +96,7 @@
     for (tableMetadata* metadata in records) {
         
         // *** LIST : DO NOT INSERT ***
-        if (metadata.status == k_metadataStatusHide || [metadata.session isEqualToString:k_upload_session_extension] ) {
+        if (metadata.status == k_metadataStatusHide) {
             continue;
         }
         

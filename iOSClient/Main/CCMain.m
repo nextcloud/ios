@@ -4848,6 +4848,29 @@
     }
     
     // ----------------------------------------------------------------------------------------------------------
+    // Session Upload Extension
+    // ----------------------------------------------------------------------------------------------------------
+    
+    if ([metadata.session isEqualToString:k_upload_session_extension] && (metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading)) {
+        
+        cell.labelTitle.enabled = NO;
+        cell.labelInfoFile.enabled = NO;
+        
+        cell.userInteractionEnabled = NO;
+        cell.cancelTaskButton.enabled = NO;
+        cell.stopTaskButton.enabled = NO;
+        
+    } else {
+        
+        cell.labelTitle.enabled = YES;
+        cell.labelInfoFile.enabled = YES;
+        
+        cell.userInteractionEnabled = YES;
+        cell.cancelTaskButton.enabled = YES;
+        cell.stopTaskButton.enabled = YES;
+    }
+    
+    // ----------------------------------------------------------------------------------------------------------
     // downloadFile
     // ----------------------------------------------------------------------------------------------------------
     
@@ -4966,7 +4989,7 @@
         [cancelLongGesture addTarget:self action:@selector(cancelAllTask:)];
         [cell.cancelTaskButton addGestureRecognizer:cancelLongGesture];
     }
-
+    
     // ----------------------------------------------------------------------------------------------------------
     // swipe
     // ----------------------------------------------------------------------------------------------------------
