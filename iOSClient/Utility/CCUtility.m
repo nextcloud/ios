@@ -811,6 +811,20 @@
     return dir;
 }
 
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID
+{
+    [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID] withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    return [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID];
+}
+
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
+{
+    [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID] withIntermediateDirectories:YES attributes:nil error:nil];
+
+    return [NSString stringWithFormat:@"%@/%@/%@", [self getDirectoryProviderStorage], fileID, fileNameView];
+}
+
 + (NSString *)getTitleSectionDate:(NSDate *)date
 {
     NSString * title;

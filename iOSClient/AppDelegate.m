@@ -1339,11 +1339,11 @@
         
         [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusWaitDownload predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
     }
-    else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
+    else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelUpload"]) {
         
         // remove the file
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], fileID] error:nil];
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", self.directoryUser, fileID] error:nil];
         
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
@@ -1483,11 +1483,6 @@
         if (metadataForUpload) {
             
             if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
-                
-                NSString *atPath = [NSString stringWithFormat:@"%@/%@", metadataForUpload.path, metadataForUpload.fileName];
-                NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataForUpload.fileName];
-                [CCUtility copyFileAtPath:atPath toPath:toPath];
-                
                 metadataForUpload.session = k_upload_session;
             }
             

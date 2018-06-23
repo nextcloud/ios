@@ -171,6 +171,8 @@
 + (NSString *)getDirectoryAudio;
 + (NSString *)getDirectoryCerificates;
 + (NSString *)getDirectoryProviderStorage;
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID;
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 

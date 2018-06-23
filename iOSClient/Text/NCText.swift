@@ -60,7 +60,7 @@ class NCText: UIViewController, UITextViewDelegate {
         if let metadata = metadata {
             
             loadText = ""
-            let path = "\(appDelegate.directoryUser!)/\(metadata.fileID)"
+            let path = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)!
             let data = NSData(contentsOfFile: path)
             
             if let data = data {

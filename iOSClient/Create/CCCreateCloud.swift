@@ -631,7 +631,9 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         self.dismiss(animated: true, completion: {
             
             let data = self.text.data(using: .utf8)
-            let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(fileNameSave)", contents: data, attributes: nil)
+            let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
+            let fileID = directoryID + fileNameSave
+            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave), contents: data, attributes: nil)
             
             if success {
                 
@@ -639,11 +641,10 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
                 
                 metadataForUpload.account = self.appDelegate.activeAccount
                 metadataForUpload.date = NSDate()
-                metadataForUpload.directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
-                metadataForUpload.fileID = metadataForUpload.directoryID + fileNameSave
+                metadataForUpload.directoryID = directoryID
+                metadataForUpload.fileID = fileID
                 metadataForUpload.fileName = fileNameSave
                 metadataForUpload.fileNameView = fileNameSave
-                metadataForUpload.path = self.appDelegate.directoryUser!
                 metadataForUpload.session = k_upload_session
                 metadataForUpload.sessionSelector = selectorUploadFile
                 metadataForUpload.status = Int(k_metadataStatusWaitUpload)

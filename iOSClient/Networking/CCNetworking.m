@@ -501,7 +501,7 @@
     // File exists ?
     tableLocalFile *localfile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         
-    if (localfile != nil && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]]) {
+    if (localfile != nil && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
             
         [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             
@@ -612,7 +612,7 @@
     
     if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
         
-        NSString *destinationFilePath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl], metadata.fileID];
+        NSString *destinationFilePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
         NSURL *destinationURL = [NSURL fileURLWithPath:destinationFilePath];
         
         [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];

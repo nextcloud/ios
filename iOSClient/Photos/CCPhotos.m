@@ -368,10 +368,8 @@
     
     for (tableMetadata *metadata in _selectedMetadatas) {
     
-        NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:metadata.fileName];
-        
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] toPath:fileNamePath error:nil];
-        
+        NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+                
         if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {

@@ -333,14 +333,11 @@
 
 - (void)openWith:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:fileNamePath toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
-        
-        NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView]];
+        NSURL *url = [NSURL fileURLWithPath:fileNamePath];
         
         _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
         _docController.delegate = self;
@@ -650,7 +647,7 @@
         
         NSString *date = [CCUtility dateDiff:metadata.date];
         NSString *length = [CCUtility transformedSize:metadata.size];
-        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID]];
+        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
         if (fileExists)
             cell.local.image = [UIImage imageNamed:@"local"];
@@ -724,7 +721,7 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
 
         if (serverUrl) {
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, _metadata.fileID]]) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:_metadata.fileID fileNameView:_metadata.fileNameView]]) {
             
                 [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
                             

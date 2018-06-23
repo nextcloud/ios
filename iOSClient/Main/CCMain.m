@@ -705,30 +705,29 @@
 {
     if (controller.documentPickerMode == UIDocumentPickerModeImport) {
         
-        NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
-        
         NSFileCoordinator *coordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
         __block NSError *error;
         
         [coordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingForUploading error:&error byAccessor:^(NSURL *newURL) {
             
             NSString *fileName = [url lastPathComponent];
-            NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, fileName];
+            NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
+            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+            NSString *fileID = [directoryID stringByAppendingString:fileName];
             NSData *data = [NSData dataWithContentsOfURL:newURL];
             
             if (data && error == nil) {
                 
-                if ([data writeToFile:fileNamePath options:NSDataWritingAtomic error:&error]) {
+                if ([data writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName] options:NSDataWritingAtomic error:&error]) {
                     
                     tableMetadata *metadataForUpload = [tableMetadata new];
                     
                     metadataForUpload.account = appDelegate.activeAccount;
                     metadataForUpload.date = [NSDate new];
-                    metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-                    metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:fileName];
+                    metadataForUpload.directoryID = directoryID;
+                    metadataForUpload.fileID = fileID;
                     metadataForUpload.fileName = fileName;
                     metadataForUpload.fileNameView = fileName;
-                    metadataForUpload.path = appDelegate.directoryUser;
                     metadataForUpload.session = k_upload_session;
                     metadataForUpload.sessionSelector = selectorUploadFile;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
@@ -1131,9 +1130,13 @@
             
             [self reloadDatasource:serverUrl];
             
+            /*
             [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
             [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
             NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView]];
+            */
+            
+            NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
             _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
             _docController.delegate = self;
@@ -1144,12 +1147,13 @@
         // Save to Photo Album
         if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-            NSString *file = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID];
+//            NSString *file = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID];
+            NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
             PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] && status == PHAuthorizationStatusAuthorized) {
                 
-                UIImage *image = [UIImage imageWithContentsOfFile:file];
+                UIImage *image = [UIImage imageWithContentsOfFile:fileNamePath];
                 
                 if (image)
                     UIImageWriteToSavedPhotosAlbum(image, self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
@@ -1159,11 +1163,9 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video] && status == PHAuthorizationStatusAuthorized) {
                 
-                [[NSFileManager defaultManager] linkItemAtPath:file toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
-                
-                if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView])) {
+                if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(fileNamePath)) {
                     
-                    UISaveVideoAtPathToSavedPhotosAlbum([NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView], self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
+                    UISaveVideoAtPathToSavedPhotosAlbum(fileNamePath, self, @selector(saveSelectedFilesSelector: didFinishSavingWithError: contextInfo:), nil);
                 } else {
                     [appDelegate messageNotification:@"_save_selected_files_" description:@"_file_not_saved_cameraroll_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
                 }
@@ -1215,7 +1217,7 @@
         // File do not exists on server, remove in local
         if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
             
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, fileID] error:nil];
+            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], fileID] error:nil];
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, fileID] error:nil];
             
             if (metadata.directory && serverUrl) {
@@ -1385,7 +1387,6 @@
         metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
         metadataForUpload.fileName = fileName;
         metadataForUpload.fileNameView = fileName;
-        metadataForUpload.path = appDelegate.directoryUser;
         metadataForUpload.session = session;
         metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.status = k_metadataStatusWaitUpload;
@@ -2803,7 +2804,7 @@
 
     [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
     
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
     
     [self reloadDatasource:serverUrl];
 }
@@ -3401,22 +3402,8 @@
             NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
             
             if (fileID) {
-                
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-            
-                if (metadata) {
-            
-                    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-                
-                    if (account) {
-                
-                        NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
-            
-                        if (directoryUser)
-                            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]])
-                                return YES;
-                    }
-                }
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], fileID]])
+                    return YES;
             }
         }
             
@@ -3440,32 +3427,8 @@
             NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
 
             if (fileID) {
-            
-                tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-            
-                if (metadata) {
-            
-                    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-
-                    if (account) {
-                
-                        NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
-            
-                        if (directoryUser) {
-                            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
-                                isValid = YES;
-                            } else {
-                                isValid = NO;
-                                break;
-                            }
-                        } else {
-                            isValid = NO;
-                            break;
-                        }
-                    } else {
-                        isValid = NO;
-                        break;
-                    }
+                if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], fileID]]) {
+                    isValid = YES;
                 } else {
                     isValid = NO;
                     break;
@@ -3490,7 +3453,7 @@
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.items = [[NSArray alloc] init];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser,_metadata.fileID]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID],_metadata.fileNameView]]) {
         
         [self copyFileToPasteboard:_metadata];
         
@@ -3523,7 +3486,7 @@
     
     for (tableMetadata *metadata in selectedMetadatas) {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID]]) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID],_metadata.fileNameView]]) {
             
             [self copyFileToPasteboard:metadata];
             
@@ -3598,40 +3561,27 @@
         
         if (metadata) {
             
-            tableAccount *account = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", metadata.account]];
-            
-            if (account) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
                 
-                NSString *directoryUser = [CCUtility getDirectoryActiveUser:account.user activeUrl:account.url];
-                
-                if (directoryUser) {
-                    
-                    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID]]) {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                         
-                        [CCUtility copyFileAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID] toPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileNameView]];
+                    tableMetadata *metadataForUpload = [tableMetadata new];
                         
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                        
-                            tableMetadata *metadataForUpload = [tableMetadata new];
-                        
-                            metadataForUpload.account = appDelegate.activeAccount;
-                            metadataForUpload.date = [NSDate new];
-                            metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:self.serverUrl];
-                            metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:metadata.fileName];
-                            metadataForUpload.fileName = metadata.fileName;
-                            metadataForUpload.fileNameView = metadata.fileNameView;
-                            metadataForUpload.path = appDelegate.directoryUser;
-                            metadataForUpload.session = k_upload_session;
-                            metadataForUpload.sessionSelector = selectorUploadFile;
-                            metadataForUpload.status = k_metadataStatusWaitUpload;
+                    metadataForUpload.account = appDelegate.activeAccount;
+                    metadataForUpload.date = [NSDate new];
+                    metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:self.serverUrl];
+                    metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:metadata.fileName];
+                    metadataForUpload.fileName = metadata.fileName;
+                    metadataForUpload.fileNameView = metadata.fileNameView;
+                    metadataForUpload.session = k_upload_session;
+                    metadataForUpload.sessionSelector = selectorUploadFile;
+                    metadataForUpload.status = k_metadataStatusWaitUpload;
                             
-                            // Add Medtadata for upload
-                            (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                        });
+                    // Add Medtadata for upload
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                });
                         
-                        timer += 0.1;
-                    }
-                }
+                timer += 0.1;
             }
         }
     }
@@ -3848,7 +3798,7 @@
         [self performSelector:@selector(deleteFile) withObject:nil];
     }]];
     
-    if (localFile || [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, _metadata.fileID]]) {
+    if (localFile || [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:_metadata.fileID fileNameView:_metadata.fileNameView]]) {
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             [self performSelector:@selector(removeLocalFile:) withObject:_metadata];
         }]];
@@ -4695,7 +4645,7 @@
         [dateFormatter setDateStyle:NSDateFormatterShortStyle];
         [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
         
-        if (localFile && [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID]])
+        if (localFile && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]])
             cell.local.image = [UIImage imageNamed:@"local"];
         else
             cell.local.image = nil;
@@ -5123,7 +5073,7 @@
     if (_metadata.directory == NO) {
         
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, _metadata.fileID]]) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:_metadata.fileID fileNameView:_metadata.fileNameView]]) {
             
             [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
             
