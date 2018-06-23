@@ -143,7 +143,6 @@
         for (tableMetadata *metadata in metadatasNotPresents) {
         
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID] error:nil];
             
             if (metadata.directory && metadataNet.serverUrl) {
                 
@@ -358,7 +357,6 @@
             
             // remove file and ico
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID] error:nil];
             
             [metadatas addObject:metadata];
         }

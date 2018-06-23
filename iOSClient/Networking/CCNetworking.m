@@ -682,7 +682,7 @@
         }
         
         // Icon
-        [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID directoryUser:_directoryUser extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+        [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
         
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
@@ -868,7 +868,7 @@
 
     // Create Image for Upload
 #ifndef EXTENSION
-    [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID directoryUser:_directoryUser extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
+    [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
 #endif
     
     // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier) image/video
@@ -1069,7 +1069,7 @@
         
         // Create ICON
         if (metadata.directory == NO)
-            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID directoryUser:_directoryUser extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
 
         // Optimization
         if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO)
@@ -1147,18 +1147,6 @@
     url = [url stringByReplacingOccurrencesOfString:[@"/" stringByAppendingString:fileName] withString:@""];
 
     return url;
-}
-
-- (NSString *)getTitleFromPlistName:(NSString *)fileName
-{
-    if ([[fileName lastPathComponent] isEqualToString:@"plist"] == NO)
-        fileName = [fileName stringByAppendingString:@".plist"];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]]) return nil;
-    
-    NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName]];
-    
-    return [data objectForKey:@"title"];
 }
 
 #pragma --------------------------------------------------------------------------------------------

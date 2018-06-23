@@ -145,7 +145,7 @@
 }
 
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileNameView fileID:(NSString *)fileID directoryUser:(NSString *)directoryUser extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writePreview:(BOOL)writePreview optimizedFileName:(BOOL)optimizedFileName
++ (UIImage *)createNewImageFrom:(NSString *)fileNameView fileID:(NSString *)fileID extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writePreview:(BOOL)writePreview optimizedFileName:(BOOL)optimizedFileName
 {
     UIImage *originalImage;
     UIImage *scaleImage;
@@ -190,11 +190,11 @@
             // if it is preview for Upload then trasform it in gray scale
             //TODO: Crash with swift
             scaleImage = [self grayscale:scaleImage];
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileID] atomically: YES];            
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView] atomically: YES];
             
         } else {
             
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileID] atomically: YES];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView] atomically: YES];
         }
     }
     
@@ -238,7 +238,8 @@
         UIGraphicsEndImageContext();
         
         resizeImage = [UIImage imageWithData:UIImageJPEGRepresentation(resizeImage, 0.5f)];
-        if (resizeImage) [UIImagePNGRepresentation(resizeImage) writeToFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID] atomically: YES];
+        if (resizeImage)
+            [UIImagePNGRepresentation(resizeImage) writeToFile:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView] atomically: YES];
     }
     
     return scaleImage;

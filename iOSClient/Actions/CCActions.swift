@@ -414,11 +414,6 @@ class CCActions: NSObject {
         } catch {
             // handle error
         }
-        do {
-            try FileManager.default.removeItem(atPath: appDelegate.directoryUser + "/" + metadata.fileID + ".ico")
-        } catch {
-            // handle error
-        }
         
         if metadata.directory {
             let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)

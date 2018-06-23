@@ -825,6 +825,13 @@
     return [NSString stringWithFormat:@"%@/%@/%@", [self getDirectoryProviderStorage], fileID, fileNameView];
 }
 
++ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
+{
+    [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorage], fileID] withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    return [NSString stringWithFormat:@"%@/%@/%@", [self getDirectoryProviderStorage], fileID, fileNameView];
+}
+
 + (NSString *)getTitleSectionDate:(NSDate *)date
 {
     NSString * title;
@@ -978,7 +985,7 @@
     return metadata;
 }
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser isFolderEncrypted:(BOOL)isFolderEncrypted
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted
 {
     tableMetadata *metadata = [tableMetadata new];
     NSString *fileNameView;

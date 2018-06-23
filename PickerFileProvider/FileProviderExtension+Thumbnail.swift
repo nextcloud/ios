@@ -33,10 +33,9 @@ extension FileProviderExtension {
                     
                     let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata!.directoryID)
                     let fileName = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl, activeUrl: providerData.accountUrl)
-                    let fileNameLocal = metadata!.fileID
                     
                     let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-                    ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileName: fileName, fileNameLocal: fileNameLocal, success: {
+                    ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileID: metadata!.fileID, fileName: fileName, success: {
                         
                         do {
                             let url = URL.init(fileURLWithPath: self.providerData.directoryUser+"/"+metadata!.fileID+".ico")
