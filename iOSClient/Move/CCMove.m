@@ -280,7 +280,7 @@
     [_networkingOperationQueue addOperation:operation];
 }
 
-// MARK: - Read Folder
+// MARK: - Read File
 
 - (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
 {
@@ -324,6 +324,10 @@
         [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
         
         for (tableMetadata *metadata in metadatas) {
+            
+            // Create directory FS
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID]] == NO)
+                [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] withIntermediateDirectories:YES attributes:nil error:nil];
             
             // Insert in Array
             [metadatasToInsertInDB addObject:metadata];

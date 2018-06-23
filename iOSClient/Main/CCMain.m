@@ -1543,6 +1543,10 @@
     
     for (tableMetadata *metadata in metadatas) {
         
+        // Create directory FS
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID]] == NO)
+            [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] withIntermediateDirectories:YES attributes:nil error:nil];
+        
         // verify if the record is in download/upload progress
         if (metadata.directory == NO && [recordsInSessions count] > 0) {
             
@@ -2118,6 +2122,8 @@
 - (void)createFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     if (errorCode == 0) {
+        
+        [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadataNet.fileID] withIntermediateDirectories:YES attributes:nil error:nil];
         
         NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];
         
