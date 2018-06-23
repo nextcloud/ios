@@ -426,7 +426,9 @@
             if (UTTypeConformsTo(fileUTI, kUTTypeImage)) typeFile = k_metadataTypeFile_image;
             if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) typeFile = k_metadataTypeFile_video;
             
-            [CCGraphics createNewImageFrom:file directoryUser:self.directoryUser fileNameTo:file extension:nil size:@"m" imageForUpload:NO typeFile:typeFile writePreview:YES optimizedFileName:NO];
+            [CCGraphics createNewImageFrom:file fileID:file directoryUser:self.directoryUser extension:nil size:@"m" imageForUpload:NO typeFile:typeFile writePreview:YES optimizedFileName:NO];
+            
+            //[CCGraphics createNewImageFrom:file directoryUser:self.directoryUser fileNameTo:file extension:nil size:@"m" imageForUpload:NO typeFile:typeFile writePreview:YES optimizedFileName:NO];
         }
     }
     

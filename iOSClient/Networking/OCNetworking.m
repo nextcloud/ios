@@ -319,8 +319,8 @@
         
         [communication getRemoteThumbnailByServer:[_activeUrl stringByAppendingString:@"/"] ofFilePath:fileName withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
             
-            [CCGraphics saveIcoWithEtag:fileNameLocal image:[UIImage imageWithData:thumbnail] writeToFile:fileNamePathLocal copy:NO move:NO fromPath:nil toPath:nil];
-            
+            [UIImagePNGRepresentation([UIImage imageWithData:thumbnail]) writeToFile:fileNamePathLocal atomically: YES];
+                    
             success();
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {

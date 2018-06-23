@@ -682,8 +682,8 @@
         }
         
         // Icon
-        [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
-                
+        [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID directoryUser:_directoryUser extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+        
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
         
@@ -868,7 +868,7 @@
 
     // Create Image for Upload
 #ifndef EXTENSION
-    [CCGraphics createNewImageFrom:metadata.fileNameView directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
+    [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID directoryUser:_directoryUser extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writePreview:YES optimizedFileName:NO];
 #endif
     
     // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier) image/video
@@ -1069,7 +1069,7 @@
         
         // Create ICON
         if (metadata.directory == NO)
-            [CCGraphics createNewImageFrom:metadata.fileID directoryUser:_directoryUser fileNameTo:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID directoryUser:_directoryUser extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
 
         // Optimization
         if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO)

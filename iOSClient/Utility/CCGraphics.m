@@ -145,7 +145,7 @@
 }
 
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileName directoryUser:(NSString *)directoryUser fileNameTo:(NSString *)fileNameTo extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writePreview:(BOOL)writePreview optimizedFileName:(BOOL)optimizedFileName
++ (UIImage *)createNewImageFrom:(NSString *)fileNameView fileID:(NSString *)fileID directoryUser:(NSString *)directoryUser extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writePreview:(BOOL)writePreview optimizedFileName:(BOOL)optimizedFileName
 {
     UIImage *originalImage;
     UIImage *scaleImage;
@@ -153,23 +153,23 @@
     CGFloat width, height;
     
     NSString *ext = [extension lowercaseString];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView];
     
-    if ([[directoryUser substringFromIndex: [directoryUser length] - 1] isEqualToString:@"/"]) directoryUser = [directoryUser substringToIndex:[directoryUser length]-1];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]]) return nil;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) return nil;
     
     // only viedo / image
     if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;
     
     if ([typeFile isEqualToString: k_metadataTypeFile_image]) {
         
-        originalImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
+        originalImage = [UIImage imageWithContentsOfFile:fileNamePath];
     }
     
     if ([typeFile isEqualToString: k_metadataTypeFile_video]) {
         
         // create symbolik link for read video file in temp
         [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"] error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName] toPath:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"] error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:fileNamePath toPath:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"] error:nil];
         
         originalImage = [self generateImageFromVideo:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"]];
     }
@@ -187,17 +187,14 @@
         
         if (imageForUpload) {
             
-            // write image preview in tmp for plist
-            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSTemporaryDirectory() stringByAppendingString:fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
-            
             // if it is preview for Upload then trasform it in gray scale
             //TODO: Crash with swift
             scaleImage = [self grayscale:scaleImage];
-            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileID] atomically: YES];            
             
         } else {
             
-            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileID] atomically: YES];
         }
     }
     
@@ -241,22 +238,10 @@
         UIGraphicsEndImageContext();
         
         resizeImage = [UIImage imageWithData:UIImageJPEGRepresentation(resizeImage, 0.5f)];
-        if (resizeImage) [UIImagePNGRepresentation(resizeImage) writeToFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameTo] atomically: YES];
+        if (resizeImage) [UIImagePNGRepresentation(resizeImage) writeToFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileID] atomically: YES];
     }
     
     return scaleImage;
-}
-
-+ (void)saveIcoWithEtag:(NSString *)fileID image:(UIImage *)image writeToFile:(NSString *)writeToFile copy:(BOOL)copy move:(BOOL)move fromPath:(NSString *)fromPath toPath:(NSString *)toPath
-{
-    if (writeToFile)
-        [UIImagePNGRepresentation(image) writeToFile:writeToFile atomically: YES];
-
-    if (copy)
-        [CCUtility copyFileAtPath:fromPath toPath:toPath];
-
-    if (move)
-        [[NSFileManager defaultManager] moveItemAtPath:fromPath toPath:toPath error:nil];
 }
 
 + (UIColor *)colorFromHexString:(NSString *)hexString
