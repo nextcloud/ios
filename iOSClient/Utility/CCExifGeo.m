@@ -22,6 +22,7 @@
 //
 
 #import "CCExifGeo.h"
+#import "CCUtility.h"
 #import "NCBridgeSwift.h"
 
 @implementation CCExifGeo
@@ -40,7 +41,7 @@
     }
 }
 
-- (void)setExifLocalTableEtag:(tableMetadata *)metadata directoryUser:(NSString *)directoryUser activeAccount:(NSString *)activeAccount
+- (void)setExifLocalTableEtag:(tableMetadata *)metadata
 {
     NSString *dateTime;
     NSString *latitudeRef;
@@ -53,10 +54,10 @@
     
     NSDate *date = [NSDate new];
     
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID]])
+    if (![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]])
         return;
 
-    NSURL *url = [NSURL fileURLWithPath:[NSString stringWithFormat:@"%@/%@", directoryUser, metadata.fileID]];
+    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
 
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
     if (!originalSource)

@@ -689,7 +689,7 @@
             
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
             if (metadata) {
-                [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:appDelegate.directoryUser activeAccount:appDelegate.activeAccount];
+                [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
             }
         }
         

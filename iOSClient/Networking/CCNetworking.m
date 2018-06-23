@@ -665,7 +665,7 @@
         [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
             
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
-            [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
+            [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
 
         // E2EE Decrypted
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier == %@ AND serverUrl == %@", fileName, serverUrl]];
@@ -1065,7 +1065,7 @@
         
         // EXIF
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
-            [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata directoryUser:_directoryUser activeAccount:_activeAccount];
+            [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
         // Create ICON
         if (metadata.directory == NO)
