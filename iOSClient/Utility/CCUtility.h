@@ -170,6 +170,7 @@
 + (NSString *)getDirectoryDocuments;
 + (NSString *)getDirectoryAudio;
 + (NSString *)getDirectoryCerificates;
++ (NSString *)getDirectoryUserData;
 + (NSString *)getDirectoryProviderStorage;
 + (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID;
 + (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;

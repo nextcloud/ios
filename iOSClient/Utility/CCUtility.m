@@ -803,6 +803,17 @@
     return dir;
 }
 
++ (NSString *)getDirectoryUserData
+{
+    NSURL *dirGroup = [CCUtility getDirectoryGroup];
+    
+    NSString *dir = [[dirGroup URLByAppendingPathComponent:appUserData] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
+        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    return dir;
+}
+
 + (NSString *)getDirectoryProviderStorage
 {
     NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
