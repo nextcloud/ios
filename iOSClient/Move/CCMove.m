@@ -31,7 +31,6 @@
     NSString *activeUrl;
     NSString *activeUser;
     NSString *activeUserID;
-    NSString *directoryUser;
     
     BOOL _loadingFolder;
     
@@ -58,7 +57,6 @@
         activeUrl = recordAccount.url;
         activeUser = recordAccount.user;
         activeUserID = recordAccount.userID;
-        directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];
         
     } else {
         
