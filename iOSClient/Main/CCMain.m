@@ -1130,12 +1130,6 @@
             
             [self reloadDatasource:serverUrl];
             
-            /*
-            [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
-            [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID] toPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView] error:nil];
-            NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:metadata.fileNameView]];
-            */
-            
             NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
             _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
@@ -1147,7 +1141,6 @@
         // Save to Photo Album
         if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-//            NSString *file = [NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, metadata.fileID];
             NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
             PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
             
