@@ -124,7 +124,12 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
 
-    // create directory Provider Storage
+    // create Directory User Data
+    dir = [[dirGroup URLByAppendingPathComponent:appUserData] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
+        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    // create Directory Provider Storage
     dir = [CCUtility getDirectoryProviderStorage];
     if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
         [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];

@@ -26,6 +26,7 @@
 extern NSString *const appApplicationSupport;
 extern NSString *const appDatabaseNextcloud;
 extern NSString *const appCertificates;
+extern NSString *const appUserData;
 
 extern NSString *const serverStatus;
 
