@@ -164,7 +164,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             var image : UIImage?
             
             if let urlIcon = urlIcon {
-                let pathFileName = (appDelegate.directoryUser) + "/" + (urlIcon.lastPathComponent)
+                let pathFileName = CCUtility.getDirectoryUserData() + "/" + urlIcon.lastPathComponent
                 image = UIImage(contentsOfFile: pathFileName)
             }
             
@@ -238,7 +238,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             DispatchQueue.main.async() { () -> Void in
                 
                 do {
-                    let pathFileName = (self.appDelegate.directoryUser) + "/" + fileName
+                    let pathFileName = CCUtility.getDirectoryUserData() + "/" + fileName
                     try data.write(to: URL(fileURLWithPath: pathFileName), options: .atomic)
                     
                     self.reloadDatasource()
