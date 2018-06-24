@@ -25,7 +25,6 @@
 #import "AppDelegate.h"
 #import "CCPhotos.h"
 #import "CCSynchronize.h"
-#import "CCTransfersCell.h"
 #import "OCActivity.h"
 #import "OCNotifications.h"
 #import "OCNotificationsAction.h"
@@ -2208,7 +2207,7 @@
     
     if ([self indexPathIsValid:indexPath]) {
         
-        CCTransfersCell *cell = (CCTransfersCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        CCCellMainTransfer *cell = (CCCellMainTransfer *)[self.tableView cellForRowAtIndexPath:indexPath];
         cell.progressView.progressTintColor = [UIColor blackColor];
         
         cell.progressView.hidden = NO;
@@ -4229,13 +4228,13 @@
             [main reloadDatasource];
         } else {
             [self tableViewReloadData];
-            [appDelegate.activeTransfers reloadDatasource];
+//            [appDelegate.activeTransfers reloadDatasource];
         }
         
         return;
     }
     
-    [appDelegate.activeTransfers reloadDatasource];
+//    [appDelegate.activeTransfers reloadDatasource];
     
     // Settaggio variabili per le ottimizzazioni
     _directoryGroupBy = [CCUtility getGroupBySettings];
