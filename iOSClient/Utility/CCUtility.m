@@ -747,6 +747,23 @@
     return [activeUrl stringByAppendingString:webDAV];
 }
 
++ (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
+{
+    NSString *baseUrl = [activeUrl lowercaseString];
+    NSString *dirUserBaseUrl = @"";
+
+    if ([activeUser length] && [baseUrl length]) {
+        
+        if ([baseUrl hasPrefix:@"https://"]) baseUrl = [baseUrl substringFromIndex:8];
+        if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
+        
+        dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", activeUser, baseUrl];
+        dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
+    }
+    
+    return dirUserBaseUrl;
+}
+
 // Return path of User
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
 {
