@@ -2872,9 +2872,9 @@
         item.argument = account;
         
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ ", account]];
-        NSString *directoryUser = [CCUtility getDirectoryActiveUser:tableAccount.user activeUrl:tableAccount.url];
-
-        UIImage *avatar = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", directoryUser]];
+        NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-avatar.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:tableAccount.user activeUrl:tableAccount.url]];
+        
+        UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
         if (avatar) {
             
             avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(25, 25) isAspectRation:YES];

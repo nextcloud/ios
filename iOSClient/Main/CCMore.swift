@@ -183,7 +183,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         self.view.backgroundColor = NCBrandColor.sharedInstance.brand
         
-        if let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png") {
+        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-themingBackground.png"
+        
+        if let theminBackgroundFile = UIImage.init(contentsOfFile: fileNamePath) {
             themingBackground.image = theminBackgroundFile
         } else {
             themingBackground.image = #imageLiteral(resourceName: "themingBackground")
@@ -196,7 +198,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     @objc func changeUserProfile() {
      
-        if let themingAvatarFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png") {
+        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar.png"
+
+        if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
             themingAvatar.image = themingAvatarFile
         } else {
             themingAvatar.image = UIImage.init(named: "moreAvatar")

@@ -374,7 +374,9 @@
     pickerAccount.rowDescriptor.selectorOptions = listAccount;
     pickerAccount.rowDescriptor.value = appDelegate.activeAccount;
     
-    UIImage *avatar = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", appDelegate.directoryUser]];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-avatar.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
+
+    UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
     if (avatar) {
     
         avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(40, 40) isAspectRation:YES];
@@ -392,7 +394,6 @@
         
         avatar = [UIImage imageNamed:@"avatarBN"];
     }
-    
     
     [pickerAccount.rowDescriptor.cellConfig setObject:avatar forKey:@"imageView.image"];
 
