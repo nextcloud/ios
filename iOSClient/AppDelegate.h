@@ -55,7 +55,6 @@
 @property (nonatomic, strong) NSString *activeUser;
 @property (nonatomic, strong) NSString *activeUserID;
 @property (nonatomic, strong) NSString *activePassword;
-@property (nonatomic, strong) NSString *directoryUser;
 @property (nonatomic, strong) NSString *activeEmail;
 
 // next version ... ? ...

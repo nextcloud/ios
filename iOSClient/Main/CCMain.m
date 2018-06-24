@@ -186,9 +186,6 @@
     // if this is not Main (the Main uses inizializeMain)
     if (_isRoot == NO && appDelegate.activeAccount.length > 0) {
         
-        // Settings this folder & delegate & Loading datasource
-        appDelegate.directoryUser = [CCUtility getDirectoryActiveUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
-        
         // Read (File) Folder
         [self readFileReloadFolder];
     }
@@ -206,9 +203,7 @@
     if (appDelegate.activeAccount.length == 0)
         return;
     
-    // Settings this folder & delegate & Loading datasource
-    appDelegate.directoryUser = [CCUtility getDirectoryActiveUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
-    
+    // delegate for Networking
     [CCNetworking sharedNetworking].delegate = self;
     
     // Color
@@ -362,7 +357,6 @@
         appDelegate.homeMain = self;
         _isRoot = YES;
         _serverUrl = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
-        appDelegate.directoryUser = [CCUtility getDirectoryActiveUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
         [appDelegate.listMainVC setObject:self forKey:_serverUrl];
         
         // go Home
