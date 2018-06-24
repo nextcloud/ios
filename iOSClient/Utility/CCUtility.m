@@ -735,8 +735,8 @@
 
 + (NSURL *)getDirectoryGroup
 {
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    return dirGroup;
+    NSURL *path = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    return path;
 }
 
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl
@@ -794,13 +794,12 @@
 // Return the path of directory Cetificates
 + (NSString *)getDirectoryCerificates
 {
-    NSURL *dirGroup = [CCUtility getDirectoryGroup];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:appCertificates] path];
     
-    NSString *dir = [[dirGroup URLByAppendingPathComponent:appCertificates] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
-    return dir;
+    return path;
 }
 
 + (NSString *)getDirectoryUserData
