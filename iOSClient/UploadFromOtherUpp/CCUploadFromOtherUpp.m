@@ -94,9 +94,9 @@
         case 0:
             if (row == 0) {
                                 
-                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, appDelegate.fileNameUpload] error:nil];
-                NSString *fileSize = [CCUtility transformedSize:[[fileAttributes objectForKey:NSFileSize] longValue]];
-                nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = [NSString stringWithFormat:@"%@ - %@", appDelegate.fileNameUpload, fileSize];
+//                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, appDelegate.fileNameUpload] error:nil];
+//                NSString *fileSize = [CCUtility transformedSize:[[fileAttributes objectForKey:NSFileSize] longValue]];
+//                nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = [NSString stringWithFormat:@"%@ - %@", appDelegate.fileNameUpload, fileSize];
             }
             break;
         case 2:
@@ -181,7 +181,6 @@
     metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:appDelegate.fileNameUpload];
     metadataForUpload.fileName = appDelegate.fileNameUpload;
     metadataForUpload.fileNameView = appDelegate.fileNameUpload;
-    metadataForUpload.path = appDelegate.directoryUser;
     metadataForUpload.session = k_upload_session;
     metadataForUpload.sessionSelector = selectorUploadFile;
     metadataForUpload.status = k_metadataStatusWaitUpload;

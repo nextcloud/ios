@@ -108,7 +108,7 @@
     
     if (errorCode == 0) {
         
-        UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw",appDelegate.directoryUser, _metadata.fileID]];
+        UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
         
         _imagePreview.image = image;
         _imagePreview.contentMode = UIViewContentModeScaleToFill;
