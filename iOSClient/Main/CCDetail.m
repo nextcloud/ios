@@ -425,8 +425,10 @@
         
         tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
 
-        if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO && metadataDB.status == k_metadataStatusNormal)
+        if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO && metadataDB.status == k_metadataStatusNormal) {
+            
             [self downloadPhotoBrowser:metadata];
+        }
     }
     
     // Title
