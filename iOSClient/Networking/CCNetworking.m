@@ -39,7 +39,6 @@
     NSString *_activeUser;
     NSString *_activeUserID;
     NSString *_activeUrl;
-    NSString *_directoryUser;
 }
 @end
 
@@ -91,7 +90,6 @@
     _activeUser = tableAccount.user;
     _activeUserID = tableAccount.userID;
     _activeUrl = tableAccount.url;
-    _directoryUser = [CCUtility getDirectoryActiveUser:_activeUser activeUrl:_activeUrl];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -670,7 +668,7 @@
         // E2EE Decrypted
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier == %@ AND serverUrl == %@", fileName, serverUrl]];
         if (object) {
-            BOOL result = [[NCEndToEndEncryption sharedManager] decryptFileID:fileID directory:_directoryUser key:object.key initializationVector:object.initializationVector authenticationTag:object.authenticationTag];
+            BOOL result = [[NCEndToEndEncryption sharedManager] decryptFileID:fileID directory:[CCUtility getDirectoryUserData] key:object.key initializationVector:object.initializationVector authenticationTag:object.authenticationTag];
             if (!result) {
                 
                 [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:fileID action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serious error internal download : decrypt error %@", fileName] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
@@ -1045,7 +1043,7 @@
         if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
         
             // rename file fileNameView (original file) -> fileID
-            [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileNameView]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
+            [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryUserData], metadata.fileNameView]  toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryUserData], metadata.fileID]];
             // remove encrypted file
 //          [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID] error:nil];
         
@@ -1164,7 +1162,7 @@
     NSInteger metadataKeyIndex;
     
     // Verify File Size
-    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileName] error:&error];
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryUserData], fileName] error:&error];
     NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
     long long fileSize = [fileSizeNumber longLongValue];
         
@@ -1182,7 +1180,7 @@
         *fileNameIdentifier = [CCUtility generateRandomIdentifier];
     
     // Write to DB
-    if ([[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:*fileNameIdentifier directory: _directoryUser key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
+    if ([[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:*fileNameIdentifier directory: [CCUtility getDirectoryUserData] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
         
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", _activeAccount, serverUrl]];
         if (object) {

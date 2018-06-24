@@ -374,7 +374,7 @@
         
         [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         
-        [self emptyUserDirectoryUser:appDelegate.activeUser url:appDelegate.activeUrl removeIco:removeIco];
+//        [self emptyUserDirectoryUser:appDelegate.activeUser url:appDelegate.activeUrl removeIco:removeIco];
         
         [self emptyDocumentsDirectory];
         

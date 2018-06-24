@@ -301,12 +301,12 @@ cleanup:
     return YES;
 }
 
-- (BOOL)saveP12WithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directoryUser:(NSString *)directoryUser finished:(void (^)(NSError *))finished
+- (BOOL)saveP12WithCert:(X509 *)x509 key:(EVP_PKEY *)pkey directory:(NSString *)directory finished:(void (^)(NSError *))finished
 {
     //PKCS12 * p12 = PKCS12_create([password UTF8String], NULL, pkey, x509, NULL, 0, 0, PKCS12_DEFAULT_ITER, 1, NID_key_usage);
     PKCS12 *p12 = PKCS12_create(NULL, NULL, pkey, x509, NULL, 0, 0, PKCS12_DEFAULT_ITER, 1, NID_key_usage);
     
-    NSString *path = [NSString stringWithFormat:@"%@/certificate.p12", directoryUser];
+    NSString *path = [NSString stringWithFormat:@"%@/certificate.p12", directory];
     
     FILE *f = fopen([path fileSystemRepresentation], "wb");
     
