@@ -1151,16 +1151,11 @@
 
 + (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", metadata.path, metadata.fileName];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
     
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
     
     metadata.date = attributes[NSFileModificationDate];
-    
-    BOOL isDirectory;
-    [[NSFileManager defaultManager] fileExistsAtPath:fileNamePath isDirectory:&isDirectory];
-    metadata.directory = isDirectory;
-    
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
     

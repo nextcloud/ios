@@ -702,7 +702,7 @@
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
-    if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+    if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO) {
     
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
         
