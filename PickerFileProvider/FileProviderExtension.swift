@@ -291,6 +291,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
+            /*
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             if tableLocalFile != nil {
                 localEtag = tableLocalFile!.etag
@@ -318,6 +319,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                     return
                 }
             }
+            */
             
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
@@ -325,17 +327,17 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             // delete prev file + ico on Directory User
-            _ = providerData.deleteFile("\(providerData.directoryUser)/\(metadata.fileID)")
-            _ = providerData.deleteFile("\(providerData.directoryUser)/\(metadata.fileID).ico")
-
+//            _ = providerData.deleteFile("\(providerData.directoryUser)/\(metadata.fileID)")
+//            _ = providerData.deleteFile("\(providerData.directoryUser)/\(metadata.fileID).ico")
+            
             let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(providerData.directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
+            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
                 
                 // remove Task
                 self.outstandingDownloadTasks.removeValue(forKey: url)
 
                 // copy download file to url
-                _ = self.providerData.copyFile("\(self.providerData.directoryUser)/\(metadata.fileID)", toPath: url.path)
+//                _ = self.providerData.copyFile("\(self.providerData.directoryUser)/\(metadata.fileID)", toPath: url.path)
             
                 // update DB Local
                 metadata.date = date! as NSDate

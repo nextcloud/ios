@@ -240,8 +240,8 @@ extension FileProviderExtension {
             // itemChanged
             if (selectorPost == providerData.selectorPostItemChanged) {
                 
-                let filePathItemIdentifier = providerData.fileProviderStorageURL!.path + "/" + providerData.getItemIdentifier(metadata: metadata).rawValue + "/" + metadata.fileName
-                _ = self.providerData.copyFile(filePathItemIdentifier, toPath: providerData.directoryUser + "/" + metadata.fileID)
+//                let filePathItemIdentifier = providerData.fileProviderStorageURL!.path + "/" + providerData.getItemIdentifier(metadata: metadata).rawValue + "/" + metadata.fileName
+//                _ = self.providerData.copyFile(filePathItemIdentifier, toPath: providerData.directoryUser + "/" + metadata.fileID)
             }
             
             NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
@@ -290,14 +290,14 @@ extension FileProviderExtension {
                 return
             }
             
-            if self.providerData.copyFile(metadataForUpload.path + "/" + metadataForUpload.fileName, toPath: providerData.directoryUser + "/" + metadataForUpload.fileName) == nil {
-                
+//            if self.providerData.copyFile(metadataForUpload.path + "/" + metadataForUpload.fileName, toPath: providerData.directoryUser + "/" + metadataForUpload.fileName) == nil {
+            
                 CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
                 
-            } else {
-                
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadataForUpload.fileID), clearDateReadDirectoryID: metadataForUpload.directoryID)
-            }
+//            } else {
+            
+//                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadataForUpload.fileID), clearDateReadDirectoryID: metadataForUpload.directoryID)
+//            }
         }
     }
     
@@ -317,7 +317,7 @@ extension FileProviderExtension {
             return
         }
         
-        _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileName)
+//        _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileName)
         
         CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
