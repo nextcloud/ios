@@ -739,11 +739,11 @@
                     NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     
-                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName] options:NSDataWritingAtomic error:&error];
                     
                 } else {
                     
-                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName] options:NSDataWritingAtomic error:&error];
                 }
                 
                 if (error) {
@@ -781,7 +781,7 @@
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
                     
-                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileName]];
+                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName]];
                     NSError *error = nil;
                     
                     [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
@@ -1051,10 +1051,8 @@
         
         } else {
         
-            // rename file fileName -> fileID
-            [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileName]  toPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID]];
-            // remove ico B/N
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, tempFileID] error:nil];
+            // Rename directory
+            [[NSFileManager defaultManager] moveItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
         }
     
         // Local
@@ -1070,10 +1068,12 @@
         // Create ICON
         if (metadata.directory == NO)
             [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writePreview:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
-
+        
         // Optimization
-        if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO)
-            [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, metadata.fileID] error:nil];
+        if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO) {
+            
+            [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView] contents:nil attributes:nil];
+        }
         
         // Copy photo or video in the photo album for auto upload
         if ([metadata.assetLocalIdentifier length] > 0 && ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload] || [metadata.sessionSelector isEqualToString:selectorUploadFile])) {
