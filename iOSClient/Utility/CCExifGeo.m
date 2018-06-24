@@ -54,7 +54,7 @@
     
     NSDate *date = [NSDate new];
     
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]])
+    if (![CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView])
         return;
 
     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];

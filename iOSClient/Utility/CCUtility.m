@@ -850,6 +850,16 @@
     return [NSString stringWithFormat:@"%@/%@/%@", [self getDirectoryProviderStorage], fileID, fileNameView];
 }
 
++ (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView
+{
+    NSString *fileNamePath = [self getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView];
+    
+    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
+    
+    if (fileSize > 0) return true;
+    else return false;
+}
+
 + (NSString *)getTitleSectionDate:(NSDate *)date
 {
     NSString * title;

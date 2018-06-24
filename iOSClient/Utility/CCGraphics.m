@@ -155,7 +155,7 @@
     NSString *ext = [extension lowercaseString];
     NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView];
     
-    if (![[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) return nil;
+    if (![CCUtility fileProviderStorageExists:fileID fileNameView:fileNameView]) return nil;
     
     // only viedo / image
     if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;

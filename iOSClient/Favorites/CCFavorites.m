@@ -333,11 +333,9 @@
 
 - (void)openWith:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
+    if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
         
-        NSURL *url = [NSURL fileURLWithPath:fileNamePath];
+        NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
         
         _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
         _docController.delegate = self;
@@ -647,7 +645,7 @@
         
         NSString *date = [CCUtility dateDiff:metadata.date];
         NSString *length = [CCUtility transformedSize:metadata.size];
-        BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        BOOL fileExists = [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView];
             
         if (fileExists)
             cell.local.image = [UIImage imageNamed:@"local"];
@@ -721,7 +719,7 @@
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
 
         if (serverUrl) {
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:_metadata.fileID fileNameView:_metadata.fileNameView]]) {
+            if ([CCUtility fileProviderStorageExists:_metadata.fileID fileNameView:_metadata.fileNameView]) {
             
                 [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
                             

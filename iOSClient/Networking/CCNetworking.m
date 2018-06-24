@@ -501,7 +501,7 @@
     // File exists ?
     tableLocalFile *localfile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         
-    if (localfile != nil && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
+    if (localfile != nil && [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
             
         [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             
@@ -702,7 +702,7 @@
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", metadata.path, metadata.fileName]]) {
+    if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
     
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
         
