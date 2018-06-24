@@ -116,19 +116,9 @@ extension FileProviderExtension {
     
     func deleteFileSystem(for metadata: tableMetadata, serverUrl: String, itemIdentifier: NSFileProviderItemIdentifier) {
         
-        let fileNamePath = self.providerData.directoryUser + "/" + metadata.fileID
+        let fileNamePath = CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue)!
         do {
             try self.providerData.fileManager.removeItem(atPath: fileNamePath)
-        } catch let error {
-            print("error: \(error)")
-        }
-        do {
-            try self.providerData.fileManager.removeItem(atPath: fileNamePath + ".ico")
-        } catch let error {
-            print("error: \(error)")
-        }
-        do {
-            try self.providerData.fileManager.removeItem(atPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
         } catch let error {
             print("error: \(error)")
         }
@@ -317,7 +307,6 @@ extension FileProviderExtension {
             return
         }
         
-        metadata.path = providerData.directoryUser
         metadata.assetLocalIdentifier = ""
         metadata.session = k_upload_session_extension
         metadata.sessionSelector = selectorUploadFile

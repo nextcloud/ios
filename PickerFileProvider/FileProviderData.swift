@@ -33,7 +33,7 @@ class FileProviderData: NSObject {
     var accountPassword = ""
     var accountUrl = ""
     var homeServerUrl = ""
-    var directoryUser = ""
+//    var directoryUser = ""
     
     // Directory
     var fileProviderStorageURL: URL?
@@ -86,7 +86,7 @@ class FileProviderData: NSObject {
                 accountPassword = activeAccount.password
                 accountUrl = activeAccount.url
                 homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
-                directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
+//                directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
             }
         } else if account != activeAccount.account {
             assert(false, "change user")
