@@ -324,8 +324,11 @@
         for (tableMetadata *metadata in metadatas) {
             
             // Create directory FS
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID]] == NO)
-                [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] withIntermediateDirectories:YES attributes:nil error:nil];
+            if (metadata.directory) {
+                [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
+            } else {
+                [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+            }
             
             // Insert in Array
             [metadatasToInsertInDB addObject:metadata];

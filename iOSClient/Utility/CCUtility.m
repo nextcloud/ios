@@ -833,7 +833,14 @@
 {
     [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID] withIntermediateDirectories:YES attributes:nil error:nil];
 
-    return [NSString stringWithFormat:@"%@/%@/%@", [self getDirectoryProviderStorage], fileID, fileNameView];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@/%@", [self getDirectoryProviderStorage], fileID, fileNameView];
+    
+    // if do not exists create file 0 length
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath] == NO) {
+        [[NSFileManager defaultManager] createFileAtPath:fileNamePath contents:nil attributes:nil];
+    }
+    
+    return fileNamePath;
 }
 
 + (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
