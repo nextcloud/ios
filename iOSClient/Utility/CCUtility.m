@@ -805,35 +805,37 @@
 
 + (NSString *)getDirectoryUserData
 {
-    NSURL *dirGroup = [CCUtility getDirectoryGroup];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:appUserData] path];
     
-    NSString *dir = [[dirGroup URLByAppendingPathComponent:appUserData] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
-    return dir;
+    return path;
 }
 
 + (NSString *)getDirectoryProviderStorage
 {
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    NSString *dir = [[dirGroup URLByAppendingPathComponent:k_DirectoryProviderStorage] path];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_DirectoryProviderStorage] path];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
 
-    return dir;
+    return path;
 }
 
 + (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID
 {
-    [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID] withIntermediateDirectories:YES attributes:nil error:nil];
+    NSString *path = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID];
     
-    return [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+
+    return path;
 }
 
 + (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
 {
-    [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID] withIntermediateDirectories:YES attributes:nil error:nil];
-
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@/%@", [self getDirectoryProviderStorage], fileID, fileNameView];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
     
     // if do not exists create file 0 length
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath] == NO) {
@@ -845,9 +847,7 @@
 
 + (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
 {
-    [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorage], fileID] withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    return [NSString stringWithFormat:@"%@/%@/%@", [self getDirectoryProviderStorage], fileID, fileNameView];
+    return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
 }
 
 + (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView
