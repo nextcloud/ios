@@ -100,7 +100,7 @@
          */
     }
 
-    NSString *dir;
+    NSString *path;
     NSURL *dirGroup = [CCUtility getDirectoryGroup];
     
     NSLog(@"[LOG] Start program group -----------------");
@@ -110,32 +110,30 @@
     NSLog(@"[LOG] -------------------------------------");
 
     // create Directory Documents
-    dir = [CCUtility getDirectoryDocuments];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    path = [CCUtility getDirectoryDocuments];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     // create Directory audio => Library, Application Support, audio
-    dir = [CCUtility getDirectoryAudio];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    path = [CCUtility getDirectoryAudio];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
 
     // create Directory database Nextcloud
-    dir = [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    path = [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
 
     // create Directory User Data
-    dir = [[dirGroup URLByAppendingPathComponent:appUserData] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    path = [[dirGroup URLByAppendingPathComponent:appUserData] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     // create Directory Provider Storage
-    dir = [CCUtility getDirectoryProviderStorage];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    NSError *error = nil;
-    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:dir error:&error];
+    path = [CCUtility getDirectoryProviderStorage];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     // Verify upgrade
     if ([self upgrade]) {
