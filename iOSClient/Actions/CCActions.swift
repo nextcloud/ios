@@ -246,16 +246,16 @@ class CCActions: NSObject {
         
         if metadataNet.directory == true {
             
-            let directory = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileName)
-            let directoryTo = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileNameTo)
+            let serverUrl = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileName)
+            let serverUrlTo = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadataNet.fileNameTo)
             
-            guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl == %@", directory!)) else {
+            guard let directoryTable = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "serverUrl == %@", serverUrl!)) else {
                 
                 metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: "Internal error, ServerUrl not found" as NSString, errorCode: 0)
                 return
             }
             
-            NCManageDatabase.sharedInstance.setDirectory(serverUrl: directory!, serverUrlTo: directoryTo!, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted)
+            NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrl!, serverUrlTo: serverUrlTo!, etag: nil, fileID: nil, encrypted: directoryTable.e2eEncrypted)
             
         } else {
             
