@@ -1070,7 +1070,7 @@
         // Optimization
         if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO) {
             
-            [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView] contents:nil attributes:nil];
+            [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] contents:nil attributes:nil];
         }
         
         // Copy photo or video in the photo album for auto upload
