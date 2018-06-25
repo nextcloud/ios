@@ -355,7 +355,7 @@
         
         if (changeRev) {
             
-            // remove file and ico
+            // remove file
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
             
             [metadatas addObject:metadata];
