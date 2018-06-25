@@ -224,12 +224,6 @@ extension FileProviderExtension {
             // importDocument
             if (selectorPost == providerData.selectorPostImportDocument) {
                 
-                // Rename directory file
-                if providerData.fileManager.fileExists(atPath: providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
-                    let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-                    _ = providerData.moveFile(providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
-                }
-                
                 providerData.queueTradeSafe.sync(flags: .barrier) {
                     let itemIdentifier = NSFileProviderItemIdentifier(assetLocalIdentifier)
                     self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
@@ -288,14 +282,7 @@ extension FileProviderExtension {
                 return
             }
             
-//            if self.providerData.copyFile(metadataForUpload.path + "/" + metadataForUpload.fileName, toPath: providerData.directoryUser + "/" + metadataForUpload.fileName) == nil {
-            
-                CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
-                
-//            } else {
-            
-//                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadataForUpload.fileID), clearDateReadDirectoryID: metadataForUpload.directoryID)
-//            }
+            CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
         }
     }
     
