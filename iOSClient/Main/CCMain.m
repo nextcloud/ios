@@ -4659,7 +4659,9 @@
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
             
         } else {
-            cell.file.image = [UIImage imageNamed:metadata.iconName];
+            if (metadata.iconName.length > 0) {
+                cell.file.image = [UIImage imageNamed:metadata.iconName];
+            }
         }
         if (metadata.thumbnailExists && _metadataFolder.e2eEncrypted == NO)
             [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];

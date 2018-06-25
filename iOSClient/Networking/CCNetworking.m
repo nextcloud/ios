@@ -736,6 +736,7 @@
                     imageData = UIImageJPEGRepresentation(image, 1.0);
                     NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
+                    metadata.fileNameView = metadata.fileName;
                     
                     [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName] options:NSDataWritingAtomic error:&error];
                     
