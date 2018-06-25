@@ -275,7 +275,7 @@
 
 - (void)downloadThumbnail
 {
-    [self downloadThumbnailWithDimOfThumbnail:(NSString *)_metadataNet.optionAny fileID:_metadataNet.fileID fileName:_metadataNet.fileName success:^{
+    [self downloadThumbnailWithDimOfThumbnail:(NSString *)_metadataNet.optionAny fileID:_metadataNet.fileID fileNamePath:_metadataNet.fileName fileNameView:_metadataNet.fileNameView success:^{
         
         if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)])
             [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:nil errorCode:0];
@@ -292,7 +292,7 @@
     }];
 }
 
-- (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileID:(NSString*)fileID fileName:(NSString *)fileName success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
@@ -305,9 +305,9 @@
     else if ([dimOfThumbnail.lowercaseString isEqualToString:@"l"])  { width = 640;  height = 640; ext = @"pvw"; }
     else if ([dimOfThumbnail.lowercaseString isEqualToString:@"xl"]) { width = 1024; height = 1024; ext = @"pvw"; }
     
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@.%@", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName, ext];
+    NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@.%@", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView, ext];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
         
         success();
         
@@ -316,9 +316,9 @@
         [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
         [communication setUserAgent:[CCUtility getUserAgent]];
         
-        [communication getRemoteThumbnailByServer:[_activeUrl stringByAppendingString:@"/"] ofFilePath:fileName withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
+        [communication getRemoteThumbnailByServer:[_activeUrl stringByAppendingString:@"/"] ofFilePath:fileNamePath withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
             
-            [UIImagePNGRepresentation([UIImage imageWithData:thumbnail]) writeToFile:fileNamePath atomically: YES];
+            [UIImagePNGRepresentation([UIImage imageWithData:thumbnail]) writeToFile:fileNameViewPath atomically: YES];
                     
             success();
             
