@@ -259,9 +259,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
 
             let pathComponents = url.pathComponents
             let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-            var fileSize = 0 as Double
-            var localEtag = ""
-            var localEtagFPE = ""
             
             // Check account
             if providerData.setupActiveAccount() == false {
