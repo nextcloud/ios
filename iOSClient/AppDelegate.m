@@ -1402,7 +1402,7 @@
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading]];
         if (metadata) {
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND e2eEncrypted == 1", self.activeAccount, metadata.directoryID]];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]];
             if (directory != nil)
                 return;
         }

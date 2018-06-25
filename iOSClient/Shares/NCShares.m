@@ -233,7 +233,7 @@
     
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
         if (directoryID)
-            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName = %@", directoryID, table.fileName]];
     }
         
     if (metadata) return YES;
@@ -248,7 +248,7 @@
         
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
         if (directoryID) {
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND fileName == %@", appDelegate.activeAccount, directoryID, table.fileName]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, table.fileName]];
         
             [self removeShares:metadata tableShare:table];
         }
@@ -310,7 +310,7 @@
         return cell;
     
     if (directoryID.length > 0)
-         metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND fileName == %@", appDelegate.activeAccount, directoryID, table.fileName]];
+         metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, table.fileName]];
     
     if (metadata) {
         
@@ -366,7 +366,7 @@
         
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
         if (directoryID)
-            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND fileName == %@", appDelegate.activeAccount, directoryID, table.fileName]];
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, table.fileName]];
 
         if (metadata) {
         

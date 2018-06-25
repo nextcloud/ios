@@ -1357,7 +1357,7 @@
         }
         
         // Check if is in upload
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND fileName == %@ AND session != ''", appDelegate.activeAccount, directoryID, fileName];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@ AND session != ''", directoryID, fileName];
         NSArray *isRecordInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
         if ([isRecordInSessions count] > 0)
             continue;
@@ -1377,7 +1377,7 @@
         metadataForUpload.status = k_metadataStatusWaitUpload;
         
         // Check il file already exists
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND fileNameView == %@", appDelegate.activeAccount, directoryID, fileName]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@", directoryID, fileName]];
         if (metadata) {
             
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileName message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -1691,7 +1691,7 @@
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
         if (!directoryID) return;
         
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND account == %@ AND fileNameView CONTAINS[cd] %@", directoryID, appDelegate.activeAccount, fileName];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView CONTAINS[cd] %@", directoryID, fileName];
         NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
             
         [_searchResultMetadatas removeAllObjects];
@@ -4235,7 +4235,7 @@
         
         if (directoryID) {
         
-            NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND status != %i", appDelegate.activeAccount, directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+            NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
                                                   
             _sectionDataSource = [CCSectionDataSourceMetadata new];
             _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy activeAccount:appDelegate.activeAccount];

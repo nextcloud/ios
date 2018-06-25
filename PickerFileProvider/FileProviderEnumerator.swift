@@ -43,7 +43,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
                 let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
                 if metadata != nil  {
-                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", providerData.account, metadata!.directoryID))  {
+                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", metadata!.directoryID))  {
                         serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
                     }
                 }
@@ -121,7 +121,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             
             // Select items from database
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", providerData.account, serverUrl))  {
-                metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", providerData.account, directory.directoryID), sorted: "fileName", ascending: true)
+                metadatasFromDB = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "directoryID == %@", directory.directoryID), sorted: "fileName", ascending: true)
             }
             
             // Calculate current page

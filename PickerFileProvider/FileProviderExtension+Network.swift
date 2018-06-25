@@ -46,7 +46,7 @@ extension FileProviderExtension {
             guard let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier) else {
                 return
             }
-            guard let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", providerData.account, metadata.directoryID)) else {
+            guard let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", metadata.directoryID)) else {
                 return
             }
             
@@ -56,7 +56,7 @@ extension FileProviderExtension {
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
             
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND directoryID == %@ AND session == ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND session == ''", directoryID!), clearDateReadDirectoryID: directoryID!)
             guard let metadatasUpdate = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl) else {
                 return
             }

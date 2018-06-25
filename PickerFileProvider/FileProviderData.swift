@@ -128,7 +128,7 @@ class FileProviderData: NSObject {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return NSFileProviderItemIdentifier("") }
         
-        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", account, metadata.directoryID))  {
+        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", metadata.directoryID))  {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
             } else {

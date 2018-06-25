@@ -62,10 +62,6 @@
 // Upload
 - (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 
-// Utility
-- (NSInteger)getNumDownloadInProgressWWan:(BOOL)WWan;
-- (NSInteger)getNumUploadInProgressWWan:(BOOL)WWan;
-
 @end
 
 @protocol CCNetworkingDelegate <NSObject>

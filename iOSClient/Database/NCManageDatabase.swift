@@ -916,7 +916,7 @@ class NCManageDatabase: NSObject {
                 }
                 
                 if let directoryID = directoryID {
-                    predicate = NSPredicate(format: "account == %@ AND directoryID == %@", tableAccount.account, directoryID)
+                    predicate = NSPredicate(format: "directoryID == %@", directoryID)
                 }
             
                 guard let result = realm.objects(tableDirectory.self).filter(predicate).first else {
@@ -988,10 +988,6 @@ class NCManageDatabase: NSObject {
     
     @objc func getServerUrl(_ directoryID: String?) -> String? {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
         guard let directoryID = directoryID else {
             return nil
         }
@@ -999,7 +995,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
 
-        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount.account, directoryID).first else {
+        guard let result = realm.objects(tableDirectory.self).filter("directoryID == %@", directoryID).first else {
             return nil
         }
         
@@ -1008,15 +1004,11 @@ class NCManageDatabase: NSObject {
     
     @objc func setDateReadDirectory(directoryID: String) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
         let realm = try! Realm()
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND directoryID = %@", tableAccount.account, directoryID).first else {
+        guard let result = realm.objects(tableDirectory.self).filter("directoryID == %@", directoryID).first else {
             realm.cancelWrite()
             return
         }
@@ -1608,16 +1600,12 @@ class NCManageDatabase: NSObject {
     
     @objc func moveMetadata(fileName: String, directoryID: String, directoryIDTo: String) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
         let realm = try! Realm()
 
         do {
             try realm.write {
             
-                let results = realm.objects(tableMetadata.self).filter("account = %@ AND fileName = %@ AND directoryID = %@", tableAccount.account, fileName, directoryID)
+                let results = realm.objects(tableMetadata.self).filter("directoryID == %@ AND fileName == %@", directoryID, fileName)
         
                 for result in results {
                     result.directoryID = directoryIDTo
@@ -1756,15 +1744,11 @@ class NCManageDatabase: NSObject {
     
     @objc func setMetadataFileNameView(directoryID: String, fileName: String, newFileNameView: String) {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
         let realm = try! Realm()
 
         realm.beginWrite()
 
-        guard let result = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@ AND fileName = %@", tableAccount.account, directoryID, fileName).first else {
+        guard let result = realm.objects(tableMetadata.self).filter("directoryID == %@ AND fileName == %@", directoryID, fileName).first else {
             realm.cancelWrite()
             return
         }
@@ -1853,14 +1837,10 @@ class NCManageDatabase: NSObject {
     
     @objc func getMetadataInSessionFromFileName(_ fileName: String, directoryID: String) -> tableMetadata? {
         
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
         let realm = try! Realm()
         realm.refresh()
         
-        guard let result = realm.objects(tableMetadata.self).filter("account = %@ AND directoryID = %@ AND fileName = %@ AND session != ''", tableAccount.account, directoryID, fileName).first else {
+        guard let result = realm.objects(tableMetadata.self).filter("directoryID == %@ AND fileName == %@ AND session != ''", directoryID, fileName).first else {
             return nil
         }
         

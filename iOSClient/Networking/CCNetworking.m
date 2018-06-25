@@ -1173,7 +1173,7 @@
     }
         
     // if exists overwrite file else create a new encrypted filename
-    tableMetadata *overwriteMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND fileNameView == %@", _activeAccount, directoryID, fileName]];
+    tableMetadata *overwriteMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@", directoryID, fileName]];
     if (overwriteMetadata)
         *fileNameIdentifier = overwriteMetadata.fileName;
     else
@@ -1234,58 +1234,6 @@
     } else {
         *errorMessage = NSLocalizedString(@"_e2e_error_create_encrypted_", nil);
     }
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Utility =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (NSInteger)getNumDownloadInProgressWWan:(BOOL)WWan
-{
-    NSInteger numTableMetadataDownload, numTableQueueDownload;
-    
-    /*
-    if (WWan) {
-        numTableMetadataDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
-        numTableQueueDownload = [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_wwan];
-    } else {
-        numTableMetadataDownload = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count];
-        numTableQueueDownload = [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session] + [[NCManageDatabase sharedInstance] countQueueDownloadWithSession:k_download_session_foreground];
-    }
-    */
-    
-    return numTableMetadataDownload + numTableQueueDownload;
-}
-
-- (NSInteger)getNumUploadInProgressWWan:(BOOL)WWan
-{
-    /*
-    NSMutableArray *recordsInUpload = [NSMutableArray new];
-    
-    if (WWan) {
-        
-        for (tableQueueUpload *record in [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session = %@", _activeAccount, k_upload_session_wwan]]) {
-            [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
-        }
-        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUploadWWan]) {
-            if (![recordsInUpload containsObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]])
-                [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
-        }
-        
-    } else {
-        
-        for (tableQueueUpload *record in [[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND (session = %@ OR session = %@)", _activeAccount, k_upload_session, k_upload_session_foreground]]) {
-            [recordsInUpload addObject:[record.fileName stringByAppendingString:record.assetLocalIdentifier]];
-        }
-        for (tableMetadata *record in [[NCManageDatabase sharedInstance] getTableMetadataUpload]) {
-            if (![recordsInUpload containsObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]])
-                [recordsInUpload addObject:[record.fileNameView stringByAppendingString:record.assetLocalIdentifier]];
-        }
-    }
-    
-    return recordsInUpload.count;
-    */
-    return 0;
 }
 
 @end

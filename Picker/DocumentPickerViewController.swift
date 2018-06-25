@@ -240,7 +240,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
         if (errorCode == 0) {
         
             // remove all record
-            var predicate = NSPredicate(format: "account == %@ AND directoryID == %@ AND session == ''", activeAccount, metadataNet.directoryID!)
+            var predicate = NSPredicate(format: "directoryID == %@ AND session == ''", metadataNet.directoryID!)
             NCManageDatabase.sharedInstance.deleteMetadata(predicate: predicate, clearDateReadDirectoryID: metadataNet.directoryID!)
             
             for metadata in metadatas as! [tableMetadata] {
@@ -254,7 +254,7 @@ class DocumentPickerViewController: UIDocumentPickerExtensionViewController, CCN
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
             }
             
-            predicate = NSPredicate(format: "account == %@ AND directoryID == %@", activeAccount, metadataNet.directoryID!)
+            predicate = NSPredicate(format: "directoryID == %@", metadataNet.directoryID!)
             recordsTableMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate, sorted: "fileName", ascending: true)
             
             autoUploadFileName = NCManageDatabase.sharedInstance.getAccountAutoUploadFileName()

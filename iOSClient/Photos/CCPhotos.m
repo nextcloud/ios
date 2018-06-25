@@ -819,7 +819,7 @@
         
         } else {
         
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@", appDelegate.activeAccount, metadata.directoryID]];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", metadata.directoryID]];
 
             // Thumbnail not present
             if (directory.e2eEncrypted) {
