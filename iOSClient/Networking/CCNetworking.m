@@ -737,11 +737,11 @@
                     NSString *fileNameJPEG = [[metadata.fileName lastPathComponent] stringByDeletingPathExtension];
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     
-                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName] options:NSDataWritingAtomic error:&error];
                     
                 } else {
                     
-                    [imageData writeToFile:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName] options:NSDataWritingAtomic error:&error];
                 }
                 
                 if (error) {
@@ -779,7 +779,7 @@
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
                     
-                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileName]];
+                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName]];
                     NSError *error = nil;
                     
                     [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
