@@ -3553,8 +3553,6 @@
 
 - (void)uploadFilePasteArray:(NSArray *)items
 {
-    float timer = 0;
-    
     for (NSDictionary *dic in items) {
         
         // Value : (NSData) fileID
@@ -3569,30 +3567,25 @@
             
             if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileName directoryID:directoryID];
+                NSString *fileID = [directoryID stringByAppendingString:fileName];
                     
-                    NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileName directoryID:directoryID];
-                    NSString *fileID = [directoryID stringByAppendingString:fileName];
+                [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName]];
                     
-                    [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName]];
-                    
-                    tableMetadata *metadataForUpload = [tableMetadata new];
+                tableMetadata *metadataForUpload = [tableMetadata new];
                         
-                    metadataForUpload.account = appDelegate.activeAccount;
-                    metadataForUpload.date = [NSDate new];
-                    metadataForUpload.directoryID = directoryID;
-                    metadataForUpload.fileID = fileID;
-                    metadataForUpload.fileName = fileName;
-                    metadataForUpload.fileNameView = fileName;
-                    metadataForUpload.session = k_upload_session;
-                    metadataForUpload.sessionSelector = selectorUploadFile;
-                    metadataForUpload.status = k_metadataStatusWaitUpload;
+                metadataForUpload.account = appDelegate.activeAccount;
+                metadataForUpload.date = [NSDate new];
+                metadataForUpload.directoryID = directoryID;
+                metadataForUpload.fileID = fileID;
+                metadataForUpload.fileName = fileName;
+                metadataForUpload.fileNameView = fileName;
+                metadataForUpload.session = k_upload_session;
+                metadataForUpload.sessionSelector = selectorUploadFile;
+                metadataForUpload.status = k_metadataStatusWaitUpload;
                             
-                    // Add Medtadata for upload
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                });
-                        
-                timer += 0.1;
+                // Add Medtadata for upload
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             }
         }
     }
