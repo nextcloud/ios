@@ -227,6 +227,9 @@
         metadataForUpload.sessionSelector = selectorUploadFile;
         metadataForUpload.status = k_metadataStatusWaitUpload;
         
+        // Prepare file and directory
+        [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] toPath:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:fileName]];
+        
         // Add Medtadata for upload
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
         [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:self];
@@ -242,8 +245,7 @@
     // rimuoviamo i file+ico
     for (NSString *fileName in self.filesName) {
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, fileName] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", self.directoryUser, fileName] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] error:nil];
     }
     
     [self closeShareViewController];
@@ -279,8 +281,8 @@
         // remove file
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
         
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, fileID] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", _directoryUser, fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileID] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
         
         // message error
         if (errorCode != kCFURLErrorCancelled) {
@@ -384,8 +386,7 @@
     
     NSString *fileName = [self.filesName objectAtIndex:indexPath.row];
     
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, fileName] error:nil];
-    [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", self.directoryUser, fileName] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] error:nil];
 
     [self.filesName removeObjectAtIndex:indexPath.row];
     
@@ -401,7 +402,7 @@
 {
     CCloadItemData *loadItem = [[CCloadItemData alloc] init];
     
-    [loadItem loadFiles:self.directoryUser extensionContext:self.extensionContext vc:self];
+    [loadItem loadFiles:NSTemporaryDirectory() extensionContext:self.extensionContext vc:self];
 }
 
 - (void)reloadData:(NSArray *)files
@@ -410,24 +411,8 @@
 
     for (NSString *file in files) {
         
-        NSUInteger fileSize = (NSInteger)[[[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, file] error:nil] fileSize];
-        
+        NSUInteger fileSize = (NSInteger)[[[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:file] error:nil] fileSize];
         totalSize += fileSize;
-        
-        // creiamo l'ICO
-        CFStringRef fileExtension = (__bridge CFStringRef)[file pathExtension];
-        CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
-        
-        if (fileSize > 0 && ((UTTypeConformsTo(fileUTI, kUTTypeImage)) || (UTTypeConformsTo(fileUTI, kUTTypeMovie)))) {
-            
-            NSString *typeFile;
-            if (UTTypeConformsTo(fileUTI, kUTTypeImage)) typeFile = k_metadataTypeFile_image;
-            if (UTTypeConformsTo(fileUTI, kUTTypeMovie)) typeFile = k_metadataTypeFile_video;
-        
-            [CCGraphics createNewImageFrom:file fileID:file extension:nil size:@"m" imageForUpload:NO typeFile:typeFile writePreview:YES optimizedFileName:NO];
-            
-            //[CCGraphics createNewImageFrom:file directoryUser:self.directoryUser fileNameTo:file extension:nil size:@"m" imageForUpload:NO typeFile:typeFile writePreview:YES optimizedFileName:NO];
-        }
     }
     
     if (totalSize > 0) {
@@ -468,7 +453,7 @@
     else if (UTTypeConformsTo(fileUTI, kUTTypeAudio)) image = [UIImage imageNamed:@"file_audio"];
     else if ((UTTypeConformsTo(fileUTI, kUTTypeImage)) || (UTTypeConformsTo(fileUTI, kUTTypeMovie))) {
         
-        image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", self.directoryUser, fileName]];
+        image = [UIImage imageWithContentsOfFile:[NSTemporaryDirectory() stringByAppendingString:fileName]];
         
     }
     else if (UTTypeConformsTo(fileUTI, kUTTypeContent)) {
@@ -485,7 +470,7 @@
     
     CCCellShareExt *cell = (CCCellShareExt *)[tableView dequeueReusableCellWithIdentifier:@"ShareExtCell" forIndexPath:indexPath];
     
-    NSUInteger fileSize = (NSInteger)[[[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, fileName] error:nil] fileSize];
+    NSUInteger fileSize = (NSInteger)[[[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:fileName] error:nil] fileSize];
     
     cell.labelInformazioni.text = [NSString stringWithFormat:@"%@\r\r%@", fileName, [CCUtility transformedSize:fileSize]];
     cell.labelInformazioni.textColor = [UIColor blackColor];
