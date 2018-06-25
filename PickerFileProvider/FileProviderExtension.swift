@@ -291,47 +291,19 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            /*
             let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-            if tableLocalFile != nil {
-                localEtag = tableLocalFile!.etag
-                localEtagFPE = tableLocalFile!.etagFPE
+            if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+                completionHandler(nil)
+                return
             }
-            
-            if (localEtagFPE != "") {
-                
-                // Verify last version on "Local Table"
-                if localEtag != localEtagFPE {
-                    if providerData.copyFile(providerData.directoryUser+"/"+metadata.fileID, toPath: url.path) == nil {
-                        NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: nil, etagFPE: localEtag)
-                    }
-                }
-                
-                do {
-                    let attributes = try providerData.fileManager.attributesOfItem(atPath: url.path)
-                    fileSize = attributes[FileAttributeKey.size] as! Double
-                } catch let error {
-                    print("error: \(error)")
-                }
-                
-                if (fileSize > 0) {
-                    completionHandler(nil)
-                    return
-                }
-            }
-            */
             
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
             
-            // delete prev file + ico on Directory User
-//            _ = providerData.deleteFile("\(providerData.directoryUser)/\(metadata.fileID)")
-//            _ = providerData.deleteFile("\(providerData.directoryUser)/\(metadata.fileID).ico")
-            
             let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
+            let task = ocNetworking?.downloadFileNameServerUrl(serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
                 
                 // remove Task
                 self.outstandingDownloadTasks.removeValue(forKey: url)

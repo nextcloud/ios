@@ -115,18 +115,11 @@ class FileProviderData: NSObject {
     func createFileIdentifierOnFileSystem(metadata: tableMetadata) {
         
         let itemIdentifier = getItemIdentifier(metadata: metadata)
-        let identifierPath = fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue
-        let fileIdentifier = identifierPath + "/" + metadata.fileName
         
-        do {
-            try FileManager.default.createDirectory(atPath: identifierPath, withIntermediateDirectories: true, attributes: nil)
-        } catch { }
-        
-        if metadata.directory == false {
-            // If do not exists create file with size = 0
-            if FileManager.default.fileExists(atPath: fileIdentifier) == false {
-                FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
-            }
+        if metadata.directory {
+            CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue)
+        } else {
+            CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
         }
     }
     
