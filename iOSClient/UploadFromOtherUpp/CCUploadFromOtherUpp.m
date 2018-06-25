@@ -94,9 +94,9 @@
         case 0:
             if (row == 0) {
                                 
-//                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, appDelegate.fileNameUpload] error:nil];
-//                NSString *fileSize = [CCUtility transformedSize:[[fileAttributes objectForKey:NSFileSize] longValue]];
-//                nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = [NSString stringWithFormat:@"%@ - %@", appDelegate.fileNameUpload, fileSize];
+                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] error:nil];
+                NSString *fileSize = [CCUtility transformedSize:[[fileAttributes objectForKey:NSFileSize] longValue]];
+                nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = [NSString stringWithFormat:@"%@ - %@", appDelegate.fileNameUpload, fileSize];
             }
             break;
         case 2:
@@ -184,6 +184,9 @@
     metadataForUpload.session = k_upload_session;
     metadataForUpload.sessionSelector = selectorUploadFile;
     metadataForUpload.status = k_metadataStatusWaitUpload;
+    
+    // Prepare file and directory
+    [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:appDelegate.fileNameUpload]];
     
     // Add Medtadata for upload
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
