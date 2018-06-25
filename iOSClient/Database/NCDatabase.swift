@@ -179,7 +179,6 @@ class tableLocalFile: Object {
     @objc dynamic var account = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var etag = ""
-    @objc dynamic var etagFPE = ""
     @objc dynamic var exifDate = NSDate()
     @objc dynamic var exifLatitude = ""
     @objc dynamic var exifLongitude = ""

@@ -1485,9 +1485,6 @@ class NCManageDatabase: NSObject {
                 if let etag = etag {
                     result.etag = etag
                 }
-                if let etagFPE = etagFPE {
-                    result.etagFPE = etagFPE
-                }
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)

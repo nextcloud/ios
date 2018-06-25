@@ -302,14 +302,14 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
+            // delete file 0 len
+            _ = self.providerData.deleteFile(CCUtility.getDirectoryProviderStorageFileID(identifier.rawValue, fileNameView: metadata.fileNameView))
+            
             let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
             let task = ocNetworking?.downloadFileNameServerUrl(serverUrl + "/" + metadata.fileName, fileNameLocalPath: url.path, communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(), success: { (lenght, etag, date) in
                 
                 // remove Task
                 self.outstandingDownloadTasks.removeValue(forKey: url)
-
-                // copy download file to url
-//                _ = self.providerData.copyFile("\(self.providerData.directoryUser)/\(metadata.fileID)", toPath: url.path)
             
                 // update DB Local
                 metadata.date = date! as NSDate
