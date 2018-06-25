@@ -348,7 +348,7 @@
 #pragma mark === Clear Cache ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)removeAllFiles:(BOOL)removeIco
+- (void)removeAllFiles
 {
     [appDelegate maintenanceMode:YES];
     
@@ -374,11 +374,11 @@
         
         [[NCAutoUpload sharedInstance] alignPhotoLibrary];
         
-//        [self emptyUserDirectoryUser:appDelegate.activeUser url:appDelegate.activeUrl removeIco:removeIco];
-        
         [self emptyDocumentsDirectory];
         
-        [self emptyGroupFileProviderStorage];
+        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
+
+        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
         
         NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
         for (NSString *file in tmpDirectory)
@@ -403,32 +403,11 @@
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_delete_cache_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
     
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"" message:NSLocalizedString(@"_want_delete_thumbnails_", nil) preferredStyle:UIAlertControllerStyleActionSheet];
-        
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil)
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction *action) {
-                                                               [self removeAllFiles:YES];
-                                                           }]];
-        
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_no_", nil)
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction *action) {
-                                                               [self removeAllFiles:NO];
-                                                           }]];
-        
-        [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-        }]];
-        
-        alertController.popoverPresentationController.sourceView = self.view;
-        NSIndexPath *indexPath = [self.form indexPathOfFormRow:sender];
-        CGRect cellRect = [self.tableView rectForRowAtIndexPath:indexPath];
-        alertController.popoverPresentationController.sourceRect = CGRectOffset(cellRect, -self.tableView.contentOffset.x, -self.tableView.contentOffset.y);
-
-        [self presentViewController:alertController animated:YES completion:nil];
-    }]];
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil)
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction *action) {
+                                                           [self removeAllFiles];
+                                                       }]];
 
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
@@ -486,7 +465,7 @@
             
             [CCUtility deleteAllChainStore];
             
-            [self emptyGroupFileProviderStorage];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
 
             [self emptyDocumentsDirectory];
             
@@ -519,17 +498,6 @@
 #pragma mark == Utility ==
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)emptyGroupFileProviderStorage
-{
-    NSString *file;
-    NSString *dirIniziale = [CCUtility getDirectoryProviderStorage];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject])
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
-}
-
 - (void)emptyGroupApplicationSupport
 {
     NSString *file;
@@ -541,7 +509,6 @@
     while (file = [enumerator nextObject])
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
 }
-
 
 - (void)emptyLibraryDirectory
 {
@@ -555,27 +522,6 @@
     
     while (file = [enumerator nextObject])
         [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
-}
-
-- (void)emptyUserDirectoryUser:(NSString *)user url:(NSString *)url removeIco:(BOOL)removeIco
-{
-    NSString *file;
-    NSString *dirIniziale;
-    
-    dirIniziale = [CCUtility getDirectoryActiveUser:user activeUrl:url];
-    
-    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
-    
-    while (file = [enumerator nextObject]) {
-        
-        NSString *ext = [[file pathExtension] lowercaseString];
-        
-        // Do not remove ICO
-        if ([ext isEqualToString:@"ico"] && !removeIco)
-            continue;
-        
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", dirIniziale, file] error:nil];
-    }
 }
 
 - (void)emptyDocumentsDirectory
@@ -593,8 +539,7 @@
 
 - (NSNumber *)getUserDirectorySize
 {
-    NSString *directoryUser = [CCUtility getDirectoryActiveUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
-    NSURL *directoryURL = [NSURL fileURLWithPath:directoryUser];
+    NSURL *directoryURL = [CCUtility getDirectoryGroup];
     unsigned long long count = 0;
     NSNumber *value = nil;
     
