@@ -98,6 +98,10 @@
 		F70944BD1F86364000AE4541 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F70944BC1F86364000AE4541 /* MainInterface.storyboard */; };
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		F70BFC7620E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
+		F70BFC7720E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
 		F710E8101EF95C9C00DC2427 /* CCIntro.m in Sources */ = {isa = PBXBuildFile; fileRef = F710E80E1EF95C9C00DC2427 /* CCIntro.m */; };
 		F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F710E80F1EF95C9C00DC2427 /* ImagesIntro.xcassets */; };
@@ -758,6 +762,7 @@
 		F70A07CB205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Error.strings"; sourceTree = "<group>"; };
 		F70A63061D5B3467004E2AA5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
 		F70A63071D5B3467004E2AA5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
+		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
 		F70F02B31C889183008DAB36 /* AFViewShaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFViewShaker.h; sourceTree = "<group>"; };
@@ -2705,6 +2710,7 @@
 			isa = PBXGroup;
 			children = (
 				F76C3B871C638A4C00DC4301 /* CCError.h */,
+				F70BFC7320E0FA7C00C67599 /* NCUtility.swift */,
 				F76C3B881C638A4C00DC4301 /* CCError.m */,
 				F7A54C341C6267B500E2C8BF /* CCExifGeo.h */,
 				F7A54C351C6267B500E2C8BF /* CCExifGeo.m */,
@@ -3608,6 +3614,7 @@
 				F73CC07C1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F70022B71EC4C9100080073F /* OCCapabilities.m in Sources */,
 				F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */,
+				F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */,
 				F70022BA1EC4C9100080073F /* OCCommunication.m in Sources */,
@@ -3724,6 +3731,7 @@
 				F73CC0801E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F743447C1E127EB2001CC831 /* NSString+TruncateToWidth.m in Sources */,
 				F70022C71EC4C9100080073F /* OCNotificationsAction.m in Sources */,
+				F70BFC7620E0FA7D00C67599 /* NCUtility.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3742,6 +3750,7 @@
 				F7BB50CE1F22388000C47094 /* OCNotifications.m in Sources */,
 				F7BB50CC1F22387900C47094 /* OCExternalSites.m in Sources */,
 				F74F9F5620BC3E52009FB1AF /* FileProviderExtension+Thumbnail.swift in Sources */,
+				F70BFC7720E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F7BB50EA1F2238FB00C47094 /* UIScrollView+EmptyDataSet.m in Sources */,
 				F7F878B11FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7BB50F71F2239BF00C47094 /* BKPasscodeLockScreenManager.m in Sources */,
@@ -3959,6 +3968,7 @@
 				F73B4F051F470D9100BBEE4B /* nsCharSetProber.cpp in Sources */,
 				F77B0E671D118A16002130FE /* Reachability.m in Sources */,
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,
+				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
 				F7D424571F063B82009C9782 /* PHAsset+CTAssetsPickerController.m in Sources */,
 				F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,

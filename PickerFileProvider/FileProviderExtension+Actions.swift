@@ -393,7 +393,6 @@ extension FileProviderExtension {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
-                let serverUrl = tableDirectory.serverUrl
             
                 // --------------------------------------------- Copy file here with security access
             
@@ -416,7 +415,7 @@ extension FileProviderExtension {
                     return
                 }
             
-                let fileName = self.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID, serverUrl: serverUrl)
+                let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID)
                 let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + tableDirectory.directoryID + fileName
             
                 do {
@@ -467,46 +466,4 @@ extension FileProviderExtension {
             }
         }
     }
-    
-    func createFileName(_ fileName: String, directoryID: String, serverUrl: String) -> String {
-        
-        var resultFileName = fileName
-        
-        providerData.queueTradeSafe.sync {
-            
-            var exitLoop = false
-            
-            while exitLoop == false {
-                
-                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileNameView == %@ AND directoryID == %@", providerData.account, resultFileName, directoryID)) != nil {
-                    
-                    var name = NSString(string: resultFileName).deletingPathExtension
-                    let ext = NSString(string: resultFileName).pathExtension
-                    
-                    let characters = Array(name)
-                    
-                    if characters.count < 2 {
-                        resultFileName = name + " " + "1" + "." + ext
-                    } else {
-                        let space = characters[characters.count-2]
-                        let numChar = characters[characters.count-1]
-                        var num = Int(String(numChar))
-                        if (space == " " && num != nil) {
-                            name = String(name.dropLast())
-                            num = num! + 1
-                            resultFileName = name + "\(num!)" + "." + ext
-                        } else {
-                            resultFileName = name + " " + "1" + "." + ext
-                        }
-                    }
-                    
-                } else {
-                    exitLoop = true
-                }
-            }
-        }
-        
-        return resultFileName
-    }
-    
 }

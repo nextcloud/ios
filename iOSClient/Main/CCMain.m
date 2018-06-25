@@ -703,9 +703,9 @@
         
         [coordinator coordinateReadingItemAtURL:url options:NSFileCoordinatorReadingForUploading error:&error byAccessor:^(NSURL *newURL) {
             
-            NSString *fileName = [url lastPathComponent];
             NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
             NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+            NSString *fileName =  [[NCUtility sharedInstance] createFileName:[url lastPathComponent] directoryID:directoryID];
             NSString *fileID = [directoryID stringByAppendingString:fileName];
             NSData *data = [NSData dataWithContentsOfURL:newURL];
             
