@@ -223,7 +223,6 @@ extension FileProviderExtension {
             
             // importDocument
             if (selectorPost == providerData.selectorPostImportDocument) {
-                
                 providerData.queueTradeSafe.sync(flags: .barrier) {
                     let itemIdentifier = NSFileProviderItemIdentifier(assetLocalIdentifier)
                     self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
