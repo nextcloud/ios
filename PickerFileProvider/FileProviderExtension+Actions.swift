@@ -248,7 +248,10 @@ extension FileProviderExtension {
                 
                 let itemIdentifier = self.providerData.getItemIdentifier(metadata: metadata)
                 
+                // rename file
                 _ = self.providerData.moveFile(self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + fileNameFrom, toPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + itemName)
+                // rename ico
+                _ = self.providerData.moveFile(self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + fileNameFrom + ".ico", toPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + itemName + ".ico")
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
             }
