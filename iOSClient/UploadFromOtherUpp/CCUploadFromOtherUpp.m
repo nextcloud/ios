@@ -173,20 +173,23 @@
 
 -(void)upload
 {
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlLocal];
+    NSString *fileName = [[NCUtility sharedInstance] createFileName:appDelegate.fileNameUpload directoryID:directoryID];
+    
     tableMetadata *metadataForUpload = [tableMetadata new];
     
     metadataForUpload.account = appDelegate.activeAccount;
     metadataForUpload.date = [NSDate new];
-    metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlLocal];
-    metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:appDelegate.fileNameUpload];
-    metadataForUpload.fileName = appDelegate.fileNameUpload;
-    metadataForUpload.fileNameView = appDelegate.fileNameUpload;
+    metadataForUpload.directoryID = directoryID;
+    metadataForUpload.fileID = [directoryID stringByAppendingString:appDelegate.fileNameUpload];
+    metadataForUpload.fileName = fileName;
+    metadataForUpload.fileNameView = fileName;
     metadataForUpload.session = k_upload_session;
     metadataForUpload.sessionSelector = selectorUploadFile;
     metadataForUpload.status = k_metadataStatusWaitUpload;
     
     // Prepare file and directory
-    [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:appDelegate.fileNameUpload]];
+    [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:fileName]];
     
     // Add Medtadata for upload
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];

@@ -602,7 +602,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
             return
         }
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account == %@ AND directoryID == %@ AND fileNameView == %@", appDelegate.activeAccount, directoryID, fileNameSave))
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave))
         
         if (metadata != nil) {
             
@@ -612,7 +612,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                self.dismissAndUpload(fileNameSave)
+                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, directoryID: directoryID)
             }
             
             alertController.addAction(cancelAction)
@@ -621,18 +621,16 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
             self.present(alertController, animated: true, completion:nil)
             
         } else {
-            
-           dismissAndUpload(fileNameSave)
+           let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
+           dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String) {
+    func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String) {
         
         self.dismiss(animated: true, completion: {
             
             let data = self.text.data(using: .utf8)
-            let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
-            let fileID = directoryID + fileNameSave
             let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave), contents: data, attributes: nil)
             
             if success {

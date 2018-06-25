@@ -3542,16 +3542,16 @@
 - (void)pasteFile:(id)sender
 {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [self uploadFilePasteArray:[pasteboard items] cryptated:NO];
+    [self uploadFilePasteArray:[pasteboard items]];
 }
 
 - (void)pasteFiles:(id)sender
 {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    [self uploadFilePasteArray:[pasteboard items] cryptated:NO];
+    [self uploadFilePasteArray:[pasteboard items]];
 }
 
-- (void)uploadFilePasteArray:(NSArray *)items cryptated:(BOOL)cryptated
+- (void)uploadFilePasteArray:(NSArray *)items
 {
     float timer = 0;
     
@@ -3561,7 +3561,8 @@
         
         NSData *dataFileID = [dic objectForKey: k_metadataKeyedUnarchiver];
         NSString *fileID = [NSKeyedUnarchiver unarchiveObjectWithData:dataFileID];
-        
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:self.serverUrl];
+
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         
         if (metadata) {
@@ -3569,15 +3570,17 @@
             if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timer * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                        
+                    
+                    NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileName directoryID:directoryID];
+                    
                     tableMetadata *metadataForUpload = [tableMetadata new];
                         
                     metadataForUpload.account = appDelegate.activeAccount;
                     metadataForUpload.date = [NSDate new];
-                    metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:self.serverUrl];
-                    metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:metadata.fileName];
-                    metadataForUpload.fileName = metadata.fileName;
-                    metadataForUpload.fileNameView = metadata.fileNameView;
+                    metadataForUpload.directoryID = directoryID;
+                    metadataForUpload.fileID = [directoryID stringByAppendingString:metadata.fileName];
+                    metadataForUpload.fileName = fileName;
+                    metadataForUpload.fileNameView = fileName;
                     metadataForUpload.session = k_upload_session;
                     metadataForUpload.sessionSelector = selectorUploadFile;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
