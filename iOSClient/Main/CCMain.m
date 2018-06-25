@@ -1507,51 +1507,24 @@
     // save father e update permission
     if(!_isSearchMode && metadataFolder)
         _fatherPermission = metadataFolder.permissions;
-    
-    NSArray *recordsInSessions;
-    NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
-    
-    if (_isSearchMode) {
         
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != ''", metadataNet.account] sorted:nil ascending:NO];
-        
-    } else {
+    if (_isSearchMode == NO) {
         
         [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
         
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND session == ''", metadataNet.account, metadataNet.directoryID] clearDateReadDirectoryID:metadataNet.directoryID];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusNormal, k_metadataStatusHide] clearDateReadDirectoryID:metadataNet.directoryID];
         
-        recordsInSessions = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND session != ''", metadataNet.account, metadataNet.directoryID] sorted:nil ascending:NO];
-
         [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:metadataNet.directoryID];
     }
     
-    for (tableMetadata *metadata in metadatas) {
-        
-        // Create directory FS
-        if (metadata.directory) {
-            [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
-        } else {
-            [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
-        }
-        
-        // verify if the record is in download/upload progress
-        if (metadata.directory == NO && [recordsInSessions count] > 0) {
-            
-            tableMetadata *metadataTransfer = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND fileName == %@", appDelegate.activeAccount, metadataNet.directoryID, metadata.fileName]];
-            
-            // is in Download or Upload
-            if ([metadataTransfer.session containsString:@"upload"] || [metadataTransfer.session containsString:@"download"]) {
-                continue;
-            }
-        }
-        
-        // Insert in Array
-        [metadatasToInsertInDB addObject:metadata];
-    }
+    NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
     
     // insert in Database
-    metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
+    NSMutableArray *metadatasToInsertInDB = (NSMutableArray *)[[NCManageDatabase sharedInstance] addMetadatas:metadatas serverUrl:metadataNet.serverUrl];
+    // reinsert metadatas in Download
+    if (metadatasInDownload) {
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload serverUrl:metadataNet.serverUrl];
+    }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
@@ -4622,7 +4595,10 @@
     // è una directory
     if (metadata.directory) {
         
-//        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        // Create Directory Provider Storage FileID
+        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
+        
+        // cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
         
@@ -4639,6 +4615,9 @@
         
     } else {
     
+        // Create Directory Provider Storage FileID + FileNameView
+        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+        
         // File                
         dataFile = [CCUtility dateDiff:metadata.date];
         lunghezzaFile = [CCUtility transformedSize:metadata.size];

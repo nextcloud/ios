@@ -316,27 +316,22 @@
 {
     if (errorCode == 0) {
         
-        NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
-     
         // Update directory etag
         [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
         
-        for (tableMetadata *metadata in metadatas) {
-            
-            // Create directory FS
-            if (metadata.directory) {
-                [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
-            } else {
-                [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
-            }
-            
-            // Insert in Array
-            [metadatasToInsertInDB addObject:metadata];
-        }
-
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusNormal, k_metadataStatusHide] clearDateReadDirectoryID:metadataNet.directoryID];
+        
+        [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:metadataNet.directoryID];
+        
+        NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+        
         // insert in Database
-        metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
-
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas serverUrl:metadataNet.serverUrl];
+        // reinsert metadatas in Download
+        if (metadatasInDownload) {
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload serverUrl:metadataNet.serverUrl];
+        }
+        
         _loadingFolder = NO;
         
         [self.tableView reloadData];
@@ -452,6 +447,9 @@
     else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND directory == true AND e2eEncrypted == false", activeAccount, directoryID];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:indexPath.row];
+    
+    // Create Directory Provider Storage FileID
+    [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
     
     // colors
     cell.textLabel.textColor = [UIColor blackColor];
