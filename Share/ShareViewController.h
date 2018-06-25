@@ -44,7 +44,6 @@
 @property (nonatomic, strong) NSString *activeUserID;
 @property (nonatomic, strong) NSString *activePassword;
 @property (nonatomic, strong) NSString *activeAccessToken;
-@property (nonatomic, strong) NSString *directoryUser;
 @property (nonatomic, strong) NSString *serverUrl;
 
 @property (nonatomic, retain) NSMutableArray *filesName;

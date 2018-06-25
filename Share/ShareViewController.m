@@ -62,7 +62,6 @@
         _activeUrl = recordAccount.url;
         _activeUser = recordAccount.user;
         _activeUserID = recordAccount.userID;
-        _directoryUser = [CCUtility getDirectoryActiveUser:self.activeUser activeUrl:self.activeUrl];
         
         if ([_activeAccount isEqualToString:[CCUtility getActiveAccountExt]]) {
             
