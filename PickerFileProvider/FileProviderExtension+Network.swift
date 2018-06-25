@@ -234,9 +234,7 @@ extension FileProviderExtension {
             if (selectorPost == providerData.selectorPostItemChanged) {
                 // nothing
             }
-            
-            NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag)
-            
+                        
             // remove session data
             metadata.assetLocalIdentifier = ""
             metadata.session = ""
