@@ -367,6 +367,7 @@ class CCActions: NSObject {
         metadataNet.delegate = delegate
         metadataNet.fileID = metadata.fileID
         metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
+        metadataNet.fileNameView = metadata.fileNameView
         metadataNet.optionAny = "\(favorite)"
         metadataNet.selector = selectorAddFavorite
         metadataNet.serverUrl = serverUrl;

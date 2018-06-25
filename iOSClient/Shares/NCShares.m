@@ -188,6 +188,7 @@
     metadataNet.action = actionUnShare;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
+    metadataNet.fileNameView = metadata.fileNameView;
     metadataNet.selector = selectorUnshare;
     metadataNet.serverUrl = tableShare.serverUrl;
     
