@@ -4684,6 +4684,7 @@
     // ----------------------------------------------------------------------------------------------------------
     
     if (_metadataFolder.e2eEncrypted && !metadata.directory) {
+        
         tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND fileNameIdentifier == %@", appDelegate.activeAccount, metadata.fileName]];
         if (tableE2eEncryption)
             cell.status.image = [UIImage imageNamed:@"encrypted"];
