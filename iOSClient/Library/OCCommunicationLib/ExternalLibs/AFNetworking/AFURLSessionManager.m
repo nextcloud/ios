@@ -338,6 +338,7 @@ didFinishDownloadingToURL:(NSURL *)location
     if (self.downloadTaskDidFinishDownloading) {
         self.downloadFileURL = self.downloadTaskDidFinishDownloading(session, downloadTask, location);
         if (self.downloadFileURL) {
+            [[NSFileManager defaultManager] removeItemAtPath:self.downloadFileURL.path error:nil];
             [[NSFileManager defaultManager] moveItemAtURL:location toURL:self.downloadFileURL error:&fileManagerError];
 
             if (fileManagerError) {
