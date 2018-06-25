@@ -213,14 +213,15 @@
 {
     if ([self.filesName count] > 0) {
     
-        NSString *fileName = [self.filesName objectAtIndex:0];
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:self.serverUrl];
+        NSString *fileName = [[NCUtility sharedInstance] createFileName:[self.filesName objectAtIndex:0] directoryID:directoryID];
         
         tableMetadata *metadataForUpload = [tableMetadata new];
         
         metadataForUpload.account = self.activeAccount;
         metadataForUpload.date = [NSDate new];
-        metadataForUpload.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:self.serverUrl];
-        metadataForUpload.fileID = [metadataForUpload.directoryID stringByAppendingString:fileName];
+        metadataForUpload.directoryID = directoryID;
+        metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
         metadataForUpload.fileName = fileName;
         metadataForUpload.fileNameView = fileName;
         metadataForUpload.session = k_upload_session_foreground;
