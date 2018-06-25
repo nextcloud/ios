@@ -239,12 +239,10 @@ extension FileProviderExtension {
             
             // itemChanged
             if (selectorPost == providerData.selectorPostItemChanged) {
-                
-//                let filePathItemIdentifier = providerData.fileProviderStorageURL!.path + "/" + providerData.getItemIdentifier(metadata: metadata).rawValue + "/" + metadata.fileName
-//                _ = self.providerData.copyFile(filePathItemIdentifier, toPath: providerData.directoryUser + "/" + metadata.fileID)
+                // nothing
             }
             
-            NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
+            NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag)
             
             // remove session data
             metadata.assetLocalIdentifier = ""
@@ -316,8 +314,6 @@ extension FileProviderExtension {
         guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {
             return
         }
-        
-//        _ = self.providerData.copyFile(url.path, toPath: providerData.directoryUser + "/" + metadata.fileName)
         
         CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
     }
