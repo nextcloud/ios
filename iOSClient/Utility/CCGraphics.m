@@ -238,7 +238,7 @@
         
         resizeImage = [UIImage imageWithData:UIImageJPEGRepresentation(resizeImage, 0.5f)];
         if (resizeImage)
-            [UIImagePNGRepresentation(resizeImage) writeToFile:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView] atomically: YES];
+            [UIImagePNGRepresentation(resizeImage) writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView] atomically: YES];
     }
     
     return scaleImage;
