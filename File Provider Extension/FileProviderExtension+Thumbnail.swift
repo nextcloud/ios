@@ -35,7 +35,7 @@ extension FileProviderExtension {
                     ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileID: metadata!.fileID, fileNamePath: fileNamePath, fileNameView: metadata!.fileNameView, success: {
                         
                         do {
-                            let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata?.fileNameView))
+                            let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileName: metadata!.fileName))
                             let data = try Data.init(contentsOf: url)
                             perThumbnailCompletionHandler(itemIdentifier, data, nil)
                         } catch let error {

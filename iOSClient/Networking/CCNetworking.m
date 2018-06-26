@@ -499,7 +499,7 @@
     // File exists ?
     tableLocalFile *localfile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         
-    if (localfile != nil && [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+    if (localfile != nil && [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
             
         [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             
@@ -610,7 +610,7 @@
     
     if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) {
         
-        NSString *destinationFilePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+        NSString *destinationFilePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
         NSURL *destinationURL = [NSURL fileURLWithPath:destinationFilePath];
         
         [[NSFileManager defaultManager] removeItemAtURL:destinationURL error:NULL];
@@ -700,7 +700,7 @@
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
-    if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO) {
+    if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName] == NO) {
     
         PHFetchResult *result = [PHAsset fetchAssetsWithLocalIdentifiers:@[metadata.assetLocalIdentifier] options:nil];
         
@@ -738,11 +738,11 @@
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     metadata.fileNameView = metadata.fileName;
                     
-                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] options:NSDataWritingAtomic error:&error];
                     
                 } else {
                     
-                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] options:NSDataWritingAtomic error:&error];
                 }
                 
                 if (error) {
@@ -780,7 +780,7 @@
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
                     
-                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName]];
+                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]];
                     NSError *error = nil;
                     
                     [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
@@ -888,7 +888,7 @@
     else if ([metadata.session isEqualToString:k_upload_session_foreground]) sessionUpload = [self sessionUploadForeground];
     else if ([metadata.session isEqualToString:k_upload_session_extension]) sessionUpload = [self sessionUploadExtension];
 
-    NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]];
+    NSURLSessionUploadTask *uploadTask = [sessionUpload uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]]];
     
     // Error
     if (uploadTask == nil) {
@@ -1071,7 +1071,7 @@
         // Optimization
         if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO) {
             
-            [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] contents:nil attributes:nil];
+            [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] contents:nil attributes:nil];
         }
         
         // Copy photo or video in the photo album for auto upload
@@ -1163,7 +1163,7 @@
     NSInteger metadataKeyIndex;
     
     // Verify File Size
-    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName] error:&error];
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName] error:&error];
     NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
     long long fileSize = [fileSizeNumber longLongValue];
         

@@ -60,7 +60,7 @@ class NCText: UIViewController, UITextViewDelegate {
         if let metadata = metadata {
             
             loadText = ""
-            let path = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)!
+            let path = CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileName: metadata.fileName)!
             let data = NSData(contentsOfFile: path)
             
             if let data = data {
@@ -151,7 +151,7 @@ class NCText: UIViewController, UITextViewDelegate {
             if textView.text != loadText {
             
                 let data = textView.text.data(using: .utf8)
-                let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView), contents: data, attributes: nil)
+                let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileName: metadata.fileName), contents: data, attributes: nil)
                 if success {
                 
                     appDelegate.activeMain.clearDateReadDataSource(nil)

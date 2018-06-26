@@ -145,7 +145,7 @@
 }
 
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileNameView fileID:(NSString *)fileID extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage optimizedFileName:(BOOL)optimizedFileName
++ (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage optimizedFileName:(BOOL)optimizedFileName
 {
     UIImage *originalImage;
     UIImage *scaleImage;
@@ -153,9 +153,9 @@
     CGFloat width, height;
     
     NSString *ext = [extension lowercaseString];
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName];
     
-    if (![CCUtility fileProviderStorageExists:fileID fileNameView:fileNameView]) return nil;
+    if (![CCUtility fileProviderStorageExists:fileID fileName:fileName]) return nil;
     
     // only viedo / image
     if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;
@@ -189,11 +189,11 @@
             
             // if it is preview for Upload then trasform it in gray scale
             scaleImage = [self grayscale:scaleImage];
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileNameView] atomically: YES];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileName:fileName] atomically: YES];
             
         } else {
             
-            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileNameView] atomically: YES];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileName:fileName] atomically: YES];
         }
     }
     
@@ -238,7 +238,7 @@
         
         resizeImage = [UIImage imageWithData:UIImageJPEGRepresentation(resizeImage, 0.5f)];
         if (resizeImage)
-            [UIImagePNGRepresentation(resizeImage) writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView] atomically: YES];
+            [UIImagePNGRepresentation(resizeImage) writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName] atomically: YES];
     }
     
     return scaleImage;

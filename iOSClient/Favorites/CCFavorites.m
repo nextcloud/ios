@@ -333,9 +333,9 @@
 
 - (void)openWith:(tableMetadata *)metadata
 {
-    if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+    if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
         
-        NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]];
         
         _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
         _docController.delegate = self;
@@ -444,9 +444,9 @@
     actionSheet.cancelButtonTitle = NSLocalizedString(@"_cancel_",nil);
     
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]]) {
         
-        iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]];
         
     } else {
         
@@ -616,7 +616,7 @@
             [cell.shared addGestureRecognizer:tap];
         }
         
-        cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]];
         
         if (cell.file.image == nil) {
             
@@ -645,7 +645,7 @@
         
         NSString *date = [CCUtility dateDiff:metadata.date];
         NSString *length = [CCUtility transformedSize:metadata.size];
-        BOOL fileExists = [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView];
+        BOOL fileExists = [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName];
             
         if (fileExists)
             cell.local.image = [UIImage imageNamed:@"local"];
@@ -720,7 +720,7 @@
 
         if (serverUrl) {
             
-            if ([CCUtility fileProviderStorageExists:_metadata.fileID fileNameView:_metadata.fileNameView]) {
+            if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileName]) {
             
                 [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
                             

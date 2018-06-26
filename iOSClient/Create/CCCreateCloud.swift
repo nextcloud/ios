@@ -631,7 +631,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         self.dismiss(animated: true, completion: {
             
             let data = self.text.data(using: .utf8)
-            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave), contents: data, attributes: nil)
+            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileName: fileNameSave), contents: data, attributes: nil)
             
             if success {
                 

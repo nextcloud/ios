@@ -54,10 +54,10 @@
     
     NSDate *date = [NSDate new];
     
-    if (![CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView])
+    if (![CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName])
         return;
 
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]];
 
     CGImageSourceRef originalSource =  CGImageSourceCreateWithURL((CFURLRef) url, NULL);
     if (!originalSource)

@@ -849,9 +849,9 @@
     return path;
 }
 
-+ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileName:(NSString *)fileName
 {
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorageFileID:fileID], fileName];
     
     // if do not exists create file 0 length
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath] == NO) {
@@ -861,14 +861,14 @@
     return fileNamePath;
 }
 
-+ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
++ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileName:(NSString *)fileName
 {
-    return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
+    return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageFileID:fileID], fileName];
 }
 
-+ (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView
++ (BOOL)fileProviderStorageExists:(NSString *)fileID fileName:(NSString *)fileName
 {
-    NSString *fileNamePath = [self getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView];
+    NSString *fileNamePath = [self getDirectoryProviderStorageFileID:fileID fileName:fileName];
     
     unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
     
@@ -1168,7 +1168,7 @@
 
 + (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata
 {
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
     
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
     

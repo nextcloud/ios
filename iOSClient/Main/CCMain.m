@@ -711,7 +711,7 @@
             
             if (data && error == nil) {
                 
-                if ([data writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName] options:NSDataWritingAtomic error:&error]) {
+                if ([data writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName] options:NSDataWritingAtomic error:&error]) {
                     
                     tableMetadata *metadataForUpload = [tableMetadata new];
                     
@@ -1055,7 +1055,7 @@
         
         if ([self indexPathIsValid:indexPath]) {
         
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadataNet.fileID fileNameView:metadataNet.fileNameView]])
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadataNet.fileID fileName:metadataNet.fileName]])
                 [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
         }
         
@@ -1123,7 +1123,7 @@
             
             [self reloadDatasource:serverUrl];
             
-            NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+            NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]];
             
             _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
             _docController.delegate = self;
@@ -1134,7 +1134,7 @@
         // Save to Photo Album
         if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-            NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+            NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
             PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] && status == PHAuthorizationStatusAuthorized) {
@@ -2767,9 +2767,9 @@
 {
     [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
     
-    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
+    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] error:nil];
     
-    [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+    [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     if (serverUrl)
@@ -3371,7 +3371,7 @@
             if (fileID) {
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
                 if (metadata) {
-                    return [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView];
+                    return [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName];
                 } else {
                     return NO;
                 }
@@ -3400,7 +3400,7 @@
             if (fileID) {
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
                 if (metadata) {
-                    if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+                    if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
                         isValid = YES;
                     } else {
                         isValid = NO;
@@ -3430,7 +3430,7 @@
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.items = [[NSArray alloc] init];
     
-    if ([CCUtility fileProviderStorageExists:_metadata.fileID fileNameView:_metadata.fileNameView]) {
+    if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileName]) {
         
         [self copyFileToPasteboard:_metadata];
         
@@ -3463,7 +3463,7 @@
     
     for (tableMetadata *metadata in selectedMetadatas) {
         
-        if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+        if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
             
             [self copyFileToPasteboard:metadata];
             
@@ -3537,12 +3537,12 @@
         
         if (metadata) {
             
-            if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+            if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
                 
                 NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileName directoryID:directoryID];
                 NSString *fileID = [directoryID stringByAppendingString:fileName];
                     
-                [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName]];
+                [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName]];
                     
                 tableMetadata *metadataForUpload = [tableMetadata new];
                         
@@ -3774,7 +3774,7 @@
         [self performSelector:@selector(deleteFile) withObject:nil];
     }]];
     
-    if (localFile || [CCUtility fileProviderStorageExists:_metadata.fileID fileNameView:_metadata.fileNameView]) {
+    if (localFile || [CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileName]) {
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             [self performSelector:@selector(removeLocalFile:) withObject:_metadata];
         }]];
@@ -4037,8 +4037,8 @@
         UIImage *iconHeader;
 
         // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:_metadata.fileID fileNameView:_metadata.fileNameView]])
-            iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:_metadata.fileID fileNameView:_metadata.fileNameView]];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:_metadata.fileID fileName:_metadata.fileName]])
+            iconHeader = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:_metadata.fileID fileName:_metadata.fileName]];
         else
             iconHeader = [UIImage imageNamed:_metadata.iconName];
         
@@ -4614,7 +4614,7 @@
     } else {
     
         // Create Directory Provider Storage FileID + FileNameView
-        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
         
         // File                
         dataFile = [CCUtility dateDiff:metadata.date];
@@ -4626,7 +4626,7 @@
         [dateFormatter setDateStyle:NSDateFormatterShortStyle];
         [dateFormatter setTimeStyle:NSDateFormatterShortStyle];
         
-        if (localFile && [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView])
+        if (localFile && [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName])
             cell.local.image = [UIImage imageNamed:@"local"];
         else
             cell.local.image = nil;
@@ -4640,9 +4640,9 @@
     // ----------------------------------------------------------------------------------------------------------
 
     // assegnamo l'immagine anteprima se esiste, altrimenti metti quella standars
-    if (metadata.directory == NO && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
+    if (metadata.directory == NO && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]]) {
         
-        cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]];
         
     } else {
         
@@ -4877,7 +4877,7 @@
         }
         
         // se non c'è una preview in bianconero metti l'immagine di default
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO)
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]] == NO)
             cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] color:[NCBrandColor sharedInstance].brandElement];
         
         cell.labelTitle.enabled = NO;
@@ -5057,7 +5057,7 @@
     if (_metadata.directory == NO) {
         
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
-        if ([CCUtility fileProviderStorageExists:_metadata.fileID fileNameView:_metadata.fileNameView]) {
+        if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileName]) {
             
             [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
             

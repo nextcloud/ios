@@ -357,7 +357,7 @@
             
             // remove & recreate
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
+            [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
             
             [metadatas addObject:metadata];
         }

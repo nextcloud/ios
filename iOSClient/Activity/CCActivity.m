@@ -197,7 +197,7 @@
         
         if (metadata && ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload])) {
             
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]]) {
                 return 1;
             } else {
                 return 0;
@@ -325,9 +325,9 @@
         
         if (metadata && ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload])) {
             
-             if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
+             if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]]) {
              
-                 imageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+                 imageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]];
                  
              } else {
                  
@@ -347,7 +347,7 @@
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", activity.fileID]];
     
-    BOOL existsFile = [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView];
+    BOOL existsFile = [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName];
     
     if (metadata && existsFile) {
         
