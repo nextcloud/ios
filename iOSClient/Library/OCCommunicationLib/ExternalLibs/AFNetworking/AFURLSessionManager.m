@@ -1180,7 +1180,9 @@ didFinishDownloadingToURL:(NSURL *)location
         if (fileURL) {
             delegate.downloadFileURL = fileURL;
             NSError *error = nil;
+            [[NSFileManager defaultManager] removeItemAtPath:fileURL.path error:nil];
             [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&error];
+            
             if (error) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:AFURLSessionDownloadTaskDidFailToMoveFileNotification object:downloadTask userInfo:error.userInfo];
             }
