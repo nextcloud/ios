@@ -335,7 +335,7 @@
 {
     if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
         
-        NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]];
+        NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
         
         _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
         _docController.delegate = self;

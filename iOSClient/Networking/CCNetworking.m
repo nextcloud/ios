@@ -738,11 +738,11 @@
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     metadata.fileNameView = metadata.fileName;
                     
-                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView] options:NSDataWritingAtomic error:&error];
                     
                 } else {
                     
-                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] options:NSDataWritingAtomic error:&error];
+                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView] options:NSDataWritingAtomic error:&error];
                 }
                 
                 if (error) {
@@ -780,7 +780,7 @@
                 
                 if ([asset isKindOfClass:[AVURLAsset class]]) {
                     
-                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]];
+                    NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
                     NSError *error = nil;
                     
                     [[NSFileManager defaultManager] removeItemAtURL:fileURL error:nil];
@@ -1059,9 +1059,9 @@
             [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
         
         // Optimization
-        if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO) {
+        if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && metadata.e2eEncrypted == NO && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO) {
             
-            [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] contents:nil attributes:nil];
+            [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView] contents:nil attributes:nil];
         }
         
         // Copy photo or video in the photo album for auto upload

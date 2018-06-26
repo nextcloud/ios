@@ -1123,7 +1123,7 @@
             
             [self reloadDatasource:serverUrl];
             
-            NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]];
+            NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
             
             _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
             _docController.delegate = self;
@@ -1134,7 +1134,7 @@
         // Save to Photo Album
         if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-            NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
+            NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
             PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] && status == PHAuthorizationStatusAuthorized) {
@@ -2768,7 +2768,7 @@
     [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
     
     [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] error:nil];
-    
+//    encr
     [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
@@ -4614,7 +4614,7 @@
     } else {
     
         // Create Directory Provider Storage FileID + FileNameView
-        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
+        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
         
         // File                
         dataFile = [CCUtility dateDiff:metadata.date];

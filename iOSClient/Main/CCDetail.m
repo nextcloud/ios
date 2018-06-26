@@ -277,7 +277,7 @@
 - (void)viewDocument
 {
     CGFloat safeAreaBottom = 0;
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileName:self.metadataDetail.fileName];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileName:self.metadataDetail.fileNameView];
     
     if (@available(iOS 11, *)) {
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
@@ -448,7 +448,7 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
-                NSString *fileImage = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
+                NSString *fileImage = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
                 NSString *ext = [CCUtility getExtension:metadata.fileNameView];
                 
                 if ([ext isEqualToString:@"GIF"]) image = [UIImage animatedImageWithAnimatedGIFURL:[NSURL fileURLWithPath:fileImage]];
@@ -476,7 +476,7 @@
                 
                 if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
                     
-                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]];
+                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
                     
                     MWPhoto *video = [MWPhoto photoWithImage:[CCGraphics thumbnailImageForVideo:url atTime:1.0]];
                     video.videoURL = url;
@@ -499,7 +499,7 @@
                     MWPhoto *audio;
                     UIImage *audioImage;
                     
-                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]];
+                    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
                     
                     if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
                         audioImage = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
@@ -548,7 +548,7 @@
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     if (metadata == nil) return;
 
-    self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName]]];
+    self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]]];
     
     self.docController.delegate = self;
     
@@ -727,7 +727,7 @@
 
 - (void)viewPDF:(NSString *)password
 {
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileName:self.metadataDetail.fileName];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileName:self.metadataDetail.fileNameView];
     
     if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileName:self.metadataDetail.fileName] == NO) {
         

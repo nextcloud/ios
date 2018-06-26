@@ -368,7 +368,7 @@
     
     for (tableMetadata *metadata in _selectedMetadatas) {
     
-        NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
+        NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
                 
         if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
             

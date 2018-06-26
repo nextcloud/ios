@@ -116,7 +116,7 @@ class FileProviderData: NSObject {
         if metadata.directory {
             CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue)
         } else {
-            CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileName: metadata.fileName)
+            CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileName: metadata.fileNameView)
         }
     }
     
