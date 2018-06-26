@@ -40,7 +40,7 @@
 - (NSString *)decryptEncryptedJson:(NSString *)encrypted key:(NSString *)key;
 
 - (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directory:(NSString *)directory key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
-- (BOOL)decryptFileID:(NSString *)fileID directory:(NSString *)directory key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
+- (BOOL)decryptFileName:(NSString *)fileName fileNameView:(NSString *)fileNameView fileID:(NSString *)fileID key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
 
 - (NSData *)generateKey:(int)length;
 - (NSString *)createSHA512:(NSString *)string;

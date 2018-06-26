@@ -532,11 +532,11 @@ cleanup:
     return false;
 }
 
-- (BOOL)decryptFileID:(NSString *)fileID directory:(NSString *)directory key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag
+- (BOOL)decryptFileName:(NSString *)fileName fileNameView:(NSString *)fileNameView fileID:(NSString *)fileID key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag
 {
     NSMutableData *plainData;
 
-    NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[NSString stringWithFormat:@"%@/%@", directory, fileID]];
+    NSData *cipherData = [[NSFileManager defaultManager] contentsAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName]];
     if (cipherData == nil)
         return false;
     
@@ -546,7 +546,7 @@ cleanup:
 
     BOOL result = [self decryptData:cipherData plainData:&plainData keyData:keyData keyLen:AES_KEY_128_LENGTH ivData:ivData tagData:tagData];
     if (plainData != nil && result) {
-        [plainData writeToFile:[NSString stringWithFormat:@"%@/%@", directory, fileID] atomically:YES];
+        [plainData writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileNameView] atomically:YES];
         return true;
     }
     

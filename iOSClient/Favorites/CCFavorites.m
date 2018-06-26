@@ -333,7 +333,7 @@
 
 - (void)openWith:(tableMetadata *)metadata
 {
-    if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
+    if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
         
         NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
         
@@ -645,7 +645,7 @@
         
         NSString *date = [CCUtility dateDiff:metadata.date];
         NSString *length = [CCUtility transformedSize:metadata.size];
-        BOOL fileExists = [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName];
+        BOOL fileExists = [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView];
             
         if (fileExists)
             cell.local.image = [UIImage imageNamed:@"local"];
@@ -720,7 +720,7 @@
 
         if (serverUrl) {
             
-            if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileName]) {
+            if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileNameView]) {
             
                 [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
                             

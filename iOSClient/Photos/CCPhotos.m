@@ -370,7 +370,7 @@
     
         NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
                 
-        if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
+        if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 

@@ -283,7 +283,7 @@
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
-    if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileName:self.metadataDetail.fileName] == NO) {
+    if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileName:self.metadataDetail.fileNameView] == NO) {
         
         [self backNavigationController];
         return;
@@ -425,7 +425,7 @@
         
         tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
 
-        if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName] == NO && metadataDB.status == k_metadataStatusNormal) {
+        if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView] == NO && metadataDB.status == k_metadataStatusNormal) {
             
             [self downloadPhotoBrowser:metadata];
         }
@@ -474,7 +474,7 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                 
-                if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
+                if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
                     
                     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
                     
@@ -494,7 +494,7 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) {
                 
-                if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName]) {
+                if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
                     
                     MWPhoto *audio;
                     UIImage *audioImage;
@@ -568,7 +568,7 @@
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser deleteButtonPressedForPhotoAtIndex:(NSUInteger)index deleteButton:(UIBarButtonItem *)deleteButton
 {
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
-    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileName] == NO) {
+    if (metadata == nil || [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView] == NO) {
         
         [appDelegate messageNotification:@"_info_" description:@"_file_not_found_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeInfo errorCode:0];
         
@@ -729,7 +729,7 @@
 {
     NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileName:self.metadataDetail.fileNameView];
     
-    if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileName:self.metadataDetail.fileName] == NO) {
+    if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileName:self.metadataDetail.fileNameView] == NO) {
         
         // read file error
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_read_file_error_", nil) preferredStyle:UIAlertControllerStyleAlert];
