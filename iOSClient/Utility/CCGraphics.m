@@ -255,7 +255,7 @@
 
 + (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color
 {
-    CGRect rect = CGRectMake(0, 0, image.size.width*2, image.size.height*2);
+    CGRect rect = CGRectMake(0, 0, image.size.width*3, image.size.height*3);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClipToMask(context, rect, image.CGImage);
@@ -264,7 +264,7 @@
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
-    return [UIImage imageWithCGImage:img.CGImage scale:2.0 orientation: UIImageOrientationDownMirrored];
+    return [UIImage imageWithCGImage:img.CGImage scale:3.0 orientation: UIImageOrientationDownMirrored];
 }
 
 + (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont
