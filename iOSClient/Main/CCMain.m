@@ -2767,9 +2767,7 @@
 {
     [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
     
-    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] error:nil];
-//    encr
-    [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName];
+    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     if (serverUrl)
