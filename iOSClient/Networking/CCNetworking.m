@@ -997,10 +997,16 @@
 {
     NSString *tempFileID = metadata.fileID;
     NSString *errorMessage = @"";
+    BOOL isE2EEDirectory = false;
     
     // Progress Task
     NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"progress": ([NSNumber numberWithFloat:0.0])};
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
+    
+    // E2EE Directory ?
+    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
+        isE2EEDirectory = true;
+    }
     
     // ERRORE
     if (errorCode != 0) {
@@ -1022,7 +1028,11 @@
             
         // Replace Metadata
         metadata.date = date;
-        metadata.e2eEncrypted = false;
+        if (isE2EEDirectory) {
+            metadata.e2eEncrypted = true;
+        } else {
+            metadata.e2eEncrypted = false;
+        }
         metadata.etag = etag;
         metadata.fileID = fileID;
         metadata.session = @"";
@@ -1059,7 +1069,7 @@
             [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
         
         // Optimization
-        if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && metadata.e2eEncrypted == NO && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO) {
+        if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && isE2EEDirectory == NO && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO) {
             
             [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView] contents:nil attributes:nil];
         }
@@ -1086,7 +1096,7 @@
     }
     
     // E2EE : UNLOCK
-    if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
+    if (isE2EEDirectory) {
         
         tableE2eEncryptionLock *tableLock = [[NCManageDatabase sharedInstance] getE2ETokenLockWithServerUrl:serverUrl];
 
@@ -1163,13 +1173,13 @@
         return;
     }
         
-    // if exists overwrite file else create a new encrypted filename
-    tableMetadata *overwriteMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@ AND e2eEncrypted == 1", directoryID, fileName]];
-    if (overwriteMetadata)
-        *fileNameIdentifier = overwriteMetadata.fileName;
-    else
+    // if new file upload [directoryID + fileName] create a new encrypted filename
+    if ([fileID isEqualToString:[directoryID stringByAppendingString:fileName]]) {
         *fileNameIdentifier = [CCUtility generateRandomIdentifier];
-    
+    } else {
+        *fileNameIdentifier = fileName;
+    }
+   
     // Write to DB
     if ([[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:*fileNameIdentifier directory: [CCUtility getDirectoryProviderStorageFileID:fileID] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
         
