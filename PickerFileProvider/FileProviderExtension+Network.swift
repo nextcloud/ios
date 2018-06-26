@@ -232,7 +232,8 @@ extension FileProviderExtension {
             
             // itemChanged
             if (selectorPost == providerData.selectorPostItemChanged) {
-                // nothing
+                // Recreate ico
+                CCGraphics.createNewImage(from: fileName, fileID: fileID, extension: NSString(string: fileName).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writeImage: true, optimizedFileName: false)
             }
                         
             // remove session data

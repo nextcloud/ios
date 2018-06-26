@@ -145,7 +145,7 @@
 }
 
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileNameView fileID:(NSString *)fileID extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writePreview:(BOOL)writePreview optimizedFileName:(BOOL)optimizedFileName
++ (UIImage *)createNewImageFrom:(NSString *)fileNameView fileID:(NSString *)fileID extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage optimizedFileName:(BOOL)optimizedFileName
 {
     UIImage *originalImage;
     UIImage *scaleImage;
@@ -182,8 +182,8 @@
     
     scaleImage = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImage, 0.5f)];
     
-    // it is request write photo preview ?
-    if (writePreview && scaleImage) {
+    // it is request write photo  ?
+    if (writeImage && scaleImage) {
         
         if (imageForUpload) {
             
