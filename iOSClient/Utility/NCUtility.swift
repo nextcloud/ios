@@ -62,7 +62,6 @@ class NCUtility: NSObject {
                 } else {
                     exitLoop = true
                 }
-            
         }
         
         return resultFileName
