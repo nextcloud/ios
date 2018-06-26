@@ -1891,7 +1891,7 @@ class NCManageDatabase: NSObject {
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
-    @objc func getTableMetadatasContentTypeImageVideo(_ startDirectory: String, activeUrl: String) -> [tableMetadata]? {
+    @objc func getTableMetadatasContentTypeImageVideo(_ startDirectory: String) -> [tableMetadata]? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -1900,20 +1900,11 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        if (startDirectory == CCUtility.getHomeServerUrlActiveUrl(activeUrl)) {
+        let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND e2eEncrypted == 0 AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
+        let directoriesID = Array(directories.map { $0.directoryID })
+        let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND session == '' AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
             
-            // All directory
-            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND NOT (session CONTAINS 'upload') AND (typeFile == %@ OR typeFile == %@)", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video)).sorted(byKeyPath: "date", ascending: false)
-            return Array(metadatas.map { tableMetadata.init(value:$0) })
-            
-        } else {
-            
-            let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
-            let directoriesID = Array(directories.map { $0.directoryID })
-            let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND session == '' AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
-            
-            return Array(metadatas.map { tableMetadata.init(value:$0) })
-        }
+        return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
     
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank() -> [String:NSNumber] {
@@ -1944,7 +1935,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let metadatasDBImageVideo = self.getTableMetadatasContentTypeImageVideo(startDirectory, activeUrl: activeUrl)
+        let metadatasDBImageVideo = self.getTableMetadatasContentTypeImageVideo(startDirectory)
         let fileIDArrayDB = metadatasDBImageVideo!.map({ $0.fileID }) as [String]
         let fileIDArraySearch = metadatas.map({ $0.fileID }) as [String]
         
