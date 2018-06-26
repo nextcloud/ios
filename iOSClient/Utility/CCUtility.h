@@ -175,7 +175,7 @@
 + (NSString *)getDirectoryProviderStorage;
 + (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID;
 + (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileName:(NSString *)fileName;
-+ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileName:(NSString *)fileName;
++ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
 + (BOOL)fileProviderStorageExists:(NSString *)fileID fileName:(NSString *)fileName;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;

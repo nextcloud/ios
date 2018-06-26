@@ -861,9 +861,9 @@
     return fileNamePath;
 }
 
-+ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileName:(NSString *)fileName
++ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
 {
-    return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageFileID:fileID], fileName];
+    return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
 }
 
 + (BOOL)fileProviderStorageExists:(NSString *)fileID fileName:(NSString *)fileName

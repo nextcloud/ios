@@ -424,7 +424,7 @@
         BOOL existsIcon = NO;
         
         if (fileID) {
-            existsIcon = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileName:fileName]];
+            existsIcon = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName]];
             indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:fileID];
         }
         
@@ -437,7 +437,7 @@
                 UIVisualEffectView *effect = [cell viewWithTag:200];
                 UIImageView *checked = [cell viewWithTag:300];
                 
-                imageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileName:fileName]];
+                imageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName]];
                 effect.hidden = YES;
                 checked.hidden = YES;
             }
@@ -567,7 +567,7 @@
         
         if ([self indexPathIsValid:indexPath]) {
         
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadataNet.fileID fileName:metadataNet.fileName]])
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadataNet.fileID fileNameView:metadataNet.fileNameView]])
                 [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
         }
     }
@@ -812,10 +812,10 @@
         tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
         // Image
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]]) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
         
             // insert Image
-            imageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileName:metadata.fileName]];
+            imageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
         
         } else {
         

@@ -839,9 +839,9 @@
                 metadata.e2eEncrypted = YES;
             
                 // Update Metadata
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                tableMetadata *metadataEncrypted = [[NCManageDatabase sharedInstance] addMetadata:metadata];
             
-                [self uploadURLSessionMetadata:metadata serverUrl:serverUrl taskStatus:taskStatus];
+                [self uploadURLSessionMetadata:metadataEncrypted serverUrl:serverUrl taskStatus:taskStatus];
             });
         }
     });
@@ -1174,14 +1174,14 @@
     }
         
     // if exists overwrite file else create a new encrypted filename
-    tableMetadata *overwriteMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@", directoryID, fileName]];
+    tableMetadata *overwriteMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@ AND e2eEncrypted == 1", directoryID, fileName]];
     if (overwriteMetadata)
         *fileNameIdentifier = overwriteMetadata.fileName;
     else
         *fileNameIdentifier = [CCUtility generateRandomIdentifier];
     
     // Write to DB
-    if ([[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:*fileNameIdentifier directory: [CCUtility getDirectoryUserData] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
+    if ([[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:*fileNameIdentifier directory: [CCUtility getDirectoryProviderStorageFileID:fileID] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
         
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", _activeAccount, serverUrl]];
         if (object) {
