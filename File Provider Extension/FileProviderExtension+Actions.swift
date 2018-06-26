@@ -27,9 +27,6 @@ extension FileProviderExtension {
 
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
         // Check account
         if providerData.setupActiveAccount() == false {
             completionHandler(nil, NSFileProviderError(.notAuthenticated))
@@ -93,9 +90,6 @@ extension FileProviderExtension {
     
     override func deleteItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (Error?) -> Void) {
         
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
         // Check account
         if providerData.setupActiveAccount() == false {
             completionHandler(NSFileProviderError(.notAuthenticated))
@@ -130,9 +124,6 @@ extension FileProviderExtension {
     }
     
     override func reparentItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemWithIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, newName: String?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
         
         // Check account
         if providerData.setupActiveAccount() == false {
@@ -202,9 +193,6 @@ extension FileProviderExtension {
     }
     
     override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
         
         // Check account
         if providerData.setupActiveAccount() == false {
@@ -278,9 +266,6 @@ extension FileProviderExtension {
     
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
         // Check account
         if providerData.setupActiveAccount() == false {
             completionHandler(nil, NSFileProviderError(.notAuthenticated))
@@ -326,9 +311,6 @@ extension FileProviderExtension {
     
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
         guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -356,9 +338,6 @@ extension FileProviderExtension {
     
     override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
         guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -376,10 +355,7 @@ extension FileProviderExtension {
     }
     
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
+                
         DispatchQueue.main.async {
             
             autoreleasepool {

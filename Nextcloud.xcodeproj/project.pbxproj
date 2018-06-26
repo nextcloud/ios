@@ -213,6 +213,8 @@
 		F7434B5E20E241EC00417916 /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
 		F7434B6020E2445200417916 /* CCExifGeo.m in Sources */ = {isa = PBXBuildFile; fileRef = F7A54C351C6267B500E2C8BF /* CCExifGeo.m */; };
 		F7434B6120E2445C00417916 /* CCCertificate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7F801011D98205A007537BC /* CCCertificate.m */; };
+		F7434B6220E249F700417916 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
+		F7434B6320E249FB00417916 /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
 		F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F74E432620B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
 		F74E432720B5547700C2E54C /* NCNetworkingEndToEnd.m in Sources */ = {isa = PBXBuildFile; fileRef = F74E432520B5547700C2E54C /* NCNetworkingEndToEnd.m */; };
@@ -3553,6 +3555,7 @@
 				F7434B5120E2409500417916 /* OCXMLServerErrorsParser.m in Sources */,
 				F7434B5720E2416800417916 /* UICKeyChainStore.m in Sources */,
 				F7434B3A20E2403500417916 /* OCActivity.m in Sources */,
+				F7434B6220E249F700417916 /* NSNotificationCenter+MainThread.m in Sources */,
 				F7434B4A20E2407600417916 /* AFURLSessionManager.m in Sources */,
 				F7434B3B20E2403900417916 /* OCCapabilities.m in Sources */,
 				F7434B4B20E2408000417916 /* NSDate+ISO8601.m in Sources */,
@@ -3571,6 +3574,7 @@
 				F7434B3920E2401C00417916 /* CCGlobal.m in Sources */,
 				F7434B3820E2400600417916 /* NCBrand.swift in Sources */,
 				F7434B4620E2406900417916 /* AFNetworkReachabilityManager.m in Sources */,
+				F7434B6320E249FB00417916 /* NSString+TruncateToWidth.m in Sources */,
 				F7434B5620E2412900417916 /* CCError.m in Sources */,
 				F7434B5C20E241D500417916 /* NCEndToEndEncryption.m in Sources */,
 				F7434B3E20E2404700417916 /* OCFileDto.m in Sources */,

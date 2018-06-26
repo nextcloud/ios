@@ -122,9 +122,6 @@ class FileProviderData: NSObject {
     
     func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
         
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return NSFileProviderItemIdentifier("") }
-        
         if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", metadata.directoryID))  {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
@@ -141,9 +138,6 @@ class FileProviderData: NSObject {
     }
     
     func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier) -> tableDirectory? {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return nil }
         
         var predicate: NSPredicate
         
@@ -169,9 +163,6 @@ class FileProviderData: NSObject {
     // MARK: -
     
     func updateFavoriteForWorkingSet() {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
         
         var updateWorkingSet = false
         let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
@@ -224,10 +215,7 @@ class FileProviderData: NSObject {
     // Convinent method to signal the enumeration for containers.
     //
     func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
+                
         currentAnchor += 1
         
         for containerItemIdentifier in containerItemIdentifiers {

@@ -128,13 +128,11 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         } else {
             
             // Favorite directory
-            if #available(iOSApplicationExtension 11.0, *) {
-                let rank = providerData.listFavoriteIdentifierRank[metadata.fileID]
-                if (rank == nil) {
-                    favoriteRank = nil
-                } else {
-                    favoriteRank = providerData.listFavoriteIdentifierRank[metadata.fileID]
-                }
+            let rank = providerData.listFavoriteIdentifierRank[metadata.fileID]
+            if (rank == nil) {
+                favoriteRank = nil
+            } else {
+                favoriteRank = providerData.listFavoriteIdentifierRank[metadata.fileID]
             }
         }
         

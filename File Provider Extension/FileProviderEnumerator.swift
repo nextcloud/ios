@@ -35,17 +35,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         self.providerData = providerData
         
         // Select ServerUrl
-        if #available(iOSApplicationExtension 11.0, *) {
-
-            if (enumeratedItemIdentifier == .rootContainer) {
-                serverUrl = providerData.homeServerUrl
-            } else {
+        if (enumeratedItemIdentifier == .rootContainer) {
+            serverUrl = providerData.homeServerUrl
+        } else {
                 
-                let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
-                if metadata != nil  {
-                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", metadata!.directoryID))  {
-                        serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
-                    }
+            let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
+            if metadata != nil  {
+                if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", metadata!.directoryID))  {
+                    serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
                 }
             }
         }
@@ -62,12 +59,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         
         var items: [NSFileProviderItemProtocol] = []
         var metadatasFromDB: [tableMetadata]?
-
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else {
-            observer.finishEnumerating(upTo: nil)
-            return
-        }
         
         /*** WorkingSet ***/
         if enumeratedItemIdentifier == .workingSet {
@@ -202,9 +193,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
     
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
-        
-        guard #available(iOS 11, *) else { return }
-    
+            
         var itemsDelete = [NSFileProviderItemIdentifier]()
         var itemsUpdate = [FileProviderItem]()
         

@@ -31,9 +31,6 @@ extension FileProviderExtension {
     
     func readFolder(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
         var serverUrl: String?
         var counter = 0
         
@@ -88,9 +85,6 @@ extension FileProviderExtension {
     
     func deleteFile(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata, serverUrl: String) {
         
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
         ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
             
@@ -137,9 +131,6 @@ extension FileProviderExtension {
     // --------------------------------------------------------------------------------------------
     
     func settingFavorite(_ favorite: Bool, withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata) {
-
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
         
         guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
             return
@@ -176,9 +167,6 @@ extension FileProviderExtension {
     
     func uploadStart(_ fileID: String!, account: String!, task: URLSessionUploadTask!, serverUrl: String!) {
         
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-
         guard let metadataUpload = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
             return
         }
@@ -206,10 +194,7 @@ extension FileProviderExtension {
     }
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-        
+                
         guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
             return
         }
