@@ -1342,7 +1342,6 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelUpload"]) {
         
-        // remove the file
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
     }

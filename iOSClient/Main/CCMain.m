@@ -2084,8 +2084,6 @@
 {
     if (errorCode == 0) {
         
-        [[NSFileManager defaultManager] createDirectoryAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadataNet.fileID] withIntermediateDirectories:YES attributes:nil error:nil];
-        
         NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];
         
         if (_metadataFolder.e2eEncrypted) {

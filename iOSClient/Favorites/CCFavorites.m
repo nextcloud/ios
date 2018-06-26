@@ -645,9 +645,8 @@
         
         NSString *date = [CCUtility dateDiff:metadata.date];
         NSString *length = [CCUtility transformedSize:metadata.size];
-        BOOL fileExists = [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView];
-            
-        if (fileExists)
+        
+        if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView])
             cell.local.image = [UIImage imageNamed:@"local"];
         else
             cell.local.image = nil;
