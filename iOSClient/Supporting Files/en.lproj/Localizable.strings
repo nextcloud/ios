@@ -374,6 +374,7 @@
 "_search_sub_folder_"           = "Search here and in subfolders";
 
 "_theming_is_light_"            = "Server theming too brightly coloured, not applicable";
+"_cancel_all_task_"             = "Cancel all transfers";
 
 // Files Preview
 
