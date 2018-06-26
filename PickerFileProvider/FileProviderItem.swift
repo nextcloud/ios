@@ -91,7 +91,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // This is a file
         if (!metadata.directory) {
             
-            let fileIdentifier = providerData.fileProviderStorageURL!.path + "/" + self.itemIdentifier.rawValue + "/" + metadata.fileNameView
+            let fileIdentifier =  CCUtility.getDirectoryProviderStorageFileID(self.itemIdentifier.rawValue, fileNameView: metadata.fileNameView)!
             var fileSize = 0 as Double
          
             do {

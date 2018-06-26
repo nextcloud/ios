@@ -33,10 +33,7 @@ class FileProviderData: NSObject {
     var accountPassword = ""
     var accountUrl = ""
     var homeServerUrl = ""
-    
-    // Directory
-    var fileProviderStorageURL: URL?
-    
+        
     // metadata Selector Post
     let selectorPostImportDocument = "importDocument"
     let selectorPostItemChanged = "itemChanged"

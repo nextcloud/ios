@@ -249,10 +249,9 @@ extension FileProviderExtension {
                 let itemIdentifier = self.providerData.getItemIdentifier(metadata: metadata)
                 
                 // rename file
-                _ = self.providerData.moveFile(self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + fileNameFrom, toPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + itemName)
-                // rename ico
-                _ = self.providerData.moveFile(self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + fileNameFrom + ".ico", toPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + itemName + ".ico")
-                
+                _ = self.providerData.moveFile(CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageFileID(itemIdentifier.rawValue, fileNameView: itemName))
+                _ = self.providerData.moveFile(CCUtility.getDirectoryProviderStorageIconFileID(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: CCUtility.getDirectoryProviderStorageIconFileID(itemIdentifier.rawValue, fileNameView: itemName))
+                                
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil)
             }
             
@@ -416,14 +415,9 @@ extension FileProviderExtension {
                 }
             
                 let fileName = NCUtility.sharedInstance.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID)
-                let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + tableDirectory.directoryID + fileName
-            
-                do {
-                    try FileManager.default.createDirectory(atPath: fileNamePathDirectory, withIntermediateDirectories: true, attributes: nil)
-                } catch  { }
             
                 self.fileCoordinator.coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { (url) in
-                    _ = self.providerData.moveFile(url.path, toPath: fileNamePathDirectory + "/" + fileName)
+                    _ = self.providerData.moveFile(url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(tableDirectory.directoryID + fileName, fileNameView: fileName))
                 }
             
                 fileURL.stopAccessingSecurityScopedResource()
