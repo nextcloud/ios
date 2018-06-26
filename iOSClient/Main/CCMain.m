@@ -3940,16 +3940,6 @@
                                     }];
         }
         
-        
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[NCBrandColor sharedInstance].brandElement]
-                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                 height:50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    [self actionDelete:indexPath];
-                                }];
-        
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
@@ -4028,6 +4018,15 @@
                                     }];
         }
         
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[UIColor redColor]]
+                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                 height:50.0
+                                   type:AHKActionSheetButtonTypeDestructive
+                                handler:^(AHKActionSheet *as) {
+                                    [self actionDelete:indexPath];
+                                }];
+
         [actionSheet show];
     }
     
@@ -4128,10 +4127,10 @@
         }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[NCBrandColor sharedInstance].brandElement]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[UIColor redColor]]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height:50.0
-                                   type:AHKActionSheetButtonTypeDefault
+                                   type:AHKActionSheetButtonTypeDestructive
                                 handler:^(AHKActionSheet *as) {
                                     [self actionDelete:indexPath];
                                 }];
