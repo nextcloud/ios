@@ -1041,19 +1041,9 @@
         
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, metadata.fileID);
 
-        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount]) {
+        // Rename directory
+        [[NSFileManager defaultManager] moveItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
         
-            // rename file fileNameView (original file) -> fileID
-            [CCUtility moveFileAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryUserData], metadata.fileNameView]  toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryUserData], metadata.fileID]];
-            // remove encrypted file
-//          [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", _directoryUser, sessionID] error:nil];
-        
-        } else {
-        
-            // Rename directory
-            [[NSFileManager defaultManager] moveItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
-        }
-    
         // Local
         if (metadata.directory == NO)
             [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
