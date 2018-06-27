@@ -661,10 +661,7 @@
             
         metadata = [[NCManageDatabase sharedInstance] updateMetadata:metadata];
         [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
-            
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
-            [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
-
+        
         // E2EE Decrypted
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"fileNameIdentifier == %@ AND serverUrl == %@", fileName, serverUrl]];
         if (object) {
@@ -678,6 +675,10 @@
                 return;
             }
         }
+        
+        // Exif
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
+            [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
         // Icon
         [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES optimizedFileName:[CCUtility getOptimizedPhoto]];

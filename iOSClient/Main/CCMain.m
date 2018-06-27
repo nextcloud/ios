@@ -3971,10 +3971,10 @@
         if (!_metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] color:[NCBrandColor sharedInstance].encrypted]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] color:[NCBrandColor sharedInstance].gray]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
+                                       type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
@@ -3994,10 +3994,10 @@
         if (_metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] color:[NCBrandColor sharedInstance].encrypted]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] color:[NCBrandColor sharedInstance].gray]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
-                                       type:AHKActionSheetButtonTypeEncrypted
+                                       type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         
                                         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
