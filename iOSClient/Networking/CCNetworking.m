@@ -831,7 +831,7 @@
         NSString *fileNameIdentifier;
         NSString *e2eMetadata;
         
-        [self encryptedE2EFile:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl directoryID:metadata.directoryID account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl errorMessage:&errorMessage fileNameIdentifier:&fileNameIdentifier e2eMetadata:&e2eMetadata];
+        [self encryptedE2EFile:metadata serverUrl:serverUrl account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl errorMessage:&errorMessage fileNameIdentifier:&fileNameIdentifier e2eMetadata:&e2eMetadata];
         
         if (errorMessage != nil || fileNameIdentifier == nil) {
             
@@ -1160,7 +1160,7 @@
 #pragma --------------------------------------------------------------------------------------------
 // E2EE
 
-- (void)encryptedE2EFile:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url errorMessage:(NSString * __autoreleasing *)errorMessage fileNameIdentifier:(NSString **)fileNameIdentifier e2eMetadata:(NSString * __autoreleasing *)e2eMetadata
+- (void)encryptedE2EFile:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url errorMessage:(NSString * __autoreleasing *)errorMessage fileNameIdentifier:(NSString **)fileNameIdentifier e2eMetadata:(NSString * __autoreleasing *)e2eMetadata
 {
     __block NSError *error;
     NSString *key;
@@ -1170,7 +1170,7 @@
     NSInteger metadataKeyIndex;
     
     // Verify File Size
-    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName] error:&error];
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView] error:&error];
     NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
     long long fileSize = [fileSizeNumber longLongValue];
         
@@ -1181,14 +1181,14 @@
     }
         
     // if new file upload [directoryID + fileName] create a new encrypted filename
-    if ([fileID isEqualToString:[directoryID stringByAppendingString:fileName]]) {
+    if ([metadata.fileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileNameView]]) {
         *fileNameIdentifier = [CCUtility generateRandomIdentifier];
     } else {
-        *fileNameIdentifier = fileName;
+        *fileNameIdentifier = metadata.fileName;
     }
    
     // Write to DB
-    if ([[NCEndToEndEncryption sharedManager] encryptFileName:fileName fileNameIdentifier:*fileNameIdentifier directory:[CCUtility getDirectoryProviderStorageFileID:fileID] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
+    if ([[NCEndToEndEncryption sharedManager] encryptFileName:metadata.fileNameView fileNameIdentifier:*fileNameIdentifier directory:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
         
         tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", _activeAccount, serverUrl]];
         if (object) {
@@ -1203,15 +1203,15 @@
         
         addObject.account = _activeAccount;
         addObject.authenticationTag = authenticationTag;
-        addObject.fileName = fileName;
+        addObject.fileName = metadata.fileNameView;
         addObject.fileNameIdentifier = *fileNameIdentifier;
-        addObject.fileNamePath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+        addObject.fileNamePath = [CCUtility returnFileNamePathFromFileName:metadata.fileNameView serverUrl:serverUrl activeUrl:_activeUrl];
         addObject.key = key;
         addObject.initializationVector = initializationVector;
         addObject.metadataKey = metadataKey;
         addObject.metadataKeyIndex = metadataKeyIndex;
         
-        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[fileName pathExtension], NULL);
+        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[metadata.fileNameView pathExtension], NULL);
         CFStringRef mimeTypeRef = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
         if (mimeTypeRef) {
             addObject.mimeType = (__bridge NSString *)mimeTypeRef;
