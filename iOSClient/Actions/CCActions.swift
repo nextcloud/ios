@@ -260,6 +260,18 @@ class CCActions: NSObject {
         } else {
             
             NCManageDatabase.sharedInstance.setLocalFile(fileID: metadataNet.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: metadataNet.fileNameTo, etag: nil)
+            
+            // Move file system
+            do {
+                try FileManager.default.moveItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadataNet.fileID) + "/" + metadataNet.fileName, toPath: CCUtility.getDirectoryProviderStorageFileID(metadataNet.fileID) + "/" +  metadataNet.fileNameTo)
+            } catch let error {
+                print("error: \(error)")
+            }
+            do {
+                try FileManager.default.moveItem(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadataNet.fileID, fileNameView: metadataNet.fileName), toPath: CCUtility.getDirectoryProviderStorageIconFileID(metadataNet.fileID, fileNameView: metadataNet.fileNameTo))
+            } catch let error {
+                print("error: \(error)")
+            }
         }
         
         metadataNet.delegate?.renameSuccess(metadataNet)
