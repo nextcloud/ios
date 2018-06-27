@@ -65,19 +65,19 @@ class CreateMenuAdd: NSObject {
         
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "photos"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "photos"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFotoVideoPlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFilePlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_text_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_text_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFileText))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), color: colorIcon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:2, color: colorIcon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFolderPlain))
         })
         
@@ -137,7 +137,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
-        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
         row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
@@ -489,7 +489,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
-        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
         row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))

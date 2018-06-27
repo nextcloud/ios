@@ -61,7 +61,7 @@
     self.annulla.tintColor = [NCBrandColor sharedInstance].customerText;
     
     // Base URL
-    _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] color:[NCBrandColor sharedInstance].customerText];
+    _imageBaseUrl.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginURL"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
     _baseUrl.textColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.tintColor = [NCBrandColor sharedInstance].customerText;
     _baseUrl.placeholder = NSLocalizedString(@"_login_url_", nil);
@@ -74,7 +74,7 @@
     self.loadingBaseUrl.hidden = YES;
     
     // User
-    _imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] color:[NCBrandColor sharedInstance].customerText];
+    _imageUser.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginUser"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
     _user.textColor = [NCBrandColor sharedInstance].customerText;
     _user.tintColor = [NCBrandColor sharedInstance].customerText;
     _user.placeholder = NSLocalizedString(@"_username_", nil);
@@ -83,7 +83,7 @@
     [self.user setDelegate:self];
 
     // Password
-    _imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] color:[NCBrandColor sharedInstance].customerText];
+    _imagePassword.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"loginPassword"] multiplier:2 color:[NCBrandColor sharedInstance].customerText];
     _password.textColor = [NCBrandColor sharedInstance].customerText;
     _password.tintColor = [NCBrandColor sharedInstance].customerText;
     _password.placeholder = NSLocalizedString(@"_password_", nil);

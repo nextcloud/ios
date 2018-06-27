@@ -142,7 +142,7 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
         [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[UIColor redColor]] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor redColor]] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(answerDelAccount:);
         if (listAccount.count == 0) row.disabled = @YES;

@@ -139,7 +139,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favoriteNoFiles"] color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favoriteNoFiles"] multiplier:2 color:[NCBrandColor sharedInstance].graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -451,7 +451,7 @@
     } else {
         
         if (metadata.directory)
-            iconHeader = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
+            iconHeader = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         else
             iconHeader = [UIImage imageNamed:metadata.iconName];
     }
@@ -460,7 +460,7 @@
      ];
     
     // Share
-    [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+    [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
         
         [appDelegate.activeMain openWindowShare:metadata];
     }];
@@ -468,7 +468,7 @@
     // NO Directory
     if (metadata.directory == NO) {
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
+        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
             [self.tableView setEditing:NO animated:YES];
             [self openWith:metadata];
         }];
@@ -571,7 +571,7 @@
         
     // favorite
     if (_serverUrl == nil)
-        cell.favorite.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] color:[NCBrandColor sharedInstance].yellowFavorite];
+        cell.favorite.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite];
     
     cell.labelTitle.textColor = [UIColor blackColor];
     
@@ -590,15 +590,15 @@
     if (metadata.directory) {
             
         if (metadata.e2eEncrypted) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brandElement];
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
         } else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory]) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] color:[NCBrandColor sharedInstance].brandElement];
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
         } else if ([shareLink length] > 0) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] color:[NCBrandColor sharedInstance].brandElement];
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
         } else if ([shareUserAndGroup length] > 0) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] color:[NCBrandColor sharedInstance].brandElement];
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
         } else {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
+            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
         }
             
     } else {
@@ -606,9 +606,9 @@
         if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) {
             
             if ([shareLink length] > 0)
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] color:[NCBrandColor sharedInstance].gray];
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
             else
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] color:[NCBrandColor sharedInstance].gray];
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
                 
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
             [tap setNumberOfTapsRequired:1];
@@ -663,7 +663,7 @@
     // LEFT : configure ONLY Root Favorites : Remove file/folder Favorites
     if (_serverUrl == nil) {
         
-        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
+        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
         cell.leftExpansion.buttonIndex = 0;
         cell.leftExpansion.fillOnTrigger = NO;
         
@@ -674,7 +674,7 @@
     
     
     // RIGHT
-    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
+    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
     
     cell.rightExpansion.buttonIndex = 0;
     cell.rightExpansion.fillOnTrigger = NO;
@@ -687,7 +687,7 @@
     // more
     // ----------------------------------------------------------------------------------------------------------
     
-    cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] color:[NCBrandColor sharedInstance].gray];
+    cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
     
     if ([self canOpenMenuAction:metadata]) {
         

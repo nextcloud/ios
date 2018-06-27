@@ -182,7 +182,7 @@
     }
     
     if (_isSearchMode) {
-        [CCGraphics addImageToTitle:self.navigationItem.title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
+        [CCGraphics addImageToTitle:self.navigationItem.title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
         [self.collectionView reloadData];
         return;
     }
@@ -297,7 +297,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photosNoRecord"] color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"photosNoRecord"] multiplier:2 color:[NCBrandColor sharedInstance].graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView

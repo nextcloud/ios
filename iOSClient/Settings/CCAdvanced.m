@@ -156,7 +156,7 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"exit"] color:[UIColor redColor]] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"exit"] multiplier:2 color:[UIColor redColor]] forKey:@"imageView.image"];
     row.action.formSelector = @selector(exitNextcloud:);
     [section addFormRow:row];
 

@@ -253,9 +253,9 @@
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
-+ (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color
++ (UIImage *)changeThemingColorImage:(UIImage *)image multiplier:(NSInteger)multiplier color:(UIColor *)color
 {
-    CGRect rect = CGRectMake(0, 0, image.size.width*3, image.size.height*3);
+    CGRect rect = CGRectMake(0, 0, image.size.width*multiplier, image.size.height*multiplier);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClipToMask(context, rect, image.CGImage);

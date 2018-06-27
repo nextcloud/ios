@@ -38,7 +38,7 @@
 + (UIImage *)scaleImage:(UIImage *)image toSize:(CGSize)targetSize isAspectRation:(BOOL)aspect;
 
 + (UIColor *)colorFromHexString:(NSString *)hexString;
-+ (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color;
++ (UIImage *)changeThemingColorImage:(UIImage *)image multiplier:(NSInteger)multiplier color:(UIColor *)color;
 
 + (UIImage*)drawText:(NSString*)text inImage:(UIImage*)image colorText:(UIColor *)colorText sizeOfFont:(CGFloat)sizeOfFont;
 
