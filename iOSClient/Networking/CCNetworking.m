@@ -1072,11 +1072,16 @@
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
         // Create ICON
-        if (metadata.directory == NO)
-            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+        if (metadata.directory == NO) {
+            BOOL optimizedFileName = [CCUtility getOptimizedPhoto];
+            if (isE2EEDirectory) {
+                optimizedFileName = NO;
+            }
+            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES optimizedFileName:optimizedFileName];
+        }
         
         // Optimization
-        if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && isE2EEDirectory == NO && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO) {
+        if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelectorPost isEqualToString:selectorUploadRemovePhoto]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO isE2EEDirectory == NO) {
             
             [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView] contents:nil attributes:nil];
         }
