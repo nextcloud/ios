@@ -808,12 +808,18 @@
                 }
             }];
         }
+        
     } else {
         
         // create Metadata for Upload
         tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
         
-        [self uploadURLSessionMetadata:metadataForUpload serverUrl:serverUrl taskStatus:taskStatus];
+        // OOOOOK
+        if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
+            [self e2eEncryptedFile:metadataForUpload serverUrl:serverUrl taskStatus:taskStatus];
+        } else {
+            [self uploadURLSessionMetadata:metadataForUpload serverUrl:serverUrl taskStatus:taskStatus];
+        }
     }
 }
 
