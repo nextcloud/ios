@@ -267,7 +267,7 @@ extension FileProviderExtension {
         
         var itemIdentifierForUpload = itemIdentifier
         
-        // Is itemIdentifier = directoryID+fileName [Apple Works]
+        // Is itemIdentifier = directoryID+fileName [Apple Works and ... ?]
         if itemIdentifier.rawValue.contains(fileName) && providerData.fileExists(atPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue) {
             let directoryID = itemIdentifier.rawValue.replacingOccurrences(of: fileName, with: "")
             guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileName == %@", directoryID, fileName)) else {

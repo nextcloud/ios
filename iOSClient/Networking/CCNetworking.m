@@ -1059,9 +1059,9 @@
         
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, metadata.fileID);
 
-        // Rename directory
+        // adjust file system Directory Provider Storage
         if ([tempSession isEqualToString:k_upload_session_extension] && [tempFileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileName]]) {
-            // this is for File Provider Extension "Works"
+            // this is for File Provider Extension [Apple Works and ... ?]
             [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID]  toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
         } else {
             [[NSFileManager defaultManager] moveItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
