@@ -293,8 +293,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         assert(pathComponents.count > 2)
 
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-            
-        uploadFileItemChanged(for: itemIdentifier, url: url)
+        let fileName = pathComponents[pathComponents.count - 1]
+        
+        uploadFileItemChanged(for: itemIdentifier, fileName: fileName, url: url)
     }
     
     override func stopProvidingItem(at url: URL) {

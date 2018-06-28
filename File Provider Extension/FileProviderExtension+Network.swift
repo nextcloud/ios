@@ -263,9 +263,21 @@ extension FileProviderExtension {
         }
     }
     
-    func uploadFileItemChanged(for itemIdentifier: NSFileProviderItemIdentifier, url: URL) {
+    func uploadFileItemChanged(for itemIdentifier: NSFileProviderItemIdentifier, fileName: String, url: URL) {
         
-        guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+        var itemIdentifierForUpload = itemIdentifier
+        
+        // Is itemIdentifier = directoryID+fileName [Apple Works]
+        if itemIdentifier.rawValue.contains(fileName) && providerData.fileExists(atPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue) {
+            let directoryID = itemIdentifier.rawValue.replacingOccurrences(of: fileName, with: "")
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileName == %@", directoryID, fileName)) else {
+                return
+            }
+            itemIdentifierForUpload = providerData.getItemIdentifier(metadata: metadata)
+            _ = providerData.moveFile(CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifier.rawValue, toPath: CCUtility.getDirectoryProviderStorage()+"/"+itemIdentifierForUpload.rawValue)
+        }
+        
+        guard let metadata = providerData.getTableMetadataFromItemIdentifier(itemIdentifierForUpload) else {
             return
         }
         

@@ -279,4 +279,8 @@ class FileProviderData: NSObject {
         
         return errorResult
     }
+    
+    func fileExists(atPath: String) -> Bool {
+        return fileManager.fileExists(atPath: atPath)
+    }
 }
