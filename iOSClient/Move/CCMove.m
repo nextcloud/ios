@@ -398,7 +398,6 @@
     metadataNet.action = actionCreateFolder;
     metadataNet.fileName = fileNameFolder;
     metadataNet.selector = selectorCreateFolder;
-    metadataNet.selectorPost = selectorReadFolderForced;
     metadataNet.serverUrl = _serverUrl;
     
     [self addNetworkingQueue:metadataNet];

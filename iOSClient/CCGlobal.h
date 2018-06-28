@@ -185,7 +185,6 @@ extern NSString *const flowEndpoint;
 #define selectorReadFileFolder                          @"readFileFolder"
 #define selectorReadFileFolderWithDownload              @"readFileFolderWithDownload"
 #define selectorReadFolder                              @"readFolder"
-#define selectorReadFolderForced                        @"readFolderForced"
 #define selectorReadFolderWithDownload                  @"readFolderWithDownload"
 #define selectorReadShare                               @"readShare"
 #define selectorRename                                  @"rename"
@@ -198,7 +197,6 @@ extern NSString *const flowEndpoint;
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
-#define selectorUploadRemovePhoto                       @"uploadRemovePhoto"
 
 // Metadata.Net ACTION
 #define actionCreateFolder                              @"createFolder"

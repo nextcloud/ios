@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 25,
+            schemaVersion: 26,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -75,6 +75,7 @@ class NCManageDatabase: NSObject {
             // 23 : Version 2.21.0.15
             // 24 : Version 2.21.2.5
             // 25 : Version 2.21.3.1
+            // 26 : Version 2.22.0.4
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -1668,7 +1669,7 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: metadata)
     }
     
-    @objc func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionSelectorPost: String?, sessionTaskIdentifier: Int, status: Int, predicate: NSPredicate) {
+    @objc func setMetadataSession(_ session: String?, sessionError: String?, sessionSelector: String?, sessionTaskIdentifier: Int, status: Int, predicate: NSPredicate) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -1691,9 +1692,6 @@ class NCManageDatabase: NSObject {
         }
         if let sessionSelector = sessionSelector {
             result.sessionSelector = sessionSelector
-        }
-        if let sessionSelectorPost = sessionSelectorPost {
-            result.sessionSelectorPost = sessionSelectorPost
         }
         
         result.sessionTaskIdentifier = sessionTaskIdentifier
@@ -1994,7 +1992,6 @@ class NCManageDatabase: NSObject {
                     result.status = Int(k_metadataStatusNormal)
                     result.sessionError = ""
                     result.sessionSelector = ""
-                    result.sessionSelectorPost = ""
                     result.sessionTaskIdentifier = Int(k_taskIdentifierDone)
                 }
             }

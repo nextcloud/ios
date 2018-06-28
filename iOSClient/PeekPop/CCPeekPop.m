@@ -84,7 +84,6 @@
             _metadata.session = k_download_session;
             _metadata.sessionError = @"";
             _metadata.sessionSelector = selectorOpenIn;
-            _metadata.sessionSelectorPost = @"";
             _metadata.status = k_metadataStatusWaitDownload;
             
             // Add Metadata for Download

@@ -410,17 +410,6 @@
         
         metadataForUpload.account = appDelegate.activeAccount;
         metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
-        
-        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
-            // Option 
-            if ([[NCBrandOptions sharedInstance] use_storeLocalAutoUploadAll] == true)
-                metadataForUpload.sessionSelectorPost = @"";
-            else
-                metadataForUpload.sessionSelectorPost = selectorUploadRemovePhoto;
-        } else {
-            metadataForUpload.sessionSelectorPost = @"";
-        }
-        
         metadataForUpload.date = [NSDate new];
         metadataForUpload.directoryID = directoryID;
         metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];

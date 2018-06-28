@@ -1330,7 +1330,7 @@
     
     if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop status:k_metadataStatusWaitUpload predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierStop status:k_metadataStatusWaitUpload predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {
@@ -1343,7 +1343,7 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusWaitDownload predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusWaitDownload predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelUpload"]) {
         
@@ -1352,7 +1352,7 @@
     }
     else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelDownload"]) {
         
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
     }
     
     // remove ChangeTask (fileID) from the list

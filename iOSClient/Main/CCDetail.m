@@ -645,7 +645,6 @@
         metadata.session = k_download_session;
         metadata.sessionError = @"";
         metadata.sessionSelector = selectorLoadViewImage;
-        metadata.sessionSelectorPost = @"";
         metadata.status = k_metadataStatusWaitDownload;
         
         // Add Metadata for Download

@@ -940,7 +940,6 @@
                     metadata.session = k_download_session;
                     metadata.sessionError = @"";
                     metadata.sessionSelector = selectorSave;
-                    metadata.sessionSelectorPost = @"";
                     metadata.status = k_metadataStatusWaitDownload;
                     
                     // Add Metadata for Download
@@ -1073,7 +1072,7 @@
     [appDelegate updateApplicationIconBadgeNumber];
 }
 
-- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
+- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
     if (metadata == nil)
@@ -1183,14 +1182,10 @@
             
             // Photos
             if (appDelegate.activePhotos)
-                [appDelegate.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:errorCode];
+                [appDelegate.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
             
             [self reloadDatasource:serverUrl];
         }
-        
-        // if exists postselector call self with selectorPost
-        if ([selectorPost length] > 0)
-            [self downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selectorPost selectorPost:nil errorMessage:@"" errorCode:0];
         
         // Auto Download Upload
         [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
@@ -1223,7 +1218,7 @@
                 
                 // Updating Photos
                 if (appDelegate.activePhotos)
-                    [appDelegate.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector selectorPost:selectorPost errorMessage:errorMessage errorCode:errorCode];
+                    [appDelegate.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
             });
             
         } else {
@@ -1283,7 +1278,7 @@
     [appDelegate updateApplicationIconBadgeNumber];
 }
 
-- (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
+- (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {    
     if (errorCode == 0) {
         
@@ -1299,14 +1294,7 @@
             [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
     
-    if ([selectorPost isEqualToString:selectorReadFolderForced] ) {
-            
-        [self readFolder:serverUrl];
-            
-    } else {
-            
-        [self reloadDatasource:serverUrl];
-    }
+    [self reloadDatasource:serverUrl];
 }
 
 //
@@ -1908,7 +1896,7 @@
         [self tableViewSelect:NO];
         
         // reload Datasource
-        if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced] || _isSearchMode)
+        if (_isSearchMode)
             [self readFolder:metadataNet.serverUrl];
         else
             [self reloadDatasource];
@@ -1962,7 +1950,7 @@
             [self tableViewSelect:NO];
             
             // reload Datasource
-            if ([metadataNet.selectorPost isEqualToString:selectorReadFolderForced] || _isSearchMode)
+            if (_isSearchMode)
                 [self readFolder:metadataNet.serverUrl];
             else
                 [self reloadDatasource];
@@ -2292,7 +2280,6 @@
             if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
                 metadata.session = @"";
                 metadata.sessionSelector = @"";
-                metadata.sessionSelectorPost = @"";
                 metadata.status = k_metadataStatusNormal;
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
             }
@@ -2721,7 +2708,6 @@
             metadata.session = k_download_session;
             metadata.sessionError = @"";
             metadata.sessionSelector = selectorAddFavorite;
-            metadata.sessionSelectorPost = @"";
             metadata.status = k_metadataStatusWaitDownload;
             
             // Add Metadata for Download
@@ -2748,7 +2734,6 @@
     metadata.session = k_download_session;
     metadata.sessionError = @"";
     metadata.sessionSelector = selectorOpenIn;
-    metadata.sessionSelectorPost = @"";
     metadata.status = k_metadataStatusWaitDownload;
     
     // Add Metadata for Download
@@ -3442,7 +3427,6 @@
             _metadata.session = k_download_session;
             _metadata.sessionError = @"";
             _metadata.sessionSelector = selectorLoadCopy;
-            _metadata.sessionSelectorPost = @"";
             _metadata.status = k_metadataStatusWaitDownload;
             
             // Add Metadata for Download
@@ -3475,7 +3459,6 @@
                 metadata.session = k_download_session;
                 metadata.sessionError = @"";
                 metadata.sessionSelector = selectorLoadCopy;
-                metadata.sessionSelectorPost = @"";
                 metadata.status = k_metadataStatusWaitDownload;
                 
                 // Add Metadata for Download
@@ -5040,7 +5023,7 @@
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
         if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileNameView]) {
             
-            [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
+            [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
             
         } else {
             
@@ -5053,7 +5036,6 @@
                 _metadata.session = k_download_session;
                 _metadata.sessionError = @"";
                 _metadata.sessionSelector = selectorLoadFileView;
-                _metadata.sessionSelectorPost = @"";
                 _metadata.status = k_metadataStatusWaitDownload;
                 
                 // Add Metadata for Download

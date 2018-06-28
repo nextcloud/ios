@@ -387,7 +387,6 @@
         metadata.session = k_download_session;
         metadata.sessionError = @"";
         metadata.sessionSelector = selectorDownloadSynchronize;
-        metadata.sessionSelectorPost = @"";
         metadata.status = k_metadataStatusWaitDownload;
         
         [metadataToAdd addObject:metadata];

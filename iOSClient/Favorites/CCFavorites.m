@@ -304,7 +304,7 @@
     [appDelegate updateApplicationIconBadgeNumber];
 }
 
-- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
+- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     if (errorCode == 0) {
         
@@ -721,14 +721,13 @@
             
             if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileNameView]) {
             
-                [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView selectorPost:@"" errorMessage:@"" errorCode:0];
+                [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
                             
             } else {
             
                 _metadata.session = k_download_session;
                 _metadata.sessionError = @"";
                 _metadata.sessionSelector = selectorLoadFileView;
-                _metadata.sessionSelectorPost = @"";
                 _metadata.status = k_metadataStatusWaitDownload;
                 
                 // Add Metadata for Download
