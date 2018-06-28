@@ -105,22 +105,6 @@
     page1.bgImage = [UIImage imageNamed:@"bgbianco"];
     page1.titleIconPositionY = titleIconPositionY;
     page1.showTitleView = NO;
-    
-    EAIntroPage *page11 = [EAIntroPage page];
-    
-    page11.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro11"]];
-    page11.title = NSLocalizedStringFromTable(@"_intro_11_title_", @"Intro", nil);
-    page11.desc = NSLocalizedStringFromTable(@"_intro_11_text_",  @"Intro", nil);
-    
-    page11.titlePositionY = titlePositionY;
-    page11.titleColor = [UIColor blackColor];
-    page11.titleFont = [UIFont systemFontOfSize:20];
-    page11.descPositionY = descPositionY;
-    page11.descColor = [UIColor blackColor];
-    page11.descFont = [UIFont systemFontOfSize:14];
-    page11.bgImage = [UIImage imageNamed:@"bgbianco"];
-    page11.titleIconPositionY = titleIconPositionY;
-    page11.showTitleView = NO;
 
     EAIntroPage *page2 = [EAIntroPage page];
 
@@ -178,7 +162,7 @@
     };
 
     [intro setDelegate:self];
-    [intro setPages:@[page1,page11,page2,page3]];
+    [intro setPages:@[page1,page2,page3]];
     [intro showInView:self.rootView animateDuration:0];
 }
 

@@ -36,7 +36,6 @@
 @property (nonatomic, strong) UIView *rootView;
 @property (nonatomic, strong) NSString *type;
 
-
 - (void)show;
 
 @end
