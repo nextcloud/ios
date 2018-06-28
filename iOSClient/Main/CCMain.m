@@ -49,8 +49,6 @@
     NSUInteger _numSelectedFileIDsMetadatas;
     NSMutableArray *_queueSelector;
     
-    NSMutableDictionary *_statusSwipeCell;
-    
     UIImageView *_ImageTitleHomeCryptoCloud;
     
     NSString *_directoryGroupBy;
@@ -131,7 +129,6 @@
     _metadata = [tableMetadata new];
     _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     _selectedFileIDsMetadatas = [NSMutableDictionary new];
-    _statusSwipeCell = [NSMutableDictionary new];
     _queueSelector = [NSMutableArray new];
     _isViewDidLoad = YES;
     _fatherPermission = @"";
@@ -4352,14 +4349,6 @@
     // store selected cells before relod
     NSArray *indexPaths = [self.tableView indexPathsForSelectedRows];
     
-    //store swipeOffset before relod
-    [_statusSwipeCell removeAllObjects];
-    for (MGSwipeTableCell *cell in self.tableView.visibleCells) {
-        NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-        if (cell != nil && indexPath != nil)
-            [_statusSwipeCell setObject:[NSNumber numberWithDouble:cell.swipeOffset] forKey:indexPath];
-    }
-    
     // reload table view
     [self.tableView reloadData];
     
@@ -4950,16 +4939,6 @@
     MGSwipeButton *deleteButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:0];
     [deleteButton centerIconOverText];
 
-    //restore swipeOffset after relod
-    CGFloat swipeOffset = [[_statusSwipeCell objectForKey:indexPath] doubleValue];
-    if (swipeOffset < 0) {
-        [cell showSwipe:MGSwipeDirectionRightToLeft animated:NO];
-        [_statusSwipeCell removeObjectForKey:indexPath];
-    } else if (swipeOffset > 0) {
-        [cell showSwipe:MGSwipeDirectionLeftToRight animated:NO];
-        [_statusSwipeCell removeObjectForKey:indexPath];
-    }
-    
     // ----------------------------------------------------------------------------------------------------------
     // More
     // ----------------------------------------------------------------------------------------------------------
