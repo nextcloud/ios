@@ -219,7 +219,6 @@ extension FileProviderExtension {
             // remove session data
             metadata.session = ""
             metadata.sessionSelector = ""
-            metadata.sessionSelectorPost = ""
             let metadata = NCManageDatabase.sharedInstance.addMetadata(metadata)
             
             let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier, providerData: providerData)
