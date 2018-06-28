@@ -418,7 +418,6 @@ extension FileProviderExtension {
                     
                     metadata.session = k_upload_session_extension
                     metadata.sessionSelector = selectorUploadFile
-                    metadata.sessionSelectorPost = self.providerData.selectorPostImportDocument
                     metadata.status = Int(k_metadataStatusWaitUpload)
                 }
                 

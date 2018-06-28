@@ -34,10 +34,6 @@ class FileProviderData: NSObject {
     var accountUrl = ""
     var homeServerUrl = ""
         
-    // metadata Selector Post
-    let selectorPostImportDocument = "importDocument"
-    let selectorPostItemChanged = "itemChanged"
-        
     // Max item for page
     let itemForPage = 20
 

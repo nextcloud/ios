@@ -206,21 +206,16 @@ extension FileProviderExtension {
         // OK
         if errorCode == 0 {
             
-            // importDocument
-            if (selectorPost == providerData.selectorPostImportDocument) {
-                providerData.queueTradeSafe.sync(flags: .barrier) {
-                    let itemIdentifier = NSFileProviderItemIdentifier(metadata.directoryID+fileName)
-                    self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
-                    self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-                }
+            // Remove temp fileID = directoryID + fileName
+            providerData.queueTradeSafe.sync(flags: .barrier) {
+                let itemIdentifier = NSFileProviderItemIdentifier(metadata.directoryID+fileName)
+                self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
+                self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
             }
             
-            // itemChanged
-            if (selectorPost == providerData.selectorPostItemChanged) {
-                // Recreate ico
-                CCGraphics.createNewImage(from: fileName, fileID: fileID, extension: NSString(string: fileName).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writeImage: true, optimizedFileName: false)
-            }
-                        
+            // Recreate ico
+            CCGraphics.createNewImage(from: fileName, fileID: fileID, extension: NSString(string: fileName).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writeImage: true, optimizedFileName: false)
+            
             // remove session data
             metadata.session = ""
             metadata.sessionSelector = ""
@@ -276,7 +271,6 @@ extension FileProviderExtension {
         
         metadata.session = k_upload_session_extension
         metadata.sessionSelector = selectorUploadFile
-        metadata.sessionSelectorPost = providerData.selectorPostItemChanged
         metadata.status = Int(k_metadataStatusWaitUpload)
 
         guard let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata) else {

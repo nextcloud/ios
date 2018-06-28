@@ -223,7 +223,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         // Error ? reUpload when touch
         if metadata.status == k_metadataStatusUploadError && metadata.session == k_upload_session_extension {
             
-            if metadata.sessionSelectorPost == providerData.selectorPostImportDocument ||  metadata.sessionSelectorPost == providerData.selectorPostItemChanged {
+            if metadata.session == k_upload_session_extension {
                 self.reUpload(metadata)
             }
                 
