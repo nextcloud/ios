@@ -54,9 +54,6 @@ class FileProviderData: NSObject {
     var fileProviderSignalUpdateContainerItem = [NSFileProviderItemIdentifier:FileProviderItem]()
     var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
     var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
-
-    // Reupload after error
-    let timeReupload: Double = 10
     
     // MARK: - 
     
