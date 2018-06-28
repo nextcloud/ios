@@ -402,7 +402,6 @@ extension FileProviderExtension {
             
                 // Metadata TEMP
                 metadata.account = self.providerData.account
-                metadata.assetLocalIdentifier = tableDirectory.directoryID + fileName
                 metadata.date = NSDate()
                 metadata.directory = false
                 metadata.directoryID = tableDirectory.directoryID

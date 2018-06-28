@@ -209,7 +209,7 @@ extension FileProviderExtension {
             // importDocument
             if (selectorPost == providerData.selectorPostImportDocument) {
                 providerData.queueTradeSafe.sync(flags: .barrier) {
-                    let itemIdentifier = NSFileProviderItemIdentifier(assetLocalIdentifier)
+                    let itemIdentifier = NSFileProviderItemIdentifier(metadata.directoryID+fileName)
                     self.providerData.fileProviderSignalDeleteContainerItemIdentifier[itemIdentifier] = itemIdentifier
                     self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
                 }
@@ -222,7 +222,6 @@ extension FileProviderExtension {
             }
                         
             // remove session data
-            metadata.assetLocalIdentifier = ""
             metadata.session = ""
             metadata.sessionSelector = ""
             metadata.sessionSelectorPost = ""
@@ -275,7 +274,6 @@ extension FileProviderExtension {
             return
         }
         
-        metadata.assetLocalIdentifier = ""
         metadata.session = k_upload_session_extension
         metadata.sessionSelector = selectorUploadFile
         metadata.sessionSelectorPost = providerData.selectorPostItemChanged
