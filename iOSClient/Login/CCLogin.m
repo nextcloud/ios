@@ -241,7 +241,7 @@
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
     // add status.php for valid test url
-    NSString *urlTest = [self.baseUrl.text stringByAppendingString:serverStatus];
+    NSString *urlTest = [self.baseUrl.text stringByAppendingString:k_serverStatus];
     
     // Remove stored cookies
     NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
@@ -435,7 +435,7 @@
         self.login.enabled = NO;
         self.loadingBaseUrl.hidden = NO;
 
-        [ocNetworking checkServer:[NSString stringWithFormat:@"%@%@", url, webDAV] success:^{
+        [ocNetworking checkServer:[NSString stringWithFormat:@"%@%@", url, k_webDAV] success:^{
             
             // account
             NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];

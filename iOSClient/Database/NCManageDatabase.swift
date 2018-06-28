@@ -36,7 +36,7 @@ class NCManageDatabase: NSObject {
         
         let configCompact = Realm.Configuration(
             
-            fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
+            fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
             
             shouldCompactOnLaunch: { totalBytes, usedBytes in
             // totalBytes refers to the size of the file on disk in bytes (data + free space)
@@ -56,7 +56,7 @@ class NCManageDatabase: NSObject {
         
         let config = Realm.Configuration(
         
-            fileURL: dirGroup?.appendingPathComponent("\(appDatabaseNextcloud)/\(k_databaseDefault)"),
+            fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
             schemaVersion: 26,
             
             // 10 : Version 2.18.0
@@ -589,7 +589,7 @@ class NCManageDatabase: NSObject {
         var noteReplacing : String = ""
         
         if let activeUrl = activeUrl {
-            noteReplacing = note.replacingOccurrences(of: "\(activeUrl)\(webDAV)", with: "")
+            noteReplacing = note.replacingOccurrences(of: "\(activeUrl)\(k_webDAV)", with: "")
         }
         
         noteReplacing = note.replacingOccurrences(of: "\(k_domain_session_queue).", with: "")

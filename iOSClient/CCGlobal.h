@@ -23,18 +23,6 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString *const appApplicationSupport;
-extern NSString *const appDatabaseNextcloud;
-extern NSString *const appCertificates;
-extern NSString *const appUserData;
-
-extern NSString *const serverStatus;
-
-extern NSString *const webDAV;
-extern NSString *const dav;
-
-extern NSString *const flowEndpoint;
-
 #ifndef EXTENSION
 
 //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -51,8 +39,21 @@ extern NSString *const flowEndpoint;
 
 #endif
 
-// UUID
-#define k_UUID_SIM                                      @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
+// Directory on Group
+#define k_appApplicationSupport                         @"Library/Application Support"
+#define k_appDatabaseNextcloud                          @"Library/Application Support/Nextcloud"
+#define k_appUserData                                   @"Library/Application Support/UserData"
+#define k_appCertificates                               @"Library/Application Support/Certificates"
+
+// Server Status
+#define k_serverStatus                                  @"/status.php"
+
+// webDAV & DAV
+#define k_webDAV                                        @"/remote.php/webdav"
+#define k_dav                                           @"/remote.php/dav"
+
+// Login Flow
+#define k_flowEndpoint                                  @"/index.php/login/flow"
 
 // Passphrase test EndToEnd Encryption
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"

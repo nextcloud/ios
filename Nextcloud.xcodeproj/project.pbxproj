@@ -85,7 +85,6 @@
 		F71459E11D12E3B700CAFEEC /* CCHud.m in Sources */ = {isa = PBXBuildFile; fileRef = F7514EDB1C7B1336008F3338 /* CCHud.m */; };
 		F71459F11D12E3B700CAFEEC /* CCMove.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D02A471C5F9E4400D6F972 /* CCMove.m */; };
 		F71459F71D12E3B700CAFEEC /* CCGraphics.m in Sources */ = {isa = PBXBuildFile; fileRef = F76C3B841C6388BC00DC4301 /* CCGraphics.m */; };
-		F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
 		F7145A041D12E3B700CAFEEC /* CCloadItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7296A661C8880ED001A7809 /* CCloadItemData.swift */; };
 		F7145A1A1D12E3B700CAFEEC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7F67BB81A24D27800EE80DA /* Images.xcassets */; };
 		F7145A1C1D12E3B700CAFEEC /* CCMove.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */; };
@@ -174,7 +173,6 @@
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3720E23FF200417916 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F7434B3820E2400600417916 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
-		F7434B3920E2401C00417916 /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
 		F7434B3A20E2403500417916 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
 		F7434B3B20E2403900417916 /* OCCapabilities.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022691EC4C9100080073F /* OCCapabilities.m */; };
 		F7434B3C20E2403D00417916 /* OCCommunication.m in Sources */ = {isa = PBXBuildFile; fileRef = F700226B1EC4C9100080073F /* OCCommunication.m */; };
@@ -331,7 +329,6 @@
 		F77B0E981D118A16002130FE /* CCManageAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42D1BAC0268006C0017 /* CCManageAccount.m */; };
 		F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
 		F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */ = {isa = PBXBuildFile; fileRef = F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */; };
-		F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */ = {isa = PBXBuildFile; fileRef = F7C8C1911B482CEA0048180E /* CCGlobal.m */; };
 		F77B0EB61D118A16002130FE /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F70F04841C889183008DAB36 /* MBProgressHUD.m */; };
 		F77B0EC61D118A16002130FE /* CCCellMain.m in Sources */ = {isa = PBXBuildFile; fileRef = F70211F51BAC56E9003FC03E /* CCCellMain.m */; };
 		F77B0ED11D118A16002130FE /* Acknowledgements.m in Sources */ = {isa = PBXBuildFile; fileRef = F7ACE42A1BAC0268006C0017 /* Acknowledgements.m */; };
@@ -1326,7 +1323,6 @@
 		F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = iOSClient.entitlements; sourceTree = "<group>"; };
 		F7C742D01E7BD35B00D9C973 /* Share.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Share.entitlements; sourceTree = "<group>"; };
 		F7C8C1901B482CEA0048180E /* CCGlobal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGlobal.h; sourceTree = "<group>"; };
-		F7C8C1911B482CEA0048180E /* CCGlobal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGlobal.m; sourceTree = "<group>"; };
 		F7CC04E31F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
 		F7CC04E41F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/SwiftWebVC.strings; sourceTree = "<group>"; };
 		F7CC04E51F5AD50D00378CEF /* es */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/BKPasscodeView.strings; sourceTree = "<group>"; };
@@ -2988,7 +2984,6 @@
 				F7A582D71A24DAB500E903D7 /* AppDelegate.h */,
 				F7A582D61A24DAB500E903D7 /* AppDelegate.m */,
 				F7C8C1901B482CEA0048180E /* CCGlobal.h */,
-				F7C8C1911B482CEA0048180E /* CCGlobal.m */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
@@ -3532,7 +3527,6 @@
 				F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */,
 				F70022A81EC4C9100080073F /* AFSecurityPolicy.m in Sources */,
 				F70022AB1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,
-				F7145A001D12E3B700CAFEEC /* CCGlobal.m in Sources */,
 				F70022B41EC4C9100080073F /* OCActivity.m in Sources */,
 				F70022CC1EC4C9100080073F /* OCSharedDto.m in Sources */,
 				F70022DB1EC4C9100080073F /* OCHTTPRequestOperation.m in Sources */,
@@ -3574,7 +3568,6 @@
 				F7434B4F20E2408E00417916 /* OCXMLListParser.m in Sources */,
 				F7434B6120E2445C00417916 /* CCCertificate.m in Sources */,
 				F7434B5A20E241BB00417916 /* NCNetworkingEndToEnd.m in Sources */,
-				F7434B3920E2401C00417916 /* CCGlobal.m in Sources */,
 				F7434B3820E2400600417916 /* NCBrand.swift in Sources */,
 				F7434B4620E2406900417916 /* AFNetworkReachabilityManager.m in Sources */,
 				F7434B6320E249FB00417916 /* NSString+TruncateToWidth.m in Sources */,
@@ -3816,7 +3809,6 @@
 				F73B4F011F470D9100BBEE4B /* LangThaiModel.cpp in Sources */,
 				F70022DD1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
 				F73B4F001F470D9100BBEE4B /* LangSpanishModel.cpp in Sources */,
-				F77B0EAD1D118A16002130FE /* CCGlobal.m in Sources */,
 				F70022BC1EC4C9100080073F /* OCExternalSites.m in Sources */,
 				F73CC07B1E813DFF006E3047 /* BKTouchIDManager.m in Sources */,
 				F762CB031EACB66200B38484 /* XLFormStepCounterCell.m in Sources */,

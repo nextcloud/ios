@@ -625,7 +625,7 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSString *path = [_activeUrl stringByAppendingString:dav];
+    NSString *path = [_activeUrl stringByAppendingString:k_dav];
     NSString *folder = [_metadataNet.serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl] withString:@""];
     NSString *dateLastModified;
     
@@ -682,12 +682,12 @@
                 }
                 // ------------------------
             
-                serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUserID] withString:@""];
+                serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, _activeUserID] withString:@""];
                 if ([serverUrl hasPrefix:@"/"])
                     serverUrl = [serverUrl substringFromIndex:1];
                 if ([serverUrl hasSuffix:@"/"])
                     serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-                serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
+                serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:k_webDAV] addFileName:serverUrl];
                 
                 if (itemDto.isDirectory) {
                     (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]];
@@ -761,7 +761,7 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSString *server = [_activeUrl stringByAppendingString:dav];
+    NSString *server = [_activeUrl stringByAppendingString:k_dav];
 
     [communication settingFavoriteServer:server andFileOrFolderPath:fileName favorite:favorite withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
         
@@ -818,7 +818,7 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSString *path = [_activeUrl stringByAppendingString:dav];
+    NSString *path = [_activeUrl stringByAppendingString:k_dav];
     NSString *folder = [_metadataNet.serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl] withString:@""];
     
     [communication listingFavorites:path folder:folder withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
@@ -875,12 +875,12 @@
                     }
                     // ------------------------
                     
-                    serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/files/%@", dav, _activeUserID] withString:@""];
+                    serverUrl = [itemDto.filePath stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"%@/files/%@", k_dav, _activeUserID] withString:@""];
                     if ([serverUrl hasPrefix:@"/"])
                         serverUrl = [serverUrl substringFromIndex:1];
                     if ([serverUrl hasSuffix:@"/"])
                         serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
-                    serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:webDAV] addFileName:serverUrl];
+                    serverUrl = [CCUtility stringAppendServerUrl:[_activeUrl stringByAppendingString:k_webDAV] addFileName:serverUrl];
                     
                     if (itemDto.isDirectory) {
                         (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:itemDto.isEncrypted favorite:itemDto.isFavorite fileID:itemDto.ocId permissions:itemDto.permissions serverUrl:[NSString stringWithFormat:@"%@/%@", serverUrl, fileName]];

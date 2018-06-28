@@ -744,7 +744,7 @@
     if (activeUrl == nil)
         return @"";
     
-    return [activeUrl stringByAppendingString:webDAV];
+    return [activeUrl stringByAppendingString:k_webDAV];
 }
 
 + (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
@@ -782,7 +782,7 @@
         dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
     } else return @"";
     
-    dirApplicationUserGroup = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
+    dirApplicationUserGroup = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
     dirUserBaseUrl = [NSString stringWithFormat:@"%@/%@", dirApplicationUserGroup, dirUserBaseUrl];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath: dirUserBaseUrl]) {
@@ -811,7 +811,7 @@
 // Return the path of directory Cetificates
 + (NSString *)getDirectoryCerificates
 {
-    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:appCertificates] path];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appCertificates] path];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
@@ -821,7 +821,7 @@
 
 + (NSString *)getDirectoryUserData
 {
-    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:appUserData] path];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appUserData] path];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];

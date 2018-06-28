@@ -502,7 +502,7 @@
 {
     NSString *file;
     NSURL *dirGroup = [CCUtility getDirectoryGroup];
-    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
+    NSString *dirIniziale = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
     
     NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirIniziale];
     

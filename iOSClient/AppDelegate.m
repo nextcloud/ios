@@ -120,13 +120,13 @@
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
 
     // create Directory database Nextcloud
-    path = [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path];
+    path = [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
 
     // create Directory User Data
-    path = [[dirGroup URLByAppendingPathComponent:appUserData] path];
+    path = [[dirGroup URLByAppendingPathComponent:k_appUserData] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
@@ -157,7 +157,7 @@
     
 #ifdef DEBUG
     NSLog(@"[LOG] Copy DB on Documents directory");
-    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path]];
+    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path]];
     NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
     [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
     [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];

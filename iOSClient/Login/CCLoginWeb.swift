@@ -56,7 +56,7 @@ public class CCLoginWeb: UIViewController {
         }
         
         if (NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
-            urlString =  urlBase+flowEndpoint
+            urlString =  urlBase+k_flowEndpoint
         }
         
         let webVC = SwiftModalWebVC(urlString: urlString, theme: .custom, color: NCBrandColor.sharedInstance.customer, colorText: NCBrandColor.sharedInstance.customerText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
