@@ -26,60 +26,6 @@ import FileProvider
 extension FileProviderExtension {
 
     // --------------------------------------------------------------------------------------------
-    //  MARK: - Read folder
-    // --------------------------------------------------------------------------------------------
-    
-    func readFolder(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
-        
-        var serverUrl: String?
-        var counter = 0
-        
-        if (enumeratedItemIdentifier == .rootContainer) {
-            
-            serverUrl = providerData.homeServerUrl
-            
-        } else {
-            
-            guard let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier) else {
-                return
-            }
-            guard let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "directoryID == %@", metadata.directoryID)) else {
-                return
-            }
-            
-            serverUrl = directorySource.serverUrl + "/" + metadata.fileName
-        }
-        
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
-            
-            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND session == ''", directoryID!), clearDateReadDirectoryID: directoryID!)
-            guard let metadatasUpdate = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl) else {
-                return
-            }
-            
-            for metadata in metadatasUpdate {
-             
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: enumeratedItemIdentifier, providerData: self.providerData)
-             
-                self.providerData.queueTradeSafe.sync(flags: .barrier) {
-                    self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                }
-             
-                counter += 1
-                if counter >= self.providerData.itemForPage {
-                    //self.signalEnumerator(for: [enumeratedItemIdentifier])
-                    counter = 0
-                }
-             }
-             
-            //self.signalEnumerator(for: [enumeratedItemIdentifier])
-            
-        }, failure: { (errorMessage, errorCode) in
-        })
-    }
-    
-    // --------------------------------------------------------------------------------------------
     //  MARK: - Delete
     // --------------------------------------------------------------------------------------------
     

@@ -168,6 +168,7 @@
 		F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F73D71621F2673C200E233EB /* NCText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D71611F2673C200E233EB /* NCText.swift */; };
 		F73D71641F2674A400E233EB /* NCText.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73D71631F2674A400E233EB /* NCText.storyboard */; };
+		F73E332820E515CF0054222E /* NCActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73E332720E515CF0054222E /* NCActivity.swift */; };
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -828,6 +829,7 @@
 		F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
 		F73D71611F2673C200E233EB /* NCText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCText.swift; sourceTree = "<group>"; };
 		F73D71631F2674A400E233EB /* NCText.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCText.storyboard; sourceTree = "<group>"; };
+		F73E332720E515CF0054222E /* NCActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivity.swift; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
 		F7434B5F20E2440600417916 /* FileProviderExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
@@ -2444,6 +2446,7 @@
 		F7A321621E9E37960069AD1B /* Activity */ = {
 			isa = PBXGroup;
 			children = (
+				F73E332720E515CF0054222E /* NCActivity.swift */,
 				F7A321631E9E37960069AD1B /* CCActivity.h */,
 				F7A321641E9E37960069AD1B /* CCActivity.m */,
 			);
@@ -3690,6 +3693,7 @@
 				F762CB081EACB66200B38484 /* XLFormOptionsViewController.m in Sources */,
 				F73CC0721E813DFF006E3047 /* BKPasscodeLockScreenManager.m in Sources */,
 				F73B4F101F470D9100BBEE4B /* nsSBCharSetProber.cpp in Sources */,
+				F73E332820E515CF0054222E /* NCActivity.swift in Sources */,
 				F762CB0E1EACB66200B38484 /* NSExpression+XLFormAdditions.m in Sources */,
 				F73B4F071F470D9100BBEE4B /* nsEscSM.cpp in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
