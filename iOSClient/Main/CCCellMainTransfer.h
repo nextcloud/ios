@@ -38,8 +38,6 @@
 
 @property(nonatomic, weak) IBOutlet UIProgressView *progressView;
 @property(nonatomic, weak) IBOutlet UIButton *cancelTaskButton;
-@property(nonatomic, weak) IBOutlet UIButton *reloadTaskButton;
-@property(nonatomic, weak) IBOutlet UIButton *stopTaskButton;
 
 @property(nonatomic, strong) UIImage *imageTitleSegue;
 

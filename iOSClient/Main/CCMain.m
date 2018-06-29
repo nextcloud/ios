@@ -2171,76 +2171,6 @@
     }
 }
 
-- (void)reloadTaskButton:(id)sender withEvent:(UIEvent *)event
-{
-    UITouch *touch = [[event allTouches] anyObject];
-    CGPoint location = [touch locationInView:self.tableView];
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
-    
-    if ([self indexPathIsValid:indexPath]) {
-        
-        tableMetadata *metadataSection = [self getMetadataFromSectionDataSource:indexPath];
-        
-        if (metadataSection) {
-            
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataSection.fileID]];
-            if (metadata)
-                [self reloadTaskButton:metadata];
-        }
-    }
-}
-
-- (void)reloadTaskButton:(tableMetadata *)metadata
-{
-    NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-    __block NSURLSessionTask *findTask;
-    
-    NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
-    NSString *fileID = metadata.fileID;
-    
-    // DOWNLOAD
-    if ([metadata.session length] > 0 && [metadata.session containsString:@"download"]) {
-        
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            for (NSURLSessionUploadTask *task in downloadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier) {
-                    findTask = task;
-                    [appDelegate.listChangeTask setObject:@"reloadDownload" forKey:fileID];
-                    [task cancel];
-                }
-            
-            if (!findTask) {
-                
-                [appDelegate.listChangeTask setObject:@"reloadDownload" forKey:fileID];
-                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
-            }
-        }];
-    }
-
-    // UPLOAD
-    if ([metadata.session length] > 0 && [metadata.session containsString:@"upload"]) {
-        
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            for (NSURLSessionUploadTask *task in uploadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier) {
-                    findTask = task;
-                    [appDelegate.listChangeTask setObject:@"reloadUpload" forKey:fileID];
-                    [task cancel];
-                }
-            
-            if (!findTask) {
-                
-                [appDelegate.listChangeTask setObject:@"reloadUpload" forKey:fileID];
-                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
-            }
-        }];
-    }
-}
-
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
 {
     UITouch *touch = [[event allTouches] anyObject];
@@ -2347,55 +2277,6 @@
             if (!findTask) {
                 
                 [appDelegate.listChangeTask setObject:@"cancelUpload" forKey:fileID];
-                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
-            }
-        }];
-    }
-}
-
-- (void)stopTaskButton:(id)sender withEvent:(UIEvent *)event
-{
-    UITouch *touch = [[event allTouches] anyObject];
-    CGPoint location = [touch locationInView:self.tableView];
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
-    
-    if ([self indexPathIsValid:indexPath]) {
-        
-        tableMetadata *metadataSection = [self getMetadataFromSectionDataSource:indexPath];
-        
-        if (metadataSection) {
-            
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataSection.fileID]];
-            if (metadata)
-                [self stopTaskButton:metadata];
-        }
-    }
-}
-
-- (void)stopTaskButton:(tableMetadata *)metadata
-{
-    NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-    __block NSURLSessionTask *findTask;
-
-    NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
-    NSString *fileID = metadata.fileID;
-    
-    // UPLOAD
-    if ([metadata.session length] > 0 && [metadata.session containsString:@"upload"]) {
-        
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            for (NSURLSessionUploadTask *task in uploadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier) {
-                    [appDelegate.listChangeTask setObject:@"stopUpload" forKey:fileID];
-                    findTask = task;
-                    [task cancel];
-                }
-            
-            if (!findTask) {
-                
-                [appDelegate.listChangeTask setObject:@"stopUpload" forKey:fileID];
                 NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
                 [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
             }
@@ -4552,8 +4433,6 @@
     cell.progressView.hidden = YES;
     
     cell.cancelTaskButton.hidden = YES;
-    cell.reloadTaskButton.hidden = YES;
-    cell.stopTaskButton.hidden = YES;
     
     cell.labelTitle.textColor = [UIColor blackColor];
     
@@ -4766,7 +4645,6 @@
         
         cell.userInteractionEnabled = NO;
         cell.cancelTaskButton.enabled = NO;
-        cell.stopTaskButton.enabled = NO;
         
     } else {
         
@@ -4775,7 +4653,6 @@
         
         cell.userInteractionEnabled = YES;
         cell.cancelTaskButton.enabled = YES;
-        cell.stopTaskButton.enabled = YES;
     }
     
     // ----------------------------------------------------------------------------------------------------------
@@ -4786,15 +4663,9 @@
         
         cell.status.image = [UIImage imageNamed:@"statusdownload"];
         
-        [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
-            
+        [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"taskCancelDownload"] forState:UIControlStateNormal];
         cell.cancelTaskButton.hidden = NO;
 
-        [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
-            
-        cell.reloadTaskButton.hidden = NO;
-            
-        
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
         
         float progress = [[appDelegate.listProgressMetadata objectForKey:metadata.fileID] floatValue];
@@ -4830,25 +4701,8 @@
 
         cell.status.image = [UIImage imageNamed:@"statusupload"];
         
-        [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"removetask"] forState:UIControlStateNormal];
+        [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"taskCancelUpload"] forState:UIControlStateNormal];
         cell.cancelTaskButton.hidden = NO;
-        
-        if (metadata.sessionTaskIdentifier == k_taskIdentifierStop) {
-            
-            [cell.reloadTaskButton setBackgroundImage:[UIImage imageNamed:@"reloadtask"] forState:UIControlStateNormal];
-            
-            cell.status.image = [UIImage imageNamed:@"statusstop"];
-            
-            cell.reloadTaskButton.hidden = NO;
-            cell.stopTaskButton.hidden = YES;
-            
-        } else {
-            
-            [cell.stopTaskButton setBackgroundImage:[UIImage imageNamed:@"stoptask"] forState:UIControlStateNormal];
-            
-            cell.stopTaskButton.hidden = NO;
-            cell.reloadTaskButton.hidden = YES;
-        }
         
         // se non c'è una preview in bianconero metti l'immagine di default
         if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO)
@@ -4889,9 +4743,7 @@
     
     if ([typeCell isEqualToString:@"CellMainTransfer"]) {
     
-        [cell.reloadTaskButton addTarget:self action:@selector(reloadTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
         [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
-        [cell.stopTaskButton addTarget:self action:@selector(stopTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
         
         UILongPressGestureRecognizer *cancelLongGesture = [UILongPressGestureRecognizer new];
         [cancelLongGesture addTarget:self action:@selector(cancelAllTask:)];

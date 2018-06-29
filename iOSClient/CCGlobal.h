@@ -128,7 +128,6 @@
 
 // TaskIdentifier
 #define k_taskIdentifierDone                            0
-#define k_taskIdentifierStop                            -1
 
 // TaskStatus
 #define k_taskStatusCancel                              -1

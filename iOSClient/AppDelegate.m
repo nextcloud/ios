@@ -1327,25 +1327,8 @@
     if (!metadata) return;
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (!serverUrl) return;
-    
-    if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierStop status:k_metadataStatusWaitUpload predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-        
-    }
-    else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {
-        
-        // V 1.8 if upload_session_wwan && change in upload_session
-        if ([metadata.session isEqualToString:k_upload_session_wwan])
-            metadata.session = k_upload_session;
-        
-        [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:self.activeMain];
-    }
-    else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusWaitDownload predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-    }
-    else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelUpload"]) {
+
+    if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelUpload"]) {
         
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
