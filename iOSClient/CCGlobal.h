@@ -58,6 +58,9 @@
 // Passphrase test EndToEnd Encryption
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
 
+// UUID
+#define k_UUID_SIM                                      @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
+
 #define k_dismissAfterSecond                            4
 
 #define k_daysOfActivity                                7
