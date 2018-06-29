@@ -2166,8 +2166,10 @@
     if ([self indexPathIsValid:indexPath]) {
         
         CCCellMainTransfer *cell = (CCCellMainTransfer *)[self.tableView cellForRowAtIndexPath:indexPath];
-        cell.progressView.progressTintColor = [UIColor blackColor];
         
+        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@", [CCUtility transformedSize:totalBytesExpected], [CCUtility transformedSize:totalBytes]];
+        
+        cell.progressView.progressTintColor = [UIColor blackColor];
         cell.progressView.hidden = NO;
         [cell.progressView setProgress:progress];
     }
