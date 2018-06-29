@@ -2167,11 +2167,7 @@
         
         CCCellMainTransfer *cell = (CCCellMainTransfer *)[self.tableView cellForRowAtIndexPath:indexPath];
         
-        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@", [CCUtility transformedSize:totalBytesExpected], [CCUtility transformedSize:totalBytes]];
-        
-        cell.progressView.progressTintColor = [UIColor blackColor];
-        cell.progressView.hidden = NO;
-        [cell.progressView setProgress:progress];
+        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@", [CCUtility transformedSize:totalBytesExpected], [CCUtility transformedSize:totalBytes]];        
     }
 }
 
@@ -4433,9 +4429,6 @@
     cell.labelInfoFile.enabled = YES;
     cell.labelInfoFile.text = @"";
     
-    cell.progressView.progress = 0.0;
-    cell.progressView.hidden = YES;
-    
     cell.cancelTaskButton.hidden = YES;
     
     cell.labelTitle.textColor = [UIColor blackColor];
@@ -4671,15 +4664,6 @@
         cell.cancelTaskButton.hidden = NO;
 
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
-        
-        float progress = [[appDelegate.listProgressMetadata objectForKey:metadata.fileID] floatValue];
-        if (progress > 0) {
-            
-            cell.progressView.progressTintColor = [UIColor blackColor];
-            
-            cell.progressView.progress = progress;
-            cell.progressView.hidden = NO;
-        }
     }
     
     // ----------------------------------------------------------------------------------------------------------
@@ -4714,15 +4698,6 @@
         
         cell.labelTitle.enabled = NO;
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", lunghezzaFile];
-        
-        float progress = [[appDelegate.listProgressMetadata objectForKey:metadata.fileID] floatValue];
-        if (progress > 0) {
-            
-            cell.progressView.progressTintColor = [UIColor blackColor];
-            
-            cell.progressView.progress = progress;
-            cell.progressView.hidden = NO;
-        }
     }
     
     // ----------------------------------------------------------------------------------------------------------
