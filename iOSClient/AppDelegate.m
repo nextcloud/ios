@@ -1345,7 +1345,7 @@
     [_listProgressMetadata removeObjectForKey:fileID];
     
     // Progress Task
-    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
+    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0]), @"totalBytes": ([NSNumber numberWithLongLong:0]), @"totalBytesExpected": ([NSNumber numberWithLongLong:0])};
     
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
 

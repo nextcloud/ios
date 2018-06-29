@@ -2149,7 +2149,9 @@
     NSString *fileID = [dict valueForKey:@"fileID"];
     NSString *serverUrl = [dict valueForKey:@"serverUrl"];
     float progress = [[dict valueForKey:@"progress"] floatValue];
-    
+    long long totalBytes = [[dict valueForKey:@"totalBytes"] longLongValue];
+    long long totalBytesExpected = [[dict valueForKey:@"totalBytesExpected"] longLongValue];
+
     // Check
     if (!fileID || [fileID isEqualToString: @""])
         return;
