@@ -82,23 +82,27 @@ class CCActions: NSObject {
             return
         }
         
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-
+        let isDirectory = metadata.directory
+        let directoryID = metadata.directoryID
+        let fileID = metadata.fileID
+        let fileName = metadata.fileName
+        let fileNameView = metadata.fileNameView
+        
         // fix CCActions.swift line 88 2.17.2 (00005)
         if (serverUrl == "") {
             appDelegate.messageNotification("_delete_", description: "_file_not_found_reload_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
             return
         }
         
-        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.activeAccount, serverUrl)) else {
-            return
-        }
-        
         DispatchQueue.global().async {
         
             // E2EE LOCK
-            let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", self.appDelegate.activeAccount, metadata.fileName))
+            let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", self.appDelegate.activeAccount, fileName))
             if tableE2eEncryption != nil {
+                
+                guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.activeAccount, serverUrl)) else {
+                    return
+                }
                 
                 let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl, serverUrl:serverUrl, fileID: tableDirectory.fileID)
                 if error != nil {
@@ -109,13 +113,15 @@ class CCActions: NSObject {
                 }
             }
         
+            let metadataNet: CCMetadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)
+
             metadataNet.action = actionDeleteFileDirectory
             metadataNet.delegate = delegate
-            metadataNet.directory = metadata.directory
-            metadataNet.directoryID = metadata.directoryID
-            metadataNet.fileID = metadata.fileID
-            metadataNet.fileName = metadata.fileName
-            metadataNet.fileNameView = metadata.fileNameView
+            metadataNet.directory = isDirectory
+            metadataNet.directoryID = directoryID
+            metadataNet.fileID = fileID
+            metadataNet.fileName = fileName
+            metadataNet.fileNameView = fileNameView
             metadataNet.selector = selectorDelete
             metadataNet.serverUrl = serverUrl
         

@@ -903,8 +903,7 @@
         
                 tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
         
-                // ricerca index
-                if ([metadata.fileID isEqualToString:metadataNet.fileID]) {
+                if ([metadata isInvalidated] || [metadata.fileID isEqualToString:metadataNet.fileID]) {
             
                     [self.dataSourceImagesVideos removeObjectAtIndex:index];
                     [self.photos removeObjectAtIndex:index];
@@ -915,9 +914,7 @@
                 
                         self.title = @"";
                         [self.navigationController popViewControllerAnimated:YES];
-                    }
-            
-                    break;
+                    }            
                 }
             }
         }
