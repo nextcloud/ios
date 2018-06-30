@@ -4473,6 +4473,8 @@
             } else {
                 if (metadata.iconName.length > 0) {
                     cell.file.image = [UIImage imageNamed:metadata.iconName];
+                } else {
+                    cell.file.image = [UIImage imageNamed:@"file"];
                 }
             }
             
@@ -4597,6 +4599,8 @@
         } else {
             if (metadata.iconName.length > 0) {
                 cell.file.image = [UIImage imageNamed:metadata.iconName];
+            } else {
+                cell.file.image = [UIImage imageNamed:@"file"];
             }
         }
         
@@ -4647,10 +4651,7 @@
             [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"taskCancelUpload"] forState:UIControlStateNormal];
             cell.cancelTaskButton.hidden = NO;
             
-            // se non c'è una preview in bianconero metti l'immagine di default
-            if (iconFileExists) {
-                
-            } else {
+            if (!iconFileExists) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
             }
             
@@ -4662,6 +4663,10 @@
             
             cell.labelTitle.enabled = NO;
             cell.status.image = [UIImage imageNamed:@"statuserror"];
+            
+            if (!iconFileExists) {
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            }
             
             if ([metadata.sessionError length] == 0) {
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];
