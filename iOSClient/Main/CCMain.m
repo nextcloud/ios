@@ -4395,6 +4395,8 @@
     // CCCell
     if (metadata.status == k_metadataStatusNormal) {
         
+        // NORMAL
+        
         CCCellMain *cell = (CCCellMain *)[tableView dequeueReusableCellWithIdentifier:@"CellMain" forIndexPath:indexPath];
         cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
         cell.accessoryType = UITableViewCellAccessoryNone;
@@ -4442,14 +4444,12 @@
             } else if (isMounted) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_external"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
                 cell.imageTitleSegue = [UIImage imageNamed:@"shareMounted"];
-            } else if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) {
-                if ([shareUserAndGroup length] > 0) {
-                    cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-                    cell.imageTitleSegue = [UIImage imageNamed:@"share"];
-                } if ([shareLink length] > 0) {
-                    cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-                    cell.imageTitleSegue = [UIImage imageNamed:@"sharebylink"];
-                }
+            } else if (shareUserAndGroup != nil) {
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
+                cell.imageTitleSegue = [UIImage imageNamed:@"share"];
+            } else if (shareLink != nil) {
+                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
+                cell.imageTitleSegue = [UIImage imageNamed:@"sharebylink"];
             } else
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
             
@@ -4500,34 +4500,31 @@
                 cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
             } else if (isMounted) {
                 cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareMounted"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
-            } else if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) {
-                if ([shareLink length] > 0) {
-                    cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
-                } if ([shareUserAndGroup length] > 0) {
-                    cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
-                }
+            } else if (shareLink != nil) {
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
+            } else if (shareUserAndGroup != nil) {
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
             }
         }
+        
+        //
+        // File & Directory
+        //
         
         // Favorite
         if (metadata.favorite) {
             cell.favorite.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite];
         }
         
-        // Share : Add Tap
-        if (isShare || [shareLink length] > 0 || [shareUserAndGroup length] > 0 || isMounted) {
+        // Share add Tap
+        if (isShare || isMounted || shareLink != nil || shareUserAndGroup != nil) {
             
-            if (isShare) { // Shared with you
+            if (isShare || isMounted) { // Shared with you
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
                 [tap setNumberOfTapsRequired:1];
                 cell.shared.userInteractionEnabled = YES;
                 [cell.shared addGestureRecognizer:tap];
-            } else if (isMounted) {  // Mounted with you
-                UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
-                [tap setNumberOfTapsRequired:1];
-                cell.shared.userInteractionEnabled = YES;
-                [cell.shared addGestureRecognizer:tap];
-            } else if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) { // You share
+            } else if (shareLink != nil || shareUserAndGroup != nil) { // You share
                 if (metadata.directory) {
                     cell.shared.userInteractionEnabled = NO;
                 } else {
@@ -4577,6 +4574,8 @@
         return cell;
         
     } else {
+        
+        // TRASNFER
         
         CCCellMainTransfer *cell = (CCCellMainTransfer *)[tableView dequeueReusableCellWithIdentifier:@"CellMainTransfer" forIndexPath:indexPath];
         cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
