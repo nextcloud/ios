@@ -2170,7 +2170,9 @@
         
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@", [CCUtility transformedSize:totalBytesExpected], [CCUtility transformedSize:totalBytes]];
         
-        cell.transferButton.progress = progress;
+        if ([cell isKindOfClass:[CCCellMainTransfer class]]) {
+            cell.transferButton.progress = progress;
+        }
     }
 }
 
@@ -4606,6 +4608,8 @@
                 cell.file.image = [UIImage imageNamed:@"file"];
             }
         }
+        
+        cell.transferButton.tintColor = [NCBrandColor sharedInstance].gray;
         
         // Session Upload Extension
         if ([metadata.session isEqualToString:k_upload_session_extension] && (metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading)) {

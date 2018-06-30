@@ -19,13 +19,13 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC" userLabel="labelTitle">
-                        <rect key="frame" x="65" y="13" width="478" height="18"/>
+                        <rect key="frame" x="65" y="13" width="488" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ" userLabel="labelInfoFile">
-                        <rect key="frame" x="65" y="31" width="478" height="15"/>
+                        <rect key="frame" x="65" y="31" width="488" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.63921568627450975" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -45,17 +45,17 @@
                         </constraints>
                     </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dhS-83-mLd" userLabel="transferButton" customClass="PKStopDownloadButton">
-                        <rect key="frame" x="551" y="9.5" width="39" height="39"/>
-                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <rect key="frame" x="558" y="14.5" width="29" height="29"/>
+                        <color key="tintColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="radius">
-                                <real key="value" value="20"/>
+                                <real key="value" value="15"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="number" keyPath="stopButtonWidth">
-                                <real key="value" value="12"/>
+                                <real key="value" value="10"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="number" keyPath="progress">
-                                <real key="value" value="0.20000000000000001"/>
+                                <real key="value" value="0.0"/>
                             </userDefinedRuntimeAttribute>
                             <userDefinedRuntimeAttribute type="number" keyPath="filledLineWidth">
                                 <real key="value" value="2"/>
@@ -77,10 +77,10 @@
                     <constraint firstItem="5" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="asW-ir-Cfb"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="top" constant="13" id="d78-LV-sUw"/>
                     <constraint firstItem="dhS-83-mLd" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="eA9-jd-n75"/>
-                    <constraint firstAttribute="trailing" secondItem="dhS-83-mLd" secondAttribute="trailing" constant="10" id="j62-Bl-LTq"/>
+                    <constraint firstAttribute="trailing" secondItem="dhS-83-mLd" secondAttribute="trailing" constant="13" id="j62-Bl-LTq"/>
                     <constraint firstAttribute="bottom" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="13.5" id="ofO-Ef-6wt"/>
-                    <constraint firstItem="dhS-83-mLd" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="8" id="vgg-Ni-Tci"/>
-                    <constraint firstItem="dhS-83-mLd" firstAttribute="leading" secondItem="p7I-KN-FVZ" secondAttribute="trailing" constant="8" id="zUF-S2-yOW"/>
+                    <constraint firstItem="dhS-83-mLd" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="5" id="vgg-Ni-Tci"/>
+                    <constraint firstItem="dhS-83-mLd" firstAttribute="leading" secondItem="p7I-KN-FVZ" secondAttribute="trailing" constant="5" id="zUF-S2-yOW"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
