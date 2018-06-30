@@ -4377,11 +4377,11 @@
 {
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
+    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
         return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl) {
+    if (serverUrl == nil) {
         return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
     }
     
@@ -4407,16 +4407,16 @@
         cell.local.image = nil;
         cell.imageTitleSegue = nil;
         
+        cell.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+
         // change color selection
-        UIView *selectionColor = [[UIView alloc] init];
+        UIView *selectionColor = [UIView new];
         selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
         cell.selectedBackgroundView = selectionColor;
-        // for checkmark color in editing mode
         cell.tintColor = [NCBrandColor sharedInstance].brandElement;
                 
         cell.delegate = self;
         cell.indexPath = indexPath;
-        cell.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
         
         cell.labelTitle.textColor = [UIColor blackColor];
         cell.labelTitle.text = metadata.fileNameView;
@@ -4582,7 +4582,7 @@
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.file.image = nil;
         cell.status.image = nil;
-       
+        
         cell.backgroundColor = [NCBrandColor sharedInstance].transferBackground;
         
         cell.labelTitle.textColor = [UIColor blackColor];
