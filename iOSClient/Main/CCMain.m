@@ -4462,13 +4462,13 @@
             
         } else {
             
-            BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+            BOOL iconFileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
             // Lable Info
             cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
             
             // File Image
-            if (fileExists) {
+            if (iconFileExists) {
                 cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             } else {
                 if (metadata.iconName.length > 0) {
@@ -4485,7 +4485,7 @@
             }
             
             // Download thumbnail
-            if (metadata.thumbnailExists && !fileExists && !_metadataFolder.e2eEncrypted) {
+            if (metadata.thumbnailExists && !iconFileExists && !_metadataFolder.e2eEncrypted) {
                 [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
             }
             
@@ -4590,6 +4590,16 @@
         
         cell.labelInfoFile.text = [CCUtility transformedSize:metadata.size];
         
+        BOOL iconFileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+
+        if (iconFileExists) {
+            cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        } else {
+            if (metadata.iconName.length > 0) {
+                cell.file.image = [UIImage imageNamed:metadata.iconName];
+            }
+        }
+        
         // Session Upload Extension
         if ([metadata.session isEqualToString:k_upload_session_extension] && (metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading)) {
             
@@ -4638,8 +4648,11 @@
             cell.cancelTaskButton.hidden = NO;
             
             // se non c'è una preview in bianconero metti l'immagine di default
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO)
+            if (iconFileExists) {
+                
+            } else {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            }
             
             cell.labelTitle.enabled = NO;
         }
