@@ -22,6 +22,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PKDownloadButton.h"
 
 @interface CCCellMainTransfer : UITableViewCell
 
@@ -31,6 +32,6 @@
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
 
-@property(nonatomic, weak) IBOutlet UIButton *cancelTaskButton;
+@property(nonatomic, weak) IBOutlet PKStopDownloadButton *transferButton;
 
 @end

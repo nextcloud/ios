@@ -35,8 +35,9 @@
 #import "NCAutoUpload.h"
 #import "NCBridgeSwift.h"
 #import "NCNetworkingEndToEnd.h"
+#import "PKDownloadButton.h"
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb, PKDownloadButtonDelegate>
 {
     AppDelegate *appDelegate;
     
@@ -2169,6 +2170,11 @@
         
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@", [CCUtility transformedSize:totalBytesExpected], [CCUtility transformedSize:totalBytes]];        
     }
+}
+
+- (void)downloadButtonTapped:(PKDownloadButton *)downloadButton currentState:(PKDownloadButtonState)state
+{
+    NSLog(@"s");
 }
 
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
@@ -4429,7 +4435,7 @@
         if (metadata.directory) {
             
             // lable Info
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility dateDiff:metadata.date], [CCUtility transformedSize:metadata.size]];
+            cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
             
             // File Image & Image Title Segue
             if (metadata.e2eEncrypted) {
@@ -4465,7 +4471,7 @@
             BOOL iconFileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
             // Lable Info
-            cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
+            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility dateDiff:metadata.date], [CCUtility transformedSize:metadata.size]];
             
             // File Image
             if (iconFileExists) {
@@ -4611,7 +4617,8 @@
             cell.labelInfoFile.enabled = NO;
             
             cell.userInteractionEnabled = NO;
-            cell.cancelTaskButton.enabled = NO;
+            
+//            cell.cancelTaskButton.enabled = NO;
             
         } else {
             
@@ -4619,7 +4626,7 @@
             cell.labelInfoFile.enabled = YES;
             
             cell.userInteractionEnabled = YES;
-            cell.cancelTaskButton.enabled = YES;
+//            cell.cancelTaskButton.enabled = YES;
         }
         
         // downloadFile
@@ -4627,8 +4634,8 @@
             
             cell.status.image = [UIImage imageNamed:@"statusdownload"];
             
-            [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"taskCancelDownload"] forState:UIControlStateNormal];
-            cell.cancelTaskButton.hidden = NO;
+//            [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"taskCancelDownload"] forState:UIControlStateNormal];
+//            cell.cancelTaskButton.hidden = NO;
         }
         
         // downloadFile Error
@@ -4648,8 +4655,8 @@
             
             cell.status.image = [UIImage imageNamed:@"statusupload"];
             
-            [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"taskCancelUpload"] forState:UIControlStateNormal];
-            cell.cancelTaskButton.hidden = NO;
+//            [cell.cancelTaskButton setBackgroundImage:[UIImage imageNamed:@"taskCancelUpload"] forState:UIControlStateNormal];
+//            cell.cancelTaskButton.hidden = NO;
             
             if (!iconFileExists) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
@@ -4676,11 +4683,11 @@
         }
         
         // gesture Transfer
-        [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
+//        [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
         
         UILongPressGestureRecognizer *cancelLongGesture = [UILongPressGestureRecognizer new];
         [cancelLongGesture addTarget:self action:@selector(cancelAllTask:)];
-        [cell.cancelTaskButton addGestureRecognizer:cancelLongGesture];
+//        [cell.cancelTaskButton addGestureRecognizer:cancelLongGesture];
         
         return cell;
     }
