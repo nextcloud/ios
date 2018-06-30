@@ -37,7 +37,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb, PKDownloadButtonDelegate>
+@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsDownloadThumbnailDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
     AppDelegate *appDelegate;
     
@@ -2170,11 +2170,6 @@
         
         cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@", [CCUtility transformedSize:totalBytesExpected], [CCUtility transformedSize:totalBytes]];        
     }
-}
-
-- (void)downloadButtonTapped:(PKDownloadButton *)downloadButton currentState:(PKDownloadButtonState)state
-{
-    NSLog(@"s");
 }
 
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
@@ -4683,11 +4678,11 @@
         }
         
         // gesture Transfer
-//        [cell.cancelTaskButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [cell.transferButton.stopButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
         
-        UILongPressGestureRecognizer *cancelLongGesture = [UILongPressGestureRecognizer new];
-        [cancelLongGesture addTarget:self action:@selector(cancelAllTask:)];
-//        [cell.cancelTaskButton addGestureRecognizer:cancelLongGesture];
+        UILongPressGestureRecognizer *stopLongGesture = [UILongPressGestureRecognizer new];
+        [stopLongGesture addTarget:self action:@selector(cancelAllTask:)];
+        [cell.transferButton.stopButton addGestureRecognizer:stopLongGesture];
         
         return cell;
     }
