@@ -4421,9 +4421,9 @@
         
         NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
         NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
-        BOOL isShare = ([metadata.permissions length] > 0) && ([metadata.permissions rangeOfString:k_permission_shared].location != NSNotFound) && ([_fatherPermission rangeOfString:k_permission_shared].location == NSNotFound);
-        BOOL isMounted = ([metadata.permissions length] > 0) && ([metadata.permissions rangeOfString:k_permission_mounted].location != NSNotFound) && ([_fatherPermission rangeOfString:k_permission_mounted].location == NSNotFound);
-        
+        BOOL isShare =  [metadata.permissions containsString:k_permission_shared] && ![_fatherPermission containsString:k_permission_shared];
+        BOOL isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_fatherPermission containsString:k_permission_mounted];
+
         if (metadata.directory) {
             
             // lable Info
