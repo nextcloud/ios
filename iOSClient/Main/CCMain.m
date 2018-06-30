@@ -2149,6 +2149,8 @@
     NSDictionary *dict = notification.userInfo;
     NSString *fileID = [dict valueForKey:@"fileID"];
     NSString *serverUrl = [dict valueForKey:@"serverUrl"];
+    long status = [[dict valueForKey:@"status"] longValue];
+    NSString *statusString = @"";
     float progress = [[dict valueForKey:@"progress"] floatValue];
     long long totalBytes = [[dict valueForKey:@"totalBytes"] longLongValue];
     long long totalBytesExpected = [[dict valueForKey:@"totalBytesExpected"] longLongValue];
@@ -2168,7 +2170,13 @@
         
         CCCellMainTransfer *cell = (CCCellMainTransfer *)[self.tableView cellForRowAtIndexPath:indexPath];
         
-        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@", [CCUtility transformedSize:totalBytesExpected], [CCUtility transformedSize:totalBytes]];
+        if (status == k_metadataStatusInDownload) {
+            statusString = @"↓";
+        } else if (status == k_metadataStatusInUpload) {
+            statusString = @"↑";
+        }
+        
+        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
         
         if ([cell isKindOfClass:[CCCellMainTransfer class]]) {
             cell.transferButton.progress = progress;
