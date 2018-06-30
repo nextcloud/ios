@@ -35,25 +35,4 @@
     return self;
 }
 
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:animated];
-
-    // Configure the view for the selected state
-    self.contentView.preservesSuperviewLayoutMargins = NO;
-}
-
-///-----------------------------------
-/// @name scrollViewWillBeginDecelerating
-///-----------------------------------
-
-/**
- * Method to initialize the position where we make the swipe in order to detect the direction
- *
- * @param UIScrollView -> scrollView
- */
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView {
-    _lastContentOffset = scrollView.contentOffset.x;
-}
-
 @end

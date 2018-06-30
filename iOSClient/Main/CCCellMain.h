@@ -36,8 +36,6 @@
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
 
-@property(nonatomic, weak) IBOutlet UIButton *cancelTaskButton;
-
 @property(nonatomic, strong) UIImage *imageTitleSegue;
 
 //Last position of the scroll of the swipe
