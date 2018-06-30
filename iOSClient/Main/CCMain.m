@@ -2168,7 +2168,9 @@
         
         CCCellMainTransfer *cell = (CCCellMainTransfer *)[self.tableView cellForRowAtIndexPath:indexPath];
         
-        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@", [CCUtility transformedSize:totalBytesExpected], [CCUtility transformedSize:totalBytes]];        
+        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@", [CCUtility transformedSize:totalBytesExpected], [CCUtility transformedSize:totalBytes]];
+        
+        cell.transferButton.progress = progress;
     }
 }
 
