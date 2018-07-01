@@ -139,7 +139,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favoriteNoFiles"] multiplier:2 color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favoriteNoFiles"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView

@@ -3745,7 +3745,7 @@
         ];
         
         [actionSheet addButtonWithTitle: titleFavorite
-                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite]
                         backgroundColor: [NCBrandColor sharedInstance].backgroundView
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDefault
@@ -3928,7 +3928,7 @@
         
         
         [actionSheet addButtonWithTitle: titleFavorite
-                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite]
                         backgroundColor: [NCBrandColor sharedInstance].backgroundView
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDefault
