@@ -566,6 +566,10 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
     
+    if (totalBytesExpectedToWrite < 1) {
+        totalBytesExpectedToWrite = totalBytesWritten;
+    }
+        
     float progress = (float) totalBytesWritten / (float)totalBytesExpectedToWrite;
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataInSessionFromFileName:fileName directoryID:directoryID];
@@ -986,6 +990,10 @@
     if (!serverUrl) return;
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
     if (!directoryID) return;
+    
+    if (totalBytesExpectedToSend < 1) {
+        totalBytesExpectedToSend = totalBytesSent;
+    }
     
     float progress = (float) totalBytesSent / (float)totalBytesExpectedToSend;
 
