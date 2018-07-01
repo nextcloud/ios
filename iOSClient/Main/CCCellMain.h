@@ -38,10 +38,4 @@
 
 @property(nonatomic, strong) UIImage *imageTitleSegue;
 
-//Last position of the scroll of the swipe
-@property (nonatomic, assign) CGFloat lastContentOffset;
-
-//Index path of the cell swipe gesture ocured
-@property (nonatomic, strong) NSIndexPath *indexPath;
-
 @end

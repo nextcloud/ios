@@ -4429,7 +4429,6 @@
         cell.tintColor = [NCBrandColor sharedInstance].brandElement;
                 
         cell.delegate = self;
-        cell.indexPath = indexPath;
         
         cell.labelTitle.textColor = [UIColor blackColor];
         cell.labelTitle.text = metadata.fileNameView;
@@ -4684,6 +4683,10 @@
                 cell.labelInfoFile.text = metadata.sessionError;
             }
         }
+        
+        // Progress
+        float progress = [[appDelegate.listProgressMetadata objectForKey:metadata.fileID] floatValue];
+        cell.transferButton.progress = progress;
         
         // gesture Transfer
         [cell.transferButton.stopButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];

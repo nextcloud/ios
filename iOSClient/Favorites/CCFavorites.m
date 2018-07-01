@@ -551,7 +551,6 @@
     
     // variable base
     cell.delegate = self;
-    cell.indexPath = indexPath;
     
     // separator
     cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
