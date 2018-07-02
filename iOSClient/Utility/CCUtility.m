@@ -741,7 +741,8 @@
 
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl
 {
-    if (activeUrl == nil) return nil;
+    if (activeUrl == nil)
+        return @"";
     
     return [activeUrl stringByAppendingString:webDAV];
 }
