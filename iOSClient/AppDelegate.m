@@ -1493,7 +1493,8 @@
         }
     }
     
-    // Verify Downloading TODO: move in new acrivity/transfers view
+    // Verify Downloading
+    // TODO: move in new acrivity/transfers view
     if (counterNewDownloadUpload == 0) {
         
         NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:@"fileName" ascending:true];
