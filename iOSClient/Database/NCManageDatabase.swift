@@ -1962,11 +1962,16 @@ class NCManageDatabase: NSObject {
         let resultsInTransfer = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status != %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal))
         
         var metadatasForAdd = [tableMetadata]()
-        for metadata in metadatas {
-            let found = resultsInTransfer.filter { $0.fileID == metadata.fileID }
-            if found.count == 0 {
-                metadatasForAdd.append(metadata)
+        
+        if resultsInTransfer.count > 0 {
+            for metadata in metadatas {
+                let found = resultsInTransfer.filter { $0.fileID == metadata.fileID }
+                if found.count == 0 {
+                    metadatasForAdd.append(metadata)
+                }
             }
+        } else {
+            metadatasForAdd = metadatas
         }
         
         // Records for delete
