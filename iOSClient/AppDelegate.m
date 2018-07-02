@@ -1494,32 +1494,35 @@
     }
     
     // Verify Downloading
-    NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:@"fileName" ascending:true];
-    for (tableMetadata *metadata in recordsInDownloading) {
+    if (counterNewDownloadUpload == 0) {
         
-        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-        
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+        NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:@"fileName" ascending:true];
+        for (tableMetadata *metadata in recordsInDownloading) {
             
-            NSURLSessionTask *findTask;
+            NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
+            
+            [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+                
+                NSURLSessionTask *findTask;
 
-            for (NSURLSessionTask *task in downloadTasks) {
-                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
-                    findTask = task;
+                for (NSURLSessionTask *task in downloadTasks) {
+                    if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
+                        findTask = task;
+                    }
                 }
-            }
-            
-            if (!findTask) {
                 
-                metadata.session = @"";
-                metadata.sessionError = @"";
-                metadata.sessionSelector = @"";
-                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-                metadata.status = k_metadataStatusNormal;
-                
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-            }
-        }];
+                if (!findTask) {
+                    
+                    metadata.session = @"";
+                    metadata.sessionError = @"";
+                    metadata.sessionSelector = @"";
+                    metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+                    metadata.status = k_metadataStatusNormal;
+                    
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                }
+            }];
+        }
     }
     
     
