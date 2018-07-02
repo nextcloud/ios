@@ -1960,18 +1960,10 @@ class NCManageDatabase: NSObject {
         
         // Create array metadatasForAdd without records in transfers
         let resultsInTransfer = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status != %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal))
+        var metadatasForAdd = metadatas
         
-        var metadatasForAdd = [tableMetadata]()
-        
-        if resultsInTransfer.count > 0 {
-            for metadata in metadatas {
-                let found = resultsInTransfer.filter { $0.fileID == metadata.fileID }
-                if found.count == 0 {
-                    metadatasForAdd.append(metadata)
-                }
-            }
-        } else {
-            metadatasForAdd = metadatas
+        for metadata in resultsInTransfer {
+            metadatasForAdd = metadatasForAdd.filter { $0.fileID != metadata.fileID }
         }
         
         // Records for delete
@@ -2040,32 +2032,6 @@ class NCManageDatabase: NSObject {
         return false
     }
     */
-    
-    @objc func clearMetadatasDownload() {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return
-        }
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.write {
-                
-                let results = realm.objects(tableMetadata.self).filter("account == %@ AND (status == %d OR status == %@)", tableAccount.account, k_metadataStatusWaitDownload, k_metadataStatusDownloadError)
-                
-                for result in results {
-                    result.session = ""
-                    result.status = Int(k_metadataStatusNormal)
-                    result.sessionError = ""
-                    result.sessionSelector = ""
-                    result.sessionTaskIdentifier = Int(k_taskIdentifierDone)
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-        }
-    }
     
     @objc func clearMetadatasUpload() {
         
