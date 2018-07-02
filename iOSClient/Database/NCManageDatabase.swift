@@ -1957,10 +1957,10 @@ class NCManageDatabase: NSObject {
         
         let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND e2eEncrypted == 0 AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
         let directoriesID = Array(directories.map { $0.directoryID })
-        let resultsDelete = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status == %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal))
-        let resultsInTransfer = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status != %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal))
         
         // Create array metadatasForAdd without records in transfers
+        let resultsInTransfer = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status != %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal))
+        
         var metadatasForAdd = [tableMetadata]()
         for metadata in metadatas {
             let found = resultsInTransfer.filter { $0.fileID == metadata.fileID }
@@ -1968,6 +1968,9 @@ class NCManageDatabase: NSObject {
                 metadatasForAdd.append(metadata)
             }
         }
+        
+        // Records for delete
+        let resultsDelete = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status == %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal))
         
         do {
             try realm.write {
