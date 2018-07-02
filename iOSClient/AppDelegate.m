@@ -1493,7 +1493,7 @@
         }
     }
     
-    // Verify Downloading 
+    // Verify Downloading
     NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:@"fileName" ascending:true];
     for (tableMetadata *metadata in recordsInDownloading) {
         
@@ -1503,10 +1503,11 @@
             
             NSURLSessionTask *findTask;
 
-            for (NSURLSessionTask *task in downloadTasks)
+            for (NSURLSessionTask *task in downloadTasks) {
                 if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
                     findTask = task;
                 }
+            }
             
             if (!findTask) {
                 
