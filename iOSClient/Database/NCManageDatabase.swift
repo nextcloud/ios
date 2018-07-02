@@ -1960,7 +1960,9 @@ class NCManageDatabase: NSObject {
         for metadata in metadatasDBImageVideo! {
             let recordFound = metadatas.filter { $0.fileID == metadata.fileID }
             if (recordFound.count == 0) {
-                metadatasForDelete.append(metadata)
+                if let result = realm.objects(tableMetadata.self).filter("fileID == %@", metadata.fileID).first {
+                    metadatasForDelete.append(result)
+                }
             }
         }
         
