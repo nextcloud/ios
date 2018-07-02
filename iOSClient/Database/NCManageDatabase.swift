@@ -1907,22 +1907,6 @@ class NCManageDatabase: NSObject {
         return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
     }
     
-    @objc func getTableMetadatasContentTypeImageVideo(_ startDirectory: String) -> [tableMetadata]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND e2eEncrypted == 0 AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
-        let directoriesID = Array(directories.map { $0.directoryID })
-        let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
-            
-        return Array(metadatas.map { tableMetadata.init(value:$0) })
-    }
-    
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank() -> [String:NSNumber] {
         
         var listIdentifierRank = [String:NSNumber]()
@@ -1946,6 +1930,52 @@ class NCManageDatabase: NSObject {
         return listIdentifierRank
     }
     
+    @objc func getTableMetadatasContentTypeImageVideo(_ startDirectory: String) -> [tableMetadata]? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND e2eEncrypted == 0 AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
+        let directoriesID = Array(directories.map { $0.directoryID })
+        let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status == %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal)).sorted(byKeyPath: "date", ascending: false)
+        
+        return Array(metadatas.map { tableMetadata.init(value:$0) })
+    }
+    
+    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String) -> Bool {
+
+        guard let tableAccount = self.getAccountActive() else {
+            return false
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND e2eEncrypted == 0 AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
+        let directoriesID = Array(directories.map { $0.directoryID })
+        let resultsDelete = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status == %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal))
+    
+        do {
+            try realm.write {
+                // DELETE
+                realm.delete(resultsDelete)
+                // INSERT
+                realm.add(metadatas, update: false)
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            realm.cancelWrite()
+            return false
+        }
+        
+        return true
+    }
+    
+    /*
     @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String, activeUrl: String) -> Bool {
         
         let realm = try! Realm()
@@ -1991,6 +2021,7 @@ class NCManageDatabase: NSObject {
         }
         return false
     }
+    */
     
     @objc func clearMetadatasDownload() {
         

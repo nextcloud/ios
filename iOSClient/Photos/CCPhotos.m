@@ -635,7 +635,7 @@
             
             NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
 
-            (void)[[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas startDirectory:startDirectory activeUrl:appDelegate.activeUrl];
+            (void)[[NCManageDatabase sharedInstance] updateTableMetadatasContentTypeImageVideo:metadatas startDirectory:startDirectory];
             
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self reloadDatasourceFromSearch:YES];
