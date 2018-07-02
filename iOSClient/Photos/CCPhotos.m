@@ -171,7 +171,11 @@
  
     // curront folder search
     NSString *directory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
-    NSString *folder = [directory stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""];
+    NSString *home = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
+    NSString *folder = @"";
+    if (home.length > 0) {
+        folder = [directory stringByReplacingOccurrencesOfString:home withString:@""];
+    }
     
     // Title
     self.navigationItem.titleView = nil;
@@ -452,37 +456,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Delete =====
 #pragma--------------------------------------------------------------------------------------------
-
-/* TEST
-- (void)deleteFileOrFolder
-{
-    tableMetadata *metadata = [_selectedMetadatas objectAtIndex:0];
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    
-    [_hud visibleHudTitle:@"c" mode:MBProgressHUDModeIndeterminate color:nil];
-    
-    [_oc deleteFileOrFolder:metadata.fileName serverUrl:serverUrl success:^{
-        
-        [_selectedMetadatas removeObjectAtIndex:0];
-        
-        if ([_selectedMetadatas count] > 0) {
-            
-            [self performSelectorOnMainThread:@selector(deleteFileOrFolder) withObject:nil waitUntilDone:0];
-            
-        } else {
-            [_hud hideHud];
-            [self editingModeNO];
-            [self reloadDatasourceFromSearch:NO];
-        }
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-        [_hud hideHud];
-        [self editingModeNO];
-        [self reloadDatasourceFromSearch:NO];
-    }];
-}
-*/
 
 - (void)deleteFileOrFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
