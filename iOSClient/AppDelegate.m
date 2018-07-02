@@ -1397,7 +1397,6 @@
     
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
-    
     NSInteger counterDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:@"fileName" ascending:true] count];
     NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
   
@@ -1493,6 +1492,16 @@
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         }
     }
+    
+    // Verify Downloading
+    NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", self.activeAccount, k_metadataStatusDownloading] sorted:@"fileName" ascending:true];
+    
+    
+    
+    
+//    NSArray *recordsInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true];
+    
+    
     
     // Start Timer
     _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
