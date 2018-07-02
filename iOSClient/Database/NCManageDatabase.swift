@@ -1964,7 +1964,7 @@ class NCManageDatabase: NSObject {
                 // DELETE
                 realm.delete(resultsDelete)
                 // INSERT
-                realm.add(metadatas, update: false)
+                realm.add(metadatas, update: true)
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
