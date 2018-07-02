@@ -1596,6 +1596,30 @@
         [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
     }
     
+    if (([actualVersion compare:@"2.22.0" options:NSNumericSearch] == NSOrderedAscending)) {
+     
+        NSArray *records = [[NCManageDatabase sharedInstance] getTableLocalFilesWithPredicate:[NSPredicate predicateWithFormat:@"size > 0"] sorted:@"account" ascending:NO];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            NSString *account = @"";
+            NSString *directoryUser = @"";
+            NSString *fileName;
+            
+            for (tableLocalFile *record in records) {
+                if (![account isEqualToString:record.account]) {
+                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ ", record.account]];
+                    if (tableAccount)
+                        directoryUser = [CCUtility getDirectoryActiveUser:tableAccount.account activeUrl:tableAccount.url];
+                }
+                fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.fileName];
+                if (![directoryUser isEqualToString:@""] && [[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
+                    [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageFileID:record.fileID fileName:record.fileName]];
+                }
+            }
+        });
+    }
+    
     return YES;
 }
 

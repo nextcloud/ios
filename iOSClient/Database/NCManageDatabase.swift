@@ -1499,6 +1499,24 @@ class NCManageDatabase: NSObject {
 
         return tableLocalFile.init(value: result)
     }
+    
+    @objc func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile]? {
+        
+        guard self.getAccountActive() != nil else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+        
+        if (results.count > 0) {
+            return Array(results.map { tableLocalFile.init(value:$0) })
+        } else {
+            return nil
+        }
+    }
 
     //MARK: -
     //MARK: Table Metadata
