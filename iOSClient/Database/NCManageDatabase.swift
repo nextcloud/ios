@@ -1941,52 +1941,54 @@ class NCManageDatabase: NSObject {
         
         let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND e2eEncrypted == 0 AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
         let directoriesID = Array(directories.map { $0.directoryID })
-        let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status == %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal)).sorted(byKeyPath: "date", ascending: false)
+        let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
         
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
     
-    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String) -> Bool {
+    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String) {
 
-        guard let tableAccount = self.getAccountActive() else {
-            return false
-        }
-        
+        var metadatasForAdd = [tableMetadata]()
+        var metadatasForDelete = [tableMetadata]()
+
         let realm = try! Realm()
         realm.refresh()
         
-        let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND e2eEncrypted == 0 AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
-        let directoriesID = Array(directories.map { $0.directoryID })
+        let metadatasDBImageVideo = self.getTableMetadatasContentTypeImageVideo(startDirectory)
         
-        // Create array metadatasForAdd without records in transfers
-        let resultsInTransfer = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status != %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal))
-        var metadatasForAdd = metadatas
-        
-        for metadata in resultsInTransfer {
-            metadatasForAdd = metadatasForAdd.filter { $0.fileID != metadata.fileID }
-        }
-        
-        // Records for delete
-        let resultsDelete = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@ AND status == %d", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID, k_metadataStatusNormal))
-        
-        do {
-            try realm.write {
-                // DELETE
-                realm.delete(resultsDelete)
-                // INSERT
-                realm.add(metadatasForAdd, update: true)
+        // Delete
+        for metadata in metadatasDBImageVideo! {
+            let recordFound = metadatas.filter { $0.fileID == metadata.fileID }
+            if (recordFound.count == 0) {
+                metadatasForDelete.append(metadata)
             }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            realm.cancelWrite()
-            return false
         }
         
-        return true
+        // New
+        for metadata in metadatas {
+            let recordFound = metadatasDBImageVideo!.filter { $0.fileID == metadata.fileID }
+            if (recordFound.count == 0) {
+                metadatasForAdd.append(metadata)
+            }
+        }
+        
+        if (metadatasForDelete.count > 0 || metadatasForAdd.count > 0) {
+            do {
+                try realm.write {
+                    // DELETE
+                    realm.delete(metadatasForDelete)
+                    // INSERT
+                    realm.add(metadatasForAdd, update: true)
+                }
+            } catch let error {
+                print("[LOG] Could not write to database: ", error)
+                realm.cancelWrite()
+            }
+        }        
     }
     
     /*
-    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String, activeUrl: String) -> Bool {
+    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String) -> Bool {
         
         let realm = try! Realm()
         realm.refresh()
