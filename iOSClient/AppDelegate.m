@@ -1513,11 +1513,9 @@
                 
                 if (!findTask) {
                     
-                    metadata.session = @"";
-                    metadata.sessionError = @"";
-                    metadata.sessionSelector = @"";
+                    metadata.sessionError = @"Internal error, task not found";
                     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-                    metadata.status = k_metadataStatusNormal;
+                    metadata.status = k_metadataStatusDownloadError;
                     
                     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
                 }
@@ -1525,12 +1523,7 @@
         }
     }
     
-    
-    
-    
 //    NSArray *recordsInUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true];
-    
-    
     
     // Start Timer
     _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
