@@ -406,24 +406,29 @@
             prevServerUrl = serverUrl;
         }
         
-        tableMetadata *metadataForUpload = [tableMetadata new];
+        // Check il file already exists
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@", directoryID, fileName]];
+        if (!metadata) {
         
-        metadataForUpload.account = appDelegate.activeAccount;
-        metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
-        metadataForUpload.date = [NSDate new];
-        metadataForUpload.directoryID = directoryID;
-        metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
-        metadataForUpload.fileName = fileName;
-        metadataForUpload.fileNameView = fileName;
-        metadataForUpload.session = session;
-        metadataForUpload.sessionSelector = selector;
-        metadataForUpload.status = k_metadataStatusWaitUpload;
+            tableMetadata *metadataForUpload = [tableMetadata new];
+            
+            metadataForUpload.account = appDelegate.activeAccount;
+            metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
+            metadataForUpload.date = [NSDate new];
+            metadataForUpload.directoryID = directoryID;
+            metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
+            metadataForUpload.fileName = fileName;
+            metadataForUpload.fileNameView = fileName;
+            metadataForUpload.session = session;
+            metadataForUpload.sessionSelector = selector;
+            metadataForUpload.status = k_metadataStatusWaitUpload;
 
-        [metadataFull addObject:metadataForUpload];
-        
-        // Update database Auto Upload
-        if ([selector isEqualToString:selectorUploadAutoUpload])
-            [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
+            [metadataFull addObject:metadataForUpload];
+            
+            // Update database Auto Upload
+            if ([selector isEqualToString:selectorUploadAutoUpload])
+                [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
+        }
     }
     
     // Insert all assets (Full) in tableQueueUpload

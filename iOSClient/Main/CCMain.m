@@ -723,11 +723,41 @@
                     metadataForUpload.sessionSelector = selectorUploadFile;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
                     
-                    // Add Medtadata for upload
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                    
-                    [self reloadDatasource];
+                    // Check il file already exists
+                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@", directoryID, fileName]];
+                    if (metadata) {
+                        
+                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileName message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+                        
+                        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                            // NO OVERWITE
+                        }];
+                        UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                            
+                            // Remove record metadata
+                            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                            
+                            // Add Medtadata for upload
+                            (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                        }];
+                        
+                        [alertController addAction:cancelAction];
+                        [alertController addAction:overwriteAction];
+                        
+                        UIWindow *alertWindow = [[UIWindow alloc]initWithFrame:[UIScreen mainScreen].bounds];
+                        alertWindow.rootViewController = [[UIViewController alloc]init];
+                        alertWindow.windowLevel = UIWindowLevelAlert + 1;
+                        [alertWindow makeKeyAndVisible];
+                        [alertWindow.rootViewController presentViewController:alertController animated:YES completion:nil];
+                        
+                    } else {
+                        
+                        // Add Medtadata for upload
+                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+
+                    }
                     
                 } else {
                     
@@ -1373,9 +1403,11 @@
             }];
             UIAlertAction *overwriteAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_overwrite_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
                 
+                // Remove record metadata
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+
                 // Add Medtadata for upload
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-                // Start upload now
                 [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
             }];
             
@@ -1392,12 +1424,9 @@
             
             // Add Medtadata for upload
             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
         }
     }
-    
-    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-
-    [self reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------

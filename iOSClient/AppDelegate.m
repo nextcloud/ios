@@ -1508,9 +1508,9 @@
 }
 
 // Method called from iOS system to send a file from other app.
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
-    NSLog(@"[LOG] URL from %@ application", sourceApplication);
+    NSError *error;
     NSLog(@"[LOG] the path is: %@", url.path);
         
     NSArray *splitedUrl = [url.path componentsSeparatedByString:@"/"];
@@ -1518,20 +1518,21 @@
     
     if (self.activeAccount) {
         
-        [[NSFileManager defaultManager]moveItemAtPath:[[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Inbox"] stringByAppendingPathComponent:self.fileNameUpload] toPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:nil];
+        [[NSFileManager defaultManager]removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:nil];
+        [[NSFileManager defaultManager]moveItemAtPath:url.path toPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:&error];
         
-        UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-        UINavigationController *splitNavigationController = [splitViewController.viewControllers firstObject];
-        
-        UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [splitNavigationController presentViewController:navigationController animated:YES completion:nil];
-        });
+        if (error == nil) {
+            
+            UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+            UINavigationController *splitNavigationController = [splitViewController.viewControllers firstObject];
+            
+            UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [splitNavigationController presentViewController:navigationController animated:YES completion:nil];
+            });
+        }
     }
-    
-    // remove from InBox
-    [[NSFileManager defaultManager] removeItemAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Inbox"] error:nil];
     
     return YES;
 }
