@@ -1598,23 +1598,28 @@
     
     if (([actualVersion compare:@"2.22.0" options:NSNumericSearch] == NSOrderedAscending)) {
      
-        NSArray *records = [[NCManageDatabase sharedInstance] getTableLocalFilesWithPredicate:[NSPredicate predicateWithFormat:@"size > 0"] sorted:@"account" ascending:NO];
+        NSArray *records = [[NCManageDatabase sharedInstance] getTableLocalFilesWithPredicate:[NSPredicate predicateWithFormat:@"#size > 0"] sorted:@"account" ascending:NO];
         
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             NSString *account = @"";
             NSString *directoryUser = @"";
-            NSString *fileName;
+            NSString *fileName, *fileNameIco;
             
             for (tableLocalFile *record in records) {
                 if (![account isEqualToString:record.account]) {
-                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ ", record.account]];
-                    if (tableAccount)
-                        directoryUser = [CCUtility getDirectoryActiveUser:tableAccount.account activeUrl:tableAccount.url];
+                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", record.account]];
+                    if (tableAccount) {
+                        directoryUser = [CCUtility getDirectoryActiveUser:tableAccount.user activeUrl:tableAccount.url];
+                        account = record.account;
+                    }
                 }
-                fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.fileName];
+                fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.fileID];
+                fileNameIco = [NSString stringWithFormat:@"%@/%@.ico", directoryUser, record.fileID];
                 if (![directoryUser isEqualToString:@""] && [[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
                     [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageFileID:record.fileID fileName:record.fileName]];
+                    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameIco])
+                        [CCUtility moveFileAtPath:fileNameIco toPath:[CCUtility getDirectoryProviderStorageIconFileID:record.fileID fileNameView:record.fileName]];
                 }
             }
         });
