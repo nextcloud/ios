@@ -394,7 +394,7 @@
         [[NCService sharedInstance] startRequestServicesServer];
         
         // Clear datasorce
-        [appDelegate.activePhotos reloadDatasourceFromSearch:NO];
+        [appDelegate.activePhotos reloadDatasource];
         [appDelegate.activeFavorites reloadDatasource];
         
         // Read this folder

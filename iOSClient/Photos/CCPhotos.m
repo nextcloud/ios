@@ -120,7 +120,7 @@
     [appDelegate plusButtonVisibile:true];
 
     if(!_isSearchMode && !_isEditMode)
-        [self reloadDatasourceFromSearch:NO];
+        [self reloadDatasource];
 }
 
 - (void)viewSafeAreaInsetsDidChange
@@ -187,8 +187,6 @@
     
     if (_isSearchMode) {
         [CCGraphics addImageToTitle:self.navigationItem.title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
-        [self.collectionView reloadData];
-        return;
     }
     
     // Button Item
@@ -204,8 +202,6 @@
         self.navigationItem.rightBarButtonItems = nil;
     }
     self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, nil];
-    
-    [self.collectionView reloadData];
 }
 
 - (void)setUINavigationBarSelected
@@ -225,8 +221,6 @@
     
     // Title
     self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[_selectedMetadatas count], (unsigned long)[_sectionDataSource.allRecordsDataSource count]];
-    
-    [self.collectionView reloadData];
 }
 
 - (void)cellSelect:(BOOL)select indexPath:(NSIndexPath *)indexPath metadata:(tableMetadata *)metadata
@@ -274,20 +268,6 @@
         
         }
     }
-}
-
-- (void)searchInProgress:(BOOL)search
-{
-    if (search) {
-        _isSearchMode = YES;
-        [self.navigationItem.leftBarButtonItems[0] setEnabled:NO];
-        [self.navigationItem.rightBarButtonItems[0] setEnabled:NO];
-    } else {
-        _isSearchMode = NO;
-        [self.navigationItem.leftBarButtonItems[0] setEnabled:YES];
-        [self.navigationItem.rightBarButtonItems[0] setEnabled:YES];
-    }
-    [self setUINavigationBarDefault];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -475,13 +455,13 @@
                 
             } else {
                 
-                [self reloadDatasourceFromSearch:NO];
+                [self reloadDatasource];
                 [self editingModeNO];
             }
             
         } else {
             
-            [self reloadDatasourceFromSearch:NO];
+            [self reloadDatasource];
         }
     }
 }
@@ -598,7 +578,6 @@
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount]) {
-        [self searchInProgress:NO];
         return;
     }
     
@@ -608,8 +587,10 @@
             
             [[NCManageDatabase sharedInstance] createTablePhotos:metadatas];
             
+            _isSearchMode = NO;
+
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadDatasourceFromSearch:YES];
+                [self reloadDatasource];
             });
             
             // Update date
@@ -619,7 +600,8 @@
         });
     
     } else {
-        [self searchInProgress:NO];
+        _isSearchMode = NO;
+        [self reloadDatasource];
     }
 }
 
@@ -642,15 +624,15 @@
         if (![metadata.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]] || _sectionDataSource.allRecordsDataSource.count == 0) {
             
             [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
-            [self searchInProgress:YES];
             [self editingModeNO];
+            _isSearchMode = YES;
             
         } else {
-            [self reloadDatasourceFromSearch:YES];
+            [self reloadDatasource];
         }
         
     } failure:^(NSString *message, NSInteger errorCode) {
-        [self reloadDatasourceFromSearch:YES];
+        [self reloadDatasource];
     }];
 }
 
@@ -658,29 +640,27 @@
 #pragma mark ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)reloadDatasourceFromSearch:(BOOL)fromSearch
+- (void)reloadDatasource
 {
     @synchronized(self) {
         // test
         if (appDelegate.activeAccount.length == 0) {
-            [self searchInProgress:NO];
             return;
         }
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
             NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotos];
-            CCSectionDataSourceMetadata *tempSectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
+            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
         
             dispatch_async(dispatch_get_main_queue(), ^{
-                // OPTIMIZED
-                if (tempSectionDataSource.totalSize != _sectionDataSource.totalSize || tempSectionDataSource.files != _sectionDataSource.files) {
-                    _sectionDataSource = [tempSectionDataSource copy];
-                    [self.collectionView reloadData];
-                }
-                if (fromSearch) {
-                    [self searchInProgress:NO];
-                }
+               
+                if (_isEditMode)
+                    [self setUINavigationBarSelected];
+                else
+                    [self setUINavigationBarDefault];
+                
+                [self.collectionView reloadData];
             });
         });
     }
@@ -691,6 +671,8 @@
     [self.collectionView setAllowsMultipleSelection:true];
     _isEditMode = true;
     [self setUINavigationBarSelected];
+
+    [self.collectionView reloadData];
 }
 
 - (void)editingModeNO
@@ -699,6 +681,8 @@
     _isEditMode = false;
     [_selectedMetadatas removeAllObjects];
     [self setUINavigationBarDefault];
+    
+    [self.collectionView reloadData];
 }
 
 #pragma --------------------------------------------------------------------------------------------
