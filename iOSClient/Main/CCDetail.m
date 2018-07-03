@@ -629,12 +629,14 @@
         // verifico se esiste l'icona e se la posso creare
         if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO)
             [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
-    } else {
         
+        [self.photoBrowser reloadData];
+
+    } else {
         [appDelegate messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        
+        [self backNavigationController];
     }
-    
-    [self.photoBrowser reloadData];
 }
 
 - (void)downloadPhotoBrowser:(tableMetadata *)metadata
