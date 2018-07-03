@@ -287,9 +287,6 @@
 		F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */; };
 		F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D420E2392D00AFB62D /* FileProviderItem.swift */; };
 		F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */; };
-		F771E3E120E2392E00AFB62D /* DocumentActionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3E020E2392E00AFB62D /* DocumentActionViewController.swift */; };
-		F771E3E420E2392E00AFB62D /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F771E3E220E2392E00AFB62D /* MainInterface.storyboard */; };
-		F771E3E820E2392E00AFB62D /* File Provider ExtensionUI.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F771E3DE20E2392E00AFB62D /* File Provider ExtensionUI.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F771E3EB20E2392E00AFB62D /* File Provider Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F771E3F320E239A600AFB62D /* FileProviderData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3F220E239A600AFB62D /* FileProviderData.swift */; };
 		F771E3F720E239B500AFB62D /* FileProviderExtension+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F771E3F420E239B400AFB62D /* FileProviderExtension+Actions.swift */; };
@@ -550,13 +547,6 @@
 			remoteGlobalIDString = F71459B41D12E3B700CAFEEC;
 			remoteInfo = "Share Ext Nextcloud";
 		};
-		F771E3E620E2392E00AFB62D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = F771E3DD20E2392E00AFB62D;
-			remoteInfo = "File Provider ExtensionUI";
-		};
 		F771E3E920E2392E00AFB62D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
@@ -587,7 +577,6 @@
 			files = (
 				F771E3EB20E2392E00AFB62D /* File Provider Extension.appex in Embed App Extensions */,
 				F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */,
-				F771E3E820E2392E00AFB62D /* File Provider ExtensionUI.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1076,10 +1065,6 @@
 		F771E3D220E2392D00AFB62D /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
 		F771E3D420E2392D00AFB62D /* FileProviderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
 		F771E3D620E2392D00AFB62D /* FileProviderEnumerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderEnumerator.swift; sourceTree = "<group>"; };
-		F771E3DE20E2392E00AFB62D /* File Provider ExtensionUI.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "File Provider ExtensionUI.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F771E3E020E2392E00AFB62D /* DocumentActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentActionViewController.swift; sourceTree = "<group>"; };
-		F771E3E320E2392E00AFB62D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
-		F771E3E520E2392E00AFB62D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F771E3F220E239A600AFB62D /* FileProviderData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderData.swift; sourceTree = "<group>"; };
 		F771E3F420E239B400AFB62D /* FileProviderExtension+Actions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FileProviderExtension+Actions.swift"; sourceTree = "<group>"; };
 		F771E3F520E239B400AFB62D /* FileProviderExtension+Thumbnail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "FileProviderExtension+Thumbnail.swift"; sourceTree = "<group>"; };
@@ -1646,13 +1631,6 @@
 				F771E3FF20E23C3A00AFB62D /* libssl.a in Frameworks */,
 				F771E40020E23C3D00AFB62D /* libcrypto.a in Frameworks */,
 				F771E3FE20E23BAB00AFB62D /* RealmSwift.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F771E3DB20E2392E00AFB62D /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2429,16 +2407,6 @@
 			path = "File Provider Extension";
 			sourceTree = "<group>";
 		};
-		F771E3DF20E2392E00AFB62D /* File Provider ExtensionUI */ = {
-			isa = PBXGroup;
-			children = (
-				F771E3E020E2392E00AFB62D /* DocumentActionViewController.swift */,
-				F771E3E220E2392E00AFB62D /* MainInterface.storyboard */,
-				F771E3E520E2392E00AFB62D /* Info.plist */,
-			);
-			path = "File Provider ExtensionUI";
-			sourceTree = "<group>";
-		};
 		F780711E1EDB135100EAFFF6 /* Photos */ = {
 			isa = PBXGroup;
 			children = (
@@ -3025,11 +2993,9 @@
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
 				F7C0F46D1C8880540059EC54 /* Share */,
 				F771E3D120E2392D00AFB62D /* File Provider Extension */,
-				F771E3DF20E2392E00AFB62D /* File Provider ExtensionUI */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
-				F771E3DE20E2392E00AFB62D /* File Provider ExtensionUI.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3188,23 +3154,6 @@
 			productReference = F771E3D020E2392D00AFB62D /* File Provider Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		F771E3DD20E2392E00AFB62D /* File Provider ExtensionUI */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F771E3EC20E2392E00AFB62D /* Build configuration list for PBXNativeTarget "File Provider ExtensionUI" */;
-			buildPhases = (
-				F771E3DA20E2392E00AFB62D /* Sources */,
-				F771E3DB20E2392E00AFB62D /* Frameworks */,
-				F771E3DC20E2392E00AFB62D /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "File Provider ExtensionUI";
-			productName = "File Provider ExtensionUI";
-			productReference = F771E3DE20E2392E00AFB62D /* File Provider ExtensionUI.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		F77B0DEB1D118A16002130FE /* Nextcloud */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F77B0F9A1D118A16002130FE /* Build configuration list for PBXNativeTarget "Nextcloud" */;
@@ -3222,7 +3171,6 @@
 			);
 			dependencies = (
 				F7145A321D12E65F00CAFEEC /* PBXTargetDependency */,
-				F771E3E720E2392E00AFB62D /* PBXTargetDependency */,
 				F771E3EA20E2392E00AFB62D /* PBXTargetDependency */,
 			);
 			name = Nextcloud;
@@ -3253,11 +3201,6 @@
 						};
 					};
 					F771E3CF20E2392D00AFB62D = {
-						CreatedOnToolsVersion = 9.4.1;
-						DevelopmentTeam = 6JLRKY9ZV7;
-						ProvisioningStyle = Automatic;
-					};
-					F771E3DD20E2392E00AFB62D = {
 						CreatedOnToolsVersion = 9.4.1;
 						DevelopmentTeam = 6JLRKY9ZV7;
 						ProvisioningStyle = Automatic;
@@ -3331,7 +3274,6 @@
 				F77B0DEB1D118A16002130FE /* Nextcloud */,
 				F71459B41D12E3B700CAFEEC /* Share */,
 				F771E3CF20E2392D00AFB62D /* File Provider Extension */,
-				F771E3DD20E2392E00AFB62D /* File Provider ExtensionUI */,
 			);
 		};
 /* End PBXProject section */
@@ -3356,14 +3298,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F771E3DC20E2392E00AFB62D /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F771E3E420E2392E00AFB62D /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3659,14 +3593,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F771E3DA20E2392E00AFB62D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F771E3E120E2392E00AFB62D /* DocumentActionViewController.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		F77B0DEF1D118A16002130FE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3957,11 +3883,6 @@
 			target = F71459B41D12E3B700CAFEEC /* Share */;
 			targetProxy = F7145A311D12E65F00CAFEEC /* PBXContainerItemProxy */;
 		};
-		F771E3E720E2392E00AFB62D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = F771E3DD20E2392E00AFB62D /* File Provider ExtensionUI */;
-			targetProxy = F771E3E620E2392E00AFB62D /* PBXContainerItemProxy */;
-		};
 		F771E3EA20E2392E00AFB62D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F771E3CF20E2392D00AFB62D /* File Provider Extension */;
@@ -4156,14 +4077,6 @@
 			);
 			name = CTAssetsPicker.strings;
 			path = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		F771E3E220E2392E00AFB62D /* MainInterface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				F771E3E320E2392E00AFB62D /* Base */,
-			);
-			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 		F7B381BF1C074E3E004693F8 /* Error.strings */ = {
@@ -4398,66 +4311,6 @@
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USE_HEADERMAP = YES;
-			};
-			name = Release;
-		};
-		F771E3ED20E2392E00AFB62D /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = "File Provider ExtensionUI/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-ExtensionUI";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		F771E3EE20E2392E00AFB62D /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = "File Provider ExtensionUI/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-ExtensionUI";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -4771,15 +4624,6 @@
 			buildConfigurations = (
 				F7145A261D12E3B700CAFEEC /* Debug */,
 				F7145A271D12E3B700CAFEEC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F771E3EC20E2392E00AFB62D /* Build configuration list for PBXNativeTarget "File Provider ExtensionUI" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F771E3ED20E2392E00AFB62D /* Debug */,
-				F771E3EE20E2392E00AFB62D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
