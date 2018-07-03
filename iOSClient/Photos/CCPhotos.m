@@ -33,6 +33,7 @@
 
     tableMetadata *_metadata;
     NSMutableArray *selectedMetadatas;
+    NSMutableArray *deletedMetadatas;
     CCSectionDataSourceMetadata *sectionDataSource;
     
     CCHud *hud;
@@ -83,6 +84,7 @@
     [super viewDidLoad];
     
     selectedMetadatas = [NSMutableArray new];
+    deletedMetadatas = [NSMutableArray new];
     saveEtagForStartDirectory = [NSMutableDictionary new];
     hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     
@@ -388,7 +390,7 @@
 #pragma mark ===== Delete =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolder
+- (void)deleteFile
 {
     NSInteger numDelete = selectedMetadatas.count;
     __block NSInteger cont = 0;
@@ -409,6 +411,8 @@
             if (++cont == numDelete) {
                 [self reloadDatasource];
             }
+            
+            [deletedMetadatas addObject:metadata.fileID];
             
         } failure:^(NSString *message, NSInteger errorCode) {
             
@@ -431,7 +435,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [self deleteFileOrFolder];
+                                                           [self deleteFile];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
@@ -594,6 +598,11 @@
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
+            // delete medata for safety
+            for (NSString *fileID in deletedMetadatas) {
+                [[NCManageDatabase sharedInstance] deletePhotosWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+            }
+            
             NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotos];
             sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
         
