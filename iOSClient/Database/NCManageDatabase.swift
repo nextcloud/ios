@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 26,
+            schemaVersion: 27,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -76,6 +76,7 @@ class NCManageDatabase: NSObject {
             // 24 : Version 2.21.2.5
             // 25 : Version 2.21.3.1
             // 26 : Version 2.22.0.4
+            // 27 : Version 2.22.0.7
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -1930,113 +1931,6 @@ class NCManageDatabase: NSObject {
         return listIdentifierRank
     }
     
-    @objc func getTableMetadatasContentTypeImageVideo(_ startDirectory: String) -> [tableMetadata]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let directories = realm.objects(tableDirectory.self).filter(NSPredicate(format: "account == %@ AND e2eEncrypted == 0 AND serverUrl BEGINSWITH %@", tableAccount.account, startDirectory)).sorted(byKeyPath: "serverUrl", ascending: true)
-        let directoriesID = Array(directories.map { $0.directoryID })
-        let metadatas = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND (typeFile == %@ OR typeFile == %@) AND directoryID IN %@", tableAccount.account, k_metadataTypeFile_image, k_metadataTypeFile_video, directoriesID)).sorted(byKeyPath: "date", ascending: false)
-        
-        return Array(metadatas.map { tableMetadata.init(value:$0) })
-    }
-    
-    /*
-    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String) {
-
-        var metadatasForAdd = [tableMetadata]()
-        var metadatasForDelete = [tableMetadata]()
-
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let metadatasDBImageVideo = self.getTableMetadatasContentTypeImageVideo(startDirectory)
-        
-        // Delete
-        for metadata in metadatasDBImageVideo! {
-            let recordFound = metadatas.filter { $0.fileID == metadata.fileID }
-            if (recordFound.count == 0) {
-                if let result = realm.objects(tableMetadata.self).filter("fileID == %@", metadata.fileID).first {
-                    metadatasForDelete.append(result)
-                }
-            }
-        }
-        
-        // New
-        for metadata in metadatas {
-            let recordFound = metadatasDBImageVideo!.filter { $0.fileID == metadata.fileID }
-            if (recordFound.count == 0) {
-                metadatasForAdd.append(metadata)
-            }
-        }
-        
-        if (metadatasForDelete.count > 0 || metadatasForAdd.count > 0) {
-            do {
-                try realm.write {
-                    // DELETE
-                    realm.delete(metadatasForDelete)
-                    // INSERT
-                    realm.add(metadatasForAdd, update: true)
-                }
-            } catch let error {
-                print("[LOG] Could not write to database: ", error)
-                realm.cancelWrite()
-            }
-        }        
-    }
-    */
-    
-    @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String) -> Bool {
-        
-        let realm = try! Realm()
-        realm.refresh()
-        
-        let metadatasDBImageVideo = self.getTableMetadatasContentTypeImageVideo(startDirectory)
-        let fileIDArrayDB = metadatasDBImageVideo!.map({ $0.fileID }) as [String]
-        let fileIDArraySearch = metadatas.map({ $0.fileID }) as [String]
-        
-        // DELETE RECORD IF NOT PRESENT ON DB [From DB To SEARCH]
-        var resultsDelete = [tableMetadata]()
-        for fileID in fileIDArrayDB {
-            if !(fileIDArraySearch.contains(fileID)) {
-                if let result = realm.objects(tableMetadata.self).filter("fileID == %@", fileID).first {
-                    resultsDelete.append(result)
-                }
-            }
-        }
-        
-        // INSERT NEW RECORD ON DB [From SEARCH To DB]
-        var resultsInsert = [tableMetadata]()
-        for metadata in metadatas {
-            if !(fileIDArrayDB.contains(metadata.fileID)) {
-                resultsInsert.append(metadata)
-            }
-        }
-        
-        do {
-            try realm.write {
-                // DELETE
-                realm.delete(resultsDelete)
-                // INSERT
-                realm.add(resultsInsert, update: true)
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            realm.cancelWrite()
-            return false
-        }
-        
-        if (resultsDelete.count > 0 || resultsInsert.count > 0) {
-            return true
-        }
-        return false
-    }
-    
     @objc func clearMetadatasUpload() {
         
         guard let tableAccount = self.getAccountActive() else {
@@ -2054,6 +1948,51 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    //MARK: -
+    //MARK: Table Photos
+    @objc func getTablePhotos() -> [tableMetadata]? {
+
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+
+        let predicate = NSPredicate(format: "account == %@", tableAccount.account)
+        let results = realm.objects(tablePhotos.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+
+        if (results.count > 0) {
+            return Array(results.map { tableMetadata.init(value:$0) })
+        } else {
+            return nil
+        }
+    }
+    
+    @objc func createTablePhotos(_ metadatas: [tableMetadata]) {
+
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        do {
+            try realm.write {
+                // DELETE ALL
+                let results = realm.objects(tablePhotos.self).filter("account = %@", tableAccount.account)
+                realm.delete(results)
+                // INSERT ALL
+                let photos = Array(metadatas.map { tablePhotos.init(value:$0) })
+                realm.add(photos, update: true)
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            realm.cancelWrite()
         }
     }
     
