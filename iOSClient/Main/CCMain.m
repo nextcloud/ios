@@ -1228,15 +1228,9 @@
             
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
             
-            if (metadata.directory && serverUrl) {
-                
-                NSString *dirForDelete = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-                
-                [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:dirForDelete];
-            }
-            
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+            [[NCManageDatabase sharedInstance] deletePhotosWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         }
         
         if ([selector isEqualToString:selectorLoadViewImage]) {

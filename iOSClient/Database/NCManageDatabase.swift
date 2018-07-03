@@ -855,8 +855,8 @@ class NCManageDatabase: NSObject {
         for result in results {
             
             self.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@", result.directoryID), clearDateReadDirectoryID: result.directoryID)
-            
             self.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", result.fileID))
+            self.deletePhotos(predicate: NSPredicate(format: "fileID == %@", result.fileID))
         }
         
         // Delete table Dirrectory
@@ -1616,9 +1616,6 @@ class NCManageDatabase: NSObject {
         for directoryID in directoriesID {
             self.setDateReadDirectory(directoryID: directoryID)
         }
-        
-        // delete Photos archive
-        self.deletePhotos(predicate: predicate)
     }
     
     @objc func moveMetadata(fileName: String, directoryID: String, directoryIDTo: String) {
