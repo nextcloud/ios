@@ -2041,6 +2041,24 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func setPhotosStatus(fileID: String, status: Int) {
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                let result = realm.objects(tableMetadata.self).filter("fileID == %@ ", fileID).first
+                if (result != nil) {
+                    result!.status = status
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
+    }
+    
     //MARK: -
     //MARK: Table Photo Library
     

@@ -398,6 +398,8 @@
     for (tableMetadata *metadata in selectedMetadatas) {
     
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        //
+        [[NCManageDatabase sharedInstance] setPhotosStatusWithFileID:metadata.fileID status:k_metadataStatusHide];
     
         OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
         [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl success:^{
@@ -415,6 +417,8 @@
             [deletedMetadatas addObject:metadata.fileID];
             
         } failure:^(NSString *message, NSInteger errorCode) {
+            
+            [[NCManageDatabase sharedInstance] setPhotosStatusWithFileID:metadata.fileID status:k_metadataStatusNormal];
             
             if (++cont == numDelete) {
                 [self reloadDatasource];
