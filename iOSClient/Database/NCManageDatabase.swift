@@ -1996,6 +1996,29 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func addPhotos(_ metadata: tableMetadata) {
+        
+        guard self.getAccountActive() != nil else {
+            return
+        }
+        
+        if metadata.isInvalidated {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                let photo = tablePhotos.init(value: metadata)
+                realm.add(photo, update: true)
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
+        }
+    }
+    
     @objc func deletePhotos(predicate: NSPredicate) {
         
         guard self.getAccountActive() != nil else {

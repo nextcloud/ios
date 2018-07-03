@@ -1058,7 +1058,10 @@
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         if (![fileID isEqualToString:tempFileID])
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID] clearDateReadDirectoryID:nil];
-        
+        if ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video]) {
+            [[NCManageDatabase sharedInstance] addPhotos:metadata];
+        }
+         
 #ifndef EXTENSION
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [appDelegate.listProgressMetadata removeObjectForKey:metadata.fileID];
