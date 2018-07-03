@@ -27,22 +27,17 @@
 #import "TOScrollBar.h"
 #import "NCBridgeSwift.h"
 
-@interface CCPhotos () <CCActionsDeleteDelegate, CCActionsDownloadThumbnailDelegate>
+@interface CCPhotos () <CCActionsDownloadThumbnailDelegate>
 {
     AppDelegate *appDelegate;
 
     tableMetadata *_metadata;
-
-    NSMutableArray *_queueMetadatas;
-    NSMutableArray *_selectedMetadatas;
-    NSUInteger _numSelectedMetadatas;
+    NSMutableArray *selectedMetadatas;
+    CCSectionDataSourceMetadata *sectionDataSource;
     
-    CCSectionDataSourceMetadata *_sectionDataSource;
-    
-    CCHud *_hud;
-    
-    TOScrollBar *_scrollBar;
-    NSMutableDictionary *_saveEtagForStartDirectory;
+    CCHud *hud;
+    TOScrollBar *scrollBar;
+    NSMutableDictionary *saveEtagForStartDirectory;
 }
 @end
 
@@ -87,24 +82,23 @@
 {
     [super viewDidLoad];
     
-    _queueMetadatas = [NSMutableArray new];
-    _selectedMetadatas = [NSMutableArray new];
-    _saveEtagForStartDirectory = [NSMutableDictionary new];
-    _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
+    selectedMetadatas = [NSMutableArray new];
+    saveEtagForStartDirectory = [NSMutableDictionary new];
+    hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     
     // empty Data Source
     self.collectionView.emptyDataSetDelegate = self;
     self.collectionView.emptyDataSetSource = self;
 
     // scroll bar
-    _scrollBar = [TOScrollBar new];
-    [self.collectionView to_addScrollBar:_scrollBar];
+    scrollBar = [TOScrollBar new];
+    [self.collectionView to_addScrollBar:scrollBar];
     
-    _scrollBar.handleTintColor = [NCBrandColor sharedInstance].brand;
-    _scrollBar.handleWidth = 20;
-    _scrollBar.handleMinimiumHeight = 20;
-    _scrollBar.trackWidth = 0;
-    _scrollBar.edgeInset = 12;
+    scrollBar.handleTintColor = [NCBrandColor sharedInstance].brand;
+    scrollBar.handleWidth = 20;
+    scrollBar.handleMinimiumHeight = 20;
+    scrollBar.trackWidth = 0;
+    scrollBar.edgeInset = 12;
 }
 
 // Apparirà
@@ -135,7 +129,7 @@
     if (self.isViewLoaded && self.view.window)
         [appDelegate changeTheming:self];
     
-    _scrollBar.handleTintColor = [NCBrandColor sharedInstance].brand;
+    scrollBar.handleTintColor = [NCBrandColor sharedInstance].brand;
     
     if(!_isSearchMode && !_isEditMode)
         [self.collectionView reloadData];
@@ -196,7 +190,7 @@
     icon = [UIImage imageNamed:@"folderPhotos"];
     UIBarButtonItem *buttonStartDirectoryPhotosTab = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(selectStartDirectoryPhotosTab)];
 
-    if ([_sectionDataSource.allRecordsDataSource count] > 0) {
+    if ([sectionDataSource.allRecordsDataSource count] > 0) {
         self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, nil];
     } else {
         self.navigationItem.rightBarButtonItems = nil;
@@ -220,7 +214,7 @@
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonDelete, buttonOpenWith, nil];
     
     // Title
-    self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[_selectedMetadatas count], (unsigned long)[_sectionDataSource.allRecordsDataSource count]];
+    self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[selectedMetadatas count], (unsigned long)[sectionDataSource.allRecordsDataSource count]];
 }
 
 - (void)cellSelect:(BOOL)select indexPath:(NSIndexPath *)indexPath metadata:(tableMetadata *)metadata
@@ -233,16 +227,16 @@
         effect.hidden = NO;
         effect.alpha = 0.4;
         checked.hidden = NO;
-        [_selectedMetadatas addObject:metadata];
+        [selectedMetadatas addObject:metadata];
         
     } else {
         effect.hidden = YES;
         checked.hidden = YES;
-        [_selectedMetadatas removeObject:metadata];
+        [selectedMetadatas removeObject:metadata];
     }
     
     // Title
-    self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[_selectedMetadatas count], (unsigned long)[_sectionDataSource.allRecordsDataSource count]];
+    self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[selectedMetadatas count], (unsigned long)[sectionDataSource.allRecordsDataSource count]];
 }
 
 - (void)scrollToTop
@@ -254,7 +248,7 @@
 {
     NSString *addLocation = @"";
     
-    NSArray *fileIDsForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]];
+    NSArray *fileIDsForKey = [sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:section]];
     
     for (NSString *fileID in fileIDsForKey) {
     
@@ -307,7 +301,7 @@
 {
     NSMutableArray *dataToShare = [[NSMutableArray alloc] init];
     
-    for (tableMetadata *metadata in _selectedMetadatas) {
+    for (tableMetadata *metadata in selectedMetadatas) {
     
         NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
                 
@@ -366,7 +360,7 @@
         
         if (fileID) {
             existsIcon = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName]];
-            indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:fileID];
+            indexPath = [sectionDataSource.fileIDIndexPath objectForKey:fileID];
         }
         
         if ([self indexPathIsValid:indexPath] && existsIcon) {
@@ -394,49 +388,42 @@
 #pragma mark ===== Delete =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)deleteFileOrFolder
 {
-    [_queueMetadatas removeObject:metadataNet.selector];
+    NSInteger numDelete = selectedMetadatas.count;
+    __block NSInteger cont = 0;
     
-    if ([_queueMetadatas count] == 0) {
-        
-        [_hud hideHud];
+    for (tableMetadata *metadata in selectedMetadatas) {
+    
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+    
+        OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl success:^{
+            
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+            [[NCManageDatabase sharedInstance] deletePhotosWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
 
-        if ([_selectedMetadatas count] > 0) {
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
             
-            [_selectedMetadatas removeObjectAtIndex:0];
-            
-            if ([_selectedMetadatas count] > 0) {
-                
-                [self deleteFileOrFolder:[_selectedMetadatas objectAtIndex:0] numFile:[_selectedMetadatas count] ofFile:_numSelectedMetadatas];
-                
-            } else {
-                
+            if (++cont == numDelete) {
                 [self reloadDatasource];
-                [self editingModeNO];
             }
             
-        } else {
+        } failure:^(NSString *message, NSInteger errorCode) {
             
-            [self reloadDatasource];
-        }
+            if (++cont == numDelete) {
+                [self reloadDatasource];
+            }
+        }];
     }
-}
-
-- (void)deleteFileOrFolder:(tableMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
-{
-    [_queueMetadatas addObject:selectorDelete];
     
-    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:_hud hudTitled:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile]];
+    [self editingModeNO];
 }
 
 - (void)deleteSelectedFiles
 {
-    [_queueMetadatas removeAllObjects];
-    
-    _numSelectedMetadatas = [_selectedMetadatas count];
-    
-    if ([_selectedMetadatas count] == 0)
+    if ([selectedMetadatas count] == 0)
         return;
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -444,7 +431,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [self deleteFileOrFolder:[_selectedMetadatas objectAtIndex:0] numFile:[_selectedMetadatas count] ofFile:_numSelectedMetadatas];
+                                                           [self deleteFileOrFolder];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
@@ -473,7 +460,7 @@
     
     if (errorCode == 0) {
         
-        NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
+        NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
         
         if ([self indexPathIsValid:indexPath]) {
         
@@ -553,7 +540,7 @@
             // Update date
             [[NCManageDatabase sharedInstance] setAccountDateSearchContentTypeImageVideo:[NSDate date]];
             // Save etag
-            [_saveEtagForStartDirectory setObject:metadataNet.etag forKey:metadataNet.serverUrl];
+            [saveEtagForStartDirectory setObject:metadataNet.etag forKey:metadataNet.serverUrl];
         });
     
     } else {
@@ -578,7 +565,7 @@
     
     [ocNetworking readFile:nil serverUrl:startDirectory account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
         
-        if (![metadata.etag isEqualToString:[_saveEtagForStartDirectory objectForKey:startDirectory]] || _sectionDataSource.allRecordsDataSource.count == 0) {
+        if (![metadata.etag isEqualToString:[saveEtagForStartDirectory objectForKey:startDirectory]] || sectionDataSource.allRecordsDataSource.count == 0) {
             
             [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
             [self editingModeNO];
@@ -608,7 +595,7 @@
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
             NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotos];
-            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
+            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
         
             dispatch_async(dispatch_get_main_queue(), ^{
                
@@ -636,7 +623,7 @@
 {
     [self.collectionView setAllowsMultipleSelection:false];
     _isEditMode = false;
-    [_selectedMetadatas removeAllObjects];
+    [selectedMetadatas removeAllObjects];
     [self setUINavigationBarDefault];
     
     [self.collectionView reloadData];
@@ -648,12 +635,12 @@
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {    
-    return [[_sectionDataSource.sectionArrayRow allKeys] count];
+    return [[sectionDataSource.sectionArrayRow allKeys] count];
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
 {
-    return [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]] count];
+    return [[sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:section]] count];
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath
@@ -668,7 +655,7 @@
 
 -(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section
 {
-    if ([_sectionDataSource.sections count] - 1 == section)
+    if ([sectionDataSource.sections count] - 1 == section)
         return CGSizeMake(collectionView.frame.size.width, 50);
     
     return CGSizeZero;
@@ -686,8 +673,8 @@
         
         UILabel *titleLabel = (UILabel *)[headerView viewWithTag:100];
         titleLabel.textColor = [UIColor blackColor];
-        if (_sectionDataSource.sections.count > indexPath.section)
-            titleLabel.text = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
+        if (sectionDataSource.sections.count > indexPath.section)
+            titleLabel.text = [CCUtility getTitleSectionDate:[sectionDataSource.sections objectAtIndex:indexPath.section]];
 
         return headerView;
     }
@@ -698,7 +685,7 @@
         
         UILabel *titleLabel = (UILabel *)[footerView viewWithTag:100];
         titleLabel.textColor = [UIColor grayColor];
-        titleLabel.text = [NSString stringWithFormat:@"%lu %@, %lu %@", (long)_sectionDataSource.image, NSLocalizedString(@"photo", nil), (long)_sectionDataSource.video, NSLocalizedString(@"_video_", nil)];
+        titleLabel.text = [NSString stringWithFormat:@"%lu %@, %lu %@", (long)sectionDataSource.image, NSLocalizedString(@"photo", nil), (long)sectionDataSource.video, NSLocalizedString(@"_video_", nil)];
         
         return footerView;
     }
@@ -715,12 +702,12 @@
     UIImageView *checked = [cell viewWithTag:300];
     checked.image = [UIImage imageNamed:@"checked"];
 
-    NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
+    NSArray *metadatasForKey = [sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]];
     
     if ([metadatasForKey count] > indexPath.row) {
         
         NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
     
         // Image
         if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
@@ -762,12 +749,12 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
+    NSArray *metadatasForKey = [sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]];
     
     if ([metadatasForKey count] > indexPath.row) {
         
         NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-        _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        _metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (_isEditMode) {
         
@@ -787,12 +774,12 @@
     if (_isEditMode == NO)
         return;
    
-    NSArray *metadatasForKey = [_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:indexPath.section]];
+    NSArray *metadatasForKey = [sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]];
     
     if ([metadatasForKey count] > indexPath.row) {
         
         NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-        _metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        _metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         [self cellSelect:NO indexPath:indexPath metadata:_metadata];
     }
@@ -856,8 +843,8 @@
     }
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [[NSMutableArray alloc] init];
-    for (NSString *fileID in _sectionDataSource.allEtag) {
-        tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+    for (NSString *fileID in sectionDataSource.allEtag) {
+        tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
             [allRecordsDataSourceImagesVideos addObject:metadata];
     }
