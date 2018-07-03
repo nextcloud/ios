@@ -1616,6 +1616,9 @@ class NCManageDatabase: NSObject {
         for directoryID in directoriesID {
             self.setDateReadDirectory(directoryID: directoryID)
         }
+        
+        // delete Photos archive
+        self.deletePhotos(predicate: predicate)
     }
     
     @objc func moveMetadata(fileName: String, directoryID: String, directoryIDTo: String) {
@@ -1993,6 +1996,28 @@ class NCManageDatabase: NSObject {
         } catch let error {
             print("[LOG] Could not write to database: ", error)
             realm.cancelWrite()
+        }
+    }
+    
+    @objc func deletePhotos(predicate: NSPredicate) {
+        
+        guard self.getAccountActive() != nil else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        let results = realm.objects(tablePhotos.self).filter(predicate)
+        
+        realm.delete(results)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return
         }
     }
     
