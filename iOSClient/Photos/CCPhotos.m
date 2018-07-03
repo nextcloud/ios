@@ -299,49 +299,6 @@
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
 }
 
-/*
-- (NSAttributedString *)descriptionForEmptyDataSet:(UIScrollView *)scrollView
-{
-    NSMutableParagraphStyle *paragraph = [NSMutableParagraphStyle new];
-    paragraph.lineBreakMode = NSLineBreakByWordWrapping;
-    paragraph.alignment = NSTextAlignmentCenter;
-    NSString *text;
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-    
-    if (account.autoUpload)
-        text = [NSString stringWithFormat:@"%@", @"\n\n\n\n"];
-    else
-        text = [NSString stringWithFormat:@"\n%@\n", NSLocalizedString(@"_tutorial_autoupload_view_", nil)];
-    
-    NSDictionary *attributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14.0], NSForegroundColorAttributeName: [UIColor lightGrayColor], NSParagraphStyleAttributeName: paragraph};
-
-    return [[NSAttributedString alloc] initWithString:text attributes:attributes];
-}
-
-
-- (UIImage *)buttonImageForEmptyDataSet:(UIScrollView *)scrollView forState:(UIControlState)state
-{
-    tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
-            
-    if (!account.autoUpload) {
-    
-        UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"button1000x200"] color:[NCBrandColor sharedInstance].brandElement];
-        
-        return [CCGraphics drawText:NSLocalizedString(@"_activate_autoupload_", nil) inImage:buttonImage colorText:[UIColor whiteColor] sizeOfFont:26];
-        
-    } else return nil;
-}
-
-- (void)emptyDataSetDidTapButton:(UIScrollView *)scrollView
-{    
-    CCManageAutoUpload *viewController = [[CCManageAutoUpload alloc] initWithNibName:nil bundle:nil];
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-    
-    [navigationController setModalPresentationStyle:UIModalPresentationFullScreen];
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-*/
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== openSelectedFiles =====
 #pragma--------------------------------------------------------------------------------------------
