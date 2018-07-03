@@ -395,14 +395,13 @@
     NSInteger numDelete = selectedMetadatas.count;
     __block NSInteger cont = 0;
     
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    
     for (tableMetadata *metadata in selectedMetadatas) {
     
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        //
-        [[NCManageDatabase sharedInstance] setPhotosStatusWithFileID:metadata.fileID status:k_metadataStatusHide];
-    
-        OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl success:^{
+        [fileIDHide addObject:metadata.fileID];
+       
+        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] success:^{
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
@@ -414,12 +413,10 @@
                 [self reloadDatasource];
             }
             
-            [fileIDHide addObject:metadata.fileID];
-            
         } failure:^(NSString *message, NSInteger errorCode) {
             
-            [[NCManageDatabase sharedInstance] setPhotosStatusWithFileID:metadata.fileID status:k_metadataStatusNormal];
-            
+            [fileIDHide removeObject:metadata.fileID];
+
             if (++cont == numDelete) {
                 [self reloadDatasource];
             }
