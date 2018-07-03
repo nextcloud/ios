@@ -424,6 +424,7 @@
     }
     
     [self editingModeNO];
+    [self reloadDatasource];
 }
 
 - (void)deleteSelectedFiles
