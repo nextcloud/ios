@@ -1946,6 +1946,7 @@ class NCManageDatabase: NSObject {
         return Array(metadatas.map { tableMetadata.init(value:$0) })
     }
     
+    /*
     @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String) {
 
         var metadatasForAdd = [tableMetadata]()
@@ -1988,8 +1989,8 @@ class NCManageDatabase: NSObject {
             }
         }        
     }
+    */
     
-    /*
     @objc func updateTableMetadatasContentTypeImageVideo(_ metadatas: [tableMetadata], startDirectory: String) -> Bool {
         
         let realm = try! Realm()
@@ -2035,7 +2036,6 @@ class NCManageDatabase: NSObject {
         }
         return false
     }
-    */
     
     @objc func clearMetadatasUpload() {
         
