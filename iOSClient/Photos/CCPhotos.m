@@ -31,7 +31,7 @@
 {
     AppDelegate *appDelegate;
 
-    tableMetadata *_metadata;
+    tableMetadata *metadata;
     NSMutableArray *selectedMetadatas;
     NSMutableArray *fileIDHide;
     CCSectionDataSourceMetadata *sectionDataSource;
@@ -762,11 +762,11 @@
     if ([metadatasForKey count] > indexPath.row) {
         
         NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-        _metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (_isEditMode) {
         
-            [self cellSelect:YES indexPath:indexPath metadata:_metadata];
+            [self cellSelect:YES indexPath:indexPath metadata:metadata];
         
         } else {
         
@@ -787,9 +787,9 @@
     if ([metadatasForKey count] > indexPath.row) {
         
         NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-        _metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
-        [self cellSelect:NO indexPath:indexPath metadata:_metadata];
+        [self cellSelect:NO indexPath:indexPath metadata:metadata];
     }
 }
 
@@ -858,10 +858,10 @@
     }
     
     self.detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
-    self.detailViewController.metadataDetail = _metadata;
-    self.detailViewController.dateFilterQuery = _metadata.date;
+    self.detailViewController.metadataDetail = metadata;
+    self.detailViewController.dateFilterQuery = metadata.date;
     
-    [self.detailViewController setTitle:_metadata.fileName];
+    [self.detailViewController setTitle:metadata.fileName];
 }
 
 @end
