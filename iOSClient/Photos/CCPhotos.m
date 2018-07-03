@@ -33,7 +33,7 @@
 
     tableMetadata *_metadata;
     NSMutableArray *selectedMetadatas;
-    NSMutableArray *deletedMetadatas;
+    NSMutableArray *fileIDHide;
     CCSectionDataSourceMetadata *sectionDataSource;
     
     CCHud *hud;
@@ -84,7 +84,7 @@
     [super viewDidLoad];
     
     selectedMetadatas = [NSMutableArray new];
-    deletedMetadatas = [NSMutableArray new];
+    fileIDHide = [NSMutableArray new];
     saveEtagForStartDirectory = [NSMutableDictionary new];
     hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     
@@ -414,7 +414,7 @@
                 [self reloadDatasource];
             }
             
-            [deletedMetadatas addObject:metadata.fileID];
+            [fileIDHide addObject:metadata.fileID];
             
         } failure:^(NSString *message, NSInteger errorCode) {
             
@@ -602,13 +602,8 @@
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-            // delete medata for safety
-            for (NSString *fileID in deletedMetadatas) {
-                [[NCManageDatabase sharedInstance] deletePhotosWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-            }
-            
             NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotos];
-            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" activeAccount:appDelegate.activeAccount];
+            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" fileIDHide:fileIDHide activeAccount:appDelegate.activeAccount];
         
             dispatch_async(dispatch_get_main_queue(), ^{
                

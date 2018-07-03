@@ -74,7 +74,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField fileIDHide:(NSArray *)fileIDHide activeAccount:(NSString *)activeAccount
 {
     id dataSection;
     long counterSessionDownload = 0;
@@ -96,7 +96,7 @@
     for (tableMetadata* metadata in records) {
         
         // *** LIST : DO NOT INSERT ***
-        if (metadata.status == k_metadataStatusHide) {
+        if (metadata.status == k_metadataStatusHide || [fileIDHide containsObject: metadata.fileID]) {
             continue;
         }
         
