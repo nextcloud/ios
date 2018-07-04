@@ -818,6 +818,14 @@
 {
     // Test
     
+    // exists
+    tableMetadata *existsMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+    if (!existsMetadata) {
+        [fileIDHide addObject:metadata.fileID];
+        [self reloadDatasource];
+        return NO;
+    }
+    
     // Background ? exit
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground)
         return NO;
