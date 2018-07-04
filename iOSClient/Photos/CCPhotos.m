@@ -134,8 +134,7 @@
     
     scrollBar.handleTintColor = [NCBrandColor sharedInstance].brand;
     
-    if(!_isSearchMode && !_isEditMode)
-        [self.collectionView reloadData];
+    [self.collectionView reloadData];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
@@ -527,22 +526,17 @@
 
 - (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount]) {
+    _isSearchMode = NO;
+
+    if (![metadataNet.account isEqualToString:appDelegate.activeAccount] || errorCode != 0) {
         
-        _isSearchMode = NO;
         [self reloadDatasource];
         
-        return;
-    }
-    
-    if (errorCode == 0) {
+    } else {
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
             [[NCManageDatabase sharedInstance] createTablePhotos:metadatas];
-            
-            _isSearchMode = NO;
 
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self reloadDatasource];
@@ -553,18 +547,16 @@
             // Save etag
             [saveEtagForStartDirectory setObject:metadataNet.etag forKey:metadataNet.serverUrl];
         });
-    
-    } else {
-        _isSearchMode = NO;
-        [self reloadDatasource];
     }
 }
 
 - (void)searchPhotoVideo
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || _isSearchMode || _isEditMode)
+    if (appDelegate.activeAccount.length == 0 || _isSearchMode)
         return;
+    
+    [self editingModeNO];
     
     // WAITING FOR d:creationdate
     //
@@ -579,6 +571,7 @@
         if (![metadata.etag isEqualToString:[saveEtagForStartDirectory objectForKey:startDirectory]] || sectionDataSource.allRecordsDataSource.count == 0) {
             
             [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
+            
             [self editingModeNO];
             _isSearchMode = YES;
             
@@ -625,6 +618,7 @@
 {
     [self.collectionView setAllowsMultipleSelection:true];
     _isEditMode = true;
+    [selectedMetadatas removeAllObjects];
     [self setUINavigationBarSelected];
 
     [self.collectionView reloadData];
