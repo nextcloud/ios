@@ -579,7 +579,6 @@
         }
         
     } failure:^(NSString *message, NSInteger errorCode) {
-        [self reloadDatasource];
     }];
 }
 
