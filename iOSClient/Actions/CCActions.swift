@@ -441,7 +441,8 @@ class CCActions: NSObject {
         
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
         NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-        NCManageDatabase.sharedInstance.deletePhotos(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+        NCManageDatabase.sharedInstance.deletePhotos(fileID: metadata.fileID)
+        appDelegate.activePhotos.fileIDHide.add(metadata.fileID)
         // E2EE (if exists the record)
         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName))
     }

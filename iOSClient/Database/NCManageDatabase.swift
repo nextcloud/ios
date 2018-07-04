@@ -856,7 +856,6 @@ class NCManageDatabase: NSObject {
             
             self.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@", result.directoryID), clearDateReadDirectoryID: result.directoryID)
             self.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", result.fileID))
-            self.deletePhotos(predicate: NSPredicate(format: "fileID == %@", result.fileID))
         }
         
         // Delete table Dirrectory
@@ -1953,7 +1952,7 @@ class NCManageDatabase: NSObject {
     
     //MARK: -
     //MARK: Table Photos
-    @objc func getTablePhotos(addMetadatas: [tableMetadata]) -> [tableMetadata]? {
+    @objc func getTablePhotos(addMetadatasFromUpload: [tableMetadata]) -> [tableMetadata]? {
 
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -1967,7 +1966,7 @@ class NCManageDatabase: NSObject {
 
         if (results.count > 0) {
             var returnMetadatas = Array(results.map { tableMetadata.init(value:$0) })
-            for metadata in addMetadatas {
+            for metadata in addMetadatasFromUpload {
                 let result = realm.objects(tablePhotos.self).filter("fileID == %@", metadata.fileID).first
                 if result == nil {
                     returnMetadatas.append(metadata)
@@ -2003,30 +2002,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func addPhotos(_ metadata: tableMetadata) {
-        
-        guard self.getAccountActive() != nil else {
-            return
-        }
-        
-        if metadata.isInvalidated {
-            return
-        }
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.write {
-                let photo = tablePhotos.init(value: metadata)
-                realm.add(photo, update: true)
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return
-        }
-    }
-    
-    @objc func deletePhotos(predicate: NSPredicate) {
+    @objc func deletePhotos(fileID: String) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -2036,7 +2012,7 @@ class NCManageDatabase: NSObject {
         
         realm.beginWrite()
         
-        let results = realm.objects(tablePhotos.self).filter(predicate)
+        let results = realm.objects(tablePhotos.self).filter("fileID = %@", fileID)
         
         realm.delete(results)
         
@@ -2047,25 +2023,7 @@ class NCManageDatabase: NSObject {
             return
         }
     }
-    
-    @objc func setPhotosStatus(fileID: String, status: Int) {
-        
-        let realm = try! Realm()
-        
-        do {
-            try realm.write {
-                
-                let result = realm.objects(tableMetadata.self).filter("fileID == %@ ", fileID).first
-                if (result != nil) {
-                    result!.status = status
-                }
-            }
-        } catch let error {
-            print("[LOG] Could not write to database: ", error)
-            return
-        }
-    }
-    
+ 
     //MARK: -
     //MARK: Table Photo Library
     

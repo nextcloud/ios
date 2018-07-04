@@ -43,7 +43,8 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property BOOL isSearchMode;
 @property BOOL isEditMode;
-@property (nonatomic, strong) NSMutableArray *addMetadatas;
+@property (nonatomic, strong) NSMutableArray *addMetadatasFromUpload;
+@property (nonatomic, strong) NSMutableArray *fileIDHide;
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 

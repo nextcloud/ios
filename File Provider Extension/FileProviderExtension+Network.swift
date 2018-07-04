@@ -74,7 +74,6 @@ extension FileProviderExtension {
         
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
         NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-        NCManageDatabase.sharedInstance.deletePhotos(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
     }
     
     // --------------------------------------------------------------------------------------------

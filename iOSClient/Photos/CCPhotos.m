@@ -33,7 +33,6 @@
 
     tableMetadata *metadata;
     NSMutableArray *selectedMetadatas;
-    NSMutableArray *fileIDHide;
     CCSectionDataSourceMetadata *sectionDataSource;
     
     CCHud *hud;
@@ -83,10 +82,10 @@
 {
     [super viewDidLoad];
     
-    selectedMetadatas = [NSMutableArray new];
-    fileIDHide = [NSMutableArray new];
     saveEtagForStartDirectory = [NSMutableDictionary new];
-    self.addMetadatas = [NSMutableArray new];
+    selectedMetadatas = [NSMutableArray new];
+    self.fileIDHide = [NSMutableArray new];
+    self.addMetadatasFromUpload = [NSMutableArray new];
     hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     
     // empty Data Source
@@ -399,13 +398,13 @@
     
     for (tableMetadata *metadata in selectedMetadatas) {
     
-        [fileIDHide addObject:metadata.fileID];
+        [self.fileIDHide addObject:metadata.fileID];
        
         [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] success:^{
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-            [[NCManageDatabase sharedInstance] deletePhotosWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+            [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
 
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
             
@@ -415,7 +414,7 @@
             
         } failure:^(NSString *message, NSInteger errorCode) {
             
-            [fileIDHide removeObject:metadata.fileID];
+            [self.fileIDHide removeObject:metadata.fileID];
 
             if (++cont == numDelete) {
                 [self reloadDatasource];
@@ -571,7 +570,11 @@
             
             _isSearchMode = YES;
             [self editingModeNO];
-
+            
+            // Clear all Hardcoded
+            [self.fileIDHide removeAllObjects];
+            [self.addMetadatasFromUpload removeAllObjects];
+            
             [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
             
         } else {
@@ -596,8 +599,8 @@
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatas:self.addMetadatas];
-            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" fileIDHide:fileIDHide activeAccount:appDelegate.activeAccount];
+            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
+            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" fileIDHide:self.fileIDHide activeAccount:appDelegate.activeAccount];
         
             dispatch_async(dispatch_get_main_queue(), ^{
                

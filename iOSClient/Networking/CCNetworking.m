@@ -1062,9 +1062,9 @@
 #ifndef EXTENSION
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [appDelegate.listProgressMetadata removeObjectForKey:metadata.fileID];
-        // Workaround for add new Photos
+        // Hardcoded for add new Photos
         if ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video]) {
-            [appDelegate.activePhotos.addMetadatas addObject:metadata];
+            [appDelegate.activePhotos.addMetadatasFromUpload addObject:metadata];
         }
 #endif
         
