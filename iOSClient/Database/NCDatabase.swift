@@ -252,10 +252,6 @@ class tablePhotos: Object {
     override static func primaryKey() -> String {
         return "fileID"
     }
-    
-    override static func indexedProperties() -> [String] {
-        return ["directoryID"]
-    }
 }
 
 class tablePhotoLibrary: Object {
