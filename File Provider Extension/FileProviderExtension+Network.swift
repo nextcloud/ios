@@ -41,6 +41,9 @@ extension FileProviderExtension {
             // file not found ? delete
             if errorCode == 404 {
                 
+                self.deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)
+
+                /*
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
             
                 // remove itemIdentifier on fileProviderSignalDeleteItemIdentifier
@@ -50,6 +53,7 @@ extension FileProviderExtension {
                 }
             
                 self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
+                */
             }
         })
     }
@@ -70,6 +74,7 @@ extension FileProviderExtension {
         
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
         NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+        NCManageDatabase.sharedInstance.deletePhotos(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
     }
     
     // --------------------------------------------------------------------------------------------

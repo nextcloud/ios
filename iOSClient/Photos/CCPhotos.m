@@ -34,6 +34,7 @@
     tableMetadata *metadata;
     NSMutableArray *selectedMetadatas;
     NSMutableArray *fileIDHide;
+    NSArray *metadatasSectionDataSource;
     CCSectionDataSourceMetadata *sectionDataSource;
     
     CCHud *hud;
@@ -600,8 +601,8 @@
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotos];
-            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" fileIDHide:fileIDHide activeAccount:appDelegate.activeAccount];
+            metadatasSectionDataSource = [[NCManageDatabase sharedInstance] getTablePhotos];
+            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatasSectionDataSource listProgressMetadata:nil groupByField:@"date" fileIDHide:fileIDHide activeAccount:appDelegate.activeAccount];
         
             dispatch_async(dispatch_get_main_queue(), ^{
                
@@ -848,14 +849,7 @@
         self.detailViewController = segue.destinationViewController;
     }
     
-    NSMutableArray *allRecordsDataSourceImagesVideos = [[NSMutableArray alloc] init];
-    for (NSString *fileID in sectionDataSource.allEtag) {
-        tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video])
-            [allRecordsDataSourceImagesVideos addObject:metadata];
-    }
-    
-    self.detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
+    self.detailViewController.dataSourceImagesVideos = (NSMutableArray *)metadatasSectionDataSource;
     self.detailViewController.metadataDetail = metadata;
     self.detailViewController.dateFilterQuery = metadata.date;
     
