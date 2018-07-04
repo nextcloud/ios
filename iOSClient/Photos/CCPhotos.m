@@ -526,6 +526,7 @@
 - (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     _isSearchMode = NO;
+    
 
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount] || errorCode != 0) {
         
@@ -555,8 +556,6 @@
     if (appDelegate.activeAccount.length == 0 || _isSearchMode)
         return;
     
-    [self editingModeNO];
-    
     // WAITING FOR d:creationdate
     //
     // tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
@@ -569,10 +568,10 @@
         
         if (![metadata.etag isEqualToString:[saveEtagForStartDirectory objectForKey:startDirectory]] || sectionDataSource.allRecordsDataSource.count == 0) {
             
-            [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
-            
-            [self editingModeNO];
             _isSearchMode = YES;
+            [self editingModeNO];
+
+            [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
             
         } else {
             [self reloadDatasource];
