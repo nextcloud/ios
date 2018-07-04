@@ -814,9 +814,6 @@
 
 - (BOOL)shouldPerformSegue
 {
-    // Test
-    
-    // Background ? exit
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground)
         return NO;
     
