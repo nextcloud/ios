@@ -529,6 +529,10 @@
 {
     // Check Active Account
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount]) {
+        
+        _isSearchMode = NO;
+        [self reloadDatasource];
+        
         return;
     }
     
