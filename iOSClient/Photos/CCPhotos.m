@@ -86,6 +86,7 @@
     selectedMetadatas = [NSMutableArray new];
     fileIDHide = [NSMutableArray new];
     saveEtagForStartDirectory = [NSMutableDictionary new];
+    self.addMetadatas = [NSMutableArray new];
     hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     
     // empty Data Source
@@ -595,7 +596,7 @@
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotos];
+            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatas:self.addMetadatas];
             sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" fileIDHide:fileIDHide activeAccount:appDelegate.activeAccount];
         
             dispatch_async(dispatch_get_main_queue(), ^{

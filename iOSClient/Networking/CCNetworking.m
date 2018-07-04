@@ -1058,13 +1058,14 @@
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
         if (![fileID isEqualToString:tempFileID])
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID] clearDateReadDirectoryID:nil];
-        if ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video]) {
-            [[NCManageDatabase sharedInstance] addPhotos:metadata];
-        }
          
 #ifndef EXTENSION
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [appDelegate.listProgressMetadata removeObjectForKey:metadata.fileID];
+        // Workaround for add new Photos
+        if ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video]) {
+            [appDelegate.activePhotos.addMetadatas addObject:metadata];
+        }
 #endif
         
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, metadata.fileID);

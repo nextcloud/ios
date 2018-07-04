@@ -1953,7 +1953,7 @@ class NCManageDatabase: NSObject {
     
     //MARK: -
     //MARK: Table Photos
-    @objc func getTablePhotos() -> [tableMetadata]? {
+    @objc func getTablePhotos(addMetadatas: [tableMetadata]) -> [tableMetadata]? {
 
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -1966,7 +1966,14 @@ class NCManageDatabase: NSObject {
         let results = realm.objects(tablePhotos.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
 
         if (results.count > 0) {
-            return Array(results.map { tableMetadata.init(value:$0) })
+            var returnMetadatas = Array(results.map { tableMetadata.init(value:$0) })
+            for metadata in addMetadatas {
+                let result = realm.objects(tablePhotos.self).filter("fileID == %@", metadata.fileID).first
+                if result == nil {
+                    returnMetadatas.append(metadata)
+                }
+            }
+            return returnMetadatas
         } else {
             return nil
         }
