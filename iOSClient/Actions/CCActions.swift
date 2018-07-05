@@ -139,14 +139,30 @@ class CCActions: NSObject {
 
         if (errorCode == 0) {
         
-            let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID))
-        
-            if let metadata = metadata {
-                self.deleteFile(metadata: metadata, serverUrl: metadataNet.serverUrl)
+            do {
+                try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadataNet.fileID))
+            } catch { }
+            
+            NCManageDatabase.sharedInstance.deletePhotos(fileID: metadataNet.fileID)
+            appDelegate.activePhotos.fileIDHide.add(metadataNet.fileID)
+            NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID))
+            // E2EE (if exists the record)
+            NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadataNet.account, metadataNet.serverUrl, metadataNet.fileName))
+
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID)) else {
+                self.deleteFileOrFolderSuccessFailure(metadataNet, message: "", errorCode: 0)
+                return
             }
+            
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID), clearDateReadDirectoryID: metadata.directoryID)
         
+            if metadata.directory {
+                let dirForDelete = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadata.fileName)
+                NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!)
+            }
+            
             guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.activeAccount, metadataNet.serverUrl)) else {
-                self.deleteFileOrFolderSuccessFailure(metadataNet, message: "Internal error, tableDirectory not found", errorCode: 0)
+                self.deleteFileOrFolderSuccessFailure(metadataNet, message: "", errorCode: 0)
                 return
             }
         
@@ -170,14 +186,31 @@ class CCActions: NSObject {
             } else {
                 metadataNet.delegate?.deleteFileOrFolderSuccessFailure(metadataNet, message: "", errorCode: 0)
             }
+            
         } else {
             
             if errorCode == 404 {
                 
-                let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID))
+                do {
+                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadataNet.fileID))
+                } catch { }
                 
-                if metadata != nil {
-                    self.deleteFile(metadata: metadata!, serverUrl: metadataNet.serverUrl)
+                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID))
+                NCManageDatabase.sharedInstance.deletePhotos(fileID: metadataNet.fileID)
+                appDelegate.activePhotos.fileIDHide.add(metadataNet.fileID)
+                // E2EE (if exists the record)
+                NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadataNet.account, metadataNet.serverUrl, metadataNet.fileName))
+                
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID)) else {
+                    self.deleteFileOrFolderSuccessFailure(metadataNet, message: "", errorCode: 0)
+                    return
+                }
+                
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadataNet.fileID), clearDateReadDirectoryID: metadata.directoryID)
+                
+                if metadata.directory {
+                    let dirForDelete = CCUtility.stringAppendServerUrl(metadataNet.serverUrl, addFileName: metadata.fileName)
+                    NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!)
                 }
             }
             
@@ -420,31 +453,6 @@ class CCActions: NSObject {
     @objc func listingFavoritesSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata], message: NSString, errorCode: NSInteger) {
         
         metadataNet.delegate?.listingFavoritesSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
-    }
-    
-    // --------------------------------------------------------------------------------------------
-    // MARK: Utility
-    // --------------------------------------------------------------------------------------------
-    
-    @objc func deleteFile(metadata: tableMetadata, serverUrl: String) {
-                
-        do {
-            try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
-        } catch {
-            // handle error
-        }
-        
-        if metadata.directory {
-            let dirForDelete = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
-            NCManageDatabase.sharedInstance.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete!)
-        }
-        
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
-        NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-        NCManageDatabase.sharedInstance.deletePhotos(fileID: metadata.fileID)
-        appDelegate.activePhotos.fileIDHide.add(metadata.fileID)
-        // E2EE (if exists the record)
-        NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName))
     }
 }
 

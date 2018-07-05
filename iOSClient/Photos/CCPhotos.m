@@ -591,28 +591,26 @@
 
 - (void)reloadDatasource
 {
-    @synchronized(self) {
-        // test
-        if (appDelegate.activeAccount.length == 0) {
-            return;
-        }
-    
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
-            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" fileIDHide:self.fileIDHide activeAccount:appDelegate.activeAccount];
-        
-            dispatch_async(dispatch_get_main_queue(), ^{
-               
-                if (_isEditMode)
-                    [self setUINavigationBarSelected];
-                else
-                    [self setUINavigationBarDefault];
-                
-                [self.collectionView reloadData];
-            });
-        });
+    // test
+    if (appDelegate.activeAccount.length == 0) {
+        return;
     }
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
+        NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" fileIDHide:self.fileIDHide activeAccount:appDelegate.activeAccount];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+               
+            if (_isEditMode)
+                [self setUINavigationBarSelected];
+            else
+                [self setUINavigationBarDefault];
+                
+            [self.collectionView reloadData];
+        });
+    });
 }
 
 - (void)editingModeYES
