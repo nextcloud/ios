@@ -605,9 +605,9 @@
         if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) {
             
             if ([shareLink length] > 0)
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
             else
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
                 
             UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
             [tap setNumberOfTapsRequired:1];
@@ -686,7 +686,7 @@
     // more
     // ----------------------------------------------------------------------------------------------------------
     
-    cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
+    cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
     
     if ([self canOpenMenuAction:metadata]) {
         

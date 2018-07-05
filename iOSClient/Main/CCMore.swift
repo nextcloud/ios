@@ -287,7 +287,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             let item = functionMenu[indexPath.row]
             
-            cell.imageIcon?.image = UIImage.init(named: item.icon)
+            cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = NCBrandColor.sharedInstance.textView
 
@@ -298,7 +298,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             let item = settingsMenu[indexPath.row]
             
-            cell.imageIcon?.image = UIImage.init(named: item.icon)
+            cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
             cell.labelText?.text = NSLocalizedString(item.name, comment: "")
             cell.labelText.textColor = NCBrandColor.sharedInstance.textView
         }

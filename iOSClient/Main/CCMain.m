@@ -3781,7 +3781,7 @@
         if (!lockDirectory && !isFolderEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3793,7 +3793,7 @@
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !_metadata.e2eEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3831,7 +3831,7 @@
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES) && !lockDirectory && !isFolderEncrypted) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3843,7 +3843,7 @@
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3863,7 +3863,7 @@
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3875,7 +3875,7 @@
         if (!_metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_set_folder_encrypted_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3898,7 +3898,7 @@
         if (_metadata.e2eEncrypted && [CCUtility isEndToEndEnabled:appDelegate.activeAccount]) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_e2e_remove_folder_encrypted_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"lock"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3964,7 +3964,7 @@
         if (!_metadataFolder.e2eEncrypted) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                                 backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                         height: 50.0
                                         type:AHKActionSheetButtonTypeDefault
@@ -3974,7 +3974,7 @@
         }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -3984,7 +3984,7 @@
         
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                         backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                  height: 50.0
                                    type:AHKActionSheetButtonTypeDefault
@@ -4017,7 +4017,7 @@
         if (!_metadataFolder.e2eEncrypted) {
 
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_move_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:[NCBrandColor sharedInstance].gray]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -4535,13 +4535,13 @@
             
             // Share
             if (isShare) {
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
             } else if (isMounted) {
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareMounted"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareMounted"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
             } else if (shareLink != nil) {
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
             } else if (shareUserAndGroup != nil) {
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
+                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
             }
         }
         
@@ -4577,7 +4577,7 @@
         }
         
         // More Image
-        cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] multiplier:2 color:[NCBrandColor sharedInstance].gray];
+        cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
         
         if ([self canOpenMenuAction:metadata]) {
             
@@ -4640,7 +4640,7 @@
             }
         }
         
-        cell.transferButton.tintColor = [NCBrandColor sharedInstance].gray;
+        cell.transferButton.tintColor = [NCBrandColor sharedInstance].icon;
         
         // Session Upload Extension
         if ([metadata.session isEqualToString:k_upload_session_extension] && (metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading)) {
