@@ -41,8 +41,7 @@
 @interface CCPhotos: UICollectionViewController <UICollectionViewDataSource, UICollectionViewDelegate, UIActionSheetDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, OCNetworkingDelegate, CCMoveDelegate>
 
 @property (nonatomic, weak) CCDetail *detailViewController;
-@property BOOL isSearchMode;
-@property BOOL isEditMode;
+
 @property (nonatomic, strong) NSMutableArray *addMetadatasFromUpload;
 @property (nonatomic, strong) NSMutableArray *fileIDHide;
 

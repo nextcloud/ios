@@ -35,7 +35,9 @@
     NSMutableArray *selectedMetadatas;
     CCSectionDataSourceMetadata *sectionDataSource;
     
-    CCHud *hud;
+    BOOL isSearchMode;
+    BOOL isEditMode;
+    
     TOScrollBar *scrollBar;
     NSMutableDictionary *saveEtagForStartDirectory;
 }
@@ -86,7 +88,6 @@
     selectedMetadatas = [NSMutableArray new];
     self.fileIDHide = [NSMutableArray new];
     self.addMetadatasFromUpload = [NSMutableArray new];
-    hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
     
     // empty Data Source
     self.collectionView.emptyDataSetDelegate = self;
@@ -115,7 +116,7 @@
     // Plus Button
     [appDelegate plusButtonVisibile:true];
 
-    if(!_isSearchMode && !_isEditMode)
+    if(!isSearchMode && !isEditMode)
         [self reloadDatasource];
 }
 
@@ -180,7 +181,7 @@
         self.navigationItem.title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_photo_camera_", nil), [folder substringFromIndex:1]];
     }
     
-    if (_isSearchMode) {
+    if (isSearchMode) {
         [CCGraphics addImageToTitle:self.navigationItem.title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
     }
     
@@ -283,7 +284,7 @@
 {
     NSString *text;
     
-    if (_isSearchMode) {
+    if (isSearchMode) {
         text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_search_in_progress_", nil)];
     } else {
         text = [NSString stringWithFormat:@"\n%@", NSLocalizedString(@"_tutorial_photo_view_", nil)];
@@ -525,9 +526,8 @@
 
 - (void)searchSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
-    _isSearchMode = NO;
+    isSearchMode = NO;
     
-
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount] || errorCode != 0) {
         
         [self reloadDatasource];
@@ -553,7 +553,7 @@
 - (void)searchPhotoVideo
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || _isSearchMode)
+    if (appDelegate.activeAccount.length == 0 || isSearchMode)
         return;
     
     // WAITING FOR d:creationdate
@@ -568,7 +568,7 @@
         
         if (![metadata.etag isEqualToString:[saveEtagForStartDirectory objectForKey:startDirectory]] || sectionDataSource.allRecordsDataSource.count == 0) {
             
-            _isSearchMode = YES;
+            isSearchMode = YES;
             [self editingModeNO];
             
             // Clear all Hardcoded
@@ -603,7 +603,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
                
-            if (_isEditMode)
+            if (isEditMode)
                 [self setUINavigationBarSelected];
             else
                 [self setUINavigationBarDefault];
@@ -616,7 +616,7 @@
 - (void)editingModeYES
 {
     [self.collectionView setAllowsMultipleSelection:true];
-    _isEditMode = true;
+    isEditMode = true;
     [selectedMetadatas removeAllObjects];
     [self setUINavigationBarSelected];
 
@@ -626,7 +626,7 @@
 - (void)editingModeNO
 {
     [self.collectionView setAllowsMultipleSelection:false];
-    _isEditMode = false;
+    isEditMode = false;
     [selectedMetadatas removeAllObjects];
     [self setUINavigationBarDefault];
     
@@ -760,7 +760,7 @@
         NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
         metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
-        if (_isEditMode) {
+        if (isEditMode) {
         
             [self cellSelect:YES indexPath:indexPath metadata:metadata];
         
@@ -775,7 +775,7 @@
 - (void)collectionView:(UICollectionView *)collectionView didDeselectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     // test
-    if (_isEditMode == NO)
+    if (isEditMode == NO)
         return;
    
     NSArray *metadatasForKey = [sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]];
