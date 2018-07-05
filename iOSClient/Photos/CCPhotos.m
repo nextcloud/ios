@@ -116,8 +116,7 @@
     // Plus Button
     [appDelegate plusButtonVisibile:true];
 
-    if(!isSearchMode && !isEditMode)
-        [self reloadDatasource];
+    [self reloadDatasource];
 }
 
 - (void)viewSafeAreaInsetsDidChange
@@ -424,7 +423,6 @@
     }
     
     [self editingModeNO];
-    [self reloadDatasource];
 }
 
 - (void)deleteSelectedFiles
