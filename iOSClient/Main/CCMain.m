@@ -4658,13 +4658,13 @@
             cell.labelInfoFile.enabled = YES;
             
             cell.userInteractionEnabled = YES;
+            
 //            cell.cancelTaskButton.enabled = YES;
         }
         
         // downloadFile
         if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusDownloadError) {
-            
-            cell.status.image = [UIImage imageNamed:@"statusdownload"];
+            //
         }
         
         // downloadFile Error
@@ -4681,8 +4681,6 @@
         
         // uploadFile
         if (metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading || metadata.status == k_metadataStatusUploadError) {
-            
-            cell.status.image = [UIImage imageNamed:@"statusupload"];
             
             if (!iconFileExists) {
                 cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
