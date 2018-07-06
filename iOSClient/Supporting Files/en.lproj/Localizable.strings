@@ -376,6 +376,13 @@
 "_theming_is_light_"            = "Server theming too brightly coloured, not applicable";
 "_cancel_all_task_"             = "Cancel all transfers";
 
+"_status_wait_download_"        = "Waiting for download";
+"_status_in_download_"          = "In download";
+"_status_downloading_"          = "Downloading";
+"_status_wait_upload_"          = "Waiting for upload";
+"_status_in_upload_"            = "In upload";
+"_status_uploading_"            = "Uploading";
+
 // Files Preview
 
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
