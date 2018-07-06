@@ -277,7 +277,6 @@
 - (void)viewDocument
 {
     CGFloat safeAreaBottom = 0;
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileName:self.metadataDetail.fileNameView];
     
     if (@available(iOS 11, *)) {
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
@@ -288,6 +287,11 @@
         [self backNavigationController];
         return;
     }
+    
+    NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNameView];
+    
+    [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
+    [[NSFileManager defaultManager] linkItemAtPath:[CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileName:self.metadataDetail.fileNameView] toPath:fileNamePath error:nil];
     
     NSURL *url = [NSURL fileURLWithPath:fileNamePath];
 
