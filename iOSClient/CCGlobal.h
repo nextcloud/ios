@@ -135,6 +135,12 @@
 #define k_taskStatusSuspend                             -3
 
 // Metadata : Status
+//
+// 1) wait download/upload
+// 2) in download/upload
+// 3) downloading/uploading
+// 4) done or error
+//
 #define k_metadataStatusNormal                          0
 #define k_metadataStatusHide                            1
 

@@ -1098,7 +1098,7 @@
 
 - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [self reloadDatasource: serverUrl];
+    [self reloadDatasource:serverUrl];
     
     [appDelegate updateApplicationIconBadgeNumber];
 }
@@ -1299,7 +1299,7 @@
 
 - (void)uploadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [self reloadDatasource: serverUrl];
+    [self reloadDatasource:serverUrl];
     
     [appDelegate updateApplicationIconBadgeNumber];
 }
@@ -4626,8 +4626,31 @@
         cell.labelTitle.textColor = [UIColor blackColor];
         cell.labelTitle.text = metadata.fileNameView;
         
-        cell.labelInfoFile.text = [CCUtility transformedSize:metadata.size];
+        // Write status on Label Info
+        NSString *statusString = @"";
+        switch (metadata.status) {
+            case 2:
+                statusString = NSLocalizedString(@"_status_wait_download_",nil);
+                break;
+            case 3:
+                statusString = NSLocalizedString(@"_status_in_download_",nil);
+                break;
+            case 4:
+                statusString = NSLocalizedString(@"_status_downloading_",nil);
+                break;
+            case 6:
+                statusString = NSLocalizedString(@"_status_wait_upload_",nil);
+                break;
+            case 7:
+                statusString = NSLocalizedString(@"_status_in_upload_",nil);
+                break;
+            case 8:
+                statusString = NSLocalizedString(@"_status_uploading_",nil);
+                break;
+        }
         
+        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
+
         BOOL iconFileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
 
         if (iconFileExists) {
