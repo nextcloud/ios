@@ -4626,31 +4626,37 @@
         cell.labelTitle.textColor = [UIColor blackColor];
         cell.labelTitle.text = metadata.fileNameView;
         
+        cell.transferButton.tintColor = [NCBrandColor sharedInstance].icon;
+        
         // Write status on Label Info
         NSString *statusString = @"";
         switch (metadata.status) {
             case 2:
                 statusString = NSLocalizedString(@"_status_wait_download_",nil);
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
                 break;
             case 3:
                 statusString = NSLocalizedString(@"_status_in_download_",nil);
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
                 break;
             case 4:
                 statusString = NSLocalizedString(@"_status_downloading_",nil);
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
                 break;
             case 6:
                 statusString = NSLocalizedString(@"_status_wait_upload_",nil);
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", statusString];
                 break;
             case 7:
                 statusString = NSLocalizedString(@"_status_in_upload_",nil);
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", statusString];
                 break;
             case 8:
                 statusString = NSLocalizedString(@"_status_uploading_",nil);
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
                 break;
         }
         
-        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
-
         BOOL iconFileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
 
         if (iconFileExists) {
@@ -4663,8 +4669,6 @@
             }
         }
         
-        cell.transferButton.tintColor = [NCBrandColor sharedInstance].icon;
-        
         // Session Upload Extension
         if ([metadata.session isEqualToString:k_upload_session_extension] && (metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading)) {
             
@@ -4673,16 +4677,12 @@
             
             cell.userInteractionEnabled = NO;
             
-//            cell.cancelTaskButton.enabled = NO;
-            
         } else {
             
             cell.labelTitle.enabled = YES;
             cell.labelInfoFile.enabled = YES;
             
-            cell.userInteractionEnabled = YES;
-            
-//            cell.cancelTaskButton.enabled = YES;
+            cell.userInteractionEnabled = YES;            
         }
         
         // downloadFile
