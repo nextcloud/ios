@@ -4655,6 +4655,9 @@
                 statusString = NSLocalizedString(@"_status_uploading_",nil);
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
                 break;
+            default:
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
+                break;
         }
         
         BOOL iconFileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
@@ -4682,7 +4685,7 @@
             cell.labelTitle.enabled = YES;
             cell.labelInfoFile.enabled = YES;
             
-            cell.userInteractionEnabled = YES;            
+            cell.userInteractionEnabled = YES;
         }
         
         // downloadFile
