@@ -225,7 +225,7 @@
     }
         
     // Start Timer
-    self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
+    self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Registration Push Notification
@@ -1356,35 +1356,18 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Process Auto Upload < k_timerProcess seconds > =====
+#pragma mark ===== Process Load Download/Upload < k_timerProcess seconds > =====
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)processAutoDownloadUpload
-{
-    // Test Maintenance
-    if (self.maintenanceMode)
-        return;
-    
-    // BACKGROND & FOREGROUND
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        
-        // ONLY BACKGROUND
-        NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
-        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-        
-    } else {
-        
-        // ONLY FOREFROUND
-        NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
-        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-    }
-}
 
 - (void)loadAutoDownloadUpload
 {    
     tableMetadata *metadataForUpload, *metadataForDownload;
     NSInteger counterNewDownloadUpload = 0;
-        
+    
+    // Test Maintenance
+    if (self.maintenanceMode)
+        return;
+    
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading]];
@@ -1394,6 +1377,8 @@
                 return;
         }
     }
+    
+    NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
     
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
@@ -1552,7 +1537,7 @@
     }
     
     // Start Timer
-    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
+    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
