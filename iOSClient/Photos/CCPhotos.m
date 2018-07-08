@@ -456,22 +456,17 @@
 #pragma mark ==== Download Thumbnail Delegate ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
 {
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    if (errorCode == 0) {
+    [ocNetworking downloadThumbnailWithDimOfThumbnail:@"m" fileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView success:^{
         
-        NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadataNet.fileID];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]])
+            [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
         
-        if ([self indexPathIsValid:indexPath]) {
-        
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadataNet.fileID fileNameView:metadataNet.fileNameView]])
-                [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
-        }
-    }
+    } failure:^(NSString *message, NSInteger errorCode) {
+    }];
 }
 
 - (void)triggerProgressTask:(NSNotification *)notification
@@ -730,8 +725,9 @@
                 
                 imageView.image = [UIImage imageNamed:@"file_photo"];
 
-                if (metadata.thumbnailExists)
-                    [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
+                if (metadata.thumbnailExists) {
+                    [self downloadThumbnail:metadata serverUrl:directory.serverUrl indexPath:indexPath];
+                }
             }
         }
     
