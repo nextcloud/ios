@@ -27,7 +27,7 @@
 #import "TOScrollBar.h"
 #import "NCBridgeSwift.h"
 
-@interface CCPhotos () <CCActionsDownloadThumbnailDelegate>
+@interface CCPhotos ()
 {
     AppDelegate *appDelegate;
 
@@ -352,6 +352,12 @@
 #pragma mark ===== Download =====
 #pragma--------------------------------------------------------------------------------------------
 
+- (void)triggerProgressTask:(NSNotification *)notification
+{
+    //NSDictionary *dict = notification.userInfo;
+    //float progress = [[dict valueForKey:@"progress"] floatValue];
+}
+
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
 {
     if (errorCode == 0) {
@@ -453,7 +459,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download Thumbnail Delegate ====
+#pragma mark ==== Download Thumbnail ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
@@ -467,12 +473,6 @@
         
     } failure:^(NSString *message, NSInteger errorCode) {
     }];
-}
-
-- (void)triggerProgressTask:(NSNotification *)notification
-{
-    //NSDictionary *dict = notification.userInfo;
-    //float progress = [[dict valueForKey:@"progress"] floatValue];
 }
 
 #pragma --------------------------------------------------------------------------------------------
