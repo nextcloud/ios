@@ -822,6 +822,11 @@
         if (self.detailViewController.isViewLoaded && self.detailViewController.view.window)
             return NO;
     
+    // check if metadata is invalidated
+    if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
+        return NO;
+    }
+    
     // ok perform segue
     return YES;
 }
