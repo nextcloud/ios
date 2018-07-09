@@ -46,12 +46,15 @@ public class SwiftModalWebVC: UINavigationController {
         self.init(request: URLRequest(url: pageURL), theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
     }
    
-    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color: UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
+    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color: UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = true, hideToolbar: Bool = true) {
         
         let webViewController = SwiftWebVC(aRequest: request, hideToolbar: hideToolbar)
         webViewController.storedStatusColor = UINavigationBar.appearance().barStyle
         
         super.init(rootViewController: webViewController)
+
+        webViewController.navigationController?.navigationBar.isTranslucent = false
+        webViewController.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
 
         let doneButton = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCDismiss"),
                                          style: UIBarButtonItemStyle.plain,
