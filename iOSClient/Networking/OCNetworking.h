@@ -60,8 +60,6 @@
 
 @optional
 
-- (void)downloadThumbnailSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;
-
 - (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode;
 
 - (void)createFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode;

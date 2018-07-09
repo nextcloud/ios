@@ -273,25 +273,6 @@
 #pragma mark ===== downloadThumbnail =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnail
-{
-    [self downloadThumbnailWithDimOfThumbnail:(NSString *)_metadataNet.optionAny fileID:_metadataNet.fileID fileNamePath:_metadataNet.fileName fileNameView:_metadataNet.fileNameView success:^{
-        
-        if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)])
-            [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:nil errorCode:0];
-        
-        [self complete];
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-        if ([self.delegate respondsToSelector:@selector(downloadThumbnailSuccessFailure:message:errorCode:)]) {
-            [self.delegate downloadThumbnailSuccessFailure:_metadataNet message:message errorCode:errorCode];
-        }
-        
-        [self complete];
-    }];
-}
-
 - (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;

@@ -1067,7 +1067,7 @@
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download Thumbnail Delegate ====
+#pragma mark ==== Download Thumbnail ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath

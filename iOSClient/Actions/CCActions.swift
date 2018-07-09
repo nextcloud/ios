@@ -39,11 +39,6 @@ import Foundation
     func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
 }
 
-@objc protocol CCActionsDownloadThumbnailDelegate {
-    
-    func downloadThumbnailSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
-}
-
 @objc protocol CCActionsSettingFavoriteDelegate {
     
     func settingFavoriteSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
@@ -372,36 +367,6 @@ class CCActions: NSObject {
         metadataNet.delegate?.searchSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
     }
     
-    // --------------------------------------------------------------------------------------------
-    // MARK: Download Tumbnail
-    // --------------------------------------------------------------------------------------------
-
-    @objc func downloadTumbnail(_ metadata: tableMetadata, delegate: AnyObject) {
-        
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-        
-        metadataNet.action = actionDownloadThumbnail
-        metadataNet.delegate = delegate
-        metadataNet.fileID = metadata.fileID
-        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
-        metadataNet.fileNameView = metadata.fileNameView
-        metadataNet.optionAny = "m"
-        metadataNet.priority = Operation.QueuePriority.low.rawValue
-        metadataNet.selector = selectorDownloadThumbnail;
-        metadataNet.serverUrl = serverUrl;
-
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-
-    @objc func downloadThumbnailSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
-        
-        metadataNet.delegate?.downloadThumbnailSuccessFailure(metadataNet, message: message, errorCode: errorCode)        
-    }
-
     // --------------------------------------------------------------------------------------------
     // MARK: Setting Favorite
     // --------------------------------------------------------------------------------------------

@@ -178,7 +178,6 @@
 #define selectorAddFavorite                             @"addFavorite"
 #define selectorCreateFolder                            @"createFolder"
 #define selectorDelete                                  @"delete"
-#define selectorDownloadThumbnail                       @"downloadThumbnail"
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorGetUserAndGroup                         @"getUserAndGroup"
 #define selectorLoadFileView                            @"loadFileView"
@@ -210,7 +209,6 @@
 // Metadata.Net ACTION
 #define actionCreateFolder                              @"createFolder"
 #define actionDeleteFileDirectory                       @"deleteFileOrFolder"
-#define actionDownloadThumbnail                         @"downloadThumbnail"
 #define actionGetActivityServer                         @"getActivityServer"
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"
 #define actionGetUserAndGroup                           @"getUserAndGroup"
@@ -272,7 +270,6 @@
 
 #define k_activityDebugActionDownload                   @"Download"
 #define k_activityDebugActionDownloadPicker             @"Download Picker"
-#define k_activityDebugActionDownloadThumbnail          @"Download Thumbnail"
 #define k_activityDebugActionUpload                     @"Upload"
 #define k_activityDebugActionUploadPicker               @"Upload Picker"
 #define k_activityDebugActionUploadShare                @"Upload Share"
