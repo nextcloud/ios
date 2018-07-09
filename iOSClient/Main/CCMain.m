@@ -4672,9 +4672,7 @@
             cell.userInteractionEnabled = NO;
             
             cell.transferButton.hidden = YES;
-            
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], NSLocalizedString(@"_uploading_on_extension_",nil)];
-            
+                        
         } else {
             
             cell.labelTitle.enabled = YES;
