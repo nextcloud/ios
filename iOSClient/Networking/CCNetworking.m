@@ -747,21 +747,19 @@
                     metadata.fileName = [fileNameJPEG stringByAppendingString:@".jpg"];
                     metadata.fileNameView = metadata.fileName;
                     
-                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView] options:NSDataWritingAtomic error:&error];
-                    
-                } else {
-                    
-                    [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView] options:NSDataWritingAtomic error:&error];
+                    // Change Metadata with new fileID, fileName, fileNameView
+                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                    metadata.fileID = [metadata.directoryID stringByAppendingString:metadata.fileName];
                 }
                 
+                tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
+                [imageData writeToFile:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileName:metadataForUpload.fileNameView] options:NSDataWritingAtomic error:&error];
+
                 if (error) {
-                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                    [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataForUpload.fileID] clearDateReadDirectoryID:metadataForUpload.directoryID];
                     
-                    [delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
+                    [delegate uploadFileSuccessFailure:metadataForUpload.fileName fileID:metadataForUpload.fileID assetLocalIdentifier:metadataForUpload.assetLocalIdentifier serverUrl:serverUrl selector:metadataForUpload.sessionSelector errorMessage:[NSString stringWithFormat:@"Image request failed [%@]", error.description] errorCode:error.code];
                 } else {
-                    
-                    // create Metadata for Upload
-                    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] addMetadata:[CCUtility insertFileSystemInMetadata:metadata]];
                     
                     // OOOOOK
                     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
