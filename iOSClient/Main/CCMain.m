@@ -4083,13 +4083,13 @@
             [main reloadDatasource];
         } else {
             [self tableViewReloadData];
-//            [appDelegate.activeTransfers reloadDatasource];
+            [appDelegate.activeTransfers reloadDatasource];
         }
         
         return;
     }
     
-//    [appDelegate.activeTransfers reloadDatasource];
+    [appDelegate.activeTransfers reloadDatasource];
     
     // Settaggio variabili per le ottimizzazioni
     _directoryGroupBy = [CCUtility getGroupBySettings];

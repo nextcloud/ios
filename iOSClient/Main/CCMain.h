@@ -79,6 +79,7 @@
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
 - (void)cancelTaskButton:(tableMetadata *)metadata reloadTable:(BOOL)reloadTable;
+- (void)cancelAllTask:(id)sender;
 
 - (void)reloadDatasource;
 - (void)reloadDatasource:(NSString *)serverUrl;

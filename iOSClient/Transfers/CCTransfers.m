@@ -57,6 +57,8 @@
 
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(triggerProgressTask:) name:@"NotificationProgressTask" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeTheming) name:@"changeTheming" object:nil];
+        
+        appDelegate.activeTransfers = self;
     }
     return self;
 }
@@ -201,25 +203,9 @@
     }
 }
 
-- (void)cancelAllTask
+- (void)cancelAllTask:(id)sender
 {
-    if (appDelegate.activeMain == nil)
-        return;
-    
-    BOOL lastAndRefresh = NO;
-    
-    for (NSString *key in sectionDataSource.allRecordsDataSource.allKeys) {
-        
-        if ([key isEqualToString:[sectionDataSource.allRecordsDataSource.allKeys lastObject]])
-            lastAndRefresh = YES;
-        
-        tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:key];
-        
-        if ([metadata.session containsString:@"upload"] && ((metadata.sessionTaskIdentifier == k_taskIdentifierDone) || (metadata.sessionTaskIdentifier >= 0)))
-            continue;
-        
-        [appDelegate.activeMain cancelTaskButton:metadata reloadTable:lastAndRefresh];
-    }
+    [appDelegate.activeMain cancelAllTask:sender];
 }
 
 #pragma --------------------------------------------------------------------------------------------
