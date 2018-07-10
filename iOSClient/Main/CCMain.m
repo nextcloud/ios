@@ -2174,7 +2174,7 @@
     if (!fileID || [fileID isEqualToString: @""])
         return;
     
-    [appDelegate.listProgressMetadata setObject:[NSNumber numberWithFloat:progress] forKey:fileID];
+    [appDelegate.listProgressMetadata setObject:[NSArray arrayWithObjects:[NSNumber numberWithFloat:progress], [dict valueForKey:@"totalBytes"], [dict valueForKey:@"totalBytesExpected"], nil] forKey:fileID];
     
     if (![serverUrl isEqualToString:_serverUrl])
         return;
@@ -4634,6 +4634,15 @@
         
         cell.transferButton.tintColor = [NCBrandColor sharedInstance].icon;
         
+        float progress = 0;
+        long long totalBytes = 0, totalBytesExpected = 0;
+        NSArray *progressArray = [appDelegate.listProgressMetadata objectForKey:metadata.fileID];
+        if (progressArray != nil && progressArray.count == 3) {
+            progress = [[progressArray objectAtIndex:0] floatValue];
+            totalBytes = [[progressArray objectAtIndex:1] longLongValue];
+            totalBytesExpected = [[progressArray objectAtIndex:2] longLongValue];
+        }
+        
         // Write status on Label Info
         NSString *statusString = @"";
         switch (metadata.status) {
@@ -4646,8 +4655,7 @@
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
                 break;
             case 4:
-                statusString = NSLocalizedString(@"_status_downloading_",nil);
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
                 break;
             case 6:
                 statusString = NSLocalizedString(@"_status_wait_upload_",nil);
@@ -4658,8 +4666,7 @@
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", statusString];
                 break;
             case 8:
-                statusString = NSLocalizedString(@"_status_uploading_",nil);
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
                 break;
             default:
                 cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
@@ -4735,9 +4742,8 @@
         }
         
         // Progress
-        float progress = [[appDelegate.listProgressMetadata objectForKey:metadata.fileID] floatValue];
         cell.transferButton.progress = progress;
-        
+
         // gesture Transfer
         [cell.transferButton.stopButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
         
