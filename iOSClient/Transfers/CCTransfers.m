@@ -482,7 +482,11 @@
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
             break;
         case 4:
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
+            if (totalBytes > 0) {
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
+            } else {
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
+            }
             break;
         case 6:
             statusString = NSLocalizedString(@"_status_wait_upload_",nil);
@@ -493,7 +497,11 @@
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", statusString];
             break;
         case 8:
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
+            if (totalBytes > 0) {
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
+            } else {
+                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
+            }
             break;
         default:
             cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
