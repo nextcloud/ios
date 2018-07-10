@@ -77,8 +77,7 @@
 + (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField fileIDHide:(NSArray *)fileIDHide activeAccount:(NSString *)activeAccount
 {
     id dataSection;
-    long counterSessionDownload = 0;
-    long counterSessionUpload = 0;
+
     NSMutableArray *copyRecords = [NSMutableArray new];
     NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
     
@@ -129,8 +128,12 @@
      sectionArrayRow
     */
     
+    //    long counterSessionDownload = 0;
+    //    long counterSessionUpload = 0;
+    
     for (tableMetadata *metadata in copyRecords) {
         
+        /*
         // how many download underway (only for groupSession)
         if ([metadata.session containsString:@"download"] && [groupByField isEqualToString:@"session"]) {
             counterSessionDownload++;
@@ -144,6 +147,7 @@
             if (counterSessionUpload > 10)
                 continue;
         }
+        */
         
         if ([metadata.session length] > 0 && [groupByField isEqualToString:@"session"]) {
             
