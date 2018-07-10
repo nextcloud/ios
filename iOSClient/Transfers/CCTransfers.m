@@ -511,16 +511,10 @@
         cell.labelTitle.enabled = NO;
         cell.labelInfoFile.enabled = NO;
         
-        cell.userInteractionEnabled = NO;
-        
-        cell.transferButton.hidden = YES;
-        
     } else {
         
         cell.labelTitle.enabled = YES;
         cell.labelInfoFile.enabled = YES;
-        
-        cell.userInteractionEnabled = YES;
     }
     
     // downloadFile

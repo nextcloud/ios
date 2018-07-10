@@ -124,6 +124,9 @@
 // Maintenance Mode
 @property BOOL maintenanceMode;
 
+// UserDefaults
+@property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
+
 // Login View
 - (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType;
 

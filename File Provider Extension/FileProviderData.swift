@@ -55,6 +55,9 @@ class FileProviderData: NSObject {
     var fileProviderSignalDeleteWorkingSetItemIdentifier = [NSFileProviderItemIdentifier:NSFileProviderItemIdentifier]()
     var fileProviderSignalUpdateWorkingSetItem = [NSFileProviderItemIdentifier:FileProviderItem]()
     
+    // UserDefaults
+    var ncUserDefaults = UserDefaults(suiteName: NCBrandOptions.sharedInstance.capabilitiesGroups)
+    
     // MARK: - 
     
     func setupActiveAccount() -> Bool {

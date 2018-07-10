@@ -2218,49 +2218,6 @@
     }
 }
 
-- (void)cancelAllTask:(id)sender
-{
-    CGPoint location = [sender locationInView:self.tableView];
-    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
-
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        
-        // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError] clearDateReadDirectoryID:nil];
-        
-        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status != %d AND status != %d", appDelegate.activeAccount, k_metadataStatusNormal, k_metadataStatusHide] sorted:@"fileName" ascending:true];
-        
-        for (tableMetadata *metadata in metadatas) {
-            
-            // Modify
-            if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
-                metadata.session = @"";
-                metadata.sessionSelector = @"";
-                metadata.status = k_metadataStatusNormal;
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-            }
-            // Cancel Task
-            if (metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading) {
-                [self cancelTaskButton:metadata reloadTable:NO];
-            }
-        }
-        
-        [self reloadDatasource];
-    }]];
-    
-    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
-    
-    alertController.popoverPresentationController.sourceView = self.view;
-    alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-        [alertController.view layoutIfNeeded];
-    
-    [self presentViewController:alertController animated:YES completion:nil];
-}
-
 - (void)cancelTaskButton:(tableMetadata *)metadata reloadTable:(BOOL)reloadTable
 {    
     NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
@@ -2268,6 +2225,21 @@
     
     NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
     NSString *fileID = metadata.fileID;
+    
+    // SESSION EXTENSION
+    if ([metadata.session isEqualToString:k_download_session_extension] || [metadata.session isEqualToString:k_upload_session_extension]) {
+        
+        if ([metadata.session isEqualToString:k_upload_session_extension]) {
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
+        } else {
+            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+        }
+    
+        [self reloadDatasource];
+        
+        return;
+    }
     
     // DOWNLOAD
     if ([metadata.session length] > 0 && [metadata.session containsString:@"download"]) {
@@ -2310,6 +2282,49 @@
             }
         }];
     }
+}
+
+- (void)cancelAllTask:(id)sender
+{
+    CGPoint location = [sender locationInView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        
+        // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError] clearDateReadDirectoryID:nil];
+        
+        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status != %d AND status != %d", appDelegate.activeAccount, k_metadataStatusNormal, k_metadataStatusHide] sorted:@"fileName" ascending:true];
+        
+        for (tableMetadata *metadata in metadatas) {
+            
+            // Modify
+            if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
+                metadata.session = @"";
+                metadata.sessionSelector = @"";
+                metadata.status = k_metadataStatusNormal;
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            }
+            // Cancel Task
+            if (metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading) {
+                [self cancelTaskButton:metadata reloadTable:NO];
+            }
+        }
+        
+        [self reloadDatasource];
+    }]];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
+    
+    alertController.popoverPresentationController.sourceView = self.view;
+    alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        [alertController.view layoutIfNeeded];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4669,16 +4684,10 @@
             cell.labelTitle.enabled = NO;
             cell.labelInfoFile.enabled = NO;
             
-            cell.userInteractionEnabled = NO;
-            
-            cell.transferButton.hidden = YES;
-                        
         } else {
             
             cell.labelTitle.enabled = YES;
             cell.labelInfoFile.enabled = YES;
-            
-            cell.userInteractionEnabled = YES;
         }
         
         // downloadFile

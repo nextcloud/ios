@@ -170,7 +170,10 @@
    
     // Add notification change session
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
-        
+    
+    // UserDefaults
+    self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    
     // Initialization Share
     self.sharesID = [NSMutableDictionary new];
     self.sharesLink = [NSMutableDictionary new];
@@ -236,7 +239,7 @@
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
     [self logUser];
-        
+    
     return YES;
 }
 
