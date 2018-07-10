@@ -4612,7 +4612,7 @@
         cell.file.image = nil;
         cell.status.image = nil;
         
-        cell.backgroundColor = [NCBrandColor sharedInstance].transferBackground;
+        cell.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
         
         cell.labelTitle.textColor = [UIColor blackColor];
         cell.labelTitle.text = metadata.fileNameView;

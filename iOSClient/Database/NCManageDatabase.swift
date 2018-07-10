@@ -1863,50 +1863,6 @@ class NCManageDatabase: NSObject {
         return tableMetadata.init(value: result)
     }
     
-    @objc func getTableMetadataDownload() -> [tableMetadata]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
-        let predicate = NSPredicate(format: "account == %@ AND (session == %@ OR session == %@) AND sessionTaskIdentifier != %i", tableAccount.account, k_download_session, k_download_session_foreground, Int(k_taskIdentifierDone))
-        
-        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
-    }
-    
-    @objc func getTableMetadataDownloadWWan() -> [tableMetadata]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-
-        let predicate = NSPredicate(format: "account == %@ AND session == %@ AND sessionTaskIdentifier != %i", tableAccount.account, k_download_session_wwan, Int(k_taskIdentifierDone))
-        
-        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
-    }
-    
-    @objc func getTableMetadataUpload() -> [tableMetadata]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-
-        let predicate = NSPredicate(format: "account == %@ AND (session == %@ OR session == %@) AND sessionTaskIdentifier != %i", tableAccount.account, k_upload_session, k_upload_session_foreground, Int(k_taskIdentifierDone))
-        
-        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
-    }
-    
-    @objc func getTableMetadataUploadWWan() -> [tableMetadata]? {
-        
-        guard let tableAccount = self.getAccountActive() else {
-            return nil
-        }
-        
-        let predicate = NSPredicate(format: "account == %@ AND session == %@ AND sessionTaskIdentifier != %i", tableAccount.account, k_upload_session_wwan, Int(k_taskIdentifierDone))
-        
-        return self.getMetadatas(predicate: predicate, sorted: nil, ascending: false)
-    }
-    
     @objc func getTableMetadatasDirectoryFavoriteIdentifierRank() -> [String:NSNumber] {
         
         var listIdentifierRank = [String:NSNumber]()
