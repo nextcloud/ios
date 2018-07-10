@@ -23,6 +23,33 @@
 
 import Foundation
 
-class NCActivity: NSObject {
+class NCActivity: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
+     override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    // Apparirà
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 10
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 0
+    }
+    
+    /*
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return nil
+    }
+    */
 }
