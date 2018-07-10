@@ -824,8 +824,6 @@
     
     // check if metadata is invalidated
     if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
-        [self.fileIDHide addObject:metadata.fileID];
-        [self reloadDatasource];
         return NO;
     }
     
