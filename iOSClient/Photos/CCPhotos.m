@@ -468,8 +468,10 @@
     
     [ocNetworking downloadThumbnailWithDimOfThumbnail:@"m" fileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView success:^{
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]])
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath]) {
+
             [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
+        }
         
     } failure:^(NSString *message, NSInteger errorCode) {
     }];
@@ -630,6 +632,11 @@
 #pragma mark ==== Collection ====
 #pragma --------------------------------------------------------------------------------------------
 
+- (BOOL)indexPathIsValid:(NSIndexPath *)indexPath
+{
+    return indexPath.section < [self numberOfSectionsInCollectionView:self.collectionView] && indexPath.row < [self collectionView:self.collectionView numberOfItemsInSection:indexPath.section];
+}
+
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
 {    
     return [[sectionDataSource.sectionArrayRow allKeys] count];
@@ -781,27 +788,6 @@
         
         [self cellSelect:NO indexPath:indexPath metadata:metadata];
     }
-}
-
-- (BOOL)indexPathIsValid:(NSIndexPath *)indexPath
-{
-    if (!indexPath)
-        return NO;
-    
-    NSInteger section = indexPath.section;
-    NSInteger row = indexPath.row;
-    
-    NSInteger lastSectionIndex = [self numberOfSectionsInCollectionView:self.collectionView] - 1;
-    
-    if (section > lastSectionIndex || lastSectionIndex < 0)
-        return NO;
-    
-    NSInteger rowCount = [self.collectionView numberOfItemsInSection:indexPath.section] - 1;
-    
-    if (rowCount < 0)
-        return NO;
-    
-    return row <= rowCount;
 }
 
 #pragma --------------------------------------------------------------------------------------------
