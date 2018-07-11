@@ -51,8 +51,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func invalidate() {
-        // Update the WorkingSet -> Favorite
-        providerData.updateFavoriteForWorkingSet()
+       
     }
 
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
@@ -133,6 +132,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 }
                 return
             }
+            
+            // Update the WorkingSet -> Favorite
+            providerData.updateFavoriteForWorkingSet()
             
             // Read 
             var fileName: String?
