@@ -28,7 +28,7 @@
 
 @protocol CCIntroDelegate;
 
-@interface CCIntro : NSObject <EAIntroDelegate>
+@interface CCIntro : UIViewController <EAIntroDelegate>
 
 - (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView type:(NSString *)type;
 
