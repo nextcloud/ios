@@ -132,7 +132,7 @@
     if ([NCBrandOptions sharedInstance].disable_intro) {
         
         [CCUtility setIntroMessage:k_Intro set:YES];
-        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
+//        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
     
         [self introWillFinish:nil type:nil wasSkipped:NO];
 

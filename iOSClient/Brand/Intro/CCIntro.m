@@ -23,11 +23,14 @@
 
 #import "CCIntro.h"
 
+#import "NCBridgeSwift.h"
+
 @interface CCIntro ()
 {
     int titlePositionY;
     int descPositionY;
     int titleIconPositionY;
+    int buttonPosition;
 }
 @end
 
@@ -68,86 +71,120 @@
     if ([self.type isEqualToString:k_Intro])
         [self showIntro];
     
-    if ([self.type isEqualToString:k_Intro_no_cryptocloud])
-        [self showIntroNoCryptoCloud];
+//    if ([self.type isEqualToString:k_Intro_no_cryptocloud])
+//        [self showIntroNoCryptoCloud];
 }
 
 - (void)showIntro
 {
     //NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
     CGFloat height = self.rootView.bounds.size.height;
+    CGFloat width = self.rootView.bounds.size.width;
     
     if (height <= 480) {
-        titleIconPositionY = 20; titlePositionY = 260; descPositionY = 230;
+        titleIconPositionY = 20;
+    } else {
+        titleIconPositionY = 100;
     }
     
-    // 812 = iPhoneX
-    if (height > 480 && height <= 812) {
-        titleIconPositionY = 50; titlePositionY = height / 2; descPositionY = height / 2 - 40 ;
-    }
+    titlePositionY = height / 2 + 40.0;
+    descPositionY  = height / 2;
+    buttonPosition = height / 2 + 120.0;
     
-    if (height > 812) {
-        titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250;
-    }
+    // Button
+    
+    UIView *buttonView = [[UIView alloc] initWithFrame:CGRectMake(0,0, self.rootView.bounds.size.width, 100.0)];
+    buttonView.userInteractionEnabled = YES ;
+    
+    UIButton *buttonLogin = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    buttonLogin.frame = CGRectMake(50.0, 0.0, width - 100.0, 40.0);
+    [buttonLogin setTitle:@"Login" forState:UIControlStateNormal];
+    buttonLogin.titleLabel.font = [UIFont systemFontOfSize:20];
+    buttonLogin.backgroundColor = [[NCBrandColor sharedInstance] customerText];
+    [buttonLogin addTarget:self action:@selector(aMethod:) forControlEvents:UIControlEventTouchDown];
+    
+    UIButton *buttonSignUp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
+    [buttonSignUp setTitle:@"Sign up with provider" forState:UIControlStateNormal];
+    buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:20];
+    buttonSignUp.backgroundColor = [[NCBrandColor sharedInstance] customerText];
+    [buttonSignUp addTarget:self action:@selector(aMethod:) forControlEvents:UIControlEventTouchDown];
+    
+    [buttonView addSubview:buttonLogin];
+    [buttonView addSubview:buttonSignUp];
+    
+    // Pages
     
     EAIntroPage *page1 = [EAIntroPage page];
 
     page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1"]];
-    page1.title = NSLocalizedStringFromTable(@"_intro_1_title_", @"Intro", nil);
-    page1.desc = NSLocalizedStringFromTable(@"_intro_1_text_",  @"Intro", nil);
-
-    page1.titlePositionY = titlePositionY;
-    page1.titleColor = [UIColor blackColor];
-    page1.titleFont = [UIFont systemFontOfSize:20];
-    page1.descPositionY = descPositionY;
-    page1.descColor = [UIColor blackColor];
-    page1.descFont = [UIFont systemFontOfSize:14];
-    page1.bgImage = [UIImage imageNamed:@"bgbianco"];
     page1.titleIconPositionY = titleIconPositionY;
-    page1.showTitleView = NO;
+
+    page1.title = NSLocalizedStringFromTable(@"_intro_1_title_", @"Intro", nil);
+    page1.titlePositionY = titlePositionY;
+    page1.titleColor = [[NCBrandColor sharedInstance] customerText];
+    page1.titleFont = [UIFont systemFontOfSize:20];
+    
+    page1.desc = NSLocalizedStringFromTable(@"_intro_1_text_",  @"Intro", nil);
+    page1.descPositionY = descPositionY;
+    page1.descColor = [[NCBrandColor sharedInstance] customerText];
+    page1.descFont = [UIFont systemFontOfSize:14];
+    
+    page1.bgColor = [[NCBrandColor sharedInstance] customer];
+    page1.showTitleView = YES;
 
     EAIntroPage *page2 = [EAIntroPage page];
 
     page2.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro2"]];
-    page2.title = NSLocalizedStringFromTable(@"_intro_2_title_",  @"Intro", nil);
-    page2.desc = NSLocalizedStringFromTable(@"_intro_2_text_",  @"Intro", nil);
-
-    page2.titlePositionY = titlePositionY;
-    page2.titleColor = [UIColor blackColor];
-    page2.titleFont = [UIFont systemFontOfSize:20];
-    page2.descPositionY = descPositionY;
-    page2.descColor = [UIColor blackColor];
-    page2.descFont = [UIFont systemFontOfSize:14];
-    page2.bgImage = [UIImage imageNamed:@"bgbianco"];
     page2.titleIconPositionY = titleIconPositionY;
-    page2.showTitleView = NO;
+
+    page2.title = NSLocalizedStringFromTable(@"_intro_2_title_",  @"Intro", nil);
+    page2.titlePositionY = titlePositionY;
+    page2.titleColor = [[NCBrandColor sharedInstance] customerText];
+    page2.titleFont = [UIFont systemFontOfSize:20];
+    
+    page2.desc = NSLocalizedStringFromTable(@"_intro_2_text_",  @"Intro", nil);
+    page2.descPositionY = descPositionY;
+    page2.descColor = [[NCBrandColor sharedInstance] customerText];
+    page2.descFont = [UIFont systemFontOfSize:14];
+    
+    page2.bgColor = [[NCBrandColor sharedInstance] customer];
+    page2.showTitleView = YES;
 
     EAIntroPage *page3 = [EAIntroPage page];
     
     page3.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro3"]];
-    page3.title = NSLocalizedStringFromTable(@"_intro_3_title_",  @"Intro", nil);
-    page3.desc = NSLocalizedStringFromTable(@"_intro_3_text_",  @"Intro", nil);
-
-    page3.titlePositionY = titlePositionY;
-    page3.titleColor = [UIColor blackColor];
-    page3.titleFont = [UIFont systemFontOfSize:20];
-    page3.descPositionY = descPositionY;
-    page3.descColor = [UIColor blackColor];
-    page3.descFont = [UIFont systemFontOfSize:14];
-    page3.bgImage = [UIImage imageNamed:@"bgbianco"];
     page3.titleIconPositionY = titleIconPositionY;
-    page3.showTitleView = NO;
 
+    page3.title = NSLocalizedStringFromTable(@"_intro_3_title_",  @"Intro", nil);
+    page3.titlePositionY = titlePositionY;
+    page3.titleColor = [[NCBrandColor sharedInstance] customerText];
+    page3.titleFont = [UIFont systemFontOfSize:20];
     
-    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds];
+    page3.desc = NSLocalizedStringFromTable(@"_intro_3_text_",  @"Intro", nil);
+    page3.descPositionY = descPositionY;
+    page3.descColor = [[NCBrandColor sharedInstance] customerText];
+    page3.descFont = [UIFont systemFontOfSize:14];
+    
+    page3.bgColor = [[NCBrandColor sharedInstance] customer];
+    page3.showTitleView = YES;
+
+    // INTRO
+    
+    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1,page2,page3]];
 
     intro.tapToNext = YES;
-    intro.pageControl.pageIndicatorTintColor = [UIColor lightGrayColor];
+    intro.pageControl.pageIndicatorTintColor = [UIColor whiteColor];
     intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
-    intro.pageControl.backgroundColor = [UIColor clearColor];
-    [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    intro.skipButton.enabled = NO;
+    intro.pageControl.backgroundColor = [[NCBrandColor sharedInstance] customer];
+//    [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+//    intro.skipButton.enabled = NO;
+    intro.swipeToExit = NO ;
+    intro.skipButton = nil ;
+    intro.titleView = buttonView;
+    intro.titleViewY = buttonPosition;
     
+    /*
     page1.onPageDidAppear = ^{
         intro.skipButton.enabled = YES;
         [UIView animateWithDuration:0.3f animations:^{
@@ -160,61 +197,10 @@
             intro.skipButton.alpha = 0.f;
         }];
     };
-
+    */
+    
     [intro setDelegate:self];
-    [intro setPages:@[page1,page2,page3]];
     [intro showInView:self.rootView animateDuration:0];
-}
-
-- (void)showIntroNoCryptoCloud
-{
-    //NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
-    CGFloat height = self.rootView.bounds.size.height;
-    
-    if (height <= 480) {
-        titleIconPositionY = 20; titlePositionY = 260; descPositionY = 230;
-    }
-    
-    // 812 = iPhoneX
-    if (height > 480 && height <= 812) {
-        titleIconPositionY = 50; titlePositionY = height / 2; descPositionY = height / 2 - 40 ;
-    }
-    
-    if (height > 812) {
-        titleIconPositionY = 100; titlePositionY = 290; descPositionY = 250;
-    }
-    
-    EAIntroPage *page1 = [EAIntroPage page];
-    
-    page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"IntroNoCryptoCloud"]];
-    page1.bgImage = [UIImage imageNamed:@"bgbianco"];
-    page1.showTitleView = NO;
-
-    page1.titlePositionY = titlePositionY;
-    page1.titleColor = [UIColor blackColor];
-    page1.titleFont = [UIFont systemFontOfSize:20];
-    page1.title = NSLocalizedStringFromTable(@"_introNoCryptoCloud_1_title_", @"Intro", nil);
-
-    page1.descPositionY = descPositionY;
-    page1.descColor = [UIColor blackColor];
-    page1.descFont = [UIFont systemFontOfSize:14];
-    page1.desc = NSLocalizedStringFromTable(@"_introNoCryptoCloud_1_text_",  @"Intro", nil);
-
-    page1.titleIconPositionY = titleIconPositionY;
-    
-    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds];
-    
-    intro.tapToNext = YES;
-    intro.pageControl.pageIndicatorTintColor = [UIColor clearColor];
-    intro.pageControl.currentPageIndicatorTintColor = [UIColor clearColor];
-    intro.pageControl.backgroundColor = [UIColor clearColor];
-    [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    intro.skipButton.enabled = NO;
-    intro.skipButton.alpha = 0.f;
-    
-    [intro setDelegate:self];
-    [intro setPages:@[page1]];
-    [intro showInView:self.rootView animateDuration:0.3];
 }
 
 @end
