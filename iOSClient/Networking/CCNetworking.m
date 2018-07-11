@@ -873,10 +873,15 @@
     NSURL *url;
     NSMutableURLRequest *request;
     PHAsset *asset;
+    NSError *error;
     
-    NSString *fileNamePath = [[NSString stringWithFormat:@"%@/%@", serverUrl, metadata.fileName] encodeString:NSUTF8StringEncoding];
-        
-    url = [NSURL URLWithString:fileNamePath];
+    // calculate and store file size
+    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileName] error:&error];
+    long long fileSize = [[fileAttributes objectForKey:NSFileSize] longLongValue];
+    metadata.size = fileSize;
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+    
+    url = [NSURL URLWithString:[[NSString stringWithFormat:@"%@/%@", serverUrl, metadata.fileName] encodeString:NSUTF8StringEncoding]];
     request = [NSMutableURLRequest requestWithURL:url];
         
     NSData *authData = [[NSString stringWithFormat:@"%@:%@", _activeUser, _activePassword] dataUsingEncoding:NSUTF8StringEncoding];
