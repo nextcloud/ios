@@ -340,14 +340,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
+                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: false)
                 webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: item.url)
+                let webVC = SwiftModalWebVC(urlString: item.url, theme: .dark, color: UIColor.clear, colorText: UIColor.black, doneButtonVisible: true)  //(urlString: item.url)
                 webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
