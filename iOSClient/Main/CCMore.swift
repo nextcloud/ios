@@ -347,7 +347,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: item.url, theme: .dark, color: UIColor.clear, colorText: UIColor.black, doneButtonVisible: true)  //(urlString: item.url)
+                let webVC = SwiftModalWebVC(urlString: item.url, theme: .dark, color: UIColor.clear, colorText: UIColor.black, doneButtonVisible: true)
                 webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
