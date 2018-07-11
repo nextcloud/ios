@@ -1,3 +1,25 @@
+3.7.4 Release notes (2018-06-19)
+=============================================================
+
+### Bugfixes
+
+* Fix a bug which could potentially flood Realm Object Server with PING
+  messages after a client device comes back online.
+
+3.7.3 Release notes (2018-06-18)
+=============================================================
+
+### Enhancements
+
+* Avoid performing potentially large amounts of pointless background work for
+  LinkingObjects instances which are accessed and then not immediate deallocated.
+
+### Bugfixes
+
+* Fix crashes which could result from extremely fragmented Realm files.
+* Fix a bug that could result in a crash with the message "bad changeset error"
+  when merging changesets from the server.
+
 3.7.2 Release notes (2018-06-13)
 =============================================================
 
