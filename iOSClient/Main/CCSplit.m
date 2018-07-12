@@ -168,6 +168,9 @@
             break;
             
         case k_intro_signup:
+            {
+                [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_signup];
+            }
             break;
     }
 }

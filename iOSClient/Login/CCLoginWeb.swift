@@ -47,7 +47,8 @@ public class CCLoginWeb: UIViewController {
             doneButtonVisible = true
         }
         
-        if (NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
+        // ADD k_flowEndpoint for Web Flow
+        if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.loginPreferredProviders) {
             urlString =  urlBase+k_flowEndpoint
         }
         

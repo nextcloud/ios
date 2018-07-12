@@ -323,7 +323,7 @@
 
 - (void)openLoginView:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
 {
-    BOOL loginWeb = NO;
+    BOOL loginWebFlow = NO;
     
     @synchronized (self) {
 
@@ -351,17 +351,22 @@
         if (loginType == k_login_Modify_Password) {
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             if (account.loginFlow)
-                loginWeb = YES;
+                loginWebFlow = YES;
         }
             
-        if (loginWeb) {
+        if (loginWebFlow || selector == k_intro_signup) {
             
             if (_activeLoginWeb == nil) {
                 
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;
                 _activeLoginWeb.loginType = loginType;
-                _activeLoginWeb.urlBase = self.activeUrl;
+                
+                if (selector == k_intro_signup) {
+                    _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginPreferredProviders];
+                } else {
+                    _activeLoginWeb.urlBase = self.activeUrl;
+                }
 
                 dispatch_async(dispatch_get_main_queue(), ^ {
                     [_activeLoginWeb presentModalWithDefaultTheme:delegate];
@@ -381,6 +386,8 @@
                 });
             }
         }
+        
+        
         
     }
 }

@@ -68,41 +68,42 @@ class NCBrandColor: NSObject {
         return instance
     }()
     
-    @objc public let brand:                           String = "Nextcloud"
-    @objc public let mailMe:                          String = "ios@nextcloud.com"
-    @objc public let textCopyrightNextcloudiOS:       String = "Nextcloud for iOS %@ © 2018 T.W.S. Inc."
-    @objc public let textCopyrightNextcloudServer:    String = "Nextcloud Server %@"
-    @objc public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
-    @objc public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
-    @objc public let linkLoginProvider:               String = "https://nextcloud.com/providers"
-    @objc public let textLoginProvider:               String = "_login_bottom_label_"
-    @objc public let middlewarePingUrl:               String = ""
-    @objc public let webLoginAutenticationProtocol:   String = "nc://"                                          // example "abc://"
+    @objc public let brand:                             String = "Nextcloud"
+    @objc public let mailMe:                            String = "ios@nextcloud.com"
+    @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2018 T.W.S. Inc."
+    @objc public let textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
+    @objc public let loginBaseUrl:                      String = "https://cloud.twsweb.it"
+    @objc public let loginPreferredProviders:           String = "https://nextcloud.com/register";
+    @objc public let pushNotificationServer:            String = "https://push-notifications.nextcloud.com"
+    @objc public let linkLoginProvider:                 String = "https://nextcloud.com/providers"
+    @objc public let textLoginProvider:                 String = "_login_bottom_label_"
+    @objc public let middlewarePingUrl:                 String = ""
+    @objc public let webLoginAutenticationProtocol:     String = "nc://"                                          // example "abc://"
     // Personalized
-    @objc public let webCloseViewProtocolPersonalized:String = ""                                               // example "abc://change/plan"      Don't touch me !!
-    @objc public let folderBrandAutoUpload:           String = ""                                               // example "_auto_upload_folder_"   Don't touch me !!
+    @objc public let webCloseViewProtocolPersonalized:  String = ""                                               // example "abc://change/plan"      Don't touch me !!
+    @objc public let folderBrandAutoUpload:             String = ""                                               // example "_auto_upload_folder_"   Don't touch me !!
 
     // Auto Upload default folder
-    @objc public var folderDefaultAutoUpload:         String = "Photos"
+    @objc public var folderDefaultAutoUpload:           String = "Photos"
     
     // Capabilities Group
-    @objc public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
+    @objc public let capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
     
     // Options
-    @objc public let use_login_web_personalized:      Bool = false                                              // Don't touch me !!
-    @objc public let use_firebase:                    Bool = false
-    @objc public let use_default_auto_upload:         Bool = false
-    @objc public let use_themingColor:                Bool = true
-    @objc public let use_themingBackground:           Bool = true
-    @objc public let use_middlewarePing:              Bool = false
-    @objc public let use_storeLocalAutoUploadAll:     Bool = false
+    @objc public let use_login_web_personalized:        Bool = false                                              // Don't touch me !!
+    @objc public let use_firebase:                      Bool = false
+    @objc public let use_default_auto_upload:           Bool = false
+    @objc public let use_themingColor:                  Bool = true
+    @objc public let use_themingBackground:             Bool = true
+    @objc public let use_middlewarePing:                Bool = false
+    @objc public let use_storeLocalAutoUploadAll:       Bool = false
     
-    @objc public let disable_intro:                   Bool = false
-    @objc public let disable_linkLoginProvider:       Bool = false
-    @objc public let disable_request_login_url:       Bool = false
-    @objc public let disable_multiaccount:            Bool = false
-    @objc public let disable_manage_account:          Bool = false
-    @objc public let disable_more_external_site:      Bool = false
+    @objc public let disable_intro:                     Bool = false
+    @objc public let disable_linkLoginProvider:         Bool = false
+    @objc public let disable_request_login_url:         Bool = false
+    @objc public let disable_multiaccount:              Bool = false
+    @objc public let disable_manage_account:            Bool = false
+    @objc public let disable_more_external_site:        Bool = false
     
     override init() {
         
