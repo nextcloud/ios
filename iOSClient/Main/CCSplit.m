@@ -131,58 +131,28 @@
     // Brand
     if ([NCBrandOptions sharedInstance].disable_intro) {
         
-        [CCUtility setIntroMessage:k_Intro set:YES];
-//        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
+        [CCUtility setIntro:YES];
     
-        [self introWillFinish:nil type:nil wasSkipped:NO];
+        [self introFinishSelector:0];
 
     } else {
     
-        // -1-
-        if ([CCUtility getIntroMessage:k_Intro] == NO) {
+        if ([CCUtility getIntro] == NO) {
         
-            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro];
+            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
             [_intro show];
         
-        }
-        
-        // -2-
-        /*
-        else if ([CCUtility getIntroMessage:k_Intro_no_cryptocloud] == NO) {
-            
-            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
-            [_intro show];
-        }
-        */
-        
-        // NO INTRO
-        else {
-            
-            [self introWillFinish:nil type:nil wasSkipped:NO];
+        } else {
+    
+            [self introFinishSelector:0];
         }
     }
 }
 
-- (void)introWillFinish:(EAIntroView *)introView type:(NSString *)type wasSkipped:(BOOL)wasSkipped
+- (void)introFinishSelector:(NSInteger)selector
 {
-    // -1-
-    if ([type isEqualToString:k_Intro]) {
-        
-        [CCUtility setIntroMessage:k_Intro set:YES];
-        // next
-        //_intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
-        //[_intro show];
-        //
-        //return;
-    }
+    [CCUtility setIntro:YES];
     
-    // -2-
-    /*
-    if ([type isEqualToString:k_Intro_no_cryptocloud]) {
-        
-        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
-    }
-    */
     // check account
     [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 }
@@ -214,7 +184,7 @@
 {
     if (appDelegate.activeAccount.length == 0) {
     
-        [appDelegate openLoginView:self loginType:loginAddForced];
+        [appDelegate openLoginView:self loginType:k_login_Add_Forced];
     }
 }
 

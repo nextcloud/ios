@@ -321,7 +321,7 @@
 #pragma mark ===== Login =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType
+- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType
 {
     BOOL loginWeb = NO;
     
@@ -348,7 +348,7 @@
         //
         
         // Login flow : LoginWeb
-        if (loginType == loginModifyPasswordUser) {
+        if (loginType == k_login_Modify_Password) {
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             if (account.loginFlow)
                 loginWeb = YES;

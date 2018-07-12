@@ -133,7 +133,7 @@
         _baseUrl.hidden = YES;
     }
 
-    if (_loginType == loginAdd) {
+    if (_loginType == k_login_Add ) {
         // Login Flow ?
         _imageUser.hidden = YES;
         _user.hidden = YES;
@@ -141,7 +141,7 @@
         _password.hidden = YES;
     }
     
-    if (_loginType == loginAddForced) {
+    if (_loginType == k_login_Add_Forced) {
         _annulla.hidden = YES;
         // Login Flow ?
         _imageUser.hidden = YES;
@@ -150,7 +150,7 @@
         _password.hidden = YES;
     }
     
-    if (_loginType == loginModifyPasswordUser) {
+    if (_loginType == k_login_Modify_Password) {
         _baseUrl.text = appDelegate.activeUrl;
         _baseUrl.userInteractionEnabled = NO;
         _baseUrl.textColor = [UIColor lightGrayColor];
@@ -165,7 +165,7 @@
     [super viewWillAppear:animated];
 
     // verify URL
-    if (_loginType == loginModifyPasswordUser && [self.baseUrl.text length] > 0)
+    if (_loginType == k_login_Modify_Password && [self.baseUrl.text length] > 0)
         [self testUrl];
 }
 
@@ -320,7 +320,7 @@
 
 - (void)trustedCerticateDenied
 {
-    if (_loginType == loginModifyPasswordUser)
+    if (_loginType == k_login_Modify_Password)
         [self handleAnnulla:self];
 }
 
@@ -440,7 +440,7 @@
             // account
             NSString *account = [NSString stringWithFormat:@"%@ %@", user, url];
             
-            if (_loginType == loginModifyPasswordUser) {
+            if (_loginType == k_login_Modify_Password) {
                 
                 // Change Password
                 tableAccount *tbAccount = [[NCManageDatabase sharedInstance] setAccountPassword:account password:password];

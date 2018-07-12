@@ -36,14 +36,13 @@
 
 @implementation CCIntro
 
-- (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView type:(NSString *)type
+- (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView
 {
     self = [super init];
     
     if (self) {
         self.delegate = delegate;
         self.rootView = delegateView;
-        self.type = type;
     }
 
     return self;
@@ -56,23 +55,27 @@
 
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(introWillFinish:type:wasSkipped:)])
-        [self.delegate introWillFinish:introView type:self.type wasSkipped:wasSkipped];
+    [self.delegate introFinishSelector:0];
 }
 
 - (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(introDidFinish:type:wasSkipped:)])
-        [self.delegate introDidFinish:introView type:self.type wasSkipped:wasSkipped];
+    [self.delegate introFinishSelector:0];
+}
+
+- (void)login:(id)sender
+{
+    [self.delegate introFinishSelector:0];
+}
+
+- (void)signUp:(id)sender
+{
+    [self.delegate introFinishSelector:0];
 }
 
 - (void)show
 {
-    if ([self.type isEqualToString:k_Intro])
-        [self showIntro];
-    
-//    if ([self.type isEqualToString:k_Intro_no_cryptocloud])
-//        [self showIntroNoCryptoCloud];
+    [self showIntro];
 }
 
 - (void)showIntro
@@ -101,14 +104,14 @@
     [buttonLogin setTitle:@"Login" forState:UIControlStateNormal];
     buttonLogin.titleLabel.font = [UIFont systemFontOfSize:20];
     buttonLogin.backgroundColor = [[NCBrandColor sharedInstance] customerText];
-    [buttonLogin addTarget:self action:@selector(aMethod:) forControlEvents:UIControlEventTouchDown];
+    [buttonLogin addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchDown];
     
     UIButton *buttonSignUp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
     [buttonSignUp setTitle:@"Sign up with provider" forState:UIControlStateNormal];
     buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:20];
     buttonSignUp.backgroundColor = [[NCBrandColor sharedInstance] customerText];
-    [buttonSignUp addTarget:self action:@selector(aMethod:) forControlEvents:UIControlEventTouchDown];
+    [buttonSignUp addTarget:self action:@selector(signUp:) forControlEvents:UIControlEventTouchDown];
     
     [buttonView addSubview:buttonLogin];
     [buttonView addSubview:buttonSignUp];
@@ -173,7 +176,7 @@
     
     EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1,page2,page3]];
 
-    intro.tapToNext = YES;
+    intro.tapToNext = NO;
     intro.pageControl.pageIndicatorTintColor = [UIColor whiteColor];
     intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
     intro.pageControl.backgroundColor = [[NCBrandColor sharedInstance] customer];
@@ -183,6 +186,7 @@
     intro.skipButton = nil ;
     intro.titleView = buttonView;
     intro.titleViewY = buttonPosition;
+    intro.swipeToExit = NO;
     
     /*
     page1.onPageDidAppear = ^{

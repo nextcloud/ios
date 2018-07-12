@@ -1441,7 +1441,7 @@
     } else {
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized)
-            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+            [appDelegate openLoginView:self loginType:k_login_Modify_Password];
     }
 }
 
@@ -1487,7 +1487,7 @@
         
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized) {
-            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+            [appDelegate openLoginView:self loginType:k_login_Modify_Password];
             
         } else {
             [self tableViewReloadData];
@@ -1744,7 +1744,7 @@
         
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized)
-            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+            [appDelegate openLoginView:self loginType:k_login_Modify_Password];
         else
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
@@ -1779,7 +1779,7 @@
 {
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+        [appDelegate openLoginView:self loginType:k_login_Modify_Password];
     
     [_queueSelector removeObject:metadataNet.selector];
     
@@ -2114,7 +2114,7 @@
         
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized)
-            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+            [appDelegate openLoginView:self loginType:k_login_Modify_Password];
         else
             [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
@@ -2386,7 +2386,7 @@
     
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+        [appDelegate openLoginView:self loginType:k_login_Modify_Password];
     else
         [appDelegate messageNotification:@"_share_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 
@@ -2492,7 +2492,7 @@
     
     // Unauthorized
     if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+        [appDelegate openLoginView:self loginType:k_login_Modify_Password];
     else
         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
 }
@@ -2611,7 +2611,7 @@
     } else {
         
         if (errorCode == kOCErrorServerUnauthorized)
-            [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+            [appDelegate openLoginView:self loginType:k_login_Modify_Password];
         
         NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
     }
@@ -2865,7 +2865,7 @@
     [appDelegate.netQueue cancelAllOperations];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:loginAdd];
+        [appDelegate openLoginView:self loginType:k_login_Add];
     });
 }
 

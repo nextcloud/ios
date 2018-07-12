@@ -30,11 +30,10 @@
 
 @interface CCIntro : UIViewController <EAIntroDelegate>
 
-- (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView type:(NSString *)type;
+- (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView;
 
 @property (nonatomic, weak) id <CCIntroDelegate> delegate;
 @property (nonatomic, strong) UIView *rootView;
-@property (nonatomic, strong) NSString *type;
 
 - (void)show;
 
@@ -42,7 +41,6 @@
 
 @protocol CCIntroDelegate <NSObject>
 
-@optional - (void)introWillFinish:(EAIntroView *)introView type:(NSString *)type wasSkipped:(BOOL)wasSkipped;
-@optional - (void)introDidFinish:(EAIntroView *)introView type:(NSString *)type wasSkipped:(BOOL)wasSkipped;
+- (void)introFinishSelector:(NSInteger)selector;
 
 @end

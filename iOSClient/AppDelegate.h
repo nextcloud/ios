@@ -128,7 +128,7 @@
 @property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
 
 // Login View
-- (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType;
+- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType;
 
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;

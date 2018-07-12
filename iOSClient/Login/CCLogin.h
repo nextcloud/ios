@@ -38,12 +38,6 @@
 
 @interface CCLogin : UIViewController <UITextFieldDelegate, NSURLSessionTaskDelegate, NSURLSessionDelegate, CCCertificateDelegate, OCNetworkingDelegate>
 
-typedef enum {
-    loginAdd = 0,
-    loginAddForced = 1,
-    loginModifyPasswordUser = 2
-} enumLoginType;
-
 @property (nonatomic, weak) id <CCLoginDelegate> delegate;
 
 @property (nonatomic, weak) IBOutlet UIImageView *imageBrand;
@@ -65,7 +59,6 @@ typedef enum {
 @property (nonatomic, weak) IBOutlet UIButton *toggleVisiblePassword;
 @property (nonatomic, weak) IBOutlet UIButton *loginTypeView;
 
-
-@property enumLoginType loginType;
+@property NSInteger loginType;
 
 @end

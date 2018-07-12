@@ -85,8 +85,8 @@
 + (NSString *)getGroupBySettings;
 + (void)setGroupBySettings:(NSString *)groupby;
 
-+ (BOOL)getIntroMessage:(NSString *)type;
-+ (void)setIntroMessage:(NSString *)type set:(BOOL)set;
++ (BOOL)getIntro;
++ (void)setIntro:(BOOL)set;
 
 + (NSString *)getIncrementalNumber;
 

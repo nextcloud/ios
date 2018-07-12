@@ -78,9 +78,11 @@
 // Name Default DB
 #define k_databaseDefault                               @"nextcloud.realm"
 
-// Intro
-#define k_Intro                                         @"Intro"
-#define k_Intro_no_cryptocloud                          @"IntroNoCryptoCloud"
+// Login
+#define k_login_Add                                     0
+#define k_login_Add_Forced                              1
+#define k_login_Add_SignUp                              2
+#define k_login_Modify_Password                         3
 
 // Picker select image
 #define k_pickerControllerMax                           1000.0

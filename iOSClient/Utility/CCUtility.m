@@ -257,19 +257,29 @@
     [UICKeyChainStore setString:groupby forKey:@"groupby" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getIntroMessage:(NSString *)type
++ (BOOL)getIntro
 {
-    NSString *key = [INTRO_MessageType stringByAppendingString:type];
+    // Set compatibility old version don't touch me
+    if ([[UICKeyChainStore stringForKey:[INTRO_MessageType stringByAppendingString:@"Intro"] service:k_serviceShareKeyChain] boolValue] == YES) {
+        [CCUtility setIntro:YES];
+        return YES;
+    }
+    
+    return [[UICKeyChainStore stringForKey:@"intro" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (BOOL)getIntroMessageOldVersion
+{
+    NSString *key = [INTRO_MessageType stringByAppendingString:@"Intro"];
     
     return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (void)setIntroMessage:(NSString *)type set:(BOOL)set
++ (void)setIntro:(BOOL)set
 {
-    NSString *key = [INTRO_MessageType stringByAppendingString:type];
-    NSString *sSet = (set) ? @"true" : @"false";
+    NSString *sIntro = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sIntro forKey:@"intro" service:k_serviceShareKeyChain];
 
-    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getIncrementalNumber
