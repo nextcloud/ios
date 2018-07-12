@@ -87,7 +87,7 @@
     CGFloat height = self.rootView.bounds.size.height;
     CGFloat width = self.rootView.bounds.size.width;
     
-    if (height <= 480) {
+    if (height <= 568) {
         titleIconPositionY = 20;
     } else {
         titleIconPositionY = 100;
@@ -104,6 +104,8 @@
     
     UIButton *buttonLogin = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     buttonLogin.frame = CGRectMake(50.0, 0.0, width - 100.0, 40.0);
+    buttonLogin.layer.cornerRadius = 3;
+    buttonLogin.clipsToBounds = YES;
     [buttonLogin setTitle:[NSLocalizedStringFromTable(@"_log_in_", @"Intro", nil) uppercaseString] forState:UIControlStateNormal];
     buttonLogin.titleLabel.font = [UIFont systemFontOfSize:14];
     [buttonLogin setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
@@ -112,6 +114,8 @@
     
     UIButton *buttonSignUp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
+    buttonSignUp.layer.cornerRadius = 3;
+    buttonSignUp.clipsToBounds = YES;
     [buttonSignUp setTitle:[NSLocalizedStringFromTable(@"_sign_up_", @"Intro", nil) uppercaseString] forState:UIControlStateNormal];
     buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:14];
     [buttonSignUp setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
