@@ -67,13 +67,13 @@
 - (void)login:(id)sender
 {
     selector = k_intro_login;
-    [self.intro hideWithFadeOutDuration:0.3];
+    [self.intro hideWithFadeOutDuration:0.7];
 }
 
 - (void)signUp:(id)sender
 {
     selector = k_intro_signup;
-    [self.intro hideWithFadeOutDuration:0.3];
+    [self.intro hideWithFadeOutDuration:0.7];
 }
 
 - (void)show
@@ -104,16 +104,18 @@
     
     UIButton *buttonLogin = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     buttonLogin.frame = CGRectMake(50.0, 0.0, width - 100.0, 40.0);
-    [buttonLogin setTitle:@"Login" forState:UIControlStateNormal];
-    buttonLogin.titleLabel.font = [UIFont systemFontOfSize:20];
+    [buttonLogin setTitle:[NSLocalizedStringFromTable(@"_log_in_", @"Intro", nil) uppercaseString] forState:UIControlStateNormal];
+    buttonLogin.titleLabel.font = [UIFont systemFontOfSize:14];
+    [buttonLogin setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     buttonLogin.backgroundColor = [[NCBrandColor sharedInstance] customerText];
     [buttonLogin addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchDown];
     
     UIButton *buttonSignUp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
-    [buttonSignUp setTitle:@"Sign up with provider" forState:UIControlStateNormal];
-    buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:20];
-    buttonSignUp.backgroundColor = [[NCBrandColor sharedInstance] customerText];
+    [buttonSignUp setTitle:[NSLocalizedStringFromTable(@"_sign_up_", @"Intro", nil) uppercaseString] forState:UIControlStateNormal];
+    buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:14];
+    [buttonSignUp setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    buttonSignUp.backgroundColor = [UIColor colorWithRed:25.0/255.0 green:89.0/255.0 blue:141.0/255.0 alpha:1.000];
     [buttonSignUp addTarget:self action:@selector(signUp:) forControlEvents:UIControlEventTouchDown];
     
     [buttonView addSubview:buttonLogin];

@@ -21,10 +21,7 @@
 //
 
 "_intro_1_title_"   = "A safe home for all your data";
-"_intro_1_text_"    = "Access, share and protect your files at home and at work";
-
-"_intro_11_title_"  = "Use gestures in files view";
-"_intro_11_text_"   = "Swipe → or ←: Options \n\nLong touch: Copy/Paste or Open in… \n\nPress: 3D Touch (when available)";
+"_intro_1_text_"    = "Keep your data secure and under your control";
 
 "_intro_2_title_"   = "Multi account";
 "_intro_2_text_"    = "Connect to all your clouds and touch the Nextcloud logo on the Files tab to switch between them";
@@ -34,3 +31,6 @@
 
 "_introNoCryptoCloud_1_title_" = "Crypto Cloud";
 "_introNoCryptoCloud_1_text_"  = "Crypto Cloud encryption protocol is no longer available, you can still decrypt your files by downloading the free app from AppStore\n\n'CryptoCloud for Nextcloud'\n\nSoon there will be a new EndToEnd protocol available on all Nextcloud clients\n\n\nTap to Start";
+
+"_log_in_"          = "Log in";
+"_sign_up_"         = "Sign up with provider";
