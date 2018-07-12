@@ -236,11 +236,6 @@
     });
 }
 
-- (void)addAccountForced
-{
-    [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Modify Account ===
 #pragma --------------------------------------------------------------------------------------------
@@ -312,7 +307,7 @@
         if ([listAccount count] > 0)
             [self ChangeDefaultAccount:listAccount[0]];
         else {
-            [self addAccountForced];
+            [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
         }
     }]];
     
@@ -366,7 +361,7 @@
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     if (listAccount.count == 0) {
-        [self addAccountForced];
+        [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
         return;
     }
     
