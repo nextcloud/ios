@@ -95,8 +95,8 @@
     [self.login setTitle:[NSLocalizedString(@"_login_", nil) uppercaseString] forState:UIControlStateNormal] ;
     self.login.backgroundColor = [NCBrandColor sharedInstance].customerText;
     self.login.tintColor = [UIColor blackColor];
-    self.login.layer.cornerRadius = 3;
-    self.login.clipsToBounds = YES;
+//    self.login.layer.cornerRadius = 3;
+//    self.login.clipsToBounds = YES;
     
     // Type view
     [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
