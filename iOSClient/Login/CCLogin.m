@@ -100,30 +100,31 @@
     
     // Type view
     [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
-    [self.loginTypeView setTitleColor:[NCBrandColor sharedInstance].customerText forState:UIControlStateNormal];
+    [self.loginTypeView setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
 
-    // Bottom label
-    self.bottomLabel.text = NSLocalizedString([NCBrandOptions sharedInstance].textLoginProvider, nil);
-    self.bottomLabel.userInteractionEnabled = YES;
+    // Preferred providers
+    self.preferredProviders.text = NSLocalizedString([NCBrandOptions sharedInstance].textLoginProvider, nil);
+    self.preferredProviders.textColor = [UIColor whiteColor];
+    self.preferredProviders.userInteractionEnabled = YES;
     if ([NCBrandOptions sharedInstance].disable_linkLoginProvider) {
-        self.bottomLabel.hidden = YES;
+        self.preferredProviders.hidden = YES;
     }
     
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tabBottomLabel)];
-    [self.bottomLabel addGestureRecognizer:tapGesture];
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(loginPreferredProviders)];
+    [self.preferredProviders addGestureRecognizer:tapGesture];
     
     if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
         
         // Portrait
         if ([NCBrandOptions sharedInstance].disable_linkLoginProvider == NO)
-            self.bottomLabel.hidden = NO;
+            self.preferredProviders.hidden = NO;
         self.loginTypeView.hidden = NO;
         
     } else {
         
         // Landscape
         if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
-            self.bottomLabel.hidden = YES;
+            self.preferredProviders.hidden = YES;
             self.loginTypeView.hidden = YES;
         }
     }
@@ -197,14 +198,14 @@
             
             // Portrait
             if ([NCBrandOptions sharedInstance].disable_linkLoginProvider == NO)
-                self.bottomLabel.hidden = NO;
+                self.preferredProviders.hidden = NO;
             self.loginTypeView.hidden = NO;
             
         } else {
             
             // Landscape
             if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
-                self.bottomLabel.hidden = YES;
+                self.preferredProviders.hidden = YES;
                 self.loginTypeView.hidden = YES;
             }
         }
@@ -405,9 +406,15 @@
 #pragma mark == Action ==
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)tabBottomLabel
+- (void)loginPreferredProviders
 {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NCBrandOptions sharedInstance].linkLoginProvider]];
+//    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NCBrandOptions sharedInstance].linkLoginProvider]];
+    appDelegate.activeLoginWeb = [CCLoginWeb new];
+    appDelegate.activeLoginWeb.loginType = _loginType;
+    appDelegate.activeLoginWeb.delegate = self;
+    appDelegate.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginPreferredProviders];
+        
+    [appDelegate.activeLoginWeb presentModalWithDefaultTheme:self];
 }
 
 - (IBAction)handlebaseUrlchange:(id)sender
