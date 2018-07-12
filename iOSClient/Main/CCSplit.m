@@ -155,11 +155,21 @@
 {
     [CCUtility setIntro:YES];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        if (appDelegate.activeAccount.length == 0) {
-            [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:selector];
-        }
-    });
+    switch (selector) {
+            
+        case k_intro_login:
+            {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                    if (appDelegate.activeAccount.length == 0) {
+                        [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+                    }
+                });
+            }
+            break;
+            
+        case k_intro_signup:
+            break;
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------

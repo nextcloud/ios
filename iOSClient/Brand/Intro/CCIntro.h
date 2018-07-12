@@ -28,10 +28,11 @@
 
 @protocol CCIntroDelegate;
 
-@interface CCIntro : UIViewController <EAIntroDelegate>
+@interface CCIntro : UIView <EAIntroDelegate>
 
 - (id)initWithDelegate:(id <CCIntroDelegate>)delegate delegateView:(UIView *)delegateView;
 
+@property (nonatomic, strong) EAIntroView *intro;
 @property (nonatomic, weak) id <CCIntroDelegate> delegate;
 @property (nonatomic, strong) UIView *rootView;
 

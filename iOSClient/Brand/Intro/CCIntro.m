@@ -31,6 +31,8 @@
     int descPositionY;
     int titleIconPositionY;
     int buttonPosition;
+    
+    int selector;
 }
 @end
 
@@ -55,22 +57,23 @@
 
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    [self.delegate introFinishSelector:k_intro_login];
+    [self.delegate introFinishSelector:selector];
 }
 
 - (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    [self.delegate introFinishSelector:k_intro_login];
 }
 
 - (void)login:(id)sender
 {
-    [self.delegate introFinishSelector:k_intro_login];
+    selector = k_intro_login;
+    [self.intro hideWithFadeOutDuration:0.3];
 }
 
 - (void)signUp:(id)sender
 {
-    [self.delegate introFinishSelector:k_intro_signup];
+    selector = k_intro_signup;
+    [self.intro hideWithFadeOutDuration:0.3];
 }
 
 - (void)show
@@ -174,19 +177,19 @@
 
     // INTRO
     
-    EAIntroView *intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1,page2,page3]];
+    self.intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1,page2,page3]];
 
-    intro.tapToNext = NO;
-    intro.pageControl.pageIndicatorTintColor = [UIColor whiteColor];
-    intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
-    intro.pageControl.backgroundColor = [[NCBrandColor sharedInstance] customer];
+    self.intro.tapToNext = NO;
+    self.intro.pageControl.pageIndicatorTintColor = [UIColor whiteColor];
+    self.intro.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+    self.intro.pageControl.backgroundColor = [[NCBrandColor sharedInstance] customer];
 //    [intro.skipButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
 //    intro.skipButton.enabled = NO;
-    intro.swipeToExit = NO ;
-    intro.skipButton = nil ;
-    intro.titleView = buttonView;
-    intro.titleViewY = buttonPosition;
-    intro.swipeToExit = NO;
+    self.intro.swipeToExit = NO ;
+    self.intro.skipButton = nil ;
+    self.intro.titleView = buttonView;
+    self.intro.titleViewY = buttonPosition;
+    self.intro.swipeToExit = NO;
     
     /*
     page1.onPageDidAppear = ^{
@@ -203,8 +206,8 @@
     };
     */
     
-    [intro setDelegate:self];
-    [intro showInView:self.rootView animateDuration:0];
+    [self.intro setDelegate:self];
+    [self.intro showInView:self.rootView animateDuration:0];
 }
 
 @end
