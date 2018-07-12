@@ -321,7 +321,7 @@
 #pragma mark ===== Login =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType
+- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
 {
     BOOL loginWeb = NO;
     

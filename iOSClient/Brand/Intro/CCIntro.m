@@ -55,22 +55,22 @@
 
 - (void)introWillFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    [self.delegate introFinishSelector:0];
+    [self.delegate introFinishSelector:k_intro_login];
 }
 
 - (void)introDidFinish:(EAIntroView *)introView wasSkipped:(BOOL)wasSkipped
 {
-    [self.delegate introFinishSelector:0];
+    [self.delegate introFinishSelector:k_intro_login];
 }
 
 - (void)login:(id)sender
 {
-    [self.delegate introFinishSelector:0];
+    [self.delegate introFinishSelector:k_intro_login];
 }
 
 - (void)signUp:(id)sender
 {
-    [self.delegate introFinishSelector:0];
+    [self.delegate introFinishSelector:k_intro_signup];
 }
 
 - (void)show

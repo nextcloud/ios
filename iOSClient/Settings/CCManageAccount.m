@@ -232,13 +232,13 @@
     [appDelegate.netQueue cancelAllOperations];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:k_login_Add];
+        [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
     });
 }
 
 - (void)addAccountForced
 {
-    [appDelegate openLoginView:self loginType:k_login_Add_Forced];
+    [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -259,7 +259,7 @@
     [appDelegate.netQueue cancelAllOperations];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:k_login_Modify_Password];
+        [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
     });
 }
 

@@ -154,6 +154,7 @@
     [CCUtility setIntro:YES];
     
     // check account
+    
     [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 }
 
@@ -174,18 +175,6 @@
 - (void)loginWebClose
 {
     appDelegate.activeLoginWeb = nil;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== newAccount =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)newAccount
-{
-    if (appDelegate.activeAccount.length == 0) {
-    
-        [appDelegate openLoginView:self loginType:k_login_Add_Forced];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
