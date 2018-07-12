@@ -79,9 +79,8 @@
 #define k_databaseDefault                               @"nextcloud.realm"
 
 // Intro selector
-#define k_intro_nothing                                 0
-#define k_intro_login                                   1
-#define k_intro_signup                                  2
+#define k_intro_login                                   0
+#define k_intro_signup                                  1
 
 // Login
 #define k_login_Add                                     0

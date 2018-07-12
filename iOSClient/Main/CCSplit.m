@@ -132,9 +132,10 @@
     if ([NCBrandOptions sharedInstance].disable_intro) {
         
         [CCUtility setIntro:YES];
+        if (appDelegate.activeAccount.length == 0) {
+            [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+        }
     
-        [self introFinishSelector:0];
-
     } else {
     
         if ([CCUtility getIntro] == NO) {
@@ -143,8 +144,9 @@
             [_intro show];
         
         } else {
-    
-            [self introFinishSelector:0];
+            if (appDelegate.activeAccount.length == 0) {
+                [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+            }
         }
     }
 }
@@ -153,9 +155,11 @@
 {
     [CCUtility setIntro:YES];
     
-    // check account
-    
-    [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        if (appDelegate.activeAccount.length == 0) {
+            [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:selector];
+        }
+    });
 }
 
 #pragma --------------------------------------------------------------------------------------------
