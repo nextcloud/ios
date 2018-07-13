@@ -74,11 +74,11 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField fileIDHide:(NSArray *)fileIDHide activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField fileIDHide:(NSArray *)fileIDHide activeAccount:(NSString *)activeAccount
 {
     id dataSection;
 
-    NSMutableArray *copyRecords = [NSMutableArray new];
+    NSMutableArray *metadatas = [NSMutableArray new];
     NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
     
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
@@ -92,7 +92,7 @@
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     NSMutableArray *metadataFilesFavorite = [NSMutableArray new];
     
-    for (tableMetadata* metadata in records) {
+    for (tableMetadata* metadata in arrayMetadatas) {
         
         // *** LIST : DO NOT INSERT ***
         if (metadata.status == k_metadataStatusHide || [fileIDHide containsObject: metadata.fileID]) {
@@ -101,53 +101,34 @@
         
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
             
-            [copyRecords insertObject:metadata atIndex:0];
+            [metadatas insertObject:metadata atIndex:0];
             
         } else {
             
             if (metadata.directory && directoryOnTop) {
                 if (metadata.favorite) {
-                    [copyRecords insertObject:metadata atIndex:numDirectoryFavorite++];
+                    [metadatas insertObject:metadata atIndex:numDirectoryFavorite++];
                     numDirectory++;
                 } else {
-                    [copyRecords insertObject:metadata atIndex:numDirectory++];
+                    [metadatas insertObject:metadata atIndex:numDirectory++];
                 }
             } else {
                 if (metadata.favorite && directoryOnTop) {
                     [metadataFilesFavorite addObject:metadata];
                 } else {
-                    [copyRecords addObject:metadata];
+                    [metadatas addObject:metadata];
                 }
             }
         }
     }
     if (directoryOnTop && metadataFilesFavorite.count > 0)
-        [copyRecords insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
+        [metadatas insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
     
     /*
      sectionArrayRow
     */
     
-    //    long counterSessionDownload = 0;
-    //    long counterSessionUpload = 0;
-    
-    for (tableMetadata *metadata in copyRecords) {
-        
-        /*
-        // how many download underway (only for groupSession)
-        if ([metadata.session containsString:@"download"] && [groupByField isEqualToString:@"session"]) {
-            counterSessionDownload++;
-            if (counterSessionDownload > 10)
-                continue;
-        }
-
-        // how many upload underway (only for groupSession)
-        if ([metadata.session containsString:@"upload"] && [groupByField isEqualToString:@"session"]) {
-            counterSessionUpload++;
-            if (counterSessionUpload > 10)
-                continue;
-        }
-        */
+    for (tableMetadata *metadata in metadatas) {
         
         if ([metadata.session length] > 0 && [groupByField isEqualToString:@"session"]) {
             
@@ -160,19 +141,19 @@
         else if ([groupByField isEqualToString:@"typefile"]) dataSection = metadata.typeFile;
         if (!dataSection) dataSection = @"_none_";
         
-        NSMutableArray *metadatas = [sectionDataSource.sectionArrayRow objectForKey:dataSection];
+        NSMutableArray *metadatasSection = [sectionDataSource.sectionArrayRow objectForKey:dataSection];
         
-        if (metadatas) {
+        if (metadatasSection) {
             
             // ROW ++
-            [metadatas addObject:metadata.fileID];
-            [sectionDataSource.sectionArrayRow setObject:metadatas forKey:dataSection];
+            [metadatasSection addObject:metadata.fileID];
+            [sectionDataSource.sectionArrayRow setObject:metadatasSection forKey:dataSection];
             
         } else {
             
             // SECTION ++
-            metadatas = [[NSMutableArray alloc] initWithObjects:metadata.fileID, nil];
-            [sectionDataSource.sectionArrayRow setObject:metadatas forKey:dataSection];
+            metadatasSection = [[NSMutableArray alloc] initWithObjects:metadata.fileID, nil];
+            [sectionDataSource.sectionArrayRow setObject:metadatasSection forKey:dataSection];
         }
 
         if (metadata && [metadata.fileID length] > 0)
@@ -252,11 +233,6 @@
     end
     */
     
-    return sectionDataSource;
-}
-
-+ (CCSectionDataSourceMetadata *)removeObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource forFileID:(NSString *)fileID
-{
     return sectionDataSource;
 }
 
