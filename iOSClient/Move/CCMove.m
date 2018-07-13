@@ -109,7 +109,7 @@
     _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
     
     // read file->folder
-    [self readFileReloadFolder];
+    [self readFile];
 }
 
 // Apparirà
@@ -268,75 +268,53 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-// MARK: - NetWorking
-
-- (void)addNetworkingQueue:(CCMetadataNet *)metadataNet
-{
-    OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
-        
-    _networkingOperationQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
-    [_networkingOperationQueue addOperation:operation];
-}
-
 // MARK: - Read File
 
-- (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFile
 {
-    if (errorCode == 0) {
-    
-        if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
-            
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadataNet.account, metadataNet.serverUrl]];
-            
-            if ([metadata.etag isEqualToString:directory.etag] == NO) {
-                
-                [self readFolder];
-            }
-        }
-    } else {
-        [self readFolder];
-    }
-}
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
 
-- (void)readFileReloadFolder
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
-    
-    metadataNet.action = actionReadFile;
-    metadataNet.priority = NSOperationQueuePriorityHigh;
-    metadataNet.selector = selectorReadFileReloadFolder;
-    metadataNet.serverUrl = _serverUrl;
-    
-    [self addNetworkingQueue:metadataNet];
+    [ocNetworking readFile:nil serverUrl:_serverUrl account:activeAccount success:^(tableMetadata *metadata) {
+        
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", activeAccount, _serverUrl]];
+            
+        if ([metadata.etag isEqualToString:directory.etag] == NO) {
+                
+            [self readFolder];
+        }
+        
+    } failure:^(NSString *message, NSInteger errorCode) {
+        [self readFolder];
+    }];
 }
 
 // MARK: - Read Folder
 
-- (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFolder
 {
-    if (errorCode == 0) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
+
+    [ocNetworking readFolder:_serverUrl depth:@"1" account:activeAccount success:^(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID) {
         
         // Update directory etag
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", directoryID, k_metadataStatusNormal, k_metadataStatusHide] clearDateReadDirectoryID:directoryID];
+        [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:directoryID];
         
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusNormal, k_metadataStatusHide] clearDateReadDirectoryID:metadataNet.directoryID];
-        
-        [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:metadataNet.directoryID];
-        
-        NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", metadataNet.directoryID, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+        NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
         
         // insert in Database
-        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas serverUrl:metadataNet.serverUrl];
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas serverUrl:_serverUrl];
         // reinsert metadatas in Download
         if (metadatasInDownload) {
-            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload serverUrl:metadataNet.serverUrl];
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload serverUrl:_serverUrl];
         }
         
         _loadingFolder = NO;
         
         [self.tableView reloadData];
         
-    } else {
+    } failure:^(NSString *message, NSInteger errorCode) {
         
         _loadingFolder = NO;
         self.move.enabled = NO;
@@ -349,58 +327,29 @@
         }]];
         
         [self presentViewController:alertController animated:YES completion:nil];
-    }
-}
+        
+    }];
 
-- (void)readFolder
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
-    
-    metadataNet.action = actionReadFolder;
-    metadataNet.date = nil;
-    metadataNet.depth = @"1";
-    metadataNet.selector = selectorReadFolder;
-    metadataNet.serverUrl = _serverUrl;
-    
-    [self addNetworkingQueue:metadataNet];
-    
-    //
     _loadingFolder = YES;
     [self.tableView reloadData];
 }
 
 // MARK: - Create Folder
 
-- (void)createFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)createFolder:(NSString *)fileNameFolder
 {
-    if (errorCode == 0) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
     
+    [ocNetworking createFolder:fileNameFolder serverUrl:_serverUrl account:activeAccount success:^(NSString *fileID, NSDate *date) {
         [self readFolder];
-        
-    } else {
-      
+    } failure:^(NSString *message, NSInteger errorCode) {
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
         
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         }]];
         
         [self presentViewController:alertController animated:YES completion:nil];
-    }
-}
-
-- (void)createFolder:(NSString *)fileNameFolder
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
-    
-    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
-    if (![fileNameFolder length]) return;
-    
-    metadataNet.action = actionCreateFolder;
-    metadataNet.fileName = fileNameFolder;
-    metadataNet.selector = selectorCreateFolder;
-    metadataNet.serverUrl = _serverUrl;
-    
-    [self addNetworkingQueue:metadataNet];
+    }];
 }
 
 // MARK: - Table
