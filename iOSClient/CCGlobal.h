@@ -182,7 +182,6 @@
 
 // Metadata.Net SELECTOR
 #define selectorAddFavorite                             @"addFavorite"
-#define selectorCreateFolder                            @"createFolder"
 #define selectorDelete                                  @"delete"
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorGetUserAndGroup                         @"getUserAndGroup"
@@ -213,7 +212,6 @@
 #define selectorUploadFile                              @"uploadFile"
 
 // Metadata.Net ACTION
-#define actionCreateFolder                              @"createFolder"
 #define actionDeleteFileDirectory                       @"deleteFileOrFolder"
 #define actionGetActivityServer                         @"getActivityServer"
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"

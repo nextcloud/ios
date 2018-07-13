@@ -909,27 +909,6 @@
 #pragma mark ===== Create Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createFolder
-{
-    [self createFolder:_metadataNet.fileName serverUrl:_metadataNet.serverUrl account:_metadataNet.account success:^(NSString *fileID, NSDate *date) {
-        
-        _metadataNet.fileID = fileID;
-        _metadataNet.date = date;
-        
-        if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)])
-            [self.delegate createFolderSuccessFailure:_metadataNet message:nil errorCode:0];
-        
-        [self complete];
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-        if ([self.delegate respondsToSelector:@selector(createFolderSuccessFailure:message:errorCode:)])
-            [self.delegate createFolderSuccessFailure:_metadataNet message:message errorCode:errorCode];
-        
-        [self complete];
-    }];
-}
-
 - (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *fileID, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     NSString *path = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];

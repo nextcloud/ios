@@ -2087,16 +2087,35 @@
 #pragma mark ===== Create folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)createFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
 {
-    if (errorCode == 0) {
-        
-        NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", metadataNet.serverUrl, metadataNet.fileName];
+    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
+    if (![fileNameFolder length]) return;
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (!directoryID) return;
+    NSString *fileIDTemp = [[NSUUID UUID] UUIDString];
+    
+    // Create Directory (temp) on metadata
+    tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:YES fileID:fileIDTemp directoryID:directoryID fileName:fileNameFolder etag:@"" size:0 status:k_metadataStatusNormal];
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+    
+    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
+    [self reloadDatasource];
+    
+    // Creeate folder Networking
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    
+    [ocNetworking createFolder:fileNameFolder serverUrl:serverUrl account:appDelegate.activeAccount success:^(NSString *fileID, NSDate *date) {
+
+        // Delete Temp Dir
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp] clearDateReadDirectoryID:nil];
+
+        NSString *newDirectory = [NSString stringWithFormat:@"%@/%@", serverUrl, fileNameFolder];
         
         if (_metadataFolder.e2eEncrypted) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSError *error = [[NCNetworkingEndToEnd sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:metadataNet.fileID serverUrl:newDirectory];
+                NSError *error = [[NCNetworkingEndToEnd sharedManager] markEndToEndFolderEncrypted:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl fileID:fileID serverUrl:newDirectory];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (error) {
                         [appDelegate messageNotification:@"_e2e_error_mark_folder_" description:error.localizedDescription visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
@@ -2110,7 +2129,7 @@
             [self readFolder:self.serverUrl];
         }
         
-    } else {
+    } failure:^(NSString *message, NSInteger errorCode) {
         
         // Unauthorized
         if (errorCode == kOCErrorServerUnauthorized)
@@ -2118,41 +2137,16 @@
         else
             [appDelegate messageNotification:@"_create_folder_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
+        // Delete Temp Dir
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp] clearDateReadDirectoryID:nil];
+        
         [self reloadDatasource];
         
         // We are in directory fail ?
-        CCMain *vc = [appDelegate.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:metadataNet.fileName]];
+        CCMain *vc = [appDelegate.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:fileNameFolder]];
         if (vc)
             [vc.navigationController popViewControllerAnimated:YES];
-    }
-}
-
-- (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
-    if (![fileNameFolder length]) return;
-    
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
-    if (!directoryID) return;
-    
-    metadataNet.action = actionCreateFolder;
-    metadataNet.directoryID = directoryID;
-    metadataNet.fileID = [[NSUUID UUID] UUIDString];
-    metadataNet.fileName = fileNameFolder;
-    metadataNet.selector = selectorCreateFolder;
-    metadataNet.serverUrl = serverUrl;
-    
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-        
-    // Create Directory on metadata
-    tableMetadata *metadata = [CCUtility createMetadataWithAccount:appDelegate.activeAccount date:[NSDate date] directory:YES fileID:metadataNet.fileID directoryID:metadataNet.directoryID fileName:metadataNet.fileName etag:@"" size:0 status:k_metadataStatusNormal];
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-    
-    [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:_serverUrl directoryID:nil];
-    [self reloadDatasource];
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
