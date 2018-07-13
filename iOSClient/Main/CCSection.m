@@ -32,7 +32,7 @@
     self = [super init];
     
     _allRecordsDataSource = [[NSMutableDictionary alloc] init];
-    _allEtag  = [[NSMutableArray alloc] init];
+    _allFileID  = [[NSMutableArray alloc] init];
     _sections = [[NSMutableArray alloc] init];
     _sectionArrayRow = [[NSMutableDictionary alloc] init];
     _fileIDIndexPath = [[NSMutableDictionary alloc] init];
@@ -51,7 +51,7 @@
     CCSectionDataSourceMetadata *sectionDataSourceMetadata = [[CCSectionDataSourceMetadata allocWithZone: zone] init];
     
     [sectionDataSourceMetadata setAllRecordsDataSource: self.allRecordsDataSource];
-    [sectionDataSourceMetadata setAllEtag: self.allEtag];
+    [sectionDataSourceMetadata setAllFileID: self.allFileID];
     [sectionDataSourceMetadata setSections: self.sections];
     [sectionDataSourceMetadata setSectionArrayRow: self.sectionArrayRow];
     [sectionDataSourceMetadata setFileIDIndexPath: self.fileIDIndexPath];
@@ -226,7 +226,7 @@
             
             if (metadata.fileID) {
                 
-                [sectionDataSource.allEtag addObject:metadata.fileID];
+                [sectionDataSource.allFileID addObject:metadata.fileID];
                 [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.fileID];
                 [sectionDataSource.fileIDIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.fileID];
                 
@@ -255,10 +255,15 @@
     return sectionDataSource;
 }
 
++ (CCSectionDataSourceMetadata *)removeObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource forFileID:(NSString *)fileID
+{
+    return sectionDataSource;
+}
+
 + (void)removeAllObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource
 {
     [sectionDataSource.allRecordsDataSource removeAllObjects];
-    [sectionDataSource.allEtag removeAllObjects];
+    [sectionDataSource.allFileID removeAllObjects];
     [sectionDataSource.sections removeAllObjects];
     [sectionDataSource.sectionArrayRow removeAllObjects];
     [sectionDataSource.fileIDIndexPath removeAllObjects];

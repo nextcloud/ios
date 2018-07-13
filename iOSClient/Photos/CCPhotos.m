@@ -829,7 +829,7 @@
     }
     
     NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
-    for (NSString *fileID in sectionDataSource.allEtag) {
+    for (NSString *fileID in sectionDataSource.allFileID) {
         tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
         [allRecordsDataSourceImagesVideos addObject:metadata];
     }

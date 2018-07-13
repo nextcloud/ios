@@ -4953,7 +4953,7 @@
         
         metadata = _metadata;
         
-        for (NSString *fileID in _sectionDataSource.allEtag) {
+        for (NSString *fileID in _sectionDataSource.allFileID) {
             tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [metadata.typeFile isEqualToString: k_metadataTypeFile_audio])
                 [allRecordsDataSourceImagesVideos addObject:metadata];
