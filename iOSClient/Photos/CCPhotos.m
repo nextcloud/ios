@@ -34,6 +34,7 @@
     tableMetadata *metadata;
     NSMutableArray *selectedMetadatas;
     CCSectionDataSourceMetadata *sectionDataSource;
+    NSString *saveDirectoryID, *saveServerUrl;
     
     BOOL isSearchMode;
     BOOL isEditMode;
@@ -462,11 +463,16 @@
 #pragma mark ==== Download Thumbnail ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
+- (void)downloadThumbnail:(tableMetadata *)metadata indexPath:(NSIndexPath *)indexPath
 {
+    if (![saveDirectoryID isEqualToString:metadata.directoryID]) {
+        saveDirectoryID = metadata.directoryID;
+        saveServerUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+    }
+    
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    [ocNetworking downloadThumbnailWithDimOfThumbnail:@"m" fileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView success:^{
+    [ocNetworking downloadThumbnailWithDimOfThumbnail:@"m" fileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:saveServerUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView success:^{
         
         if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath]) {
 
@@ -721,20 +727,10 @@
         
         } else {
         
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", metadata.directoryID]];
+            imageView.image = [UIImage imageNamed:@"file_photo"];
 
-            // Thumbnail not present
-            if (directory.e2eEncrypted) {
-                
-                imageView.image = [UIImage imageNamed:@"file_photo_encrypted"];
-                
-            } else {
-                
-                imageView.image = [UIImage imageNamed:@"file_photo"];
-
-                if (metadata.thumbnailExists) {
-                    [self downloadThumbnail:metadata serverUrl:directory.serverUrl indexPath:indexPath];
-                }
+            if (metadata.thumbnailExists) {
+                [self downloadThumbnail:metadata indexPath:indexPath];
             }
         }
     
