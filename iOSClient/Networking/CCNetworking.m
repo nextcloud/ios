@@ -1071,8 +1071,22 @@
         metadata.status = k_metadataStatusNormal;
         
         metadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-        if (![fileID isEqualToString:tempFileID])
+        
+        NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, fileID);
+
+        // remove tempFileID and adjust the directory provider storage
+        if ([tempFileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileName]]) {
+            
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID] clearDateReadDirectoryID:nil];
+            
+            // adjust file system Directory Provider Storage
+            if ([tempSession isEqualToString:k_upload_session_extension]) {
+                // this is for File Provider Extension [Apple Works and ... ?]
+                [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID]  toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
+            } else {
+                [[NSFileManager defaultManager] moveItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
+            }
+        }
          
 #ifndef EXTENSION
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -1083,15 +1097,6 @@
         }
 #endif
         
-        NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, metadata.fileID);
-
-        // adjust file system Directory Provider Storage
-        if ([tempSession isEqualToString:k_upload_session_extension] && [tempFileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileName]]) {
-            // this is for File Provider Extension [Apple Works and ... ?]
-            [[NSFileManager defaultManager] copyItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID]  toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
-        } else {
-            [[NSFileManager defaultManager] moveItemAtPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], tempFileID] toPath:[NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorage], metadata.fileID] error:nil];
-        }
         // Local
         if (metadata.directory == NO)
             [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
