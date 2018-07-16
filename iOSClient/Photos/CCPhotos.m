@@ -407,8 +407,6 @@
     
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         
-        [self.fileIDHide addObject:metadata.fileID];
-        
         [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
             
             if (errorCode == 0 || errorCode == 404) {
@@ -418,6 +416,8 @@
                 [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
                 [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
                 [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
+                [[appDelegate activePhotos].fileIDHide addObject:metadata.fileID];
+                
                 // Directory ?
                 if (metadata.directory) {
                     [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName]];
@@ -427,8 +427,6 @@
                     [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
                 }
                 
-            } else {
-                [self.fileIDHide removeObject:metadata.fileID];
             }
             
             if (++cont == numDelete) {
@@ -446,8 +444,6 @@
             }
         }];
     }
-    
-    [self editingModeNO];
 }
 
 - (void)deleteSelectedFiles
@@ -461,6 +457,7 @@
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
                                                            [self deleteFile:selectedMetadatas e2ee:false];
+                                                           [self editingModeNO];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
