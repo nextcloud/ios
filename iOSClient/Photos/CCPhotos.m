@@ -396,16 +396,10 @@
 #pragma mark ===== Delete =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)deleteFile:(NSArray *)metadatas e2ee:(BOOL)e2ee tableDirectory:(tableDirectory *)tableDirectory
+- (void)deleteFile:(NSArray *)metadatas e2ee:(BOOL)e2ee
 {
     NSInteger numDelete = metadatas.count;
     __block NSInteger cont = 0;
-    
-    if (e2ee) {
-        
-        [[NCNetworkingEndToEnd sharedManager] lockEndToEndFolderEncryptedOnServerUrl:tableDirectory.serverUrl fileID:tableDirectory.fileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];        
-        
-    }
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
@@ -466,7 +460,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [self deleteFile:selectedMetadatas e2ee:false tableDirectory:nil];
+                                                           [self deleteFile:selectedMetadatas e2ee:false];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
