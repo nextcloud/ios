@@ -756,24 +756,6 @@
 #pragma mark ===== Listing Favorites =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)listingFavorites
-{
-    [self listingFavorites:_metadataNet.serverUrl account:_metadataNet.account success:^(NSArray *metadatas) {
-    
-        if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccessFailure:metadatas:message:errorCode:)])
-            [self.delegate listingFavoritesSuccessFailure:_metadataNet metadatas:metadatas message:nil errorCode:0];
-        
-        [self complete];
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-        if ([self.delegate respondsToSelector:@selector(listingFavoritesSuccessFailure:metadatas:message:errorCode:)])
-            [self.delegate listingFavoritesSuccessFailure:_metadataNet metadatas:nil message:message errorCode:errorCode];
-        
-        [self complete];
-    }];
-}
-
 - (void)listingFavorites:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSArray *metadatas))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;

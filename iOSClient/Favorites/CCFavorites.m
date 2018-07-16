@@ -266,17 +266,18 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== listingFavorites <delegate> =====
+#pragma mark ===== listingFavorites =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)listingFavoritesSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)listingFavorites
 {
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
+    // test
+    if (appDelegate.activeAccount.length == 0)
         return;
     
-    if (errorCode == 0) {
-    
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    [ocNetworking listingFavorites:@"" account:appDelegate.activeAccount success:^(NSArray *metadatas) {
+        
         NSString *father = @"";
         NSMutableArray *filesEtag = [NSMutableArray new];
         
@@ -296,7 +297,7 @@
                         [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolderWithDownload];
                     else
                         [[CCSynchronize sharedSynchronize] readFileForFolder:metadata.fileName serverUrl:serverUrl selector:selectorReadFileFolder];
-
+                    
                 } else {
                     
                     if ([CCUtility getFavoriteOffline])
@@ -317,20 +318,10 @@
                 [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:NO];
         
         [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-    
-    } else {
         
+    } failure:^(NSString *message, NSInteger errorCode) {
         NSLog(@"[LOG] Listing Favorites failure error %d, %@", (int)errorCode, message);
-    }
-}
-
-- (void)listingFavorites
-{
-    // test
-    if (appDelegate.activeAccount.length == 0)
-        return;
-    
-    [[CCActions sharedInstance] listingFavorites:@"" delegate:self];
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -34,11 +34,6 @@ import Foundation
     func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
 }
 
-@objc protocol CCActionsListingFavoritesDelegate {
-    
-    func listingFavoritesSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
-}
-
 class CCActions: NSObject {
     
     //MARK: Shared Instance
@@ -204,26 +199,6 @@ class CCActions: NSObject {
     @objc func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata], message: NSString, errorCode: NSInteger) {
         
         metadataNet.delegate?.searchSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
-    }
-    
-    // --------------------------------------------------------------------------------------------
-    // MARK: Linsting Favorites
-    // --------------------------------------------------------------------------------------------
-    
-    @objc func listingFavorites(_ serverUrl: String, delegate: AnyObject) {
-        
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        
-        metadataNet.action = actionListingFavorites
-        metadataNet.delegate = delegate
-        metadataNet.serverUrl = serverUrl
-        
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-    
-    @objc func listingFavoritesSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata], message: NSString, errorCode: NSInteger) {
-        
-        metadataNet.delegate?.listingFavoritesSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
     }
 }
 

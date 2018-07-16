@@ -220,7 +220,6 @@
 #define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
 #define actionGetExternalSitesServer                    @"getExternalSitesServer"
 #define actionMiddlewarePing                            @"middlewarePing"
-#define actionListingFavorites                          @"listingFavorites"
 #define actionMoveFileOrFolder                          @"moveFileOrFolder"
 #define actionReadFile                                  @"readFile"
 #define actionReadFolder                                @"readFolder"
