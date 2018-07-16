@@ -2624,8 +2624,8 @@
                 
                 metadata.favorite = favorite;
                 metadata.session = k_download_session;
-                metadata.sessionSelector = selectorDownloadSynchronize;
                 metadata.sessionError = @"";
+                metadata.sessionSelector = selectorDownloadSynchronize;
                 metadata.status = k_metadataStatusWaitDownload;
                     
                 // Add Metadata for Download
