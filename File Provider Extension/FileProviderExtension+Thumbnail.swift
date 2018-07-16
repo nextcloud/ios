@@ -47,25 +47,20 @@ extension FileProviderExtension {
                     let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl, activeUrl: providerData.accountUrl)
                     
                     let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-                    ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileID: metadata!.fileID, fileNamePath: fileNamePath, fileNameView: metadata!.fileNameView, success: {
+                    ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileID: metadata!.fileID, fileNamePath: fileNamePath, fileNameView: metadata!.fileNameView, completion: { (message, errorCode) in
                         
-                        do {
-                            let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView))
-                            let data = try Data.init(contentsOf: url)
-                            perThumbnailCompletionHandler(itemIdentifier, data, nil)
-                        } catch let error {
-                            print("error: \(error)")
-                            perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.noSuchItem))
+                        if errorCode == 0 {
+                            do {
+                                let url = URL.init(fileURLWithPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata!.fileID, fileNameView: metadata!.fileNameView))
+                                let data = try Data.init(contentsOf: url)
+                                perThumbnailCompletionHandler(itemIdentifier, data, nil)
+                            } catch let error {
+                                print("error: \(error)")
+                                perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.noSuchItem))
+                            }
+                        } else {
+                            perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
                         }
-                        
-                        counterProgress += 1
-                        if (counterProgress == progress.totalUnitCount) {
-                            completionHandler(nil)
-                        }
-                        
-                    }, failure: { (errorMessage, errorCode) in
-                        
-                        perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
                         
                         counterProgress += 1
                         if (counterProgress == progress.totalUnitCount) {

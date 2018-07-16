@@ -273,7 +273,7 @@
 #pragma mark ===== downloadThumbnail =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
@@ -290,7 +290,7 @@
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
         
-        success();
+        completion(nil, 0);
         
     } else {
         
@@ -301,7 +301,7 @@
             
             [UIImagePNGRepresentation([UIImage imageWithData:thumbnail]) writeToFile:fileNameViewPath atomically: YES];
                     
-            success();
+            completion(nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
             
@@ -317,7 +317,7 @@
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
-            failure(message, errorCode);
+            completion(message, errorCode);
         }];
     }
 }

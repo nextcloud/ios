@@ -102,20 +102,18 @@
 - (void)downloadThumbnail
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
-    [ocNetworking downloadThumbnailWithDimOfThumbnail:@"l" fileID:_metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:_metadata.fileName serverUrl:appDelegate.activeMain.serverUrl activeUrl:appDelegate.activeUrl] fileNameView:_metadata.fileNameView success:^{
-        
-        UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
-        
-        _imagePreview.image = image;
-        _imagePreview.contentMode = UIViewContentModeScaleToFill;
-        
-        self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-        [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        [self dismissViewControllerAnimated:YES completion:nil];
+    [ocNetworking downloadThumbnailWithDimOfThumbnail:@"l" fileID:_metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:_metadata.fileName serverUrl:appDelegate.activeMain.serverUrl activeUrl:appDelegate.activeUrl] fileNameView:_metadata.fileNameView completion:^(NSString *message, NSInteger errorCode) {
+        if (errorCode == 0) {
+            UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
+            
+            _imagePreview.image = image;
+            _imagePreview.contentMode = UIViewContentModeScaleToFill;
+            
+            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
+        } else {
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
     }];
 }
 
