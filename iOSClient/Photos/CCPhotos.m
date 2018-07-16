@@ -396,14 +396,20 @@
 #pragma mark ===== Delete =====
 #pragma--------------------------------------------------------------------------------------------
 
-- (void)deleteFile
+- (void)deleteFile:(NSArray *)metadatas e2ee:(BOOL)e2ee tableDirectory:(tableDirectory *)tableDirectory
 {
-    NSInteger numDelete = selectedMetadatas.count;
+    NSInteger numDelete = metadatas.count;
     __block NSInteger cont = 0;
+    
+    if (e2ee) {
+        
+        [[NCNetworkingEndToEnd sharedManager] lockEndToEndFolderEncryptedOnServerUrl:tableDirectory.serverUrl fileID:tableDirectory.fileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];        
+        
+    }
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    for (tableMetadata *metadata in selectedMetadatas) {
+    for (tableMetadata *metadata in metadatas) {
     
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         
@@ -413,24 +419,36 @@
             
             if (errorCode == 0 || errorCode == 404) {
                 
+                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
+
                 [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
                 [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
                 [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
-                // E2EE (if exists the record)
-                [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
                 // Directory ?
                 if (metadata.directory) {
                     [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName]];
                 }
-                
-                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
+                // E2EE (if exists the record)
+                if (e2ee) {
+                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
+                }
                 
             } else {
                 [self.fileIDHide removeObject:metadata.fileID];
             }
             
             if (++cont == numDelete) {
-                [self reloadDatasource];
+                
+                if (e2ee) {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        [[NCNetworkingEndToEnd sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self reloadDatasource];
+                        });
+                    });
+                } else {
+                    [self reloadDatasource];
+                }
             }
         }];
     }
@@ -448,7 +466,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [self deleteFile];
+                                                           [self deleteFile:selectedMetadatas e2ee:false tableDirectory:nil];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
