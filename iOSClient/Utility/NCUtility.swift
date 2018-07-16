@@ -67,4 +67,13 @@ class NCUtility: NSObject {
         return resultFileName
     }
     
+    @objc func isEncryptedMetadata(_ metadata: tableMetadata) -> Bool {
+        
+        if metadata.fileName != metadata.fileNameView && metadata.fileName.count == 32 && metadata.fileName.contains(".") == false {
+            return true
+        }
+        
+        return false
+    }
+    
 }
