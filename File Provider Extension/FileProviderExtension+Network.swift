@@ -32,28 +32,10 @@ extension FileProviderExtension {
     func deleteFile(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata, serverUrl: String) {
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
+        ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, completion: { (message, errorCode) in
             
-            self.deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)
-            
-        }, failure: { (errorMessage, errorCode) in
-            
-            // file not found ? delete
-            if errorCode == 404 {
-                
+            if errorCode == 0 || errorCode == 404 {
                 self.deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)
-
-                /*
-                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: nil)
-            
-                // remove itemIdentifier on fileProviderSignalDeleteItemIdentifier
-                self.providerData.queueTradeSafe.sync(flags: .barrier) {
-                    self.providerData.fileProviderSignalDeleteContainerItemIdentifier.removeValue(forKey: itemIdentifier)
-                    self.providerData.fileProviderSignalDeleteWorkingSetItemIdentifier.removeValue(forKey: itemIdentifier)
-                }
-            
-                self.providerData.signalEnumerator(for: [parentItemIdentifier, .workingSet])
-                */
             }
         })
     }

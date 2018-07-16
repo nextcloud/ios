@@ -405,24 +405,30 @@
     
     for (tableMetadata *metadata in selectedMetadatas) {
     
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        
         [self.fileIDHide addObject:metadata.fileID];
-       
-        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] success:^{
+        
+        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
             
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-            [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
-
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            
-            if (++cont == numDelete) {
-                [self reloadDatasource];
+            if (errorCode == 0 || errorCode == 404) {
+                
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
+                // E2EE (if exists the record)
+                [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
+                // Directory ?
+                if (metadata.directory) {
+                    [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName]];
+                }
+                
+                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
+                
+            } else {
+                [self.fileIDHide removeObject:metadata.fileID];
             }
             
-        } failure:^(NSString *message, NSInteger errorCode) {
-            
-            [self.fileIDHide removeObject:metadata.fileID];
-
             if (++cont == numDelete) {
                 [self reloadDatasource];
             }

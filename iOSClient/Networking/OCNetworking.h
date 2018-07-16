@@ -48,7 +48,7 @@
 - (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 - (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 - (void)readFile:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(tableMetadata *metadata))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
-- (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+- (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *message, NSInteger errorCode))completion;
 - (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *fileID, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 - (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 - (void)settingFavorite:(NSString *)fileName favorite:(BOOL)favorite success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;

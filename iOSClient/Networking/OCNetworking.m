@@ -981,14 +981,7 @@
 
 - (void)deleteFileOrFolder
 {
-    [self deleteFileOrFolder:_metadataNet.fileName serverUrl:_metadataNet.serverUrl success:^{
-        
-        if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
-            [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:nil errorCode:0];
-        
-        [self complete];
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
+    [self deleteFileOrFolder:_metadataNet.fileName serverUrl:_metadataNet.serverUrl completion:^(NSString *message, NSInteger errorCode) {
         
         if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
             [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:message errorCode:errorCode];
@@ -997,7 +990,7 @@
     }];
 }
 
-- (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {    
     NSString *serverFilePath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
     
@@ -1008,7 +1001,7 @@
     
     [communication deleteFileOrFolder:serverFilePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
-        success();
+        completion(nil, 0);
         
     } failureRquest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
@@ -1031,7 +1024,7 @@
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionDeleteFileFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
-        failure(message, errorCode);
+        completion(message, errorCode);
     }];
 }
 
