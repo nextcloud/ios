@@ -3085,13 +3085,19 @@
 
 - (void)createReSelectMenu
 {
+    // ITEM SELECT ALL --------------------------------------------------------------------------------------------------
+    
+    appDelegate.selectAllItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_all_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"selectAll"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        [self didSelectAll];
+    }];
+    
     // ITEM DELETE ------------------------------------------------------------------------------------------------------
     
     appDelegate.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
             [self deleteFile];
     }];
     
-    // ITEM MOVE ------------------------------------------------------------------------------------------------------
+    // ITEM MOVE --------------------------------------------------------------------------------------------------------
     
     appDelegate.moveItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_move_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"move"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
             [self moveOpenWindow:[self.tableView indexPathsForSelectedRows]];
@@ -3111,9 +3117,9 @@
 
     // E2EE
     if (_metadataFolder.e2eEncrypted) {
-        appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.deleteItem,appDelegate.downloadItem, appDelegate.saveItem]];
+        appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.deleteItem, appDelegate.downloadItem, appDelegate.saveItem]];
     } else {
-        appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.deleteItem,appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem]];
+        appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.deleteItem, appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem]];
     }
     
     appDelegate.reSelectMenu.imageOffset = CGSizeMake(5, -1);
@@ -4879,6 +4885,19 @@
     
     [_selectedFileIDsMetadatas removeObjectForKey:metadata.fileID];
     
+    [self setTitle];
+}
+
+- (void)didSelectAll
+{
+    for (int i = 0; i < self.tableView.numberOfSections; i++) {
+        for (int j = 0; j < [self.tableView numberOfRowsInSection:i]; j++) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:j inSection:i];
+            tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+            [_selectedFileIDsMetadatas setObject:metadata forKey:metadata.fileID];
+            [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+        }
+    }
     [self setTitle];
 }
 

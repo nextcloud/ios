@@ -48,6 +48,7 @@
 "_no_"                      = "No";
 "_yes_"                     = "Yes";
 "_select_"                  = "Select";
+"_select_all_"              = "Select all";
 "_upload_"                  = "Upload";
 "_home_"                    = "Files";
 "_file_to_upload_"          = "File to upload";

@@ -1917,10 +1917,10 @@
 		F72B60941A24F04E004EF66F /* Localizations */ = {
 			isa = PBXGroup;
 			children = (
+				F7E70DE91A24DE4100E1B66A /* Localizable.strings */,
 				F75797AC1E81356C00187A1B /* CTAssetsPicker.strings */,
 				F732B3351E8045A1002B7D75 /* SwiftWebVC.strings */,
 				F72B60911A24F00B004EF66F /* BKPasscodeView.strings */,
-				F7E70DE91A24DE4100E1B66A /* Localizable.strings */,
 				F7C6D5F61BE371D800AC83AD /* InfoPlist.strings */,
 				F744BE9F1BEBB69F004FFF66 /* Intro.strings */,
 				F7B381BF1C074E3E004693F8 /* Error.strings */,

@@ -93,6 +93,7 @@
 @property (nonatomic, strong) REMenuItem *dateItem;
 
 @property (nonatomic, strong) REMenu *reSelectMenu;
+@property (nonatomic, strong) REMenuItem *selectAllItem;
 @property (nonatomic, strong) REMenuItem *deleteItem;
 @property (nonatomic, strong) REMenuItem *moveItem;
 @property (nonatomic, strong) REMenuItem *encryptItem;
