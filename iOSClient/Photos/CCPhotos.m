@@ -426,11 +426,9 @@
                 if (e2ee) {
                     [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
                 }
-                
             }
             
             if (++cont == numDelete) {
-                
                 if (e2ee) {
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         [[NCNetworkingEndToEnd sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
