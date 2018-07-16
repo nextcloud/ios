@@ -943,17 +943,6 @@
 #pragma mark =====  Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolder
-{
-    [self deleteFileOrFolder:_metadataNet.fileName serverUrl:_metadataNet.serverUrl completion:^(NSString *message, NSInteger errorCode) {
-        
-        if ([self.delegate respondsToSelector:@selector(deleteFileOrFolderSuccessFailure:message:errorCode:)])
-            [self.delegate deleteFileOrFolderSuccessFailure:_metadataNet message:message errorCode:errorCode];
-        
-        [self complete];
-    }];
-}
-
 - (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {    
     NSString *serverFilePath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];

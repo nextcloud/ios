@@ -181,7 +181,6 @@
 #define k_minCharsSearch                                2
 
 // Metadata.Net SELECTOR
-#define selectorDelete                                  @"delete"
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorGetUserAndGroup                         @"getUserAndGroup"
 #define selectorLoadFileView                            @"loadFileView"
@@ -211,7 +210,6 @@
 #define selectorUploadFile                              @"uploadFile"
 
 // Metadata.Net ACTION
-#define actionDeleteFileDirectory                       @"deleteFileOrFolder"
 #define actionGetActivityServer                         @"getActivityServer"
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"
 #define actionGetUserAndGroup                           @"getUserAndGroup"
