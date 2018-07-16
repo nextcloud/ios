@@ -31,7 +31,7 @@
 
 #define alertRequestPasswordPDF 1
 
-@interface CCDetail () <CCActionsDeleteDelegate>
+@interface CCDetail ()
 {
     AppDelegate *appDelegate;
     
@@ -584,7 +584,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:nil hudTitled:nil];
+                                                           [self deleteFile:metadata];
                                                        }]];
 
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
@@ -876,7 +876,84 @@
 #pragma mark ===== Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)deleteFile:(tableMetadata *)metadata
+{
+    NSArray *metadatas = [[NSArray alloc] initWithObjects:metadata, nil];
+
+    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", metadata.directoryID]];
+    
+    if ([CCUtility isFolderEncrypted:tableDirectory.serverUrl account:metadata.account]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSError *error = [[NCNetworkingEndToEnd sharedManager] lockEndToEndFolderEncryptedOnServerUrl:tableDirectory.serverUrl fileID:tableDirectory.fileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (error == nil) {
+                    [self deleteFile:metadatas e2ee:true];
+                } else {
+                    [appDelegate messageNotification:@"_delete_" description:error.localizedDescription visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+                    return;
+                }
+            });
+        });
+    } else {
+        [self deleteFile:metadatas e2ee:false];
+    }
+}
+
+- (void)deleteFile:(NSArray *)metadatas e2ee:(BOOL)e2ee
+{
+    NSInteger numDelete = metadatas.count;
+    __block NSInteger cont = 0;
+    
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    
+    for (tableMetadata *metadata in metadatas) {
+        
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        
+        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
+            
+            if (errorCode == 0 || errorCode == 404) {
+                
+                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
+                
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
+                [[appDelegate activePhotos].fileIDHide addObject:metadata.fileID];
+                
+                // Directory ?
+                if (metadata.directory) {
+                    [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName]];
+                }
+                // E2EE (if exists the record)
+                if (e2ee) {
+                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
+                }
+            }
+            
+            if (++cont == numDelete) {
+                if (e2ee) {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        [[NCNetworkingEndToEnd sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            // ONLY for this View
+                            
+                            [self deleteFile:metadata message:message errorCode:errorCode];
+                        });
+                    });
+                } else {
+                    
+                    // ONLY for this View
+                    
+                    [self deleteFile:metadata message:message errorCode:errorCode];
+                }
+            }
+        }];
+    }
+}
+
+- (void)deleteFile:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     if (errorCode == 0) {
         
@@ -888,11 +965,11 @@
             [self removeAllView];
         
         // if a message for a directory of these
-        if (![_dataSourceDirectoryID containsObject:metadataNet.directoryID])
+        if (![_dataSourceDirectoryID containsObject:metadata.directoryID])
             return;
     
         // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
-        if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadataNet.fileID]) {
+        if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadata.fileID]) {
         
             NSArray *viewsToRemove = [self.view subviews];
             for (id element in viewsToRemove) {
@@ -910,9 +987,9 @@
             // only photoBrowser if exists
             for (NSUInteger index=0; index < [self.dataSourceImagesVideos count] && _photoBrowser; index++ ) {
         
-                tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
+                tableMetadata *metadataTemp = [self.dataSourceImagesVideos objectAtIndex:index];
         
-                if ([metadata isInvalidated] || [metadata.fileID isEqualToString:metadataNet.fileID]) {
+                if ([metadata isInvalidated] || [metadataTemp.fileID isEqualToString:metadata.fileID]) {
             
                     [self.dataSourceImagesVideos removeObjectAtIndex:index];
                     [self.photos removeObjectAtIndex:index];
@@ -980,7 +1057,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [[CCActions sharedInstance] deleteFileOrFolder:self.metadataDetail delegate:self hud:nil hudTitled:nil];
+                                                           [self deleteFile:self.metadataDetail];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)

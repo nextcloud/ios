@@ -37,7 +37,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <CCActionsDeleteDelegate, CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
+@interface CCMain () <CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
     AppDelegate *appDelegate;
     
@@ -1864,7 +1864,6 @@
         }];
     }
 }
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Rename / Move =====
