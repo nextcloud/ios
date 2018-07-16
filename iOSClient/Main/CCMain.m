@@ -2606,6 +2606,7 @@
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     [ocNetworking settingFavorite:fileNameServerUrl favorite:favorite completion:^(NSString *message, NSInteger errorCode) {
         if (errorCode == 0) {
+            
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
 
             _dateReadDataSource = nil;
@@ -2614,11 +2615,24 @@
             else
                 [self reloadDatasource:self.serverUrl];
             
-            tableMetadata *metadataTemp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-            if (metadataTemp.directory && metadataTemp.favorite) {
-                NSString *dir = [CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadataTemp.fileName];
+            if (metadata.directory && favorite) {
+                NSString *dir = [CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadata.fileName];
                 [appDelegate.activeFavorites addFavoriteFolder:dir];
             }
+            
+            if (!metadata.directory && favorite && [CCUtility getFavoriteOffline]) {
+                
+                metadata.favorite = favorite;
+                metadata.session = k_download_session;
+                metadata.sessionSelector = selectorDownloadSynchronize;
+                metadata.sessionError = @"";
+                metadata.status = k_metadataStatusWaitDownload;
+                    
+                // Add Metadata for Download
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+            }
+            
         } else {
             if (errorCode == kOCErrorServerUnauthorized)
                 [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
