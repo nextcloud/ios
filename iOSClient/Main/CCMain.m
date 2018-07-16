@@ -1772,66 +1772,99 @@
 #pragma mark ===== Delete File or Folder =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    // Unauthorized
-    if (errorCode == kOCErrorServerUnauthorized)
-        [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-    
-    [_queueSelector removeObject:metadataNet.selector];
-    
-    if ([_queueSelector count] == 0) {
-        
-        [_hud hideHud];
-        
-        // next
-        [_selectedFileIDsMetadatas removeObjectForKey:metadataNet.fileID];
-            
-        if ([_selectedFileIDsMetadatas count] > 0) {
-            
-            NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
-            [self deleteFileOrFolder:[metadatas objectAtIndex:0] numFile:[_selectedFileIDsMetadatas count] ofFile:_numSelectedFileIDsMetadatas];
-            
-        } else {
-            
-            // End Select Table View
-            [self tableViewSelect:NO];
-            
-            // Reload
-            if (_isSearchMode)
-                [self readFolder:metadataNet.serverUrl];
-            else
-                [self reloadDatasource:metadataNet.serverUrl];
-        }
-    }
-}
-
-- (void)deleteFileOrFolder:(tableMetadata *)metadata numFile:(NSInteger)numFile ofFile:(NSInteger)ofFile
-{
-    [_queueSelector addObject:selectorDelete];
-    
-    [[CCActions sharedInstance] deleteFileOrFolder:metadata delegate:self hud:_hud hudTitled:[NSString stringWithFormat:NSLocalizedString(@"_delete_file_n_", nil), ofFile - numFile + 1, ofFile]];        
-}
-
 - (void)deleteFile
 {
     if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
         return;
-    
-    [_queueSelector removeAllObjects];
-    
+     
+    NSArray *metadatas;
     if ([_selectedFileIDsMetadatas count] > 0) {
-            
-        _numSelectedFileIDsMetadatas = [_selectedFileIDsMetadatas count];
-        NSArray *metadatas = [_selectedFileIDsMetadatas allValues];
-        [self deleteFileOrFolder:[metadatas objectAtIndex:0] numFile:[_selectedFileIDsMetadatas count] ofFile:_numSelectedFileIDsMetadatas];
-        
+        metadatas = [_selectedFileIDsMetadatas allValues];
     } else {
-        
-        _numSelectedFileIDsMetadatas = 1;
-        [self deleteFileOrFolder:_metadata numFile:1 ofFile:_numSelectedFileIDsMetadatas];
+        metadatas = [[NSArray alloc] initWithObjects:_metadata, nil];
+    }
+
+    if (_metadataFolder.e2eEncrypted) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSError *error = [[NCNetworkingEndToEnd sharedManager] lockEndToEndFolderEncryptedOnServerUrl:self.serverUrl fileID:_metadataFolder.fileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if (error == nil) {
+                    [self deleteFile:metadatas e2ee:_metadataFolder.e2eEncrypted];
+                } else {
+                    [appDelegate messageNotification:@"_delete_" description:error.localizedDescription visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+                    return;
+                }
+            });
+        });
+    } else {
+        [self deleteFile:metadatas e2ee:_metadataFolder.e2eEncrypted];
     }
 }
+
+- (void)deleteFile:(NSArray *)metadatas e2ee:(BOOL)e2ee
+{
+    NSInteger numDelete = metadatas.count;
+    __block NSInteger cont = 0;
+    
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    
+    for (tableMetadata *metadata in metadatas) {
+        
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        
+        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
+            
+            if (errorCode == 0 || errorCode == 404) {
+                
+                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
+                
+                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
+                [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
+                [[appDelegate activePhotos].fileIDHide addObject:metadata.fileID];
+                
+                // Directory ?
+                if (metadata.directory) {
+                    [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName]];
+                }
+                // E2EE (if exists the record)
+                if (e2ee) {
+                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
+                }
+            }
+            
+            if (++cont == numDelete) {
+                if (e2ee) {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                        [[NCNetworkingEndToEnd sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            // ONLY for this View
+                            
+                            // End Select Table View
+                            [self tableViewSelect:NO];
+                            
+                            [self reloadDatasource];
+                        });
+                    });
+                } else {
+                    
+                    // ONLY for this View
+
+                    // End Select Table View
+                    [self tableViewSelect:NO];
+                    
+                    // Reload
+                    if (_isSearchMode)
+                        [self readFolder:serverUrl];
+                    else
+                        [self reloadDatasource:serverUrl];
+                }
+            }
+        }];
+    }
+}
+
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Rename / Move =====

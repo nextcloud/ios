@@ -1075,7 +1075,7 @@
         NSLog(@"[LOG] Insert new upload : %@ - fileID : %@", metadata.fileName, fileID);
 
         // remove tempFileID and adjust the directory provider storage
-        if ([tempFileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileName]]) {
+        if ([tempFileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileNameView]]) {
             
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID] clearDateReadDirectoryID:nil];
             

@@ -433,10 +433,16 @@
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                         [[NCNetworkingEndToEnd sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
                         dispatch_async(dispatch_get_main_queue(), ^{
+                            
+                            // ONLY for this View
+                            
                             [self reloadDatasource];
                         });
                     });
                 } else {
+                    
+                    // ONLY for this View
+                    
                     [self reloadDatasource];
                 }
             }
