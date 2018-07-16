@@ -671,8 +671,9 @@
         // ----------------------------------------------------------------------------------------------------------
         
         tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND fileNameIdentifier == %@", appDelegate.activeAccount, metadata.fileName]];
-        if (tableE2eEncryption)
+        if (tableE2eEncryption && [[NCUtility sharedInstance] isEncryptedMetadata:metadata]) {
             cell.status.image = [UIImage imageNamed:@"encrypted"];
+        }
     }
     
     // text and length
