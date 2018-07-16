@@ -27,7 +27,7 @@
 
 #import "NCBridgeSwift.h"
 
-@interface CCFavorites () <CCActionsSettingFavoriteDelegate>
+@interface CCFavorites ()
 {
     AppDelegate *appDelegate;
 
@@ -223,21 +223,8 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Favorite <delegate> =====
+#pragma mark ===== Favorite =====
 #pragma--------------------------------------------------------------------------------------------
-
-- (void)settingFavoriteSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    if (errorCode == 0) {
-        
-        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.optionAny boolValue]];
-        [self reloadDatasource];
-        
-    } else {
-        
-         NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
-    }
-}
 
 - (void)addFavoriteFolder:(NSString *)serverUrl
 {
@@ -261,6 +248,26 @@
     
     [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:[CCSynchronize sharedSynchronize] metadataNet:metadataNet];
 }
+
+- (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite
+{
+    NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] activeUrl:appDelegate.activeUrl];
+    
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    [ocNetworking settingFavorite:fileNameServerUrl favorite:favorite completion:^(NSString *message, NSInteger errorCode) {
+        if (errorCode == 0) {
+            [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
+            [self reloadDatasource];
+        } else {
+            if (errorCode == kOCErrorServerUnauthorized)
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
+        }
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== listingFavorites <delegate> =====
+#pragma--------------------------------------------------------------------------------------------
 
 - (void)listingFavoritesSuccessFailure:(CCMetadataNet *)metadataNet metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
@@ -432,8 +439,7 @@
     
     if (direction == MGSwipeDirectionLeftToRight) {
         
-        tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
-        [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
+        [self settingFavorite:[_dataSource objectAtIndex:indexPath.row] favorite:NO];
     }
     
     return YES;

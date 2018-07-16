@@ -71,25 +71,24 @@ extension FileProviderExtension {
         let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: self.providerData.accountUrl)
 
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.settingFavorite(fileNamePath, favorite: favorite, success: {
-                    
-            // Change DB
-            metadata.favorite = favorite
-            _ = NCManageDatabase.sharedInstance.addMetadata(metadata)                    
-            
-        }, failure: { (errorMessage, errorCode) in
-            
-            // Errore, remove from listFavoriteIdentifierRank
-            self.providerData.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
-            
-            self.providerData.queueTradeSafe.sync(flags: .barrier) {
-                self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
-                self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+        ocNetworking?.settingFavorite(fileNamePath, favorite: favorite, completion: { (message, errorCode) in
+            if errorCode == 0 {
+                // Change DB
+                metadata.favorite = favorite
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            } else {
+                // Errore, remove from listFavoriteIdentifierRank
+                self.providerData.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
+                
+                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier, providerData: self.providerData)
+                
+                self.providerData.queueTradeSafe.sync(flags: .barrier) {
+                    self.providerData.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
+                    self.providerData.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
+                }
+                
+                self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             }
-            
-            self.providerData.signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         })
     }
     

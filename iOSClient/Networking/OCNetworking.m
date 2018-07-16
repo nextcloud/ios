@@ -717,25 +717,7 @@
 #pragma mark ===== Setting Favorite =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)settingFavorite
-{
-    [self settingFavorite:_metadataNet.fileName favorite:[_metadataNet.optionAny boolValue] success:^{
-        
-        if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)])
-            [self.delegate settingFavoriteSuccessFailure:_metadataNet message:nil errorCode:0];
-        
-        [self complete];
-        
-    } failure:^(NSString *message, NSInteger errorCode) {
-        
-        if ([self.delegate respondsToSelector:@selector(settingFavoriteSuccessFailure:message:errorCode:)])
-             [self.delegate settingFavoriteSuccessFailure:_metadataNet message:message errorCode:errorCode];
-        
-        [self complete];
-    }];
-}
-
-- (void)settingFavorite:(NSString *)fileName favorite:(BOOL)favorite success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)settingFavorite:(NSString *)fileName favorite:(BOOL)favorite completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -746,7 +728,7 @@
 
     [communication settingFavoriteServer:server andFileOrFolderPath:fileName favorite:favorite withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer, NSString *token) {
         
-        success();
+        completion(nil, 0);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         
@@ -766,7 +748,7 @@
         if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
-        failure(message, errorCode);
+        completion(message, errorCode);
     }];
 }
 

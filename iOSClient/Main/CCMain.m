@@ -37,7 +37,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <CCActionsRenameDelegate, CCActionsSearchDelegate, CCActionsSettingFavoriteDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
+@interface CCMain () <CCActionsRenameDelegate, CCActionsSearchDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
     AppDelegate *appDelegate;
     
@@ -1101,12 +1101,6 @@
         
         // Synchronized
         if ([selector isEqualToString:selectorDownloadSynchronize]) {
-            [self reloadDatasource:serverUrl];
-        }
-        
-        // add Favorite
-        if ([selector isEqualToString:selectorAddFavorite]) {
-            [[CCActions sharedInstance] settingFavorite:metadata favorite:YES delegate:self];
             [self reloadDatasource:serverUrl];
         }
         
@@ -2605,68 +2599,31 @@
 #pragma mark ===== Favorite =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)settingFavoriteSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite
 {
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
+    NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:self.serverUrl activeUrl:appDelegate.activeUrl];
     
-    if (errorCode == 0) {
-    
-        _dateReadDataSource = nil;
-        
-        [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadataNet.fileID favorite:[metadataNet.optionAny boolValue]];
-        
-        if (_isSearchMode)
-            [self readFolder:metadataNet.serverUrl];
-        else
-            [self reloadDatasource:metadataNet.serverUrl];
-        
-        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
-        
-        if (metadata.directory && metadata.favorite) {
-            
-            NSString *dir = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
-            
-            [appDelegate.activeFavorites addFavoriteFolder:dir];
-        }
-    } else {
-        
-        if (errorCode == kOCErrorServerUnauthorized)
-            [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
-        
-        NSLog(@"[LOG] Setting Favorite failure error %d, %@", (int)errorCode, message);
-    }
-}
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    [ocNetworking settingFavorite:fileNameServerUrl favorite:favorite completion:^(NSString *message, NSInteger errorCode) {
+        if (errorCode == 0) {
+            [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
 
-- (void)addFavorite:(tableMetadata *)metadata
-{
-    if (metadata.directory) {
-        
-        [[CCActions sharedInstance] settingFavorite:metadata favorite:YES delegate:self];
-        
-    } else {
-    
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        
-        if (serverUrl) {
+            _dateReadDataSource = nil;
+            if (_isSearchMode)
+                [self readFolder:self.serverUrl];
+            else
+                [self reloadDatasource:self.serverUrl];
             
-            metadata.session = k_download_session;
-            metadata.sessionError = @"";
-            metadata.sessionSelector = selectorAddFavorite;
-            metadata.status = k_metadataStatusWaitDownload;
-            
-            // Add Metadata for Download
-            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+            tableMetadata *metadataTemp = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+            if (metadataTemp.directory && metadataTemp.favorite) {
+                NSString *dir = [CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadataTemp.fileName];
+                [appDelegate.activeFavorites addFavoriteFolder:dir];
+            }
+        } else {
+            if (errorCode == kOCErrorServerUnauthorized)
+                [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
         }
-    }
-}
-
-- (void)removeFavorite:(tableMetadata *)metadata
-{
-    [[CCActions sharedInstance] settingFavorite:metadata favorite:NO delegate:self];
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3674,9 +3631,9 @@
     
     if (direction == MGSwipeDirectionLeftToRight) {
         if (_metadata.favorite)
-            [self removeFavorite:_metadata];
+            [self settingFavorite:_metadata favorite:NO];
         else
-            [self addFavorite:_metadata];
+            [self settingFavorite:_metadata favorite:YES];
     }
     
     return YES;
@@ -3803,8 +3760,8 @@
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDefault
                                 handler: ^(AHKActionSheet *as) {
-                                    if (_metadata.favorite) [self removeFavorite:_metadata];
-                                    else [self addFavorite:_metadata];
+                                    if (_metadata.favorite) [self settingFavorite:_metadata favorite:NO];
+                                    else [self settingFavorite:_metadata favorite:YES];
                                 }];
         
         if (!lockDirectory && !isFolderEncrypted) {
@@ -3986,8 +3943,8 @@
                                  height: 50.0
                                    type: AHKActionSheetButtonTypeDefault
                                 handler: ^(AHKActionSheet *as) {
-                                    if (_metadata.favorite) [self removeFavorite:_metadata];
-                                    else [self addFavorite:_metadata];
+                                    if (_metadata.favorite) [self settingFavorite:_metadata favorite:NO];
+                                    else [self settingFavorite:_metadata favorite:YES];
                                 }];
         
         if (!_metadataFolder.e2eEncrypted) {

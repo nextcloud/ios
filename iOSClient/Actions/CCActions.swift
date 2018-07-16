@@ -34,11 +34,6 @@ import Foundation
     func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
 }
 
-@objc protocol CCActionsSettingFavoriteDelegate {
-    
-    func settingFavoriteSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
-}
-
 @objc protocol CCActionsListingFavoritesDelegate {
     
     func listingFavoritesSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
@@ -211,39 +206,6 @@ class CCActions: NSObject {
         metadataNet.delegate?.searchSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
     }
     
-    // --------------------------------------------------------------------------------------------
-    // MARK: Setting Favorite
-    // --------------------------------------------------------------------------------------------
-    
-    @objc func settingFavorite(_ metadata: tableMetadata, favorite: Bool, delegate: AnyObject) {
-        
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-                
-        metadataNet.action = actionSettingFavorite
-        metadataNet.delegate = delegate
-        metadataNet.fileID = metadata.fileID
-        metadataNet.fileName = CCUtility.returnFileNamePath(fromFileName: metadata.fileName, serverUrl: serverUrl, activeUrl: appDelegate.activeUrl)
-        metadataNet.fileNameView = metadata.fileNameView
-        metadataNet.optionAny = "\(favorite)"
-        metadataNet.selector = selectorAddFavorite
-        metadataNet.serverUrl = serverUrl;
-        
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-    
-    @objc func settingFavoriteSuccessFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger) {
-        
-        if (errorCode != 0) {
-            appDelegate.messageNotification("_favorites_", description: message as String, visible: true, delay:TimeInterval(k_dismissAfterSecond), type:TWMessageBarMessageType.error, errorCode: errorCode)
-        }
-
-        metadataNet.delegate?.settingFavoriteSuccessFailure(metadataNet, message: message, errorCode: errorCode)
-    }
-
     // --------------------------------------------------------------------------------------------
     // MARK: Linsting Favorites
     // --------------------------------------------------------------------------------------------

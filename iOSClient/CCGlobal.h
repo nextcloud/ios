@@ -181,7 +181,6 @@
 #define k_minCharsSearch                                2
 
 // Metadata.Net SELECTOR
-#define selectorAddFavorite                             @"addFavorite"
 #define selectorDelete                                  @"delete"
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorGetUserAndGroup                         @"getUserAndGroup"
@@ -228,7 +227,6 @@
 #define actionReadShareServer                           @"readShareServer"
 #define actionSearch                                    @"search"
 #define actionSetNotificationServer                     @"setNotificationServer"
-#define actionSettingFavorite                           @"settingFavorite"
 #define actionShare                                     @"share"
 #define actionShareWith                                 @"shareWith"
 #define actionSubscribingNextcloudServer                @"subscribingNextcloudServer"
