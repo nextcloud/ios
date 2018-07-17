@@ -1,8 +1,8 @@
-### Expected behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+### Expected behaviour
 
-### Actual behaviour                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+### Actual behaviour
 
-### Steps to reproduce                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+### Steps to reproduce
 
 ### iOS version
 
