@@ -1146,7 +1146,7 @@
                 metadata.iconName = @"file_xls";
             }
             
-            if ([typeFile isEqualToString:@"public.plain-text"] || [ext isEqualToString:@"MD"]) {
+            if ([typeFile isEqualToString:@"public.plain-text"] || [CCUtility isDocumentModifiableExtension:ext]) {
                 metadata.iconName = @"file_txt";
             }
             
