@@ -110,6 +110,10 @@
 //Name of the container to configure NSURLSessions
 #define k_shared_container_identifier @"group.com.owncloud.iOSmobileapp";
 
+// Quota return value
+#define k_quota_space_not_computed  -1
+#define k_quota_space_unknown       -2
+#define k_quota_space_unlimited     -3
 
 
 

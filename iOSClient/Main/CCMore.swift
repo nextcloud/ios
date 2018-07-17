@@ -197,7 +197,8 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     @objc func changeUserProfile() {
      
         let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar.png"
-
+        var quota: String = ""
+        
         if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
             themingAvatar.image = themingAvatarFile
         } else {
@@ -232,8 +233,18 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         }
 
         progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
-                
-        let quota : String = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
+        
+        switch Double(tabAccount.quotaTotal) {
+        case Double(k_quota_space_not_computed):
+            quota = "0"
+        case Double(k_quota_space_unknown):
+            quota = NSLocalizedString("_quota_space_unknown_", comment: "")
+        case Double(k_quota_space_unlimited):
+            quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
+        default:
+            quota = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
+        }
+        
         let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
                 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)

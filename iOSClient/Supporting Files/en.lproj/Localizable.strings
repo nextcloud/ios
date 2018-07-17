@@ -106,6 +106,9 @@
 "_more_"                        = "More";
 "_notifications_"               = "Notifications";
 "_logout_"                      = "Log out";
+"_quota_space_unlimited_"       = "Unlimited";
+"_quota_space_unknown_"         = "Unknown";
+"_quota_using_"                 = "You are using %@ of %@";
 
 // Settings
 
@@ -169,7 +172,6 @@
 "_user_email_"                  = "Email";
 "_user_web_"                    = "Website";
 "_user_twitter_"                = "Twitter";
-"_quota_using_"                 = "You are using %@ of %@";
 "_favorite_offline_"            = "Favorites available offline";
 "_favorite_offline_footer_"     = "Making all favorites available offline may take a while and use a lot of memory while doing it.";
 "_advanced_"                    = "Advanced";
