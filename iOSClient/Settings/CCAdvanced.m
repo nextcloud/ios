@@ -144,6 +144,9 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCache:);
+    UILongPressGestureRecognizer *longGesture = [UILongPressGestureRecognizer new];
+    [longGesture addTarget:self action:@selector(clearCacheAndDatabase:)];
+    [row.cellClass addGestureRecognizer:longGesture];
     [section addFormRow:row];
 
     // Section EXIT --------------------------------------------------------
@@ -348,7 +351,7 @@
 #pragma mark === Clear Cache ===
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)removeAllFiles
+- (void)removeAllFilesWithDB:(BOOL)withDB
 {
     [appDelegate maintenanceMode:YES];
     
@@ -358,34 +361,35 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        [[NSURLCache sharedURLCache] setMemoryCapacity:0];
-        [[NSURLCache sharedURLCache] setDiskCapacity:0];
-        
-        [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
-        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
-        [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:appDelegate.activeAccount];
-        
-        [[NCAutoUpload sharedInstance] alignPhotoLibrary];
-        
-        [self emptyDocumentsDirectory];
-        
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
-
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
         
+        [self emptyDocumentsDirectory];
         NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
         for (NSString *file in tmpDirectory)
             [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), file] error:NULL];
         
         [self recalculateSize];
+        
+        // Clear Database
+        
+        [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:appDelegate.activeAccount];
+
+        if (withDB) {
+            
+            [[NCManageDatabase sharedInstance] clearTable:[tableActivity class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableCapabilities class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableDirectory class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableE2eEncryption class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableGPS class] account:nil];
+            [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:appDelegate.activeAccount];
+            
+            [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+        }
         
         [appDelegate maintenanceMode:NO];
         
@@ -407,9 +411,15 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_yes_", nil)
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *action) {
-                                                           [self removeAllFiles];
+                                                           [self removeAllFilesWithDB:NO];
                                                        }]];
 
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_cache_and_db_", nil)
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction *action) {
+                                                           [self removeAllFilesWithDB:YES];
+                                                       }]];
+    
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
     
