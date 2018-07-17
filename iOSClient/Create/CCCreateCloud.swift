@@ -587,16 +587,12 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         let ext = (name as! NSString).pathExtension.uppercased()
         var fileNameSave = ""
         
-        switch ext
-        {
-            case "":
-                fileNameSave = name as! String + ".txt"
-            
-            case "TXT":
-                fileNameSave = name as! String
-            
-            default:
-                fileNameSave = (name as! NSString).deletingPathExtension + ".txt"
+        if (ext == "") {
+            fileNameSave = name as! String + ".txt"
+        } else if (CCUtility.isDocumentModifiableExtension(ext)) {
+            fileNameSave = name as! String
+        } else {
+            fileNameSave = (name as! NSString).deletingPathExtension + ".txt"
         }
         
         guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {

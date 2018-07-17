@@ -982,6 +982,13 @@
     return (NSArray *)datesSubFolder;
 }
 
++ (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension
+{
+    // Use UPPERCASE extension :
+    
+    return [@[@"TXT", @"MD", @"MARKDOWN", @"ORG"] containsObject:fileExtension];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1120,8 +1127,8 @@
             metadata.typeFile = k_metadataTypeFile_audio;
             metadata.iconName = @"file_audio";
         }
-        // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") [MD]
-        else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
+        // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") + isDocumentModifiableExtension
+        else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [CCUtility isDocumentModifiableExtension:ext]) {
             metadata.typeFile = k_metadataTypeFile_document;
             metadata.iconName = @"document";
             

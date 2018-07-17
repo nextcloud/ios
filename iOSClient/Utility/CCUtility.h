@@ -189,6 +189,8 @@
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
++ (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;

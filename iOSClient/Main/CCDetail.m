@@ -201,7 +201,7 @@
     _buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
-    if ([_fileNameExtension isEqualToString:@"TXT"]) {
+    if ([CCUtility isDocumentModifiableExtension:_fileNameExtension]) {
         if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
             [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
         else
@@ -316,7 +316,7 @@
             [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"20",@"Sans-Serif",dataFile] baseURL:nil];
         }
         
-    } else if ([_fileNameExtension isEqualToString:@"TXT"] || [_fileNameExtension isEqualToString:@"MD"]) {
+    } else if ([CCUtility isDocumentModifiableExtension:_fileNameExtension]) {
         
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
