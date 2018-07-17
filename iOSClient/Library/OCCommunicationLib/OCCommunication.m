@@ -1924,20 +1924,30 @@
                 
                 if ([quota count] > 0) {
                     
-                    if ([quota valueForKey:@"free"] && ![[quota valueForKey:@"free"] isKindOfClass:[NSNull class]])
+                    if ([quota valueForKey:@"free"] && ![[quota valueForKey:@"free"] isKindOfClass:[NSNull class]]) {
                         userProfile.quotaFree = [[quota valueForKey:@"free"] doubleValue];
+                        if (userProfile.quotaFree < 0) userProfile.quotaFree = 0;
+                    }
                     
-                    if ([quota valueForKey:@"quota"] && ![[quota valueForKey:@"quota"] isKindOfClass:[NSNull class]])
+                    if ([quota valueForKey:@"quota"] && ![[quota valueForKey:@"quota"] isKindOfClass:[NSNull class]]) {
                         userProfile.quota = [[quota valueForKey:@"quota"] doubleValue];
-
-                    if ([quota valueForKey:@"relative"] && ![[quota valueForKey:@"relative"] isKindOfClass:[NSNull class]])
+                        if (userProfile.quota < 0) userProfile.quota = 0;
+                    }
+                    
+                    if ([quota valueForKey:@"relative"] && ![[quota valueForKey:@"relative"] isKindOfClass:[NSNull class]]) {
                         userProfile.quotaRelative = [[quota valueForKey:@"relative"] doubleValue];
-                        
-                    if ([quota valueForKey:@"total"] && ![[quota valueForKey:@"total"] isKindOfClass:[NSNull class]])
+                        if (userProfile.quotaRelative < 0) userProfile.quotaRelative = 0;
+                    }
+                    
+                    if ([quota valueForKey:@"total"] && ![[quota valueForKey:@"total"] isKindOfClass:[NSNull class]]) {
                         userProfile.quotaTotal = [[quota valueForKey:@"total"] doubleValue];
-                        
-                    if ([quota valueForKey:@"used"] && ![[quota valueForKey:@"used"] isKindOfClass:[NSNull class]])
+                        if (userProfile.quotaTotal < 0) userProfile.quotaTotal = 0;
+                    }
+                    
+                    if ([quota valueForKey:@"used"] && ![[quota valueForKey:@"used"] isKindOfClass:[NSNull class]]) {
                         userProfile.quotaUsed = [[quota valueForKey:@"used"] doubleValue];
+                        if (userProfile.quotaUsed < 0) userProfile.quotaUsed = 0;
+                    }
                 }
                 
                 successRequest(response, userProfile, request.redirectedServer);
