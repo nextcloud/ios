@@ -35,12 +35,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     @IBOutlet weak var progressQuota: UIProgressView!
 
     var functionMenu = [OCExternalSites]()
+    var externalSiteMenu = [OCExternalSites]()
     var settingsMenu = [OCExternalSites]()
     var quotaMenu = [OCExternalSites]()
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    var menuExternalSite: [tableExternalSites]?
+    var listExternalSite: [tableExternalSites]?
     var tabAccount : tableAccount?
     
     //var loginWeb : CCLoginWeb!
@@ -81,6 +82,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         // Clear
         functionMenu.removeAll()
+        externalSiteMenu.removeAll()
         settingsMenu.removeAll()
         quotaMenu.removeAll()
         labelQuotaExternalSite.text = ""
@@ -112,11 +114,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {
         
-            menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites()
+            listExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites()
             
-            if menuExternalSite != nil {
+            if listExternalSite != nil {
                 
-                for table in menuExternalSite! {
+                for table in listExternalSite! {
             
                     item = OCExternalSites.init()
             
@@ -126,7 +128,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
                     if (table.type == "link") {
                         item.icon = "world"
-                        functionMenu.append(item)
+                        externalSiteMenu.append(item)
                     }
                     if (table.type == "settings") {
                         item.icon = "settings"
@@ -252,13 +254,17 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     func numberOfSections(in tableView: UITableView) -> Int {
         
-        return 2
+        if (externalSiteMenu.count == 0) {
+            return 2
+        } else {
+            return 3
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
         if (section == 0) {
-            return 10
+            return 0.1
         } else {
             return 30
         }
@@ -271,10 +277,25 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // Menu Normal
         if (section == 0) {
             cont = functionMenu.count
-        }
-        // Menu Settings
-        if (section == 1) {
-            cont = settingsMenu.count
+        } else {
+            switch (numberOfSections(in: tableView)) {
+            case 2:
+                // Menu Settings
+                if (section == 1) {
+                    cont = settingsMenu.count
+                }
+            case 3:
+                // Menu External Site
+                if (section == 1) {
+                    cont = externalSiteMenu.count
+                }
+                // Menu Settings
+                if (section == 2) {
+                    cont = settingsMenu.count
+                }
+            default:
+                cont = 0
+            }
         }
         
         return cont
@@ -283,6 +304,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
+        var item: OCExternalSites = OCExternalSites.init()
 
         // change color selection and disclosure indicator
         let selectionColor : UIView = UIView.init()
@@ -294,23 +316,26 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // Menu Normal
         if (indexPath.section == 0) {
             
-            let item = functionMenu[indexPath.row]
+            item = functionMenu[indexPath.row]
             
-            cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
-            cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.sharedInstance.textView
-
+        } else {
+            
+            // Menu External Site
+            if (numberOfSections(in: tableView) == 3 && indexPath.section == 1) {
+                
+                item = externalSiteMenu[indexPath.row]
+            }
+            
+            // Menu Settings
+            if ((numberOfSections(in: tableView) == 2 && indexPath.section == 1) || (numberOfSections(in: tableView) == 3 && indexPath.section == 2)) {
+                
+                item = settingsMenu[indexPath.row]
+            }
         }
         
-        // Menu Settings
-        if (indexPath.section == 1) {
-            
-            let item = settingsMenu[indexPath.row]
-            
-            cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
-            cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.sharedInstance.textView
-        }
+        cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+        cell.labelText?.text = NSLocalizedString(item.name, comment: "")
+        cell.labelText.textColor = NCBrandColor.sharedInstance.textView
         
         return cell
     }
@@ -322,13 +347,16 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         // Menu Function
         if indexPath.section == 0 {
-            
             item = functionMenu[indexPath.row]
         }
         
+        // Menu External Site
+        if (numberOfSections(in: tableView) == 3 && indexPath.section == 1) {
+            item = externalSiteMenu[indexPath.row]
+        }
+        
         // Menu Settings
-        if indexPath.section == 1 {
-            
+        if ((numberOfSections(in: tableView) == 2 && indexPath.section == 1) || (numberOfSections(in: tableView) == 3 && indexPath.section == 2)) {
             item = settingsMenu[indexPath.row]
         }
         
