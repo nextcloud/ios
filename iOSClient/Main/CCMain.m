@@ -3526,6 +3526,8 @@
             if (aViewController.fromType == CCBKPasscodeFromDisactivateDirectory) {
                 
                 NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
+                if (!serverUrl)
+                    return;
                 NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:_metadata.fileName];
                 
                 if (![[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:NO]) {

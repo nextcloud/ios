@@ -253,7 +253,10 @@
 
 - (void)settingFavorite:(tableMetadata *)metadata favorite:(BOOL)favorite
 {
-    NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:[[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID] activeUrl:appDelegate.activeUrl];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+    if(!serverUrl)
+        return;
+    NSString *fileNameServerUrl = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     [ocNetworking settingFavorite:fileNameServerUrl favorite:favorite completion:^(NSString *message, NSInteger errorCode) {
@@ -289,6 +292,8 @@
             [filesEtag addObject:metadata.fileID];
             
             NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+            if (!serverUrl)
+                continue;
             NSString *serverUrlSon = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
             
             if (![serverUrlSon containsString:father]) {

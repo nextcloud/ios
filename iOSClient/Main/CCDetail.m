@@ -185,6 +185,9 @@
 - (void)createToolbar
 {
     CGFloat safeAreaBottom = 0;
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID];
+    if (!serverUrl)
+        return;
     
     if (@available(iOS 11, *)) {
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
@@ -202,12 +205,12 @@
     _buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
     if ([CCUtility isDocumentModifiableExtension:_fileNameExtension]) {
-        if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
+        if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
             [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
         else
             [_toolbar setItems:[NSArray arrayWithObjects: _buttonModifyTxt, flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
     } else {
-        if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
+        if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
             [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonAction,  nil]];
         else
             [_toolbar setItems:[NSArray arrayWithObjects: flexible, _buttonDelete, fixedSpaceMini, _buttonShare, fixedSpaceMini, _buttonAction,  nil]];
@@ -355,7 +358,13 @@
     [_dataSourceDirectoryID removeAllObjects];
     
     // if not images, exit
-    if ([self.dataSourceImagesVideos count] == 0) return;
+    if ([self.dataSourceImagesVideos count] == 0)
+        return;
+    
+    // test
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID];
+    if (!serverUrl)
+        return;
     
     NSUInteger index = 0;
     for (tableMetadata *metadata in self.dataSourceImagesVideos) {
@@ -374,7 +383,7 @@
     // PhotoBrowser
     self.photoBrowser.displayActionButton = YES;
     self.photoBrowser.displayDeleteButton = YES;
-    if ([CCUtility isFolderEncrypted:[[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID] account:appDelegate.activeAccount]) // E2EE
+    if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
         self.photoBrowser.displayShareButton = NO;
     else
         self.photoBrowser.displayShareButton = YES;
@@ -881,6 +890,8 @@
     NSArray *metadatas = [[NSArray alloc] initWithObjects:metadata, nil];
 
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", metadata.directoryID]];
+    if (!tableDirectory)
+        return;
     
     if ([CCUtility isFolderEncrypted:tableDirectory.serverUrl account:metadata.account]) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

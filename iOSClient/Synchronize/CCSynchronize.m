@@ -108,7 +108,9 @@
 
     // reload folder ../ *
     NSString *serverUrlParent = [[NCManageDatabase sharedInstance] getServerUrl:metadataFolder.directoryID];
-    [appDelegate.activeMain reloadDatasource:serverUrlParent];
+    if (serverUrlParent) {
+        [appDelegate.activeMain reloadDatasource:serverUrlParent];
+    }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         
