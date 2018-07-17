@@ -356,8 +356,10 @@
     [appDelegate maintenanceMode:YES];
     
     [self.hud visibleHudTitle:NSLocalizedString(@"_remove_cache_", nil) mode:MBProgressHUDModeIndeterminate color:nil];
-        
-    [appDelegate.netQueue cancelAllOperations];
+    
+    if (withDB) {
+        [appDelegate.netQueue cancelAllOperations];
+    }
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC),dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
