@@ -43,7 +43,9 @@ extension FileProviderExtension {
                 
                 if (metadata!.typeFile == k_metadataTypeFile_image || metadata!.typeFile == k_metadataTypeFile_video) {
                     
-                    let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata!.directoryID)
+                    guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata!.directoryID) else {
+                        continue
+                    }
                     let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl, activeUrl: providerData.accountUrl)
                     
                     let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)

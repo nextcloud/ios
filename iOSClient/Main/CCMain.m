@@ -1805,6 +1805,8 @@
     for (tableMetadata *metadata in metadatas) {
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        if (!serverUrl)
+            continue;
         
         [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
             

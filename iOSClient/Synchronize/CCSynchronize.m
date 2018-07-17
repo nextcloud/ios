@@ -382,9 +382,9 @@
         // Clear date for dorce refresh view
         if (![oldDirectoryID isEqualToString:metadata.directoryID]) {
             serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-            oldDirectoryID = metadata.directoryID;
             if (!serverUrl)
                 continue;
+            oldDirectoryID = metadata.directoryID;
             [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
         }
         

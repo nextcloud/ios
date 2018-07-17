@@ -178,6 +178,8 @@
     for (tableMetadata *metadata in metadatas) {
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        if (!serverUrl)
+            continue;
         
         [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
             
@@ -757,7 +759,7 @@
         
         // File do not exists
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-
+        
         if (serverUrl) {
             
             if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileNameView]) {

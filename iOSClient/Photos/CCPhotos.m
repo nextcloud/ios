@@ -406,6 +406,8 @@
     for (tableMetadata *metadata in metadatas) {
     
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        if (!serverUrl)
+            continue;
         
         [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
             
@@ -487,6 +489,8 @@
     if (![saveDirectoryID isEqualToString:metadata.directoryID]) {
         saveDirectoryID = metadata.directoryID;
         saveServerUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        if (!saveServerUrl)
+            return;
     }
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
