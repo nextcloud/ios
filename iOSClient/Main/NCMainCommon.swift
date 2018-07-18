@@ -23,12 +23,18 @@
 
 import Foundation
 
-class NCMainCommon {
+class NCMainCommon: NSObject {
+    
+    @objc static let sharedInstance: NCMainCommon = {
+        let instance = NCMainCommon()
+        return instance
+    }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, fatherPermission: String, e2e2: Bool) -> UITableViewCell {
+    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, shareLink: String?, shareUserAndGroup: String?, isShare: Bool, isMounted: Bool) -> UITableViewCell {
         
+        // Create File System
         if metadata.directory {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID)
         } else {
@@ -49,6 +55,7 @@ class NCMainCommon {
             cell.shared.image = nil
             cell.local.image = nil
             cell.imageTitleSegue = nil
+            cell.shared.isUserInteractionEnabled = false
             
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
             
@@ -61,11 +68,6 @@ class NCMainCommon {
             cell.labelTitle.textColor = UIColor.black
             cell.labelTitle.text = metadata.fileNameView;
             
-            let shareLink = appDelegate.sharesLink.object(forKey: serverUrl+metadata.fileName)
-            let shareUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl+metadata.fileName)
-            let isShare = metadata.permissions.contains(k_permission_shared) && !fatherPermission.contains(k_permission_shared)
-            let isMounted = metadata.permissions.contains(k_permission_mounted) && !fatherPermission.contains(k_permission_mounted)
-
             if metadata.directory {
                 
                 // lable Info
@@ -149,10 +151,14 @@ class NCMainCommon {
             
             // Favorite
             if metadata.favorite {
-                cell.favorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+                cell.favorite.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "favorite"), multiplier: 2, color: NCBrandColor.sharedInstance.yellowFavorite)
             }
             
+            // More Image
+            cell.more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+            
             return cell
+            
         } else {
          
             // TRASNFER

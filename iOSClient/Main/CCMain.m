@@ -4432,137 +4432,21 @@
         return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
     }
     
-    // Create File System
-    if (metadata.directory) {
-        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
-    } else {
-        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
+    NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+    NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+    BOOL isShare =  [metadata.permissions containsString:k_permission_shared] && ![_fatherPermission containsString:k_permission_shared];
+    BOOL isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_fatherPermission containsString:k_permission_mounted];
+    
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shareLink:shareLink shareUserAndGroup:shareUserAndGroup isShare:isShare isMounted:isMounted];
+        
+    // Download thumbnail
+    if (metadata.thumbnailExists && ![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && !_metadataFolder.e2eEncrypted) {
+        [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
     }
     
-    // CCCell
-    if (metadata.status == k_metadataStatusNormal) {
-        
-        // NORMAL
-        
-        CCCellMain *cell = (CCCellMain *)[tableView dequeueReusableCellWithIdentifier:@"CellMain" forIndexPath:indexPath];
-        cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.file.image = nil;
-        cell.status.image = nil;
-        cell.favorite.image = nil;
-        cell.shared.image = nil;
-        cell.local.image = nil;
-        cell.imageTitleSegue = nil;
-        
-        cell.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
-
-        // change color selection
-        UIView *selectionColor = [UIView new];
-        selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
-        cell.selectedBackgroundView = selectionColor;
-        cell.tintColor = [NCBrandColor sharedInstance].brandElement;
-                
-        cell.delegate = self;
-        
-        cell.labelTitle.textColor = [UIColor blackColor];
-        cell.labelTitle.text = metadata.fileNameView;
-        
-        NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
-        NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
-        BOOL isShare =  [metadata.permissions containsString:k_permission_shared] && ![_fatherPermission containsString:k_permission_shared];
-        BOOL isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_fatherPermission containsString:k_permission_mounted];
-
-        if (metadata.directory) {
-            
-            // lable Info
-            cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
-            
-            // File Image & Image Title Segue
-            if (metadata.e2eEncrypted) {
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"lock"];
-            } else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory]) {
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"photos"];
-            } else if (isShare) {
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"share"];
-            } else if (isMounted) {
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_external"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"shareMounted"];
-            } else if (shareUserAndGroup != nil) {
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"share"];
-            } else if (shareLink != nil) {
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-                cell.imageTitleSegue = [UIImage imageNamed:@"sharebylink"];
-            } else
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-            
-            // Image Status Lock Passcode
-            NSString *lockServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl]];
-            if ((directory.lock && [[CCUtility getBlockCode] length])) {
-                cell.status.image = [UIImage imageNamed:@"passcode"];
-            }
-            
-        } else {
-            
-            BOOL iconFileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-            
-            // Lable Info
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility dateDiff:metadata.date], [CCUtility transformedSize:metadata.size]];
-            
-            // File Image
-            if (iconFileExists) {
-                cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-            } else {
-                if (metadata.iconName.length > 0) {
-                    cell.file.image = [UIImage imageNamed:metadata.iconName];
-                } else {
-                    cell.file.image = [UIImage imageNamed:@"file"];
-                }
-            }
-            
-            // Local Image
-            tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-            if (localFile && [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
-                cell.local.image = [UIImage imageNamed:@"local"];
-            } else {
-                cell.local.image = nil;
-            }
-            
-            // Download thumbnail
-            if (metadata.thumbnailExists && !iconFileExists && !_metadataFolder.e2eEncrypted) {
-                [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
-            }
-            
-            // Status Image
-            tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND fileNameIdentifier == %@", appDelegate.activeAccount, metadata.fileName]];
-            if (tableE2eEncryption && [[NCUtility sharedInstance] isEncryptedMetadata:metadata]) {
-                cell.status.image = [UIImage imageNamed:@"encrypted"];
-            }
-            
-            // Share
-            if (isShare) {
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-            } else if (isMounted) {
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"shareMounted"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-            } else if (shareLink != nil) {
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-            } else if (shareUserAndGroup != nil) {
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-            }
-        }
-        
-        //
-        // File & Directory
-        //
-        
-        // Favorite
-        if (metadata.favorite) {
-            cell.favorite.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite];
-        }
+    // NORMAL - > MAIN
+    
+    if ([cell isKindOfClass:[CCCellMain class]]) {
         
         // Share add Tap
         if (isShare || isMounted || shareLink != nil || shareUserAndGroup != nil) {
@@ -4570,201 +4454,66 @@
             if (isShare || isMounted) { // Shared with you
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
                 [tap setNumberOfTapsRequired:1];
-                cell.shared.userInteractionEnabled = YES;
-                [cell.shared addGestureRecognizer:tap];
+                ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
+                [((CCCellMain *)cell).shared addGestureRecognizer:tap];
             } else if (shareLink != nil || shareUserAndGroup != nil) { // You share
                 if (metadata.directory) {
-                    cell.shared.userInteractionEnabled = NO;
+                    ((CCCellMain *)cell).shared.userInteractionEnabled = NO;
                 } else {
                     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionShared:)];
                     [tap setNumberOfTapsRequired:1];
-                    cell.shared.userInteractionEnabled = YES;
-                    [cell.shared addGestureRecognizer:tap];
+                    ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
+                    [((CCCellMain *)cell).shared addGestureRecognizer:tap];
                 }
             }
-        } else {
-            cell.shared.userInteractionEnabled = NO;
         }
-        
-        // More Image
-        cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
         
         if ([self canOpenMenuAction:metadata]) {
             
             UITapGestureRecognizer *tapMore = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionMore:)];
             [tapMore setNumberOfTapsRequired:1];
-            cell.more.userInteractionEnabled = YES;
-            [cell.more addGestureRecognizer:tapMore];
+            ((CCCellMain *)cell).more.userInteractionEnabled = YES;
+            [((CCCellMain *)cell).more addGestureRecognizer:tapMore];
         }
         
         // MGSwipeButton
-        
+        ((CCCellMain *)cell).delegate = self;
+
         // LEFT
-        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
+        ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
         
-        cell.leftExpansion.buttonIndex = 0;
-        cell.leftExpansion.fillOnTrigger = NO;
+        ((CCCellMain *)cell).leftExpansion.buttonIndex = 0;
+        ((CCCellMain *)cell).leftExpansion.fillOnTrigger = NO;
         
         //centerIconOverText
-        MGSwipeButton *favoriteButton = (MGSwipeButton *)[cell.leftButtons objectAtIndex:0];
+        MGSwipeButton *favoriteButton = (MGSwipeButton *)[((CCCellMain *)cell).leftButtons objectAtIndex:0];
         [favoriteButton centerIconOverText];
         
         // RIGHT
-        cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
+        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
         
-        cell.rightExpansion.buttonIndex = 0;
-        cell.rightExpansion.fillOnTrigger = NO;
+        ((CCCellMain *)cell).rightExpansion.buttonIndex = 0;
+        ((CCCellMain *)cell).rightExpansion.fillOnTrigger = NO;
         
         //centerIconOverText
-        MGSwipeButton *deleteButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:0];
+        MGSwipeButton *deleteButton = (MGSwipeButton *)[((CCCellMain *)cell).rightButtons objectAtIndex:0];
         [deleteButton centerIconOverText];
+    }
+    
+    // TRANSFER
+    
+    if ([cell isKindOfClass:[CCCellMainTransfer class]]) {
         
-        return cell;
-        
-    } else {
-        
-        // TRASNFER
-        
-        CCCellMainTransfer *cell = (CCCellMainTransfer *)[tableView dequeueReusableCellWithIdentifier:@"CellMainTransfer" forIndexPath:indexPath];
-        cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        cell.file.image = nil;
-        cell.status.image = nil;
-        
-        cell.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
-        
-        cell.labelTitle.textColor = [UIColor blackColor];
-        cell.labelTitle.text = metadata.fileNameView;
-        
-        cell.transferButton.tintColor = [NCBrandColor sharedInstance].icon;
-        
-        float progress = 0;
-        long long totalBytes = 0, totalBytesExpected = 0;
-        NSArray *progressArray = [appDelegate.listProgressMetadata objectForKey:metadata.fileID];
-        if (progressArray != nil && progressArray.count == 3) {
-            progress = [[progressArray objectAtIndex:0] floatValue];
-            totalBytes = [[progressArray objectAtIndex:1] longLongValue];
-            totalBytesExpected = [[progressArray objectAtIndex:2] longLongValue];
-        }
-        
-        // Write status on Label Info
-        NSString *statusString = @"";
-        switch (metadata.status) {
-            case 2:
-                statusString = NSLocalizedString(@"_status_wait_download_",nil);
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
-                break;
-            case 3:
-                statusString = NSLocalizedString(@"_status_in_download_",nil);
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
-                break;
-            case 4:
-                if (totalBytes > 0) {
-                    cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
-                } else {
-                    cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
-                }
-                break;
-            case 6:
-                statusString = NSLocalizedString(@"_status_wait_upload_",nil);
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", statusString];
-                break;
-            case 7:
-                statusString = NSLocalizedString(@"_status_in_upload_",nil);
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", statusString];
-                break;
-            case 8:
-                if (totalBytes > 0) {
-                    cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
-                } else {
-                    cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
-                }
-                break;
-            default:
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
-                break;
-        }
-        
-        BOOL iconFileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-
-        if (iconFileExists) {
-            cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-        } else {
-            if (metadata.iconName.length > 0) {
-                cell.file.image = [UIImage imageNamed:metadata.iconName];
-            } else {
-                cell.file.image = [UIImage imageNamed:@"file"];
-            }
-        }
-        
-        // Session Upload Extension
-        if ([metadata.session isEqualToString:k_upload_session_extension] && (metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading)) {
-            
-            cell.labelTitle.enabled = NO;
-            cell.labelInfoFile.enabled = NO;
-            
-        } else {
-            
-            cell.labelTitle.enabled = YES;
-            cell.labelInfoFile.enabled = YES;
-        }
-        
-        // downloadFile
-        if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusDownloadError) {
-            //
-        }
-        
-        // downloadFile Error
-        if (metadata.status == k_metadataStatusDownloadError) {
-            
-            cell.status.image = [UIImage imageNamed:@"statuserror"];
-            
-            if ([metadata.sessionError length] == 0) {
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_downloaded_",nil)];
-            } else {
-                cell.labelInfoFile.text = metadata.sessionError;
-            }
-        }
-        
-        // uploadFile
-        if (metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading || metadata.status == k_metadataStatusUploadError) {
-            
-            if (!iconFileExists) {
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-            }
-            
-            cell.labelTitle.enabled = NO;
-        }
-        
-        // uploadFileError
-        if (metadata.status == k_metadataStatusUploadError) {
-            
-            cell.labelTitle.enabled = NO;
-            cell.status.image = [UIImage imageNamed:@"statuserror"];
-            
-            if (!iconFileExists) {
-                cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-            }
-            
-            if ([metadata.sessionError length] == 0) {
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];
-            } else {
-                cell.labelInfoFile.text = metadata.sessionError;
-            }
-        }
-        
-        // Progress
-        cell.transferButton.progress = progress;
-
         // gesture Transfer
-        [cell.transferButton.stopButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
+        [((CCCellMainTransfer *)cell).transferButton.stopButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
         
         UILongPressGestureRecognizer *stopLongGesture = [UILongPressGestureRecognizer new];
         [stopLongGesture addTarget:self action:@selector(cancelAllTask:)];
-        [cell.transferButton.stopButton addGestureRecognizer:stopLongGesture];
-        
-        return cell;
+        [((CCCellMainTransfer *)cell).transferButton.stopButton addGestureRecognizer:stopLongGesture];
     }
+    
+    return cell;
+    
 }
 
 - (void)setTableViewFooter
