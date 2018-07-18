@@ -4424,8 +4424,9 @@
 {
     tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
     
-    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
+    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
         return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+    }
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (serverUrl == nil) {
@@ -4437,12 +4438,12 @@
     BOOL isShare =  [metadata.permissions containsString:k_permission_shared] && ![_fatherPermission containsString:k_permission_shared];
     BOOL isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_fatherPermission containsString:k_permission_mounted];
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shareLink:shareLink shareUserAndGroup:shareUserAndGroup isShare:isShare isMounted:isMounted];
-        
     // Download thumbnail
     if (metadata.thumbnailExists && ![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && !_metadataFolder.e2eEncrypted) {
         [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
     }
+    
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shareLink:shareLink shareUserAndGroup:shareUserAndGroup isShare:isShare isMounted:isMounted];
     
     // NORMAL - > MAIN
     
@@ -4468,6 +4469,7 @@
             }
         }
         
+        // More 
         if ([self canOpenMenuAction:metadata]) {
             
             UITapGestureRecognizer *tapMore = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionMore:)];

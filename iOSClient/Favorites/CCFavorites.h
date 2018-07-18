@@ -29,6 +29,7 @@
 #import "AHKActionSheet.h"
 #import "MGSwipeTableCell.h"
 #import "CCCellMain.h"
+#import "CCCellMainTransfer.h"
 #import "CCUtility.h"
 #import "CCMain.h"
 #import "CCGraphics.h"

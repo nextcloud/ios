@@ -65,6 +65,7 @@
     [super viewDidLoad];
     
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
+    [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
 
     // dataSource
     _dataSource = [NSMutableArray new];
@@ -593,158 +594,75 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CCCellMain *cell = (CCCellMain *)[tableView dequeueReusableCellWithIdentifier:@"CellMain" forIndexPath:indexPath];
-    tableMetadata *metadata;
+    tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
+    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
+        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+    }
     
-    // variable base
-    cell.delegate = self;
-    
-    // separator
-    cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
-    
-    // Initialize
-    cell.status.image = nil;
-    cell.favorite.image = nil;
-    cell.local.image = nil;
-    cell.shared.image = nil;
-        
-    // change color selection
-    UIView *selectionColor = [[UIView alloc] init];
-    selectionColor.backgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
-    cell.selectedBackgroundView = selectionColor;
-    
-    metadata = [_dataSource objectAtIndex:indexPath.row];
-        
-    // favorite
-    if (_serverUrl == nil)
-        cell.favorite.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite];
-    
-    cell.labelTitle.textColor = [UIColor blackColor];
-    
-    // filename
-    cell.labelTitle.text = metadata.fileNameView;
-    cell.labelInfoFile.text = @"";
-    
-    // Shared
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl)
-        return cell;
+    if (serverUrl == nil) {
+        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+    }
+    
     NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
     NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+//    BOOL isShare =  [metadata.permissions containsString:k_permission_shared] && ![_fatherPermission containsString:k_permission_shared];
+//    BOOL isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_fatherPermission containsString:k_permission_mounted];
+    
+    // Download thumbnail
+    if (metadata.thumbnailExists && ![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) { // && !_metadataFolder.e2eEncrypted) {
+        [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
+    }
+    
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shareLink:shareLink shareUserAndGroup:shareUserAndGroup isShare:NO isMounted:NO];
+    
+    // NORMAL - > MAIN
 
-    // Immage
-    if (metadata.directory) {
+    if ([cell isKindOfClass:[CCCellMain class]]) {
+        
+        // More
+        if ([self canOpenMenuAction:metadata]) {
             
-        if (metadata.e2eEncrypted) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-        } else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory]) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-        } else if ([shareLink length] > 0) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_public"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-        } else if ([shareUserAndGroup length] > 0) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder_shared_with_me"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-        } else {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
-        }
-            
-    } else {
-            
-        if ([shareLink length] > 0 || [shareUserAndGroup length] > 0) {
-            
-            if ([shareLink length] > 0)
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharebylink"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-            else
-                cell.shared.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-                
-            UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
-            [tap setNumberOfTapsRequired:1];
-            cell.shared.userInteractionEnabled = YES;
-            [cell.shared addGestureRecognizer:tap];
+            UITapGestureRecognizer *tapMore = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionMore:)];
+            [tapMore setNumberOfTapsRequired:1];
+            ((CCCellMain *)cell).more.userInteractionEnabled = YES;
+            [((CCCellMain *)cell).more addGestureRecognizer:tapMore];
         }
         
-        cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        // MGSwipeButton
+        ((CCCellMain *)cell).delegate = self;
         
-        if (cell.file.image == nil) {
+        // LEFT : configure ONLY Root Favorites : Remove file/folder Favorites
+        if (_serverUrl == nil) {
             
-            cell.file.image = [UIImage imageNamed:metadata.iconName];
+            ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
+            ((CCCellMain *)cell).leftExpansion.buttonIndex = 0;
+            ((CCCellMain *)cell).leftExpansion.fillOnTrigger = NO;
             
-            if (metadata.thumbnailExists) {
-                [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
-            }
+            //centerIconOverText
+            MGSwipeButton *favoriteButton = (MGSwipeButton *)[((CCCellMain *)cell).leftButtons objectAtIndex:0];
+            [favoriteButton centerIconOverText];
         }
         
-        // ----------------------------------------------------------------------------------------------------------
-        // E2EE Image Status Encrypted
-        // ----------------------------------------------------------------------------------------------------------
+        // RIGHT
+        ((CCCellMain *)cell).rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
         
-        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND fileNameIdentifier == %@", appDelegate.activeAccount, metadata.fileName]];
-        if (tableE2eEncryption && [[NCUtility sharedInstance] isEncryptedMetadata:metadata]) {
-            cell.status.image = [UIImage imageNamed:@"encrypted"];
-        }
-    }
-    
-    // text and length
-    if (metadata.directory) {
-        
-        cell.labelInfoFile.text = [CCUtility dateDiff:metadata.date];
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        
-    } else {
-        
-        NSString *date = [CCUtility dateDiff:metadata.date];
-        NSString *length = [CCUtility transformedSize:metadata.size];
-        
-        if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView])
-            cell.local.image = [UIImage imageNamed:@"local"];
-        else
-            cell.local.image = nil;
-            
-        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", date, length];
-        cell.accessoryType = UITableViewCellAccessoryNone;
-        
-    }
-    
-    // ----------------------------------------------------------------------------------------------------------
-    // swipe
-    // ----------------------------------------------------------------------------------------------------------
-    
-    // LEFT : configure ONLY Root Favorites : Remove file/folder Favorites
-    if (_serverUrl == nil) {
-        
-        cell.leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
-        cell.leftExpansion.buttonIndex = 0;
-        cell.leftExpansion.fillOnTrigger = NO;
+        ((CCCellMain *)cell).rightExpansion.buttonIndex = 0;
+        ((CCCellMain *)cell).rightExpansion.fillOnTrigger = NO;
         
         //centerIconOverText
-        MGSwipeButton *favoriteButton = (MGSwipeButton *)[cell.leftButtons objectAtIndex:0];
-        [favoriteButton centerIconOverText];
-    }
-    
-    
-    // RIGHT
-    cell.rightButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[UIColor redColor] padding:25]];
-    
-    cell.rightExpansion.buttonIndex = 0;
-    cell.rightExpansion.fillOnTrigger = NO;
-    
-    //centerIconOverText
-    MGSwipeButton *deleteButton = (MGSwipeButton *)[cell.rightButtons objectAtIndex:0];
-    [deleteButton centerIconOverText];
-
-    // ----------------------------------------------------------------------------------------------------------
-    // more
-    // ----------------------------------------------------------------------------------------------------------
-    
-    cell.more.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"more"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-    
-    if ([self canOpenMenuAction:metadata]) {
+        MGSwipeButton *deleteButton = (MGSwipeButton *)[((CCCellMain *)cell).rightButtons objectAtIndex:0];
+        [deleteButton centerIconOverText];
         
-        UITapGestureRecognizer *tapMore = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionMore:)];
-        [tapMore setNumberOfTapsRequired:1];
-        cell.more.userInteractionEnabled = YES;
-        [cell.more addGestureRecognizer:tapMore];
     }
     
+    // TRANSFER
+    
+    if ([cell isKindOfClass:[CCCellMainTransfer class]]) {
+        
+        
+    }
+   
     return cell;
 }
 
