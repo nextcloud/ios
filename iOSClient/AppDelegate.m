@@ -167,10 +167,7 @@
     _netQueue = [[NSOperationQueue alloc] init];
     _netQueue.name = k_queue;
     _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
-   
-    // Add notification change session
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
-    
+       
     // UserDefaults
     self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
     
@@ -187,7 +184,6 @@
 
     // Initialization List
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
-    self.listChangeTask = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
             
     // setting Reachable in back
@@ -1284,77 +1280,6 @@
     [operation setQueuePriority:metadataNet.priority];
     
     [netQueue addOperation:operation];
-}
-
-// Notification change session
-- (void)sessionChanged:(NSNotification *)notification
-{
-    NSURLSession *session;
-    NSString *fileID;
-    NSURLSessionTask *task;
-    
-    for (id object in notification.object) {
-        
-        if ([object isKindOfClass:[NSURLSession class]])
-            session = object;
-        
-        if ([object isKindOfClass:[NSString class]])
-            fileID = object;
-        
-        if ([object isKindOfClass:[NSURLSessionTask class]])
-            task = object;
-    }
-    
-    /*
-    Task
-    */
-    if (fileID && [_listChangeTask objectForKey:fileID])
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self changeTask:fileID];
-        });
-        
-    /* 
-    Session
-    */
-    if (session) {
-                
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            unsigned long numDownload = [downloadTasks count];
-            unsigned long numUpload = [uploadTasks count];
-        
-            NSLog(@"[LOG] Num Download in queue %lu, num upload in queue %lu", numDownload, numUpload);
-        }];
-    }
-}
-
-- (void)changeTask:(NSString *)fileID
-{
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-    if (!metadata) return;
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl) return;
-
-    if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelUpload"]) {
-        
-        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
-    }
-    else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelDownload"]) {
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-    }
-    
-    // remove ChangeTask (fileID) from the list
-    [_listChangeTask removeObjectForKey:fileID];
-    
-    // delete progress
-    [_listProgressMetadata removeObjectForKey:fileID];
-    
-    // Refresh
-    [_activeMain reloadDatasource:serverUrl];
-    [_activeFavorites reloadDatasource];
-    [_activeTransfers reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------

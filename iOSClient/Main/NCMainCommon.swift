@@ -330,11 +330,118 @@ class NCMainCommon: NSObject {
         }
     }
     
-    func isValidIndexPath(_ indexPath: IndexPath, tableView: UITableView) -> Bool {
+    @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool) {
         
-        return indexPath.section < tableView.numberOfSections && indexPath.row < tableView.numberOfRows(inSection: indexPath.section)
+        let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) as URLSession
+        
+        // SESSION EXTENSION
+        if metadata.session == k_download_session_extension || metadata.session == k_upload_session_extension {
 
+            if (metadata.session == k_upload_session_extension) {
+
+                do {
+                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
+                } catch { }
+                
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
+            } else {
+                NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+            }
+         
+            appDelegate.activeMain.reloadDatasource()
+            appDelegate.activeFavorites.reloadDatasource()
+            if (self.appDelegate.activeTransfers != nil) {
+                self.appDelegate.activeTransfers.reloadDatasource()
+            }
+            
+            return
+        }
+        
+        session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
+            
+            // DOWNLOAD
+            if metadata.session.count > 0 && metadata.session.contains("download") {
+                for task in downloadTasks {
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        task.cancel()
+                    }
+                }
+            }
+            
+            // UPLOAD
+            if metadata.session.count > 0 && metadata.session.contains("upload") {
+                for task in uploadTasks {
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        task.cancel()
+                    }
+                }
+            }
+        }
     }
     
+    @objc func cancelAllTransfer() {
+
+        // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError), clearDateReadDirectoryID: nil)
+
+        guard let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d AND status != %d", appDelegate.activeAccount, k_metadataStatusNormal, k_metadataStatusHide), sorted: "fileName", ascending: true) else {
+            return
+        }
+        
+        for metadata in metadatas {
+            
+            // Modify
+            if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
+                metadata.session = ""
+                metadata.sessionSelector = ""
+                metadata.status = Int(k_metadataStatusNormal)
+                
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+            }
+            
+            // Cancel Task
+            if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
+                cancelTransferMetadata(metadata, reloadDatasource: false)
+            }
+        }
+        
+        self.appDelegate.activeMain.reloadDatasource()
+        self.appDelegate.activeFavorites.reloadDatasource()
+        if (self.appDelegate.activeTransfers != nil) {
+            self.appDelegate.activeTransfers.reloadDatasource()
+        }
+    }
+    
+    @objc func getMetadataFromSectionDataSourceIndexPath(_ indexPath: IndexPath, sectionDataSource: CCSectionDataSourceMetadata) -> tableMetadata? {
+        
+        let section = indexPath.section + 1;
+        let row = indexPath.row + 1;
+        let totSections = sectionDataSource.sections.count
+        
+        if totSections < section || section > totSections {
+            return nil
+        }
+        
+        let valueSection = sectionDataSource.sections.object(at: indexPath.section)
+        guard let filesID = sectionDataSource.sectionArrayRow.object(forKey: valueSection) as? NSArray else {
+            return nil
+        }
+        
+        let totRows = filesID.count
+        if totRows < row || row > totRows {
+            return nil
+        }
+        
+        let fileID = filesID.object(at: indexPath.row)
+        let metadata = sectionDataSource.allRecordsDataSource.object(forKey: fileID) as? tableMetadata
+      
+        return metadata
+    }
+    
+    @objc func isValidIndexPath(_ indexPath: IndexPath, tableView: UITableView) -> Bool {
+        
+        return indexPath.section < tableView.numberOfSections && indexPath.row < tableView.numberOfRows(inSection: indexPath.section)
+    }
+        
 }
 

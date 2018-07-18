@@ -101,9 +101,6 @@
 @property (nonatomic, strong) REMenuItem *downloadItem;
 @property (nonatomic, strong) REMenuItem *saveItem;
 
-// List Change Task
-@property (nonatomic, retain) NSMutableDictionary *listChangeTask;
-
 // Reachability
 @property (nonatomic, strong) Reachability *reachability;
 @property BOOL lastReachability;

@@ -404,7 +404,7 @@
         if (metadata) {
             
             NSString *etag = metadata.etag;
-            NSString *fileID = metadata.fileID;
+            //NSString *fileID = metadata.fileID;
             NSDictionary *fields = [httpResponse allHeaderFields];
             
             if (errorCode == 0) {
@@ -420,9 +420,6 @@
                     date = [NSDate date];
                 }
             }
-        
-            NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
             
             if (fileName.length > 0 && serverUrl.length > 0) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -466,10 +463,7 @@
                     date = [NSDate date];
                 }
             }
-        
-            NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, task, nil];
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
-        
+                
             if (fileName.length > 0 && fileID.length > 0 && serverUrl.length > 0) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self uploadFileSuccessFailure:metadata fileName:fileName fileID:fileID etag:etag date:date serverUrl:serverUrl errorCode:errorCode];
@@ -631,7 +625,11 @@
     
     if (errorCode != 0) {
         
-        if (errorCode != kCFURLErrorCancelled) {
+        if (errorCode == kCFURLErrorCancelled) {
+            
+            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+            
+        } else {
             
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         }
@@ -1039,7 +1037,12 @@
 #endif
         
         // Mark error only if not Cancelled Task
-        if (errorCode != kCFURLErrorCancelled)  {
+        if (errorCode == kCFURLErrorCancelled)  {
+            
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:tempFileID] error:nil];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID] clearDateReadDirectoryID:metadata.directoryID];
+
+        } else {
 
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", tempFileID]];
         }

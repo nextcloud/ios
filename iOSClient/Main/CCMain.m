@@ -1229,13 +1229,10 @@
                     [appDelegate.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
             });
             
-        } else {
-            
-            if (errorCode != kCFURLErrorCancelled && errorCode != kOCErrorServerUnauthorized && errorCode != k_CCErrorFileAlreadyInDownload)
-                [appDelegate messageNotification:@"_download_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         }
         
         [self reloadDatasource:serverUrl];
+        [appDelegate.activeTransfers reloadDatasource];
     }
 }
 
@@ -1303,6 +1300,7 @@
     }
     
     [self reloadDatasource:serverUrl];
+    [appDelegate.activeTransfers reloadDatasource];
 }
 
 //
@@ -2203,69 +2201,8 @@
 }
 
 - (void)cancelTaskButton:(tableMetadata *)metadata reloadTable:(BOOL)reloadTable
-{    
-    NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-    __block NSURLSessionTask *findTask;
-    
-    NSInteger sessionTaskIdentifier = metadata.sessionTaskIdentifier;
-    NSString *fileID = metadata.fileID;
-    
-    // SESSION EXTENSION
-    if ([metadata.session isEqualToString:k_download_session_extension] || [metadata.session isEqualToString:k_upload_session_extension]) {
-        
-        if ([metadata.session isEqualToString:k_upload_session_extension]) {
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
-        } else {
-            [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusNormal predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-        }
-    
-        [self reloadDatasource];
-        
-        return;
-    }
-    
-    // DOWNLOAD
-    if ([metadata.session length] > 0 && [metadata.session containsString:@"download"]) {
-        
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            for (NSURLSessionTask *task in downloadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier) {
-                    findTask = task;
-                    [appDelegate.listChangeTask setObject:@"cancelDownload" forKey:fileID];
-                    [task cancel];
-                }
-            
-            if (!findTask) {
-                
-                [appDelegate.listChangeTask setObject:@"cancelDownload" forKey:fileID];
-                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
-            }
-        }];
-    }
-
-    // UPLOAD
-    if ([metadata.session length] > 0 && [metadata.session containsString:@"upload"]) {
-        
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            for (NSURLSessionUploadTask *task in uploadTasks)
-                if (task.taskIdentifier == sessionTaskIdentifier) {
-                    findTask = task;
-                    [appDelegate.listChangeTask setObject:@"cancelUpload" forKey:fileID];
-                    [task cancel];
-                }
-            
-            if (!findTask) {
-                
-                [appDelegate.listChangeTask setObject:@"cancelUpload" forKey:fileID];
-                NSArray *object = [[NSArray alloc] initWithObjects:session, fileID, findTask, nil];
-                [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:k_networkingSessionNotification object:object];
-            }
-        }];
-    }
+{
+    [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true];
 }
 
 - (void)cancelAllTask:(id)sender
@@ -2276,28 +2213,7 @@
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        
-        // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError] clearDateReadDirectoryID:nil];
-        
-        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status != %d AND status != %d", appDelegate.activeAccount, k_metadataStatusNormal, k_metadataStatusHide] sorted:@"fileName" ascending:true];
-        
-        for (tableMetadata *metadata in metadatas) {
-            
-            // Modify
-            if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
-                metadata.session = @"";
-                metadata.sessionSelector = @"";
-                metadata.status = k_metadataStatusNormal;
-                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-            }
-            // Cancel Task
-            if (metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading) {
-                [self cancelTaskButton:metadata reloadTable:NO];
-            }
-        }
-        
-        [self reloadDatasource];
+        [[NCMainCommon sharedInstance] cancelAllTransfer];
     }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
@@ -2628,21 +2544,6 @@
     NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if ([self indexPathIsValid:indexPath])
         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Remove Local File =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)removeLocalFile:(tableMetadata *)metadata
-{
-    [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-    
-    [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-    
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
-    if (serverUrl)
-        [self reloadDatasource:serverUrl];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3649,9 +3550,12 @@
         [self performSelector:@selector(deleteFile) withObject:nil];
     }]];
     
-    if (localFile || [CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileNameView]) {
+    if (localFile) {
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-            [self performSelector:@selector(removeLocalFile:) withObject:_metadata];
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", _metadata.fileID]];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:_metadata.fileID] error:nil];
+            [self reloadDatasource];
+            
         }]];
     }
     

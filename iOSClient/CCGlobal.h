@@ -105,8 +105,6 @@
 #define k_permission_can_rename                         @"N"
 #define k_permission_can_move                           @"V"
 
-#define k_networkingSessionNotification                 @"networkingSessionNotification"
-
 // Session
 #define k_domain_session_queue                          @"it.twsweb.Crypto-Cloud"
 
