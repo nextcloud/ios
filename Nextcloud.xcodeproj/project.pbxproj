@@ -479,6 +479,7 @@
 		F7D424721F063B82009C9782 /* CTAssetThumbnailOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D423E61F063B82009C9782 /* CTAssetThumbnailOverlay.m */; };
 		F7D424731F063B82009C9782 /* CTAssetThumbnailStacks.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D423E81F063B82009C9782 /* CTAssetThumbnailStacks.m */; };
 		F7D424741F063B82009C9782 /* CTAssetThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7D423EA1F063B82009C9782 /* CTAssetThumbnailView.m */; };
+		F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D6650620FF341600BFBA9E /* NCMainCommon.swift */; };
 		F7DC5FEC1F011EB700A903C7 /* MGSwipeButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */; };
 		F7DC5FED1F011EB700A903C7 /* MGSwipeTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F7DC5FEB1F011EB700A903C7 /* MGSwipeTableCell.m */; };
 		F7DFE2521EBDC3A400CF5202 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F7DFE24F1EBDC3A400CF5202 /* Realm.framework */; };
@@ -1528,6 +1529,7 @@
 		F7D532A51F5D4461006568B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F7D532A61F5D4462006568B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Intro.strings"; sourceTree = "<group>"; };
 		F7D532A71F5D4462006568B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Error.strings"; sourceTree = "<group>"; };
+		F7D6650620FF341600BFBA9E /* NCMainCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainCommon.swift; sourceTree = "<group>"; };
 		F7DC5FE81F011EB700A903C7 /* MGSwipeButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeButton.h; sourceTree = "<group>"; };
 		F7DC5FE91F011EB700A903C7 /* MGSwipeButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MGSwipeButton.m; sourceTree = "<group>"; };
 		F7DC5FEA1F011EB700A903C7 /* MGSwipeTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MGSwipeTableCell.h; sourceTree = "<group>"; };
@@ -1782,6 +1784,7 @@
 				F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */,
 				F792A77B1BC7C45400C9388E /* CCSplit.h */,
 				F792A77C1BC7C45400C9388E /* CCSplit.m */,
+				F7D6650620FF341600BFBA9E /* NCMainCommon.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -3687,6 +3690,7 @@
 				F73B4F071F470D9100BBEE4B /* nsEscSM.cpp in Sources */,
 				F77B0E221D118A16002130FE /* CCManageLocation.m in Sources */,
 				F70022C51EC4C9100080073F /* OCNotificationsAction.m in Sources */,
+				F7D6650720FF341600BFBA9E /* NCMainCommon.swift in Sources */,
 				F77B0E231D118A16002130FE /* CCSharePermissionOC.m in Sources */,
 				F78071211EDB135100EAFFF6 /* CCPhotos.m in Sources */,
 				F762CAF81EACB66200B38484 /* XLFormButtonCell.m in Sources */,
