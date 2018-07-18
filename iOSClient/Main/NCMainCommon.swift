@@ -188,26 +188,26 @@ class NCMainCommon: NSObject {
             
             // Write status on Label Info
             switch metadata.status {
-            case 2:
+            case Int(k_metadataStatusWaitDownload):
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " " + NSLocalizedString("_status_wait_download_", comment: "")
                 break
-            case 3:
+            case Int(k_metadataStatusInDownload):
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " " + NSLocalizedString("_status_in_download_", comment: "")
                 break
-            case 4:
+            case Int(k_metadataStatusDownloading):
                 if totalBytes > 0 {
                     cell.labelInfoFile.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓" + CCUtility.transformedSize(totalBytes)
                 } else {
                     cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size)
                 }
                 break
-            case 6:
+            case Int(k_metadataStatusWaitUpload):
                 cell.labelInfoFile.text = NSLocalizedString("_status_wait_upload_", comment: "")
                 break
-            case 7:
+            case Int(k_metadataStatusInUpload):
                 cell.labelInfoFile.text = NSLocalizedString("_status_in_upload_", comment: "")
                 break
-            case 8:
+            case Int(k_metadataStatusUploading):
                 if totalBytes > 0 {
                     cell.labelInfoFile.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑" + CCUtility.transformedSize(totalBytes)
                 } else {

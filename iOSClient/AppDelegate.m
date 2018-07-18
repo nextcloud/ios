@@ -1395,7 +1395,7 @@
   
     NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
 
-    // ------------------------- <selector Auto Download> -------------------------
+    // ------------------------- <selector Download> -------------------------
     
     if (counterDownload < k_maxConcurrentOperationDownload) {
         
@@ -1410,6 +1410,25 @@
         }  
     }
   
+    // ------------------------- <selector Upload> -------------------------
+    
+    if (counterUpload < k_maxConcurrentOperationUpload) {
+        
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
+        if (metadataForUpload) {
+            
+            if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
+                metadataForUpload.session = k_upload_session;
+            }
+            
+            metadataForUpload.status = k_metadataStatusInUpload;
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+            
+            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+            counterNewDownloadUpload++;
+        }
+    }
+    
     // ------------------------- <selector Auto Upload> -------------------------
     
     if (counterUpload < k_maxConcurrentOperationUpload) {
@@ -1454,25 +1473,6 @@
         }
     }
   
-    // ------------------------- <selector Upload File> -------------------------
-    
-    if (counterUpload < k_maxConcurrentOperationUpload) {
-        
-        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
-        if (metadataForUpload) {
-            
-            if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
-                metadataForUpload.session = k_upload_session;
-            }
-            
-            metadataForUpload.status = k_metadataStatusInUpload;
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-
-            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
-            counterNewDownloadUpload++;
-        }
-    }
-    
     // No Download/upload available ? --> remove errors for retry
     if (counterNewDownloadUpload == 0) {
         
