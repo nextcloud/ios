@@ -293,5 +293,48 @@ class NCMainCommon: NSObject {
         }
     }
     
+    @objc func triggerProgressTask(_ notification: Notification, sectionDataSourceFileIDIndexPath: NSDictionary, tableView: UITableView) {
+        
+        guard let dic = notification.userInfo else {
+            return
+        }
+        
+        let fileID = dic["fileID"] as! NSString
+        _ = dic["serverUrl"] as! NSString
+        let status = dic["status"] as! Int
+        let progress = dic["progress"] as! CGFloat
+        let totalBytes = dic["totalBytes"] as! Double
+        let totalBytesExpected = dic["totalBytesExpected"] as! Double
+        
+        appDelegate.listProgressMetadata.setObject([progress as NSNumber, totalBytes as NSNumber, totalBytesExpected as NSNumber], forKey: fileID)
+        
+        guard let indexPath = sectionDataSourceFileIDIndexPath.object(forKey: fileID) else {
+            return
+        }
+        
+        if isValidIndexPath(indexPath as! IndexPath, tableView: tableView) {
+        
+            if let cell = tableView.cellForRow(at: indexPath as! IndexPath) as? CCCellMainTransfer {
+                
+                var image = ""
+
+                if status == k_metadataStatusInDownload {
+                    image = "↓"
+                } else if status == k_metadataStatusInUpload {
+                    image = "↑"
+                }
+                
+                cell.labelInfoFile.text = CCUtility.transformedSize(totalBytesExpected) + " - " + image + CCUtility.transformedSize(totalBytes)
+                cell.transferButton.progress = progress
+            }
+        }
+    }
+    
+    func isValidIndexPath(_ indexPath: IndexPath, tableView: UITableView) -> Bool {
+        
+        return indexPath.section < tableView.numberOfSections && indexPath.row < tableView.numberOfRows(inSection: indexPath.section)
+
+    }
+    
 }
 

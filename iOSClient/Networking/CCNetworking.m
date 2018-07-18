@@ -629,10 +629,6 @@
     [appDelegate.listProgressMetadata removeObjectForKey:fileID];
 #endif
     
-    // Progress Task
-    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"progress": ([NSNumber numberWithFloat:0.0])};
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
-        
     if (errorCode != 0) {
         
         if (errorCode != kCFURLErrorCancelled) {
@@ -1028,10 +1024,6 @@
     NSString *tempSession = metadata.session;
     NSString *errorMessage = @"";
     BOOL isE2EEDirectory = false;
-    
-    // Progress Task
-    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"progress": ([NSNumber numberWithFloat:0.0])};
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
     
     // E2EE Directory ?
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {

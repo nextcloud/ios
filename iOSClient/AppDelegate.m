@@ -840,9 +840,6 @@
             [tbItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
         } else {
             [tbItem setBadgeValue:nil];
-            
-            NSDictionary* userInfo = @{@"fileID": @"", @"serverUrl": @"", @"progress": [NSNumber numberWithFloat:0]};
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
         }
     }
 }
@@ -1354,15 +1351,10 @@
     // delete progress
     [_listProgressMetadata removeObjectForKey:fileID];
     
-    // Progress Task
-    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"status": ([NSNumber numberWithLong:metadata.status]), @"progress": ([NSNumber numberWithFloat:0.0]), @"totalBytes": ([NSNumber numberWithLongLong:0]), @"totalBytesExpected": ([NSNumber numberWithLongLong:0])};
-    
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
-
     // Refresh
-    if (_activeMain && [_listChangeTask count] == 0) {
-        [_activeMain reloadDatasource:serverUrl];
-    }
+    [_activeMain reloadDatasource:serverUrl];
+    [_activeFavorites reloadDatasource];
+    [_activeTransfers reloadDatasource];
 }
 
 #pragma --------------------------------------------------------------------------------------------

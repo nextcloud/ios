@@ -2180,42 +2180,7 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    NSDictionary *dict = notification.userInfo;
-    NSString *fileID = [dict valueForKey:@"fileID"];
-    NSString *serverUrl = [dict valueForKey:@"serverUrl"];
-    long status = [[dict valueForKey:@"status"] longValue];
-    NSString *statusString = @"";
-    float progress = [[dict valueForKey:@"progress"] floatValue];
-    long long totalBytes = [[dict valueForKey:@"totalBytes"] longLongValue];
-    long long totalBytesExpected = [[dict valueForKey:@"totalBytesExpected"] longLongValue];
-
-    // Check
-    if (!fileID || [fileID isEqualToString: @""])
-        return;
-    
-    [appDelegate.listProgressMetadata setObject:[NSArray arrayWithObjects:[NSNumber numberWithFloat:progress], [dict valueForKey:@"totalBytes"], [dict valueForKey:@"totalBytesExpected"], nil] forKey:fileID];
-    
-    if (![serverUrl isEqualToString:_serverUrl])
-        return;
-    
-    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:fileID];
-    
-    if ([self indexPathIsValid:indexPath]) {
-        
-        CCCellMainTransfer *cell = (CCCellMainTransfer *)[self.tableView cellForRowAtIndexPath:indexPath];
-        
-        if (status == k_metadataStatusInDownload) {
-            statusString = @"↓";
-        } else if (status == k_metadataStatusInUpload) {
-            statusString = @"↑";
-        }
-        
-        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
-        
-        if ([cell isKindOfClass:[CCCellMainTransfer class]]) {
-            cell.transferButton.progress = progress;
-        }
-    }
+    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:_sectionDataSource.fileIDIndexPath tableView:self.tableView];
 }
 
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
@@ -4469,7 +4434,7 @@
             }
         }
         
-        // More 
+        // More
         if ([self canOpenMenuAction:metadata]) {
             
             UITapGestureRecognizer *tapMore = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(actionMore:)];

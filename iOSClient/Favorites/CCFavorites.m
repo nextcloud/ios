@@ -37,6 +37,9 @@
     // Automatic Upload Folder
     NSString *_autoUploadFileName;
     NSString *_autoUploadDirectory;
+    
+    // Datasource
+    CCSectionDataSourceMetadata *sectionDataSource;
 }
 @end
 
@@ -125,8 +128,7 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    //NSDictionary *dict = notification.userInfo;
-    //float progress = [[dict valueForKey:@"progress"] floatValue];
+    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -562,7 +564,7 @@
             recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
     }
         
-    CCSectionDataSourceMetadata *sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil fileIDHide:nil activeAccount:appDelegate.activeAccount];
+    sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil fileIDHide:nil activeAccount:appDelegate.activeAccount];
         
     NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
     for (NSString *fileID in fileIDs)
