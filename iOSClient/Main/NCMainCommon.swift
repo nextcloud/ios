@@ -32,7 +32,7 @@ class NCMainCommon: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String, shareLink: String?, shareUserAndGroup: String?, isShare: Bool, isMounted: Bool) -> UITableViewCell {
+    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String) -> UITableViewCell {
         
         // Create File System
         if metadata.directory {
@@ -68,6 +68,12 @@ class NCMainCommon: NSObject {
             cell.labelTitle.textColor = UIColor.black
             cell.labelTitle.text = metadata.fileNameView;
             
+            // Share
+            let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
+            let sharesUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName)
+            let isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder.permissions.contains(k_permission_shared)
+            let isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder.permissions.contains(k_permission_mounted)
+
             if metadata.directory {
                 
                 // lable Info
@@ -86,10 +92,10 @@ class NCMainCommon: NSObject {
                 } else if isMounted {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_external"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                     cell.imageTitleSegue = UIImage.init(named: "shareMounted")
-                } else if (shareUserAndGroup != nil) {
+                } else if (sharesUserAndGroup != nil) {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                     cell.imageTitleSegue = UIImage.init(named: "share")
-                } else if (shareLink != nil) {
+                } else if (sharesLink != nil) {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_public"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                     cell.imageTitleSegue = UIImage.init(named: "sharebylink")
                 } else {
@@ -138,9 +144,9 @@ class NCMainCommon: NSObject {
                     cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
                 } else if (isMounted) {
                     cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
-                } else if (shareLink != nil) {
+                } else if (sharesLink != nil) {
                     cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
-                } else if (shareUserAndGroup != nil) {
+                } else if (sharesUserAndGroup != nil) {
                     cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
                 }
             }

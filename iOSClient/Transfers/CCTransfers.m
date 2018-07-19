@@ -148,43 +148,7 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    NSDictionary *dict = notification.userInfo;
-    NSString *fileID = [dict valueForKey:@"fileID"];
-//    NSString *serverUrl = [dict valueForKey:@"serverUrl"];
-    long status = [[dict valueForKey:@"status"] longValue];
-    NSString *statusString = @"";
-    float progress = [[dict valueForKey:@"progress"] floatValue];
-    long long totalBytes = [[dict valueForKey:@"totalBytes"] longLongValue];
-    long long totalBytesExpected = [[dict valueForKey:@"totalBytesExpected"] longLongValue];
-    
-    // Check
-    if (!fileID || [fileID isEqualToString: @""])
-        return;
-    
-    [appDelegate.listProgressMetadata setObject:[NSArray arrayWithObjects:[NSNumber numberWithFloat:progress], [dict valueForKey:@"totalBytes"], [dict valueForKey:@"totalBytesExpected"], nil] forKey:fileID];
-
-    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:fileID];
-    
-    if (indexPath && indexPath.row == 0) {
-        
-        CCCellMainTransfer *cell = (CCCellMainTransfer *)[self.tableView cellForRowAtIndexPath:indexPath];
-        
-        if (status == k_metadataStatusInDownload) {
-            statusString = @"↓";
-        } else if (status == k_metadataStatusInUpload) {
-            statusString = @"↑";
-        }
-
-        cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
-        
-        if ([cell isKindOfClass:[CCCellMainTransfer class]]) {
-            cell.transferButton.progress = progress;
-        }
-        
-    } else {
-        
-        [self reloadDatasource];
-    }
+    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView];
 }
 
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
@@ -199,13 +163,30 @@
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
         
         if (metadata)
-            [appDelegate.activeMain cancelTaskButton:metadata reloadTable:YES];
+            [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true];
     }
 }
 
 - (void)cancelAllTask:(id)sender
 {
-    [appDelegate.activeMain cancelAllTask:sender];
+    CGPoint location = [sender locationInView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_all_task_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [[NCMainCommon sharedInstance] cancelAllTransfer];
+    }]];
+    
+    [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
+    
+    alertController.popoverPresentationController.sourceView = self.view;
+    alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+        [alertController.view layoutIfNeeded];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------

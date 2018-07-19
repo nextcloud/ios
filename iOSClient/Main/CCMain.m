@@ -2195,14 +2195,9 @@
             
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataSection.fileID]];
             if (metadata)
-                [self cancelTaskButton:metadata reloadTable:YES];
+                [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true];
         }
     }
-}
-
-- (void)cancelTaskButton:(tableMetadata *)metadata reloadTable:(BOOL)reloadTable
-{
-    [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true];
 }
 
 - (void)cancelAllTask:(id)sender
@@ -4273,7 +4268,7 @@
         [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
     }
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shareLink:shareLink shareUserAndGroup:shareUserAndGroup isShare:isShare isMounted:isMounted];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:_metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory];
     
     // NORMAL - > MAIN
     

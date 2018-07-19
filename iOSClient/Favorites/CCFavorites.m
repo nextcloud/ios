@@ -440,14 +440,9 @@
             
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataSection.fileID]];
             if (metadata)
-                [self cancelTaskButton:metadata reloadTable:YES];
+                [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true];
         }
     }
-}
-
-- (void)cancelTaskButton:(tableMetadata *)metadata reloadTable:(BOOL)reloadTable
-{
-    [[NCMainCommon sharedInstance] cancelTransferMetadata:metadata reloadDatasource:true];
 }
 
 - (void)cancelAllTask:(id)sender
@@ -675,17 +670,22 @@
         return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
     }
     
-    NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
-    NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
-//    BOOL isShare =  [metadata.permissions containsString:k_permission_shared] && ![_fatherPermission containsString:k_permission_shared];
-//    BOOL isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_fatherPermission containsString:k_permission_mounted];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+    if (directory == nil) {
+        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+    }
+    
+    tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
+    if (metadataFolder == nil) {
+        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+    }
     
     // Download thumbnail
     if (metadata.thumbnailExists && ![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) { // && !_metadataFolder.e2eEncrypted) {
         [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
     }
     
-    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory shareLink:shareLink shareUserAndGroup:shareUserAndGroup isShare:NO isMounted:NO];
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:self.serverUrl autoUploadFileName:_autoUploadFileName autoUploadDirectory:_autoUploadDirectory];
     
     // NORMAL - > MAIN
 
