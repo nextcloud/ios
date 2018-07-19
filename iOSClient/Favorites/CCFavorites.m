@@ -676,9 +676,6 @@
     }
     
     tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
-    if (metadataFolder == nil) {
-        return [CCCellMain new];
-    }
     
     // Download thumbnail
     if (metadata.thumbnailExists && ![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) { // && !_metadataFolder.e2eEncrypted) {

@@ -32,7 +32,7 @@ class NCMainCommon: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String) -> UITableViewCell {
+    @objc func cellForRowAtIndexPath(_ indexPath: IndexPath, tableView: UITableView ,metadata: tableMetadata, metadataFolder: tableMetadata?, serverUrl: String, autoUploadFileName: String, autoUploadDirectory: String) -> UITableViewCell {
         
         // Create File System
         if metadata.directory {
@@ -71,9 +71,14 @@ class NCMainCommon: NSObject {
             // Share
             let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
             let sharesUserAndGroup = appDelegate.sharesUserAndGroup.object(forKey: serverUrl + metadata.fileName)
-            let isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder.permissions.contains(k_permission_shared)
-            let isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder.permissions.contains(k_permission_mounted)
-
+            var isShare = false
+            var isMounted = false
+            
+            if metadataFolder != nil {
+                isShare = metadata.permissions.contains(k_permission_shared) && !metadataFolder!.permissions.contains(k_permission_shared)
+                isMounted = metadata.permissions.contains(k_permission_mounted) && !metadataFolder!.permissions.contains(k_permission_mounted)
+            }
+            
             if metadata.directory {
                 
                 // lable Info
