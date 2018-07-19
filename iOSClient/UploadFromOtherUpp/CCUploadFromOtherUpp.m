@@ -195,7 +195,7 @@
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
-    [appDelegate.activeMain reloadDatasource:serverUrlLocal];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

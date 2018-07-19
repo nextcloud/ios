@@ -402,7 +402,7 @@
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [appDelegate.activeMain reloadDatasource:serverUrl];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
     });
 }
 

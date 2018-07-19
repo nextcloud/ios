@@ -343,7 +343,7 @@
 
 - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [self reloadDatasource];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
         
     [appDelegate updateApplicationIconBadgeNumber];
 }
@@ -382,8 +382,7 @@
         }
     }
     
-    [self reloadDatasource];
-    [appDelegate.activeTransfers reloadDatasource];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
 }
 
 - (void)openWith:(tableMetadata *)metadata

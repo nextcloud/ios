@@ -391,8 +391,7 @@
         [[NCService sharedInstance] startRequestServicesServer];
         
         // Clear datasorce
-        [appDelegate.activePhotos reloadDatasource];
-        [appDelegate.activeFavorites reloadDatasource];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil];
         
         // Read this folder
         [self readFileReloadFolder];
@@ -400,7 +399,7 @@
     } else {
         
         // reload datasource
-        [self reloadDatasource:_serverUrl];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl];
     }
 }
 
@@ -1083,7 +1082,7 @@
 
 - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [self reloadDatasource:serverUrl];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
     
     [appDelegate updateApplicationIconBadgeNumber];
 }
@@ -1098,16 +1097,14 @@
         
         // Synchronized
         if ([selector isEqualToString:selectorDownloadSynchronize]) {
-            
-            [self reloadDatasource:serverUrl];
-            [appDelegate.activeFavorites reloadDatasource];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
         }
         
         // open View File
         if ([selector isEqualToString:selectorLoadFileView] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-            [self reloadDatasource:serverUrl];
-            
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
                 
                 selector = selectorOpenIn;
@@ -1129,8 +1126,8 @@
         // Open with...
         if ([selector isEqualToString:selectorOpenIn] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-            [self reloadDatasource:serverUrl];
-            
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+
             NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
             
             _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
@@ -1174,14 +1171,14 @@
                 [self presentViewController:alertController animated:YES completion:nil];
             }
             
-            [self reloadDatasource:serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
         }
         
         // Copy File
         if ([selector isEqualToString:selectorLoadCopy]) {
             
-            [self reloadDatasource:serverUrl];
-            
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+
             [self copyFileToPasteboard:metadata];
         }
         
@@ -1196,7 +1193,7 @@
             if (appDelegate.activePhotos)
                 [appDelegate.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
             
-            [self reloadDatasource:serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
         }
         
         // Auto Download Upload
@@ -1230,8 +1227,7 @@
             
         }
         
-        [self reloadDatasource:serverUrl];
-        [appDelegate.activeTransfers reloadDatasource];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
     }
 }
 
@@ -1298,8 +1294,7 @@
             [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
     
-    [self reloadDatasource:serverUrl];
-    [appDelegate.activeTransfers reloadDatasource];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
 }
 
 //
@@ -3328,7 +3323,7 @@
     
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
 
-    [self reloadDatasource];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3969,14 +3964,11 @@
             [main reloadDatasource];
         } else {
             [self tableViewReloadData];
-            [appDelegate.activeTransfers reloadDatasource];
         }
         
         return;
     }
-    
-    [appDelegate.activeTransfers reloadDatasource];
-    
+        
     // Settaggio variabili per le ottimizzazioni
     _directoryGroupBy = [CCUtility getGroupBySettings];
     _directoryOrder = [CCUtility getOrderSettings];

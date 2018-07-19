@@ -363,11 +363,7 @@ class NCMainCommon: NSObject {
                 NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
             }
          
-            appDelegate.activeMain.reloadDatasource()
-            appDelegate.activeFavorites.reloadDatasource()
-            if (appDelegate.activeTransfers != nil) {
-                appDelegate.activeTransfers.reloadDatasource()
-            }
+            self.reloadDatasource(ServerUrl: nil)
             
             return
         }
@@ -407,13 +403,7 @@ class NCMainCommon: NSObject {
             }
             
             if cancel == false {
-                DispatchQueue.main.async {
-                    self.appDelegate.activeMain.reloadDatasource()
-                    self.appDelegate.activeFavorites.reloadDatasource()
-                    if (self.appDelegate.activeTransfers != nil) {
-                        self.appDelegate.activeTransfers.reloadDatasource()
-                    }
-                }
+                self.reloadDatasource(ServerUrl: nil)
             }
         }
     }
@@ -444,11 +434,7 @@ class NCMainCommon: NSObject {
             }
         }
         
-        self.appDelegate.activeMain.reloadDatasource()
-        self.appDelegate.activeFavorites.reloadDatasource()
-        if (self.appDelegate.activeTransfers != nil) {
-            self.appDelegate.activeTransfers.reloadDatasource()
-        }
+        self.reloadDatasource(ServerUrl: nil)
     }
     
     @objc func getMetadataFromSectionDataSourceIndexPath(_ indexPath: IndexPath, sectionDataSource: CCSectionDataSourceMetadata) -> tableMetadata? {
@@ -475,6 +461,25 @@ class NCMainCommon: NSObject {
         let metadata = sectionDataSource.allRecordsDataSource.object(forKey: fileID) as? tableMetadata
       
         return metadata
+    }
+    
+    @objc func reloadDatasource(ServerUrl: String?) {
+        
+        DispatchQueue.main.async {
+            if self.appDelegate.activeMain != nil {
+                if ServerUrl == nil {
+                    self.appDelegate.activeMain.reloadDatasource()
+                } else {
+                    self.appDelegate.activeMain.reloadDatasource(ServerUrl)
+                }
+            }
+            if self.appDelegate.activeFavorites != nil {
+                self.appDelegate.activeFavorites.reloadDatasource()
+            }
+            if self.appDelegate.activeTransfers != nil {
+                self.appDelegate.activeTransfers.reloadDatasource()
+            }
+        }
     }
     
     @objc func isValidIndexPath(_ indexPath: IndexPath, tableView: UITableView) -> Bool {
