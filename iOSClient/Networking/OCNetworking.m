@@ -764,13 +764,13 @@
     [communication setUserAgent:[CCUtility getUserAgent]];
     
     NSString *path = [_activeUrl stringByAppendingString:k_dav];
-    NSString *folder = [_metadataNet.serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl] withString:@""];
+    NSString *folder = [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl] withString:@""];
     
     [communication listingFavorites:path folder:folder withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         // Test active account
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
+        if (![recordAccount.account isEqualToString:account]) {
             
             failure(NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil), k_CCErrorUserNotAvailble);
             
@@ -833,9 +833,9 @@
                     
                     directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
                     
-                    isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:_metadataNet.account];
+                    isFolderEncrypted = [CCUtility isFolderEncrypted:serverUrl account:account];
                     
-                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:_metadataNet.account isFolderEncrypted:isFolderEncrypted]];
+                    [metadatas addObject:[CCUtility trasformedOCFileToCCMetadata:itemDto fileName:itemDto.fileName serverUrl:serverUrl directoryID:directoryID autoUploadFileName:autoUploadFileName autoUploadDirectory:autoUploadDirectory activeAccount:account isFolderEncrypted:isFolderEncrypted]];
                 }
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
