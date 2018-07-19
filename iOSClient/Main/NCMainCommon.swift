@@ -343,6 +343,10 @@ class NCMainCommon: NSObject {
     
     @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool) {
         
+        if metadata.session.count == 0 {
+            return
+        }
+        
         let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) as URLSession
         
         // SESSION EXTENSION
@@ -361,8 +365,8 @@ class NCMainCommon: NSObject {
          
             appDelegate.activeMain.reloadDatasource()
             appDelegate.activeFavorites.reloadDatasource()
-            if (self.appDelegate.activeTransfers != nil) {
-                self.appDelegate.activeTransfers.reloadDatasource()
+            if (appDelegate.activeTransfers != nil) {
+                appDelegate.activeTransfers.reloadDatasource()
             }
             
             return
@@ -370,11 +374,25 @@ class NCMainCommon: NSObject {
         
         session.getTasksWithCompletionHandler { (dataTasks, uploadTasks, downloadTasks) in
             
+            var cancel = false
+            
             // DOWNLOAD
             if metadata.session.count > 0 && metadata.session.contains("download") {
                 for task in downloadTasks {
                     if task.taskIdentifier == metadata.sessionTaskIdentifier {
                         task.cancel()
+                        cancel = true
+                    }
+                }
+                if cancel == false {
+                    DispatchQueue.main.async {
+                        NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+                        
+                        self.appDelegate.activeMain.reloadDatasource()
+                        self.appDelegate.activeFavorites.reloadDatasource()
+                        if (self.appDelegate.activeTransfers != nil) {
+                            self.appDelegate.activeTransfers.reloadDatasource()
+                        }
                     }
                 }
             }
@@ -384,6 +402,22 @@ class NCMainCommon: NSObject {
                 for task in uploadTasks {
                     if task.taskIdentifier == metadata.sessionTaskIdentifier {
                         task.cancel()
+                        cancel = true
+                    }
+                }
+                if cancel == false {
+                    DispatchQueue.main.async {
+                        do {
+                            try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
+                        }
+                        catch { }
+                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
+                        
+                        self.appDelegate.activeMain.reloadDatasource()
+                        self.appDelegate.activeFavorites.reloadDatasource()
+                        if (self.appDelegate.activeTransfers != nil) {
+                            self.appDelegate.activeTransfers.reloadDatasource()
+                        }
                     }
                 }
             }
