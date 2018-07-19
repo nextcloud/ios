@@ -335,10 +335,8 @@ class NCMainCommon: NSObject {
                     image = "↑"
                 }
                 
-                if cell.labelInfoFile != nil && cell.transferButton != nil {
-                    cell.labelInfoFile.text = CCUtility.transformedSize(totalBytesExpected) + " - " + image + CCUtility.transformedSize(totalBytes)
-                    cell.transferButton.progress = progress
-                }
+                cell.labelInfoFile.text = CCUtility.transformedSize(totalBytesExpected) + " - " + image + CCUtility.transformedSize(totalBytes)
+                cell.transferButton.progress = progress
             }
         }
     }
