@@ -66,7 +66,7 @@
     CCHud *_hud;
     
     // Datasource
-    CCSectionDataSourceMetadata *_sectionDataSource;
+    CCSectionDataSourceMetadata *sectionDataSource;
     NSDate *_dateReadDataSource;
     
     // Search
@@ -557,7 +557,7 @@
 
     if (_isSelectedMode) {
         
-        NSUInteger totali = [_sectionDataSource.allRecordsDataSource count];
+        NSUInteger totali = [sectionDataSource.allRecordsDataSource count];
         NSUInteger selezionati = [[self.tableView indexPathsForSelectedRows] count];
         
         self.navigationItem.titleView = nil;
@@ -1039,7 +1039,7 @@
 {
     CGPoint convertedLocation = [self.view convertPoint:location toView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:convertedLocation];
-    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata.thumbnailExists && _metadataFolder.e2eEncrypted == NO) {
         CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
@@ -2178,7 +2178,7 @@
 
 - (void)triggerProgressTask:(NSNotification *)notification
 {
-    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:_sectionDataSource.fileIDIndexPath tableView:self.tableView];
+    [[NCMainCommon sharedInstance] triggerProgressTask:notification sectionDataSourceFileIDIndexPath:sectionDataSource.fileIDIndexPath tableView:self.tableView];
 }
 
 - (void)cancelTaskButton:(id)sender withEvent:(UIEvent *)event
@@ -2189,7 +2189,7 @@
     
     if ([self indexPathIsValid:indexPath]) {
         
-        tableMetadata *metadataSection = [self getMetadataFromSectionDataSource:indexPath];
+        tableMetadata *metadataSection = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         
         if (metadataSection) {
             
@@ -2454,7 +2454,7 @@
     CGPoint location = [tapGesture locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata)
         [self openWindowShare:metadata];
@@ -2465,7 +2465,7 @@
     CGPoint location = [tapGesture locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
     
-    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata) {
         
@@ -2541,7 +2541,7 @@
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
-    NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
+    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
     if ([self indexPathIsValid:indexPath])
         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
@@ -2781,7 +2781,7 @@
     // ITEM SELECT ----------------------------------------------------------------------------------------------------
     
     appDelegate.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([_sectionDataSource.allRecordsDataSource count] > 0) {
+            if ([sectionDataSource.allRecordsDataSource count] > 0) {
                 [self tableViewSelect:YES];
             }
     }];
@@ -3071,7 +3071,7 @@
         NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touchPoint];
         
         if ([self indexPathIsValid:indexPath])
-            _metadata = [self getMetadataFromSectionDataSource:indexPath];
+            _metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         else
             _metadata = nil;
         
@@ -3467,7 +3467,7 @@
     
     if ([[NCManageDatabase sharedInstance] setDirectoryLockWithServerUrl:lockServerUrl lock:YES]) {
         
-        NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
+        NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
         if ([self indexPathIsValid:indexPath])
             [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
         
@@ -3500,7 +3500,7 @@
 - (BOOL)swipeTableCell:(MGSwipeTableCell *)cell canSwipe:(MGSwipeDirection)direction
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     return [self canOpenMenuAction:metadata];
 }
@@ -3512,7 +3512,7 @@
 - (BOOL)swipeTableCell:(MGSwipeTableCell *)cell tappedButtonAtIndex:(NSInteger)index direction:(MGSwipeDirection)direction fromExpansion:(BOOL)fromExpansion
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-   _metadata = [self getMetadataFromSectionDataSource:indexPath];
+   _metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (direction == MGSwipeDirectionRightToLeft) {
         
@@ -3577,7 +3577,7 @@
     CGPoint touch = [gestureRecognizer locationInView:self.tableView];
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:touch];
     
-    _metadata = [self getMetadataFromSectionDataSource:indexPath];
+    _metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
     if (!serverUrl) return;
@@ -3942,17 +3942,17 @@
     // Search Mode
     if (_isSearchMode) {
         
-        _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:nil activeAccount:appDelegate.activeAccount];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:nil activeAccount:appDelegate.activeAccount];
 
         [self tableViewReloadData];
         
-        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch) {
+        if ([sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch) {
             
             _noFilesSearchTitle = NSLocalizedString(@"_search_no_record_found_", nil);
             _noFilesSearchDescription = @"";
         }
         
-        if ([_sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] < k_minCharsSearch) {
+        if ([sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] < k_minCharsSearch) {
             
             _noFilesSearchTitle = @"";
             _noFilesSearchDescription = NSLocalizedString(@"_search_instruction_", nil);
@@ -4014,8 +4014,8 @@
         
             NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
                                                   
-            _sectionDataSource = [CCSectionDataSourceMetadata new];
-            _sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:nil activeAccount:appDelegate.activeAccount];
+            sectionDataSource = [CCSectionDataSourceMetadata new];
+            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:nil activeAccount:appDelegate.activeAccount];
             
             // get auto upload folder
             _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
@@ -4038,8 +4038,8 @@
     
         for (NSIndexPath *selectionIndex in selectedRows) {
             
-            NSString *fileID = [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:selectionIndex.section]] objectAtIndex:selectionIndex.row];
-            tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+            NSString *fileID = [[sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:selectionIndex.section]] objectAtIndex:selectionIndex.row];
+            tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
 
             [metadatas addObject:metadata];
         }
@@ -4048,56 +4048,17 @@
     return metadatas;
 }
 
-- (tableMetadata *)getMetadataFromSectionDataSource:(NSIndexPath *)indexPath
-{
-    NSInteger section = indexPath.section + 1;
-    NSInteger row = indexPath.row + 1;
-    
-    NSInteger totSections = [_sectionDataSource.sections count] ;
-    
-    if ((totSections < section) || (section > totSections)) {
-      
-        NSLog(@"[LOG] %@", [NSString stringWithFormat:@"DEBUG [0] : error section, totSections = %lu - section = %lu", (long)totSections, (long)section]);
-        return nil;
-    }
-    
-    id valueSection = [_sectionDataSource.sections objectAtIndex:indexPath.section];
-    
-    NSArray *fileIDs = [_sectionDataSource.sectionArrayRow objectForKey:valueSection];
-    
-    if (fileIDs) {
-        
-        NSInteger totRows =[fileIDs count] ;
-        
-        if ((totRows < row) || (row > totRows)) {
-            
-            NSLog(@"[LOG] %@", [NSString stringWithFormat:@"DEBUG [1] : error row, totRows = %lu - row = %lu", (long)totRows, (long)row]);
-            return nil;
-        }
-
-    } else {
-        
-        NSLog(@"[LOG] DEBUG [2] : fileIDs is NIL");
-        return nil;
-    }
-        
-    NSString *fileID = [fileIDs objectAtIndex:indexPath.row];
-    tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
-    
-    return metadata;
-}
-
 - (NSArray *)getMetadatasFromSectionDataSource:(NSInteger)section
 {
-    NSInteger totSections =[_sectionDataSource.sections count] ;
+    NSInteger totSections =[sectionDataSource.sections count] ;
     
     if ((totSections < (section + 1)) || ((section + 1) > totSections)) {
         return nil;
     }
     
-    id valueSection = [_sectionDataSource.sections objectAtIndex:section];
+    id valueSection = [sectionDataSource.sections objectAtIndex:section];
     
-    return  [_sectionDataSource.sectionArrayRow objectForKey:valueSection];
+    return [sectionDataSource.sectionArrayRow objectForKey:valueSection];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -4146,7 +4107,7 @@
 {    
     if (tableView.editing == 1) {
         
-        tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+        tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
         
         if (!metadata || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata])
             return NO;
@@ -4171,16 +4132,16 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return [[_sectionDataSource.sectionArrayRow allKeys] count];
+    return [[sectionDataSource.sectionArrayRow allKeys] count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [[_sectionDataSource.sectionArrayRow objectForKey:[_sectionDataSource.sections objectAtIndex:section]] count];
+    return [[sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:section]] count];
 }
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    NSArray *sections = [_sectionDataSource.sectionArrayRow allKeys];
+    NSArray *sections = [sectionDataSource.sectionArrayRow allKeys];
     NSString *sectionTitle = [sections objectAtIndex:section];
     
     if ([sectionTitle isKindOfClass:[NSString class]] && [sectionTitle rangeOfString:@"download"].location != NSNotFound) return 18.f;
@@ -4201,11 +4162,11 @@
     if (![self indexPathIsValid:[NSIndexPath indexPathForRow:0 inSection:section]])
         return nil;
     
-    if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]])
-        titleSection = [_sectionDataSource.sections objectAtIndex:section];
+    if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSString class]])
+        titleSection = [sectionDataSource.sections objectAtIndex:section];
     
-    if ([[_sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]])
-        titleSection = [CCUtility getTitleSectionDate:[_sectionDataSource.sections objectAtIndex:section]];
+    if ([[sectionDataSource.sections objectAtIndex:section] isKindOfClass:[NSDate class]])
+        titleSection = [CCUtility getTitleSectionDate:[sectionDataSource.sections objectAtIndex:section]];
     
     if ([titleSection isEqualToString:@"_none_"]) titleSection = @"";
     else if ([titleSection rangeOfString:@"download"].location != NSNotFound) titleSection = NSLocalizedString(@"_title_section_download_",nil);
@@ -4269,7 +4230,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
 {
-    return [_sectionDataSource.sections indexOfObject:title];
+    return [sectionDataSource.sections indexOfObject:title];
 }
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
@@ -4291,7 +4252,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
         return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
@@ -4406,18 +4367,18 @@
     NSString *files;
     NSString *footerText;
     
-    if (_sectionDataSource.directories > 1) {
-        folders = [NSString stringWithFormat:@"%ld %@", (long)_sectionDataSource.directories, NSLocalizedString(@"_folders_", nil)];
-    } else if (_sectionDataSource.directories == 1){
-        folders = [NSString stringWithFormat:@"%ld %@", (long)_sectionDataSource.directories, NSLocalizedString(@"_folder_", nil)];
+    if (sectionDataSource.directories > 1) {
+        folders = [NSString stringWithFormat:@"%ld %@", (long)sectionDataSource.directories, NSLocalizedString(@"_folders_", nil)];
+    } else if (sectionDataSource.directories == 1){
+        folders = [NSString stringWithFormat:@"%ld %@", (long)sectionDataSource.directories, NSLocalizedString(@"_folder_", nil)];
     } else {
         folders = @"";
     }
     
-    if (_sectionDataSource.files > 1) {
-        files = [NSString stringWithFormat:@"%ld %@ %@", (long)_sectionDataSource.files, NSLocalizedString(@"_files_", nil), [CCUtility transformedSize:_sectionDataSource.totalSize]];
-    } else if (_sectionDataSource.files == 1){
-        files = [NSString stringWithFormat:@"%ld %@ %@", (long)_sectionDataSource.files, NSLocalizedString(@"_file_", nil), [CCUtility transformedSize:_sectionDataSource.totalSize]];
+    if (sectionDataSource.files > 1) {
+        files = [NSString stringWithFormat:@"%ld %@ %@", (long)sectionDataSource.files, NSLocalizedString(@"_files_", nil), [CCUtility transformedSize:sectionDataSource.totalSize]];
+    } else if (sectionDataSource.files == 1){
+        files = [NSString stringWithFormat:@"%ld %@ %@", (long)sectionDataSource.files, NSLocalizedString(@"_file_", nil), [CCUtility transformedSize:sectionDataSource.totalSize]];
     } else {
         files = @"";
     }
@@ -4441,7 +4402,7 @@
     CCCellMain *cell = [tableView cellForRowAtIndexPath:indexPath];
     
     // settiamo il record file.
-    _metadata = [self getMetadataFromSectionDataSource:indexPath];
+    _metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (!_metadata)
         return;
@@ -4490,7 +4451,7 @@
                 (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
                 [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
                             
-                NSIndexPath *indexPath = [_sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
+                NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
                 if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
             }
         }
@@ -4505,7 +4466,7 @@
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(nonnull NSIndexPath *)indexPath
 {
-    tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+    tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     [_selectedFileIDsMetadatas removeObjectForKey:metadata.fileID];
     
@@ -4517,7 +4478,7 @@
     for (int i = 0; i < self.tableView.numberOfSections; i++) {
         for (int j = 0; j < [self.tableView numberOfRowsInSection:i]; j++) {
             NSIndexPath *indexPath = [NSIndexPath indexPathForRow:j inSection:i];
-            tableMetadata *metadata = [self getMetadataFromSectionDataSource:indexPath];
+            tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
             [_selectedFileIDsMetadatas setObject:metadata forKey:metadata.fileID];
             [self.tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         }
@@ -4590,8 +4551,8 @@
         
         metadata = _metadata;
         
-        for (NSString *fileID in _sectionDataSource.allFileID) {
-            tableMetadata *metadata = [_sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        for (NSString *fileID in sectionDataSource.allFileID) {
+            tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [metadata.typeFile isEqualToString: k_metadataTypeFile_audio])
                 [allRecordsDataSourceImagesVideos addObject:metadata];
         }
