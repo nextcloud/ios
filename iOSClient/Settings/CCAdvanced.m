@@ -144,9 +144,6 @@
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
     row.action.formSelector = @selector(clearCache:);
-    UILongPressGestureRecognizer *longGesture = [UILongPressGestureRecognizer new];
-    [longGesture addTarget:self action:@selector(clearCacheAndDatabase:)];
-    [row.cellClass addGestureRecognizer:longGesture];
     [section addFormRow:row];
 
     // Section EXIT --------------------------------------------------------
