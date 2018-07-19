@@ -58,8 +58,6 @@
     NSUInteger _failedAttempts;
     NSDate *_lockUntilDate;
 
-    NSString *_fatherPermission;
-
     UIRefreshControl *_refreshControl;
     UIDocumentInteractionController *_docController;
 
@@ -132,7 +130,6 @@
     _selectedFileIDsMetadatas = [NSMutableDictionary new];
     _queueSelector = [NSMutableArray new];
     _isViewDidLoad = YES;
-    _fatherPermission = @"";
     _searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     _searchResultMetadatas = [NSMutableArray new];
     _searchFileName = @"";
@@ -1494,10 +1491,6 @@
     // save metadataFolder
     _metadataFolder = metadataFolder;
     
-    // save father e update permission
-    if(!_isSearchMode && metadataFolder)
-        _fatherPermission = metadataFolder.permissions;
-        
     if (_isSearchMode == NO) {
         
         [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
@@ -4258,11 +4251,6 @@
         return [CCCellMain new];
     }
     
-    NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
-    NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
-    BOOL isShare =  [metadata.permissions containsString:k_permission_shared] && ![_fatherPermission containsString:k_permission_shared];
-    BOOL isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_fatherPermission containsString:k_permission_mounted];
-    
     // Download thumbnail
     if (metadata.thumbnailExists && ![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && !_metadataFolder.e2eEncrypted) {
         [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
@@ -4273,6 +4261,16 @@
     // NORMAL - > MAIN
     
     if ([cell isKindOfClass:[CCCellMain class]]) {
+        
+        NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+        NSString *shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
+        BOOL isShare = false;
+        BOOL isMounted = false;
+        
+        if (_metadataFolder) {
+            isShare =  [metadata.permissions containsString:k_permission_shared] && ![_metadataFolder.permissions containsString:k_permission_shared];
+            isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_metadataFolder.permissions containsString:k_permission_mounted];
+        }
         
         // Share add Tap
         if (isShare || isMounted || shareLink != nil || shareUserAndGroup != nil) {
