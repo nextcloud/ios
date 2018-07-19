@@ -1680,7 +1680,7 @@
         [_searchResultMetadatas removeAllObjects];
         for (tableMetadata *record in records)
             [_searchResultMetadatas addObject:record];
-            
+        
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
             
         metadataNet.account = appDelegate.activeAccount;
@@ -3927,7 +3927,16 @@
     // Search Mode
     if (_isSearchMode) {
         
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:_searchResultMetadatas listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:nil activeAccount:appDelegate.activeAccount];
+        // Create metadatas
+        NSMutableArray *metadatas = [NSMutableArray new];
+        for (tableMetadata *resultMetadata in _searchResultMetadatas) {
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", resultMetadata.fileID]];
+            if (metadata) {
+                [metadatas addObject:metadata];
+            }
+        }
+        
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:nil activeAccount:appDelegate.activeAccount];
 
         [self tableViewReloadData];
         
