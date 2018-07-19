@@ -380,10 +380,10 @@
             [[NCManageDatabase sharedInstance] deletePhotosWithFileID:fileID];
             [appDelegate.activePhotos.fileIDHide addObject:fileID];
         }
-        
-        [self reloadDatasource];
-        [appDelegate.activeTransfers reloadDatasource];
     }
+    
+    [self reloadDatasource];
+    [appDelegate.activeTransfers reloadDatasource];
 }
 
 - (void)openWith:(tableMetadata *)metadata

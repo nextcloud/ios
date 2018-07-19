@@ -1098,7 +1098,9 @@
         
         // Synchronized
         if ([selector isEqualToString:selectorDownloadSynchronize]) {
+            
             [self reloadDatasource:serverUrl];
+            [appDelegate.activeFavorites reloadDatasource];
         }
         
         // open View File
