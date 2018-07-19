@@ -421,151 +421,38 @@
 {
     NSString *fileID = [[sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
     tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
-    
-    // Create File System
-    if (metadata.directory) {
-        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
-    } else {
-        [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
+    if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
+        return [[CCCellMainTransfer alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CCCellMainTransfer"];
     }
     
-    CCCellMainTransfer *cell = [tableView dequeueReusableCellWithIdentifier:@"CellMainTransfer" forIndexPath:indexPath];
-    cell.separatorInset = UIEdgeInsetsMake(0.f, 60.f, 0.f, 0.f);
-    cell.accessoryType = UITableViewCellAccessoryNone;
-    cell.file.image = nil;
-    cell.status.image = nil;
-    
-    cell.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
-    
-    cell.labelTitle.textColor = [UIColor blackColor];
-    cell.labelTitle.text = metadata.fileNameView;
-    
-    cell.transferButton.tintColor = [NCBrandColor sharedInstance].icon;
-    
-    float progress = 0;
-    long long totalBytes = 0, totalBytesExpected = 0;
-    NSArray *progressArray = [appDelegate.listProgressMetadata objectForKey:metadata.fileID];
-    if (progressArray != nil && progressArray.count == 3) {
-        progress = [[progressArray objectAtIndex:0] floatValue];
-        totalBytes = [[progressArray objectAtIndex:1] longLongValue];
-        totalBytesExpected = [[progressArray objectAtIndex:2] longLongValue];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+    if (serverUrl == nil) {
+        return [[CCCellMainTransfer alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CCCellMainTransfer"];
     }
     
-    // Write status on Label Info
-    NSString *statusString = @"";
-    switch (metadata.status) {
-        case 2:
-            statusString = NSLocalizedString(@"_status_wait_download_",nil);
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
-            break;
-        case 3:
-            statusString = NSLocalizedString(@"_status_in_download_",nil);
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ %@", [CCUtility transformedSize:metadata.size], statusString];
-            break;
-        case 4:
-            if (totalBytes > 0) {
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
-            } else {
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
-            }
-            break;
-        case 6:
-            statusString = NSLocalizedString(@"_status_wait_upload_",nil);
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", statusString];
-            break;
-        case 7:
-            statusString = NSLocalizedString(@"_status_in_upload_",nil);
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", statusString];
-            break;
-        case 8:
-            if (totalBytes > 0) {
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@ - %@%@", [CCUtility transformedSize:totalBytesExpected], statusString, [CCUtility transformedSize:totalBytes]];
-            } else {
-                cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
-            }
-            break;
-        default:
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@", [CCUtility transformedSize:metadata.size]];
-            break;
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+    if (directory == nil) {
+        return [[CCCellMainTransfer alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CCCellMainTransfer"];
     }
     
-    BOOL iconFileExists = [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-    
-    if (iconFileExists) {
-        cell.file.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-    } else {
-        if (metadata.iconName.length > 0) {
-            cell.file.image = [UIImage imageNamed:metadata.iconName];
-        } else {
-            cell.file.image = [UIImage imageNamed:@"file"];
-        }
+    tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
+    if (metadataFolder == nil) {
+        return [[CCCellMainTransfer alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CCCellMainTransfer"];
     }
     
-    // Session Upload Extension
-    if ([metadata.session isEqualToString:k_upload_session_extension] && (metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading)) {
+    UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:serverUrl autoUploadFileName:@"" autoUploadDirectory:@""];
+    
+    // TRANSFER
+    
+    if ([cell isKindOfClass:[CCCellMainTransfer class]]) {
         
-        cell.labelTitle.enabled = NO;
-        cell.labelInfoFile.enabled = NO;
+        // gesture Transfer
+        [((CCCellMainTransfer *)cell).transferButton.stopButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
         
-    } else {
-        
-        cell.labelTitle.enabled = YES;
-        cell.labelInfoFile.enabled = YES;
+        UILongPressGestureRecognizer *stopLongGesture = [UILongPressGestureRecognizer new];
+        [stopLongGesture addTarget:self action:@selector(cancelAllTask:)];
+        [((CCCellMainTransfer *)cell).transferButton.stopButton addGestureRecognizer:stopLongGesture];
     }
-    
-    // downloadFile
-    if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusInDownload || metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusDownloadError) {
-        //
-    }
-    
-    // downloadFile Error
-    if (metadata.status == k_metadataStatusDownloadError) {
-        
-        cell.status.image = [UIImage imageNamed:@"statuserror"];
-        
-        if ([metadata.sessionError length] == 0) {
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_downloaded_",nil)];
-        } else {
-            cell.labelInfoFile.text = metadata.sessionError;
-        }
-    }
-    
-    // uploadFile
-    if (metadata.status == k_metadataStatusWaitUpload || metadata.status == k_metadataStatusInUpload || metadata.status == k_metadataStatusUploading || metadata.status == k_metadataStatusUploadError) {
-        
-        if (!iconFileExists) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-        }
-        
-        cell.labelTitle.enabled = NO;
-    }
-    
-    // uploadFileError
-    if (metadata.status == k_metadataStatusUploadError) {
-        
-        cell.labelTitle.enabled = NO;
-        cell.status.image = [UIImage imageNamed:@"statuserror"];
-        
-        if (!iconFileExists) {
-            cell.file.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"uploadCloud"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-        }
-        
-        if ([metadata.sessionError length] == 0) {
-            cell.labelInfoFile.text = [NSString stringWithFormat:@"%@, %@", NSLocalizedString(@"_error_",nil), NSLocalizedString(@"_file_not_uploaded_",nil)];
-        } else {
-            cell.labelInfoFile.text = metadata.sessionError;
-        }
-    }
-    
-    // Progress
-    cell.transferButton.progress = progress;
-    
-    // gesture Transfer
-    [cell.transferButton.stopButton addTarget:self action:@selector(cancelTaskButton:withEvent:) forControlEvents:UIControlEventTouchUpInside];
-    
-    UILongPressGestureRecognizer *stopLongGesture = [UILongPressGestureRecognizer new];
-    [stopLongGesture addTarget:self action:@selector(cancelAllTask:)];
-    [cell.transferButton.stopButton addGestureRecognizer:stopLongGesture];
     
     return cell;
 }
