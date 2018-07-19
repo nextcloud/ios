@@ -422,22 +422,22 @@
     NSString *fileID = [[sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
     tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
-        return [[CCCellMainTransfer alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CCCellMainTransfer"];
+        return [CCCellMainTransfer new];
     }
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (serverUrl == nil) {
-        return [[CCCellMainTransfer alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CCCellMainTransfer"];
+        return [CCCellMainTransfer new];
     }
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
     if (directory == nil) {
-        return [[CCCellMainTransfer alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CCCellMainTransfer"];
+        return [CCCellMainTransfer new];
     }
     
     tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
     if (metadataFolder == nil) {
-        return [[CCCellMainTransfer alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"CCCellMainTransfer"];
+        return [CCCellMainTransfer new];
     }
     
     UITableViewCell *cell = [[NCMainCommon sharedInstance] cellForRowAtIndexPath:indexPath tableView:tableView metadata:metadata metadataFolder:metadataFolder serverUrl:serverUrl autoUploadFileName:@"" autoUploadDirectory:@""];

@@ -662,22 +662,22 @@
 {
     tableMetadata *metadata = [_dataSource objectAtIndex:indexPath.row];
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
-        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+        return [CCCellMain new];
     }
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (serverUrl == nil) {
-        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+        return [CCCellMain new];
     }
     
     tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
     if (directory == nil) {
-        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+        return [CCCellMain new];
     }
     
     tableMetadata *metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", directory.fileID]];
     if (metadataFolder == nil) {
-        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+        return [CCCellMain new];
     }
     
     // Download thumbnail

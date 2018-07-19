@@ -4250,12 +4250,12 @@
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
     if (metadata == nil || [[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
-        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+        return [CCCellMain new];
     }
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     if (serverUrl == nil) {
-        return [tableView dequeueReusableCellWithIdentifier:@"CellMain"];
+        return [CCCellMain new];
     }
     
     NSString *shareLink = [appDelegate.sharesLink objectForKey:[serverUrl stringByAppendingString:metadata.fileName]];
