@@ -3573,12 +3573,9 @@
     NSString *titoloLock, *titleFavorite;
     
     if (_metadata.favorite) {
-        
-        titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_remove_favorites_", nil)];
-        
+        titleFavorite = NSLocalizedString(@"_remove_favorites_", nil);
     } else {
-        
-        titleFavorite = [NSString stringWithFormat:NSLocalizedString(@"_add_favorites_", nil)];
+        titleFavorite = NSLocalizedString(@"_add_favorites_", nil);
     }
     
     if (_metadata.directory) {

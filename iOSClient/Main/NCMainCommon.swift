@@ -66,7 +66,7 @@ class NCMainCommon: NSObject {
             cell.tintColor = NCBrandColor.sharedInstance.brandElement
             
             cell.labelTitle.textColor = UIColor.black
-            cell.labelTitle.text = metadata.fileNameView;
+            cell.labelTitle.text = metadata.fileNameView
             
             // Share
             let sharesLink = appDelegate.sharesLink.object(forKey: serverUrl + metadata.fileName)
@@ -177,13 +177,13 @@ class NCMainCommon: NSObject {
             let cell = tableView.dequeueReusableCell(withIdentifier: "CellMainTransfer", for: indexPath) as! CCCellMainTransfer
             cell.separatorInset = UIEdgeInsetsMake(0, 60, 0, 0)
             cell.accessoryType = UITableViewCellAccessoryType.none
-            cell.file.image = nil;
-            cell.status.image = nil;
+            cell.file.image = nil
+            cell.status.image = nil
             
             cell.backgroundColor = NCBrandColor.sharedInstance.backgroundView
 
             cell.labelTitle.textColor = UIColor.black
-            cell.labelTitle.text = metadata.fileNameView;
+            cell.labelTitle.text = metadata.fileNameView
             
             cell.transferButton.tintColor = NCBrandColor.sharedInstance.icon
             
@@ -385,15 +385,7 @@ class NCMainCommon: NSObject {
                     }
                 }
                 if cancel == false {
-                    DispatchQueue.main.async {
-                        NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-                        
-                        self.appDelegate.activeMain.reloadDatasource()
-                        self.appDelegate.activeFavorites.reloadDatasource()
-                        if (self.appDelegate.activeTransfers != nil) {
-                            self.appDelegate.activeTransfers.reloadDatasource()
-                        }
-                    }
+                    NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 }
             }
             
@@ -406,18 +398,20 @@ class NCMainCommon: NSObject {
                     }
                 }
                 if cancel == false {
-                    DispatchQueue.main.async {
-                        do {
-                            try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
-                        }
-                        catch { }
-                        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
-                        
-                        self.appDelegate.activeMain.reloadDatasource()
-                        self.appDelegate.activeFavorites.reloadDatasource()
-                        if (self.appDelegate.activeTransfers != nil) {
-                            self.appDelegate.activeTransfers.reloadDatasource()
-                        }
+                    do {
+                        try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
+                    }
+                    catch { }
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
+                }
+            }
+            
+            if cancel == false {
+                DispatchQueue.main.async {
+                    self.appDelegate.activeMain.reloadDatasource()
+                    self.appDelegate.activeFavorites.reloadDatasource()
+                    if (self.appDelegate.activeTransfers != nil) {
+                        self.appDelegate.activeTransfers.reloadDatasource()
                     }
                 }
             }
@@ -459,8 +453,8 @@ class NCMainCommon: NSObject {
     
     @objc func getMetadataFromSectionDataSourceIndexPath(_ indexPath: IndexPath, sectionDataSource: CCSectionDataSourceMetadata) -> tableMetadata? {
         
-        let section = indexPath.section + 1;
-        let row = indexPath.row + 1;
+        let section = indexPath.section + 1
+        let row = indexPath.row + 1
         let totSections = sectionDataSource.sections.count
         
         if totSections < section || section > totSections {

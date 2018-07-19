@@ -573,6 +573,18 @@
     [actionSheet addButtonWithTitle: metadata.fileNameView image: iconHeader backgroundColor: [NCBrandColor sharedInstance].tabBar height: 50.0 type: AHKActionSheetButtonTypeDisabled handler: nil
      ];
     
+    // Favorite : ONLY root
+    if (_serverUrl == nil) {
+        [actionSheet addButtonWithTitle: NSLocalizedString(@"_remove_favorites_", nil)
+                                  image: [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[NCBrandColor sharedInstance].yellowFavorite]
+                        backgroundColor: [NCBrandColor sharedInstance].backgroundView
+                                 height: 50.0
+                                   type: AHKActionSheetButtonTypeDefault
+                                handler: ^(AHKActionSheet *as) {
+                                    [self settingFavorite:_metadata favorite:NO];
+                                }];
+    }
+    
     // Share
     [actionSheet addButtonWithTitle:NSLocalizedString(@"_share_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"share"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
         
@@ -587,6 +599,16 @@
             [self openWith:metadata];
         }];
     }
+    
+    // Delete
+    [actionSheet addButtonWithTitle:NSLocalizedString(@"_delete_", nil)
+                              image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor redColor]]
+                    backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                             height:50.0
+                               type:AHKActionSheetButtonTypeDestructive
+                            handler:^(AHKActionSheet *as) {
+                                [self actionDelete:indexPath];
+                            }];
     
     [actionSheet show];
 }
