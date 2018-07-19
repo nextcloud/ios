@@ -4268,19 +4268,26 @@
         BOOL isMounted = false;
         
         if (_metadataFolder) {
-            isShare =  [metadata.permissions containsString:k_permission_shared] && ![_metadataFolder.permissions containsString:k_permission_shared];
+            isShare = [metadata.permissions containsString:k_permission_shared] && ![_metadataFolder.permissions containsString:k_permission_shared];
             isMounted = [metadata.permissions containsString:k_permission_mounted] && ![_metadataFolder.permissions containsString:k_permission_mounted];
         }
         
         // Share add Tap
         if (isShare || isMounted || shareLink != nil || shareUserAndGroup != nil) {
             
-            if (isShare || isMounted) { // Shared with you
+            if (isShare || isMounted) {
+                
+                // Shared with you
+                
                 UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapActionConnectionMounted:)];
                 [tap setNumberOfTapsRequired:1];
                 ((CCCellMain *)cell).shared.userInteractionEnabled = YES;
                 [((CCCellMain *)cell).shared addGestureRecognizer:tap];
-            } else if (shareLink != nil || shareUserAndGroup != nil) { // You share
+                
+            } else if (shareLink != nil || shareUserAndGroup != nil) {
+                
+                // You share
+                
                 if (metadata.directory) {
                     ((CCCellMain *)cell).shared.userInteractionEnabled = NO;
                 } else {
