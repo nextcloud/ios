@@ -1769,6 +1769,10 @@
     } else {
         metadatas = [[NSArray alloc] initWithObjects:_metadata, nil];
     }
+    
+    // remove optimization
+    _dateReadDataSource = nil;
+    
     [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:metadatas e2ee:_metadataFolder.e2eEncrypted serverUrl:self.serverUrl folderFileID:_metadataFolder.fileID completion:^(NSInteger errorCode, NSString *message) {
         // End Select Table View
         [self tableViewSelect:NO];
@@ -3937,7 +3941,7 @@
             NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
                                                   
             sectionDataSource = [CCSectionDataSourceMetadata new];
-            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:nil activeAccount:appDelegate.activeAccount];
+            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:self.fileIDHide activeAccount:appDelegate.activeAccount];
             
             // get auto upload folder
             _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
