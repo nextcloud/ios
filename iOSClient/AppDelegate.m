@@ -1387,6 +1387,25 @@
                 counterNewDownloadUpload++;
             }
         }
+        
+        /*
+         while (counterUpload < 11) {
+         
+         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusWaitUpload]];
+         if (metadataForUpload) {
+         
+         metadataForUpload.status = k_metadataStatusInUpload;
+         tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+         
+         [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+         counterNewDownloadUpload++;
+         counterUpload++;
+         } else {
+         counterUpload = 11;
+         }
+         }
+         */
+         
     }
     
     // ------------------------- < END > ----------------------

@@ -163,8 +163,9 @@
 #define k_timerUpdateApplicationIconBadgeNumber         3
 
 // ConcurrentOperation
+#define k_maxHTTPConnectionsPerHost                     5
 #define k_maxConcurrentOperation                        10
-#define k_maxConcurrentOperationDownload                10
+#define k_maxConcurrentOperationDownload                5
 #define k_maxConcurrentOperationUpload                  1
 
 // Error

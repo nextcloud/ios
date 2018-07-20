@@ -107,7 +107,7 @@
         configuration.allowsCellularAccess = YES;
         configuration.sessionSendsLaunchEvents = YES;
         configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = 1;
+        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionDownload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
@@ -126,7 +126,7 @@
     
         configuration.allowsCellularAccess = YES;
         configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = 1;
+        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
     
         sessionDownloadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
@@ -146,7 +146,7 @@
         configuration.allowsCellularAccess = NO;
         configuration.sessionSendsLaunchEvents = YES;
         configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = 1;
+        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionWWanDownload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
@@ -166,7 +166,7 @@
         configuration.allowsCellularAccess = YES;
         configuration.sessionSendsLaunchEvents = YES;
         configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = 1;
+        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
 
         sessionUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
@@ -186,7 +186,7 @@
         configuration.allowsCellularAccess = NO;
         configuration.sessionSendsLaunchEvents = YES;
         configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = 1;
+        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionWWanUpload = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
@@ -205,7 +205,7 @@
         
         configuration.allowsCellularAccess = YES;
         configuration.discretionary = NO;
-        configuration.HTTPMaximumConnectionsPerHost = 1;
+        configuration.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
         configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         
         sessionUploadForeground = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
@@ -256,12 +256,12 @@
         NSURLSessionConfiguration *configurationDownload = [NSURLSessionConfiguration defaultSessionConfiguration];
         configurationDownload.allowsCellularAccess = YES;
         configurationDownload.discretionary = NO;
-        configurationDownload.HTTPMaximumConnectionsPerHost = 1;
+        configurationDownload.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
         configurationDownload.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         configurationDownload.timeoutIntervalForRequest = k_timeout_upload;
         
         OCURLSessionManager *downloadSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configurationDownload];
-        [downloadSessionManager.operationQueue setMaxConcurrentOperationCount:1];
+        [downloadSessionManager.operationQueue setMaxConcurrentOperationCount:k_maxHTTPConnectionsPerHost];
         [downloadSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
             return NSURLSessionAuthChallengePerformDefaultHandling;
         }];
@@ -270,12 +270,12 @@
         NSURLSessionConfiguration *configurationUpload = [NSURLSessionConfiguration defaultSessionConfiguration];
         configurationUpload.allowsCellularAccess = YES;
         configurationUpload.discretionary = NO;
-        configurationUpload.HTTPMaximumConnectionsPerHost = 1;
+        configurationUpload.HTTPMaximumConnectionsPerHost = k_maxHTTPConnectionsPerHost;
         configurationUpload.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
         configurationUpload.timeoutIntervalForRequest = k_timeout_upload;
 
         OCURLSessionManager *uploadSessionManager = [[OCURLSessionManager alloc] initWithSessionConfiguration:configurationUpload];
-        [uploadSessionManager.operationQueue setMaxConcurrentOperationCount:1];
+        [uploadSessionManager.operationQueue setMaxConcurrentOperationCount:k_maxHTTPConnectionsPerHost];
         [uploadSessionManager setSessionDidReceiveAuthenticationChallengeBlock:^NSURLSessionAuthChallengeDisposition (NSURLSession *session, NSURLAuthenticationChallenge *challenge, NSURLCredential * __autoreleasing *credential) {
             return NSURLSessionAuthChallengePerformDefaultHandling;
         }];
