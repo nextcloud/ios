@@ -600,11 +600,12 @@
                 shareUserAndGroup = [appDelegate.sharesUserAndGroup objectForKey:[serverUrl stringByAppendingString:_metadataFolder.fileName]];
             }
             
+            self.navigationItem.title = _titleMain;
+            
             if (self.imageTitle) {
                 [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:self.imageTitle multiplier:2 color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
             } else {
                 self.navigationItem.titleView = nil;
-                self.navigationItem.title = _titleMain;
             }
         }
     }
@@ -4634,7 +4635,6 @@
             
             viewController.serverUrl = serverUrlPush;
             viewController.titleMain = _metadata.fileName;
-            viewController.textBackButton = _titleMain;
             viewController.imageTitle = imageTitleSegue;
             
             // save self
@@ -4646,7 +4646,7 @@
            
             if (viewController.isViewLoaded) {
                 
-                // Icon Title
+                viewController.titleMain = _metadata.fileName;
                 viewController.imageTitle = imageTitleSegue;
                 
                 // Fix : Application tried to present modally an active controller
