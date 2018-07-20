@@ -1766,88 +1766,15 @@
     } else {
         metadatas = [[NSArray alloc] initWithObjects:_metadata, nil];
     }
-
-    if (_metadataFolder.e2eEncrypted) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSError *error = [[NCNetworkingEndToEnd sharedManager] lockEndToEndFolderEncryptedOnServerUrl:self.serverUrl fileID:_metadataFolder.fileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (error == nil) {
-                    [self deleteFile:metadatas e2ee:_metadataFolder.e2eEncrypted];
-                } else {
-                    [appDelegate messageNotification:@"_delete_" description:error.localizedDescription visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-                    return;
-                }
-            });
-        });
-    } else {
-        [self deleteFile:metadatas e2ee:_metadataFolder.e2eEncrypted];
-    }
-}
-
-- (void)deleteFile:(NSArray *)metadatas e2ee:(BOOL)e2ee
-{
-    NSInteger numDelete = metadatas.count;
-    __block NSInteger cont = 0;
-    
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
-    for (tableMetadata *metadata in metadatas) {
-        
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        if (!serverUrl)
-            continue;
-        
-        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
-            
-            if (errorCode == 0 || errorCode == 404) {
-                
-                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-                
-                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
-                [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-                [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
-                [[appDelegate activePhotos].fileIDHide addObject:metadata.fileID];
-                
-                // Directory ?
-                if (metadata.directory) {
-                    [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName]];
-                }
-                // E2EE (if exists the record)
-                if (e2ee) {
-                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
-                }
-            }
-            
-            if (++cont == numDelete) {
-                if (e2ee) {
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        [[NCNetworkingEndToEnd sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            
-                            // ONLY for this View
-                            
-                            // End Select Table View
-                            [self tableViewSelect:NO];
-                            
-                            [self reloadDatasource:serverUrl];
-                        });
-                    });
-                } else {
-                    
-                    // ONLY for this View
-
-                    // End Select Table View
-                    [self tableViewSelect:NO];
-                    
-                    // Reload
-                    if (_isSearchMode)
-                        [self readFolder:serverUrl];
-                    else
-                        [self reloadDatasource:serverUrl];
-                }
-            }
-        }];
-    }
+    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:metadatas e2ee:_metadataFolder.e2eEncrypted serverUrl:self.serverUrl folderFileID:_metadataFolder.fileID completion:^(NSInteger errorCode, NSString *message) {
+        // End Select Table View
+        [self tableViewSelect:NO];
+        // Reload
+        if (_isSearchMode)
+            [self readFolder:self.serverUrl];
+        else
+            [self reloadDatasource:self.serverUrl];
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------

@@ -887,139 +887,67 @@
 
 - (void)deleteFile:(tableMetadata *)metadata
 {
-    NSArray *metadatas = [[NSArray alloc] initWithObjects:metadata, nil];
-
-    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", metadata.directoryID]];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
     if (!tableDirectory)
         return;
     
-    if ([CCUtility isFolderEncrypted:tableDirectory.serverUrl account:metadata.account]) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSError *error = [[NCNetworkingEndToEnd sharedManager] lockEndToEndFolderEncryptedOnServerUrl:tableDirectory.serverUrl fileID:tableDirectory.fileID user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (error == nil) {
-                    [self deleteFile:metadatas e2ee:true];
-                } else {
-                    [appDelegate messageNotification:@"_delete_" description:error.localizedDescription visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
-                    return;
-                }
-            });
-        });
-    } else {
-        [self deleteFile:metadatas e2ee:false];
-    }
-}
-
-- (void)deleteFile:(NSArray *)metadatas e2ee:(BOOL)e2ee
-{
-    NSInteger numDelete = metadatas.count;
-    __block NSInteger cont = 0;
-    
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
-    for (tableMetadata *metadata in metadatas) {
+    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:serverUrl folderFileID:tableDirectory.fileID completion:^(NSInteger errorCode, NSString *message) {
         
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        if (!serverUrl)
-            continue;
-        
-        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
+        if (errorCode == 0) {
             
-            if (errorCode == 0 || errorCode == 404) {
-                
-                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-                
-                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
-                [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-                [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
-                [[appDelegate activePhotos].fileIDHide addObject:metadata.fileID];
-                
-                // Directory ?
-                if (metadata.directory) {
-                    [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName]];
-                }
-                // E2EE (if exists the record)
-                if (e2ee) {
-                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
-                }
-            }
+            // reload Main
+            [appDelegate.activeMain reloadDatasource];
             
-            if (++cont == numDelete) {
-                if (e2ee) {
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        [[NCNetworkingEndToEnd sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            
-                            // ONLY for this View
-                            
-                            [self deleteFile:metadata message:message errorCode:errorCode];
-                        });
-                    });
-                } else {
+            // If removed document (web) or PDF close
+            if (_webView || _readerPDFViewController)
+                [self removeAllView];
+            
+            // if a message for a directory of these
+            if (![_dataSourceDirectoryID containsObject:metadata.directoryID])
+                return;
+            
+            // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
+            if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadata.fileID]) {
+                
+                NSArray *viewsToRemove = [self.view subviews];
+                for (id element in viewsToRemove) {
                     
-                    // ONLY for this View
+                    if ([element isMemberOfClass:[UIView class]] || [element isMemberOfClass:[UIToolbar class]])
+                        [element removeFromSuperview];
+                }
+                
+                self.title = @"";
+                
+                [self.navigationController popViewControllerAnimated:YES];
+                
+            } else {
+                
+                // only photoBrowser if exists
+                for (NSUInteger index=0; index < [self.dataSourceImagesVideos count] && _photoBrowser; index++ ) {
                     
-                    [self deleteFile:metadata message:message errorCode:errorCode];
+                    tableMetadata *metadataTemp = [self.dataSourceImagesVideos objectAtIndex:index];
+                    
+                    if ([metadata isInvalidated] || [metadataTemp.fileID isEqualToString:metadata.fileID]) {
+                        
+                        [self.dataSourceImagesVideos removeObjectAtIndex:index];
+                        [self.photos removeObjectAtIndex:index];
+                        [self.photoBrowser reloadData];
+                        
+                        // Title
+                        if ([self.dataSourceImagesVideos count] == 0) {
+                            
+                            self.title = @"";
+                            [self.navigationController popViewControllerAnimated:YES];
+                        }
+                    }
                 }
             }
-        }];
-    }
-}
-
-- (void)deleteFile:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    if (errorCode == 0) {
-        
-        // reload Main
-        [appDelegate.activeMain reloadDatasource];
-    
-        // If removed document (web) or PDF close
-        if (_webView || _readerPDFViewController)
-            [self removeAllView];
-        
-        // if a message for a directory of these
-        if (![_dataSourceDirectoryID containsObject:metadata.directoryID])
-            return;
-    
-        // if we are not in browserPhoto and it's removed photo/video in preview then "< Back"
-        if (!self.photoBrowser && [self.metadataDetail.fileID isEqualToString:metadata.fileID]) {
-        
-            NSArray *viewsToRemove = [self.view subviews];
-            for (id element in viewsToRemove) {
-            
-                if ([element isMemberOfClass:[UIView class]] || [element isMemberOfClass:[UIToolbar class]])
-                    [element removeFromSuperview];
-            }
-        
-            self.title = @"";
-        
-            [self.navigationController popViewControllerAnimated:YES];
-        
         } else {
-    
-            // only photoBrowser if exists
-            for (NSUInteger index=0; index < [self.dataSourceImagesVideos count] && _photoBrowser; index++ ) {
-        
-                tableMetadata *metadataTemp = [self.dataSourceImagesVideos objectAtIndex:index];
-        
-                if ([metadata isInvalidated] || [metadataTemp.fileID isEqualToString:metadata.fileID]) {
-            
-                    [self.dataSourceImagesVideos removeObjectAtIndex:index];
-                    [self.photos removeObjectAtIndex:index];
-                    [self.photoBrowser reloadData];
-            
-                    // Title
-                    if ([self.dataSourceImagesVideos count] == 0) {
-                
-                        self.title = @"";
-                        [self.navigationController popViewControllerAnimated:YES];
-                    }            
-                }
-            }
+            NSLog(@"[LOG] DeleteFileOrFolder failure error %d, %@", (int)errorCode, message);
         }
-    } else {
-        NSLog(@"[LOG] DeleteFileOrFolder failure error %d, %@", (int)errorCode, message);
-    }
+    }];
+
 }
 
 #pragma --------------------------------------------------------------------------------------------

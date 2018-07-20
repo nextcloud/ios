@@ -398,58 +398,10 @@
 
 - (void)deleteFile:(NSArray *)metadatas e2ee:(BOOL)e2ee
 {
-    NSInteger numDelete = metadatas.count;
-    __block NSInteger cont = 0;
-    
-    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    
-    for (tableMetadata *metadata in metadatas) {
-    
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-        if (!serverUrl)
-            continue;
-        
-        [ocNetworking deleteFileOrFolder:metadata.fileName serverUrl:serverUrl completion:^(NSString *message, NSInteger errorCode) {
-            
-            if (errorCode == 0 || errorCode == 404) {
-                
-                [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-
-                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:metadata.directoryID];
-                [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-                [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
-                [[appDelegate activePhotos].fileIDHide addObject:metadata.fileID];
-                
-                // Directory ?
-                if (metadata.directory) {
-                    [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName]];
-                }
-                // E2EE (if exists the record)
-                if (e2ee) {
-                    [[NCManageDatabase sharedInstance] deleteE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName]];
-                }
-            }
-            
-            if (++cont == numDelete) {
-                if (e2ee) {
-                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                        [[NCNetworkingEndToEnd sharedManager] rebuildAndSendEndToEndMetadataOnServerUrl:serverUrl account:appDelegate.activeAccount user:appDelegate.activeUser userID:appDelegate.activeUserID password:appDelegate.activePassword url:appDelegate.activeUrl];
-                        dispatch_async(dispatch_get_main_queue(), ^{
-                            
-                            // ONLY for this View
-                            
-                            [self reloadDatasource];
-                        });
-                    });
-                } else {
-                    
-                    // ONLY for this View
-                    
-                    [self reloadDatasource];
-                }
-            }
-        }];
-    }
+    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:metadatas e2ee:false serverUrl:@"" folderFileID:@"" completion:^(NSInteger errorCode, NSString *message) {
+        [self reloadDatasource];
+        [self editingModeNO];
+    }];
 }
 
 - (void)deleteSelectedFiles
@@ -463,7 +415,6 @@
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
                                                            [self deleteFile:selectedMetadatas e2ee:false];
-                                                           [self editingModeNO];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
