@@ -64,6 +64,7 @@
 @property (nonatomic, strong) UIView *reMenuBackgroundView;
 @property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 @property (nonatomic, strong) UIImage *imageTitle;
+@property (nonatomic, strong) NSMutableArray *fileIDHide;
 @property BOOL isSelectedMode;
 
 

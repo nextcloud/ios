@@ -135,6 +135,7 @@
     _searchFileName = @"";
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = @"";
+    self.fileIDHide = [NSMutableArray new];
     
     // delegate
     self.tableView.delegate = self;
@@ -3866,7 +3867,7 @@
             }
         }
         
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:nil activeAccount:appDelegate.activeAccount];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:self.fileIDHide activeAccount:appDelegate.activeAccount];
 
         [self tableViewReloadData];
         
