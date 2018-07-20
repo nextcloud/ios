@@ -718,6 +718,7 @@
                     metadataForUpload.fileNameView = fileName;
                     metadataForUpload.session = k_upload_session;
                     metadataForUpload.sessionSelector = selectorUploadFile;
+                    metadataForUpload.size = data.length;
                     metadataForUpload.status = k_metadataStatusWaitUpload;
                     
                     // Check il file already exists
@@ -1360,6 +1361,7 @@
         metadataForUpload.fileNameView = fileName;
         metadataForUpload.session = session;
         metadataForUpload.sessionSelector = selectorUploadFile;
+        metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
         
         // Check il file already exists
@@ -3241,6 +3243,7 @@
                 metadataForUpload.fileNameView = fileName;
                 metadataForUpload.session = k_upload_session;
                 metadataForUpload.sessionSelector = selectorUploadFile;
+                metadataForUpload.size = metadata.size;
                 metadataForUpload.status = k_metadataStatusWaitUpload;
                             
                 // Add Medtadata for upload

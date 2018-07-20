@@ -421,6 +421,7 @@
             metadataForUpload.fileNameView = fileName;
             metadataForUpload.session = session;
             metadataForUpload.sessionSelector = selector;
+            metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
             metadataForUpload.status = k_metadataStatusWaitUpload;
 
             [metadataFull addObject:metadataForUpload];
