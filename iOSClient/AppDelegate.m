@@ -1388,8 +1388,11 @@
             }
         }
     }
-  
+    
+    // ------------------------- < END > ----------------------
+
     // No Download/upload available ? --> remove errors for retry
+    //
     if (counterNewDownloadUpload == 0) {
         
         NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", _activeAccount, k_metadataStatusDownloadError, k_metadataStatusUploadError] sorted:nil ascending:NO];
