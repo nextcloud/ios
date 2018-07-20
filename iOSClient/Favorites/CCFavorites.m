@@ -498,7 +498,6 @@
 
 - (void)actionDelete:(NSIndexPath *)indexPath
 {
-    
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -627,7 +626,6 @@
 
 - (void)reloadDatasource
 {
-    NSMutableArray *metadatas = [NSMutableArray new];
     NSArray *recordsTableMetadata ;
     
     NSString *sorted = [CCUtility getOrderSettings];
@@ -648,10 +646,6 @@
         
     sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil fileIDHide:nil activeAccount:appDelegate.activeAccount];
         
-    NSArray *fileIDs = [sectionDataSource.sectionArrayRow objectForKey:@"_none_"];
-    for (NSString *fileID in fileIDs)
-        [metadatas addObject:[sectionDataSource.allRecordsDataSource objectForKey:fileID]];
-    
     // get auto upload folder
     autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
     autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
