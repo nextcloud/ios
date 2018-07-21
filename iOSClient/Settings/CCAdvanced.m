@@ -388,6 +388,8 @@
             [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:appDelegate.activeAccount];
             
             [[NCAutoUpload sharedInstance] alignPhotoLibrary];
+            
+            [appDelegate.fileIDHide removeAllObjects];
         }
         
         [appDelegate maintenanceMode:NO];
