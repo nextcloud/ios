@@ -1456,63 +1456,60 @@
 #pragma mark ===== Verify internal error in Download/Upload  =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)verifyInternalErrorDownloadUpload
+- (void)verifyInternalErrorDownloadingUploading
 {
-    if (counterDownload+counterUpload == 0) {
+    NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
         
-        NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+    for (tableMetadata *metadata in recordsInDownloading) {
+            
+        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
+            
+        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+                
+            NSURLSessionTask *findTask;
+                
+            for (NSURLSessionTask *task in downloadTasks) {
+                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
+                    findTask = task;
+                }
+            }
+                
+            if (!findTask) {
+                    
+                metadata.sessionError = @"";
+                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+                metadata.status = k_metadataStatusWaitDownload;
+                    
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            }
+        }];
+    }
         
-        for (tableMetadata *metadata in recordsInDownloading) {
-            
-            NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
-            
-            [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-                
-                NSURLSessionTask *findTask;
-                
-                for (NSURLSessionTask *task in downloadTasks) {
-                    if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
-                        findTask = task;
-                    }
-                }
-                
-                if (!findTask) {
-                    
-                    metadata.sessionError = @"Internal error, task not found";
-                    metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-                    metadata.status = k_metadataStatusDownloadError;
-                    
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-                }
-            }];
-        }
+    NSArray *recordsInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
         
-        NSArray *recordsInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
-        
-        for (tableMetadata *metadata in recordsInUploading) {
+    for (tableMetadata *metadata in recordsInUploading) {
             
-            NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
+        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
             
-            [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
                 
-                NSURLSessionTask *findTask;
+            NSURLSessionTask *findTask;
                 
-                for (NSURLSessionTask *task in uploadTasks) {
-                    if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
-                        findTask = task;
-                    }
+            for (NSURLSessionTask *task in uploadTasks) {
+                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
+                    findTask = task;
                 }
+            }
                 
-                if (!findTask) {
+            if (!findTask) {
                     
-                    metadata.sessionError = @"Internal error, task not found";
-                    metadata.sessionTaskIdentifier = k_taskIdentifierDone;
-                    metadata.status = k_metadataStatusUploadError;
+                metadata.sessionError = @"";
+                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+                metadata.status = k_metadataStatusWaitUpload;
                     
-                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
-                }
-            }];
-        }
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            }
+        }];
     }
 }
 
