@@ -401,8 +401,9 @@
 {
     [[NCMainCommon sharedInstance ] deleteFileWithFilesID:filesID e2ee:false serverUrl:@"" folderFileID:@"" completion:^(NSInteger errorCode, NSString *message) {
         [self reloadDatasource];
-        [self editingModeNO];
     }];
+    
+    [self editingModeNO];
 }
 
 - (void)deleteSelectedFiles
@@ -421,7 +422,6 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
                                                          style:UIAlertActionStyleCancel
                                                        handler:^(UIAlertAction *action) {
-                                                           [alertController dismissViewControllerAnimated:YES completion:nil];
                                                        }]];
     
     alertController.popoverPresentationController.barButtonItem = self.navigationItem.rightBarButtonItems.firstObject;
