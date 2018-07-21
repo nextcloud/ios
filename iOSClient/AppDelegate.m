@@ -1347,9 +1347,11 @@
   
     // ------------------------- <selector Upload> -------------------------
     
-//    while (counterUpload <= k_maxConcurrentOperationUpload ) {
-
-    if (counterUpload < k_maxConcurrentOperationUpload) {
+    while (counterUpload <= k_maxConcurrentOperationUpload) {
+        
+        if (sizeUpload > k_maxSizeOperationUpload) {
+            break;
+        }
         
         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
         if (metadataForUpload) {
@@ -1366,12 +1368,18 @@
             counterUpload++;
             counterNewDownloadUpload++;
             sizeUpload = sizeUpload + metadata.size;
+        } else {
+            break;
         }
     }
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    if (counterUpload < k_maxConcurrentOperationUpload) {
+    while (counterUpload <= k_maxConcurrentOperationUpload) {
+
+        if (sizeUpload > k_maxSizeOperationUpload) {
+            break;
+        }
         
         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUpload, k_metadataStatusWaitUpload]];
         if (metadataForUpload) {
@@ -1384,6 +1392,8 @@
             counterUpload++;
             counterNewDownloadUpload++;
             sizeUpload = sizeUpload + metadata.size;
+        } else {
+            break;
         }
     }
   
@@ -1401,7 +1411,11 @@
 
     } else {
         
-        if (counterUpload < k_maxConcurrentOperationUpload) {
+        while (counterUpload <= k_maxConcurrentOperationUpload) {
+
+            if (sizeUpload > k_maxSizeOperationUpload) {
+                break;
+            }
             
             metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusWaitUpload]];
             if (metadataForUpload) {
@@ -1414,6 +1428,8 @@
                 counterUpload++;
                 counterNewDownloadUpload++;
                 sizeUpload = sizeUpload + metadata.size;
+            } else {
+                break;
             }
         }
     }
