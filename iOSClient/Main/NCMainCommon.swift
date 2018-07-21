@@ -325,12 +325,12 @@ class NCMainCommon: NSObject {
             
             var progress: CGFloat = 0.0
             var totalBytes: Double = 0
-            var totalBytesExpected : Double = 0
+            //var totalBytesExpected : Double = 0
             let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.fileID) as? NSArray
             if progressArray != nil && progressArray?.count == 3 {
                 progress = progressArray?.object(at: 0) as! CGFloat
                 totalBytes = progressArray?.object(at: 1) as! Double
-                totalBytesExpected = progressArray?.object(at: 2) as! Double
+                //totalBytesExpected = progressArray?.object(at: 2) as! Double
             }
             
             // Write status on Label Info
