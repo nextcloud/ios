@@ -1289,7 +1289,8 @@
 - (void)loadAutoDownloadUpload
 {    
     tableMetadata *metadataForUpload, *metadataForDownload;
-    NSInteger counterNewDownloadUpload = 0;
+    long counterNewDownloadUpload = 0, counterDownload = 0, counterUpload = 0;
+    NSUInteger sizeDownload = 0, sizeUpload = 0;
     
     // Test Maintenance
     if (self.maintenanceMode)
@@ -1307,13 +1308,25 @@
     
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
-    NSInteger counterDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:@"fileName" ascending:true] count];
-    NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+    NSArray *metadatasDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:nil ascending:true];
+    NSArray *metadatasUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:nil ascending:true];
+    
+    // Counter
+    counterDownload = [metadatasDownload count];
+    counterUpload = [metadatasUpload count];
+    
+    // Size
+    for (tableMetadata *metadata in metadatasDownload) {
+        sizeDownload = sizeDownload + metadata.size;
+    }
+    for (tableMetadata *metadata in metadatasUpload) {
+        sizeUpload = sizeUpload + metadata.size;
+    }
   
-    NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
+    NSLog(@"%@", [NSString stringWithFormat:@"[LOG] -PROCESS-AUTO-UPLOAD- | Download %ld - %@ | Upload %ld - %@", counterDownload, [CCUtility transformedSize:sizeDownload], counterUpload, [CCUtility transformedSize:sizeUpload]]);
 
     // ------------------------- <selector Download> -------------------------
-            
+    
     while (counterDownload <= k_maxConcurrentOperationDownload) {
         
         metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", _activeAccount, k_metadataStatusWaitDownload]];
@@ -1390,25 +1403,6 @@
                 counterNewDownloadUpload++;
             }
         }
-        
-        /*
-         while (counterUpload < 11) {
-         
-         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusWaitUpload]];
-         if (metadataForUpload) {
-         
-         metadataForUpload.status = k_metadataStatusInUpload;
-         tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-         
-         [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
-         counterNewDownloadUpload++;
-         counterUpload++;
-         } else {
-         counterUpload = 11;
-         }
-         }
-         */
-         
     }
     
     // ------------------------- < END > ----------------------
