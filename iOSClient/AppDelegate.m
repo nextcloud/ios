@@ -1330,7 +1330,7 @@
 
     // ------------------------- <selector Download> -------------------------
     
-    while (counterDownload <= k_maxConcurrentOperationDownload) {
+    while (counterDownload < k_maxConcurrentOperationDownload) {
         
         metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", _activeAccount, k_metadataStatusWaitDownload]];
         if (metadataForDownload) {
@@ -1349,7 +1349,7 @@
   
     // ------------------------- <selector Upload> -------------------------
     
-    while (counterUpload <= k_maxConcurrentOperationUpload) {
+    while (counterUpload < k_maxConcurrentOperationUpload) {
         
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
@@ -1376,7 +1376,7 @@
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    while (counterUpload <= k_maxConcurrentOperationUpload) {
+    while (counterUpload < k_maxConcurrentOperationUpload) {
 
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
@@ -1411,7 +1411,7 @@
 
     } else {
         
-        while (counterUpload <= k_maxConcurrentOperationUpload) {
+        while (counterUpload < k_maxConcurrentOperationUpload) {
 
             if (sizeUpload > k_maxSizeOperationUpload) {
                 break;
@@ -1461,6 +1461,10 @@
 
 - (void)verifyInternalErrorDownloadingUploading
 {
+    // Test Maintenance
+    if (self.maintenanceMode || self.activeAccount.length == 0)
+        return;
+    
     NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
         
     for (tableMetadata *metadata in recordsInDownloading) {
