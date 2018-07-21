@@ -1313,8 +1313,8 @@
     NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
 
     // ------------------------- <selector Download> -------------------------
-    
-    if (counterDownload < k_maxConcurrentOperationDownload) {
+            
+    while (counterDownload <= k_maxConcurrentOperationDownload) {
         
         metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", _activeAccount, k_metadataStatusWaitDownload]];
         if (metadataForDownload) {
@@ -1323,8 +1323,11 @@
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
             
             [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+            counterDownload++;
             counterNewDownloadUpload++;
-        }  
+        } else {
+            counterDownload = k_maxConcurrentOperationDownload + 1;
+        }
     }
   
     // ------------------------- <selector Upload> -------------------------
