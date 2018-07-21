@@ -143,26 +143,23 @@ class NCMainCommon: NSObject {
         // Delete k_metadataStatusWaitUpload OR k_metadataStatusUploadError
         NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND (status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusUploadError), clearDateReadDirectoryID: nil)
         
-        guard let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d AND status != %d", appDelegate.activeAccount, k_metadataStatusNormal, k_metadataStatusHide), sorted: "fileName", ascending: true) else {
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d AND status != %d", appDelegate.activeAccount, k_metadataStatusNormal, k_metadataStatusHide), sorted: "fileName", ascending: true)  {
             
-            self.reloadDatasource(ServerUrl: nil)
-            return
-        }
-        
-        for metadata in metadatas {
-            
-            // Modify
-            if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
-                metadata.session = ""
-                metadata.sessionSelector = ""
-                metadata.status = Int(k_metadataStatusNormal)
+            for metadata in metadatas {
                 
-                _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
-            }
-            
-            // Cancel Task
-            if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
-                cancelTransferMetadata(metadata, reloadDatasource: false)
+                // Modify
+                if (metadata.status == k_metadataStatusWaitDownload || metadata.status == k_metadataStatusDownloadError) {
+                    metadata.session = ""
+                    metadata.sessionSelector = ""
+                    metadata.status = Int(k_metadataStatusNormal)
+                    
+                    _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
+                }
+                
+                // Cancel Task
+                if metadata.status == k_metadataStatusDownloading || metadata.status == k_metadataStatusUploading {
+                    cancelTransferMetadata(metadata, reloadDatasource: false)
+                }
             }
         }
         
