@@ -74,7 +74,7 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField fileIDHide:(NSArray *)fileIDHide activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterFileID:(NSArray *)filterFileID activeAccount:(NSString *)activeAccount
 {
     id dataSection;
 
@@ -95,7 +95,7 @@
     for (tableMetadata* metadata in arrayMetadatas) {
         
         // *** LIST : DO NOT INSERT ***
-        if (metadata.status == k_metadataStatusHide || [fileIDHide containsObject: metadata.fileID]) {
+        if (metadata.status == k_metadataStatusHide || [filterFileID containsObject: metadata.fileID]) {
             continue;
         }
         

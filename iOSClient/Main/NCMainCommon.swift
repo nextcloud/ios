@@ -523,7 +523,7 @@ class NCMainCommon: NSObject {
                 continue
             }
             
-            self.appDelegate.fileIDHide.add(metadata.fileID)
+            self.appDelegate.filterFileID.add(metadata.fileID)
             
             ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, completion: { (message, errorCode) in
                 
@@ -549,7 +549,7 @@ class NCMainCommon: NSObject {
                     
                 } else {
                     
-                    self.appDelegate.fileIDHide.remove(metadata.fileID)
+                    self.appDelegate.filterFileID.remove(metadata.fileID)
                     
                     completionErrorCode = errorCode
                     completionMessage = message!

@@ -177,7 +177,7 @@
     self.sharesUserAndGroup = [NSMutableDictionary new];
     
     // Filter fileID
-    self.fileIDHide = [NSMutableArray new];
+    self.filterFileID = [NSMutableArray new];
 
     // Initialization Notification
     self.listOfNotifications = [NSMutableArray new];

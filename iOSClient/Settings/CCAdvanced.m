@@ -389,7 +389,7 @@
             
             [[NCAutoUpload sharedInstance] alignPhotoLibrary];
             
-            [appDelegate.fileIDHide removeAllObjects];
+            [appDelegate.filterFileID removeAllObjects];
         }
         
         [appDelegate maintenanceMode:NO];
