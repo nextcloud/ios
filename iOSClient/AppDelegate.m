@@ -1289,7 +1289,7 @@
 - (void)loadAutoDownloadUpload
 {    
     tableMetadata *metadataForUpload, *metadataForDownload;
-    long counterNewDownloadUpload = 0, counterDownload = 0, counterUpload = 0;
+    long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
     
     // Test Maintenance
@@ -1338,7 +1338,6 @@
             [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
             
             counterDownload++;
-            counterNewDownloadUpload++;
             sizeDownload = sizeDownload + metadata.size;
         } else {
             break;
@@ -1366,7 +1365,6 @@
             [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
             
             counterUpload++;
-            counterNewDownloadUpload++;
             sizeUpload = sizeUpload + metadata.size;
         } else {
             break;
@@ -1390,7 +1388,6 @@
             [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
             
             counterUpload++;
-            counterNewDownloadUpload++;
             sizeUpload = sizeUpload + metadata.size;
         } else {
             break;
@@ -1426,7 +1423,6 @@
                 [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
                 
                 counterUpload++;
-                counterNewDownloadUpload++;
                 sizeUpload = sizeUpload + metadata.size;
             } else {
                 break;
@@ -1438,7 +1434,7 @@
 
     // No Download/upload available ? --> remove errors for retry
     //
-    if (counterNewDownloadUpload == 0) {
+    if (counterDownload+counterUpload == 0) {
         
         NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", _activeAccount, k_metadataStatusDownloadError, k_metadataStatusUploadError] sorted:nil ascending:NO];
         for (tableMetadata *metadata in metadatas) {
@@ -1452,12 +1448,20 @@
         }
     }
     
-    // Verify Transfer
-    // TODO: move in new acrivity/transfers view
-    //
-    if (counterNewDownloadUpload == 0) {
+    // Start Timer
+    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Verify internal error in Download/Upload  =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)verifyInternalErrorDownloadUpload
+{
+    if (counterDownload+counterUpload == 0) {
         
-        NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:@"fileName" ascending:true];
+        NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+        
         for (tableMetadata *metadata in recordsInDownloading) {
             
             NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
@@ -1465,7 +1469,7 @@
             [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
                 
                 NSURLSessionTask *findTask;
-
+                
                 for (NSURLSessionTask *task in downloadTasks) {
                     if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
                         findTask = task;
@@ -1483,7 +1487,8 @@
             }];
         }
         
-        NSArray *recordsInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:@"fileName" ascending:true];
+        NSArray *recordsInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
+        
         for (tableMetadata *metadata in recordsInUploading) {
             
             NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
@@ -1509,9 +1514,6 @@
             }];
         }
     }
-    
-    // Start Timer
-    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
