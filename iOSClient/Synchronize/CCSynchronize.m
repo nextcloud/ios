@@ -156,7 +156,6 @@
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID] clearDateReadDirectoryID:nil];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadata.fileID];
-            [appDelegate.activePhotos.fileIDHide addObject:metadata.fileID];
         }
         
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -315,7 +314,6 @@
                 [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
                 [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
                 [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadataNet.fileID];
-                [appDelegate.activePhotos.fileIDHide addObject:metadataNet.fileID];
                 
                 NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
                 if (serverUrl)

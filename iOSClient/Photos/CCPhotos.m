@@ -86,7 +86,6 @@
     
     saveEtagForStartDirectory = [NSMutableDictionary new];
     selectedMetadatas = [NSMutableArray new];
-    self.fileIDHide = [NSMutableArray new];
     self.addMetadatasFromUpload = [NSMutableArray new];
     
     // empty Data Source
@@ -541,7 +540,6 @@
             [self editingModeNO];
             
             // Clear all Hardcoded
-            [self.fileIDHide removeAllObjects];
             [self.addMetadatasFromUpload removeAllObjects];
             
             [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
@@ -568,7 +566,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
         NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" fileIDHide:self.fileIDHide activeAccount:appDelegate.activeAccount];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" fileIDHide:appDelegate.fileIDHide activeAccount:appDelegate.activeAccount];
         
         dispatch_async(dispatch_get_main_queue(), ^{
                

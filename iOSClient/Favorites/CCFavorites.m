@@ -318,7 +318,6 @@
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
             [[NCManageDatabase sharedInstance] deletePhotosWithFileID:fileID];
-            [appDelegate.activePhotos.fileIDHide addObject:fileID];
         }
     }
     

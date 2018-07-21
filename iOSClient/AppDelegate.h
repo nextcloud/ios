@@ -119,6 +119,8 @@
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
+@property (nonatomic, strong) NSMutableArray *fileIDHide;
+
 // Maintenance Mode
 @property BOOL maintenanceMode;
 

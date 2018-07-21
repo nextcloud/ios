@@ -486,14 +486,18 @@ class NCMainCommon: NSObject {
     
     @objc func deleteFile(metadatas: NSArray, e2ee: Bool, serverUrl: String, folderFileID: String, completion: @escaping (_ errorCode: Int, _ message: String)->()) {
         
-        //let copyFilesID = NSArray(array:filesID as! [Any], copyItems: true)
+        var copyMetadatas = [tableMetadata]()
+        
+        for metadata in metadatas {
+            copyMetadatas.append(tableMetadata.init(value: metadata))
+        }
         
         if e2ee {
             DispatchQueue.global().async {
                 let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(onServerUrl: serverUrl, fileID: folderFileID, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl)
                 DispatchQueue.main.async {
                     if error == nil {
-                        self.delete(metadatas: metadatas, serverUrl:serverUrl, e2ee: e2ee, completion: completion)
+                        self.delete(metadatas: copyMetadatas, serverUrl:serverUrl, e2ee: e2ee, completion: completion)
                     } else {
                         self.appDelegate.messageNotification("_delete_", description: error?.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
                         return
@@ -501,11 +505,11 @@ class NCMainCommon: NSObject {
                 }
             }
         } else {
-            delete(metadatas: metadatas, serverUrl:serverUrl, e2ee: e2ee, completion: completion)
+            delete(metadatas: copyMetadatas, serverUrl:serverUrl, e2ee: e2ee, completion: completion)
         }
     }
     
-    private func delete(metadatas: NSArray, serverUrl: String, e2ee: Bool, completion: @escaping (_ errorCode: Int, _ message: String)->()) {
+    private func delete(metadatas: [tableMetadata], serverUrl: String, e2ee: Bool, completion: @escaping (_ errorCode: Int, _ message: String)->()) {
         
         var count: Int = 0
         var completionErrorCode: Int = 0
@@ -513,14 +517,13 @@ class NCMainCommon: NSObject {
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
-        for case let metadata as tableMetadata in metadatas {
+        for metadata in metadatas {
         
+            self.appDelegate.fileIDHide.add(metadata.fileID)
+            
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                 continue
             }
-            
-            self.appDelegate.activeMain.fileIDHide.add(metadata.fileID)
-            self.appDelegate.activePhotos.fileIDHide.add(metadata.fileID)
             
             ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, completion: { (message, errorCode) in
                 
@@ -546,8 +549,7 @@ class NCMainCommon: NSObject {
                     
                 } else {
                     
-                    self.appDelegate.activeMain.fileIDHide.remove(metadata.fileID)
-                    self.appDelegate.activePhotos.fileIDHide.remove(metadata.fileID)
+                    self.appDelegate.fileIDHide.remove(metadata.fileID)
                     
                     completionErrorCode = errorCode
                     completionMessage = message!

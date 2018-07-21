@@ -135,7 +135,6 @@
     _searchFileName = @"";
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = @"";
-    self.fileIDHide = [NSMutableArray new];
     
     // delegate
     self.tableView.delegate = self;
@@ -1212,7 +1211,6 @@
             [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
             [[NCManageDatabase sharedInstance] deletePhotosWithFileID:fileID];
-            [appDelegate.activePhotos.fileIDHide addObject:fileID];
         }
         
         if ([selector isEqualToString:selectorLoadViewImage]) {
@@ -3873,7 +3871,7 @@
             }
         }
         
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:self.fileIDHide activeAccount:appDelegate.activeAccount];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:appDelegate.fileIDHide activeAccount:appDelegate.activeAccount];
 
         [self tableViewReloadData];
         
@@ -3943,7 +3941,7 @@
             NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
                                                   
             sectionDataSource = [CCSectionDataSourceMetadata new];
-            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:self.fileIDHide activeAccount:appDelegate.activeAccount];
+            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy fileIDHide:appDelegate.fileIDHide activeAccount:appDelegate.activeAccount];
             
             // get auto upload folder
             _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];

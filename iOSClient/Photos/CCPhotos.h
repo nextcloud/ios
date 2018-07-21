@@ -43,7 +43,6 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) NSMutableArray *addMetadatasFromUpload;
-@property (nonatomic, strong) NSMutableArray *fileIDHide;
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
