@@ -532,8 +532,11 @@ class NCMainCommon: NSObject {
                 continue
             }
             
-            self.appDelegate.activePhotos.fileIDHide.add(metadata.fileID)
-            self.appDelegate.activeMain.fileIDHide.add(metadata.fileID)
+            if classActive is CCMain {
+                (classActive as! CCMain).fileIDHide.add(metadata.fileID)
+            } else if classActive is CCPhotos {
+                (classActive as! CCPhotos).fileIDHide.add(metadata.fileID)
+            }
             
             ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, completion: { (message, errorCode) in
                 
@@ -560,9 +563,12 @@ class NCMainCommon: NSObject {
                     
                 } else {
                     
-                    self.appDelegate.activePhotos.fileIDHide.remove(metadata.fileID)
-                    self.appDelegate.activeMain.fileIDHide.remove(metadata.fileID)
-
+                    if classActive is CCMain {
+                        (classActive as! CCMain).fileIDHide.remove(metadata.fileID)
+                    } else if classActive is CCPhotos {
+                        (classActive as! CCPhotos).fileIDHide.remove(metadata.fileID)
+                    }
+                    
                     completionErrorCode = errorCode
                     completionMessage = message!
                 }
@@ -585,9 +591,7 @@ class NCMainCommon: NSObject {
         // reload for filesID
         if classActive is CCMain {
             (classActive as! CCMain).reloadDatasource()
-        }
-        
-        if classActive is CCPhotos {
+        } else if classActive is CCPhotos {
             (classActive as! CCPhotos).reloadDatasource()
         }
     }
