@@ -504,6 +504,9 @@
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
             
+            // Clear all Hardcoded new foto/video from CCNetworking
+            [self.addMetadatasFromUpload removeAllObjects];
+            
             [[NCManageDatabase sharedInstance] createTablePhotos:metadatas];
 
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -538,9 +541,6 @@
             
             isSearchMode = YES;
             [self editingModeNO];
-            
-            // Clear all Hardcoded
-            [self.addMetadatasFromUpload removeAllObjects];
             
             [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
             
