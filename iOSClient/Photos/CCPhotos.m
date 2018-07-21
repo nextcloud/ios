@@ -399,7 +399,7 @@
 
 - (void)deleteFile:(NSArray *)filesID e2ee:(BOOL)e2ee
 {
-    [[NCMainCommon sharedInstance ] deleteFileWithFilesID:filesID e2ee:false serverUrl:@"" folderFileID:@"" classActive:self completion:^(NSInteger errorCode, NSString *message) {
+    [[NCMainCommon sharedInstance ] deleteFileWithFilesID:filesID e2ee:false serverUrl:@"" folderFileID:@"" completion:^(NSInteger errorCode, NSString *message) {
         [self reloadDatasource];
         [self editingModeNO];
     }];
