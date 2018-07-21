@@ -1763,17 +1763,17 @@
     if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
         return;
      
-    NSArray *filesID;
+    NSArray *metadatas;
     if ([_selectedFileIDsMetadatas count] > 0) {
-        filesID = [_selectedFileIDsMetadatas allKeys];
+        metadatas = [_selectedFileIDsMetadatas allValues];
     } else {
-        filesID = [[NSArray alloc] initWithObjects:_metadata.fileID, nil];
+        metadatas = [[NSArray alloc] initWithObjects:_metadata, nil];
     }
     
     // remove optimization
     _dateReadDataSource = nil;
     
-    [[NCMainCommon sharedInstance ] deleteFileWithFilesID:filesID e2ee:_metadataFolder.e2eEncrypted serverUrl:self.serverUrl folderFileID:_metadataFolder.fileID completion:^(NSInteger errorCode, NSString *message) {
+    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:metadatas e2ee:_metadataFolder.e2eEncrypted serverUrl:self.serverUrl folderFileID:_metadataFolder.fileID completion:^(NSInteger errorCode, NSString *message) {
         
         // Reload
         if (_isSearchMode)
