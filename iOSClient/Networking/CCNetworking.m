@@ -947,9 +947,12 @@
                         
                         NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
                         
+                        NSString *fileID = metadata.fileID;
+                        NSString *account = metadata.account;
+                        
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
-                                [[self getDelegate:metadata.fileID] uploadStart:metadata.fileID account:metadata.account task:uploadTask serverUrl:serverUrl];
+                            if ([[self getDelegate:fileID] respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
+                                [[self getDelegate:fileID] uploadStart:fileID account:account task:uploadTask serverUrl:serverUrl];
                             }
                         });
                     }
@@ -968,9 +971,12 @@
              
              NSLog(@"[LOG] Upload file %@ TaskIdentifier %lu", metadata.fileName, (unsigned long)uploadTask.taskIdentifier);
              
+             NSString *fileID = metadata.fileID;
+             NSString *account = metadata.account;
+             
              dispatch_async(dispatch_get_main_queue(), ^{
-                 if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
-                     [[self getDelegate:metadata.fileID] uploadStart:metadata.fileID account:metadata.account task:uploadTask serverUrl:serverUrl];
+                 if ([[self getDelegate:fileID] respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
+                     [[self getDelegate:fileID] uploadStart:fileID account:account task:uploadTask serverUrl:serverUrl];
                  }
              });
          }
