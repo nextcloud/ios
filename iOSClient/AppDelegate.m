@@ -1336,15 +1336,19 @@
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
             
             [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+            
             counterDownload++;
             counterNewDownloadUpload++;
+            sizeDownload = sizeDownload + metadata.size;
         } else {
-            counterDownload = k_maxConcurrentOperationDownload + 1;
+            break;
         }
     }
   
     // ------------------------- <selector Upload> -------------------------
     
+//    while (counterUpload <= k_maxConcurrentOperationUpload ) {
+
     if (counterUpload < k_maxConcurrentOperationUpload) {
         
         metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
@@ -1358,7 +1362,10 @@
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
             [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+            
+            counterUpload++;
             counterNewDownloadUpload++;
+            sizeUpload = sizeUpload + metadata.size;
         }
     }
     
@@ -1373,7 +1380,10 @@
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
             [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+            
+            counterUpload++;
             counterNewDownloadUpload++;
+            sizeUpload = sizeUpload + metadata.size;
         }
     }
   
@@ -1400,7 +1410,10 @@
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                 
                 [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+                
+                counterUpload++;
                 counterNewDownloadUpload++;
+                sizeUpload = sizeUpload + metadata.size;
             }
         }
     }
