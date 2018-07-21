@@ -31,8 +31,7 @@
 {
     AppDelegate *appDelegate;
 
-    tableMetadata *metadata;
-    NSMutableArray *selectedMetadatas;
+    NSMutableArray *selectedFilesID;
     CCSectionDataSourceMetadata *sectionDataSource;
     NSString *saveDirectoryID, *saveServerUrl;
     
@@ -86,7 +85,7 @@
     [super viewDidLoad];
     
     saveEtagForStartDirectory = [NSMutableDictionary new];
-    selectedMetadatas = [NSMutableArray new];
+    selectedFilesID = [NSMutableArray new];
     self.fileIDHide = [NSMutableArray new];
     self.addMetadatasFromUpload = [NSMutableArray new];
     
@@ -216,7 +215,7 @@
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonDelete, buttonOpenWith, nil];
     
     // Title
-    self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[selectedMetadatas count], (unsigned long)[sectionDataSource.allRecordsDataSource count]];
+    self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[selectedFilesID count], (unsigned long)[sectionDataSource.allRecordsDataSource count]];
 }
 
 - (void)cellSelect:(BOOL)select indexPath:(NSIndexPath *)indexPath metadata:(tableMetadata *)metadata
@@ -229,16 +228,16 @@
         effect.hidden = NO;
         effect.alpha = 0.4;
         checked.hidden = NO;
-        [selectedMetadatas addObject:metadata];
+        [selectedFilesID addObject:metadata.fileID];
         
     } else {
         effect.hidden = YES;
         checked.hidden = YES;
-        [selectedMetadatas removeObject:metadata];
+        [selectedFilesID removeObject:metadata.fileID];
     }
     
     // Title
-    self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[selectedMetadatas count], (unsigned long)[sectionDataSource.allRecordsDataSource count]];
+    self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[selectedFilesID count], (unsigned long)[sectionDataSource.allRecordsDataSource count]];
 }
 
 - (void)scrollToTop
@@ -303,8 +302,10 @@
 {
     NSMutableArray *dataToShare = [[NSMutableArray alloc] init];
     
-    for (tableMetadata *metadata in selectedMetadatas) {
+    for (NSString *fileID in selectedFilesID) {
     
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
+        
         NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
                 
         if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
@@ -406,7 +407,7 @@
 
 - (void)deleteSelectedFiles
 {
-    if ([selectedMetadatas count] == 0)
+    if ([selectedFilesID count] == 0)
         return;
     
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
@@ -414,7 +415,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil)
                                                          style:UIAlertActionStyleDestructive
                                                        handler:^(UIAlertAction *action) {
-                                                           [self deleteFile:selectedMetadatas e2ee:false];
+                                                           [self deleteFile:selectedFilesID e2ee:false];
                                                        }]];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
@@ -587,7 +588,7 @@
 {
     [self.collectionView setAllowsMultipleSelection:true];
     isEditMode = true;
-    [selectedMetadatas removeAllObjects];
+    [selectedFilesID removeAllObjects];
     [self setUINavigationBarSelected];
 
     [self.collectionView reloadData];
@@ -597,7 +598,7 @@
 {
     [self.collectionView setAllowsMultipleSelection:false];
     isEditMode = false;
-    [selectedMetadatas removeAllObjects];
+    [selectedFilesID removeAllObjects];
     [self setUINavigationBarDefault];
     
     [self.collectionView reloadData];
@@ -724,11 +725,11 @@
     if ([metadatasForKey count] > indexPath.row) {
         
         NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-        metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        self.metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
         if (isEditMode) {
         
-            [self cellSelect:YES indexPath:indexPath metadata:metadata];
+            [self cellSelect:YES indexPath:indexPath metadata:self.metadata];
         
         } else {
         
@@ -749,9 +750,9 @@
     if ([metadatasForKey count] > indexPath.row) {
         
         NSString *fileID = [metadatasForKey objectAtIndex:indexPath.row];
-        metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
+        self.metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
         
-        [self cellSelect:NO indexPath:indexPath metadata:metadata];
+        [self cellSelect:NO indexPath:indexPath metadata:self.metadata];
     }
 }
 
@@ -774,7 +775,7 @@
             return NO;
     
     // check if metadata is invalidated
-    if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata]) {
+    if ([[NCManageDatabase sharedInstance] isTableInvalidated:self.metadata]) {
         return NO;
     }
     
@@ -800,10 +801,10 @@
     }
     
     self.detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
-    self.detailViewController.metadataDetail = metadata;
-    self.detailViewController.dateFilterQuery = metadata.date;
+    self.detailViewController.metadataDetail = self.metadata;
+    self.detailViewController.dateFilterQuery = self.metadata.date;
     
-    [self.detailViewController setTitle:metadata.fileName];
+    [self.detailViewController setTitle:self.metadata.fileName];
 }
 
 @end
