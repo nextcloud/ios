@@ -599,7 +599,6 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil)
                                                          style:UIAlertActionStyleCancel
                                                        handler:^(UIAlertAction *action) {
-                                                            [alertController dismissViewControllerAnimated:YES completion:nil];
                                                        }]];
     
     alertController.popoverPresentationController.barButtonItem = deleteButton;
@@ -889,10 +888,8 @@
 {
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
-    if (!tableDirectory)
-        return;
     
-    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:serverUrl folderFileID:tableDirectory.fileID completion:^(NSInteger errorCode, NSString *message) {
+    [[NCMainCommon sharedInstance ] deleteFileWithFilesID:[[NSArray alloc] initWithObjects:metadata.fileID, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:serverUrl folderFileID:tableDirectory.fileID classActive:self completion:^(NSInteger errorCode, NSString *message) {
         
         if (errorCode == 0) {
             
@@ -947,7 +944,6 @@
             NSLog(@"[LOG] DeleteFileOrFolder failure error %d, %@", (int)errorCode, message);
         }
     }];
-
 }
 
 #pragma --------------------------------------------------------------------------------------------

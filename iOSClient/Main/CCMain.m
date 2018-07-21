@@ -1763,25 +1763,27 @@
     if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
         return;
      
-    NSArray *metadatas;
+    NSArray *filesID;
     if ([_selectedFileIDsMetadatas count] > 0) {
-        metadatas = [_selectedFileIDsMetadatas allValues];
+        filesID = [_selectedFileIDsMetadatas allKeys];
     } else {
-        metadatas = [[NSArray alloc] initWithObjects:_metadata, nil];
+        filesID = [[NSArray alloc] initWithObjects:_metadata.fileID, nil];
     }
     
     // remove optimization
     _dateReadDataSource = nil;
     
-    [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:metadatas e2ee:_metadataFolder.e2eEncrypted serverUrl:self.serverUrl folderFileID:_metadataFolder.fileID completion:^(NSInteger errorCode, NSString *message) {
-        // End Select Table View
-        [self tableViewSelect:NO];
+    [[NCMainCommon sharedInstance ] deleteFileWithFilesID:filesID e2ee:_metadataFolder.e2eEncrypted serverUrl:self.serverUrl folderFileID:_metadataFolder.fileID classActive:self completion:^(NSInteger errorCode, NSString *message) {
+        
         // Reload
         if (_isSearchMode)
             [self readFolder:self.serverUrl];
         else
             [self reloadDatasource:self.serverUrl];
     }];
+    
+    // End Select Table View
+    [self tableViewSelect:NO];
 }
 
 #pragma --------------------------------------------------------------------------------------------

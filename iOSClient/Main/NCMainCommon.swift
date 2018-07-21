@@ -493,14 +493,16 @@ class NCMainCommon: NSObject {
     
     //MARK: -
     
-    @objc func deleteFile(metadatas: NSArray, e2ee: Bool, serverUrl: String, folderFileID: String, completion: @escaping (_ errorCode: Int, _ message: String)->()) {
+    @objc func deleteFile(filesID: NSArray, e2ee: Bool, serverUrl: String, folderFileID: String, classActive: Any, completion: @escaping (_ errorCode: Int, _ message: String)->()) {
+        
+        let copyFilesID = NSArray(array:filesID as! [Any], copyItems: true)
         
         if e2ee {
             DispatchQueue.global().async {
                 let error = NCNetworkingEndToEnd.sharedManager().lockFolderEncrypted(onServerUrl: serverUrl, fileID: folderFileID, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl)
                 DispatchQueue.main.async {
                     if error == nil {
-                        self.delete(metadatas: metadatas, serverUrl:serverUrl, e2ee: e2ee, completion: completion)
+                        self.delete(filesID: copyFilesID, serverUrl:serverUrl, e2ee: e2ee, classActive:classActive, completion: completion)
                     } else {
                         self.appDelegate.messageNotification("_delete_", description: error?.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
                         return
@@ -508,11 +510,11 @@ class NCMainCommon: NSObject {
                 }
             }
         } else {
-            delete(metadatas: metadatas, serverUrl:serverUrl, e2ee: e2ee, completion: completion)
+            delete(filesID: copyFilesID, serverUrl:serverUrl, e2ee: e2ee, classActive:classActive, completion: completion)
         }
     }
     
-    private func delete(metadatas: NSArray, serverUrl: String,e2ee: Bool,  completion: @escaping (_ errorCode: Int, _ message: String)->()) {
+    private func delete(filesID: NSArray, serverUrl: String, e2ee: Bool, classActive: Any, completion: @escaping (_ errorCode: Int, _ message: String)->()) {
         
         var count: Int = 0
         var completionErrorCode: Int = 0
@@ -520,7 +522,11 @@ class NCMainCommon: NSObject {
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
-        for case let metadata as tableMetadata in metadatas {
+        for case let fileID as String in filesID {
+        
+            guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
+                return
+            }
             
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                 continue
@@ -551,6 +557,7 @@ class NCMainCommon: NSObject {
                     if (e2ee) {
                         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName))
                     }
+                    
                 } else {
                     
                     self.appDelegate.activePhotos.fileIDHide.remove(metadata.fileID)
@@ -560,7 +567,7 @@ class NCMainCommon: NSObject {
                     completionMessage = message!
                 }
                 
-                if count == metadatas.count {
+                if count == filesID.count {
                     if e2ee {
                         DispatchQueue.global().async {
                             NCNetworkingEndToEnd.sharedManager().rebuildAndSendMetadata(onServerUrl: serverUrl, account: self.appDelegate.activeAccount, user: self.appDelegate.activeUser, userID: self.appDelegate.activeUserID, password: self.appDelegate.activePassword, url: self.appDelegate.activeUrl)
@@ -575,7 +582,14 @@ class NCMainCommon: NSObject {
             })
         }
         
-        self.reloadDatasource(ServerUrl: serverUrl)
+        // reload for filesID
+        if classActive is CCMain {
+            (classActive as! CCMain).reloadDatasource()
+        }
+        
+        if classActive is CCPhotos {
+            (classActive as! CCPhotos).reloadDatasource()
+        }
     }
 }
     
