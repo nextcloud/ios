@@ -518,12 +518,12 @@ class NCMainCommon: NSObject {
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
         for metadata in metadatas {
-        
-            self.appDelegate.fileIDHide.add(metadata.fileID)
             
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                 continue
             }
+            
+            self.appDelegate.fileIDHide.add(metadata.fileID)
             
             ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, completion: { (message, errorCode) in
                 
