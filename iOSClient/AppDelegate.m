@@ -279,6 +279,9 @@
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
     }
+    
+    // Test error task upload / download
+    [self verifyInternalErrorDownloadingUploading];
 }
 
 //
