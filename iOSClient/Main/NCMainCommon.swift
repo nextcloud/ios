@@ -342,11 +342,7 @@ class NCMainCommon: NSObject {
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
                 break
             case Int(k_metadataStatusDownloading):
-                if totalBytes > 0 {
-                    cell.labelInfoFile.text = CCUtility.transformedSize(totalBytesExpected) + " - ↓" + CCUtility.transformedSize(totalBytes)
-                } else {
-                    cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size)
-                }
+                cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - ↓" + CCUtility.transformedSize(totalBytes)
                 break
             case Int(k_metadataStatusWaitUpload):
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
@@ -355,11 +351,7 @@ class NCMainCommon: NSObject {
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
                 break
             case Int(k_metadataStatusUploading):
-                if totalBytes > 0 {
-                    cell.labelInfoFile.text = CCUtility.transformedSize(totalBytesExpected) + " - ↑" + CCUtility.transformedSize(totalBytes)
-                } else {
-                    cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size)
-                }
+                cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - ↑" + CCUtility.transformedSize(totalBytes)
                 break
             default:
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size)
