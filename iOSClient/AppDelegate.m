@@ -1479,7 +1479,6 @@
                 
             if (!findTask) {
                     
-                metadata.sessionError = @"";
                 metadata.sessionTaskIdentifier = k_taskIdentifierDone;
                 metadata.status = k_metadataStatusWaitDownload;
                     
@@ -1506,7 +1505,6 @@
                 
             if (!findTask) {
                     
-                metadata.sessionError = @"";
                 metadata.sessionTaskIdentifier = k_taskIdentifierDone;
                 metadata.status = k_metadataStatusWaitUpload;
                     
