@@ -23,7 +23,7 @@
 
 import Foundation
 
-// MARK: - CreateMenuAdd
+// MARK: -
 
 class CreateMenuAdd: NSObject {
     
@@ -85,12 +85,14 @@ class CreateMenuAdd: NSObject {
     }
 }
 
-// MARK: - CreateFormUploadAssets
+// MARK: -
 
 @objc protocol createFormUploadAssetsDelegate {
     
     func dismissFormUploadAssets()
 }
+
+// MARK: -
 
 class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
@@ -447,6 +449,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     }
     
 }
+
+// MARK: -
 
 class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
     
