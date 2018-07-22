@@ -189,10 +189,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         section.addFormRow(row)
         
         // Section: Preview File Name
-        
-        //section = XLFormSectionDescriptor.formSection()
-        //form.addFormSection(section)
-        
+                
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
         row.height = 180
         row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "backgroundColor" as NSCopying)
@@ -398,12 +395,13 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     func previewFileName(valueRename : String?) -> String {
         
         var returnString: String = ""
-        var originalFileName: String = ""
         let asset = assets[0] as! PHAsset
         
-        let resources = PHAssetResource.assetResources(for: asset)
-        if let resource = resources.first {
-            originalFileName = resource.originalFilename
+        if CCUtility.getOriginalFileName() {
+            let resources = PHAssetResource.assetResources(for: asset)
+            if let resource = resources.first {
+                return resource.originalFilename
+            }
         }
         
         if let valueRename = valueRename {

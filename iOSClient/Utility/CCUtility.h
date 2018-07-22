@@ -111,6 +111,9 @@
 + (BOOL)getDirectoryOnTop;
 + (void)setDirectoryOnTop:(BOOL)directoryOnTop;
 
++ (BOOL)getOriginalFileName;
++ (void)setOriginalFileName:(BOOL)value;
+
 + (NSString *)getFileNameMask:(NSString *)key;
 + (void)setFileNameMask:(NSString *)mask key:(NSString *)key;
 

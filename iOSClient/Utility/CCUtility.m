@@ -373,6 +373,17 @@
     [UICKeyChainStore setString:sDirectoryOnTop forKey:@"directoryOnTop" service:k_serviceShareKeyChain];
 }
 
++ (BOOL)getOriginalFileName
+{
+    return [[UICKeyChainStore stringForKey:@"originalFileName" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setOriginalFileName:(BOOL)value
+{
+    NSString *sValue = (value) ? @"true" : @"false";
+    [UICKeyChainStore setString:sValue forKey:@"originalFileName" service:k_serviceShareKeyChain];
+}
+
 + (NSString *)getFileNameMask:(NSString *)key
 {
     NSString *mask = [UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain];
