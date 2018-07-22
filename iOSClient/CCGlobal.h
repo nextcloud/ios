@@ -261,6 +261,8 @@
 #define k_keyFileNameType                               @"fileNameType"
 #define k_keyFileNameAutoUploadMask                     @"fileNameAutoUploadMask"
 #define k_keyFileNameAutoUploadType                     @"fileNameAutoUploadType"
+#define k_keyFileNameOriginal                           @"fileNameOriginal"
+#define k_keyFileNameOriginalAutoUpload                 @"fileNameOriginalAutoUpload"
 
 // Activity
 #define k_activityVerboseDefault                        0

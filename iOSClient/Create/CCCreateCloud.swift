@@ -138,6 +138,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
+        
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
@@ -145,12 +146,14 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
-        // Section: Folder Photo
+        // Section Switch
         
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "useFolderPhoto", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_photo_camera_", comment: ""))
+        // Folder Photo
+        
+        row = XLFormRowDescriptor(tag: "useFolderPhoto", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_photos_", comment: ""))
         row.value = 0
         section.addFormRow(row)
         
@@ -166,12 +169,17 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         }
         section.addFormRow(row)
 
-        // Section: Add File Name Type
+        // Maintain the original fileName
+        
+        row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
+        row.value = CCUtility.getOriginalFileName(k_keyFileNameOriginal)
+        section.addFormRow(row)
+        
+        // Add File Name Type
 
-        section = XLFormSectionDescriptor.formSection()
-        form.addFormSection(section)
-
-        row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_filenametype_photo_video_", comment: ""))
+        row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
+        row.hidden = "$\("maintainOriginalFileName") == 1"
+        
         row.value = CCUtility.getFileNameType(k_keyFileNameType)
         section.addFormRow(row)
         
@@ -181,7 +189,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
-        
+        row.hidden = "$\("maintainOriginalFileName") == 1"
+
         let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameMask)
         if fileNameMask.count > 0 {
             row.value = fileNameMask
@@ -189,8 +198,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         section.addFormRow(row)
         
         // Section: Preview File Name
-                
+        
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
+
         row.height = 180
         row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "backgroundColor" as NSCopying)
         row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "textView.backgroundColor" as NSCopying)
@@ -225,6 +235,10 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             } else{
                 
             }
+        }
+        else if formRow.tag == "maintainOriginalFileName" {
+            CCUtility.setOriginalFileName((formRow.value! as AnyObject).boolValue, key: k_keyFileNameOriginal)
+            self.reloadForm()
         }
         else if formRow.tag == "addFileNameType" {
             CCUtility.setFileNameType((formRow.value! as AnyObject).boolValue, key: k_keyFileNameType)
@@ -308,6 +322,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
 
     //MARK: TableView
 
+    /*
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         
         switch section {
@@ -332,7 +347,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             return ""
         }
     }
-    
+ 
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         
         switch section {
@@ -348,7 +363,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             return ""
         }
     }
-
+    */
+    
     // MARK: - Action
 
     func moveServerUrl(to serverUrlTo: String!, title: String!) {
@@ -397,13 +413,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         var returnString: String = ""
         let asset = assets[0] as! PHAsset
         
-        if CCUtility.getOriginalFileName() {
-            let resources = PHAssetResource.assetResources(for: asset)
-            if let resource = resources.first {
-                return resource.originalFilename
-            }
-        }
-        
         if let valueRename = valueRename {
             
             let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
@@ -414,18 +423,18 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
                 CCUtility.setFileNameMask(valueRename, key: k_keyFileNameMask)
                 self.form.delegate = self
                 
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)
                 
             } else {
                 
                 CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)
             }
             
         } else {
             
             CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-            returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
+            returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)
         }
         
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm") + ":" + "\n\n" + returnString

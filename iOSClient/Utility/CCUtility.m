@@ -373,15 +373,15 @@
     [UICKeyChainStore setString:sDirectoryOnTop forKey:@"directoryOnTop" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getOriginalFileName
++ (BOOL)getOriginalFileName:(NSString *)key
 {
-    return [[UICKeyChainStore stringForKey:@"originalFileName" service:k_serviceShareKeyChain] boolValue];
+    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (void)setOriginalFileName:(BOOL)value
++ (void)setOriginalFileName:(BOOL)value key:(NSString *)key
 {
     NSString *sValue = (value) ? @"true" : @"false";
-    [UICKeyChainStore setString:sValue forKey:@"originalFileName" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:sValue forKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getFileNameMask:(NSString *)key
@@ -658,9 +658,14 @@
     return [NSString stringWithFormat:@"%@", randomString];
 }
 
-+ (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType
++ (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal
 {
     BOOL addFileNameType = NO;
+    
+    // Original FileName ?
+    if ([self getOriginalFileName:keyFileNameOriginal]) {
+        return fileName;
+    }
     
     NSString *numberFileName;
     if ([fileName length] > 8) numberFileName = [fileName substringWithRange:NSMakeRange(04, 04)];

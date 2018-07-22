@@ -491,6 +491,7 @@
 "_forbidden_characters_"            = "Invalid character in filename";
 "_add_filenametype_"                = "Specify type in filename";
 "_filenametype_photo_video_"        = "Photo/Video";
+"_maintain_original_filename_"      = "Maintain original filename";
 
 // Notification
 

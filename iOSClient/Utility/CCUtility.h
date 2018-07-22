@@ -111,8 +111,8 @@
 + (BOOL)getDirectoryOnTop;
 + (void)setDirectoryOnTop:(BOOL)directoryOnTop;
 
-+ (BOOL)getOriginalFileName;
-+ (void)setOriginalFileName:(BOOL)value;
++ (BOOL)getOriginalFileName:(NSString *)key;
++ (void)setOriginalFileName:(BOOL)value key:(NSString *)key;
 
 + (NSString *)getFileNameMask:(NSString *)key;
 + (void)setFileNameMask:(NSString *)mask key:(NSString *)key;
@@ -165,7 +165,7 @@
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
 
 + (NSString *)createRandomString:(int)numChars;
-+ (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType;
++ (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal;
 
 + (NSURL *)getDirectoryGroup;
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;
