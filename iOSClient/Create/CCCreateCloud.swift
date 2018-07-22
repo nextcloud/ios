@@ -397,8 +397,14 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
     func previewFileName(valueRename : String?) -> String {
         
-        var returnString : String = ""
+        var returnString: String = ""
+        var originalFileName: String = ""
         let asset = assets[0] as! PHAsset
+        
+        let resources = PHAssetResource.assetResources(for: asset)
+        if let resource = resources.first {
+            originalFileName = resource.originalFilename
+        }
         
         if let valueRename = valueRename {
             
