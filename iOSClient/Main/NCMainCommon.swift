@@ -324,7 +324,7 @@ class NCMainCommon: NSObject {
             cell.transferButton.tintColor = NCBrandColor.sharedInstance.icon
             
             var progress: CGFloat = 0.0
-            var totalBytes: Double = 0
+            var totalBytes: Double = 0.0
             //var totalBytesExpected : Double = 0
             let progressArray = appDelegate.listProgressMetadata.object(forKey: metadata.fileID) as? NSArray
             if progressArray != nil && progressArray?.count == 3 {
@@ -337,24 +337,29 @@ class NCMainCommon: NSObject {
             switch metadata.status {
             case Int(k_metadataStatusWaitDownload):
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_download_", comment: "")
+                progress = 0.0
                 break
             case Int(k_metadataStatusInDownload):
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_download_", comment: "")
+                progress = 0.0
                 break
             case Int(k_metadataStatusDownloading):
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - ↓" + CCUtility.transformedSize(totalBytes)
                 break
             case Int(k_metadataStatusWaitUpload):
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_wait_upload_", comment: "")
+                progress = 0.0
                 break
             case Int(k_metadataStatusInUpload):
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - " + NSLocalizedString("_status_in_upload_", comment: "")
+                progress = 0.0
                 break
             case Int(k_metadataStatusUploading):
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size) + " - ↑" + CCUtility.transformedSize(totalBytes)
                 break
             default:
                 cell.labelInfoFile.text = CCUtility.transformedSize(metadata.size)
+                progress = 0.0
             }
             
             let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
