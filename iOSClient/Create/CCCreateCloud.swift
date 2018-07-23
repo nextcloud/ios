@@ -143,6 +143,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
         row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
@@ -155,10 +156,13 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         row = XLFormRowDescriptor(tag: "useFolderPhoto", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_photos_", comment: ""))
         row.value = 0
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         section.addFormRow(row)
         
+        // Use Sub folder
         row = XLFormRowDescriptor(tag: "useSubFolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
         row.hidden = "$\("useFolderPhoto") == 0"
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
         
@@ -173,13 +177,14 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
         row.value = CCUtility.getOriginalFileName(k_keyFileNameOriginal)
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         section.addFormRow(row)
         
         // Add File Name Type
 
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
         row.hidden = "$\("maintainOriginalFileName") == 1"
-        
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.value = CCUtility.getFileNameType(k_keyFileNameType)
         section.addFormRow(row)
         
@@ -188,8 +193,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
+        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: (NSLocalizedString("_filename_", comment: ""))+":")
         row.hidden = "$\("maintainOriginalFileName") == 1"
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
 
         let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameMask)
         if fileNameMask.count > 0 {
@@ -206,6 +212,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "textView.backgroundColor" as NSCopying)
 
         row.disabled = true
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         section.addFormRow(row)
         
         self.form = form
@@ -320,51 +327,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.form.delegate = self
     }
 
-    //MARK: TableView
-
-    /*
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
-        switch section {
-        
-        case 0:
-            let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
-            
-            if buttonDestinationFolder.isHidden() {
-                return ""
-            } else {
-                return "    " + NSLocalizedString("_destination_folder_", comment: "")
-            }
-        case 1:
-            return "    " + NSLocalizedString("_use_folder_photos_", comment: "")
-        case 2:
-            return "    " + NSLocalizedString("_add_filenametype_", comment: "")
-        case 3:
-            return "    " + NSLocalizedString("_rename_filename_", comment: "")
-        case 4:
-            return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm")
-        default:
-            return ""
-        }
-    }
- 
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        
-        switch section {
-           
-        /*
-        case 2:
-            let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "maskFileName")!
-            let text = self.writePreviewFileName(buttonDestinationFolder)
-            return text
-        */
-            
-        default:
-            return ""
-        }
-    }
-    */
-    
     // MARK: - Action
 
     func moveServerUrl(to serverUrlTo: String!, title: String!) {
@@ -509,6 +471,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
         row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
@@ -518,6 +481,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.value = fileName
         section.addFormRow(row)
         
