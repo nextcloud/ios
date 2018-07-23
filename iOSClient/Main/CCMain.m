@@ -4027,6 +4027,9 @@
     
     if (self.tableView.editing)
         [self setTitle];
+    
+    //
+    [self.tableView reloadEmptyDataSet];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
