@@ -262,7 +262,6 @@
                 [self reloadForm];
             }]];
             
-            
             alertController.popoverPresentationController.sourceView = self.view;
             NSIndexPath *indexPath = [self.form indexPathOfFormRow:rowDescriptor];
             CGRect cellRect = [self.tableView rectForRowAtIndexPath:indexPath];

@@ -164,48 +164,17 @@ class NCManageAutoUploadFileName: XLFormViewController {
         self.form.delegate = self
     }
     
-    //MARK: TableView
-    
-    /*
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
-        switch section {
-            
-        case 0:
-            return "    " + NSLocalizedString("_add_filenametype_", comment: "")
-        case 1:
-            return "    " + NSLocalizedString("_rename_filename_", comment: "")
-        case 2:
-            return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm")
-        default:
-            return ""
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        
-        switch section {
-            
-            /*
-             case 2:
-             let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "maskFileName")!
-             let text = self.writePreviewFileName(buttonDestinationFolder)
-             return text
-             */
-            
-        default:
-            return ""
-        }
-    }
-    */
-    
     // MARK: - Utility
     
     func previewFileName(valueRename : String?) -> String {
         
         var returnString : String = ""
         
-        if let valueRename = valueRename {
+        if CCUtility.getOriginalFileName(k_keyFileNameOriginalAutoUpload) {
+            
+            return (NSLocalizedString("_filename_", comment: "") + ": IMG_0001.JPG")
+            
+        } else if let valueRename = valueRename {
             
             let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             

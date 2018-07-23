@@ -375,7 +375,11 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         var returnString: String = ""
         let asset = assets[0] as! PHAsset
         
-        if let valueRename = valueRename {
+        if (CCUtility.getOriginalFileName(k_keyFileNameOriginal)) {
+            
+            return (NSLocalizedString("_filename_", comment: "") + ": " + (asset.value(forKey: "filename") as! String))
+            
+        } else if let valueRename = valueRename {
             
             let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             
