@@ -252,6 +252,10 @@ class FileProviderData: NSObject {
         
         var errorResult: Error?
         
+        if atPath == toPath {
+            return nil
+        }
+                
         if !fileManager.fileExists(atPath: atPath) {
             return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:])
         }
