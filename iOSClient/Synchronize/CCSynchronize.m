@@ -170,24 +170,26 @@
             // RECURSIVE DIRECTORY MODE
             if (metadata.directory) {
                 
-                    NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
-                    NSString *etag = metadata.etag;
+                NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
+                //NSString *etag = metadata.etag;
                 
-                    // Verify if do not exists this Metadata
-                    tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+                // Verify if do not exists this Metadata
+                tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
 
-                    if (!result)
-                        (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+                if (!result)
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
               
                     // Load if different etag
-                    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadataNet.account, serverUrl]];
+                    //tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadataNet.account, serverUrl]];
                 
-                if (![tableDirectory.etag isEqualToString:etag] || [metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
+                    //if (![tableDirectory.etag isEqualToString:etag] || [metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
                                         
-                        [self readFolder:serverUrl selector:metadataNet.selector];
-                    }
+                    //    [self readFolder:serverUrl selector:metadataNet.selector];
+                    //}
+                
+                [self readFolder:serverUrl selector:metadataNet.selector];
                     
-                } else {
+            } else {
                 
                 if ([metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
                     
