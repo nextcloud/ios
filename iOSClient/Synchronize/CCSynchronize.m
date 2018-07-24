@@ -171,7 +171,6 @@
             if (metadata.directory) {
                 
                 NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadata.fileName];
-                //NSString *etag = metadata.etag;
                 
                 // Verify if do not exists this Metadata
                 tableMetadata *result = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
@@ -182,7 +181,7 @@
                     // Load if different etag
                     //tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadataNet.account, serverUrl]];
                 
-                    //if (![tableDirectory.etag isEqualToString:etag] || [metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
+                    //if (![tableDirectory.etag isEqualToString:metadata.etag] || [metadataNet.selector isEqualToString:selectorReadFolderWithDownload]) {
                                         
                     //    [self readFolder:serverUrl selector:metadataNet.selector];
                     //}
