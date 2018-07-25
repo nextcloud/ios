@@ -1,7 +1,0 @@
-framework module FirebaseInstanceID {
-  umbrella header "FirebaseInstanceID.h"
-  export *
-  module * { export *}
-  link "c++"
-  link "z"
-}
