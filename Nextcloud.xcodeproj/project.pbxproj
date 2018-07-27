@@ -108,6 +108,10 @@
 		F72D0FFF210B6638009C96B7 /* FirebaseNanoPB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72D0FF6210B6638009C96B7 /* FirebaseNanoPB.framework */; };
 		F72D1000210B6638009C96B7 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72D0FF7210B6638009C96B7 /* FirebaseInstanceID.framework */; };
 		F72D1001210B6638009C96B7 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72D0FF8210B6638009C96B7 /* FirebaseCoreDiagnostics.framework */; };
+		F72D1003210B67CE009C96B7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F72D1002210B67CE009C96B7 /* GoogleService-Info.plist */; };
+		F72D1007210B6882009C96B7 /* NCPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotification.m */; };
+		F72D100F210B6B17009C96B7 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72D100E210B6B17009C96B7 /* NotificationService.swift */; };
+		F72D1013210B6B17009C96B7 /* Notification Service Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F72D100C210B6B16009C96B7 /* Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F732B3371E8045A1002B7D75 /* SwiftWebVC.strings in Resources */ = {isa = PBXBuildFile; fileRef = F732B3351E8045A1002B7D75 /* SwiftWebVC.strings */; };
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
@@ -556,6 +560,13 @@
 			remoteGlobalIDString = F71459B41D12E3B700CAFEEC;
 			remoteInfo = "Share Ext Nextcloud";
 		};
+		F72D1011210B6B17009C96B7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F72D100B210B6B16009C96B7;
+			remoteInfo = "Notification Service Extension";
+		};
 		F771E3E920E2392E00AFB62D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F7F67BA01A24D27800EE80DA /* Project object */;
@@ -586,6 +597,7 @@
 			files = (
 				F771E3EB20E2392E00AFB62D /* File Provider Extension.appex in Embed App Extensions */,
 				F749E4E91DC1FB38009BA2FD /* Share.appex in Embed App Extensions */,
+				F72D1013210B6B17009C96B7 /* Notification Service Extension.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -733,6 +745,12 @@
 		F72D0FF6210B6638009C96B7 /* FirebaseNanoPB.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseNanoPB.framework; sourceTree = "<group>"; };
 		F72D0FF7210B6638009C96B7 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		F72D0FF8210B6638009C96B7 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
+		F72D1002210B67CE009C96B7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
+		F72D1004210B6835009C96B7 /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
+		F72D1005210B6882009C96B7 /* NCPushNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCPushNotification.m; sourceTree = "<group>"; };
+		F72D1006210B6882009C96B7 /* NCPushNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCPushNotification.h; sourceTree = "<group>"; };
+		F72D100C210B6B16009C96B7 /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F72D100E210B6B17009C96B7 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		F73049B81CB567F000C7C320 /* NSString+TruncateToWidth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+TruncateToWidth.h"; sourceTree = "<group>"; };
 		F73049B91CB567F000C7C320 /* NSString+TruncateToWidth.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+TruncateToWidth.m"; sourceTree = "<group>"; };
 		F7320931201B812F008A0888 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/CTAssetsPicker.strings; sourceTree = "<group>"; };
@@ -1642,6 +1660,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F72D1009210B6B16009C96B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F771E3CD20E2392D00AFB62D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1959,6 +1984,7 @@
 		F72D0FED210B6638009C96B7 /* Firebase */ = {
 			isa = PBXGroup;
 			children = (
+				F72D1004210B6835009C96B7 /* Firebase.h */,
 				F72D0FEE210B6638009C96B7 /* Messaging */,
 				F72D0FF1210B6638009C96B7 /* Analytics */,
 			);
@@ -1986,6 +2012,14 @@
 				F72D0FF8210B6638009C96B7 /* FirebaseCoreDiagnostics.framework */,
 			);
 			path = Analytics;
+			sourceTree = "<group>";
+		};
+		F72D100D210B6B17009C96B7 /* Notification Service Extension */ = {
+			isa = PBXGroup;
+			children = (
+				F72D100E210B6B17009C96B7 /* NotificationService.swift */,
+			);
+			path = "Notification Service Extension";
 			sourceTree = "<group>";
 		};
 		F73B4EAC1F470D9100BBEE4B /* src */ = {
@@ -2712,6 +2746,7 @@
 				F7C742D31E7BD36600D9C973 /* Supporting Files */,
 				F710E80C1EF95C9C00DC2427 /* Intro */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
+				F72D1002210B67CE009C96B7 /* GoogleService-Info.plist */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */,
 				F76F23331ED4603700C40023 /* LaunchScreen.xib */,
@@ -3062,9 +3097,11 @@
 				F7F67BAB1A24D27800EE80DA /* Supporting Files */,
 				F7C0F46D1C8880540059EC54 /* Share */,
 				F771E3D120E2392D00AFB62D /* File Provider Extension */,
+				F72D100D210B6B17009C96B7 /* Notification Service Extension */,
 				F7FC7D651DC1F98700BB2C6A /* Products */,
 				F7FC7D541DC1F93700BB2C6A /* Frameworks */,
 				F771E3D020E2392D00AFB62D /* File Provider Extension.appex */,
+				F72D100C210B6B16009C96B7 /* Notification Service Extension.appex */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3181,6 +3218,8 @@
 				F7F801001D98205A007537BC /* CCCertificate.h */,
 				F7F801011D98205A007537BC /* CCCertificate.m */,
 				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
+				F72D1006210B6882009C96B7 /* NCPushNotification.h */,
+				F72D1005210B6882009C96B7 /* NCPushNotification.m */,
 				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
 				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 			);
@@ -3205,6 +3244,23 @@
 			name = Share;
 			productName = "Share Ext";
 			productReference = F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		F72D100B210B6B16009C96B7 /* Notification Service Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F72D1014210B6B17009C96B7 /* Build configuration list for PBXNativeTarget "Notification Service Extension" */;
+			buildPhases = (
+				F72D1008210B6B16009C96B7 /* Sources */,
+				F72D1009210B6B16009C96B7 /* Frameworks */,
+				F72D100A210B6B16009C96B7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Notification Service Extension";
+			productName = "Notification Service Extension";
+			productReference = F72D100C210B6B16009C96B7 /* Notification Service Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 		F771E3CF20E2392D00AFB62D /* File Provider Extension */ = {
@@ -3242,6 +3298,7 @@
 			dependencies = (
 				F7145A321D12E65F00CAFEEC /* PBXTargetDependency */,
 				F771E3EA20E2392E00AFB62D /* PBXTargetDependency */,
+				F72D1012210B6B17009C96B7 /* PBXTargetDependency */,
 			);
 			name = Nextcloud;
 			productName = "Crypto Cloud";
@@ -3267,6 +3324,16 @@
 							};
 							com.apple.iCloud = {
 								enabled = 0;
+							};
+						};
+					};
+					F72D100B210B6B16009C96B7 = {
+						CreatedOnToolsVersion = 9.4.1;
+						DevelopmentTeam = 6JLRKY9ZV7;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 1;
 							};
 						};
 					};
@@ -3344,6 +3411,7 @@
 				F77B0DEB1D118A16002130FE /* Nextcloud */,
 				F71459B41D12E3B700CAFEEC /* Share */,
 				F771E3CF20E2392D00AFB62D /* File Provider Extension */,
+				F72D100B210B6B16009C96B7 /* Notification Service Extension */,
 			);
 		};
 /* End PBXProject section */
@@ -3361,6 +3429,13 @@
 				F7F8D71D1ED6183000E711F3 /* CCCellShareExt.xib in Resources */,
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
 				F700222D1EC479840080073F /* Custom.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F72D100A210B6B16009C96B7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3455,6 +3530,7 @@
 				F77B0F671D118A16002130FE /* InfoPlist.strings in Resources */,
 				F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */,
 				F7F54CEB1E5B14C700E19C62 /* ImageSelectedOn.png in Resources */,
+				F72D1003210B67CE009C96B7 /* GoogleService-Info.plist in Resources */,
 				F762CB951EACB84400B38484 /* icon-error.png in Resources */,
 				F7F54CF01E5B14C700E19C62 /* ImageSelectedSmallOff@3x.png in Resources */,
 				F73B4EF01F470D9100BBEE4B /* CMakeLists.txt in Resources */,
@@ -3601,6 +3677,14 @@
 				F70022C61EC4C9100080073F /* OCNotificationsAction.m in Sources */,
 				F7BAADCC1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */,
 				F70022DE1EC4C9100080073F /* OCWebDAVClient.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F72D1008210B6B16009C96B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F72D100F210B6B17009C96B7 /* NotificationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3754,6 +3838,7 @@
 				F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */,
 				F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */,
 				F762CAFC1EACB66200B38484 /* XLFormImageCell.m in Sources */,
+				F72D1007210B6882009C96B7 /* NCPushNotification.m in Sources */,
 				F70022D11EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F73B4EF61F470D9100BBEE4B /* LangArabicModel.cpp in Sources */,
 				F7CA1ED420E7E3FE002CC65E /* PKPendingView.m in Sources */,
@@ -3952,6 +4037,11 @@
 			isa = PBXTargetDependency;
 			target = F71459B41D12E3B700CAFEEC /* Share */;
 			targetProxy = F7145A311D12E65F00CAFEEC /* PBXContainerItemProxy */;
+		};
+		F72D1012210B6B17009C96B7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F72D100B210B6B16009C96B7 /* Notification Service Extension */;
+			targetProxy = F72D1011210B6B17009C96B7 /* PBXContainerItemProxy */;
 		};
 		F771E3EA20E2392E00AFB62D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -4323,10 +4413,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
-				OTHER_LDFLAGS = (
-					"-Obj-C",
-					"-all_load",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4369,10 +4456,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
-				OTHER_LDFLAGS = (
-					"-Obj-C",
-					"-all_load",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = it.twsweb.Nextcloud.Share;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4381,6 +4465,81 @@
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USE_HEADERMAP = YES;
+			};
+			name = Release;
+		};
+		F72D1015210B6B17009C96B7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					EXTENSION,
+					EXTENSION_NOTIFICATION_SERVICE,
+					NC,
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Notification-Service-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F72D1016210B6B17009C96B7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					EXTENSION,
+					EXTENSION_NOTIFICATION_SERVICE,
+					NC,
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/iOSClient/Brand/Notification_Service_Extension.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.Notification-Service-Extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -4420,6 +4579,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4466,6 +4626,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external\"/**";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.Nextcloud.File-Provider-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -4484,7 +4645,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = "";
 				DEVELOPMENT_TEAM = 6JLRKY9ZV7;
@@ -4506,10 +4667,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external/openssl\"";
-				OTHER_LDFLAGS = (
-					"-Obj-C",
-					"-all_load",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				OTHER_SWIFT_FLAGS = "-DDEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4534,7 +4692,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = NO;
 				CODE_SIGN_ENTITLEMENTS = iOSClient/Brand/iOSClient.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development IOS Push Services: it.twsweb.Nextcloud";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = "";
@@ -4557,10 +4715,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				LIBRARY_SEARCH_PATHS = "\"Libraries external/openssl\"";
-				OTHER_LDFLAGS = (
-					"-Obj-C",
-					"-all_load",
-				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "it.twsweb.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -4694,6 +4849,15 @@
 			buildConfigurations = (
 				F7145A261D12E3B700CAFEEC /* Debug */,
 				F7145A271D12E3B700CAFEEC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F72D1014210B6B17009C96B7 /* Build configuration list for PBXNativeTarget "Notification Service Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F72D1015210B6B17009C96B7 /* Debug */,
+				F72D1016210B6B17009C96B7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

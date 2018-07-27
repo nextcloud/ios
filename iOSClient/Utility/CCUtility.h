@@ -151,6 +151,13 @@
 + (BOOL)getDisableFilesApp;
 + (void)setDisableFilesApp:(BOOL)disable;
 
++ (void)setPushNotificationPublicKey:(NSData *)data;
++ (NSData *)getPushNotificationPublicKey;
++ (void)setPushNotificationPrivateKey:(NSData *)data;
++ (NSData *)getPushNotificationPrivateKey;
++ (void)setPushNotificationToken:(NSString *)token;
++ (NSString *)getPushNotificationToken;
+
 // ===== Varius =====
 
 + (NSString *)getUserAgent;

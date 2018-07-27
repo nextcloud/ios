@@ -23,6 +23,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <openssl/ssl.h>
+
 @class tableMetadata;
 
 @interface NCEndToEndEncryption : NSObject
@@ -42,6 +44,7 @@
 - (BOOL)encryptFileName:(NSString *)fileName fileNameIdentifier:(NSString *)fileNameIdentifier directory:(NSString *)directory key:(NSString **)key initializationVector:(NSString **)initializationVector authenticationTag:(NSString **)authenticationTag;
 - (BOOL)decryptFileName:(NSString *)fileName fileNameView:(NSString *)fileNameView fileID:(NSString *)fileID key:(NSString *)key initializationVector:(NSString *)initializationVector authenticationTag:(NSString *)authenticationTag;
 
+- (EVP_PKEY *)generateRSAKey:(NSError **)error;
 - (NSData *)generateKey:(int)length;
 - (NSString *)createSHA512:(NSString *)string;
 

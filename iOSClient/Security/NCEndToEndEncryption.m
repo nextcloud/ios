@@ -34,7 +34,6 @@
 #import <openssl/pem.h>
 #import <openssl/rsa.h>
 #import <openssl/pkcs12.h>
-#import <openssl/ssl.h>
 #import <openssl/err.h>
 #import <openssl/bn.h>
 #import <openssl/md5.h>

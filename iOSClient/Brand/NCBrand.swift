@@ -91,7 +91,6 @@ class NCBrandColor: NSObject {
     
     // Options
     @objc public let use_login_web_personalized:        Bool = false                                              // Don't touch me !!
-    @objc public let use_firebase:                      Bool = false
     @objc public let use_default_auto_upload:           Bool = false
     @objc public let use_themingColor:                  Bool = true
     @objc public let use_themingBackground:             Bool = true

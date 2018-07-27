@@ -1601,84 +1601,70 @@
     }];
 }
 
-- (void)subscribingNextcloudServer
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Push Notification =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)subscribingPushNotificationServer:(NSString *)urlServer pushToken:(NSString *)pushToken Hash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
-    communication.kindOfCredential = credentialNotSet;
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSDictionary *parameter = _metadataNet.optionAny;
-    
-    NSString *pushToken = [parameter objectForKey:@"pushToken"];
-    NSString *pushTokenHash = [parameter objectForKey:@"pushTokenHash"];
-    NSString *devicePublicKey = [parameter objectForKey:@"devicePublicKey"];
-    
-    // encode URL
-    devicePublicKey = [devicePublicKey stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-    
-    [communication subscribingNextcloudServerPush:_activeUrl pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: [NCBrandOptions sharedInstance].pushNotificationServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
+    devicePublicKey = [CCUtility URLEncodeStringFromString:devicePublicKey];
+
+    [communication subscribingNextcloudServerPush:urlServer pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath: [NCBrandOptions sharedInstance].pushNotificationServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer) {
         
-        // encode URL
-        deviceIdentifier = [deviceIdentifier stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-        signature = [signature stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-        publicKey = [publicKey stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+        deviceIdentifier = [CCUtility URLEncodeStringFromString:deviceIdentifier];
+        signature = [CCUtility URLEncodeStringFromString:signature];
+        publicKey = [CCUtility URLEncodeStringFromString:publicKey];
         
         [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServer pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             // Activity
             [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:_activeUrl];
             
-            [self complete];
+            success();
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
            
+            NSString *message;
+
             NSInteger errorCode = response.statusCode;
             if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
                 errorCode = error.code;
             
             // Error
-            if ([self.delegate respondsToSelector:@selector(subscribingNextcloudServerFailure:message:errorCode:)]) {
-                
-                if (errorCode == 503)
-                    [self.delegate subscribingNextcloudServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
-                else
-                    [self.delegate subscribingNextcloudServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-            }
+            if (errorCode == 503)
+                message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
-            // Request trusted certificated
-            if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
-                [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-
             // Activity
             [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServer fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
             
-            [self complete];
+            failure(message, errorCode);
         }];
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         
+        NSString *message;
+
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
     
         // Error
-        if ([self.delegate respondsToSelector:@selector(subscribingNextcloudServerFailure:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate subscribingNextcloudServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
-            else
-                [self.delegate subscribingNextcloudServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-        }
+        if (errorCode == 503)
+            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
 
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
-        
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
-        [self complete];
+        failure(message, errorCode);
     }];
 }
 

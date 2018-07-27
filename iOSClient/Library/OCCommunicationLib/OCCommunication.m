@@ -723,7 +723,7 @@
     }];
 }
 
-#pragma mark - OC API Calls
+#pragma mark - OC/NC API Calls
 
 - (NSString *) getCurrentServerVersion {
     return self.currentServerVersion;
@@ -827,6 +827,8 @@
         failure(response, error, request.redirectedServer);
     }];
 }
+
+#pragma mark - Share
 
 - (void) readSharedByServer: (NSString *) path
             onCommunication:(OCCommunication *)sharedOCCommunication
@@ -1280,6 +1282,8 @@
     }];
 }
 
+#pragma mark - Capabilities
+
 - (void) getCapabilitiesOfServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCCapabilities *capabilities, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest{
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
@@ -1487,6 +1491,8 @@
     }];
 }
 
+#pragma mark - Thumbnail
+
 - (NSURLSessionTask *) getRemoteThumbnailByServer:(NSString*)serverPath ofFilePath:(NSString *)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight onCommunication:(OCCommunication *)sharedOCComunication
                      successRequest:(void(^)(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer)) successRequest
                      failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
@@ -1513,6 +1519,8 @@
 
     return operation;
 }
+
+#pragma mark - Notification
 
 - (void)getNotificationServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
@@ -1663,6 +1671,8 @@
     }];
 }
 
+#pragma mark - Push Notification
+
 - (void)subscribingNextcloudServerPush:(NSString *)serverPath pushTokenHash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey proxyServerPath:(NSString *)proxyServerPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey, NSString *deviceIdentifier, NSString *signature, NSString *redirectedServer)) successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
@@ -1671,21 +1681,41 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request subscribingNextcloudServerPush:serverPath authorizationToken:_password pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath:proxyServerPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request subscribingNextcloudServerPush:serverPath pushTokenHash:pushTokenHash devicePublicKey:devicePublicKey proxyServerPath:proxyServerPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
-        NSData *responseData = (NSData*) responseObject;
+        NSData *responseData = (NSData*)responseObject;
         
-        //Parse
         NSError *error;
         NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
-        NSLog(@"[LOG] Subscribing at the Nextcloud server : %@",jsongParsed);
         
-        NSString *publicKey = [jsongParsed objectForKey:@"publicKey"];
-        NSString *deviceIdentifier = [jsongParsed objectForKey:@"deviceIdentifier"];
-        NSString *signature = [jsongParsed objectForKey:@"signature"];
-        
-        successRequest(response, publicKey, deviceIdentifier, signature, request.redirectedServer);
-        
+        if (jsongParsed && jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *datas = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCPushNotificationAPISuccessful || statusCode == kOCPushNotificationAPINeedSendProxy) {
+                
+                NSString *publicKey = [datas objectForKey:@"publicKey"];
+                NSString *deviceIdentifier = [datas objectForKey:@"deviceIdentifier"];
+                NSString *signature = [datas objectForKey:@"signature"];
+                
+                successRequest(response, publicKey, deviceIdentifier, signature, request.redirectedServer);
+                
+            } else {
+                
+                NSString *message = (NSString *)[meta objectForKey:@"message"];
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                }
+                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+            }
+        } else {
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+        }
+
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
                 
         failureRequest(response, error, request.redirectedServer);
@@ -1712,6 +1742,8 @@
         failureRequest(response, error, request.redirectedServer);
     }];
 }
+
+#pragma mark - Activity
 
 - (void) getActivityServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
 
@@ -1795,6 +1827,8 @@
     }];
 }
 
+#pragma mark - External Sites
+
 - (void) getExternalSitesServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfExternalSites, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:k_url_acces_external_sites_api];
@@ -1865,6 +1899,8 @@
         failureRequest(response, error, request.redirectedServer);
     }];
 }
+
+#pragma mark - User Profile
 
 - (void) getUserProfileServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, OCUserProfile *userProfile, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
@@ -2137,7 +2173,7 @@
     }];
 }
 
-- (void)signEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey,NSString *redirectedServer))successRequest  failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (void)signEndToEndPublicKey:(NSString*)serverPath publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *publicKey,NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath stringByAppendingString:k_url_client_side_encryption];
     serverPath = [serverPath stringByAppendingString:@"/public-key"];

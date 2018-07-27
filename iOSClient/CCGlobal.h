@@ -228,7 +228,6 @@
 #define actionSetNotificationServer                     @"setNotificationServer"
 #define actionShare                                     @"share"
 #define actionShareWith                                 @"shareWith"
-#define actionSubscribingNextcloudServer                @"subscribingNextcloudServer"
 #define actionUnShare                                   @"unShare"
 #define actionUpdateShare                               @"updateShare"
 

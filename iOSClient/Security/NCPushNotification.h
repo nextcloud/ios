@@ -1,9 +1,9 @@
 //
-//  NCBridgeSwift.h
-//  Nextcloud iOS
+//  NCPushNotification.h
+//  Nextcloud
 //
-//  Created by Marino Faggiana on 11/05/17.
-//  Copyright © 2017 TWS. All rights reserved.
+//  Created by Marino Faggiana on 25/07/18.
+//  Copyright © 2018 TWS. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -20,37 +20,18 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
+//  This code derived from : Nextcloud Talk - NCSettingsController Created by Ivan Sein on 26.06.17. Copyright © 2017 struktur AG. All rights reserved.
 //
-// App bridge swift
-//
-// change 
-// from   : Nextcloud-Swift.h
-// to     : brand-Swift.h
-//
-#if !defined(EXTENSION)
 
-    #import "Nextcloud-Swift.h"
+#import <Foundation/Foundation.h>
 
-#endif
+@interface NCPushNotification : NSObject
 
-// Nextcloud Share
-#if defined(EXTENSION_SHARE)
+@property (nonatomic, copy) NSData *ncPNPublicKey;
+@property (nonatomic, copy) NSData *ncPNPrivateKey;
 
-    #import "Share-Swift.h"
++ (NCPushNotification *)sharedInstance;
+- (BOOL)generatePushNotificationsKeyPair;
+- (NSString *)decryptPushNotification:(NSString *)message withDevicePrivateKey:(NSData *)privateKey;
 
-#endif
-
-// Nextcloud File Provider Extension
-#if defined(EXTENSION_FILE_PROVIDER_EXTENSION)
-
-    #import "File_Provider_Extension-Swift.h"
-
-#endif
-
-// Nextcloud Notification Service Extension
-#if defined(EXTENSION_NOTIFICATION_SERVICE)
-
-    #import "Notification_Service_Extension-Swift.h"
-
-#endif
+@end
