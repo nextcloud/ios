@@ -414,7 +414,7 @@
     NSString *devicePublicKey = [[NSString alloc] initWithData:[NCPushNotification sharedInstance].ncPNPublicKey encoding:NSUTF8StringEncoding];
 
     [ocNetworking subscribingPushNotificationServer:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey success:^{
-        NSLog(@"[LOG] Subscribed to Push Notification server successfully.");
+        NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
     } failure:^(NSString *message, NSInteger errorCode) {
         NSLog(@"[LOG] Error while subscribing to Push Notification server.");
     }];
