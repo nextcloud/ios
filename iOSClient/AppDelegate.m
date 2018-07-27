@@ -447,7 +447,6 @@
     NSLog(@"FCM registration token: %@", fcmToken);
     [CCUtility setPushNotificationToken:fcmToken];
     
-    //
     [self subscribingNextcloudServerPushNotification];
 }
 
