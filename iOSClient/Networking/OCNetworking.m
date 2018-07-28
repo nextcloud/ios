@@ -188,7 +188,6 @@
         if(contentLength) {
             totalUnitCount = (int64_t) [contentLength longLongValue];
         }
-        NSString *etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
         NSString *dateString = [fields objectForKey:@"Date"];
         if (dateString) {
             if (![dateFormatter getObjectValue:&date forString:dateString range:nil error:&error]) {
@@ -198,7 +197,12 @@
             date = [NSDate date];
         }
         
-        success(totalUnitCount, etag, date);
+        NSString *etag = [CCUtility removeForbiddenCharactersFileSystem:[fields objectForKey:@"OC-ETag"]];
+        if (etag == nil) {
+            failure(@"Internal error", k_CCErrorInternalError);
+        } else {
+            success(totalUnitCount, etag, date);
+        }
         
     } failureRequest:^(NSURLResponse *response, NSError *error) {
         
