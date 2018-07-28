@@ -77,7 +77,9 @@ class NCMainCommon: NSObject {
             return
         }
         
-        let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) as URLSession
+        guard let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) else {
+            return
+        }
         
         // SESSION EXTENSION
         if metadata.session == k_download_session_extension || metadata.session == k_upload_session_extension {
