@@ -81,8 +81,10 @@ class NCUtility: NSObject {
         let resources = PHAssetResource.assetResources(for: asset)
         
         if let resource = resources.first {
-            let unsignedInt64 = resource.value(forKey: "fileSize") as! CLong
-            return Int64(bitPattern: UInt64(unsignedInt64))
+            if resource.responds(to: #selector(NSDictionary.fileSize)) {
+                let unsignedInt64 = resource.value(forKey: "fileSize") as! CLong
+                return Int64(bitPattern: UInt64(unsignedInt64))
+            }
         }
         
         return 0
