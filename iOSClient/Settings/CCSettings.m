@@ -158,6 +158,7 @@
     [section addFormRow:row];
     
     // Contact us mail
+    /*
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"sendmail" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_contact_by_email_", nil)];
     [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
     [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
@@ -165,7 +166,8 @@
     [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"mail"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
     row.action.formSelector = @selector(sendMail:);
     [section addFormRow:row];
-   
+    */
+    
     self.form = form;
 }
 
