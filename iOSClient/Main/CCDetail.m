@@ -47,8 +47,6 @@
     
     NSMutableOrderedSet *_dataSourceDirectoryID;
     NSString *_fileNameExtension;
-    
-    CCHud *_hud;
 }
 @end
 
@@ -72,7 +70,6 @@
         self.photos = [[NSMutableArray alloc] init];
         self.dataSourceImagesVideos = [[NSMutableArray alloc] init];
         _dataSourceDirectoryID = [[NSMutableOrderedSet alloc] init];
-        _hud = [[CCHud alloc] initWithView:[[[UIApplication sharedApplication] delegate] window]];
         _indexNowVisible = -1;
         _fileIDNowVisible = nil;
 
@@ -452,12 +449,15 @@
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index
 {
     UIImage *image;
-    
+//    UIImage *loadingGIF = [UIImage animatedImageWithAnimatedGIFURL:[[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"]];
+
     tableMetadata *metadata = [self.dataSourceImagesVideos objectAtIndex:index];
     
     if (index < self.photos.count) {
         
         if (metadata.fileID) {
+            
+            UIImage *imagePreview = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
@@ -481,6 +481,10 @@
                     if (metadata.status == k_metadataStatusDownloadError) {
                         
                         [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
+                        
+                    } else {
+                        
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:imagePreview]];
                     }
                 }
             }
@@ -501,6 +505,10 @@
                     if (metadata.status == k_metadataStatusDownloadError) {
                         
                         [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
+                        
+                    } else {
+                        
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:imagePreview]];
                     }
                 }
             }
@@ -529,6 +537,10 @@
                     if (metadata.status == k_metadataStatusDownloadError) {
                         
                         [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:[UIImage imageNamed:@"filePreviewError"]]];
+                        
+                    } else {
+                        
+                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:imagePreview]];
                     }
                 }
             }
@@ -625,8 +637,8 @@
     //long long totalBytes = [[dict valueForKey:@"totalBytes"] longLongValue];
     //long long totalBytesExpected = [[dict valueForKey:@"totalBytesExpected"] longLongValue];
     
-    if ([fileID isEqualToString:_fileIDNowVisible])
-        [_hud progress:progress];
+//    if ([fileID isEqualToString:_fileIDNowVisible])
+//        [_hud progress:progress];
 }
 
 - (void)downloadPhotoBrowserSuccessFailure:(tableMetadata *)metadata selector:(NSString *)selector errorCode:(NSInteger)errorCode
@@ -634,8 +646,6 @@
     // if a message for a directory of these
     if (![metadata.fileID isEqualToString:_fileIDNowVisible])
         return;
- 
-    [_hud hideHud];
     
     if (errorCode == 0) {
         // verifico se esiste l'icona e se la posso creare
@@ -656,8 +666,6 @@
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
     if (serverUrl) {
-        
-        [_hud visibleHudTitle:@"" mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
         
         metadata.session = k_download_session;
         metadata.sessionError = @"";
