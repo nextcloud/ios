@@ -461,6 +461,8 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
+                if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
+                
                 NSString *fileImage = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
                 NSString *ext = [CCUtility getExtension:metadata.fileNameView];
                 
@@ -491,6 +493,8 @@
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
                 
+                if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
+                
                 if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
                     
                     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
@@ -514,6 +518,8 @@
             }
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) {
+                
+                if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_audio"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
                 
                 if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
                     
