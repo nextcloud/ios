@@ -1,5 +1,5 @@
 //
-//  NCPushNotification.h
+//  NCPushNotificationEncryption.h
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 25/07/18.
@@ -25,12 +25,12 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NCPushNotification : NSObject
+@interface NCPushNotificationEncryption : NSObject
 
 @property (nonatomic, copy) NSData *ncPNPublicKey;
 @property (nonatomic, copy) NSData *ncPNPrivateKey;
 
-+ (NCPushNotification *)sharedInstance;
++ (NCPushNotificationEncryption *)sharedInstance;
 - (BOOL)generatePushNotificationsKeyPair;
 - (NSString *)decryptPushNotification:(NSString *)message withDevicePrivateKey:(NSData *)privateKey;
 

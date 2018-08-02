@@ -37,7 +37,7 @@
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
 #import "Firebase.h"
-#import "NCPushNotification.h"
+#import "NCPushNotificationEncryption.h"
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
 
@@ -407,11 +407,11 @@
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
     
-    [[NCPushNotification sharedInstance] generatePushNotificationsKeyPair];
+    [[NCPushNotificationEncryption sharedInstance] generatePushNotificationsKeyPair];
 
     NSString *pushToken = [CCUtility getPushNotificationToken];
     NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:pushToken];
-    NSString *devicePublicKey = [[NSString alloc] initWithData:[NCPushNotification sharedInstance].ncPNPublicKey encoding:NSUTF8StringEncoding];
+    NSString *devicePublicKey = [[NSString alloc] initWithData:[NCPushNotificationEncryption sharedInstance].ncPNPublicKey encoding:NSUTF8StringEncoding];
 
     [ocNetworking subscribingPushNotificationServer:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey success:^{
         NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
@@ -431,8 +431,8 @@
     //Called to let your app know which action was selected by the user for a given notification.
     NSString *message = [response.notification.request.content.userInfo objectForKey:@"subject"];
     
-    if (message && [NCPushNotification sharedInstance].ncPNPrivateKey) {
-        NSString *decryptedMessage = [[NCPushNotification sharedInstance] decryptPushNotification:message withDevicePrivateKey:[NCPushNotification sharedInstance].ncPNPrivateKey];
+    if (message && [NCPushNotificationEncryption sharedInstance].ncPNPrivateKey) {
+        NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:[NCPushNotificationEncryption sharedInstance].ncPNPrivateKey];
         if (decryptedMessage) {
            
         }

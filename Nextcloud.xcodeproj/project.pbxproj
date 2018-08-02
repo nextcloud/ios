@@ -109,7 +109,7 @@
 		F72D1000210B6638009C96B7 /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72D0FF7210B6638009C96B7 /* FirebaseInstanceID.framework */; };
 		F72D1001210B6638009C96B7 /* FirebaseCoreDiagnostics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72D0FF8210B6638009C96B7 /* FirebaseCoreDiagnostics.framework */; };
 		F72D1003210B67CE009C96B7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F72D1002210B67CE009C96B7 /* GoogleService-Info.plist */; };
-		F72D1007210B6882009C96B7 /* NCPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotification.m */; };
+		F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F72D100F210B6B17009C96B7 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F72D100E210B6B17009C96B7 /* NotificationService.swift */; };
 		F72D1013210B6B17009C96B7 /* Notification Service Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F72D100C210B6B16009C96B7 /* Notification Service Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F72D101A210B7473009C96B7 /* CCUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = F7053E3D1C639DF500741EA5 /* CCUtility.m */; };
@@ -121,7 +121,7 @@
 		F72D103C210B777F009C96B7 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F72D103D210B7796009C96B7 /* OCSharedDto.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022791EC4C9100080073F /* OCSharedDto.m */; };
 		F72D103E210B77A5009C96B7 /* OCActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022671EC4C9100080073F /* OCActivity.m */; };
-		F72D103F210B77B8009C96B7 /* NCPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotification.m */; };
+		F72D103F210B77B8009C96B7 /* NCPushNotificationEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */; };
 		F72D1040210B77EA009C96B7 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F72D1041210B77ED009C96B7 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F72D1042210B783D009C96B7 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
@@ -768,8 +768,8 @@
 		F72D0FF8210B6638009C96B7 /* FirebaseCoreDiagnostics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCoreDiagnostics.framework; sourceTree = "<group>"; };
 		F72D1002210B67CE009C96B7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		F72D1004210B6835009C96B7 /* Firebase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Firebase.h; sourceTree = "<group>"; };
-		F72D1005210B6882009C96B7 /* NCPushNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCPushNotification.m; sourceTree = "<group>"; };
-		F72D1006210B6882009C96B7 /* NCPushNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCPushNotification.h; sourceTree = "<group>"; };
+		F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCPushNotificationEncryption.m; sourceTree = "<group>"; };
+		F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCPushNotificationEncryption.h; sourceTree = "<group>"; };
 		F72D100C210B6B16009C96B7 /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F72D100E210B6B17009C96B7 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		F72D1019210B7394009C96B7 /* NotificationServiceExtension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NotificationServiceExtension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -1354,6 +1354,8 @@
 		F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCLoginWeb.swift; sourceTree = "<group>"; };
 		F7B4F1C71F44356F00B53B42 /* NCUchardet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCUchardet.h; sourceTree = "<group>"; };
 		F7B4F1C81F44356F00B53B42 /* NCUchardet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCUchardet.m; sourceTree = "<group>"; };
+		F7B7ED3A21133A4300C89FFA /* Notification_Service_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notification_Service_Extension.entitlements; sourceTree = "<group>"; };
+		F7B7ED3B21133A6000C89FFA /* Notification_Service_Extension.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Notification_Service_Extension.plist; sourceTree = "<group>"; };
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BB04821FD58ACA00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
@@ -2812,7 +2814,9 @@
 				F7C742C01E7BD01F00D9C973 /* iOSClient.entitlements */,
 				F7C742D01E7BD35B00D9C973 /* Share.entitlements */,
 				F771E3FB20E23A8700AFB62D /* File_Provider_Extension.entitlements */,
+				F7B7ED3A21133A4300C89FFA /* Notification_Service_Extension.entitlements */,
 				F771E3FC20E23A8800AFB62D /* File_Provider_Extension.plist */,
+				F7B7ED3B21133A6000C89FFA /* Notification_Service_Extension.plist */,
 				F7496B81208F5651004B299C /* iOSClient.plist */,
 				F7496B83208F5652004B299C /* Share.plist */,
 			);
@@ -3261,8 +3265,8 @@
 				F7F801001D98205A007537BC /* CCCertificate.h */,
 				F7F801011D98205A007537BC /* CCCertificate.m */,
 				F7F878AD1FB9E3B900599E4F /* NCEndToEndMetadata.swift */,
-				F72D1006210B6882009C96B7 /* NCPushNotification.h */,
-				F72D1005210B6882009C96B7 /* NCPushNotification.m */,
+				F72D1006210B6882009C96B7 /* NCPushNotificationEncryption.h */,
+				F72D1005210B6882009C96B7 /* NCPushNotificationEncryption.m */,
 				F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */,
 				F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */,
 			);
@@ -3733,7 +3737,7 @@
 				F72D103A210B769E009C96B7 /* NCDatabase.swift in Sources */,
 				F72D103D210B7796009C96B7 /* OCSharedDto.m in Sources */,
 				F72D101B210B74CA009C96B7 /* UICKeyChainStore.m in Sources */,
-				F72D103F210B77B8009C96B7 /* NCPushNotification.m in Sources */,
+				F72D103F210B77B8009C96B7 /* NCPushNotificationEncryption.m in Sources */,
 				F72D103E210B77A5009C96B7 /* OCActivity.m in Sources */,
 				F72D1042210B783D009C96B7 /* NCEndToEndEncryption.m in Sources */,
 				F72D103B210B76A1009C96B7 /* NCManageDatabase.swift in Sources */,
@@ -3890,7 +3894,7 @@
 				F7CA1ED120E7E3FE002CC65E /* PKCircleProgressView.m in Sources */,
 				F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */,
 				F762CAFC1EACB66200B38484 /* XLFormImageCell.m in Sources */,
-				F72D1007210B6882009C96B7 /* NCPushNotification.m in Sources */,
+				F72D1007210B6882009C96B7 /* NCPushNotificationEncryption.m in Sources */,
 				F70022D11EC4C9100080073F /* OCUserProfile.m in Sources */,
 				F73B4EF61F470D9100BBEE4B /* LangArabicModel.cpp in Sources */,
 				F7CA1ED420E7E3FE002CC65E /* PKPendingView.m in Sources */,

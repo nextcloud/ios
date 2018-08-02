@@ -40,7 +40,7 @@ class NotificationService: UNNotificationServiceExtension {
             
             let message = bestAttemptContent.userInfo["subject"] as! String
             
-            guard let decryptedMessage = NCPushNotification.sharedInstance().decryptPushNotification(message, withDevicePrivateKey: CCUtility.getPushNotificationPrivateKey()) else {
+            guard let decryptedMessage = NCPushNotificationEncryption.sharedInstance().decryptPushNotification(message, withDevicePrivateKey: CCUtility.getPushNotificationPrivateKey()) else {
                 contentHandler(bestAttemptContent)
                 return
             }

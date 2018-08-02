@@ -1,5 +1,5 @@
 //
-//  NCPushNotification.m
+//  NCPushNotificationEncryption.m
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 25/07/18.
@@ -23,7 +23,7 @@
 //  This code derived from : Nextcloud Talk - NCSettingsController Created by Ivan Sein on 26.06.17. Copyright © 2017 struktur AG. All rights reserved.
 //
 
-#import "NCPushNotification.h"
+#import "NCPushNotificationEncryption.h"
 
 #import <openssl/rsa.h>
 #import <openssl/pem.h>
@@ -37,12 +37,12 @@
 #import "NCEndToEndEncryption.h"
 #import "CCUtility.h"
 
-@implementation NCPushNotification
+@implementation NCPushNotificationEncryption
 
-+ (NCPushNotification *)sharedInstance
++ (NCPushNotificationEncryption *)sharedInstance
 {
     static dispatch_once_t once;
-    static NCPushNotification *sharedInstance;
+    static NCPushNotificationEncryption *sharedInstance;
     dispatch_once(&once, ^{
         sharedInstance = [[self alloc] init];
     });
