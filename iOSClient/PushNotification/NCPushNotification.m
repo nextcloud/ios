@@ -11,7 +11,8 @@
 @implementation NCPushNotification
 
 NSString * const kNCPNAppKey            = @"app";
-NSString * const kNCPNAppIdComments     = @"comments";
+NSString * const kNCPNAppIdKey          = @"spreed";
+NSString * const kNCPNAppIdKeyComments  = @"comments";
 NSString * const kNCPNTypeKey           = @"type";
 NSString * const kNCPNSubjectKey        = @"subject";
 NSString * const kNCPNIdKey             = @"id";
@@ -35,7 +36,7 @@ NSString * const NCPushNotificationJoinVideoCallAcceptedNotification    = @"NCPu
     id jsonDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     
     NSString *app = [jsonDict objectForKey:kNCPNAppKey];
-    if (![app isEqualToString:kNCPNAppIdComments]) {
+    if (![app isEqualToString:kNCPNAppIdKeyComments]) {
         return nil;
     }
     

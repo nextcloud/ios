@@ -429,7 +429,6 @@
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(nonnull UNNotificationResponse *)response withCompletionHandler:(nonnull void (^)(void))completionHandler
 {
-    //Called to let your app know which action was selected by the user for a given notification.
     NSString *message = [response.notification.request.content.userInfo objectForKey:@"subject"];
     
     if (message && [NCPushNotificationEncryption sharedInstance].ncPNPrivateKey) {
