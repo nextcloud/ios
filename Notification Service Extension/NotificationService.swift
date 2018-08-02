@@ -25,6 +25,7 @@ import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
 
+    let privateKey = CCUtility.getPushNotificationPrivateKey()
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
 
@@ -36,19 +37,25 @@ class NotificationService: UNNotificationServiceExtension {
         if let bestAttemptContent = bestAttemptContent {
             
             bestAttemptContent.title = "Nextcloud notification 🔔"
-            bestAttemptContent.body = ""
+            bestAttemptContent.body = "Nextcloud notification 🔔"
             
             let message = bestAttemptContent.userInfo["subject"] as! String
             
-            guard let decryptedMessage = NCPushNotificationEncryption.sharedInstance().decryptPushNotification(message, withDevicePrivateKey: CCUtility.getPushNotificationPrivateKey()) else {
-                
+            guard let privateKey = CCUtility.getPushNotificationPrivateKey() else {
                 contentHandler(bestAttemptContent)
                 return
             }
             
+            guard let decryptedMessage = NCPushNotificationEncryption.sharedInstance().decryptPushNotification(message, withDevicePrivateKey: privateKey) else {
+                contentHandler(bestAttemptContent)
+                return
+            }
+            
+            NSLog("[LOG] PN Decr Message, %@", decryptedMessage)
+            
             let pushNotification = NCPushNotification.init(fromDecryptedString: decryptedMessage)
             if (pushNotification != nil) {
-                bestAttemptContent.title = ""
+                bestAttemptContent.title = "Nextcloud notification 🔔"
                 bestAttemptContent.body = pushNotification!.bodyForRemoteAlerts()
             }
             
@@ -60,8 +67,11 @@ class NotificationService: UNNotificationServiceExtension {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+            NSLog("[LOG] PN X1")
             contentHandler(bestAttemptContent)
         }
+        
+        NSLog("[LOG] PN X2")
     }
 
 }

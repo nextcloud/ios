@@ -432,7 +432,9 @@
     NSString *message = [response.notification.request.content.userInfo objectForKey:@"subject"];
     
     if (message && [NCPushNotificationEncryption sharedInstance].ncPNPrivateKey) {
-        NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:[NCPushNotificationEncryption sharedInstance].ncPNPrivateKey];
+        
+        NSData *privateKey = [CCUtility getPushNotificationPrivateKey];
+        NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:privateKey];
         if (decryptedMessage) {
            
             NCPushNotification *pushNotification = [NCPushNotification pushNotificationFromDecryptedString:decryptedMessage];
