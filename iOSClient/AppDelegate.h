@@ -82,6 +82,10 @@
 // Passcode lockDirectory
 @property (nonatomic, strong) NSDate *sessionePasscodeLock;
 
+// Audio Video
+@property (nonatomic, strong) AVPlayer *player;
+@property (nonatomic, strong) AVPlayerViewController *playerController;
+
 // Remenu
 @property (nonatomic, strong) REMenu *reMainMenu;
 @property (nonatomic, strong) REMenuItem *selezionaItem;

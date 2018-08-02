@@ -189,7 +189,7 @@
     
     //AV Session
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
-    //[[AVAudioSession sharedInstance] setActive:YES error:nil];
+    // [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     // How to hide UINavigationBar 1px bottom line < iOS 11

@@ -812,13 +812,15 @@
         self.detailViewController = segue.destinationViewController;
     }
     
-    NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
+    NSMutableArray *photoDataSource = [NSMutableArray new];
+    
     for (NSString *fileID in sectionDataSource.allFileID) {
         tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
-        [allRecordsDataSourceImagesVideos addObject:metadata];
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
+            [photoDataSource addObject:metadata];
     }
     
-    self.detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
+    self.detailViewController.photoDataSource = photoDataSource;
     self.detailViewController.metadataDetail = self.metadata;
     self.detailViewController.dateFilterQuery = self.metadata.date;
     

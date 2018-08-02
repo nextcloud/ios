@@ -374,8 +374,17 @@
         // Setting Theming
         [appDelegate settingThemingColorBrand];
         
-        // remove all of detail
-        [appDelegate.activeDetail removeAllView];
+        // Detail
+        // If AVPlayer in play -> Stop
+        if (appDelegate.player != nil && appDelegate.player.rate != 0) {
+            [appDelegate.player pause];
+        }
+        for (UIView *view in [appDelegate.activeDetail.view subviews]) {
+            if ([view isKindOfClass:[UIImageView class]] == NO) { // View Image Nextcloud
+                [view removeFromSuperview];
+            }
+        }
+        appDelegate.activeDetail.title = nil;
         
         // remove all Notification Messages
         [appDelegate.listOfNotifications removeAllObjects];
@@ -4383,17 +4392,24 @@
                 
             } else {
             
-                _metadata.session = k_download_session;
-                _metadata.sessionError = @"";
-                _metadata.sessionSelector = selectorLoadFileView;
-                _metadata.status = k_metadataStatusWaitDownload;
-                
-                // Add Metadata for Download
-                (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
-                [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-                            
-                NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:_metadata.fileID];
-                if (indexPath) [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+                if (([_metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) && _metadataFolder.e2eEncrypted == NO) {
+                    
+                    if ([self shouldPerformSegue])
+                        [self performSegueWithIdentifier:@"segueDetail" sender:self];
+                    
+                } else {
+                   
+                    _metadata.session = k_download_session;
+                    _metadata.sessionError = @"";
+                    _metadata.sessionSelector = selectorLoadFileView;
+                    _metadata.status = k_metadataStatusWaitDownload;
+                    
+                    // Add Metadata for Download
+                    (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
+                    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                    
+                    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+                }
             }
         }
     }
@@ -4470,7 +4486,6 @@
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
     id viewController = segue.destinationViewController;
-    NSMutableArray *allRecordsDataSourceImagesVideos = [NSMutableArray new];
     tableMetadata *metadata;
     
     if ([viewController isKindOfClass:[UINavigationController class]]) {
@@ -4483,10 +4498,12 @@
         _detailViewController = segue.destinationViewController;
     }
     
+    NSMutableArray *photoDataSource = [NSMutableArray new];
+    
     if ([sender isKindOfClass:[tableMetadata class]]) {
     
         metadata = sender;
-        [allRecordsDataSourceImagesVideos addObject:sender];
+        [photoDataSource addObject:sender];
         
     } else {
         
@@ -4494,13 +4511,13 @@
         
         for (NSString *fileID in sectionDataSource.allFileID) {
             tableMetadata *metadata = [sectionDataSource.allRecordsDataSource objectForKey:fileID];
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] || [metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [metadata.typeFile isEqualToString: k_metadataTypeFile_audio])
-                [allRecordsDataSourceImagesVideos addObject:metadata];
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
+                [photoDataSource addObject:metadata];
         }
     }
     
     _detailViewController.metadataDetail = metadata;
-    _detailViewController.dataSourceImagesVideos = allRecordsDataSourceImagesVideos;
+    _detailViewController.photoDataSource = photoDataSource;
     _detailViewController.dateFilterQuery = nil;
     
     [_detailViewController setTitle:metadata.fileNameView];

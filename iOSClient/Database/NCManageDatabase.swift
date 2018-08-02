@@ -1906,6 +1906,10 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func initNewMetadata(_ metadata: tableMetadata) -> tableMetadata {
+        return tableMetadata.init(value: metadata)
+    }
+    
     //MARK: -
     //MARK: Table Photos
     @objc func getTablePhotos(addMetadatasFromUpload: [tableMetadata]) -> [tableMetadata]? {
@@ -1932,6 +1936,22 @@ class NCManageDatabase: NSObject {
         } else {
             return nil
         }
+    }
+    
+    @objc func getTablePhoto(predicate: NSPredicate) -> tableMetadata? {
+        
+        guard self.getAccountActive() != nil else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tablePhotos.self).filter(predicate).first else {
+            return nil
+        }
+        
+        return tableMetadata.init(value: result)
     }
     
     @objc func createTablePhotos(_ metadatas: [tableMetadata]) {

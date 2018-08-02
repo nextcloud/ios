@@ -376,6 +376,12 @@
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F78071211EDB135100EAFFF6 /* CCPhotos.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071201EDB135100EAFFF6 /* CCPhotos.m */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
+		F784FA28210F672E00256C26 /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */; };
+		F784FA29210F672E00256C26 /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA27210F672E00256C26 /* KTVHTTPCache.framework */; };
+		F784FA2E210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */; };
+		F784FA2F210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F784FA30210F6FC500256C26 /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA27210F672E00256C26 /* KTVHTTPCache.framework */; };
+		F784FA31210F6FC500256C26 /* KTVHTTPCache.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA27210F672E00256C26 /* KTVHTTPCache.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F78964AD1EBB576C00403E13 /* JDStatusBarNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */; };
 		F78964AE1EBB576C00403E13 /* JDStatusBarStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AA1EBB576C00403E13 /* JDStatusBarStyle.m */; };
 		F78964AF1EBB576C00403E13 /* JDStatusBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = F78964AC1EBB576C00403E13 /* JDStatusBarView.m */; };
@@ -598,6 +604,8 @@
 			files = (
 				F7DFE25A1EBDC53200CF5202 /* RealmSwift.framework in Embed Frameworks */,
 				F7DFE2581EBDC52E00CF5202 /* Realm.framework in Embed Frameworks */,
+				F784FA2F210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Embed Frameworks */,
+				F784FA31210F6FC500256C26 /* KTVHTTPCache.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1256,6 +1264,9 @@
 		F78071201EDB135100EAFFF6 /* CCPhotos.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCPhotos.m; sourceTree = "<group>"; };
 		F78316861C0CB3CA00C43975 /* CCShareUserOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareUserOC.h; sourceTree = "<group>"; };
 		F78316871C0CB3CA00C43975 /* CCShareUserOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareUserOC.m; sourceTree = "<group>"; };
+		F784FA25210F672E00256C26 /* KTVHTTPCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KTVHTTPCache.h; sourceTree = "<group>"; };
+		F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KTVCocoaHTTPServer.framework; sourceTree = "<group>"; };
+		F784FA27210F672E00256C26 /* KTVHTTPCache.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = KTVHTTPCache.framework; sourceTree = "<group>"; };
 		F78964A71EBB576C00403E13 /* JDStatusBarNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarNotification.h; sourceTree = "<group>"; };
 		F78964A81EBB576C00403E13 /* JDStatusBarNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JDStatusBarNotification.m; sourceTree = "<group>"; };
 		F78964A91EBB576C00403E13 /* JDStatusBarStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JDStatusBarStyle.h; sourceTree = "<group>"; };
@@ -1704,6 +1715,7 @@
 				F75EDFBD1E8C112F00E6F369 /* libsqlite3.0.tbd in Frameworks */,
 				F72D0FFF210B6638009C96B7 /* FirebaseNanoPB.framework in Frameworks */,
 				F7DFE2541EBDC3A400CF5202 /* RealmSwift.framework in Frameworks */,
+				F784FA2E210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Frameworks */,
 				F7A377161EB2364A002856D3 /* Crashlytics.framework in Frameworks */,
 				F7FC7D561DC1F93800BB2C6A /* libz.tbd in Frameworks */,
 				F7A3771A1EB2364A002856D3 /* Fabric.framework in Frameworks */,
@@ -1714,9 +1726,12 @@
 				F72D1000210B6638009C96B7 /* FirebaseInstanceID.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
+				F784FA28210F672E00256C26 /* KTVCocoaHTTPServer.framework in Frameworks */,
+				F784FA30210F6FC500256C26 /* KTVHTTPCache.framework in Frameworks */,
 				F72D1001210B6638009C96B7 /* FirebaseCoreDiagnostics.framework in Frameworks */,
 				F72D0FFA210B6638009C96B7 /* FirebaseMessaging.framework in Frameworks */,
 				F72D0FFC210B6638009C96B7 /* FirebaseAnalytics.framework in Frameworks */,
+				F784FA29210F672E00256C26 /* KTVHTTPCache.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1874,6 +1889,7 @@
 				F7659A2A1DC0B72F004860C4 /* EARestrictedScrollView */,
 				F72D0FED210B6638009C96B7 /* Firebase */,
 				F78964A61EBB576C00403E13 /* JDStatusBarNotification */,
+				F784FA24210F672E00256C26 /* KTVHTTPCache */,
 				F7659A2F1DC0B737004860C4 /* iRate */,
 				F70F04821C889183008DAB36 /* MBProgressHUD */,
 				F7DC5FD31F00F98B00A903C7 /* MGSwipeTableCell */,
@@ -2526,6 +2542,16 @@
 				F78071201EDB135100EAFFF6 /* CCPhotos.m */,
 			);
 			path = Photos;
+			sourceTree = "<group>";
+		};
+		F784FA24210F672E00256C26 /* KTVHTTPCache */ = {
+			isa = PBXGroup;
+			children = (
+				F784FA25210F672E00256C26 /* KTVHTTPCache.h */,
+				F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */,
+				F784FA27210F672E00256C26 /* KTVHTTPCache.framework */,
+			);
+			path = KTVHTTPCache;
 			sourceTree = "<group>";
 		};
 		F78964A61EBB576C00403E13 /* JDStatusBarNotification */ = {
@@ -4705,6 +4731,7 @@
 					"$(PROJECT_DIR)\"/Libraries external/Firebase\"/**",
 					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 					"$(PROJECT_DIR)\"/Libraries external/Realm\"",
+					"$(PROJECT_DIR)\"/Libraries external/KTVHTTPCache\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;
@@ -4753,6 +4780,7 @@
 					"$(PROJECT_DIR)\"/Libraries external/Firebase\"/**",
 					"$(PROJECT_DIR)\"/Libraries external/Fabric\"",
 					"$(PROJECT_DIR)\"/Libraries external/Realm\"",
+					"$(PROJECT_DIR)\"/Libraries external/KTVHTTPCache\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = iOSClient/CryptoCloud.pch;

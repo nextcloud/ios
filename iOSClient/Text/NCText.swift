@@ -24,6 +24,10 @@
 
 import Foundation
 
+@objc protocol NCTextDelegate {
+    func dismissTextView()
+}
+
 class NCText: UIViewController, UITextViewDelegate {
 
     @IBOutlet weak var cancelButton: UIBarButtonItem!
@@ -35,6 +39,7 @@ class NCText: UIViewController, UITextViewDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @objc var metadata: tableMetadata?
+    @objc var delegate: NCTextDelegate?
     var loadText: String?
     
     override func viewDidLoad() {
@@ -124,7 +129,9 @@ class NCText: UIViewController, UITextViewDelegate {
             let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: NSLocalizedString("_save_exit_", comment: ""), preferredStyle: .alert)
             
             let actionYes = UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default) { (action:UIAlertAction) in
-                self.dismiss(animated: true, completion: nil)
+                self.dismiss(animated: true, completion: {
+                    self.delegate?.dismissTextView()
+                })
             }
             
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .cancel) { (action:UIAlertAction) in
@@ -138,7 +145,9 @@ class NCText: UIViewController, UITextViewDelegate {
             
         } else {
             
-            self.dismiss(animated: true, completion: nil)
+            self.dismiss(animated: true, completion: {
+                self.delegate?.dismissTextView()
+            })
         }
     }
     
@@ -164,8 +173,8 @@ class NCText: UIViewController, UITextViewDelegate {
 
                         _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
                         self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
-
-                        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "detailBack"), object: nil)
+                        
+                        self.delegate?.dismissTextView()
                     })
 
                 } else {
@@ -173,7 +182,9 @@ class NCText: UIViewController, UITextViewDelegate {
                 }
                 
             } else {
-                self.dismiss(animated: true, completion: nil)
+                self.dismiss(animated: true, completion: {
+                    self.delegate?.dismissTextView()
+                })
             }
             
         } else {

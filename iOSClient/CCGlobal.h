@@ -171,6 +171,9 @@
 // Max Size Operation
 #define k_maxSizeOperationUpload                        524288000   // 500 MB
 
+// Max Cache Proxy Video
+#define k_maxHTTPCache                                  10737418240 // 10GB
+
 // Error
 #define k_CCErrorTaskNil                                -9999
 #define k_CCErrorTaskDownloadNotFound                   -9998
