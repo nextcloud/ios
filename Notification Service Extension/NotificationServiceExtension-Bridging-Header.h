@@ -23,6 +23,7 @@
 
 #import "CCUtility.h"
 #import "NCPushNotificationEncryption.h"
+#import "NCPushNotification.h"
 
 #import "OCActivity.h"
 #import "OCUserProfile.h"

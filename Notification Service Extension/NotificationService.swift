@@ -41,11 +41,16 @@ class NotificationService: UNNotificationServiceExtension {
             let message = bestAttemptContent.userInfo["subject"] as! String
             
             guard let decryptedMessage = NCPushNotificationEncryption.sharedInstance().decryptPushNotification(message, withDevicePrivateKey: CCUtility.getPushNotificationPrivateKey()) else {
+                
                 contentHandler(bestAttemptContent)
                 return
             }
             
-            bestAttemptContent.body = decryptedMessage
+            let pushNotification = NCPushNotification.init(fromDecryptedString: decryptedMessage)
+            if (pushNotification != nil) {
+                bestAttemptContent.title = ""
+                bestAttemptContent.body = pushNotification!.bodyForRemoteAlerts()
+            }
             
             contentHandler(bestAttemptContent)
         }

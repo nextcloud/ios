@@ -38,6 +38,7 @@
 #import "NCAutoUpload.h"
 #import "Firebase.h"
 #import "NCPushNotificationEncryption.h"
+#import "NCPushNotification.h"
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
 
@@ -435,6 +436,21 @@
         NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:[NCPushNotificationEncryption sharedInstance].ncPNPrivateKey];
         if (decryptedMessage) {
            
+            NCPushNotification *pushNotification = [NCPushNotification pushNotificationFromDecryptedString:decryptedMessage];
+            if (pushNotification) {
+                switch (pushNotification.type) {
+                    case NCPushNotificationTypeComment:
+                    {
+                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[pushNotification bodyForRemoteAlerts] message:nil preferredStyle:UIAlertControllerStyleAlert];
+                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                        
+                        [alertController addAction:okAction];
+                        [self.activeMain presentViewController:alertController animated:YES completion:nil];
+                    }
+                    default:
+                        break;
+                }
+            }
         }
     }
     completionHandler();
