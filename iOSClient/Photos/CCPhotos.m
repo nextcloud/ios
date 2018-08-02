@@ -697,8 +697,11 @@
     UIImageView *imageView = (UIImageView *)[cell viewWithTag:100];
     UIVisualEffectView *effect = [cell viewWithTag:200];
 
-    UIImageView *checked = [cell viewWithTag:300];
-    checked.image = [UIImage imageNamed:@"checked"];
+    UIImageView *checkedOverlay = [cell viewWithTag:300];
+    checkedOverlay.image = [UIImage imageNamed:@"checked"];
+    
+    UIImageView *videoOverlay = [cell viewWithTag:400];
+    videoOverlay.image = [UIImage imageNamed:@"VideoOverlay"];
 
     NSArray *metadatasForKey = [sectionDataSource.sectionArrayRow objectForKey:[sectionDataSource.sections objectAtIndex:indexPath.section]];
     
@@ -722,14 +725,21 @@
             }
         }
     
-        // Cheched
+        // Cheched Overlay
         if (cell.selected) {
-            checked.hidden = NO;
+            checkedOverlay.hidden = NO;
             effect.hidden = NO;
             effect.alpha = 0.4;
         } else {
-            checked.hidden = YES;
+            checkedOverlay.hidden = YES;
             effect.hidden = YES;
+        }
+        
+        // Video Overlay
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
+            videoOverlay.hidden = NO;
+        } else {
+            videoOverlay.hidden = YES;
         }
     }
     
