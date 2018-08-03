@@ -40,6 +40,7 @@
 #import "CCTransfers.h"
 
 @class CCLoginWeb;
+@class CCMore;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
@@ -119,6 +120,8 @@
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) CCLoginWeb *activeLoginWeb;
+@property (nonatomic, retain) CCMore *activeMore;
+
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;

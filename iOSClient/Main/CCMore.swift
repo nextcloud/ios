@@ -44,8 +44,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     var listExternalSite: [tableExternalSites]?
     var tabAccount : tableAccount?
     
-    //var loginWeb : CCLoginWeb!
-
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        appDelegate.activeMore = self
+    }
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()

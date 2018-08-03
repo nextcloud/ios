@@ -443,11 +443,27 @@
                     case NCPushNotificationTypeComment:
                     case NCPushNotificationTypeUnknown:
                     {
-                        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[pushNotification bodyForRemoteAlerts] message:nil preferredStyle:UIAlertControllerStyleAlert];
-                        UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+                        UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
                         
-                        [alertController addAction:okAction];
-                        [self.activeMain presentViewController:alertController animated:YES completion:nil];
+                        if (splitViewController.isCollapsed) {
+                            
+                            UITabBarController *tbc = splitViewController.viewControllers.firstObject;
+                            for (UINavigationController *nvc in tbc.viewControllers) {
+                                
+                                if ([nvc.topViewController isKindOfClass:[CCDetail class]])
+                                    [nvc popToRootViewControllerAnimated:NO];
+                            }
+                            
+                            [tbc setSelectedIndex: k_tabBarApplicationIndexMore];
+                            
+                        } else {
+                            
+                            UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
+                            [nvcDetail popToRootViewControllerAnimated:NO];
+                            
+                            UITabBarController *tbc = splitViewController.viewControllers.firstObject;
+                            [tbc setSelectedIndex: k_tabBarApplicationIndexMore];
+                        }
                     }
                     default:
                         break;
