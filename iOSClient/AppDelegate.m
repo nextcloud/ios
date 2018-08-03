@@ -403,7 +403,7 @@
 - (void)subscribingNextcloudServerPushNotification
 {
     // test
-    if (self.activeAccount.length == 0)
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
@@ -430,8 +430,15 @@
 
 - (void)unsubscribingNextcloudServerPushNotification:(BOOL)withSubscribing
 {
-    if (self.pnDeviceIdentifier == nil || self.pnDeviceIdentifierSignature == nil || self.pnPublicKey == nil)
+    // test
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
+    
+    if (self.pnDeviceIdentifier == nil || self.pnDeviceIdentifierSignature == nil || self.pnPublicKey == nil) {
+        if (withSubscribing)
+            [self subscribingNextcloudServerPushNotification];
+        return;
+    }
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
 

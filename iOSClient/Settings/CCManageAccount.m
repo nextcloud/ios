@@ -201,7 +201,8 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+    NSDictionary* userInfo = @{@"PushNotification": [NSNumber numberWithBool:YES]};
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:userInfo];
 }
 
 - (void)loginClose
@@ -345,7 +346,8 @@
             [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
  
             // Init home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+            NSDictionary* userInfo = @{@"PushNotification": [NSNumber numberWithBool:YES]};
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:userInfo];
             
             [self UpdateForm];
         }

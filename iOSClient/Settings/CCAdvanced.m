@@ -401,7 +401,8 @@
             // Close HUD
             [self.hud hideHud];
             // Inizialized home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+            NSDictionary* userInfo = @{@"PushNotification": [NSNumber numberWithBool:NO]};
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:userInfo];
         });
     });
 }
