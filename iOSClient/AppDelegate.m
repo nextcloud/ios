@@ -414,7 +414,7 @@
     NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:pushToken];
     NSString *devicePublicKey = [[NSString alloc] initWithData:[NCPushNotificationEncryption sharedInstance].ncPNPublicKey encoding:NSUTF8StringEncoding];
 
-    [ocNetworking subscribingPushNotificationServer:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey success:^{
+    [ocNetworking subscribingPushNotificationServer:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey success:^(NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey) {
         NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
     } failure:^(NSString *message, NSInteger errorCode) {
         NSLog(@"[LOG] Error while subscribing to Push Notification server.");
