@@ -441,6 +441,7 @@
             if (pushNotification) {
                 switch (pushNotification.type) {
                     case NCPushNotificationTypeComment:
+                    case NCPushNotificationTypeUnknown:
                     {
                         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:[pushNotification bodyForRemoteAlerts] message:nil preferredStyle:UIAlertControllerStyleAlert];
                         UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
