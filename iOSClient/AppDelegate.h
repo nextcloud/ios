@@ -122,11 +122,15 @@
 @property (nonatomic, retain) CCLoginWeb *activeLoginWeb;
 @property (nonatomic, retain) CCMore *activeMore;
 
-
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
 @property (nonatomic, strong) NSMutableArray *filterFileID;
+
+// Push Notification
+@property (nonatomic, strong) NSString *pnDeviceIdentifier;
+@property (nonatomic, strong) NSString *pnDeviceIdentifierSignature;
+@property (nonatomic, strong) NSString *pnPublicKey;
 
 // Maintenance Mode
 @property BOOL maintenanceMode;

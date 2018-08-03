@@ -413,11 +413,29 @@
     NSString *pushToken = [CCUtility getPushNotificationToken];
     NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:pushToken];
     NSString *devicePublicKey = [[NSString alloc] initWithData:[NCPushNotificationEncryption sharedInstance].ncPNPublicKey encoding:NSUTF8StringEncoding];
-
+    
+    self.pnDeviceIdentifier = nil;
+    self.pnDeviceIdentifierSignature = nil;
+    self.pnPublicKey = nil;
+    
     [ocNetworking subscribingPushNotificationServer:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey success:^(NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey) {
         NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+        self.pnDeviceIdentifier = deviceIdentifier;
+        self.pnDeviceIdentifierSignature = deviceIdentifierSignature;
+        self.pnPublicKey = publicKey;
     } failure:^(NSString *message, NSInteger errorCode) {
-        NSLog(@"[LOG] Error while subscribing to Push Notification server.");
+        NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+    }];
+}
+
+- (void)unsubscribingNextcloudServerPushNotification
+{
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
+
+    [ocNetworking unsubscribingPushNotificationServer:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey success:^{
+        NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+    } failure:^(NSString *message, NSInteger errorCode) {
+        NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
     }];
 }
 
