@@ -338,9 +338,6 @@
 //
 - (void)initializeMain:(NSNotification *)notification
 {
-    NSDictionary *dict = notification.userInfo;
-    BOOL pushNotification = [[dict valueForKey:@"PushNotification"] boolValue];
-    
     _directoryGroupBy = nil;
     _directoryOrder = nil;
     _dateReadDataSource = nil;
@@ -407,11 +404,7 @@
         
         // Read this folder
         [self readFileReloadFolder];
-        
-        // unsubscribing -> subscribing
-        if (pushNotification)
-            [appDelegate unsubscribingNextcloudServerPushNotification:YES];
-        
+                
     } else {
         
         // reload datasource
@@ -1028,8 +1021,7 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
         // go to home sweet home
-        NSDictionary* userInfo = @{@"PushNotification": [NSNumber numberWithBool:YES]};
-        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:userInfo];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
         
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     });
@@ -2647,8 +2639,7 @@
             [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
     
             // go to home sweet home
-            NSDictionary* userInfo = @{@"PushNotification": [NSNumber numberWithBool:YES]};
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:userInfo];        
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];        
         }
     });
 }

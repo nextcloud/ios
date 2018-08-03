@@ -119,8 +119,7 @@
     self.build = [CCUtility setBuild];
     
     // init home
-    NSDictionary* userInfo = @{@"PushNotification": [NSNumber numberWithBool:NO]};
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -182,8 +181,7 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    NSDictionary* userInfo = @{@"PushNotification": [NSNumber numberWithBool:YES]};
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:userInfo];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
 - (void)loginClose
