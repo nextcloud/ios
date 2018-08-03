@@ -127,7 +127,6 @@
 
 @property (nonatomic, strong) NSMutableArray *filterFileID;
 
-// Push Notification
 @property (nonatomic, strong) NSString *pnDeviceIdentifier;
 @property (nonatomic, strong) NSString *pnDeviceIdentifierSignature;
 @property (nonatomic, strong) NSString *pnPublicKey;
@@ -159,6 +158,10 @@
 - (void)plusButtonVisibile:(BOOL)visible;
 - (void)selectedTabBarController:(NSInteger)index;
 - (NSString *)getTabBarControllerActiveServerUrl;
+
+// Push Notification
+- (void)subscribingNextcloudServerPushNotification;
+- (void)unsubscribingNextcloudServerPushNotification;
 
 // Theming Color
 - (void)settingThemingColorBrand;
