@@ -444,26 +444,34 @@
                     case NCPushNotificationTypeUnknown:
                     {
                         UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+                        UINavigationController *navigationControllerMore;
+                        UITabBarController *tabBarController;
                         
                         if (splitViewController.isCollapsed) {
                             
-                            UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                            for (UINavigationController *nvc in tbc.viewControllers) {
+                            tabBarController = splitViewController.viewControllers.firstObject;
+                            for (UINavigationController *nvc in tabBarController.viewControllers) {
                                 
                                 if ([nvc.topViewController isKindOfClass:[CCDetail class]])
                                     [nvc popToRootViewControllerAnimated:NO];
+                                
+                                if ([nvc.topViewController isKindOfClass:[CCMore class]])
+                                    navigationControllerMore = nvc;
                             }
-                            
-                            [tbc setSelectedIndex: k_tabBarApplicationIndexMore];
                             
                         } else {
                             
                             UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
                             [nvcDetail popToRootViewControllerAnimated:NO];
                             
-                            UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                            [tbc setSelectedIndex: k_tabBarApplicationIndexMore];
+                            tabBarController = splitViewController.viewControllers.firstObject;
                         }
+                        
+                        if (tabBarController)
+                            [tabBarController setSelectedIndex: k_tabBarApplicationIndexMore];
+                        if (navigationControllerMore)
+                            [navigationControllerMore performSegueWithIdentifier:@"segueActivity" sender:navigationControllerMore];
+                        
                     }
                     default:
                         break;
