@@ -428,7 +428,7 @@
     }];
 }
 
-- (void)unsubscribingNextcloudServerPushNotification
+- (void)unsubscribingNextcloudServerPushNotification:(BOOL)withSubscribing
 {
     if (self.pnDeviceIdentifier == nil || self.pnDeviceIdentifierSignature == nil || self.pnPublicKey == nil)
         return;
@@ -437,6 +437,8 @@
 
     [ocNetworking unsubscribingPushNotificationServer:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey success:^{
         NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+        if (withSubscribing)
+            [self subscribingNextcloudServerPushNotification];
     } failure:^(NSString *message, NSInteger errorCode) {
         NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
     }];
