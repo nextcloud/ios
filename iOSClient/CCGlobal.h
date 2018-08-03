@@ -284,8 +284,10 @@
 #define k_activityDebugActionCreateFolder               @"Create Folder"
 #define k_activityDebugActionDeleteFileFolder           @"Delete File-Folder"
 #define k_activityDebugActionGetNotification            @"Get Notification Server"
-#define k_activityDebugActionPushProxy                  @"Subscribing Push Proxy"
-#define k_activityDebugActionServerPush                 @"Subscribing Server Push"
+#define k_activityDebugActionSubscribingServerPush      @"Subscribing Server Push"
+#define k_activityDebugActionUnsubscribingServerPush    @"Unsubscribing Server Push"
+#define k_activityDebugActionSubscribingPushProxy       @"Subscribing Push Proxy"
+#define k_activityDebugActionUnsubscribingPushProxy     @"Unsubscribing Push Proxy"
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
 
