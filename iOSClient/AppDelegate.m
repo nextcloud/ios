@@ -430,6 +430,9 @@
 
 - (void)unsubscribingNextcloudServerPushNotification
 {
+    if (self.pnDeviceIdentifier == nil || self.pnDeviceIdentifierSignature == nil || self.pnPublicKey == nil)
+        return;
+    
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
 
     [ocNetworking unsubscribingPushNotificationServer:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey success:^{
