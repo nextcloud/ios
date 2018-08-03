@@ -96,7 +96,7 @@
 {
     [super viewDidAppear:animated];
     
-    [self reloadDatasource];
+    [self getActivity];
 }
 
 - (void)changeTheming
@@ -145,6 +145,24 @@
 #pragma mark - ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
+- (void)getActivity
+{
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    [ocNetworking getActivityServer:^(NSArray *listOfActivity) {
+        
+        [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity];
+        [self reloadDatasource];
+        
+    } failure:^(NSString *message, NSInteger errorCode) {
+        
+        [self reloadDatasource];
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark - ==== Datasource ====
+#pragma --------------------------------------------------------------------------------------------
+
 - (void)reloadDatasource
 {
     // test
@@ -163,6 +181,7 @@
     _sectionDataSource = [[NCManageDatabase sharedInstance] getActivityWithPredicate:predicate];
         
     [self reloadCollection];
+    
 }
 
 - (void)reloadCollection

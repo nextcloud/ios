@@ -1361,6 +1361,24 @@
 
 - (void)getActivityServer
 {
+    [self getActivityServer:^(NSArray *listOfActivity) {
+        
+        if ([self.delegate respondsToSelector:@selector(getActivityServerSuccessFailure:listOfActivity:message:errorCode:)])
+            [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:listOfActivity message:nil errorCode:0];
+        
+        [self complete];
+        
+    } failure:^(NSString *message, NSInteger errorCode) {
+        
+        if ([self.delegate respondsToSelector:@selector(getActivityServerSuccessFailure:listOfActivity:message:errorCode:)])
+            [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:nil message:message errorCode:errorCode];
+        
+        [self complete];
+    }];
+}
+
+- (void)getActivityServer:(void(^)(NSArray *listOfActivity))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
@@ -1368,41 +1386,23 @@
     
     [communication getActivityServer:[_activeUrl stringByAppendingString:@"/"] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *listOfActivity, NSString *redirectedServer) {
         
-        // Test active account
-        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-        if (![recordAccount.account isEqualToString:_metadataNet.account]) {
-            if ([self.delegate respondsToSelector:@selector(getActivityServerSuccessFailure:listOfActivity:message:errorCode:)])
-                [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
-            
-            [self complete];
-            return;
-        }
-        
-        if ([self.delegate respondsToSelector:@selector(getActivityServerSuccessFailure:listOfActivity:message:errorCode:)])
-            [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:listOfActivity message:nil errorCode:0];
-        
-        [self complete];
+        success(listOfActivity);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
         
         NSInteger errorCode = response.statusCode;
         if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
             errorCode = error.code;
         
         // Error
-        if ([self.delegate respondsToSelector:@selector(getActivityServerSuccessFailure:listOfActivity:message:errorCode:)]) {
-            
-            if (errorCode == 503)
-                [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
-            else
-                [self.delegate getActivityServerSuccessFailure:_metadataNet listOfActivity:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
-        }
-
-        // Request trusted certificated
-        if ([error code] == NSURLErrorServerCertificateUntrusted && self.delegate)
-            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
+        if (errorCode == 503)
+            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
-        [self complete];
+        failure(message, errorCode);
     }];
 }
 
