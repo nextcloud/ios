@@ -837,7 +837,22 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)subscribingPushProxy:(NSString *)serverPath authorizationToken:(NSString *)authorizationToken pushToken:(NSString *)pushToken deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature userPublicKey:(NSString *)userPublicKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *, id))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
+- (void)unsubscribingNextcloudServerPush:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *, id))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
+    
+    NSParameterAssert(success);
+    
+    _requestMethod = @"DELETE";
+    
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    [operation resume];
+}
+
+- (void)subscribingPushProxy:(NSString *)serverPath pushToken:(NSString *)pushToken deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *, id))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
     
     NSParameterAssert(success);
     
@@ -845,6 +860,26 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
         
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&pushToken=%@",pushToken]];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&deviceIdentifier=%@",deviceIdentifier]];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&deviceIdentifierSignature=%@",deviceIdentifierSignature]];
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&userPublicKey=%@",publicKey]];
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
+    
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    [operation resume];
+}
+
+- (void)unsubscribingPushProxy:(NSString *)serverPath deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature userPublicKey:(NSString *)userPublicKey onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *, id))success failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
+    
+    NSParameterAssert(success);
+    
+    _requestMethod = @"DELETE";
+    
+    serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"?format=json"]];
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&deviceIdentifier=%@",deviceIdentifier]];
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&deviceIdentifierSignature=%@",deviceIdentifierSignature]];
     serverPath = [serverPath stringByAppendingString:[NSString stringWithFormat:@"&userPublicKey=%@",userPublicKey]];

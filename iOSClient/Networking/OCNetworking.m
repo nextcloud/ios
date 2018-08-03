@@ -1620,7 +1620,7 @@
         signature = [CCUtility URLEncodeStringFromString:signature];
         publicKey = [CCUtility URLEncodeStringFromString:publicKey];
         
-        [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature userPublicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+        [communication subscribingPushProxy:[NCBrandOptions sharedInstance].pushNotificationServerProxy pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:signature publicKey:publicKey onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
             
             // Activity
             [[NCManageDatabase sharedInstance] addActivityClient:[NCBrandOptions sharedInstance].pushNotificationServerProxy fileID:@"" action:k_activityDebugActionPushProxy selector:@"" note:@"Service registered." type:k_activityTypeSuccess verbose:k_activityVerboseHigh activeUrl:_activeUrl];

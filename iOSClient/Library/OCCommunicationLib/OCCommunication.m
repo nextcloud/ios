@@ -1722,7 +1722,22 @@
     }];
 }
 
-- (void)subscribingPushProxy:(NSString *)serverPath pushToken:(NSString *)pushToken deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature userPublicKey:(NSString *)userPublicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void (^)(NSHTTPURLResponse *, NSString *redirectedServer))successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
+- (void)unsubscribingNextcloudServerPush:(NSString *)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
+    
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    serverPath = [serverPath stringByAppendingString:k_url_acces_remote_subscribing_nextcloud_server_api];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request unsubscribingNextcloudServerPush:serverPath onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        successRequest(response, request.redirectedServer);
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+- (void)subscribingPushProxy:(NSString *)serverPath pushToken:(NSString *)pushToken deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void (^)(NSHTTPURLResponse *, NSString *redirectedServer))successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
     serverPath = [serverPath stringByAppendingString:@"/devices"];
@@ -1730,7 +1745,28 @@
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request subscribingPushProxy:serverPath authorizationToken:_password pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature userPublicKey:userPublicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    [request subscribingPushProxy:serverPath pushToken:pushToken deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        if (successRequest) {
+            //Return success
+            successRequest(response, request.redirectedServer);
+        }
+        
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+- (void)unsubscribingPushProxy:(NSString *)serverPath deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature publicKey:(NSString *)publicKey onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void (^)(NSHTTPURLResponse *, NSString *redirectedServer))successRequest failureRequest:(void (^)(NSHTTPURLResponse *, NSError *, NSString *))failureRequest {
+    
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    serverPath = [serverPath stringByAppendingString:@"/devices"];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request unsubscribingPushProxy:serverPath deviceIdentifier:deviceIdentifier deviceIdentifierSignature:deviceIdentifierSignature publicKey:publicKey onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         if (successRequest) {
             //Return success
