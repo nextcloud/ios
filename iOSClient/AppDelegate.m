@@ -428,24 +428,16 @@
     }];
 }
 
-- (void)unsubscribingNextcloudServerPushNotification:(BOOL)withSubscribing
+- (void)unsubscribingNextcloudServerPushNotification
 {
     // test
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    if (self.pnDeviceIdentifier == nil || self.pnDeviceIdentifierSignature == nil || self.pnPublicKey == nil) {
-        if (withSubscribing)
-            [self subscribingNextcloudServerPushNotification];
-        return;
-    }
-    
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
 
     [ocNetworking unsubscribingPushNotificationServer:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey success:^{
         NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
-        if (withSubscribing)
-            [self subscribingNextcloudServerPushNotification];
     } failure:^(NSString *message, NSInteger errorCode) {
         NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
     }];

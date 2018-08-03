@@ -161,7 +161,7 @@
 
 // Push Notification
 - (void)subscribingNextcloudServerPushNotification;
-- (void)unsubscribingNextcloudServerPushNotification:(BOOL)withSubscribing;
+- (void)unsubscribingNextcloudServerPushNotification;
 
 // Theming Color
 - (void)settingThemingColorBrand;
