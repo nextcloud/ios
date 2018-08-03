@@ -35,13 +35,8 @@ NSString * const NCPushNotificationJoinVideoCallAcceptedNotification    = @"NCPu
     NSData *data = [decryptedString dataUsingEncoding:NSUTF8StringEncoding];
     id jsonDict = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     
-    NSString *app = [jsonDict objectForKey:kNCPNAppKey];
-    if (![app isEqualToString:kNCPNAppIdKeyComments]) {
-        return nil;
-    }
-    
-    NCPushNotification *pushNotification = [[NCPushNotification alloc] init];
-    pushNotification.app = app;
+    NCPushNotification *pushNotification = [NCPushNotification new];
+    pushNotification.app = [jsonDict objectForKey:kNCPNAppKey];
     pushNotification.subject = [jsonDict objectForKey:kNCPNSubjectKey];
     pushNotification.pnId = [[jsonDict objectForKey:kNCPNIdKey] integerValue];
     
@@ -56,6 +51,8 @@ NSString * const NCPushNotificationJoinVideoCallAcceptedNotification    = @"NCPu
         pushNotification.type = NCPushNotificationTypeChat;
     } else if ([type isEqualToString:kNCPNTypeCommentKey]) {
         pushNotification.type = NCPushNotificationTypeComment;
+    } else {
+        pushNotification.type = NCPushNotificationTypeUnknown;
     }
     
     return pushNotification;
