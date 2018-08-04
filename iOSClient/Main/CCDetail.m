@@ -50,6 +50,7 @@
     
     NSURL *videoURLProxy;
     NSURL *videoURL;
+    BOOL isMediaObserver;
 }
 @end
 
@@ -130,6 +131,13 @@
     if (appDelegate.player != nil && appDelegate.player.rate != 0) {
         [appDelegate.player pause];
     }
+    
+    // remove Observer AVPlayer
+    if (isMediaObserver) {
+        isMediaObserver = NO;
+        [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
+    }
 }
 
 - (void)changeTheming
@@ -163,6 +171,13 @@
     if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]] == NO) {
         
         [CCGraphics createNewImageFrom:self.metadataDetail.fileNameView fileID:self.metadataDetail.fileID extension:[self.metadataDetail.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:self.metadataDetail.typeFile writeImage:YES];
+    }
+    
+    // remove Observer AVPlayer
+    if (isMediaObserver) {
+        isMediaObserver = NO;
+        [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
     }
     
     // IMAGE
@@ -371,6 +386,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
     [appDelegate.player addObserver:self forKeyPath:@"rate" options:0 context:nil];
+    isMediaObserver = YES;
 
     [appDelegate.player play];
 }
