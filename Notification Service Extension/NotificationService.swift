@@ -57,7 +57,7 @@ class NotificationService: UNNotificationServiceExtension {
             }
             
             do {
-                let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String: AnyObject]
+                let json = try JSONSerialization.jsonObject(with: data) as! [String:AnyObject]
                 if let app = json["app"] as? String {
                     bestAttemptContent.title = app.uppercased()
                 }
