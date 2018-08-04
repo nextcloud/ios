@@ -59,7 +59,11 @@ class NotificationService: UNNotificationServiceExtension {
             do {
                 let json = try JSONSerialization.jsonObject(with: data) as! [String:AnyObject]
                 if let app = json["app"] as? String {
-                    bestAttemptContent.title = app.uppercased()
+                    if app == "spreed" {
+                        bestAttemptContent.title = "Nextcloud Talk"
+                    } else {
+                        bestAttemptContent.title = app.capitalized
+                    }
                 }
                 if let subject = json["subject"] as? String {
                     bestAttemptContent.body = subject
