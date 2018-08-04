@@ -1083,7 +1083,7 @@
 {
     if ([self.metadataDetail.fileNameView length] == 0) return;
     
-    NSString *filePath = [NSString stringWithFormat:@"%@%@", NSTemporaryDirectory(), self.metadataDetail.fileNameView];
+    NSString *filePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileName:self.metadataDetail.fileNameView];
 
     self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
 
