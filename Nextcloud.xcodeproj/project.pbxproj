@@ -407,8 +407,6 @@
 		F7B2DEF11F976859007CF4D2 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F7B2DEED1F976785007CF4D2 /* english.txt */; };
 		F7B3A4EE1E97818A000DACE8 /* CCLoginWeb.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7B3A4ED1E97818A000DACE8 /* CCLoginWeb.swift */; };
 		F7B4F1CB1F44356F00B53B42 /* NCUchardet.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B4F1C81F44356F00B53B42 /* NCUchardet.m */; };
-		F7B7ED3F211340EB00C89FFA /* NCPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B7ED3E211340EB00C89FFA /* NCPushNotification.m */; };
-		F7B7ED40211340EB00C89FFA /* NCPushNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = F7B7ED3E211340EB00C89FFA /* NCPushNotification.m */; };
 		F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADC91ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7BAADCB1ED5A87C00B7EAD4 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -1358,8 +1356,6 @@
 		F7B4F1C81F44356F00B53B42 /* NCUchardet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCUchardet.m; sourceTree = "<group>"; };
 		F7B7ED3A21133A4300C89FFA /* Notification_Service_Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Notification_Service_Extension.entitlements; sourceTree = "<group>"; };
 		F7B7ED3B21133A6000C89FFA /* Notification_Service_Extension.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Notification_Service_Extension.plist; sourceTree = "<group>"; };
-		F7B7ED3D211340EB00C89FFA /* NCPushNotification.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCPushNotification.h; sourceTree = "<group>"; };
-		F7B7ED3E211340EB00C89FFA /* NCPushNotification.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCPushNotification.m; sourceTree = "<group>"; };
 		F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDatabase.swift; sourceTree = "<group>"; };
 		F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageDatabase.swift; sourceTree = "<group>"; };
 		F7BB04821FD58ACA00BBFD2A /* cs-CZ */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "cs-CZ"; path = "cs-CZ.lproj/CTAssetsPicker.strings"; sourceTree = "<group>"; };
@@ -2712,15 +2708,6 @@
 			path = NCUchardet;
 			sourceTree = "<group>";
 		};
-		F7B7ED3C211340EB00C89FFA /* PushNotification */ = {
-			isa = PBXGroup;
-			children = (
-				F7B7ED3D211340EB00C89FFA /* NCPushNotification.h */,
-				F7B7ED3E211340EB00C89FFA /* NCPushNotification.m */,
-			);
-			path = PushNotification;
-			sourceTree = "<group>";
-		};
 		F7BAAD951ED5A63D00B7EAD4 /* Database */ = {
 			isa = PBXGroup;
 			children = (
@@ -3192,7 +3179,6 @@
 				F74D3DB81BAC1941000BAE4B /* Networking */,
 				F7C5259A1E3B441D00FFE02C /* Notification */,
 				F7FCFFD51D70798C000E6E29 /* PeekPop */,
-				F7B7ED3C211340EB00C89FFA /* PushNotification */,
 				F7BE6E2A1D2D5C3B00106933 /* QuickActions */,
 				F7FE125B1BAC03FB0041924B /* Security */,
 				F7ACE4281BAC0268006C0017 /* Settings */,
@@ -3756,7 +3742,6 @@
 				F72D101B210B74CA009C96B7 /* UICKeyChainStore.m in Sources */,
 				F72D103F210B77B8009C96B7 /* NCPushNotificationEncryption.m in Sources */,
 				F72D103E210B77A5009C96B7 /* OCActivity.m in Sources */,
-				F7B7ED40211340EB00C89FFA /* NCPushNotification.m in Sources */,
 				F72D1042210B783D009C96B7 /* NCEndToEndEncryption.m in Sources */,
 				F72D103B210B76A1009C96B7 /* NCManageDatabase.swift in Sources */,
 			);
@@ -4099,7 +4084,6 @@
 				F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
 				F73B4EFD1F470D9100BBEE4B /* LangHebrewModel.cpp in Sources */,
-				F7B7ED3F211340EB00C89FFA /* NCPushNotification.m in Sources */,
 				F70022CE1EC4C9100080073F /* OCShareUser.m in Sources */,
 				F77B0ED91D118A16002130FE /* main.m in Sources */,
 			);

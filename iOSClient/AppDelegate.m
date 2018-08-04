@@ -38,7 +38,6 @@
 #import "NCAutoUpload.h"
 #import "Firebase.h"
 #import "NCPushNotificationEncryption.h"
-#import "NCPushNotification.h"
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
 
@@ -459,45 +458,40 @@
         NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:privateKey];
         if (decryptedMessage) {
            
-            NCPushNotification *pushNotification = [NCPushNotification pushNotificationFromDecryptedString:decryptedMessage];
-            if (pushNotification) {
-                switch (pushNotification.type) {
-                    case NCPushNotificationTypeComment:
-                    case NCPushNotificationTypeUnknown:
-                    {
-                        UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-                        UINavigationController *navigationControllerMore;
-                        UITabBarController *tabBarController;
+            NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            NSString *app = [json objectForKey:@"app"];
+            
+            if ([app isEqualToString:@"spreed"] == NO) {
+                
+                UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+                UINavigationController *navigationControllerMore;
+                UITabBarController *tabBarController;
+                
+                if (splitViewController.isCollapsed) {
+                    
+                    tabBarController = splitViewController.viewControllers.firstObject;
+                    for (UINavigationController *nvc in tabBarController.viewControllers) {
                         
-                        if (splitViewController.isCollapsed) {
-                            
-                            tabBarController = splitViewController.viewControllers.firstObject;
-                            for (UINavigationController *nvc in tabBarController.viewControllers) {
-                                
-                                if ([nvc.topViewController isKindOfClass:[CCDetail class]])
-                                    [nvc popToRootViewControllerAnimated:NO];
-                                
-                                if ([nvc.topViewController isKindOfClass:[CCMore class]])
-                                    navigationControllerMore = nvc;
-                            }
-                            
-                        } else {
-                            
-                            UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
-                            [nvcDetail popToRootViewControllerAnimated:NO];
-                            
-                            tabBarController = splitViewController.viewControllers.firstObject;
-                        }
+                        if ([nvc.topViewController isKindOfClass:[CCDetail class]])
+                            [nvc popToRootViewControllerAnimated:NO];
                         
-                        if (tabBarController)
-                            [tabBarController setSelectedIndex: k_tabBarApplicationIndexMore];
-                        if (navigationControllerMore)
-                            [navigationControllerMore performSegueWithIdentifier:@"segueActivity" sender:navigationControllerMore];
-                        
+                        if ([nvc.topViewController isKindOfClass:[CCMore class]])
+                            navigationControllerMore = nvc;
                     }
-                    default:
-                        break;
+                    
+                } else {
+                    
+                    UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
+                    [nvcDetail popToRootViewControllerAnimated:NO];
+                    
+                    tabBarController = splitViewController.viewControllers.firstObject;
                 }
+                
+                if (tabBarController)
+                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexMore];
+                if (navigationControllerMore)
+                    [navigationControllerMore performSegueWithIdentifier:@"segueActivity" sender:navigationControllerMore];
             }
         }
     }

@@ -35,9 +35,9 @@ class NotificationService: UNNotificationServiceExtension {
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
         if let bestAttemptContent = bestAttemptContent {
-            
+
             bestAttemptContent.title = ""
-            bestAttemptContent.body = "Nextcloud notification 🔔"
+            bestAttemptContent.body = "Nextcloud notification"
             
             let message = bestAttemptContent.userInfo["subject"] as! String
             
@@ -51,12 +51,23 @@ class NotificationService: UNNotificationServiceExtension {
                 return
             }
             
-            let pushNotification = NCPushNotification.init(fromDecryptedString: decryptedMessage)
-            if (pushNotification != nil) {
-                bestAttemptContent.title = pushNotification!.app.uppercased()
-                bestAttemptContent.body = pushNotification!.bodyForRemoteAlerts()
+            guard let data = decryptedMessage.data(using: .utf8) else {
+                contentHandler(bestAttemptContent)
+                return
             }
             
+            do {
+                let json = try JSONSerialization.jsonObject(with: data, options: []) as! [String: AnyObject]
+                if let app = json["app"] as? String {
+                    bestAttemptContent.title = app.uppercased()
+                }
+                if let subject = json["subject"] as? String {
+                    bestAttemptContent.body = subject
+                }
+            } catch let error as NSError {
+                print("Failed : \(error.localizedDescription)")
+            }
+          
             contentHandler(bestAttemptContent)
         }
     }
@@ -66,7 +77,7 @@ class NotificationService: UNNotificationServiceExtension {
         if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
             
             bestAttemptContent.title = ""
-            bestAttemptContent.body = "Nextcloud notification 🔔"
+            bestAttemptContent.body = "Nextcloud notification"
             
             contentHandler(bestAttemptContent)
         }
