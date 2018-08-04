@@ -121,6 +121,9 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     
                     if (loginType == k_login_Add || loginType == k_login_Add_Forced) {
                         
+                        // LOGOUT
+                        appDelegate.unsubscribingNextcloudServerPushNotification()
+                        
                         // Add new account
                         NCManageDatabase.sharedInstance.deleteAccount(account)
                         NCManageDatabase.sharedInstance.addAccount(account, url: serverUrl, user: username, password: password, loginFlow: true)

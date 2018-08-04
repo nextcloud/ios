@@ -1025,6 +1025,8 @@
         
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
     });
+    
+    [appDelegate subscribingNextcloudServerPushNotification];
 }
 
 - (void)loginClose
@@ -2633,13 +2635,21 @@
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
 
+        // LOGOUT
+        
+        [appDelegate unsubscribingNextcloudServerPushNotification];
+        
         tableAccount *tableAccount = [[NCManageDatabase sharedInstance] setAccountActive:[sender argument]];
         if (tableAccount) {
+            
+            // LOGIN
             
             [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
     
             // go to home sweet home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];        
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+            
+            [appDelegate subscribingNextcloudServerPushNotification];
         }
     });
 }

@@ -202,6 +202,8 @@
 - (void)loginSuccess:(NSInteger)loginType
 {
     [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+    
+    [appDelegate subscribingNextcloudServerPushNotification];
 }
 
 - (void)loginClose
@@ -270,6 +272,8 @@
         [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
         return;
     }
+    
+    [appDelegate unsubscribingNextcloudServerPushNotification];
     
     [appDelegate.netQueue cancelAllOperations];
     
@@ -348,6 +352,8 @@
             [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
             
             [self UpdateForm];
+            
+            [appDelegate subscribingNextcloudServerPushNotification];
         }
     });
 }

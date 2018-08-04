@@ -463,6 +463,10 @@
                 
             } else {
                 
+                // LOGOUT
+                
+                [appDelegate unsubscribingNextcloudServerPushNotification];
+                
                 [[NCManageDatabase sharedInstance] deleteAccount:account];
                 [[NCManageDatabase sharedInstance] addAccount:account url:url user:user password:password loginFlow:false];
                 
