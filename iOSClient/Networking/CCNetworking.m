@@ -696,7 +696,7 @@
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
         // Icon
-        [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES optimizedFileName:[CCUtility getOptimizedPhoto]];
+        [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES];
         
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
@@ -919,7 +919,7 @@
 
     // Create Image for Upload
 #ifndef EXTENSION
-    [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writeImage:YES optimizedFileName:NO];
+    [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:YES typeFile:metadata.typeFile writeImage:YES];
 #endif
     
     // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier) image/video
@@ -1149,11 +1149,7 @@
         
         // Create ICON
         if (metadata.directory == NO) {
-            BOOL optimizedFileName = [CCUtility getOptimizedPhoto];
-            if (isE2EEDirectory) {
-                optimizedFileName = NO;
-            }
-            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES optimizedFileName:optimizedFileName];
+            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES];
         }
         
         // Optimization

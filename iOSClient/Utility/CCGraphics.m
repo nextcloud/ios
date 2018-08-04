@@ -144,15 +144,10 @@
     return newImage;
 }
 
-
-+ (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage optimizedFileName:(BOOL)optimizedFileName
++ (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
 {
     UIImage *originalImage;
     UIImage *scaleImage;
-    CGRect rect;
-    CGFloat width, height;
-    
-    NSString *ext = [extension lowercaseString];
     NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName];
     
     if (![CCUtility fileProviderStorageExists:fileID fileName:fileName]) return nil;
@@ -195,50 +190,6 @@
             
             [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName] atomically: YES];
         }
-    }
-    
-    // Optimized photos resolution
-    // Resize image 640 x 480 ( with proportion : 1,333)
-    if (originalImage.size.height < originalImage.size.width) {
-        
-        // (lanscape)
-        
-        width = 640;
-        height = 480;
-        
-    } else {
-        
-        // (portrait)
-        
-        height = 640;
-        width = 480;
-    }
-    
-    // Optimized photos resolution
-    if ([typeFile isEqualToString: k_metadataTypeFile_image] && [ext isEqualToString:@"gif"] == NO && optimizedFileName && scaleImage && (originalImage.size.width > width || originalImage.size.height > height)) {
-        
-        // conversion scale proportion
-        if (height > width) {
-            
-            float proportion = originalImage.size.height / originalImage.size.width;
-            width = height / proportion;
-            
-        } else {
-            
-            float proportion = originalImage.size.width / originalImage.size.height;
-            height = width / proportion;
-        }
-        
-        rect = CGRectMake(0,0,width,height);
-        
-        UIGraphicsBeginImageContext(rect.size);
-        [originalImage drawInRect:rect];
-        UIImage *resizeImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        resizeImage = [UIImage imageWithData:UIImageJPEGRepresentation(resizeImage, 0.5f)];
-        if (resizeImage)
-            [UIImagePNGRepresentation(resizeImage) writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName] atomically: YES];
     }
     
     return scaleImage;

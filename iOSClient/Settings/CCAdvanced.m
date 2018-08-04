@@ -79,16 +79,6 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_optimized_photos_how_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"optimizedphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_optimized_photos_", nil)];
-    if ([CCUtility getOptimizedPhoto]) row.value = @"1";
-    else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [section addFormRow:row];
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
     section.footerTitle = NSLocalizedString(@"_upload_del_photos_how_", nil);
     
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"uploadremovephoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_del_photos_", nil)];
@@ -202,11 +192,6 @@
         
         // Clear Date read Activity for force reload datasource
         appDelegate.activeActivity.storeDateFirstActivity = nil;
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"optimizedphoto"]) {
-        
-        [CCUtility setOptimizedPhoto:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"uploadremovephoto"]) {

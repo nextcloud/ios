@@ -145,7 +145,7 @@ extension FileProviderExtension {
             }
             
             // Recreate ico
-            CCGraphics.createNewImage(from: fileName, fileID: fileID, extension: NSString(string: fileName).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writeImage: true, optimizedFileName: false)
+            CCGraphics.createNewImage(from: fileName, fileID: fileID, extension: NSString(string: fileName).pathExtension, size: "m", imageForUpload: false, typeFile: metadata.typeFile, writeImage: true)
             
             // remove session data
             metadata.session = ""
