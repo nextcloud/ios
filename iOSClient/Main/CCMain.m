@@ -612,7 +612,7 @@
             self.navigationItem.title = _titleMain;
             
             if (self.imageTitle) {
-                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:self.imageTitle multiplier:2 color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
+                [CCGraphics addImageToTitle:_titleMain colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:self.imageTitle multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
             } else {
                 self.navigationItem.titleView = nil;
             }

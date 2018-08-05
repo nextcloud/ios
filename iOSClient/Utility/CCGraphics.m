@@ -346,11 +346,12 @@ Color difference is determined by the following formula:
     return theImage;
 }
 
-+ (void)addImageToTitle:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle navigationItem:(UINavigationItem *)navigationItem
++ (void)addImageToTitle:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle imageRight:(BOOL)imageRight navigationItem:(UINavigationItem *)navigationItem
 {
     UIView *navView = [UIView new];
     
     UILabel *label = [UILabel new];
+    if (imageRight) title = [@"  " stringByAppendingString:title];
     label.text = title;
     [label sizeToFit];
     label.center = navView.center;
@@ -361,7 +362,13 @@ Color difference is determined by the following formula:
     UIImageView *image = [UIImageView new];
     image.image = imageTitle;
     CGFloat imageAspect = image.image.size.width/image.image.size.height;
-    image.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
+    
+    if (imageRight) {
+        image.frame = CGRectMake(label.intrinsicContentSize.width+label.frame.origin.x+correct, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
+    } else {
+        image.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
+    }
+    
     image.contentMode = UIViewContentModeScaleAspectFit;
     
     [navView addSubview:label];
