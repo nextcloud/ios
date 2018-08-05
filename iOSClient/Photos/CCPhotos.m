@@ -46,7 +46,7 @@
     
     // Fix Crash Thumbnail + collectionView ReloadData ?
     NSInteger counterThumbnail;
-    BOOL collectionViewReloadData;
+    BOOL collectionViewReloadDataInProgress;
 }
 @end
 
@@ -102,10 +102,6 @@
     // scroll bar
     scrollBar = [TOScrollBar new];
     [self.collectionView to_addScrollBar:scrollBar];
-    
-    // Fix Crash Thumbnail + collectionView ReloadData ?
-    counterThumbnail = 0;
-    collectionViewReloadData = NO;
     
     scrollBar.handleTintColor = [NCBrandColor sharedInstance].brand;
     scrollBar.handleWidth = 20;
@@ -470,14 +466,8 @@
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     [ocNetworking downloadThumbnailWithDimOfThumbnail:@"m" fileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:saveServerUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView completion:^(NSString *message, NSInteger errorCode) {
         counterThumbnail--;
-        if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath]) {
+        if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath] && !collectionViewReloadDataInProgress) {
             [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];
-        }
-        
-        // Fix Crash Thumbnail + collectionView ReloadData ?
-        if (counterThumbnail == 0 && collectionViewReloadData == YES) {
-            [self.collectionView reloadData];
-            collectionViewReloadData = NO;
         }
     }];
 }
@@ -630,6 +620,8 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
+        collectionViewReloadDataInProgress = YES;
+        
         NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
         sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
         
@@ -640,12 +632,11 @@
             else
                 [self setUINavigationBarDefault];
             
-            // Fix Crash Thumbnail + collectionView ReloadData ?
-            collectionViewReloadData = YES;
-            if (counterThumbnail == 0) {
-                [self.collectionView reloadData];
-                collectionViewReloadData = NO;
-            }
+            [self.collectionView reloadData];
+            
+            [self.collectionView performBatchUpdates:^{} completion:^(BOOL finished) {
+                collectionViewReloadDataInProgress = NO;
+            }];
         });
     });
 }
@@ -657,7 +648,11 @@
     [selectedMetadatas removeAllObjects];
     [self setUINavigationBarSelected];
 
+    collectionViewReloadDataInProgress = YES;
     [self.collectionView reloadData];
+    [self.collectionView performBatchUpdates:^{} completion:^(BOOL finished) {
+        collectionViewReloadDataInProgress = NO;
+    }];
 }
 
 - (void)editingModeNO
@@ -667,7 +662,11 @@
     [selectedMetadatas removeAllObjects];
     [self setUINavigationBarDefault];
     
+    collectionViewReloadDataInProgress = YES;
     [self.collectionView reloadData];
+    [self.collectionView performBatchUpdates:^{} completion:^(BOOL finished) {
+        collectionViewReloadDataInProgress = NO;
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
