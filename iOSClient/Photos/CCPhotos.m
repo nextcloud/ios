@@ -35,6 +35,9 @@
     CCSectionDataSourceMetadata *sectionDataSource;
     NSString *saveDirectoryID, *saveServerUrl;
     
+    BOOL filterTypeFileImage;
+    BOOL filterTypeFileVideo;
+    
     BOOL isSearchMode;
     BOOL isEditMode;
     
@@ -191,19 +194,31 @@
         [CCGraphics addImageToTitle:self.navigationItem.title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] navigationItem:self.navigationItem];
     }
     
-    // Button Item
-    UIImage *icon;
-    icon = [UIImage imageNamed:@"select"];
-    UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(editingModeYES)];
-    icon = [UIImage imageNamed:@"folderPhotos"];
-    UIBarButtonItem *buttonStartDirectoryPhotosTab = [[UIBarButtonItem alloc] initWithImage:icon style:UIBarButtonItemStylePlain target:self action:@selector(selectStartDirectoryPhotosTab)];
-
+    // Button Item RIGHT
+    UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"select"] style:UIBarButtonItemStylePlain target:self action:@selector(editingModeYES)];
+    
     if ([sectionDataSource.allRecordsDataSource count] > 0) {
         self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, nil];
     } else {
         self.navigationItem.rightBarButtonItems = nil;
     }
-    self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, nil];
+    
+    // Button Item LEFT
+    UIBarButtonItem *buttonStartDirectoryPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"folderPhotos"] style:UIBarButtonItemStylePlain target:self action:@selector(selectStartDirectoryPhotosTab)];
+    UIBarButtonItem *buttonImageFilterYesPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"imageyes"] style:UIBarButtonItemStylePlain target:self action:@selector(buttonImageFilterYes)];
+    UIBarButtonItem *buttonImageFilterNoPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"imageno"] style:UIBarButtonItemStylePlain target:self action:@selector(buttonImageFilterNo)];
+    UIBarButtonItem *buttonVideoFilterYesPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"videoyes"] style:UIBarButtonItemStylePlain target:self action:@selector(buttonVideoFilterYes)];
+    UIBarButtonItem *buttonVideoFilterNoPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"videono"] style:UIBarButtonItemStylePlain target:self action:@selector(buttonVideoFilterNo)];
+
+    if (filterTypeFileImage && filterTypeFileVideo) {
+        self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, buttonImageFilterNoPhotosTab, buttonVideoFilterNoPhotosTab,nil];
+    } else if (filterTypeFileImage && !filterTypeFileVideo) {
+        self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, buttonImageFilterNoPhotosTab, buttonVideoFilterYesPhotosTab,nil];
+    } else if (!filterTypeFileImage && filterTypeFileVideo) {
+        self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, buttonImageFilterYesPhotosTab, buttonVideoFilterNoPhotosTab,nil];
+    } else {
+        self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, buttonImageFilterYesPhotosTab, buttonVideoFilterYesPhotosTab,nil];
+    }
 }
 
 - (void)setUINavigationBarSelected
@@ -506,6 +521,39 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
+#pragma mark ==== Filter Image Video====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)buttonImageFilterYes
+{
+    filterTypeFileImage = YES;
+    if (filterTypeFileVideo == YES)
+        filterTypeFileVideo = NO;
+    [self reloadDatasource];
+}
+
+- (void)buttonImageFilterNo
+{
+    filterTypeFileImage = NO;
+    [self reloadDatasource];
+}
+
+- (void)buttonVideoFilterYes
+{
+    filterTypeFileVideo = YES;
+    if (filterTypeFileImage == YES)
+        filterTypeFileImage = NO;
+    [self reloadDatasource];
+}
+
+- (void)buttonVideoFilterNo
+{
+    filterTypeFileVideo = NO;
+    [self reloadDatasource];
+}
+
+
+#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Search Photo/Video ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -583,7 +631,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
         NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID activeAccount:appDelegate.activeAccount];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
         
         dispatch_async(dispatch_get_main_queue(), ^{
                
