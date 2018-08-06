@@ -439,7 +439,15 @@ class NCMainCommon: NSObject {
         }
     }
     
-    @objc func getMetadataFromSectionDataSourceIndexPath(_ indexPath: IndexPath, sectionDataSource: CCSectionDataSourceMetadata) -> tableMetadata? {
+    @objc func getMetadataFromSectionDataSourceIndexPath(_ indexPath: IndexPath?, sectionDataSource: CCSectionDataSourceMetadata?) -> tableMetadata? {
+        
+        guard let indexPath = indexPath else {
+            return nil
+        }
+        
+        guard let sectionDataSource = sectionDataSource else {
+            return nil
+        }
         
         let section = indexPath.section + 1
         let row = indexPath.row + 1
