@@ -326,6 +326,47 @@
     }
 }
 
+- (void)downloadPreviewWithfileID:(NSString*)fileID fileName:(NSString *)fileName withWidth:(NSInteger)width andHeight:(NSInteger)height andA:(NSInteger)a andMode:(NSString *)mode completion:(void (^)(NSString *message, NSInteger errorCode))completion
+{
+    NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
+        
+        completion(nil, 0);
+        
+    } else {
+    
+        OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+
+        [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+        [communication setUserAgent:[CCUtility getUserAgent]];
+        
+        [communication getRemotePreviewByServer:[_activeUrl stringByAppendingString:@"/"] ofFileID:fileID withWidth:width andHeight:height andA:a andMode:mode onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+
+            [UIImagePNGRepresentation([UIImage imageWithData:preview]) writeToFile:fileNameViewPath atomically: YES];
+            
+            completion(nil, 0);
+            
+        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+            
+            NSString *message;
+            
+            NSInteger errorCode = response.statusCode;
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                errorCode = error.code;
+            
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+            
+            completion(message, errorCode);
+        }];
+    }
+}
+
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Read Folder =====
 #pragma --------------------------------------------------------------------------------------------
