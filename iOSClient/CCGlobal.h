@@ -255,7 +255,7 @@
 #define k_tabBarApplicationIndexFile                    0
 #define k_tabBarApplicationIndexFavorite                1
 #define k_tabBarApplicationIndexPlusHide                2
-#define k_tabBarApplicationIndexPhotos                  3
+#define k_tabBarApplicationIndexMedia                   3
 #define k_tabBarApplicationIndexMore                    4
 
 // Filename Mask and Type

@@ -1133,7 +1133,7 @@
         [appDelegate.listProgressMetadata removeObjectForKey:metadata.fileID];
         // Hardcoded for add new Photos
         if ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video]) {
-            [appDelegate.activePhotos.addMetadatasFromUpload addObject:metadata];
+            [appDelegate.activeMedia.addMetadatasFromUpload addObject:metadata];
         }
 #endif
         

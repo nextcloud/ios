@@ -34,7 +34,7 @@
 #import "CCDetail.h"
 #import "CCQuickActions.h"
 #import "CCMain.h"
-#import "CCPhotos.h"
+#import "CCMedia.h"
 #import "CCSettings.h"
 #import "CCFavorites.h"
 #import "CCTransfers.h"
@@ -113,7 +113,7 @@
 @property (nonatomic, strong) CCMain *activeMain;
 @property (nonatomic, strong) CCMain *homeMain;
 @property (nonatomic, strong) CCFavorites *activeFavorites;
-@property (nonatomic, strong) CCPhotos *activePhotos;
+@property (nonatomic, strong) CCMedia *activeMedia;
 @property (nonatomic, retain) CCDetail *activeDetail;
 @property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCActivity *activeActivity;

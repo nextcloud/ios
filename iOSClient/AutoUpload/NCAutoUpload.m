@@ -364,8 +364,8 @@
         }
     });
     
-    // Create the folder for Photos & if request the subfolders
-    if(![[NCAutoUpload sharedInstance] createAutoUploadFolderPhotosWithSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector]) {
+    // Create the folder for auto upload & if request the subfolders
+    if(![[NCAutoUpload sharedInstance] createAutoUploadFolderWithSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // end loading
             [_hud hideHud];
@@ -477,10 +477,10 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Create Folder SubFolder Auto Upload Folder Photos ====
+#pragma mark ===== Create Folder SubFolder Auto Upload Folder Photos/Videos ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)createAutoUploadFolderPhotosWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
+- (BOOL)createAutoUploadFolderWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
     NSString *fileID;
     NSError *error;

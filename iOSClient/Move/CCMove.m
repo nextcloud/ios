@@ -407,7 +407,7 @@
     if (metadata.e2eEncrypted)
         cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     else
         cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     

@@ -84,7 +84,8 @@
 "_success_"                 = "Success";
 "_initialization_"          = "Initialization";
 "_experimental_"            = "Experimental";
-"_select_dir_photos_tab_"   = "Select as folder \"Photos\"";
+"_select_dir_media_tab_"    = "Select as folder \"Media\"";
+
 
 // App
 
@@ -285,6 +286,7 @@
 // File
 
 "_photo_camera_"                = "Photos";
+"_media_"                       = "Media";
 "_unzip_in_progress_"           = "Extraction in progress on local storage…";
 "_file_unpacked_"               = "File unpacked on local storage";
 "_file_saved_local_"            = "File saved on local storage.";
@@ -484,7 +486,7 @@
 // CreateFormUploadAssets
 
 "_destination_folder_"              = "Destination folder";
-"_use_folder_photos_"               = "Use the Photos folder as destination";
+"_use_folder_media_"                = "Use the Media folder as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
 "_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";

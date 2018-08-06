@@ -65,7 +65,7 @@ class CreateMenuAdd: NSObject {
         
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "photos"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "media"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFotoVideoPlain))
         })
         
@@ -154,14 +154,14 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         // Folder Photo
         
-        row = XLFormRowDescriptor(tag: "useFolderPhoto", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_photos_", comment: ""))
+        row = XLFormRowDescriptor(tag: "useFolderMedia", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_media_", comment: ""))
         row.value = 0
         row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         section.addFormRow(row)
         
         // Use Sub folder
         row = XLFormRowDescriptor(tag: "useSubFolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
-        row.hidden = "$\("useFolderPhoto") == 0"
+        row.hidden = "$\("useFolderMedia") == 0"
         row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
@@ -222,7 +222,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
         
-        if formRow.tag == "useFolderPhoto" {
+        if formRow.tag == "useFolderMedia" {
             
             if (formRow.value! as AnyObject).boolValue  == true {
                 
@@ -349,7 +349,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         self.dismiss(animated: true, completion: {
             
-            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderPhoto")!
+            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderMedia")!
             let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
             var useSubFolder : Bool = false
             

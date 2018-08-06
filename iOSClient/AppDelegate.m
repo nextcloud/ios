@@ -27,7 +27,7 @@
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 #import "CCGraphics.h"
-#import "CCPhotos.h"
+#import "CCMedia.h"
 #import "CCSynchronize.h"
 #import "CCMain.h"
 #import "CCDetail.h"
@@ -520,15 +520,15 @@
 {
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
 
-    UIApplicationShortcutIcon *shortcutPhotosIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionPhotos"];
+    UIApplicationShortcutIcon *shortcutMediaIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionMedia"];
     UIApplicationShortcutIcon *shortcutUploadIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionUpload"];
     
-    UIApplicationShortcutItem *shortcutPhotos = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.photos", bundleId] localizedTitle:NSLocalizedString(@"_photo_camera_", nil) localizedSubtitle:nil icon:shortcutPhotosIcon userInfo:nil];
+    UIApplicationShortcutItem *shortcutMedia = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.media", bundleId] localizedTitle:NSLocalizedString(@"_media_", nil) localizedSubtitle:nil icon:shortcutMediaIcon userInfo:nil];
     UIApplicationShortcutItem *shortcutUpload = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.upload", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadIcon userInfo:nil];
    
     // add the array to our app
-    if (shortcutUpload && shortcutPhotos)
-        [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
+    if (shortcutUpload && shortcutMedia)
+        [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutMedia];
 }
 
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler
@@ -544,7 +544,7 @@
     
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
     
-    NSString *shortcutPhotos = [NSString stringWithFormat:@"%@.photos", bundleId];
+    NSString *shortcutMedia = [NSString stringWithFormat:@"%@.media", bundleId];
     NSString *shortcutUpload = [NSString stringWithFormat:@"%@.upload", bundleId];
     NSString *shortcutUploadEncrypted = [NSString stringWithFormat:@"%@.uploadEncrypted", bundleId];
         
@@ -626,7 +626,7 @@
         handled = YES;
     }
     
-    else if ([shortcutItem.type isEqualToString:shortcutPhotos] && self.activeAccount) {
+    else if ([shortcutItem.type isEqualToString:shortcutMedia] && self.activeAccount) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -641,7 +641,7 @@
                         [nvc popToRootViewControllerAnimated:NO];
                 }
             
-                [tbc setSelectedIndex: k_tabBarApplicationIndexPhotos];
+                [tbc setSelectedIndex: k_tabBarApplicationIndexMedia];
 
             } else {
             
@@ -649,7 +649,7 @@
                 [nvcDetail popToRootViewControllerAnimated:NO];
             
                 UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                [tbc setSelectedIndex: k_tabBarApplicationIndexPhotos];
+                [tbc setSelectedIndex: k_tabBarApplicationIndexMedia];
             }
         });
         
@@ -824,11 +824,11 @@
     item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[UIColor clearColor]];
     item.enabled = false;
     
-    // Photos
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPhotos];
-    [item setTitle:NSLocalizedString(@"_photo_camera_", nil)];
-    item.image = [UIImage imageNamed:@"photos"];
-    item.selectedImage = [UIImage imageNamed:@"photos"];
+    // Media
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
+    [item setTitle:NSLocalizedString(@"_media_", nil)];
+    item.image = [UIImage imageNamed:@"media"];
+    item.selectedImage = [UIImage imageNamed:@"media"];
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
@@ -971,7 +971,7 @@
     } else if (index == k_tabBarApplicationIndexFavorite) {
         if (self.activeFavorites.serverUrl)
             serverUrl = self.activeFavorites.serverUrl;
-    } else if (index == k_tabBarApplicationIndexPhotos) {
+    } else if (index == k_tabBarApplicationIndexMedia) {
         serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
     }
     

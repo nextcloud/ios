@@ -23,7 +23,7 @@
 
 #import "CCMain.h"
 #import "AppDelegate.h"
-#import "CCPhotos.h"
+#import "CCMedia.h"
 #import "CCSynchronize.h"
 #import "OCActivity.h"
 #import "OCNotifications.h"
@@ -1202,9 +1202,9 @@
             if (appDelegate.activeDetail)
                 [appDelegate.activeDetail downloadPhotoBrowserSuccessFailure:metadata selector:selector errorCode:0];
             
-            // Photos
-            if (appDelegate.activePhotos)
-                [appDelegate.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
+            // Media
+            if (appDelegate.activeMedia)
+                [appDelegate.activeMedia downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
             
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
         }
@@ -1232,9 +1232,9 @@
                 if (appDelegate.activeDetail)
                     [appDelegate.activeDetail downloadPhotoBrowserSuccessFailure:metadata selector:selector errorCode:errorCode];
                 
-                // Updating Photos
-                if (appDelegate.activePhotos)
-                    [appDelegate.activePhotos downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
+                // Updating Media
+                if (appDelegate.activeMedia)
+                    [appDelegate.activeMedia downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
             });
             
         }
@@ -1318,9 +1318,9 @@
  
         NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
 
-        // if request create the folder for Photos & the subfolders
+        // if request create the folder for Auto Upload & the subfolders
         if ([autoUploadPath isEqualToString:serverUrl])
-            if (![[NCAutoUpload sharedInstance] createAutoUploadFolderPhotosWithSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
+            if (![[NCAutoUpload sharedInstance] createAutoUploadFolderWithSubFolder:useSubFolder assets:(PHFetchResult *)assets selector:selectorUploadFile])
                 return;
     
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -3661,7 +3661,7 @@
         if (!([_metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
