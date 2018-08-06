@@ -790,6 +790,22 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     return operation;
 }
 
+- (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString *)serverPath ofFileID:(NSString *)fileID  withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString *)mode onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure {
+    
+    _requestMethod = @"GET";
+    
+    NSString *query = [NSString stringWithFormat:@"/core/preview?fileID=%@&x=%d&y=%d&a=%d&mode=%@", fileID, (int)fileWidth, (int)fileHeight, (int)a, mode];
+    serverPath = [serverPath stringByAppendingString:query];
+    
+    NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
+    
+    OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
+    [self setRedirectionBlockOnDatataskWithOCCommunication:sharedOCCommunication andSessionManager:sharedOCCommunication.networkSessionManager];
+    
+    return operation;
+}
+
+
 #pragma mark - Get Notification
 
 - (void)getNotificationServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success

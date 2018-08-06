@@ -1520,6 +1520,30 @@
     return operation;
 }
 
+- (NSURLSessionTask *) getRemotePreviewByServer:(NSString*)serverPath ofFileID:(NSString *)fileID withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    OCHTTPRequestOperation *operation = [request getRemotePreviewByServer:serverPath ofFileID:fileID withWidth:fileWidth andHeight:fileHeight andA:a andMode:mode onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+        
+        NSData *responseData = (NSData*) responseObject;
+        
+        successRequest(response, responseData, request.redirectedServer);
+        
+    } failure:^(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError * _Nonnull error) {
+        
+        failureRequest(response, error, request.redirectedServer);
+
+    }];
+    
+    [operation resume];
+    
+    return operation;
+}
+    
 #pragma mark - Notification
 
 - (void)getNotificationServer:(NSString*)serverPath onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *listOfNotifications, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
