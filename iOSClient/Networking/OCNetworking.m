@@ -330,18 +330,18 @@
 {
     NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
-        
-        completion(nil, 0);
-        
-    } else {
+//    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
+    
+//        completion(nil, 0);
+    
+//    } else {
     
         OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
         [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
         [communication setUserAgent:[CCUtility getUserAgent]];
         
-        [communication getRemotePreviewByServer:[_activeUrl stringByAppendingString:@"/"] ofFileID:fileID withWidth:width andHeight:height andA:a andMode:mode onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+        [communication getRemotePreviewByServer:_activeUrl ofFileID:fileID withWidth:width andHeight:height andA:a andMode:mode onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
 
             [UIImagePNGRepresentation([UIImage imageWithData:preview]) writeToFile:fileNameViewPath atomically: YES];
             
@@ -363,7 +363,7 @@
             
             completion(message, errorCode);
         }];
-    }
+//    }
 }
 
 

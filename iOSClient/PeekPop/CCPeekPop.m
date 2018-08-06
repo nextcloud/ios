@@ -102,6 +102,12 @@
 - (void)downloadThumbnail
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    
+    [ocNetworking downloadPreviewWithfileID:_metadata.fileID fileName:_metadata.fileNameView withWidth:640 andHeight:480 andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
+//
+    }];
+    
+    /*
     [ocNetworking downloadThumbnailWithDimOfThumbnail:@"l" fileID:_metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:_metadata.fileName serverUrl:appDelegate.activeMain.serverUrl activeUrl:appDelegate.activeUrl] fileNameView:_metadata.fileNameView completion:^(NSString *message, NSInteger errorCode) {
         if (errorCode == 0) {
             UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
@@ -115,6 +121,7 @@
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     }];
+    */
 }
 
 @end
