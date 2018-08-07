@@ -47,8 +47,7 @@
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    self.preferredContentSize = CGSizeMake(640, 640);
-    //detailVC?.preferredContentSize = CGSize(width: 0, height: 380)
+    self.preferredContentSize = CGSizeMake(self.view.frame.size.width - 50, self.view.frame.size.width - 50);
     
     NSURL *url = [[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"];
     
@@ -103,12 +102,9 @@
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    [ocNetworking downloadPreviewWithfileID:_metadata.fileID fileName:_metadata.fileNameView withWidth:640 andHeight:480 andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
-//
-    }];
+    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:_metadata.fileName serverUrl:appDelegate.activeMain.serverUrl activeUrl:appDelegate.activeUrl];
     
-    /*
-    [ocNetworking downloadThumbnailWithDimOfThumbnail:@"l" fileID:_metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:_metadata.fileName serverUrl:appDelegate.activeMain.serverUrl activeUrl:appDelegate.activeUrl] fileNameView:_metadata.fileNameView completion:^(NSString *message, NSInteger errorCode) {
+    [ocNetworking downloadPreviewWithfileID:_metadata.fileID fileNamePath:fileNamePath fileNameView:_metadata.fileNameView withWidth:self.view.frame.size.width - 50 andHeight:640 andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
         if (errorCode == 0) {
             UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
             
@@ -116,12 +112,13 @@
             _imagePreview.contentMode = UIViewContentModeScaleToFill;
             
             self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
+            
         } else {
+            
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             [self dismissViewControllerAnimated:YES completion:nil];
         }
     }];
-    */
 }
 
 @end

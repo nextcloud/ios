@@ -92,7 +92,7 @@
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     NSMutableArray *metadataFilesFavorite = [NSMutableArray new];
     
-    for (tableMetadata* metadata in arrayMetadatas) {
+    for (tableMetadata *metadata in arrayMetadatas) {
         
         // *** LIST : DO NOT INSERT ***
         if (metadata.status == k_metadataStatusHide || [filterFileID containsObject: metadata.fileID] || (filterTypeFileImage == YES && [metadata.typeFile isEqualToString: k_metadataTypeFile_image]) || (filterTypeFileVideo == YES && [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {

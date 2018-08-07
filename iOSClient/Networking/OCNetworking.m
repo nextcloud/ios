@@ -274,7 +274,7 @@
     return sessionTask;
 }
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== downloadThumbnail =====
+#pragma mark ===== downloadThumbnail / downloadPreview =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView completion:(void (^)(NSString *message, NSInteger errorCode))completion
@@ -326,22 +326,22 @@
     }
 }
 
-- (void)downloadPreviewWithfileID:(NSString*)fileID fileName:(NSString *)fileName withWidth:(NSInteger)width andHeight:(NSInteger)height andA:(NSInteger)a andMode:(NSString *)mode completion:(void (^)(NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewWithfileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView withWidth:(NSInteger)width andHeight:(NSInteger)height andA:(NSInteger)a andMode:(NSString *)mode completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
-    NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
+    NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@.pvw", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView];
     
-//    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
     
-//        completion(nil, 0);
+        completion(nil, 0);
     
-//    } else {
+    } else {
     
         OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
         [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
         [communication setUserAgent:[CCUtility getUserAgent]];
         
-        [communication getRemotePreviewByServer:_activeUrl ofFileID:fileID withWidth:width andHeight:height andA:a andMode:mode onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+        [communication getRemotePreviewByServer:_activeUrl ofFilePath:fileNamePath withWidth:width andHeight:height andA:a andMode:mode onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
 
             [UIImagePNGRepresentation([UIImage imageWithData:preview]) writeToFile:fileNameViewPath atomically: YES];
             
@@ -363,9 +363,8 @@
             
             completion(message, errorCode);
         }];
-//    }
+    }
 }
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Read Folder =====

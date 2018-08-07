@@ -1520,14 +1520,15 @@
     return operation;
 }
 
-- (NSURLSessionTask *) getRemotePreviewByServer:(NSString*)serverPath ofFileID:(NSString *)fileID withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+- (NSURLSessionTask *) getRemotePreviewByServer:(NSString*)serverPath ofFilePath:(NSString *)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
+    filePath = [filePath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    OCHTTPRequestOperation *operation = [request getRemotePreviewByServer:serverPath ofFileID:fileID withWidth:fileWidth andHeight:fileHeight andA:a andMode:mode onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
+    OCHTTPRequestOperation *operation = [request getRemotePreviewByServer:serverPath ofFilePath:filePath withWidth:fileWidth andHeight:fileHeight andA:a andMode:mode onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         NSData *responseData = (NSData*) responseObject;
         

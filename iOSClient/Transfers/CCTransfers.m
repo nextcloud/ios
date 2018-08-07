@@ -210,7 +210,7 @@
 - (void)reloadDatasource
 {
     // test
-    if (appDelegate.activeAccount.length == 0)
+    if (appDelegate.activeAccount.length == 0 || !self.view.window)
         return;
     
     NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND ((session CONTAINS 'upload') OR (session CONTAINS 'download'))", appDelegate.activeAccount] sorted:@"sessionTaskIdentifier" ascending:NO];

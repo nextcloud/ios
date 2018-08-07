@@ -791,7 +791,7 @@ typedef enum {
  *
  */
 
-- (NSURLSessionTask *) getRemotePreviewByServer:(NSString*)serverPath ofFileID:(NSString *)fileID withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString *)mode onCommunication:(OCCommunication *)sharedOCComunication
+- (NSURLSessionTask *) getRemotePreviewByServer:(NSString*)serverPath ofFilePath:(NSString *)filePath withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString *)mode onCommunication:(OCCommunication *)sharedOCComunication
                                    successRequest:(void(^)(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer)) successRequest
                                    failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest;
 
