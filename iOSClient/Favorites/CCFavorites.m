@@ -394,7 +394,7 @@
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { }]];
     
-    alertController.popoverPresentationController.sourceView = self.view;
+    alertController.popoverPresentationController.sourceView = self.tableView;
     alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
@@ -467,7 +467,7 @@
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
     }]];
     
-    alertController.popoverPresentationController.sourceView = self.view;
+    alertController.popoverPresentationController.sourceView = self.tableView;
     alertController.popoverPresentationController.sourceRect = [self.tableView rectForRowAtIndexPath:indexPath];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
