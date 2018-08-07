@@ -303,8 +303,7 @@
         
         [communication getRemoteThumbnailByServer:[_activeUrl stringByAppendingString:@"/"] ofFilePath:fileNamePath withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
             
-            [UIImagePNGRepresentation([UIImage imageWithData:thumbnail]) writeToFile:fileNameViewPath atomically: YES];
-                    
+            [thumbnail writeToFile:fileNameViewPath atomically:YES];
             completion(nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
@@ -343,8 +342,7 @@
         
         [communication getRemotePreviewByServer:_activeUrl ofFilePath:fileNamePath withWidth:width andHeight:height andA:a andMode:mode onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
 
-            [UIImagePNGRepresentation([UIImage imageWithData:preview]) writeToFile:fileNameViewPath atomically: YES];
-            
+            [preview writeToFile:fileNameViewPath atomically:YES];
             completion(nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
