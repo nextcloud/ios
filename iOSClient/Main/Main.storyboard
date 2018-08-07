@@ -240,7 +240,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wv7-Pl-1S9" userLabel="Image">
+                                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="wv7-Pl-1S9" userLabel="Image">
                                             <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
                                         </imageView>
                                         <visualEffectView hidden="YES" opaque="NO" tag="200" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vaz-kb-VZC" userLabel="VisualEffect">
