@@ -105,8 +105,10 @@
     NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:_metadata.fileName serverUrl:appDelegate.activeMain.serverUrl activeUrl:appDelegate.activeUrl];
     
     [ocNetworking downloadPreviewWithfileID:_metadata.fileID fileNamePath:fileNamePath fileNameView:_metadata.fileNameView withWidth:self.view.frame.size.width - 50 andHeight:640 andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
+        
         if (errorCode == 0) {
-            UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
+            
+            UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
             
             _imagePreview.image = image;
             _imagePreview.contentMode = UIViewContentModeScaleToFill;

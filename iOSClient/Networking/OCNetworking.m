@@ -281,16 +281,15 @@
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
-    __block NSString *ext;
     NSInteger width = 0, height = 0;
     
-    if ([dimOfThumbnail.lowercaseString isEqualToString:@"xs"])      { width = 32;   height = 32;  ext = @"ico"; }
-    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"s"])  { width = 64;   height = 64;  ext = @"ico"; }
-    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"m"])  { width = 128;  height = 128; ext = @"ico"; }
-    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"l"])  { width = 640;  height = 640; ext = @"pvw"; }
-    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"xl"]) { width = 1024; height = 1024; ext = @"pvw"; }
+    if ([dimOfThumbnail.lowercaseString isEqualToString:@"xs"])      { width = 32;   height = 32;}
+    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"s"])  { width = 64;   height = 64;}
+    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"m"])  { width = 128;  height = 128;}
+    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"l"])  { width = 640;  height = 640;}
+    else if ([dimOfThumbnail.lowercaseString isEqualToString:@"xl"]) { width = 1024; height = 1024;}
     
-    NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@.%@", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView, ext];
+    NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
         
@@ -327,7 +326,7 @@
 
 - (void)downloadPreviewWithfileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView withWidth:(NSInteger)width andHeight:(NSInteger)height andA:(NSInteger)a andMode:(NSString *)mode completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
-    NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@.pvw", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView];
+    NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView];
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
     

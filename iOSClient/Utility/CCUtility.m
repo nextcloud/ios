@@ -911,11 +911,6 @@
     return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
 }
 
-+ (NSString *)getDirectoryProviderStoragePreviewFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
-{
-    return [NSString stringWithFormat:@"%@/%@.pvw", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
-}
-
 + (BOOL)fileProviderStorageExists:(NSString *)fileID fileName:(NSString *)fileName
 {
     NSString *fileNamePath = [self getDirectoryProviderStorageFileID:fileID fileName:fileName];
