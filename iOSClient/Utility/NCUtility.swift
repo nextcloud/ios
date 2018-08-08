@@ -98,7 +98,17 @@ class NCUtility: NSObject {
             
         } else if CCUtility.fileProviderStorageIconExists(fileID, fileNameView: fileNameView) && typeFile == k_metadataTypeFile_image {
             
-            return NSURL.fileURL(withPath: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileNameView)) as NSURL
+            let fileNamePath = NSTemporaryDirectory() + fileNameView
+            
+            do {
+                try FileManager.default.removeItem(atPath: fileNamePath)
+            } catch { }
+            
+            do {
+                try FileManager.default.linkItem(atPath: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileNameView), toPath: fileNamePath)                
+            } catch { return nil }
+            
+            return NSURL.fileURL(withPath: fileNamePath) as NSURL
         }
         
         return nil;
