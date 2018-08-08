@@ -271,7 +271,7 @@ class NCMainCommon: NSObject {
                 }
                 
                 // Local Image
-                if (CCUtility.getOptimizedPhoto()) {
+                if CCUtility.getOptimizedPhoto() && metadata.typeFile == k_metadataTypeFile_image  {
                     if CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) || CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileNameView) {
                         cell.local.image = UIImage.init(named: "local")
                     }

@@ -1570,7 +1570,7 @@
             
             NSString *account = @"";
             NSString *directoryUser = @"";
-            NSString *fileName, *fileNameIco;
+            NSString *fileName;
             
             for (tableLocalFile *record in records) {
                 if (![account isEqualToString:record.account]) {
@@ -1581,11 +1581,8 @@
                     }
                 }
                 fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.fileID];
-                fileNameIco = [NSString stringWithFormat:@"%@/%@.ico", directoryUser, record.fileID];
                 if (![directoryUser isEqualToString:@""] && [[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
                     [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageFileID:record.fileID fileNameView:record.fileName]];
-                    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameIco])
-                        [CCUtility moveFileAtPath:fileNameIco toPath:[CCUtility getDirectoryProviderStorageIconFileID:record.fileID fileNameView:record.fileName]];
                 }
             }
         });
