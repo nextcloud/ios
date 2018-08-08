@@ -772,7 +772,7 @@
         
             imageView.image = [UIImage imageNamed:@"file_photo"];
 
-            if (metadata.thumbnailExists) {
+            if (metadata.thumbnailExists && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 [self downloadThumbnail:metadata indexPath:indexPath];
             }
         }

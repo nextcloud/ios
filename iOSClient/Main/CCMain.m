@@ -4211,7 +4211,7 @@
     }
     
     // Download thumbnail
-    if (metadata.thumbnailExists && ![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && !_metadataFolder.e2eEncrypted) {
+    if (metadata.thumbnailExists && !_metadataFolder.e2eEncrypted && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
         [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
     }
     

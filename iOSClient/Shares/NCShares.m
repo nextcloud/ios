@@ -326,7 +326,7 @@
 
             if (cell.fileImageView.image == nil) {
                 
-                if (metadata.thumbnailExists) {
+                if (metadata.thumbnailExists && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                     [self downloadThumbnail:metadata serverUrl:table.serverUrl indexPath:indexPath];
                 } else {
                     cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
