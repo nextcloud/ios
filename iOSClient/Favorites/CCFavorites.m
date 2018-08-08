@@ -327,7 +327,7 @@
 
 - (void)openIn:(tableMetadata *)metadata
 {
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
+    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
         
     UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
     docController.delegate = self;
@@ -541,7 +541,7 @@
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
             [self.tableView setEditing:NO animated:YES];
             
-            if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
+            if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 [self openIn:metadata];
             } else {
                 metadata.session = k_download_session;
@@ -729,7 +729,7 @@
         
         if (serverUrl) {
             
-            if ([CCUtility fileProviderStorageExists:self.metadata.fileID fileName:self.metadata.fileNameView]) {
+            if ([CCUtility fileProviderStorageExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
             
                 [self downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
                             
@@ -743,7 +743,7 @@
                     
                 } else {
                     
-                    if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) && self.metadata.e2eEncrypted == NO) {
+                    if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && self.metadata.e2eEncrypted == NO) {
                         
                         if ([self shouldPerformSegue])
                             [self performSegueWithIdentifier:@"segueDetail" sender:self];

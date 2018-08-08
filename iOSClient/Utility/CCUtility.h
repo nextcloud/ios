@@ -184,9 +184,10 @@
 + (NSString *)getDirectoryUserData;
 + (NSString *)getDirectoryProviderStorage;
 + (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID;
-+ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileName:(NSString *)fileName;
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
 + (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
-+ (BOOL)fileProviderStorageExists:(NSString *)fileID fileName:(NSString *)fileName;
++ (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
++ (BOOL)fileProviderStorageIconExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 

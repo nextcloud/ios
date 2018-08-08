@@ -714,7 +714,7 @@
             
             if (data && error == nil) {
                 
-                if ([data writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName] options:NSDataWritingAtomic error:&error]) {
+                if ([data writeToFile:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName] options:NSDataWritingAtomic error:&error]) {
                     
                     tableMetadata *metadataForUpload = [tableMetadata new];
                     
@@ -1117,12 +1117,7 @@
             
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
 
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
-                
-                selector = selectorOpenIn;
-                //[self performSelector:@selector(unZipFile:) withObject:metadata.fileID];
-                
-            } else if ([metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
+            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress] || [metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
                 
                 selector = selectorOpenIn;
                 
@@ -1140,7 +1135,7 @@
 
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
 
-            NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
+            NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
             UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
             docController.delegate = self;
@@ -1158,7 +1153,7 @@
         // Save to Photo Album
         if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-            NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
+            NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView];
             PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image] && status == PHAuthorizationStatusAuthorized) {
@@ -3092,7 +3087,7 @@
             if (fileID) {
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
                 if (metadata) {
-                    return [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView];
+                    return [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView];
                 } else {
                     return NO;
                 }
@@ -3121,7 +3116,7 @@
             if (fileID) {
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
                 if (metadata) {
-                    if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
+                    if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                         isValid = YES;
                     } else {
                         isValid = NO;
@@ -3151,7 +3146,7 @@
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.items = [[NSArray alloc] init];
     
-    if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileNameView]) {
+    if ([CCUtility fileProviderStorageExists:_metadata.fileID fileNameView:_metadata.fileNameView]) {
         
         [self copyFileToPasteboard:_metadata];
         
@@ -3183,7 +3178,7 @@
     
     for (tableMetadata *metadata in selectedMetadatas) {
         
-        if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
+        if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
             
             [self copyFileToPasteboard:metadata];
             
@@ -3256,12 +3251,12 @@
         
         if (metadata) {
             
-            if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
+            if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 
                 NSString *fileName = [[NCUtility sharedInstance] createFileName:metadata.fileNameView directoryID:directoryID];
                 NSString *fileID = [directoryID stringByAppendingString:fileName];
                     
-                [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName]];
+                [CCUtility copyFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] toPath:[CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName]];
                     
                 tableMetadata *metadataForUpload = [tableMetadata new];
                         
@@ -4394,7 +4389,7 @@
     if (_metadata.directory == NO) {
         
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
-        if ([CCUtility fileProviderStorageExists:_metadata.fileID fileName:_metadata.fileNameView]) {
+        if ([CCUtility fileProviderStorageExists:_metadata.fileID fileNameView:_metadata.fileNameView]) {
             
             [self downloadFileSuccessFailure:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
             
@@ -4406,7 +4401,7 @@
                 
             } else {
             
-                if (([_metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) && _metadataFolder.e2eEncrypted == NO) {
+                if (([_metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && _metadataFolder.e2eEncrypted == NO) {
                     
                     if ([self shouldPerformSegue])
                         [self performSegueWithIdentifier:@"segueDetail" sender:self];

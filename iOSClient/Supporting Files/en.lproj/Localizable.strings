@@ -218,7 +218,7 @@
 
 "_optimized_photos_"            = "Optimized photo resolution";
 "_upload_del_photos_"           = "Remove files after upload";
-"_optimized_photos_how_"        = "Download, if possible, only a low-resolution photos.";
+"_optimized_photos_how_"        = "Download for view, if possible, only a low-resolution photos.";
 "_upload_del_photos_how_"       = "Files will be removed from device memory after they’ve been uploaded to your cloud. They will remain in the camera roll. Just download the files to see them.";
 "_show_hidden_files_"           = "Show hidden files";
 "_format_compatibility_"        = "Most Compatible";

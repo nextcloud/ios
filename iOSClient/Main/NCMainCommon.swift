@@ -176,7 +176,7 @@ class NCMainCommon: NSObject {
         if metadata.directory {
             CCUtility.getDirectoryProviderStorageFileID(metadata.fileID)
         } else {
-            CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileName: metadata.fileNameView)
+            CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView)
         }
         
         // CCCell
@@ -272,9 +272,17 @@ class NCMainCommon: NSObject {
                 
                 // Local Image
                 let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
-                if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileName: metadata.fileNameView) {
-                    cell.local.image = UIImage.init(named: "local")
+                if (CCUtility.getOptimizedPhoto()) {
+                    //if tableLocalFile != nil && (CCUtility.fileProviderStorageExists(metadata.fileID, fileName: metadata.fileNameView)
+                } else {
+                    if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+                        cell.local.image = UIImage.init(named: "local")
+                    }
                 }
+                
+                
+                //![[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]
+                
                 
                 // Status Image
                 let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", appDelegate.activeAccount, metadata.fileName))

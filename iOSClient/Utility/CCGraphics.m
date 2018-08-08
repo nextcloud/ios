@@ -148,9 +148,9 @@
 {
     UIImage *originalImage;
     UIImage *scaleImage;
-    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileName:fileName];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName];
     
-    if (![CCUtility fileProviderStorageExists:fileID fileName:fileName]) return nil;
+    if (![CCUtility fileProviderStorageExists:fileID fileNameView:fileName]) return nil;
     
     // only viedo / image
     if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;

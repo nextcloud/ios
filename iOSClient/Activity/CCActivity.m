@@ -366,7 +366,7 @@
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", activity.fileID]];
     
-    BOOL existsFile = [CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView];
+    BOOL existsFile = [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView];
     
     if (metadata && existsFile) {
         
