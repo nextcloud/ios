@@ -563,10 +563,10 @@
                     }
                     [self.photoBrowser reloadData];
                 }];
-            }
-        } else {
-            if ([CCUtility getOptimizedPhoto] == NO) {
-                [self downloadPhotoBrowser:metadata];
+            } else {
+                if ([CCUtility getOptimizedPhoto] == NO ) {
+                    [self downloadPhotoBrowser:metadata];
+                }
             }
         }
     }
