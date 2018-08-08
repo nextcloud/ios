@@ -70,6 +70,9 @@
 + (BOOL)getOnlyLockDir;
 + (void)setOnlyLockDir:(BOOL)lockDir;
 
++ (BOOL)getOptimizedPhoto;
++ (void)setOptimizedPhoto:(BOOL)resize;
+
 + (BOOL)getUploadAndRemovePhoto;
 + (void)setUploadAndRemovePhoto:(BOOL)remove;
 

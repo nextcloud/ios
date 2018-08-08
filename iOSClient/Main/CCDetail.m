@@ -550,7 +550,7 @@
 
         if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView] == NO && metadataDB.status == k_metadataStatusNormal) {
             
-            if([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
                 
                 NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
                 
@@ -558,11 +558,16 @@
                 
                 [ocNetworking downloadPreviewWithfileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
                     
+                    if (([CCUtility getOptimizedPhoto] == YES && errorCode != 0) || [CCUtility getOptimizedPhoto] == NO) {
+                        [self downloadPhotoBrowser:metadata];
+                    }
                     [self.photoBrowser reloadData];
                 }];
             }
-            
-            [self downloadPhotoBrowser:metadata];
+        } else {
+            if ([CCUtility getOptimizedPhoto] == NO) {
+                [self downloadPhotoBrowser:metadata];
+            }
         }
     }
     
