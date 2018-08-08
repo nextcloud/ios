@@ -25,6 +25,7 @@
 #import "AppDelegate.h"
 #import "CCMain.h"
 #import "NCUchardet.h"
+#import "NCBridgeSwift.h"
 #import <KTVHTTPCache/KTVHTTPCache.h>
 
 #import "NCBridgeSwift.h"
@@ -713,7 +714,10 @@
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
     if (metadata == nil) return;
 
-    self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]];
+    NSURL *url = [[NCUtility sharedInstance] getUrlforDocumentInteractionControllerWithFileID:metadata.fileID fileNameView:metadata.fileNameView typeFile:metadata.typeFile];
+    if (url == nil) return;
+    
+    self.docController = [UIDocumentInteractionController interactionControllerWithURL:url];
     
     self.docController.delegate = self;
     

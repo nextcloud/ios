@@ -327,7 +327,8 @@
 
 - (void)openIn:(tableMetadata *)metadata
 {
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+    NSURL *url = [[NCUtility sharedInstance] getUrlforDocumentInteractionControllerWithFileID:metadata.fileID fileNameView:metadata.fileNameView typeFile:metadata.typeFile];
+    if (url == nil) return;
         
     UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
     docController.delegate = self;
