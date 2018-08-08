@@ -550,6 +550,18 @@
 
         if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView] == NO && metadataDB.status == k_metadataStatusNormal) {
             
+            if([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
+                
+                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+                
+                OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+                
+                [ocNetworking downloadPreviewWithfileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
+                    
+                    [self.photoBrowser reloadData];
+                }];
+            }
+            
             [self downloadPhotoBrowser:metadata];
         }
     }
@@ -562,7 +574,6 @@
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index
 {
     UIImage *image;
-//    UIImage *loadingGIF = [UIImage animatedImageWithAnimatedGIFURL:[[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"]];
 
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
     
@@ -573,8 +584,6 @@
             UIImage *imagePreview = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
-                
-                if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
                 
                 NSString *fileImage = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView];
                 NSString *ext = [CCUtility getExtension:metadata.fileNameView];
@@ -599,14 +608,13 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:imagePreview]];
+                        if (imagePreview)
+                            [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:imagePreview]];
                     }
                 }
             }
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_video]) {
-                
-                if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
                 
                 if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
                     
@@ -625,14 +633,13 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:imagePreview]];
+                        if (imagePreview)
+                            [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:imagePreview]];
                     }
                 }
             }
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_audio]) {
-                
-                if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_audio"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
                 
                 if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
                     
@@ -659,7 +666,8 @@
                         
                     } else {
                         
-                        [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:imagePreview]];
+                        if (imagePreview)
+                            [self.photos replaceObjectAtIndex:index withObject:[MWPhoto photoWithImage:imagePreview]];
                     }
                 }
             }
