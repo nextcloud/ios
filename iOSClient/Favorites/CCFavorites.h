@@ -45,7 +45,6 @@
 @property (nonatomic, strong) NSString *titleViewControl;
 
 @property (nonatomic, weak) CCDetail *detailViewController;
-@property (nonatomic, strong) UIDocumentInteractionController *docController;
 
 - (void)reloadDatasource;
 - (void)listingFavorites;

@@ -299,13 +299,9 @@
         
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress]) {
+        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress] || [metadata.typeFile isEqualToString: k_metadataTypeFile_unknown] || [selector isEqualToString:selectorOpenIn]) {
             
-            [self openWith:metadata];
-            
-        } else if ([metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
-            
-            [self openWith:metadata];
+            [self openIn:metadata];
             
         } else {
             
@@ -329,19 +325,22 @@
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
 }
 
-- (void)openWith:(tableMetadata *)metadata
+- (void)openIn:(tableMetadata *)metadata
 {
-    if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
+    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
         
-        NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
+    UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+    docController.delegate = self;
         
-        _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
-        _docController.delegate = self;
-        
-        [_docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
+    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+
+    if (cell) {
+        [docController presentOptionsMenuFromRect:cell.frame inView:self.tableView animated:YES];
+    } else {
+        [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
     }
 }
-
 
 - (void)tapActionConnectionMounted:(UITapGestureRecognizer *)tapGesture
 {
@@ -541,7 +540,19 @@
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
             [self.tableView setEditing:NO animated:YES];
-            [self openWith:metadata];
+            
+            if ([CCUtility fileProviderStorageExists:metadata.fileID fileName:metadata.fileNameView]) {
+                [self openIn:metadata];
+            } else {
+                metadata.session = k_download_session;
+                metadata.sessionError = @"";
+                metadata.sessionSelector = selectorOpenIn;
+                metadata.status = k_metadataStatusWaitDownload;
+                
+                // Add Metadata for Download
+                tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+                [[CCNetworking sharedNetworking] downloadFile:metadataForDownload taskStatus:k_taskStatusResume delegate:self];
+            }
         }];
     }
     
