@@ -547,6 +547,8 @@
     if (metadata) {
         
         tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+        
+        NSString *ext = [[metadataDB.fileNameView pathExtension] uppercaseString];
 
         if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO && metadataDB.status == k_metadataStatusNormal) {
             
@@ -562,14 +564,14 @@
                     self.navigationItem.titleView = nil;
                     self.title = metadata.fileNameView;
                     
-                    if (([CCUtility getOptimizedPhoto] == YES && errorCode != 0) || [CCUtility getOptimizedPhoto] == NO) {
+                    if (([CCUtility getOptimizedPhoto] == YES && errorCode != 0) || [CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
                         [self downloadPhotoBrowser:metadata];
                     }
                     
                     [self.photoBrowser reloadData];
                 }];
             } else {
-                if ([CCUtility getOptimizedPhoto] == NO ) {
+                if ([CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
                     [self downloadPhotoBrowser:metadata];
                 }
             }
