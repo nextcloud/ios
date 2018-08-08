@@ -587,6 +587,7 @@
         if (metadata.fileID) {
             
             UIImage *imagePreview = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+//            if (!imagePreview) imagePreview = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file_photo"] multiplier:3 color:[[NCBrandColor sharedInstance] icon]];
             
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image]) {
                 
