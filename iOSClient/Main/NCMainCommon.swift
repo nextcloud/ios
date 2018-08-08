@@ -271,10 +271,12 @@ class NCMainCommon: NSObject {
                 }
                 
                 // Local Image
-                let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 if (CCUtility.getOptimizedPhoto()) {
-                    //if tableLocalFile != nil && (CCUtility.fileProviderStorageExists(metadata.fileID, fileName: metadata.fileNameView)
+                    if CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) || CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+                        cell.local.image = UIImage.init(named: "local")
+                    }
                 } else {
+                    let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                     if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
                         cell.local.image = UIImage.init(named: "local")
                     }
