@@ -808,15 +808,15 @@
 
 - (void)downloadPhotoBrowser:(tableMetadata *)metadata
 {
-    tableMetadata *metadataForUpload = [[NCManageDatabase sharedInstance] initNewMetadata:metadata];
+    tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] initNewMetadata:metadata];
     
-    metadataForUpload.session = k_download_session;
-    metadataForUpload.sessionError = @"";
-    metadataForUpload.sessionSelector = selectorLoadViewImage;
-    metadataForUpload.status = k_metadataStatusWaitDownload;
+    metadataForDownload.session = k_download_session;
+    metadataForDownload.sessionError = @"";
+    metadataForDownload.sessionSelector = selectorLoadViewImage;
+    metadataForDownload.status = k_metadataStatusWaitDownload;
         
     // Add Metadata for Download
-    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
     [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
