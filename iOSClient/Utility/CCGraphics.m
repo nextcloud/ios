@@ -351,7 +351,8 @@ Color difference is determined by the following formula:
     UIView *navView = [UIView new];
     
     UILabel *label = [UILabel new];
-    if (imageRight) title = [@"  " stringByAppendingString:title];
+    if (imageRight)
+        title = [NSString stringWithFormat:@"     %@", title];
     label.text = title;
     [label sizeToFit];
     label.center = navView.center;

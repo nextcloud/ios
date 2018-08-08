@@ -179,15 +179,18 @@
     }
     
     // Title
-    self.navigationItem.titleView = nil;
+    NSString *title;
     if (folder.length == 0) {
-        self.navigationItem.title = NSLocalizedString(@"_media_", nil);
+        title = NSLocalizedString(@"_media_", nil);
     } else {
-        self.navigationItem.title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_media_", nil), [folder substringFromIndex:1]];
+        title = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"_media_", nil), [folder substringFromIndex:1]];
     }
     
+    self.navigationItem.titleView = nil;
+    self.navigationItem.title = title;
+    
     if (isSearchMode) {
-        [CCGraphics addImageToTitle:self.navigationItem.title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:YES navigationItem:self.navigationItem];
+        [CCGraphics addImageToTitle:title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:YES navigationItem:self.navigationItem];
     }
     
     // Button Item RIGHT
