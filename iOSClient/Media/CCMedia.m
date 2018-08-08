@@ -222,12 +222,12 @@
 - (void)setUINavigationBarSelected
 {
     UIBarButtonItem *buttonDelete = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"delete"] style:UIBarButtonItemStylePlain target:self action:@selector(deleteSelectedFiles)];
-    UIBarButtonItem *buttonOpenIn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(openSelectedFiles)];
+//    UIBarButtonItem *buttonOpenIn = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(openSelectedFiles)];
     
     UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIBarButtonItemStylePlain target:self action:@selector(editingModeNO)];
     
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:cancelButton, nil];
-    self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonDelete, buttonOpenIn, nil];
+    self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonDelete, nil];
     
     // Title
     self.navigationItem.title = [NSString stringWithFormat:@"%@ : %lu / %lu", NSLocalizedString(@"_selected_", nil), (unsigned long)[selectedMetadatas count], (unsigned long)[sectionDataSource.allRecordsDataSource count]];
@@ -437,7 +437,7 @@
                                                        handler:^(UIAlertAction *action) {
                                                        }]];
     
-    alertController.popoverPresentationController.barButtonItem = self.navigationItem.rightBarButtonItems.firstObject;
+    alertController.popoverPresentationController.barButtonItem = self.navigationItem.leftBarButtonItems.firstObject;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
         [alertController.view layoutIfNeeded];
