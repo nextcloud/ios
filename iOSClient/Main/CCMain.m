@@ -59,7 +59,6 @@
     NSDate *_lockUntilDate;
 
     UIRefreshControl *_refreshControl;
-    UIDocumentInteractionController *_docController;
 
     CCHud *_hud;
     
@@ -784,8 +783,8 @@
     UIDocumentMenuViewController *documentProviderMenu = [[UIDocumentMenuViewController alloc] initWithDocumentTypes:@[@"public.data"] inMode:UIDocumentPickerModeImport];
     
     documentProviderMenu.modalPresentationStyle = UIModalPresentationFormSheet;
-    documentProviderMenu.popoverPresentationController.sourceView = self.view;
-    documentProviderMenu.popoverPresentationController.sourceRect = self.view.bounds;
+    documentProviderMenu.popoverPresentationController.sourceView = self.tabBarController.tabBar;
+    documentProviderMenu.popoverPresentationController.sourceRect = self.tabBarController.tabBar.bounds;
     documentProviderMenu.delegate = self;
     
     [self presentViewController:documentProviderMenu animated:YES completion:nil];
@@ -1138,15 +1137,22 @@
         
         // Open with...
         if ([selector isEqualToString:selectorOpenIn] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-            
+
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
 
             NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileName:metadata.fileNameView]];
             
-            _docController = [UIDocumentInteractionController interactionControllerWithURL:url];
-            _docController.delegate = self;
+            UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+            docController.delegate = self;
             
-            [_docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+            NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
+            CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            
+            if (cell) {
+                [docController presentOptionsMenuFromRect:cell.frame inView:self.tableView animated:YES];
+            } else {
+                [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+            }
         }
         
         // Save to Photo Album
