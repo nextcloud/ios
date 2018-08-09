@@ -779,7 +779,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                             failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure{
     _requestMethod = @"GET";
     
-    NSString *query = [NSString stringWithFormat:@"/%i/%i/%@", (int)fileWidth, (int)fileHeight, filePath];
+    NSString *query = [NSString stringWithFormat:@"/index.php/apps/files/api/v1/thumbnail/%i/%i/%@", (int)fileWidth, (int)fileHeight, filePath];
     serverPath = [serverPath stringByAppendingString:query];
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];

@@ -1498,7 +1498,6 @@
                      failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
     serverPath = [serverPath encodeString:NSUTF8StringEncoding];
-    serverPath = [serverPath stringByAppendingString:k_url_thumbnails];
     filePath = [filePath encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
