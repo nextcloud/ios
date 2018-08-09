@@ -1081,7 +1081,7 @@
 - (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    [ocNetworking downloadPreviewWithfileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
+    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:serverUrl withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width completion:^(NSString *message, NSInteger errorCode) {
         if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [[NCMainCommon sharedInstance] isValidIndexPath:indexPath tableView:self.tableView]) {
             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
         }
@@ -1135,8 +1135,7 @@
 
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
 
-            NSURL *url = [[NCUtility sharedInstance] getUrlforDocumentInteractionControllerWithFileID:metadata.fileID fileNameView:metadata.fileNameView typeFile:metadata.typeFile];
-            if (url == nil) return;
+            NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
             UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
             docController.delegate = self;

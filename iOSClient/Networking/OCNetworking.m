@@ -324,11 +324,11 @@
     }
 }
 
-- (void)downloadPreviewWithfileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView withWidth:(NSInteger)width andHeight:(NSInteger)height andA:(NSInteger)a andMode:(NSString *)mode completion:(void (^)(NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(NSInteger)width andHeight:(NSInteger)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
-    NSString *fileNameViewPath = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileNameView];
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNameViewPath]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
     
         completion(nil, 0);
     
@@ -339,9 +339,20 @@
         [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
         [communication setUserAgent:[CCUtility getUserAgent]];
         
-        [communication getRemotePreviewByServer:_activeUrl ofFilePath:fileNamePath withWidth:width andHeight:height andA:a andMode:mode onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+        [communication getRemotePreviewByServer:_activeUrl ofFilePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:_activeUrl] withWidth:width andHeight:height andA:1 andMode:@"cover" onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
 
-            [preview writeToFile:fileNameViewPath atomically:YES];
+            [preview writeToFile:file atomically:YES];
+            
+            // Optimization Photo
+            NSString *ext = [[metadata.fileNameView pathExtension] uppercaseString];
+
+            if ([CCUtility getOptimizedPhoto] && [metadata.typeFile isEqualToString:k_metadataTypeFile_image] && [ext isEqualToString:@"GIF"] == NO) {
+                
+                NSString *file = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
+                [preview writeToFile:file atomically:YES];
+                [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+            }
+            
             completion(nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {

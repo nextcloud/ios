@@ -466,7 +466,7 @@
     counterThumbnail++;
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    [ocNetworking downloadPreviewWithfileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:saveServerUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
+    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:saveServerUrl withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width completion:^(NSString *message, NSInteger errorCode) {
         counterThumbnail--;
         if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath] && !collectionViewReloadDataInProgress) {
             [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];

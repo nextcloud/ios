@@ -90,28 +90,4 @@ class NCUtility: NSObject {
         return 0
     }
     
-    @objc func getUrlforDocumentInteractionController(fileID: String, fileNameView: String, typeFile: String) -> NSURL? {
-        
-        if CCUtility.fileProviderStorageExists(fileID, fileNameView: fileNameView) {
-            
-            return NSURL.fileURL(withPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameView)) as NSURL
-            
-        } else if CCUtility.fileProviderStorageIconExists(fileID, fileNameView: fileNameView) && typeFile == k_metadataTypeFile_image {
-            
-            let fileNamePath = NSTemporaryDirectory() + fileNameView
-            
-            do {
-                try FileManager.default.removeItem(atPath: fileNamePath)
-            } catch { }
-            
-            do {
-                try FileManager.default.linkItem(atPath: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: fileNameView), toPath: fileNamePath)                
-            } catch { return nil }
-            
-            return NSURL.fileURL(withPath: fileNamePath) as NSURL
-        }
-        
-        return nil;
-    }
-    
 }

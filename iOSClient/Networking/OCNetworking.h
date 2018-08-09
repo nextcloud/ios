@@ -43,20 +43,33 @@
 @property (nonatomic, assign) BOOL isFinished;
 
 - (void)checkServer:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+
 - (NSURLSessionTask *)downloadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void (^)(int64_t length, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+
 - (NSURLSessionTask *)uploadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void(^)(NSString *fileID, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+
 - (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView completion:(void (^)(NSString *message, NSInteger errorCode))completion;
-- (void)downloadPreviewWithfileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView withWidth:(NSInteger)width andHeight:(NSInteger)height andA:(NSInteger)a andMode:(NSString *)mode completion:(void (^)(NSString *message, NSInteger errorCode))completion;
+
+- (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(NSInteger)width andHeight:(NSInteger)height completion:(void (^)(NSString *message, NSInteger errorCode))completion;
+
 - (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+
 - (void)readFile:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(tableMetadata *metadata))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+
 - (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *message, NSInteger errorCode))completion;
+
 - (void)createFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSString *fileID, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+
 - (void)moveFileOrFolder:(NSString *)fileName fileNameTo:(NSString *)fileNameTo success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+
 - (void)settingFavorite:(NSString *)fileName favorite:(BOOL)favorite completion:(void (^)(NSString *message, NSInteger errorCode))completion;
+
 - (void)listingFavorites:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSArray *metadatas))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+
 - (void)getActivityServer:(void(^)(NSArray *listOfActivity))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
 - (void)subscribingPushNotificationServer:(NSString *)url pushToken:(NSString *)pushToken Hash:(NSString *)pushTokenHash devicePublicKey:(NSString *)devicePublicKey success:(void(^)(NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+
 - (void)unsubscribingPushNotificationServer:(NSString *)url deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature publicKey:(NSString *)publicKey success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
 @end

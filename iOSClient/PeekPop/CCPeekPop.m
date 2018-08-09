@@ -102,9 +102,7 @@
 {
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:_metadata.fileName serverUrl:appDelegate.activeMain.serverUrl activeUrl:appDelegate.activeUrl];
-    
-    [ocNetworking downloadPreviewWithfileID:_metadata.fileID fileNamePath:fileNamePath fileNameView:_metadata.fileNameView withWidth:self.view.frame.size.width - 50 andHeight:640 andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
+    [ocNetworking downloadPreviewWithMetadata:_metadata serverUrl:appDelegate.activeMain.serverUrl withWidth:self.view.frame.size.width - 50 andHeight:self.view.frame.size.width - 50 completion:^(NSString *message, NSInteger errorCode) {
         
         if (errorCode == 0) {
             

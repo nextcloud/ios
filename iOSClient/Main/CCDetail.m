@@ -560,10 +560,10 @@
                 [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
                 
                 OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-                [ocNetworking downloadPreviewWithfileID:metadata.fileID fileNamePath:[CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl] fileNameView:metadata.fileNameView withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width andA:1 andMode:@"cover" completion:^(NSString *message, NSInteger errorCode) {
+                [ocNetworking downloadPreviewWithMetadata:metadataDB serverUrl:serverUrl withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width completion:^(NSString *message, NSInteger errorCode) {
                     
                     self.navigationItem.titleView = nil;
-                    self.title = metadata.fileNameView;
+                    self.title = metadataDB.fileNameView;
                     
                     if (([CCUtility getOptimizedPhoto] == YES && errorCode != 0) || [CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
                         [self downloadPhotoBrowser:metadata];
@@ -714,10 +714,7 @@
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
     if (metadata == nil) return;
 
-    NSURL *url = [[NCUtility sharedInstance] getUrlforDocumentInteractionControllerWithFileID:metadata.fileID fileNameView:metadata.fileNameView typeFile:metadata.typeFile];
-    if (url == nil) return;
-    
-    self.docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+    self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]];
     
     self.docController.delegate = self;
     
