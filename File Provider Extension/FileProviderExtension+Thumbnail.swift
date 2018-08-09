@@ -46,10 +46,14 @@ extension FileProviderExtension {
                     guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata!.directoryID) else {
                         continue
                     }
-                    let fileNamePath = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl, activeUrl: providerData.accountUrl)
+                    
+                    
+                    let width = NCUtility.sharedInstance.getScreenWidthForPreview()
+                    let height = NCUtility.sharedInstance.getScreenHeightForPreview()
                     
                     let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-                    ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileID: metadata!.fileID, fileNamePath: fileNamePath, fileNameView: metadata!.fileNameView, completion: { (message, errorCode) in
+                    
+                    ocNetworking?.downloadPreview(with: metadata!, serverUrl: serverUrl, withWidth: width, andHeight: height, completion: { (message, errorCode) in
                         
                         if errorCode == 0 {
                             do {

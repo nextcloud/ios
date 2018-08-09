@@ -559,8 +559,12 @@
                 
                 [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
                 
+                CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
+                CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
+
                 OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-                [ocNetworking downloadPreviewWithMetadata:metadataDB serverUrl:serverUrl withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width completion:^(NSString *message, NSInteger errorCode) {
+
+                [ocNetworking downloadPreviewWithMetadata:metadataDB serverUrl:serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
                     
                     self.navigationItem.titleView = nil;
                     self.title = metadataDB.fileNameView;

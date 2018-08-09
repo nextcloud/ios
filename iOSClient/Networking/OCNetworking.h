@@ -50,7 +50,7 @@
 
 - (void)downloadThumbnailWithDimOfThumbnail:(NSString *)dimOfThumbnail fileID:(NSString*)fileID fileNamePath:(NSString *)fileNamePath fileNameView:(NSString *)fileNameView completion:(void (^)(NSString *message, NSInteger errorCode))completion;
 
-- (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(NSInteger)width andHeight:(NSInteger)height completion:(void (^)(NSString *message, NSInteger errorCode))completion;
+- (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion;
 
 - (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 

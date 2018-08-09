@@ -465,8 +465,12 @@
     
     counterThumbnail++;
     
+    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
+    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
+    
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:saveServerUrl withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width completion:^(NSString *message, NSInteger errorCode) {
+    
+    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:saveServerUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
         counterThumbnail--;
         if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [self indexPathIsValid:indexPath] && !collectionViewReloadDataInProgress) {
             [self.collectionView reloadItemsAtIndexPaths:@[indexPath]];

@@ -148,8 +148,12 @@
 
 - (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
 {
+    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
+    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
+    
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:serverUrl withWidth:appDelegate.activeDetail.view.frame.size.width andHeight:appDelegate.activeDetail.view.frame.size.width completion:^(NSString *message, NSInteger errorCode) {
+    
+    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
         if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] && [[NCMainCommon sharedInstance] isValidIndexPath:indexPath tableView:self.tableView]) {
             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
         }

@@ -324,7 +324,7 @@
     }
 }
 
-- (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(NSInteger)width andHeight:(NSInteger)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
+- (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
     
@@ -349,7 +349,9 @@
             if ([CCUtility getOptimizedPhoto] && [metadata.typeFile isEqualToString:k_metadataTypeFile_image] && [ext isEqualToString:@"GIF"] == NO) {
                 
                 NSString *file = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
+                
                 [preview writeToFile:file atomically:YES];
+                
                 [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
             }
             
