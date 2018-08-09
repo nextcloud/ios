@@ -547,11 +547,17 @@
     // Download image ?
     if (metadata) {
         
+        NSInteger status;
         tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+        if (metadataDB) {
+            status = metadataDB.status;
+        } else {
+            status = k_metadataStatusNormal;
+        }
         
-        NSString *ext = [[metadataDB.fileNameView pathExtension] uppercaseString];
+        NSString *ext = [[metadata.fileNameView pathExtension] uppercaseString];
 
-        if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO && metadataDB.status == k_metadataStatusNormal) {
+        if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO && status == k_metadataStatusNormal) {
             
             if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
                 
@@ -564,10 +570,10 @@
 
                 OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
 
-                [ocNetworking downloadPreviewWithMetadata:metadataDB serverUrl:serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
+                [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
                     
                     self.navigationItem.titleView = nil;
-                    self.title = metadataDB.fileNameView;
+                    self.title = metadata.fileNameView;
                     
                     if (([CCUtility getOptimizedPhoto] == YES && errorCode != 0) || [CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
                         [self downloadPhotoBrowser:metadata];
