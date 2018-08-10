@@ -596,6 +596,7 @@ class NCMainCommon: NSObject {
         }
         
         self.reloadDatasource(ServerUrl: serverUrl, fileID: nil, action: k_action_NULL)
+        self.appDelegate.activeMedia.reloadDatasource(nil, action: Int(k_action_NULL))
     }
 }
     
