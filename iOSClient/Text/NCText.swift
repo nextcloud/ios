@@ -174,6 +174,8 @@ class NCText: UIViewController, UITextViewDelegate {
                         _ = NCManageDatabase.sharedInstance.addMetadata(metadata)
                         self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
                         
+                        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: metadata.fileID, action: Int32(k_action_MOD))
+
                         self.delegate?.dismissTextView()
                     })
 

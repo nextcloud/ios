@@ -548,6 +548,9 @@
             if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 [self openIn:metadata];
             } else {
+                
+                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+                
                 metadata.session = k_download_session;
                 metadata.sessionError = @"";
                 metadata.sessionSelector = selectorOpenIn;
@@ -556,6 +559,8 @@
                 // Add Metadata for Download
                 tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [[CCNetworking sharedNetworking] downloadFile:metadataForDownload taskStatus:k_taskStatusResume delegate:self];
+                
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
             }
         }];
     }
@@ -758,7 +763,7 @@
                         tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
                         [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:self];
                         
-                        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:self.metadata.fileID action:k_action_MOD];
                     }
                 }
             }

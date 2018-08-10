@@ -175,13 +175,14 @@
 {
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlLocal];
     NSString *fileName = [[NCUtility sharedInstance] createFileName:appDelegate.fileNameUpload directoryID:directoryID];
+    NSString *fileID = [directoryID stringByAppendingString:appDelegate.fileNameUpload];
     
     tableMetadata *metadataForUpload = [tableMetadata new];
     
     metadataForUpload.account = appDelegate.activeAccount;
     metadataForUpload.date = [NSDate new];
     metadataForUpload.directoryID = directoryID;
-    metadataForUpload.fileID = [directoryID stringByAppendingString:appDelegate.fileNameUpload];
+    metadataForUpload.fileID = fileID;
     metadataForUpload.fileName = fileName;
     metadataForUpload.fileNameView = fileName;
     metadataForUpload.session = k_upload_session;
@@ -194,7 +195,9 @@
     // Add Medtadata for upload
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-        
+    
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal fileID:fileID action:k_action_NULL];
+
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

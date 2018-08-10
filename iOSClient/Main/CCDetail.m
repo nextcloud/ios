@@ -547,6 +547,7 @@
     // Download image ?
     if (metadata) {
         
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         NSInteger status;
         tableMetadata *metadataDB = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         if (metadataDB) {
@@ -561,8 +562,6 @@
             
             if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
                 
-                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-                
                 [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
                 
                 CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
@@ -576,14 +575,14 @@
                     self.title = metadata.fileNameView;
                     
                     if (([CCUtility getOptimizedPhoto] == YES && errorCode != 0) || [CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
-                        [self downloadPhotoBrowser:metadata];
+                        [self downloadPhotoBrowser:metadata serverUrl:serverUrl];
                     }
                     
                     [self.photoBrowser reloadData];
                 }];
             } else {
                 if ([CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
-                    [self downloadPhotoBrowser:metadata];
+                    [self downloadPhotoBrowser:metadata serverUrl:serverUrl];
                 }
             }
         }
@@ -819,7 +818,7 @@
     }
 }
 
-- (void)downloadPhotoBrowser:(tableMetadata *)metadata
+- (void)downloadPhotoBrowser:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl
 {
     tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] initNewMetadata:metadata];
     
@@ -832,6 +831,8 @@
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
+
     [CCGraphics addImageToTitle:NSLocalizedString(@"_...loading..._", nil) colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
 }
 

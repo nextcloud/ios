@@ -447,6 +447,9 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [_hud hideHud];
     });
+    
+    // reload
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil fileID:nil action:k_action_ADD];
 }
 
 - (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset

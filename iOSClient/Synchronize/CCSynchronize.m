@@ -400,9 +400,7 @@
     (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataToAdd serverUrl:nil];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
-    });
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
 }
 
 @end

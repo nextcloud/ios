@@ -746,6 +746,8 @@
                             // Add Medtadata for upload
                             (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                            
+                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:fileID action:k_action_ADD];
                         }];
                         
                         [alertController addAction:cancelAction];
@@ -763,6 +765,7 @@
                         (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                         [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
 
+                        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:fileID action:k_action_ADD];
                     }
                     
                 } else {
@@ -983,11 +986,12 @@
                     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
                     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
                 }
-                
             }
         }
         
         [_hud hideHud];
+        
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_ADD];
     });
     
     [self tableViewSelect:NO];
@@ -1290,7 +1294,7 @@
 
 - (void)uploadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_ADD];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
     
     [appDelegate updateApplicationIconBadgeNumber];
 }
@@ -1414,6 +1418,8 @@
             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
         }
     }
+    
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_ADD];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -2449,6 +2455,8 @@
                 // Add Metadata for Download
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
             }
             
         } else {
@@ -2476,9 +2484,11 @@
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
-    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    if ([self indexPathIsValid:indexPath])
-        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
+    
+//    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
+//    if ([self indexPathIsValid:indexPath])
+//        [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3167,6 +3177,8 @@
             // Add Metadata for Download
             (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+            
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:_metadata.fileID action:k_action_MOD];
         }
     }
 }
@@ -3199,6 +3211,8 @@
                 // Add Metadata for Download
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
                 [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
             }
         }
     }
@@ -3276,6 +3290,8 @@
                             
                 // Add Medtadata for upload
                 (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:fileID action:k_action_ADD];
             }
         }
     }
@@ -4414,7 +4430,7 @@
                     (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
                     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
                     
-                    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObjects:indexPath, nil] withRowAnimation:UITableViewRowAnimationAutomatic];
+                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:_metadata.fileID action:k_action_MOD];
                 }
             }
         }
