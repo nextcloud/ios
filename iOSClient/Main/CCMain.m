@@ -1290,7 +1290,7 @@
 
 - (void)uploadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_ADD];
     
     [appDelegate updateApplicationIconBadgeNumber];
 }
