@@ -629,25 +629,26 @@
     }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-        collectionViewReloadDataInProgress = YES;
-        
-        NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
-        
-        dispatch_async(dispatch_get_main_queue(), ^{
-               
-            if (isEditMode)
-                [self setUINavigationBarSelected];
-            else
-                [self setUINavigationBarDefault];
+        @synchronized(self) {
+            collectionViewReloadDataInProgress = YES;
             
-            [self.collectionView reloadData];
+            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
+            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
             
-            [self.collectionView performBatchUpdates:^{} completion:^(BOOL finished) {
-                collectionViewReloadDataInProgress = NO;
-            }];
-        });
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if (isEditMode)
+                    [self setUINavigationBarSelected];
+                else
+                    [self setUINavigationBarDefault];
+                
+                [self.collectionView reloadData];
+                
+                [self.collectionView performBatchUpdates:^{} completion:^(BOOL finished) {
+                    collectionViewReloadDataInProgress = NO;
+                }];
+            });
+        };
     });
 }
 

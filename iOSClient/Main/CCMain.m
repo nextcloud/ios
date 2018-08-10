@@ -3886,101 +3886,115 @@
     if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil)
         return;
     
-    // Search Mode
-    if (_isSearchMode) {
-        
-        // Create metadatas
-        NSMutableArray *metadatas = [NSMutableArray new];
-        for (tableMetadata *resultMetadata in _searchResultMetadatas) {
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", resultMetadata.fileID]];
-            if (metadata) {
-                [metadatas addObject:metadata];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        @synchronized(self) {
+            
+            // Search Mode
+            if (_isSearchMode) {
+                
+                // Create metadatas
+                NSMutableArray *metadatas = [NSMutableArray new];
+                for (tableMetadata *resultMetadata in _searchResultMetadatas) {
+                    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", resultMetadata.fileID]];
+                    if (metadata) {
+                        [metadatas addObject:metadata];
+                    }
+                }
+                
+                sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:_directoryGroupBy filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
+
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self tableViewReloadData];
+                });
+                    
+                if ([sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch) {
+                        
+                    _noFilesSearchTitle = NSLocalizedString(@"_search_no_record_found_", nil);
+                    _noFilesSearchDescription = @"";
+                }
+                    
+                if ([sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] < k_minCharsSearch) {
+                        
+                    _noFilesSearchTitle = @"";
+                    _noFilesSearchDescription = NSLocalizedString(@"_search_instruction_", nil);
+                }
+                
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.tableView reloadEmptyDataSet];
+                });
+                    
+                return;
             }
-        }
-        
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:_directoryGroupBy filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
-
-        [self tableViewReloadData];
-        
-        if ([sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] >= k_minCharsSearch) {
             
-            _noFilesSearchTitle = NSLocalizedString(@"_search_no_record_found_", nil);
-            _noFilesSearchDescription = @"";
-        }
-        
-        if ([sectionDataSource.allRecordsDataSource count] == 0 && [_searchFileName length] < k_minCharsSearch) {
+            // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
+            if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {
+                
+                CCMain *main = [appDelegate.listMainVC objectForKey:serverUrl];
+                if (main) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self reloadDatasource:self.serverUrl fileID:nil action:k_action_NULL];
+                    });
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [self tableViewReloadData];
+                    });
+                }
+                return;
+            }
             
-            _noFilesSearchTitle = @"";
-            _noFilesSearchDescription = NSLocalizedString(@"_search_instruction_", nil);
-        }
-    
-        [self.tableView reloadEmptyDataSet];
-        
-        return;
-    }
-    
-    // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
-    if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {
-        
-        CCMain *main = [appDelegate.listMainVC objectForKey:serverUrl];
-        if (main) {
-            [self reloadDatasource:self.serverUrl fileID:nil action:k_action_NULL];
-        } else {
-            [self tableViewReloadData];
-        }
-        
-        return;
-    }
-        
-    // Settaggio variabili per le ottimizzazioni
-    _directoryGroupBy = [CCUtility getGroupBySettings];
-    _directoryOrder = [CCUtility getOrderSettings];
-    
-    // Remove optimization for encrypted directory
-    if (_metadataFolder.e2eEncrypted)
-        _dateReadDataSource = nil;
-    
-    // current directoryID
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-
-    // Controllo data lettura Data Source
-    tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
-    // Get MetadataFolder
-    if (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]])
-        _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tableDirectory.fileID]];
-    
-    NSDate *dateDateRecordDirectory = tableDirectory.dateReadDirectory;
-    
-    if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
-        
-        NSLog(@"[LOG] Rebuild Data Source File : %@", _serverUrl);
-
-        _dateReadDataSource = [NSDate date];
-    
-        // Data Source
-        
-        NSString *sorted = _directoryOrder;
-        if ([sorted isEqualToString:@"fileName"])
-            sorted = @"fileName";
-        
-        if (directoryID) {
-        
-            NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
-                                                  
-            sectionDataSource = [CCSectionDataSourceMetadata new];
-            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
+            // Settaggio variabili per le ottimizzazioni
+            _directoryGroupBy = [CCUtility getGroupBySettings];
+            _directoryOrder = [CCUtility getOrderSettings];
             
-            // get auto upload folder
-            _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-            _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
+            // Remove optimization for encrypted directory
+            if (_metadataFolder.e2eEncrypted)
+                _dateReadDataSource = nil;
+            
+            // current directoryID
+            NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+
+            // Controllo data lettura Data Source
+            tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+            // Get MetadataFolder
+            if (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]])
+                _metadataFolder = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", tableDirectory.fileID]];
+            
+            NSDate *dateDateRecordDirectory = tableDirectory.dateReadDirectory;
+            
+            if ([dateDateRecordDirectory compare:_dateReadDataSource] == NSOrderedDescending || dateDateRecordDirectory == nil || _dateReadDataSource == nil) {
+                
+                NSLog(@"[LOG] Rebuild Data Source File : %@", _serverUrl);
+
+                _dateReadDataSource = [NSDate date];
+            
+                // Data Source
+                
+                NSString *sorted = _directoryOrder;
+                if ([sorted isEqualToString:@"fileName"])
+                    sorted = @"fileName";
+                
+                if (directoryID) {
+                
+                    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+                    
+                    sectionDataSource = [CCSectionDataSourceMetadata new];
+                    sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
+                    
+                    // get auto upload folder
+                    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+                    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
+                }
+                
+            } else {
+                
+                 NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self tableViewReloadData];
+            });
         }
-        
-    } else {
-        
-         NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
-    }
-    
-    [self tableViewReloadData];
+    });
 }
 
 - (NSArray *)getMetadatasFromSelectedRows:(NSArray *)selectedRows
