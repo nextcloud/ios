@@ -1290,7 +1290,7 @@
 
 - (void)uploadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_ADD];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
     
     [appDelegate updateApplicationIconBadgeNumber];
 }
@@ -1311,7 +1311,7 @@
             [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
     
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_DEL];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
 }
 
 //
