@@ -46,7 +46,7 @@
 
 @property (nonatomic, weak) CCDetail *detailViewController;
 
-- (void)reloadDatasource;
+- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action;
 - (void)listingFavorites;
 - (void)addFavoriteFolder:(NSString *)serverUrl;
 

@@ -297,9 +297,14 @@
 // Flow Version
 #define k_flow_version_available                        12
 
-//
+// Directory File Provider Storage
 #define k_DirectoryProviderStorage                      @"File Provider Storage"
 
+// Cell Reload Data Source
+#define k_action_NULL                                   0
+#define k_action_ADD                                    1
+#define k_action_MOD                                    2
+#define k_action_DEL                                    3
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

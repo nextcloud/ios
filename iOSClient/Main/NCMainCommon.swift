@@ -73,11 +73,17 @@ class NCMainCommon: NSObject {
     
     @objc func cancelTransferMetadata(_ metadata: tableMetadata, reloadDatasource: Bool) {
         
+        var actionReloadDatasource = k_action_NULL
+        
         if metadata.session.count == 0 {
             return
         }
         
         guard let session = CCNetworking.shared().getSessionfromSessionDescription(metadata.session) else {
+            return
+        }
+        
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
             return
         }
         
@@ -91,11 +97,17 @@ class NCMainCommon: NSObject {
                 } catch { }
                 
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
+                
+                actionReloadDatasource = k_action_DEL
+                
             } else {
+                
                 NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+                
+                actionReloadDatasource = k_action_MOD
             }
             
-            self.reloadDatasource(ServerUrl: nil)
+            self.reloadDatasource(ServerUrl: serverUrl, fileID: metadata.fileID, action: actionReloadDatasource)
             
             return
         }
@@ -115,6 +127,7 @@ class NCMainCommon: NSObject {
                 if cancel == false {
                     NCManageDatabase.sharedInstance.setMetadataSession("", sessionError: "", sessionSelector: "", sessionTaskIdentifier: Int(k_taskIdentifierDone), status: Int(k_metadataStatusNormal), predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 }
+                actionReloadDatasource = k_action_MOD
             }
             
             // UPLOAD
@@ -132,10 +145,11 @@ class NCMainCommon: NSObject {
                     catch { }
                     NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
                 }
+                actionReloadDatasource = k_action_DEL
             }
             
             if cancel == false {
-                self.reloadDatasource(ServerUrl: nil)
+                self.reloadDatasource(ServerUrl: serverUrl, fileID: metadata.fileID, action: actionReloadDatasource)
             }
         }
     }
@@ -165,7 +179,7 @@ class NCMainCommon: NSObject {
             }
         }
         
-        self.reloadDatasource(ServerUrl: nil)
+        self.reloadDatasource(ServerUrl: nil, fileID: nil, action: k_action_NULL)
     }
     
     //MARK: -
@@ -473,21 +487,17 @@ class NCMainCommon: NSObject {
         return metadata
     }
     
-    @objc func reloadDatasource(ServerUrl: String?) {
+    @objc func reloadDatasource(ServerUrl: String?, fileID: String?, action: Int32) {
         
         DispatchQueue.main.async {
             if self.appDelegate.activeMain != nil {
-                if ServerUrl == nil {
-                    self.appDelegate.activeMain.reloadDatasource()
-                } else {
-                    self.appDelegate.activeMain.reloadDatasource(ServerUrl)
-                }
+                self.appDelegate.activeMain.reloadDatasource(ServerUrl, fileID: fileID, action: Int(action))
             }
             if self.appDelegate.activeFavorites != nil {
-                self.appDelegate.activeFavorites.reloadDatasource()
+                self.appDelegate.activeFavorites.reloadDatasource(fileID, action: Int(action))
             }
             if self.appDelegate.activeTransfers != nil {
-                self.appDelegate.activeTransfers.reloadDatasource()
+                self.appDelegate.activeTransfers.reloadDatasource(fileID, action: Int(action))
             }
         }
     }
@@ -585,9 +595,7 @@ class NCMainCommon: NSObject {
             })
         }
         
-        // reload for filesID
-        self.appDelegate.activeMain.reloadDatasource()
-        self.appDelegate.activeMedia.reloadDatasource()
+        self.reloadDatasource(ServerUrl: serverUrl, fileID: nil, action: k_action_NULL)
     }
 }
     

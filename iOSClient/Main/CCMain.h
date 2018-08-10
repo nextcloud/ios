@@ -77,8 +77,7 @@
 
 - (void)uploadFileAsset:(NSMutableArray *)assets serverUrl:(NSString *)serverUrl useSubFolder:(BOOL)useSubFolder session:(NSString *)session;
 
-- (void)reloadDatasource;
-- (void)reloadDatasource:(NSString *)serverUrl;
+- (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID action:(NSInteger)action;
 
 - (void)openWindowShare:(tableMetadata *)metadata;
 - (void)clearDateReadDataSource:(NSNotification *)notification;

@@ -399,7 +399,7 @@
         [[NCService sharedInstance] startRequestServicesServer];
         
         // Clear datasorce
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl fileID:nil action:k_action_NULL];
         
         // Read this folder
         [self readFileReloadFolder];
@@ -407,7 +407,7 @@
     } else {
         
         // reload datasource
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:_serverUrl fileID:nil action:k_action_NULL];
     }
 }
 
@@ -796,7 +796,7 @@
 
 -(void)dismissFormUploadAssets
 {
-    [self reloadDatasource];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
 }
 
 - (void)openAssetsPickerController
@@ -1098,7 +1098,7 @@
 
 - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
     
     [appDelegate updateApplicationIconBadgeNumber];
 }
@@ -1113,13 +1113,13 @@
         
         // Synchronized
         if ([selector isEqualToString:selectorDownloadSynchronize]) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
         }
         
         // open View File
         if ([selector isEqualToString:selectorLoadFileView] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
             
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
 
             if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress] || [metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
                 
@@ -1137,7 +1137,7 @@
         // Open with...
         if ([selector isEqualToString:selectorOpenIn] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
 
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
 
             NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
             
@@ -1189,13 +1189,13 @@
                 [self presentViewController:alertController animated:YES completion:nil];
             }
             
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
         }
         
         // Copy File
         if ([selector isEqualToString:selectorLoadCopy]) {
             
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
 
             [self copyFileToPasteboard:metadata];
         }
@@ -1211,7 +1211,7 @@
             if (appDelegate.activeMedia)
                 [appDelegate.activeMedia downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
             
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
         }
         
         // Auto Download Upload
@@ -1244,7 +1244,7 @@
             
         }
         
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
     }
 }
 
@@ -1290,7 +1290,7 @@
 
 - (void)uploadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [self reloadDatasource:serverUrl];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_ADD];
     
     [appDelegate updateApplicationIconBadgeNumber];
 }
@@ -1311,7 +1311,7 @@
             [appDelegate messageNotification:@"_upload_file_" description:errorMessage visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
     }
     
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_DEL];
 }
 
 //
@@ -1452,7 +1452,7 @@
         return;
     
     // Load Datasource
-    [self reloadDatasource];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
 
@@ -1497,7 +1497,7 @@
             
             [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
             
-            [self reloadDatasource:metadataNet.serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
         }
         
         return;
@@ -1538,14 +1538,14 @@
         if (metadatasToInsertInDB)
             _searchResultMetadatas = [[NSMutableArray alloc] initWithArray:metadatasToInsertInDB];
         
-        [self reloadDatasource:metadataNet.serverUrl];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
     }
     
     // this is the same directory
     if ([metadataNet.serverUrl isEqualToString:_serverUrl] && !_isSearchMode) {
         
         // reload
-        [self reloadDatasource:metadataNet.serverUrl];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
     
         // Enable change user
         [_ImageTitleHomeCryptoCloud setUserInteractionEnabled:YES];
@@ -1570,7 +1570,7 @@
                         if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:appDelegate.activeAccount] serverUrl:self.serverUrl account:appDelegate.activeAccount url:appDelegate.activeUrl] == false)
                             [appDelegate messageNotification:@"_error_e2ee_" description:@"_e2e_error_decode_metadata_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:error.code];
                         else
-                            [self reloadDatasource];
+                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
                     }
                 });
             });
@@ -1715,7 +1715,7 @@
     
     if (_searchResultMetadatas.count == 0 && fileName.length == 0) {
 
-        [self reloadDatasource];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     }
 }
 
@@ -1761,7 +1761,7 @@
         _dateReadDataSource = nil;
         _searchResultMetadatas = [NSMutableArray new];
         
-        [self reloadDatasource];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     }
     
     //[self setNeedsStatusBarAppearanceUpdate];
@@ -1793,7 +1793,7 @@
         if (_isSearchMode)
             [self readFolder:self.serverUrl];
         else
-            [self reloadDatasource:self.serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     }];
     
     // End Select Table View
@@ -1806,7 +1806,7 @@
 
 - (void)renameSuccess:(CCMetadataNet *)metadataNet
 {
-    [self reloadDatasource:metadataNet.serverUrl];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:metadataNet.fileID action:k_action_MOD];
 }
 
 - (void)renameFile:(NSArray *)arguments
@@ -1852,7 +1852,7 @@
                 }
             }
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadDatasource];
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
             });
         });
         
@@ -1879,7 +1879,7 @@
         if (_isSearchMode)
             [self readFolder:metadataNet.serverUrl];
         else
-            [self reloadDatasource];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     }
 }
 
@@ -1933,7 +1933,7 @@
             if (_isSearchMode)
                 [self readFolder:metadataNet.serverUrl];
             else
-                [self reloadDatasource];
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
         }
     }
 }
@@ -1995,8 +1995,7 @@
 // DELEGATE : Move
 - (void)dismissMove
 {
-    [self reloadDatasource];
-
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
 }
 
 // DELEGATE : Move
@@ -2064,7 +2063,7 @@
     (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
     
     [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
-    [self reloadDatasource];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
     
     // Creeate folder Networking
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
@@ -2104,7 +2103,7 @@
         // Delete Temp Dir
         [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileIDTemp] clearDateReadDirectoryID:nil];
         
-        [self reloadDatasource];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
         
         // We are in directory fail ?
         CCMain *vc = [appDelegate.listMainVC objectForKey:[CCUtility stringAppendServerUrl:_serverUrl addFileName:fileNameFolder]];
@@ -2432,7 +2431,7 @@
             if (_isSearchMode)
                 [self readFolder:self.serverUrl];
             else
-                [self reloadDatasource:self.serverUrl];
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
             
             if (metadata.directory && favorite) {
                 NSString *dir = [CCUtility stringAppendServerUrl:self.serverUrl addFileName:metadata.fileName];
@@ -3283,7 +3282,7 @@
     
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
 
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -3500,8 +3499,7 @@
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            [self reloadDatasource];
-            
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
         }]];
     }
     
@@ -3867,15 +3865,10 @@
 - (void)clearDateReadDataSource:(NSNotification *)notification
 {
     _dateReadDataSource = Nil;
-    [self reloadDatasource];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
 }
 
-- (void)reloadDatasource
-{
-    [self reloadDatasource:_serverUrl];
-}
-
-- (void)reloadDatasource:(NSString *)serverUrl
+- (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID action:(NSInteger)action
 {
     // test
     if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil)
@@ -3919,7 +3912,7 @@
         
         CCMain *main = [appDelegate.listMainVC objectForKey:serverUrl];
         if (main) {
-            [main reloadDatasource];
+            [self reloadDatasource:self.serverUrl fileID:nil action:k_action_NULL];
         } else {
             [self tableViewReloadData];
         }

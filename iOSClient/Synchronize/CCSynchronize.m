@@ -92,7 +92,7 @@
         if (errorCode == 404) {
             
             [[NCManageDatabase sharedInstance] deleteDirectoryAndSubDirectoryWithServerUrl:metadataNet.serverUrl];
-            [appDelegate.activeMain reloadDatasource:metadataNet.serverUrl];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
         }
         
         return;
@@ -109,7 +109,7 @@
     // reload folder ../ *
     NSString *serverUrlParent = [[NCManageDatabase sharedInstance] getServerUrl:metadataFolder.directoryID];
     if (serverUrlParent) {
-        [appDelegate.activeMain reloadDatasource:serverUrlParent];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlParent fileID:nil action:k_action_NULL];
     }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
@@ -160,7 +160,7 @@
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if ([metadatasNotPresents count] > 0)
-                [appDelegate.activeMain reloadDatasource:metadataNet.serverUrl];
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:nil action:k_action_NULL];
         });
         
         // ----- Test : (MODIFY) -----
@@ -318,7 +318,7 @@
                 
                 NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
                 if (serverUrl)
-                    [appDelegate.activeMain reloadDatasource:serverUrl];
+                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
             }
         }
     }
@@ -401,7 +401,7 @@
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
     });
 }
 

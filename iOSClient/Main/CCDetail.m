@@ -419,8 +419,8 @@
             [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:self.metadataDetail];
             [KTVHTTPCache cacheDeleteCacheWithURL:videoURL];
             
-            // reload Main
-            [appDelegate.activeMain reloadDatasource];
+            // reload Data Source
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:self.metadataDetail.directoryID] fileID:self.metadataDetail.fileID action:k_action_MOD];
             
             // Enabled Button Action (the file is in local)
             buttonAction.enabled = true;
@@ -1058,8 +1058,8 @@
         
         if (errorCode == 0) {
             
-            // reload Main
-            [appDelegate.activeMain reloadDatasource];
+            // reload data source
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadata.fileID action:k_action_DEL];
             
             // Not image
             if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] == NO) {

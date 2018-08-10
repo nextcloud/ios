@@ -66,8 +66,6 @@
 
 @protocol CCNetworkingDelegate <NSObject>
 
-@optional - (void)reloadDatasource:(NSString *)serverUrl;
-
 @optional - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl;
 @optional  - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 

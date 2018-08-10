@@ -99,7 +99,7 @@
     // Plus Button
     [appDelegate plusButtonVisibile:true];
     
-    [self reloadDatasource];
+    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 // E' arrivato
@@ -194,7 +194,7 @@
     [ocNetworking settingFavorite:fileNameServerUrl favorite:favorite completion:^(NSString *message, NSInteger errorCode) {
         if (errorCode == 0) {
             [[NCManageDatabase sharedInstance] setMetadataFavoriteWithFileID:metadata.fileID favorite:favorite];
-            [self reloadDatasource];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadata.fileID action:k_action_MOD];
         } else {
             if (errorCode == kOCErrorServerUnauthorized)
                 [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
@@ -292,8 +292,8 @@
 
 - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
 {
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
-        
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
+    
     [appDelegate updateApplicationIconBadgeNumber];
 }
 
@@ -326,7 +326,7 @@
         }
     }
     
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
 }
 
 - (void)openIn:(tableMetadata *)metadata
@@ -446,16 +446,16 @@
 - (void)actionDelete:(NSIndexPath *)indexPath
 {
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
+    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     
     [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_delete_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
         
-        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
         tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
         
         [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:[[NSArray alloc] initWithObjects:metadata, nil] e2ee:tableDirectory.e2eEncrypted serverUrl:serverUrl folderFileID:tableDirectory.fileID completion:^(NSInteger errorCode, NSString *message) {
-            [self reloadDatasource];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadata.fileID action:k_action_DEL];
         }];
     }]];
     
@@ -463,7 +463,7 @@
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_remove_local_file_", nil) style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
             [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] error:nil];
-            [self reloadDatasource];
+            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadata.fileID action:k_action_MOD];
         }]];
     }
     
@@ -584,12 +584,7 @@
     return metadata;
 }
 
-- (void)readFolder:(NSString *)serverUrl
-{
-    [self reloadDatasource];
-}
-
-- (void)reloadDatasource
+- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action
 {
     NSArray *recordsTableMetadata ;
     

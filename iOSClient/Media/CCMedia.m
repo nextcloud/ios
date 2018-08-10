@@ -122,7 +122,7 @@
     // Plus Button
     [appDelegate plusButtonVisibile:true];
 
-    [self reloadDatasource];
+    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 - (void)viewSafeAreaInsetsDidChange
@@ -418,7 +418,7 @@
 - (void)deleteFile:(NSArray *)metadatas e2ee:(BOOL)e2ee
 {
     [[NCMainCommon sharedInstance ] deleteFileWithMetadatas:metadatas e2ee:false serverUrl:@"" folderFileID:@"" completion:^(NSInteger errorCode, NSString *message) {
-        [self reloadDatasource];
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil fileID:nil action:k_action_NULL];
     }];
     
     [self editingModeNO];
@@ -523,7 +523,7 @@
 - (void)buttonImageFilterYes
 {
     filterTypeFileImage = !filterTypeFileImage;
-    [self reloadDatasource];
+    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 - (void)buttonImageFilterNo
@@ -532,7 +532,8 @@
         filterTypeFileVideo = NO;
     } else {
         filterTypeFileImage = !filterTypeFileImage;
-    }    [self reloadDatasource];
+    }
+    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 - (void)buttonVideoFilterYes
@@ -542,13 +543,13 @@
     } else {
         filterTypeFileVideo = !filterTypeFileVideo;
     }
-    [self reloadDatasource];
+    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 - (void)buttonVideoFilterNo
 {
     filterTypeFileVideo = !filterTypeFileVideo;
-    [self reloadDatasource];
+    [self reloadDatasource:nil action:k_action_NULL];
 }
 
 
@@ -562,7 +563,7 @@
     
     if (![metadataNet.account isEqualToString:appDelegate.activeAccount] || errorCode != 0) {
         
-        [self reloadDatasource];
+        [self reloadDatasource:nil action:k_action_NULL];
         
     } else {
     
@@ -574,7 +575,7 @@
             [[NCManageDatabase sharedInstance] createTablePhotos:metadatas];
 
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self reloadDatasource];
+                [self reloadDatasource:nil action:k_action_NULL];
             });
             
             // Update date
@@ -609,7 +610,7 @@
             [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
             
         } else {
-            [self reloadDatasource];
+            [self reloadDatasource:nil action:k_action_NULL];
         }
         
     } failure:^(NSString *message, NSInteger errorCode) {
@@ -620,7 +621,7 @@
 #pragma mark ==== Datasource ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)reloadDatasource
+- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action
 {
     // test
     if (appDelegate.activeAccount.length == 0) {
