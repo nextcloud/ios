@@ -1284,7 +1284,7 @@
             metadataForDownload.status = k_metadataStatusInDownload;
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
             
-            [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:_activeMain];
+            [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:[NCNetworkingMain sharedInstance]];
             
             counterDownload++;
             sizeDownload = sizeDownload + metadata.size;

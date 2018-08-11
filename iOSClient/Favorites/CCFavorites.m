@@ -287,46 +287,8 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download <Delegate> ====
+#pragma mark ==== Open in... ====
 #pragma --------------------------------------------------------------------------------------------
-
-- (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
-{
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
-    
-    [appDelegate updateApplicationIconBadgeNumber];
-}
-
-- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
-{
-    if (errorCode == 0) {
-        
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-        
-        if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress] || [metadata.typeFile isEqualToString: k_metadataTypeFile_unknown] || [selector isEqualToString:selectorOpenIn]) {
-            
-            [self openIn:metadata];
-            
-        } else {
-            
-            [self shouldPerformSegue];
-        }
-        
-    } else {
-        
-        // File do not exists on server, remove in local
-        if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
-            
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
-            
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-            [[NCManageDatabase sharedInstance] deletePhotosWithFileID:fileID];
-        }
-    }
-    
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
-}
 
 - (void)openIn:(tableMetadata *)metadata
 {
@@ -557,7 +519,7 @@
                 
                 // Add Metadata for Download
                 tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [[CCNetworking sharedNetworking] downloadFile:metadataForDownload taskStatus:k_taskStatusResume delegate:self];
+                [[CCNetworking sharedNetworking] downloadFile:metadataForDownload taskStatus:k_taskStatusResume delegate:[NCNetworkingMain sharedInstance]];
                 
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
             }
@@ -734,7 +696,7 @@
             
             if ([CCUtility fileProviderStorageExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
             
-                [self downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
+                [[NCNetworkingMain sharedInstance] downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
                             
             } else {
             
@@ -759,7 +721,7 @@
                         
                         // Add Metadata for Download
                         tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                        [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:self];
+                        [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:[NCNetworkingMain sharedInstance]];
                         
                         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:self.metadata.fileID action:k_action_MOD];
                     }

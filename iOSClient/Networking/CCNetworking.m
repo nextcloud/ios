@@ -60,7 +60,6 @@
     self = [super init];
        
     _taskData = [[NSMutableDictionary alloc] init];
-    _delegates = [[NSMutableDictionary alloc] init];
     
     // Initialization Sessions
     [self sessionDownload];
@@ -491,7 +490,7 @@
 - (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
 {
     // add delegate
-    [_delegates setObject:delegate forKey:metadata.fileID];
+    self.delegate = delegate;
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
 
@@ -555,8 +554,8 @@
     }
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        if ([[self getDelegate:metadata.fileID] respondsToSelector:@selector(downloadStart:account:task:serverUrl:)]) {
-            [[self getDelegate:metadata.fileID] downloadStart:metadata.fileID account:metadata.account task:downloadTask serverUrl:serverUrl];
+        if ([self.delegate respondsToSelector:@selector(downloadStart:account:task:serverUrl:)]) {
+            [self.delegate downloadStart:metadata.fileID account:metadata.account task:downloadTask serverUrl:serverUrl];
         }
     });
 }
@@ -646,8 +645,8 @@
             [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:[CCError manageErrorKCF:errorCode withNumberError:NO] sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusDownloadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
         }
         
-        if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
-            [[self getDelegate:fileID] downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector errorMessage:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
+            [self.delegate downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector errorMessage:[CCError manageErrorKCF:errorCode withNumberError:YES] errorCode:errorCode];
         }
         
     } else {
@@ -659,8 +658,8 @@
             
             NSLog(@"[LOG] Serious error internal download : metadata not found %@ ", fileName);
             
-            if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
-                [[self getDelegate:fileID] downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector errorMessage:[NSString stringWithFormat:@"Serious error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
+            if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
+                [self.delegate downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector errorMessage:[NSString stringWithFormat:@"Serious error internal download : metadata not found %@", fileName] errorCode:k_CCErrorInternalError];
             }
 
             return;
@@ -683,8 +682,8 @@
                 
                 [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:fileID action:k_activityDebugActionUpload selector:@"" note:[NSString stringWithFormat:@"Serious error internal download : decrypt error %@", fileName] type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
                 
-                if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
-                    [[self getDelegate:fileID] downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector errorMessage:[NSString stringWithFormat:@"Serious error internal download : decrypt error %@", fileName] errorCode:k_CCErrorInternalError];
+                if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
+                    [self.delegate downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector errorMessage:[NSString stringWithFormat:@"Serious error internal download : decrypt error %@", fileName] errorCode:k_CCErrorInternalError];
                 }
                 
                 return;
@@ -703,8 +702,8 @@
         // Activity
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.fileID action:k_activityDebugActionDownload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
         
-        if ([[self getDelegate:fileID] respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
-            [[self getDelegate:fileID] downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector errorMessage:@"" errorCode:0];
+        if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
+            [self.delegate downloadFileSuccessFailure:fileName fileID:fileID serverUrl:serverUrl selector:selector errorMessage:@"" errorCode:0];
         }
     }
 }
@@ -716,7 +715,7 @@
 - (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate
 {
     //delegate
-    [_delegates setObject:delegate forKey:metadata.fileID];
+    self.delegate = delegate;
     
     NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
     
@@ -876,8 +875,8 @@
         
         if (errorMessage != nil || fileNameIdentifier == nil) {
             
-            if ([[self delegate] respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                [[self delegate] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:k_CCErrorInternalError];
+            if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+                [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:k_CCErrorInternalError];
             }
             
         } else {
@@ -950,8 +949,8 @@
         NSString *messageError = @"Serious internal error uploadTask not available";
         [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:messageError sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         
-        if ([[self delegate] respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-            [[self delegate] uploadFileSuccessFailure:metadata.fileNameView fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:messageError errorCode:k_CCErrorInternalError];
+        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+            [self.delegate uploadFileSuccessFailure:metadata.fileNameView fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:messageError errorCode:k_CCErrorInternalError];
         }
         
     } else {
@@ -973,8 +972,8 @@
                         NSString *messageError = [NSString stringWithFormat:@"%@ (%d)", error.localizedDescription, (int)error.code];
                         [[NCManageDatabase sharedInstance] setMetadataSession:metadata.session sessionError:messageError sessionSelector:nil sessionTaskIdentifier:k_taskIdentifierDone status:k_metadataStatusUploadError predicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
                         
-                        if ([[self delegate] respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                            [[self delegate] uploadFileSuccessFailure:metadata.fileNameView fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:messageError errorCode:k_CCErrorInternalError];
+                        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+                            [self.delegate uploadFileSuccessFailure:metadata.fileNameView fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:messageError errorCode:k_CCErrorInternalError];
                         }
                         
                     } else {
@@ -993,8 +992,8 @@
                         NSString *account = metadata.account;
                         
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            if ([[self delegate] respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
-                                [[self delegate] uploadStart:fileID account:account task:uploadTask serverUrl:serverUrl];
+                            if ([self.delegate respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
+                                [self.delegate uploadStart:fileID account:account task:uploadTask serverUrl:serverUrl];
                             }
                         });
                     }
@@ -1017,8 +1016,8 @@
              NSString *account = metadata.account;
              
              dispatch_async(dispatch_get_main_queue(), ^{
-                 if ([[self delegate] respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
-                     [[self delegate] uploadStart:fileID account:account task:uploadTask serverUrl:serverUrl];
+                 if ([self.delegate respondsToSelector:@selector(uploadStart:account:task:serverUrl:)]) {
+                     [self.delegate uploadStart:fileID account:account task:uploadTask serverUrl:serverUrl];
                  }
              });
          }
@@ -1152,7 +1151,7 @@
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
         // Create ICON
-        if (metadata.directory == NO) {
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
             [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] size:@"m" imageForUpload:NO typeFile:metadata.typeFile writeImage:YES];
         }
         
@@ -1205,15 +1204,15 @@
             }
             
             dispatch_async(dispatch_get_main_queue(), ^{
-                if ([[self delegate] respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                    [[self delegate] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:errorCode];
+                if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+                    [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:errorCode];
                 }
             });
         });
     } else {
         
-        if ([[self delegate] respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-            [[self delegate] uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:errorCode];
+        if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+            [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:errorCode];
         }
     }
 }
@@ -1221,16 +1220,6 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark =====  Utility =====
 #pragma --------------------------------------------------------------------------------------------
-
-- (id)getDelegate:(NSString *)fileID
-{
-    id delegate = [_delegates objectForKey:fileID];
-    
-    if (delegate)
-        return delegate;
-    else
-        return self.delegate;
-}
 
 - (NSString *)getServerUrlFromUrl:(NSString *)url
 {

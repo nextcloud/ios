@@ -1123,112 +1123,6 @@
 #pragma mark ==== Download ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl
-{
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
-    
-    [appDelegate updateApplicationIconBadgeNumber];
-}
-
-- (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode
-{
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-    if (metadata == nil)
-        return;
-    
-    if (errorCode == 0) {
-        
-        // Synchronized
-        if ([selector isEqualToString:selectorDownloadSynchronize]) {
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
-        }
-        
-        // open View File
-        if ([selector isEqualToString:selectorLoadFileView] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-            
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
-
-            if ([metadata.typeFile isEqualToString: k_metadataTypeFile_compress] || [metadata.typeFile isEqualToString: k_metadataTypeFile_unknown]) {
-                
-                [self openIn:metadata];
-                
-            } else {
-                
-                self.metadata = metadata;
-                [self shouldPerformSegue];
-            }
-        }
-        
-        // Open with...
-        if ([selector isEqualToString:selectorOpenIn] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive && self.view.window) {
-
-            [self openIn:metadata];
-        }
-        
-        // Save to Photo Album
-        if ([selector isEqualToString:selectorSave] && [[UIApplication sharedApplication] applicationState] == UIApplicationStateActive) {
-            
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
-            
-            [self saveToPhotoAlbum:metadata];
-        }
-        
-        // Copy File
-        if ([selector isEqualToString:selectorLoadCopy]) {
-            
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
-
-            [self copyFileToPasteboard:metadata];
-        }
-        
-        //selectorLoadViewImage
-        if ([selector isEqualToString:selectorLoadViewImage]) {
-            
-            // Detail
-            if (appDelegate.activeDetail)
-                [appDelegate.activeDetail downloadPhotoBrowserSuccessFailure:metadata selector:selector errorCode:0];
-            
-            // Media
-            if (appDelegate.activeMedia)
-                [appDelegate.activeMedia downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
-            
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
-        }
-        
-        // Auto Download Upload
-        [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
-        
-    } else {
-        
-        // File do not exists on server, remove in local
-        if (errorCode == kOCErrorServerPathNotFound || errorCode == kCFURLErrorBadServerResponse) {
-            
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:fileID] error:nil];
-            
-            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID] clearDateReadDirectoryID:nil];
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", fileID]];
-            [[NCManageDatabase sharedInstance] deletePhotosWithFileID:fileID];
-        }
-        
-        if ([selector isEqualToString:selectorLoadViewImage]) {
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                // Updating Detail
-                if (appDelegate.activeDetail)
-                    [appDelegate.activeDetail downloadPhotoBrowserSuccessFailure:metadata selector:selector errorCode:errorCode];
-                
-                // Updating Media
-                if (appDelegate.activeMedia)
-                    [appDelegate.activeMedia downloadFileSuccessFailure:metadata.fileName fileID:metadata.fileID serverUrl:serverUrl selector:selector errorMessage:errorMessage errorCode:errorCode];
-            });
-            
-        }
-        
-        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:fileID action:k_action_MOD];
-    }
-}
-
 - (void)downloadSelectedFilesFolders
 {
     if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
@@ -4382,7 +4276,7 @@
         // se il file esiste andiamo direttamente al delegato altrimenti carichiamolo
         if ([CCUtility fileProviderStorageExists:self.metadata.fileID fileNameView:self.metadata.fileNameView]) {
             
-            [self downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
+            [[NCNetworkingMain sharedInstance] downloadFileSuccessFailure:self.metadata.fileName fileID:self.metadata.fileID serverUrl:serverUrl selector:selectorLoadFileView errorMessage:@"" errorCode:0];
             
         } else {
             

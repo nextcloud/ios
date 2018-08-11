@@ -763,10 +763,10 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             //selectorLoadViewImage
             if selector == selectorLoadViewImage {
                 
-                if appDelegate.activeDetail.view.window != nil {
+                if appDelegate.activeDetail != nil {
                     appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
                 }
-                if appDelegate.activeMedia.view.window != nil {
+                if appDelegate.activeMedia != nil {
                     appDelegate.activeMedia.downloadFileSuccessFailure(metadata.fileName, fileID: metadata.fileID, serverUrl: serverUrl, selector: selector, errorMessage: errorMessage, errorCode: errorCode)
                 }
             }

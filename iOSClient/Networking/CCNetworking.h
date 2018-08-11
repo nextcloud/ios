@@ -41,7 +41,6 @@
 @interface CCNetworking : NSObject <NSURLSessionTaskDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate>
 
 @property (nonatomic, weak) id <CCNetworkingDelegate> delegate;
-@property (nonatomic, strong) NSMutableDictionary *delegates;
 
 + (CCNetworking *)sharedNetworking;
 
