@@ -1133,8 +1133,10 @@
 #ifndef EXTENSION
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
         [appDelegate.listProgressMetadata removeObjectForKey:metadata.fileID];
-        // Hardcoded for add new Photos
-        if ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video]) {
+        
+        // Hardcoded for add new photo/video for tab Media view
+        NSString *startDirectoryMediaTabView = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+        if ([serverUrl containsString:startDirectoryMediaTabView] && ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video])) {
             [appDelegate.activeMedia.addMetadatasFromUpload addObject:metadata];
         }
 #endif

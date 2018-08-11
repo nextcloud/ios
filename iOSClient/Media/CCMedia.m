@@ -171,7 +171,7 @@
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
  
     // curront folder search
-    NSString *directory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+    NSString *directory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
     NSString *home = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     NSString *folder = @"";
     if (home.length > 0) {
@@ -484,12 +484,12 @@
 
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
 {
-    NSString *oldStartDirectoryPhotosTab = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+    NSString *oldStartDirectoryMediaTabView = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
     
-    if (![serverUrlTo isEqualToString:oldStartDirectoryPhotosTab]) {
+    if (![serverUrlTo isEqualToString:oldStartDirectoryMediaTabView]) {
         
         // Save Start Directory
-        [[NCManageDatabase sharedInstance] setAccountStartDirectoryPhotosTab:serverUrlTo];
+        [[NCManageDatabase sharedInstance] setAccountStartDirectoryMediaTabView:serverUrlTo];
         
         // search PhotoVideo with new start directory
         [self searchPhotoVideo];
@@ -597,7 +597,7 @@
     // tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
     // account.dateSearchContentTypeImageVideo
     
-    NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryPhotosTab:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+    NSString *startDirectory = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
     [ocNetworking readFile:nil serverUrl:startDirectory account:appDelegate.activeAccount success:^(tableMetadata *metadata) {

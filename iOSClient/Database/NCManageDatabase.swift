@@ -485,7 +485,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getAccountStartDirectoryPhotosTab(_ homeServerUrl: String) -> String {
+    @objc func getAccountStartDirectoryMediaTabView(_ homeServerUrl: String) -> String {
         
         guard let activeAccount = self.getAccountActive() else {
             return ""
@@ -500,7 +500,7 @@ class NCManageDatabase: NSObject {
         
         if result.startDirectoryPhotosTab == "" {
             
-            self.setAccountStartDirectoryPhotosTab(homeServerUrl)
+            self.setAccountStartDirectoryMediaTabView(homeServerUrl)
             return homeServerUrl
             
         } else {
@@ -508,7 +508,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setAccountStartDirectoryPhotosTab(_ directory: String) {
+    @objc func setAccountStartDirectoryMediaTabView(_ directory: String) {
         
         guard let activeAccount = self.getAccountActive() else {
             return
