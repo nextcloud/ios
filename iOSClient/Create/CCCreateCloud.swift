@@ -631,7 +631,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
                 _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
                 self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
                 
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: fileID, action: Int32(k_action_ADD))
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
                 
             } else {
                 

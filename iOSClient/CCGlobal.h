@@ -302,9 +302,8 @@
 
 // Cell Reload Data Source
 #define k_action_NULL                                   0
-#define k_action_ADD                                    1
-#define k_action_MOD                                    2
-#define k_action_DEL                                    3
+#define k_action_MOD                                    1
+#define k_action_DEL                                    2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

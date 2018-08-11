@@ -449,7 +449,7 @@
     });
     
     // reload
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil fileID:nil action:k_action_ADD];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil fileID:nil action:k_action_NULL];
 }
 
 - (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset
