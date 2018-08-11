@@ -716,6 +716,13 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
                 
+                    if appDelegate.activeMain.view.window != nil {
+                        appDelegate.activeMain.open(in: metadata)
+                    }
+                    if appDelegate.activeFavorites.view.window != nil {
+                        appDelegate.activeFavorites.open(in: metadata)
+                    }
+                    
                 } else {
                 }
             }
