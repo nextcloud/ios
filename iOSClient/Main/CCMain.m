@@ -676,27 +676,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Open In ... =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)openIn:(tableMetadata *)metadata
-{
-    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
-
-    UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
-    docController.delegate = self;
-    
-    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
-    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    
-    if (cell) {
-        [docController presentOptionsMenuFromRect:cell.frame inView:self.tableView animated:YES];
-    } else {
-        [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
-    }
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Document Picker =====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2454,6 +2433,23 @@
     [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
     
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:metadata.fileID action:k_action_MOD];
+}
+
+- (void)openIn:(tableMetadata *)metadata
+{
+    NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+    
+    UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+    docController.delegate = self;
+    
+    NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
+    CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    
+    if (cell) {
+        [docController presentOptionsMenuFromRect:cell.frame inView:self.tableView animated:YES];
+    } else {
+        [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
