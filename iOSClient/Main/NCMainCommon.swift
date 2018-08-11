@@ -705,14 +705,15 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         
         if errorCode == 0 {
             
+            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
+            
             // Synchronized
             if selector == selectorDownloadSynchronize {
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
+                //
             }
             
             // open View File
             if selector == selectorLoadFileView && UIApplication.shared.applicationState == UIApplicationState.active {
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
             
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
                 
@@ -735,8 +736,71 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     }
                 }
             }
-        }
-       
+            
+            // Open in...
+            if selector == selectorOpenIn && UIApplication.shared.applicationState == UIApplicationState.active {
+
+                if appDelegate.activeMain.view.window != nil {
+                    appDelegate.activeMain.open(in: metadata)
+                }
+                if appDelegate.activeFavorites.view.window != nil {
+                    appDelegate.activeFavorites.open(in: metadata)
+                }
+            }
+            
+            // Save to Photo Album
+            if selector == selectorSave {
+                
+                appDelegate.activeMain.save(toPhotoAlbum: metadata)
+            }
+            
+            // Copy File
+            if selector == selectorLoadCopy {
+                
+                appDelegate.activeMain.copyFile(toPasteboard: metadata)
+            }
+            
+            //selectorLoadViewImage
+            if selector == selectorLoadViewImage {
+                
+                if appDelegate.activeDetail.view.window != nil {
+                    appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
+                }
+                if appDelegate.activeMedia.view.window != nil {
+                    appDelegate.activeMedia.downloadFileSuccessFailure(metadata.fileName, fileID: metadata.fileID, serverUrl: serverUrl, selector: selector, errorMessage: errorMessage, errorCode: errorCode)
+                }
+            }
+            
+            self.appDelegate.performSelector(onMainThread: #selector(self.appDelegate.loadAutoDownloadUpload), with: nil, waitUntilDone: true)
+            
+        } else {
+            
+            // File do not exists on server, remove in local
+            if (errorCode == kOCErrorServerPathNotFound || errorCode == -1011) { // - 1011 = kCFURLErrorBadServerResponse
+                
+                do {
+                    try FileManager.default.removeItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID))
+                } catch { }
+                
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID == %@", metadata.fileID), clearDateReadDirectoryID: metadata.directoryID)
+                NCManageDatabase.sharedInstance.deleteLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
+                NCManageDatabase.sharedInstance.deletePhotos(fileID: fileID)
+                
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_DEL))
+            }
+            
+            if selector == selectorLoadViewImage {
+                
+                if appDelegate.activeDetail.view.window != nil {
+                    appDelegate.activeDetail.downloadPhotoBrowserSuccessFailure(metadata, selector: selector, errorCode: errorCode)
+                }
+                if appDelegate.activeMedia.view.window != nil {
+                    appDelegate.activeMedia.downloadFileSuccessFailure(metadata.fileName, fileID: metadata.fileID, serverUrl: serverUrl, selector: selector, errorMessage: errorMessage, errorCode: errorCode)
+                }
+                
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
+            }
+        }       
     }
     
     // UPLOAD

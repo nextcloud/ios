@@ -71,6 +71,10 @@
 
 - (void)shouldPerformSegue;
 
+- (void)saveToPhotoAlbum:(tableMetadata *)metadata;
+
+- (void)copyFileToPasteboard:(tableMetadata *)metadata;
+
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
 
