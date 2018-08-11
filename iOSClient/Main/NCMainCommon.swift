@@ -680,4 +680,72 @@ extension UITabBar {
     }
 }
 
+//MARK: -
+
+class NCNetworkingMain: NSObject, CCNetworkingDelegate {
+
+    @objc static let sharedInstance: NCNetworkingMain = {
+        let instance = NCNetworkingMain()
+        return instance
+    }()
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
+    // DOWNLOAD
+    func downloadStart(_ fileID: String!, account: String!, task: URLSessionDownloadTask!, serverUrl: String!) {
+        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
+        appDelegate.updateApplicationIconBadgeNumber()
+    }
+    
+    func downloadFileSuccessFailure(_ fileName: String!, fileID: String!, serverUrl: String!, selector: String!, errorMessage: String!, errorCode: Int) {
+        
+        guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", fileID)) else {
+            return
+        }
+        
+        if errorCode == 0 {
+            
+            // Synchronized
+            if selector == selectorDownloadSynchronize {
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
+            }
+            
+            // open View File
+            if selector == selectorLoadFileView && UIApplication.shared.applicationState == UIApplicationState.active {
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
+            
+                if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
+                
+                } else {
+                }
+            }
+        }
+       
+    }
+    
+    // UPLOAD
+    
+    func uploadStart(_ fileID: String!, account: String!, task: URLSessionUploadTask!, serverUrl: String!) {
+        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
+        appDelegate.updateApplicationIconBadgeNumber()
+    }
+    
+    func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, errorMessage: String!, errorCode: Int) {
+        
+        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: serverUrl, fileID: fileID, action: Int32(k_action_MOD))
+        
+        if errorCode == 0 {
+            self.appDelegate.performSelector(onMainThread: #selector(self.appDelegate.loadAutoDownloadUpload), with: nil, waitUntilDone: true)
+        } else {
+            NCManageDatabase.sharedInstance.addActivityClient(fileName, fileID: assetLocalIdentifier, action: k_activityDebugActionUpload, selector: selector, note: errorMessage, type: k_activityTypeFailure, verbose: false, activeUrl: appDelegate.activeUrl)
+            
+            if errorCode != -999 && errorCode != kOCErrorServerUnauthorized {
+                appDelegate.messageNotification("_upload_file_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
+        }
+    }
+}
+
+
+
 
