@@ -206,15 +206,6 @@
     [appDelegate subscribingNextcloudServerPushNotification];
 }
 
-- (void)loginClose
-{
-    appDelegate.activeLogin = nil;
-}
-
-- (void)loginWebClose
-{
-    appDelegate.activeLoginWeb = nil;
-}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Add Account ===

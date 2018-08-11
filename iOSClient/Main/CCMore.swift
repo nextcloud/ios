@@ -454,14 +454,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         appDelegate.subscribingNextcloudServerPushNotification()
     }
-    
-    func loginClose() {
-        appDelegate.activeLogin = nil
-    }
-    
-    func loginWebClose() {
-        appDelegate.activeLoginWeb = nil
-    }
 }
 
 extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
@@ -495,6 +487,10 @@ extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
     
     public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(.allow)
+    }
+    
+    public func webDismiss() {
+        print("Web dismiss.")
     }
 }
 

@@ -320,7 +320,7 @@
         // only for personalized LoginWeb [customer]
         if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
             
-            if (_activeLoginWeb == nil) {
+            if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;
@@ -346,7 +346,7 @@
             
         if (loginWebFlow || selector == k_intro_signup) {
             
-            if (_activeLoginWeb == nil) {
+            if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;
@@ -365,7 +365,7 @@
             
         } else {
             
-            if (_activeLogin == nil) {
+            if (!(_activeLogin.isViewLoaded && _activeLogin.view.window)) {
                 
                 _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
                 _activeLogin.delegate = delegate;

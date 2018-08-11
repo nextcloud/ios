@@ -25,7 +25,7 @@ import UIKit
 
 @objc protocol CCLoginDelegateWeb: class {
     func loginSuccess(_: NSInteger)
-    func loginWebClose()
+    @objc optional func webDismiss()
 }
 
 public class CCLoginWeb: UIViewController {
@@ -114,7 +114,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         
                         self.delegate?.loginSuccess(NSInteger(loginType))
-                        self.delegate?.loginWebClose()
+                        self.delegate?.webDismiss?()
 
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
@@ -136,7 +136,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         
                         self.delegate?.loginSuccess(NSInteger(loginType))
-                        self.delegate?.loginWebClose()
+                        self.delegate?.webDismiss?()
 
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
@@ -149,8 +149,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
         print("Finished loading. Success: \(success).")
     }
     
-    public func loginWebClose() {
-        self.delegate?.loginWebClose()
+    public func webDismiss() {
+        self.delegate?.webDismiss?()
     }
     
     public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {

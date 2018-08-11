@@ -214,17 +214,6 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 }
 
-- (void)dismissViewControllerAnimated:(BOOL)flag completion:(void (^)(void))completion
-{
-    [super dismissViewControllerAnimated:flag completion:completion];
- 
-    NSArray *callStack = [NSThread callStackSymbols];
-    NSString *callParent = [callStack objectAtIndex:1];
-
-    if ([callParent containsString:@"CCLogin"])
-        [self.delegate loginClose];
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark == Chech Server URL ==
 #pragma --------------------------------------------------------------------------------------------
@@ -395,10 +384,8 @@
     [self.delegate loginSuccess:_loginType];
 }
 
-- (void)loginWebClose
-{
-    appDelegate.activeLoginWeb = nil;
-   
+- (void)webDismiss
+{   
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
