@@ -732,7 +732,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     }
                     if appDelegate.activeFavorites.view.window != nil {
                         appDelegate.activeFavorites.metadata = metadata;
-                        appDelegate.activeMain.shouldPerformSegue()
+                        appDelegate.activeFavorites.shouldPerformSegue()
                     }
                 }
             }
