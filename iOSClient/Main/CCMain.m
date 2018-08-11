@@ -142,9 +142,6 @@
     self.searchController.delegate = self;
     self.searchController.searchBar.delegate = self;
     
-    // Actie Delegate Networking
-    [CCNetworking sharedNetworking].delegate = self;
-    
     // Register cell
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
@@ -194,9 +191,6 @@
     // test
     if (appDelegate.activeAccount.length == 0)
         return;
-    
-    // delegate for Networking
-    [CCNetworking sharedNetworking].delegate = self;
     
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
@@ -355,7 +349,6 @@
         [self.navigationController popToRootViewControllerAnimated:NO];
         
         // setting Networking
-        [CCNetworking sharedNetworking].delegate = self;
         [[CCNetworking sharedNetworking] settingAccount];
         
         // Remove search mode

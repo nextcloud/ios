@@ -233,7 +233,7 @@
         
         // Add Medtadata for upload
         tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
-        [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:self];
+        [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
         
         [self.hud visibleHudTitle:NSLocalizedString(@"_uploading_", nil) mode:MBProgressHUDModeDeterminate color:[NCBrandColor sharedInstance].brandElement];
     }

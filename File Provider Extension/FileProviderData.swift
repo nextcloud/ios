@@ -83,6 +83,8 @@ class FileProviderData: NSObject {
             assert(false, "change user")
         }
         
+        CCNetworking.shared().settingAccount()
+        
         return true
     }
     

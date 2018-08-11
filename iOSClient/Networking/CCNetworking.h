@@ -56,10 +56,10 @@
 - (void)invalidateAndCancelAllSession;
 
 // Download
-- (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 // Upload
-- (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 @end
 

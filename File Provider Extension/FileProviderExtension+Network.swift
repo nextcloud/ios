@@ -189,7 +189,8 @@ extension FileProviderExtension {
                 return
             }
             
-            CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
+            CCNetworking.shared().delegate = self
+            CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume))
         }
     }
     
@@ -219,7 +220,8 @@ extension FileProviderExtension {
             return
         }
         
-        CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
+        CCNetworking.shared().delegate = self
+        CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume))
     }
     
     func reUpload(_ metadata: tableMetadata) {
@@ -227,6 +229,7 @@ extension FileProviderExtension {
         metadata.status = Int(k_metadataStatusWaitUpload)
         let metadataForUpload = NCManageDatabase.sharedInstance.addMetadata(metadata)
         
-        CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume), delegate: self)
+        CCNetworking.shared().delegate = self
+        CCNetworking.shared().uploadFile(metadataForUpload, taskStatus: Int(k_taskStatusResume))
     }
 }

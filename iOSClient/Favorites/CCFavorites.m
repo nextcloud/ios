@@ -519,7 +519,7 @@
                 
                 // Add Metadata for Download
                 tableMetadata *metadataForDownload = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-                [[CCNetworking sharedNetworking] downloadFile:metadataForDownload taskStatus:k_taskStatusResume delegate:[NCNetworkingMain sharedInstance]];
+                [[CCNetworking sharedNetworking] downloadFile:metadataForDownload taskStatus:k_taskStatusResume];
                 
                 [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:metadataForDownload.fileID action:k_action_MOD];
             }
@@ -721,7 +721,7 @@
                         
                         // Add Metadata for Download
                         tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:self.metadata];
-                        [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:[NCNetworkingMain sharedInstance]];
+                        [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
                         
                         [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:self.metadata.fileID action:k_action_MOD];
                     }

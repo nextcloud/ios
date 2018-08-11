@@ -393,6 +393,7 @@
     
     // Setting Account to CCNetworking
     [[CCNetworking sharedNetworking] settingAccount];
+    [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1284,7 +1285,7 @@
             metadataForDownload.status = k_metadataStatusInDownload;
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
             
-            [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume delegate:[NCNetworkingMain sharedInstance]];
+            [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
             
             counterDownload++;
             sizeDownload = sizeDownload + metadata.size;
@@ -1311,7 +1312,7 @@
             metadataForUpload.status = k_metadataStatusInUpload;
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
-            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:[NCNetworkingMain sharedInstance]];
+            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
             
             counterUpload++;
             sizeUpload = sizeUpload + metadata.size;
@@ -1334,7 +1335,7 @@
             metadataForUpload.status = k_metadataStatusInUpload;
             tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
             
-            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:[NCNetworkingMain sharedInstance]];
+            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
             
             counterUpload++;
             sizeUpload = sizeUpload + metadata.size;
@@ -1369,7 +1370,7 @@
                 metadataForUpload.status = k_metadataStatusInUpload;
                 tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
                 
-                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume delegate:[NCNetworkingMain sharedInstance]];
+                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
                 
                 counterUpload++;
                 sizeUpload = sizeUpload + metadata.size;
