@@ -1120,9 +1120,7 @@
             } else {
                 
                 self.metadata = metadata;
-                
-                if ([self shouldPerformSegue])
-                    [self performSegueWithIdentifier:@"segueDetail" sender:self];
+                [self shouldPerformSegue];
             }
         }
         
@@ -4391,8 +4389,7 @@
             
                 if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && _metadataFolder.e2eEncrypted == NO) {
                     
-                    if ([self shouldPerformSegue])
-                        [self performSegueWithIdentifier:@"segueDetail" sender:self];
+                    [self shouldPerformSegue];
                     
                 } else {
                    
@@ -4465,19 +4462,19 @@
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)shouldPerformSegue
+- (void)shouldPerformSegue
 {
     // if background return
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return NO;
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return;
     
     if (self.view.window == NO)
-        return NO;
+        return;
     
     // Collapsed ma siamo già in detail esci
     if (self.splitViewController.isCollapsed)
-        if (_detailViewController.isViewLoaded && _detailViewController.view.window) return NO;
+        if (_detailViewController.isViewLoaded && _detailViewController.view.window) return;
     
-    return YES;
+    [self performSegueWithIdentifier:@"segueDetail" sender:self];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

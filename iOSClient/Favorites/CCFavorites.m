@@ -309,8 +309,7 @@
             
         } else {
             
-            if ([self shouldPerformSegue])
-                [self performSegueWithIdentifier:@"segueDetail" sender:self];
+            [self shouldPerformSegue];
         }
         
     } else {
@@ -749,8 +748,7 @@
                     
                     if (([self.metadata.typeFile isEqualToString: k_metadataTypeFile_video] || [self.metadata.typeFile isEqualToString: k_metadataTypeFile_audio] || [_metadata.typeFile isEqualToString: k_metadataTypeFile_image]) && self.metadata.e2eEncrypted == NO) {
                         
-                        if ([self shouldPerformSegue])
-                            [self performSegueWithIdentifier:@"segueDetail" sender:self];
+                        [self shouldPerformSegue];
                         
                     } else {
                         
@@ -794,20 +792,20 @@
 #pragma mark ===== Navigation ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)shouldPerformSegue
+- (void)shouldPerformSegue
 {
     // if i am in background -> exit
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return NO;
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) return;
     
     // if i am not window -> exit
     if (self.view.window == NO)
-        return NO;
+        return;
     
     // Collapsed but i am in detail -> exit
     if (self.splitViewController.isCollapsed)
-        if (self.detailViewController.isViewLoaded && self.detailViewController.view.window) return NO;
+        if (self.detailViewController.isViewLoaded && self.detailViewController.view.window) return;
     
-    return YES;
+    [self performSegueWithIdentifier:@"segueDetail" sender:self];
 }
 
 -(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender

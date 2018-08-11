@@ -724,6 +724,15 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                     }
                     
                 } else {
+                    
+                    if appDelegate.activeMain.view.window != nil {
+                        appDelegate.activeMain.metadata = metadata;
+                        appDelegate.activeMain.shouldPerformSegue()
+                    }
+                    if appDelegate.activeFavorites.view.window != nil {
+                        appDelegate.activeFavorites.metadata = metadata;
+                        appDelegate.activeMain.shouldPerformSegue()
+                    }
                 }
             }
         }

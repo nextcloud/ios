@@ -69,6 +69,8 @@
 
 - (void)openIn:(tableMetadata *)metadata;
 
+- (void)shouldPerformSegue;
+
 - (void)closeAllMenu;
 - (void)returnCreate:(NSInteger)type;
 
