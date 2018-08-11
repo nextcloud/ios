@@ -3787,7 +3787,7 @@
                 CCMain *main = [appDelegate.listMainVC objectForKey:serverUrl];
                 if (main) {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        [self reloadDatasource:self.serverUrl fileID:nil action:k_action_NULL];
+                        [self reloadDatasource:serverUrl fileID:fileID action:action];
                     });
                 } else {
                     dispatch_async(dispatch_get_main_queue(), ^{
