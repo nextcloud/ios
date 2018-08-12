@@ -43,6 +43,7 @@
         
     BOOL _isRoot;
     BOOL _isViewDidLoad;
+    BOOL isReloadDataSourceInProgress;
     
     NSMutableDictionary *_selectedFileIDsMetadatas;
     NSUInteger _numSelectedFileIDsMetadatas;
@@ -3741,6 +3742,9 @@
     if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil)
         return;
     
+    // ****
+    isReloadDataSourceInProgress = YES;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @synchronized(self) {
             
@@ -3759,6 +3763,7 @@
                 sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:_directoryGroupBy filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
 
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    isReloadDataSourceInProgress = NO;
                     [self tableViewReloadData];
                 });
                     
@@ -3791,6 +3796,7 @@
                     });
                 } else {
                     dispatch_async(dispatch_get_main_queue(), ^{
+                        isReloadDataSourceInProgress = NO;
                         [self tableViewReloadData];
                     });
                 }
@@ -3853,6 +3859,7 @@
                         return;
                     }
                 }
+                isReloadDataSourceInProgress = NO;
                 [self tableViewReloadData];
             });
         }
@@ -3916,6 +3923,10 @@
 
 - (void)tableViewReloadData
 {
+    //
+    if (isReloadDataSourceInProgress)
+        return;
+    
     // store selected cells before relod
     NSArray *indexPaths = [self.tableView indexPathsForSelectedRows];
     
