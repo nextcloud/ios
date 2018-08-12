@@ -178,7 +178,6 @@
     
     // if this is not Main (the Main uses inizializeMain)
     if (_isRoot == NO && appDelegate.activeAccount.length > 0) {
-        
         // Read (File) Folder
         [self readFileReloadFolder];
     }
@@ -219,7 +218,9 @@
     }
     
     // Query data source
-    [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
+    if (!_isSearchMode) {
+        [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -3776,6 +3777,11 @@
     
         [self.tableView reloadEmptyDataSet];
         
+        return;
+    }
+    
+    // Se non siamo nella dir appropriata esci
+    if ([serverUrl isEqualToString:self.serverUrl] == NO || self.serverUrl == nil) {
         return;
     }
     
