@@ -819,7 +819,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
         } else {
             NCManageDatabase.sharedInstance.addActivityClient(fileName, fileID: assetLocalIdentifier, action: k_activityDebugActionUpload, selector: selector, note: errorMessage, type: k_activityTypeFailure, verbose: false, activeUrl: appDelegate.activeUrl)
             
-            if errorCode != -999 && errorCode != kOCErrorServerUnauthorized {
+            if errorCode != -999 && errorCode != kOCErrorServerUnauthorized && errorMessage != "" {
                 appDelegate.messageNotification("_upload_file_", description: errorMessage, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
             }
         }

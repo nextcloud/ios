@@ -433,7 +433,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 
                 if ([self.delegate respondsToSelector:@selector(downloadFileSuccessFailure:fileID:serverUrl:selector:errorMessage:errorCode:)]) {
-                    [self.delegate downloadFileSuccessFailure:fileName fileID:@"" serverUrl:serverUrl selector:@"" errorMessage:@"Remove record ? : metadata not found" errorCode:k_CCErrorInternalError];
+                    [self.delegate downloadFileSuccessFailure:fileName fileID:@"" serverUrl:serverUrl selector:@"" errorMessage:@"" errorCode:k_CCErrorInternalError];
                 }
             });
         }
@@ -476,7 +476,7 @@
             NSLog(@"[LOG] Remove record ? : metadata not found %@", url);
             dispatch_async(dispatch_get_main_queue(), ^{
                 if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                    [self.delegate uploadFileSuccessFailure:fileName fileID:@"" assetLocalIdentifier:@"" serverUrl:serverUrl selector:@"" errorMessage:@"Remove record ? : metadata not found" errorCode:k_CCErrorInternalError];
+                    [self.delegate uploadFileSuccessFailure:fileName fileID:@"" assetLocalIdentifier:@"" serverUrl:serverUrl selector:@"" errorMessage:@"" errorCode:k_CCErrorInternalError];
                 }
             });
         }
