@@ -91,7 +91,9 @@
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
-    [self reloadDatasource:nil action:k_action_NULL];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [self reloadDatasource:nil action:k_action_NULL];
+    });
 }
 
 - (void)changeTheming
@@ -213,9 +215,8 @@
 - (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || !self.view.window)
+    if (appDelegate.activeAccount.length == 0 || self.view.window == nil)
         return;
-    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
         NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND ((session CONTAINS 'upload') OR (session CONTAINS 'download'))", appDelegate.activeAccount] sorted:@"sessionTaskIdentifier" ascending:NO];

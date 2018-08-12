@@ -1296,7 +1296,9 @@
         return;
     
     // Load Datasource
-    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+    });
     
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
 
@@ -3738,7 +3740,7 @@
 - (void)reloadDatasource:(NSString *)serverUrl fileID:(NSString *)fileID action:(NSInteger)action
 {
     // test
-    if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil)
+    if (appDelegate.activeAccount.length == 0 || serverUrl.length == 0 || serverUrl == nil || self.view.window == nil)
         return;
     
     // Search Mode
@@ -3774,19 +3776,6 @@
         return;
     }
     
-    // Reload -> Self se non siamo nella dir appropriata cercala e se è in memoria reindirizza il reload
-    if ([serverUrl isEqualToString:_serverUrl] == NO || _serverUrl == nil) {
-        
-        CCMain *main = [appDelegate.listMainVC objectForKey:serverUrl];
-        if (main) {
-            [main reloadDatasource:serverUrl fileID:fileID action:action];
-        } else {
-            [self tableViewReloadData];
-        }
-        
-        return;
-    }
-        
     // Settaggio variabili per le ottimizzazioni
     _directoryGroupBy = [CCUtility getGroupBySettings];
     _directoryOrder = [CCUtility getOrderSettings];

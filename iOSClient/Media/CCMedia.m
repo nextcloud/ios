@@ -110,10 +110,9 @@
     scrollBar.edgeInset = 12;
 }
 
-// Apparirà
-- (void)viewWillAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewWillAppear:animated];
+    [super viewDidAppear:animated];
     
     // Color
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
@@ -122,7 +121,9 @@
     // Plus Button
     [appDelegate plusButtonVisibile:true];
 
-    [self reloadDatasource:nil action:k_action_NULL];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.001 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [self reloadDatasource:nil action:k_action_NULL];
+    });
 }
 
 - (void)viewSafeAreaInsetsDidChange
@@ -624,7 +625,7 @@
 - (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action
 {
     // test
-    if (appDelegate.activeAccount.length == 0) {
+    if (appDelegate.activeAccount.length == 0 || self.view.window == nil) {
         return;
     }
     
