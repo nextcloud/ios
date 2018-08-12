@@ -108,6 +108,9 @@
     scrollBar.handleMinimiumHeight = 20;
     scrollBar.trackWidth = 0;
     scrollBar.edgeInset = 12;
+    
+    // Query data source
+    [self queryDatasourceWithReloadData:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -631,13 +634,10 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-        CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
-
         collectionViewReloadDataInProgress = YES;
-        
-        NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
-        sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
-        
+
+        CCSectionDataSourceMetadata *sectionDataSourceTemp = [self queryDatasourceWithReloadData:NO];
+
         dispatch_async(dispatch_get_main_queue(), ^{
                
             if (isEditMode)
@@ -653,6 +653,26 @@
             }];
         });
     });
+}
+
+- (CCSectionDataSourceMetadata *)queryDatasourceWithReloadData:(BOOL)withReloadData
+{
+    // test
+    if (appDelegate.activeAccount.length == 0) {
+        return nil;
+    }
+    
+    CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
+    
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
+    sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
+    
+    if (withReloadData) {
+        sectionDataSource = sectionDataSourceTemp;
+        [self.collectionView reloadData];
+    }
+    
+    return sectionDataSourceTemp;
 }
 
 - (void)editingModeYES

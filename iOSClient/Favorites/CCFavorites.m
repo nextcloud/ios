@@ -85,6 +85,9 @@
         self.title = _titleViewControl;
     else
         self.title = NSLocalizedString(@"_favorites_", nil);
+    
+    // Query data source
+    [self queryDatasource];
 }
 
 // Apparirà
@@ -559,32 +562,41 @@
         return;
     }
     
-    NSArray *recordsTableMetadata ;
-    
-    NSString *sorted = [CCUtility getOrderSettings];
-    if ([sorted isEqualToString:@"fileName"])
-        sorted = @"fileName";
-        
-    if (!_serverUrl) {
-        
-        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", appDelegate.activeAccount] sorted:sorted ascending:[CCUtility getAscendingSettings]];
-            
-    } else {
-        
-        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];        
-        
-        if (directoryID)
-            recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+    [self queryDatasource];
+}
+
+- (void)queryDatasource
+{
+    // test
+    if (appDelegate.activeAccount.length == 0) {
+        return;
     }
-        
-    sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
-        
+    
+    NSArray *recordsTableMetadata;
+    NSString *sorted = [CCUtility getOrderSettings];
+    if ([sorted isEqualToString:@"fileName"]) sorted = @"fileName";
+    
     // get auto upload folder
     autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
     autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
     
+    if (!_serverUrl) {
+        
+        recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND favorite == true", appDelegate.activeAccount] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+        
+    } else {
+        
+        NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
+        
+        if (directoryID)
+            recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@", directoryID] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+    }
+    
+    sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:nil filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
+    
     [self.tableView reloadData];
 }
+
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {

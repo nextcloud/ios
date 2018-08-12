@@ -214,6 +214,9 @@
     } else {
         [self searchEnabled:YES];
     }
+    
+    // Query data source
+    [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
 }
 
 // E' arrivato
@@ -3784,9 +3787,6 @@
     if (_metadataFolder.e2eEncrypted)
         _dateReadDataSource = nil;
     
-    // current directoryID
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
-
     // Controllo data lettura Data Source
     tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
     // Get MetadataFolder
@@ -3803,30 +3803,15 @@
     
         // Data Source
         
-        NSString *sorted = _directoryOrder;
-        if ([sorted isEqualToString:@"fileName"])
-            sorted = @"fileName";
-        
-        if (directoryID) {
-        
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 
-                CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
-
-                NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
-                
-                sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
-                
-                // get auto upload folder
-                _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
-                _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
+            CCSectionDataSourceMetadata *sectionDataSourceTemp = [self queryDatasourceWithReloadData:NO serverUrl:serverUrl];
             
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    sectionDataSource = sectionDataSourceTemp;
-                    [self tableViewReloadData];
-                });
+            dispatch_async(dispatch_get_main_queue(), ^{
+                sectionDataSource = sectionDataSourceTemp;
+                [self tableViewReloadData];
             });
-        }
+        });
         
     } else {
         
@@ -3835,6 +3820,40 @@
          NSLog(@"[LOG] [OPTIMIZATION] Rebuild Data Source File : %@ - %@", _serverUrl, _dateReadDataSource);
     }
     
+}
+
+- (CCSectionDataSourceMetadata *)queryDatasourceWithReloadData:(BOOL)withReloadData serverUrl:(NSString *)serverUrl
+{
+    // test
+    if (appDelegate.activeAccount.length == 0 || serverUrl == nil) {
+        return nil;
+    }
+    
+    // current directoryID
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+    if (directoryID == nil) {
+        return nil;
+    }
+    
+    // get auto upload folder
+    _autoUploadFileName = [[NCManageDatabase sharedInstance] getAccountAutoUploadFileName];
+    _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl];
+    
+    CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
+
+    NSString *sorted = _directoryOrder;
+    if ([sorted isEqualToString:@"fileName"]) sorted = @"fileName";
+    
+    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
+    
+    sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:[CCUtility getGroupBySettings] filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
+    
+    if (withReloadData) {
+        sectionDataSource = sectionDataSourceTemp;
+        [self tableViewReloadData];
+    }
+    
+    return sectionDataSourceTemp;
 }
 
 - (NSArray *)getMetadatasFromSelectedRows:(NSArray *)selectedRows
