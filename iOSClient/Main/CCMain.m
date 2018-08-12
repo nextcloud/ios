@@ -146,6 +146,10 @@
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
     
+    // Order & GroupBy
+    _directoryOrder = [CCUtility getOrderSettings];
+    _directoryGroupBy = [CCUtility getGroupBySettings];
+    
     // long press recognizer TableView
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
     [self.tableView addGestureRecognizer:longPressRecognizer];
@@ -332,8 +336,6 @@
 //
 - (void)initializeMain:(NSNotification *)notification
 {
-    _directoryGroupBy = nil;
-    _directoryOrder = nil;
     _dateReadDataSource = nil;
     
     // test
@@ -2579,8 +2581,6 @@
 
 - (void)createReMainMenu
 {
-    NSString *ordinamento;
-    NSString *groupBy = _directoryGroupBy;
     __block NSString *nuovoOrdinamento;
     NSString *titoloNuovo, *titoloAttuale;
     BOOL ascendente;
@@ -2597,8 +2597,7 @@
 
     // ITEM ORDER ----------------------------------------------------------------------------------------------------
     
-    ordinamento = _directoryOrder;
-    if ([ordinamento isEqualToString:@"fileName"]) {
+    if ([_directoryOrder isEqualToString:@"fileName"]) {
         
         image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrdeyByDate"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
         titoloNuovo = NSLocalizedString(@"_order_by_date_", nil);
@@ -2606,7 +2605,7 @@
         nuovoOrdinamento = @"date";
     }
     
-    if ([ordinamento isEqualToString:@"date"]) {
+    if ([_directoryOrder isEqualToString:@"date"]) {
         
         image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrderByFileName"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
         titoloNuovo = NSLocalizedString(@"_order_by_name_", nil);
@@ -2645,32 +2644,32 @@
     
     // ITEM ALPHABETIC -----------------------------------------------------------------------------------------------------
     
-    if ([groupBy isEqualToString:@"alphabetic"])  { titoloNuovo = NSLocalizedString(@"_group_alphabetic_yes_", nil); }
+    if ([_directoryGroupBy isEqualToString:@"alphabetic"])  { titoloNuovo = NSLocalizedString(@"_group_alphabetic_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_alphabetic_no_", nil); }
     
     appDelegate.alphabeticItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByAlphabetic"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([groupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
+            if ([_directoryGroupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"alphabetic"];
     }];
     
     // ITEM TYPEFILE -------------------------------------------------------------------------------------------------------
     
-    if ([groupBy isEqualToString:@"typefile"])  { titoloNuovo = NSLocalizedString(@"_group_typefile_yes_", nil); }
+    if ([_directoryGroupBy isEqualToString:@"typefile"])  { titoloNuovo = NSLocalizedString(@"_group_typefile_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_typefile_no_", nil); }
     
     appDelegate.typefileItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([groupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
+            if ([_directoryGroupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"typefile"];
     }];
    
 
     // ITEM DATE -------------------------------------------------------------------------------------------------------
     
-    if ([groupBy isEqualToString:@"date"])  { titoloNuovo = NSLocalizedString(@"_group_date_yes_", nil); }
+    if ([_directoryGroupBy isEqualToString:@"date"])  { titoloNuovo = NSLocalizedString(@"_group_date_yes_", nil); }
     else { titoloNuovo = NSLocalizedString(@"_group_date_no_", nil); }
     
     appDelegate.dateItem = [[REMenuItem alloc] initWithTitle:titoloNuovo   subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByDate"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([groupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
+            if ([_directoryGroupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
             else [self tableGroupBy:@"date"];
     }];
     
@@ -3737,6 +3736,9 @@
 - (void)clearDateReadDataSource:(NSNotification *)notification
 {
     _dateReadDataSource = Nil;
+    _directoryGroupBy = [CCUtility getGroupBySettings];
+    _directoryOrder = [CCUtility getOrderSettings];
+    
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
 }
 
@@ -3778,10 +3780,6 @@
         
         return;
     }
-    
-    // Settaggio variabili per le ottimizzazioni
-    _directoryGroupBy = [CCUtility getGroupBySettings];
-    _directoryOrder = [CCUtility getOrderSettings];
     
     // Remove optimization for encrypted directory
     if (_metadataFolder.e2eEncrypted)
@@ -3841,12 +3839,9 @@
     
     CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
 
-    NSString *sorted = _directoryOrder;
-    if ([sorted isEqualToString:@"fileName"]) sorted = @"fileName";
+    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:_directoryOrder ascending:[CCUtility getAscendingSettings]];
     
-    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:sorted ascending:[CCUtility getAscendingSettings]];
-    
-    sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:[CCUtility getGroupBySettings] filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
+    sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
     
     if (withReloadData) {
         sectionDataSource = sectionDataSourceTemp;
