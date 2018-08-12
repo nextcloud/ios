@@ -629,26 +629,25 @@
     }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        @synchronized(self) {
-            collectionViewReloadDataInProgress = YES;
+
+        collectionViewReloadDataInProgress = YES;
+        
+        NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+               
+            if (isEditMode)
+                [self setUINavigationBarSelected];
+            else
+                [self setUINavigationBarDefault];
             
-            NSArray *metadatas = [[NCManageDatabase sharedInstance] getTablePhotosWithAddMetadatasFromUpload:self.addMetadatasFromUpload];
-            sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:@"date" filterFileID:appDelegate.filterFileID filterTypeFileImage:filterTypeFileImage filterTypeFileVideo:filterTypeFileVideo activeAccount:appDelegate.activeAccount];
+            [self.collectionView reloadData];
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                if (isEditMode)
-                    [self setUINavigationBarSelected];
-                else
-                    [self setUINavigationBarDefault];
-                
-                [self.collectionView reloadData];
-                
-                [self.collectionView performBatchUpdates:^{} completion:^(BOOL finished) {
-                    collectionViewReloadDataInProgress = NO;
-                }];
-            });
-        };
+            [self.collectionView performBatchUpdates:^{} completion:^(BOOL finished) {
+                collectionViewReloadDataInProgress = NO;
+            }];
+        });
     });
 }
 
