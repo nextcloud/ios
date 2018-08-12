@@ -187,7 +187,6 @@
     [self setTitle];
 }
 
-// Apparirà
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -223,7 +222,6 @@
     [self queryDatasourceWithReloadData:YES serverUrl:self.serverUrl];
 }
 
-// E' arrivato
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];

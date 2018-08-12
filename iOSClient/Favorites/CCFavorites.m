@@ -90,7 +90,6 @@
     [self queryDatasource];
 }
 
-// Apparirà
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -103,7 +102,6 @@
     [appDelegate plusButtonVisibile:true];
 }
 
-// E' arrivato
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
