@@ -199,6 +199,9 @@
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
+    // Plus Button
+    [appDelegate plusButtonVisibile:true];
+    
     if (_isSelectedMode)
         [self setUINavigationBarSelected];
     else
@@ -207,9 +210,6 @@
     // If not editing mode remove _selectedFileIDs
     if (!self.tableView.editing)
         [_selectedFileIDsMetadatas removeAllObjects];
-    
-    // Plus Button
-    [appDelegate plusButtonVisibile:true];
     
     // Search Bar
     if ([CCUtility isFolderEncrypted:self.serverUrl account:appDelegate.activeAccount]) {
