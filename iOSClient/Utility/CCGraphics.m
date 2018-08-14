@@ -144,7 +144,7 @@
     return newImage;
 }
 
-+ (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
++ (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
 {
     UIImage *originalImage;
     UIImage *scaleImage;
@@ -169,12 +169,10 @@
         originalImage = [self generateImageFromVideo:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"]];
     }
     
-    if ([size isEqualToString:@"xs"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(32, 32)];
-    if ([size isEqualToString:@"s"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(64, 64)];
-    if ([size isEqualToString:@"m"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(128, 128)];
-    if ([size isEqualToString:@"l"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(640, 640)];
-    if ([size isEqualToString:@"xl"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(1024, 1024)];
+    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
+    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
+    scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(width, height)];
     scaleImage = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImage, 0.5f)];
     
     // it is request write photo  ?
