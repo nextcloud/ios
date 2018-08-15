@@ -253,7 +253,10 @@
     [[NCService sharedInstance] startRequestServicesServer];
     
     NSLog(@"[LOG] Initialize Auto upload");
-    [[NCAutoUpload sharedInstance] initStateAutoUpload];    
+    [[NCAutoUpload sharedInstance] initStateAutoUpload];
+    
+    NSLog(@"[LOG] Read active directory");
+    [self.activeMain readFileReloadFolder];
 }
 
 //
