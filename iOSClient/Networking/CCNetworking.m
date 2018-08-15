@@ -693,7 +693,7 @@
         
         // Icon
         if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
-            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] imageForUpload:NO typeFile:metadata.typeFile writeImage:YES];
+            [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
         }
         
         // Activity
@@ -912,9 +912,9 @@
     [request setValue:authValue forHTTPHeaderField:@"Authorization"];
     [request setValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
 
-    // Create Image for Upload (B/N)
+    // Create Image for Upload (gray scale)
 #ifndef EXTENSION
-    [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] imageForUpload:YES typeFile:metadata.typeFile writeImage:YES];
+    [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] filterGrayScale:YES typeFile:metadata.typeFile writeImage:YES];
 #endif
     
     // Change date file upload with header : X-OC-Mtime (ctime assetLocalIdentifier) image/video
@@ -1145,7 +1145,7 @@
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
         // Create ICON (color)
-        [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] imageForUpload:NO typeFile:metadata.typeFile writeImage:YES];
+        [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
         
         // Optimization
         if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelector isEqualToString:selectorUploadAutoUploadAll]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO && isE2EEDirectory == NO) {
