@@ -1151,6 +1151,8 @@
         if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelector isEqualToString:selectorUploadAutoUploadAll]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO && isE2EEDirectory == NO) {
             
             [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] contents:nil attributes:nil];
+            
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
         }
         
         // Copy photo or video in the photo album for auto upload
