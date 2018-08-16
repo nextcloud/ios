@@ -1134,9 +1134,11 @@
         }
 #endif
         
-        // Local
-        if (metadata.directory == NO)
+        // Add Local
+        if (![CCUtility getUploadAndRemovePhoto]) {
+            
             [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
+        }
         
 #ifndef EXTENSION
         
@@ -1144,15 +1146,13 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
-        // Create ICON (color)
-        [CCGraphics createNewImageFrom:metadata.fileNameView fileID:metadata.fileID extension:[metadata.fileNameView pathExtension] filterGrayScale:NO typeFile:metadata.typeFile writeImage:YES];
+        // Remove icon
+        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
         
         // Optimization
         if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelector isEqualToString:selectorUploadAutoUploadAll]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO && isE2EEDirectory == NO) {
             
-            [[NSFileManager defaultManager] createFileAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] contents:nil attributes:nil];
-            
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
         }
         
         // Copy photo or video in the photo album for auto upload
