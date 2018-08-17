@@ -182,7 +182,15 @@
 
 + (BOOL)getOptimizedPhoto
 {
-    return [[UICKeyChainStore stringForKey:@"optimizedphoto" service:k_serviceShareKeyChain] boolValue];
+    NSString *result = [UICKeyChainStore stringForKey:@"optimizedphoto" service:k_serviceShareKeyChain];
+    
+    if (result == nil) {
+        
+        [self setOptimizedPhoto:YES];
+        return YES;
+    }
+    
+    return [result boolValue];
 }
 
 + (void)setOptimizedPhoto:(BOOL)resize
