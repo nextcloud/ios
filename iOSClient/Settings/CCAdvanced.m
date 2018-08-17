@@ -87,16 +87,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_upload_del_photos_how_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"uploadremovephoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_upload_del_photos_", nil)];
-    if ([CCUtility getUploadAndRemovePhoto]) row.value = @"1";
-    else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [section addFormRow:row];
-
     // Section HIDDEN FILES -------------------------------------------------
 
     section = [XLFormSectionDescriptor formSection];
@@ -207,11 +197,6 @@
     if ([rowDescriptor.tag isEqualToString:@"optimizedphoto"]) {
         
         [CCUtility setOptimizedPhoto:[[rowDescriptor.value valueData] boolValue]];
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"uploadremovephoto"]) {
-        
-        [CCUtility setUploadAndRemovePhoto:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"showHiddenFiles"]) {

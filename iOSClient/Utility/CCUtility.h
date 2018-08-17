@@ -73,9 +73,6 @@
 + (BOOL)getOptimizedPhoto;
 + (void)setOptimizedPhoto:(BOOL)resize;
 
-+ (BOOL)getUploadAndRemovePhoto;
-+ (void)setUploadAndRemovePhoto:(BOOL)remove;
-
 + (NSString *)getOrderSettings;
 + (void)setOrderSettings:(NSString *)order;
 

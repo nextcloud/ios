@@ -191,17 +191,6 @@
     [UICKeyChainStore setString:sOptimizedPhoto forKey:@"optimizedphoto" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getUploadAndRemovePhoto
-{
-    return [[UICKeyChainStore stringForKey:@"uploadremovephoto" service:k_serviceShareKeyChain] boolValue];
-}
-
-+ (void)setUploadAndRemovePhoto:(BOOL)remove
-{
-    NSString *sRemovePhoto = (remove) ? @"true" : @"false";
-    [UICKeyChainStore setString:sRemovePhoto forKey:@"uploadremovephoto" service:k_serviceShareKeyChain];
-}
-
 + (NSString *)getOrderSettings
 {
     NSString *order = [UICKeyChainStore stringForKey:@"order" service:k_serviceShareKeyChain];

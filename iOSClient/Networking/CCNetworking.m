@@ -1135,7 +1135,7 @@
 #endif
         
         // Add Local
-        if (![CCUtility getUploadAndRemovePhoto]) {
+        if (![CCUtility getOptimizedPhoto]) {
             
             [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
         }
@@ -1146,11 +1146,11 @@
         if ([metadata.typeFile isEqualToString: k_metadataTypeFile_image])
             [[CCExifGeo sharedInstance] setExifLocalTableEtag:metadata];
         
-        // Remove icon
+        // Remove icon B/N
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
         
         // Optimization
-        if (([CCUtility getUploadAndRemovePhoto] || [metadata.sessionSelector isEqualToString:selectorUploadAutoUploadAll]) && [metadata.typeFile isEqualToString:k_metadataTypeFile_document] == NO && isE2EEDirectory == NO) {
+        if (([CCUtility getOptimizedPhoto] || [metadata.sessionSelector isEqualToString:selectorUploadAutoUploadAll]) && ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video]) && isE2EEDirectory == NO) {
             
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
         }
