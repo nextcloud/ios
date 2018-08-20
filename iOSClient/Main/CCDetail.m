@@ -34,10 +34,12 @@
 
 #define alertRequestPasswordPDF 1
 
-@interface CCDetail () <NCTextDelegate>
+@interface CCDetail () <NCTextDelegate, UIDocumentInteractionControllerDelegate>
 {
     AppDelegate *appDelegate;
-        
+    
+    UIDocumentInteractionController *docController;
+    
     UIBarButtonItem *buttonModifyTxt;
     UIBarButtonItem *buttonAction;
     UIBarButtonItem *buttonShare;
@@ -723,14 +725,14 @@
     tableMetadata *metadata = [self.photoDataSource objectAtIndex:index];
     if (metadata == nil) return;
 
-    self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]];
+    docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]];
     
-    self.docController.delegate = self;
+    docController.delegate = self;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-        [self.docController presentOptionsMenuFromRect:photoBrowser.view.frame inView:photoBrowser.view animated:YES];
+        [docController presentOptionsMenuFromRect:photoBrowser.view.frame inView:photoBrowser.view animated:YES];
     
-    [self.docController presentOptionsMenuFromBarButtonItem:photoBrowser.actionButton animated:YES];
+    [docController presentOptionsMenuFromBarButtonItem:photoBrowser.actionButton animated:YES];
 }
 
 - (void)photoBrowser:(MWPhotoBrowser *)photoBrowser shareButtonPressedForPhotoAtIndex:(NSUInteger)index
@@ -1135,14 +1137,14 @@
     
     NSString *filePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView];
 
-    self.docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
+    docController = [UIDocumentInteractionController interactionControllerWithURL:[NSURL fileURLWithPath:filePath]];
 
-    self.docController.delegate = self;
+    docController.delegate = self;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
-        [self.docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
+        [docController presentOptionsMenuFromRect:self.view.frame inView:self.view animated:YES];
     
-    [self.docController presentOptionsMenuFromBarButtonItem:sender animated:YES];
+    [docController presentOptionsMenuFromBarButtonItem:sender animated:YES];
 }
 
 - (void)shareButtonPressed:(UIBarButtonItem *)sender

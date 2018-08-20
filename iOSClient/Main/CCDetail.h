@@ -33,7 +33,7 @@
 
 @class tableMetadata;
 
-@interface CCDetail : UIViewController <UIDocumentInteractionControllerDelegate, MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
+@interface CCDetail : UIViewController <MWPhotoBrowserDelegate, ReaderViewControllerDelegate>
 
 @property (nonatomic, strong) tableMetadata *metadataDetail;
 @property (nonatomic, strong) NSDate *dateFilterQuery;
@@ -52,9 +52,6 @@
 // PDF
 @property (nonatomic, strong) ReaderViewController *readerPDFViewController;
 @property (nonatomic, strong) NSString *passwordPDF;
-
-// Action
-@property (nonatomic, strong) UIDocumentInteractionController *docController;
 
 @property(nonatomic, weak) IBOutlet UIImageView *imageBackground;
 

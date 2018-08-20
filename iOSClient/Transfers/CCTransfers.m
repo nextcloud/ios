@@ -68,6 +68,7 @@
     [super viewDidLoad];
     
     // Custom Cell
+    [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
     
     self.tableView.delegate = self;
