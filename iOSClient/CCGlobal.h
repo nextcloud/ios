@@ -44,6 +44,7 @@
 #define k_appDatabaseNextcloud                          @"Library/Application Support/Nextcloud"
 #define k_appUserData                                   @"Library/Application Support/UserData"
 #define k_appCertificates                               @"Library/Application Support/Certificates"
+#define k_DirectoryProviderStorage                      @"File Provider Storage"
 
 // Server Status
 #define k_serverStatus                                  @"/status.php"
@@ -296,9 +297,6 @@
 
 // Flow Version
 #define k_flow_version_available                        12
-
-// Directory File Provider Storage
-#define k_DirectoryProviderStorage                      @"File Provider Storage"
 
 // Cell Reload Data Source
 #define k_action_NULL                                   0
