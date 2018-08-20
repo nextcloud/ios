@@ -66,19 +66,23 @@ class CreateMenuAdd: NSObject {
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "media"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnCreateFotoVideoPlain))
+            appDelegate.activeMain.openAssetsPickerController()
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnCreateFilePlain))
+            appDelegate.activeMain.openImportDocumentPicker()
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_text_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnCreateFileText))
+            
+            let storyboard = UIStoryboard(name: "NCText", bundle: nil)
+            let controller = storyboard.instantiateViewController(withIdentifier: "NCText")
+            controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+            appDelegate.activeMain.present(controller, animated: true, completion: nil)
         })
         
         actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:2, color: colorIcon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-            appDelegate.activeMain.returnCreate(Int(k_returnCreateFolderPlain))
+            appDelegate.activeMain.createFolder()
         })
         
         actionSheet.show()

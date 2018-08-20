@@ -863,83 +863,6 @@
     }];
 }
 
-// New folder or new photo or video
-- (void)returnCreate:(NSInteger)type
-{
-    switch (type) {
-            
-        case k_returnCreateFolderPlain: {
-            
-            NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
-            NSString *message;
-            UIAlertController *alertController;
-            
-            if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
-                message = @"/";
-            } else {
-                message = [serverUrl lastPathComponent];
-            }
-            
-            alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_on_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-
-            [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                
-                textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
-            }];
-            
-            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                NSLog(@"[LOG] Cancel action");
-            }];
-            
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                
-                UITextField *fileName = alertController.textFields.firstObject;
-                [self createFolder:fileName.text serverUrl:serverUrl];
-            }];
-            
-            okAction.enabled = NO;
-            
-            [alertController addAction:cancelAction];
-            [alertController addAction:okAction];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
-        }
-            break;
-        case k_returnCreateFotoVideoPlain: {
-            
-            [self openAssetsPickerController];
-        }
-            break;
-        case k_returnCreateFilePlain: {
-            
-            [self openImportDocumentPicker];
-        }
-            break;
-            
-        case k_returnCreateFotoVideoEncrypted: {
-            
-            [self openAssetsPickerController];
-        }
-            break;
-        case k_returnCreateFileEncrypted: {
-            
-            [self openImportDocumentPicker];
-        }
-            break;
-    
-        case k_returnCreateFileText: {
-            
-            UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
-                        
-            navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
-
-            [self presentViewController:navigationController animated:YES completion:nil];
-        }
-            break;
-    }
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Save selected File =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1900,6 +1823,44 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Create folder =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)createFolder
+{
+    NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
+    NSString *message;
+    UIAlertController *alertController;
+    
+    if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
+        message = @"/";
+    } else {
+        message = [serverUrl lastPathComponent];
+    }
+    
+    alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_on_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+        
+        textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
+    }];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        NSLog(@"[LOG] Cancel action");
+    }];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        
+        UITextField *fileName = alertController.textFields.firstObject;
+        [self createFolder:fileName.text serverUrl:serverUrl];
+    }];
+    
+    okAction.enabled = NO;
+    
+    [alertController addAction:cancelAction];
+    [alertController addAction:okAction];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
 
 - (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
 {

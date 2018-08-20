@@ -68,14 +68,6 @@
 
 #define k_maxErrorAutoUploadAll                         100
 
-#define k_returnCreateFolderPlain                       0
-#define k_returnCreateFotoVideoPlain                    1
-#define k_returnCreateFilePlain                         2
-#define k_returnCreateFolderEncrypted                   3
-#define k_returnCreateFotoVideoEncrypted                4
-#define k_returnCreateFileEncrypted                     5
-#define k_returnCreateFileText                          6
-
 // Name Default DB
 #define k_databaseDefault                               @"nextcloud.realm"
 

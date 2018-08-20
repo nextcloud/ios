@@ -75,7 +75,6 @@
 - (void)copyFileToPasteboard:(tableMetadata *)metadata;
 
 - (void)closeAllMenu;
-- (void)returnCreate:(NSInteger)type;
 
 - (void)setUINavigationBarDefault;
 
@@ -89,6 +88,10 @@
 - (void)openWindowShare:(tableMetadata *)metadata;
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;
+
+- (void)openAssetsPickerController;
+- (void)openImportDocumentPicker;
+- (void)createFolder;
 
 @end
 
