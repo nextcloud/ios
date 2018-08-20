@@ -34,12 +34,13 @@
 #import "CCDetail.h"
 #import "CCQuickActions.h"
 #import "CCMain.h"
-#import "CCPhotos.h"
-#import "CCTransfers.h"
+#import "CCMedia.h"
 #import "CCSettings.h"
 #import "CCFavorites.h"
+#import "CCTransfers.h"
 
 @class CCLoginWeb;
+@class CCMore;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, BKPasscodeLockScreenManagerDelegate, BKPasscodeViewControllerDelegate, TWMessageBarStyleSheet, CCNetworkingDelegate>
 
@@ -56,7 +57,6 @@
 @property (nonatomic, strong) NSString *activeUser;
 @property (nonatomic, strong) NSString *activeUserID;
 @property (nonatomic, strong) NSString *activePassword;
-@property (nonatomic, strong) NSString *directoryUser;
 @property (nonatomic, strong) NSString *activeEmail;
 
 // next version ... ? ...
@@ -83,6 +83,10 @@
 // Passcode lockDirectory
 @property (nonatomic, strong) NSDate *sessionePasscodeLock;
 
+// Audio Video
+@property (nonatomic, strong) AVPlayer *player;
+@property (nonatomic, strong) AVPlayerViewController *playerController;
+
 // Remenu
 @property (nonatomic, strong) REMenu *reMainMenu;
 @property (nonatomic, strong) REMenuItem *selezionaItem;
@@ -94,15 +98,13 @@
 @property (nonatomic, strong) REMenuItem *dateItem;
 
 @property (nonatomic, strong) REMenu *reSelectMenu;
+@property (nonatomic, strong) REMenuItem *selectAllItem;
 @property (nonatomic, strong) REMenuItem *deleteItem;
 @property (nonatomic, strong) REMenuItem *moveItem;
 @property (nonatomic, strong) REMenuItem *encryptItem;
 @property (nonatomic, strong) REMenuItem *decryptItem;
 @property (nonatomic, strong) REMenuItem *downloadItem;
 @property (nonatomic, strong) REMenuItem *saveItem;
-
-// List Change Task
-@property (nonatomic, retain) NSMutableDictionary *listChangeTask;
 
 // Reachability
 @property (nonatomic, strong) Reachability *reachability;
@@ -111,22 +113,32 @@
 @property (nonatomic, strong) CCMain *activeMain;
 @property (nonatomic, strong) CCMain *homeMain;
 @property (nonatomic, strong) CCFavorites *activeFavorites;
-@property (nonatomic, strong) CCPhotos *activePhotos;
+@property (nonatomic, strong) CCMedia *activeMedia;
 @property (nonatomic, retain) CCDetail *activeDetail;
 @property (nonatomic, retain) CCSettings *activeSettings;
 @property (nonatomic, retain) CCActivity *activeActivity;
 @property (nonatomic, retain) CCTransfers *activeTransfers;
 @property (nonatomic, retain) CCLogin *activeLogin;
 @property (nonatomic, retain) CCLoginWeb *activeLoginWeb;
+@property (nonatomic, retain) CCMore *activeMore;
 
 @property (nonatomic, strong) NSMutableDictionary *listMainVC;
 @property (nonatomic, strong) NSMutableDictionary *listProgressMetadata;
 
+@property (nonatomic, strong) NSMutableArray *filterFileID;
+
+@property (nonatomic, strong) NSString *pnDeviceIdentifier;
+@property (nonatomic, strong) NSString *pnDeviceIdentifierSignature;
+@property (nonatomic, strong) NSString *pnPublicKey;
+
 // Maintenance Mode
 @property BOOL maintenanceMode;
 
+// UserDefaults
+@property (nonatomic, strong) NSUserDefaults *ncUserDefaults;
+
 // Login View
-- (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType;
+- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector;
 
 // Setting Active Account
 - (void)settingActiveAccount:(NSString *)activeAccount activeUrl:(NSString *)activeUrl activeUser:(NSString *)activeUser activeUserID:(NSString *)activeUserID activePassword:(NSString *)activePassword;
@@ -147,13 +159,17 @@
 - (void)selectedTabBarController:(NSInteger)index;
 - (NSString *)getTabBarControllerActiveServerUrl;
 
+// Push Notification
+- (void)subscribingNextcloudServerPushNotification;
+- (void)unsubscribingNextcloudServerPushNotification;
+
 // Theming Color
 - (void)settingThemingColorBrand;
 - (void)changeTheming:(UIViewController *)vc;
 
 // Task Networking
 - (void)addNetworkingOperationQueue:(NSOperationQueue *)netQueue delegate:(id)delegate metadataNet:(CCMetadataNet *)metadataNet;
-- (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent;
+- (void)loadAutoDownloadUpload;
 
 // Maintenance Mode
 - (void)maintenanceMode:(BOOL)mode;

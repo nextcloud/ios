@@ -32,7 +32,7 @@
     self = [super init];
     
     _allRecordsDataSource = [[NSMutableDictionary alloc] init];
-    _allEtag  = [[NSMutableArray alloc] init];
+    _allFileID  = [[NSMutableArray alloc] init];
     _sections = [[NSMutableArray alloc] init];
     _sectionArrayRow = [[NSMutableDictionary alloc] init];
     _fileIDIndexPath = [[NSMutableDictionary alloc] init];
@@ -51,7 +51,7 @@
     CCSectionDataSourceMetadata *sectionDataSourceMetadata = [[CCSectionDataSourceMetadata allocWithZone: zone] init];
     
     [sectionDataSourceMetadata setAllRecordsDataSource: self.allRecordsDataSource];
-    [sectionDataSourceMetadata setAllEtag: self.allEtag];
+    [sectionDataSourceMetadata setAllFileID: self.allFileID];
     [sectionDataSourceMetadata setSections: self.sections];
     [sectionDataSourceMetadata setSectionArrayRow: self.sectionArrayRow];
     [sectionDataSourceMetadata setFileIDIndexPath: self.fileIDIndexPath];
@@ -74,14 +74,12 @@
 //
 // orderByField : nil, date, typeFile
 //
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterFileID:(NSArray *)filterFileID filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo activeAccount:(NSString *)activeAccount
 {
     id dataSection;
-    long counterSessionDownload = 0;
-    long counterSessionUpload = 0;
-    NSMutableArray *copyRecords = [NSMutableArray new];
+
+    NSMutableArray *metadatas = [NSMutableArray new];
     NSMutableDictionary *dictionaryEtagMetadataForIndexPath = [NSMutableDictionary new];
-    NSMutableArray *fileInUpload = [NSMutableArray new];
     
     CCSectionDataSourceMetadata *sectionDataSource = [CCSectionDataSourceMetadata new];
     
@@ -94,76 +92,48 @@
     BOOL directoryOnTop = [CCUtility getDirectoryOnTop];
     NSMutableArray *metadataFilesFavorite = [NSMutableArray new];
     
-    // fileName in Upload [PickerFileProvider]
-    for (tableMetadata* metadata in records) {
-        if ([metadata.session containsString:@"upload"]) {
-            [fileInUpload addObject:metadata.fileName];
-        }
-    }
-    
-    for (tableMetadata* metadata in records) {
-        
-        // remove duplicate in Upload [PickerFileProvider]
-        if (fileInUpload.count > 0 && ![metadata.session containsString:@"upload"]) {
-            if ([fileInUpload containsObject:metadata.fileName])
-                continue;
-        }
+    for (tableMetadata *metadata in arrayMetadatas) {
         
         // *** LIST : DO NOT INSERT ***
-        if (metadata.status == k_metadataStatusHide || [metadata.session isEqualToString:k_upload_session_extension] ) {
+        if (metadata.status == k_metadataStatusHide || [filterFileID containsObject: metadata.fileID] || (filterTypeFileImage == YES && [metadata.typeFile isEqualToString: k_metadataTypeFile_image]) || (filterTypeFileVideo == YES && [metadata.typeFile isEqualToString: k_metadataTypeFile_video])) {
             continue;
         }
         
         if ([listProgressMetadata objectForKey:metadata.fileID] && [groupByField isEqualToString:@"session"]) {
             
-            [copyRecords insertObject:metadata atIndex:0];
+            [metadatas insertObject:metadata atIndex:0];
             
         } else {
             
             if (metadata.directory && directoryOnTop) {
                 if (metadata.favorite) {
-                    [copyRecords insertObject:metadata atIndex:numDirectoryFavorite++];
+                    [metadatas insertObject:metadata atIndex:numDirectoryFavorite++];
                     numDirectory++;
                 } else {
-                    [copyRecords insertObject:metadata atIndex:numDirectory++];
+                    [metadatas insertObject:metadata atIndex:numDirectory++];
                 }
             } else {
                 if (metadata.favorite && directoryOnTop) {
                     [metadataFilesFavorite addObject:metadata];
                 } else {
-                    [copyRecords addObject:metadata];
+                    [metadatas addObject:metadata];
                 }
             }
         }
     }
     if (directoryOnTop && metadataFilesFavorite.count > 0)
-        [copyRecords insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
+        [metadatas insertObjects:metadataFilesFavorite atIndexes:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(numDirectoryFavorite, metadataFilesFavorite.count)]]; // Add Favorite files at end of favorite folders
     
     /*
      sectionArrayRow
     */
     
-    for (tableMetadata *metadata in copyRecords) {
-        
-        // how many download underway (only for groupSession)
-        if ([metadata.session containsString:@"download"] && [groupByField isEqualToString:@"session"]) {
-            counterSessionDownload++;
-            if (counterSessionDownload > k_maxConcurrentOperationDownloadUpload)
-                continue;
-        }
-
-        // how many upload underway (only for groupSession)
-        if ([metadata.session containsString:@"upload"] && [groupByField isEqualToString:@"session"]) {
-            counterSessionUpload++;
-            if (counterSessionUpload > k_maxConcurrentOperationDownloadUpload)
-                continue;
-        }
+    for (tableMetadata *metadata in metadatas) {
         
         if ([metadata.session length] > 0 && [groupByField isEqualToString:@"session"]) {
             
             if ([metadata.session containsString:@"wwan"]) dataSection = [@"." stringByAppendingString:metadata.session];
             else dataSection = metadata.session;
-            
         }
         else if ([groupByField isEqualToString:@"none"]) dataSection = @"_none_";
         else if ([groupByField isEqualToString:@"date"]) dataSection = [CCUtility datetimeWithOutTime:metadata.date];
@@ -171,19 +141,19 @@
         else if ([groupByField isEqualToString:@"typefile"]) dataSection = metadata.typeFile;
         if (!dataSection) dataSection = @"_none_";
         
-        NSMutableArray *metadatas = [sectionDataSource.sectionArrayRow objectForKey:dataSection];
+        NSMutableArray *metadatasSection = [sectionDataSource.sectionArrayRow objectForKey:dataSection];
         
-        if (metadatas) {
+        if (metadatasSection) {
             
             // ROW ++
-            [metadatas addObject:metadata.fileID];
-            [sectionDataSource.sectionArrayRow setObject:metadatas forKey:dataSection];
+            [metadatasSection addObject:metadata.fileID];
+            [sectionDataSource.sectionArrayRow setObject:metadatasSection forKey:dataSection];
             
         } else {
             
             // SECTION ++
-            metadatas = [[NSMutableArray alloc] initWithObjects:metadata.fileID, nil];
-            [sectionDataSource.sectionArrayRow setObject:metadatas forKey:dataSection];
+            metadatasSection = [[NSMutableArray alloc] initWithObjects:metadata.fileID, nil];
+            [sectionDataSource.sectionArrayRow setObject:metadatasSection forKey:dataSection];
         }
 
         if (metadata && [metadata.fileID length] > 0)
@@ -237,7 +207,7 @@
             
             if (metadata.fileID) {
                 
-                [sectionDataSource.allEtag addObject:metadata.fileID];
+                [sectionDataSource.allFileID addObject:metadata.fileID];
                 [sectionDataSource.allRecordsDataSource setObject:metadata forKey:metadata.fileID];
                 [sectionDataSource.fileIDIndexPath setObject:[NSIndexPath indexPathForRow:indexRow inSection:indexSection] forKey:metadata.fileID];
                 
@@ -269,7 +239,7 @@
 + (void)removeAllObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource
 {
     [sectionDataSource.allRecordsDataSource removeAllObjects];
-    [sectionDataSource.allEtag removeAllObjects];
+    [sectionDataSource.allFileID removeAllObjects];
     [sectionDataSource.sections removeAllObjects];
     [sectionDataSource.sectionArrayRow removeAllObjects];
     [sectionDataSource.fileIDIndexPath removeAllObjects];

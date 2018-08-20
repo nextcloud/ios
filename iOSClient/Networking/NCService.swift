@@ -130,7 +130,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                 DispatchQueue.global().async {
                 
                     let address = capabilities!.themingBackground!.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
-                    let fileName = "\(self.appDelegate.directoryUser!)/themingBackground.png"
+                    let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(self.appDelegate.activeUser, activeUrl: self.appDelegate.activeUrl) + "-themingBackground.png"
 
                     guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
                         DispatchQueue.main.async {
@@ -142,13 +142,13 @@ class NCService: NSObject, OCNetworkingDelegate {
                     DispatchQueue.main.async {
                         
                         guard let image = UIImage(data: imageData) else {
-                            try? FileManager.default.removeItem(atPath: fileName)
+                            try? FileManager.default.removeItem(atPath: fileNamePath)
                             self.appDelegate.settingThemingColorBrand()
                             return
                         }
                     
                         if let data = UIImagePNGRepresentation(image) {
-                            try? data.write(to: URL(fileURLWithPath: fileName))
+                            try? data.write(to: URL(fileURLWithPath: fileNamePath))
                         }
                     
                         self.appDelegate.settingThemingColorBrand()
@@ -235,18 +235,21 @@ class NCService: NSObject, OCNetworkingDelegate {
                 return
             }
             
+            let user = tableAccount.user
+            let url = tableAccount.url
+            
             CCNetworking.shared().settingAccount()
             appDelegate.settingActiveAccount(tableAccount.account, activeUrl: tableAccount.url, activeUser: tableAccount.user, activeUserID: tableAccount.userID, activePassword: tableAccount.password)
             
             // Call func thath required the userdID
             appDelegate.activeFavorites.listingFavorites()
-            appDelegate.activePhotos.searchPhotoVideo()
+            appDelegate.activeMedia.searchPhotoVideo()
             
             DispatchQueue.global(qos: .default).async {
                 
                 let address = "\(self.appDelegate.activeUrl!)/index.php/avatar/\(self.appDelegate.activeUser!)/128".addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed)!
-                let fileName = "\(self.appDelegate.directoryUser!)/avatar.png"
-
+                let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(user, activeUrl: url) + "-avatar.png"
+                
                 guard let imageData = try? Data(contentsOf: URL(string: address)!) else {
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
@@ -257,13 +260,13 @@ class NCService: NSObject, OCNetworkingDelegate {
                 DispatchQueue.main.async {
                     
                     guard let image = UIImage(data: imageData) else {
-                        try? FileManager.default.removeItem(atPath: fileName)
+                        try? FileManager.default.removeItem(atPath: fileNamePath)
                         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)
                         return
                     }
                 
                     if let data = UIImagePNGRepresentation(image) {
-                        try? data.write(to: URL(fileURLWithPath: fileName))
+                        try? data.write(to: URL(fileURLWithPath: fileNamePath))
                     }
                 
                     NotificationCenter.default.post(name: NSNotification.Name(rawValue: "changeUserProfile"), object: nil)

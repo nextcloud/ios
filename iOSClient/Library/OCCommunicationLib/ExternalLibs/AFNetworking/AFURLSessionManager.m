@@ -338,6 +338,7 @@ didFinishDownloadingToURL:(NSURL *)location
     if (self.downloadTaskDidFinishDownloading) {
         self.downloadFileURL = self.downloadTaskDidFinishDownloading(session, downloadTask, location);
         if (self.downloadFileURL) {
+            [[NSFileManager defaultManager] removeItemAtPath:self.downloadFileURL.path error:nil];
             [[NSFileManager defaultManager] moveItemAtURL:location toURL:self.downloadFileURL error:&fileManagerError];
 
             if (fileManagerError) {
@@ -1179,7 +1180,9 @@ didFinishDownloadingToURL:(NSURL *)location
         if (fileURL) {
             delegate.downloadFileURL = fileURL;
             NSError *error = nil;
+            [[NSFileManager defaultManager] removeItemAtPath:fileURL.path error:nil];
             [[NSFileManager defaultManager] moveItemAtURL:location toURL:fileURL error:&error];
+            
             if (error) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:AFURLSessionDownloadTaskDidFailToMoveFileNotification object:downloadTask userInfo:error.userInfo];
             }

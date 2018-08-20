@@ -27,7 +27,7 @@
 #import "AFURLSessionManager.h"
 #import "CCNetworking.h"
 #import "CCGraphics.h"
-#import "CCPhotos.h"
+#import "CCMedia.h"
 #import "CCSynchronize.h"
 #import "CCMain.h"
 #import "CCDetail.h"
@@ -36,15 +36,11 @@
 #import "JDStatusBarNotification.h"
 #import "NCBridgeSwift.h"
 #import "NCAutoUpload.h"
+#import "Firebase.h"
+#import "NCPushNotificationEncryption.h"
 
-/* Remove comment for activate Firebase and push notification */
-//#import "Firebase.h"
-//@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
+@interface AppDelegate () <UNUserNotificationCenterDelegate, FIRMessagingDelegate>
 
-@interface AppDelegate () <UNUserNotificationCenterDelegate>
-{
-    
-}
 @end
 
 @implementation AppDelegate
@@ -63,44 +59,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Brand
-    if ([NCBrandOptions sharedInstance].use_firebase) {
-    
-        /* Remove comment for activate Firebase and push notification */
-        
-        /*
-        //In order for this to work, proper GoogleService-Info.plist must be included
-        @try {
-            [FIRApp configure];
-        } @catch (NSException *exception) {
-            NSLog(@"[LOG] Something went wrong while configuring Firebase");
-        }
-    
-        if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
-        
-            UIUserNotificationType allNotificationTypes =(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-            UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
-        
-            [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-        
-        } else {
-        
-            // iOS 10 or later
-            #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-            // For iOS 10 display notification (sent via APNS)
-            [UNUserNotificationCenter currentNotificationCenter].delegate = self;
-            UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
-            [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
-            }];
-        
-            // For iOS 10 data message (sent via FCM)
-            [FIRMessaging messaging].remoteMessageDelegate = self;
-            #endif
-        }
-         */
-    }
-
-    NSString *dir;
+    NSString *path;
     NSURL *dirGroup = [CCUtility getDirectoryGroup];
     
     NSLog(@"[LOG] Start program group -----------------");
@@ -110,27 +69,30 @@
     NSLog(@"[LOG] -------------------------------------");
 
     // create Directory Documents
-    dir = [CCUtility getDirectoryDocuments];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    path = [CCUtility getDirectoryDocuments];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     // create Directory audio => Library, Application Support, audio
-    dir = [CCUtility getDirectoryAudio];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    path = [CCUtility getDirectoryAudio];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
 
     // create Directory database Nextcloud
-    dir = [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    path = [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:path error:nil];
 
-    // create directory Provider Storage
-    dir = [CCUtility getDirectoryProviderStorage];
-    if (![[NSFileManager defaultManager] fileExistsAtPath: dir] && [dir length])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    // create Directory User Data
+    path = [[dirGroup URLByAppendingPathComponent:k_appUserData] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
-    NSError *error = nil;
-    [[NSFileManager defaultManager] setAttributes:@{NSFileProtectionKey:NSFileProtectionNone} ofItemAtPath:dir error:&error];
+    // create Directory Provider Storage
+    path = [CCUtility getDirectoryProviderStorage];
+    if (![[NSFileManager defaultManager] fileExistsAtPath: path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
     // Verify upgrade
     if ([self upgrade]) {
@@ -154,7 +116,7 @@
     
 #ifdef DEBUG
     NSLog(@"[LOG] Copy DB on Documents directory");
-    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:appDatabaseNextcloud] path]];
+    NSString *atPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [[dirGroup URLByAppendingPathComponent:k_appDatabaseNextcloud] path]];
     NSString *toPathDB = [NSString stringWithFormat:@"%@/nextcloud.realm", [CCUtility getDirectoryDocuments]];
     [[NSFileManager defaultManager] removeItemAtPath:toPathDB error:nil];
     [[NSFileManager defaultManager] copyItemAtPath:atPathDB toPath:toPathDB error:nil];
@@ -164,15 +126,18 @@
     _netQueue = [[NSOperationQueue alloc] init];
     _netQueue.name = k_queue;
     _netQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
-   
-    // Add notification change session
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(sessionChanged:) name:k_networkingSessionNotification object:nil];
-        
+       
+    // UserDefaults
+    self.ncUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    
     // Initialization Share
     self.sharesID = [NSMutableDictionary new];
     self.sharesLink = [NSMutableDictionary new];
     self.sharesUserAndGroup = [NSMutableDictionary new];
     
+    // Filter fileID
+    self.filterFileID = [NSMutableArray new];
+
     // Initialization Notification
     self.listOfNotifications = [NSMutableArray new];
     
@@ -181,9 +146,37 @@
 
     // Initialization List
     self.listProgressMetadata = [[NSMutableDictionary alloc] init];
-    self.listChangeTask = [[NSMutableDictionary alloc] init];
     self.listMainVC = [[NSMutableDictionary alloc] init];
-            
+    
+    // Firebase - Push Notification
+    @try {
+        [FIRApp configure];
+    } @catch (NSException *exception) {
+        NSLog(@"[LOG] Something went wrong while configuring Firebase");
+    }
+    
+    if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
+        
+        UIUserNotificationType allNotificationTypes =(UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+        
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+        
+    } else {
+        
+        // iOS 10 or later
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+        // For iOS 10 display notification (sent via APNS)
+        [UNUserNotificationCenter currentNotificationCenter].delegate = self;
+        UNAuthorizationOptions authOptions = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+        [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:authOptions completionHandler:^(BOOL granted, NSError * _Nullable error) {
+        }];
+#endif
+    }
+    
+    [application registerForRemoteNotifications];
+    [FIRMessaging messaging].delegate = self;
+    
     // setting Reachable in back
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
@@ -196,7 +189,7 @@
     
     //AV Session
     [[AVAudioSession sharedInstance] setCategory: AVAudioSessionCategoryPlayback error:nil];
-    //[[AVAudioSession sharedInstance] setActive:YES error:nil];
+    // [[AVAudioSession sharedInstance] setActive:YES error:nil];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     
     // How to hide UINavigationBar 1px bottom line < iOS 11
@@ -220,12 +213,9 @@
         if (shortcutItem)
             [self handleShortCutItem:shortcutItem];
     }
-    
-    // Verify Lock
-    [self verifyLockOnLoadAutoUpload];
-    
+        
     // Start Timer
-    self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
+    self.timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
     self.timerUpdateApplicationIconBadgeNumber = [NSTimer scheduledTimerWithTimeInterval:k_timerUpdateApplicationIconBadgeNumber target:self selector:@selector(updateApplicationIconBadgeNumber) userInfo:nil repeats:YES];
 
     // Registration Push Notification
@@ -236,7 +226,7 @@
     // Fabric
     [Fabric with:@[[Crashlytics class]]];
     [self logUser];
-        
+    
     return YES;
 }
 
@@ -263,7 +253,10 @@
     [[NCService sharedInstance] startRequestServicesServer];
     
     NSLog(@"[LOG] Initialize Auto upload");
-    [[NCAutoUpload sharedInstance] initStateAutoUpload];    
+    [[NCAutoUpload sharedInstance] initStateAutoUpload];
+    
+    NSLog(@"[LOG] Read active directory");
+    [self.activeMain readFileReloadFolder];
 }
 
 //
@@ -275,14 +268,14 @@
     if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    // verify Upload
-    [self verifyUploadInErrorOrWait];
-    
     // middelware ping
     if ([[NCBrandOptions sharedInstance] use_middlewarePing]) {
         NSLog(@"[LOG] Middleware Ping");
         [[NCService sharedInstance] middlewarePing];
     }
+    
+    // Test error task upload / download
+    [self verifyInternalErrorDownloadingUploading];
 }
 
 //
@@ -321,16 +314,16 @@
 #pragma mark ===== Login =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)openLoginView:(id)delegate loginType:(enumLoginType)loginType
+- (void)openLoginView:(id)delegate loginType:(NSInteger)loginType selector:(NSInteger)selector
 {
-    BOOL loginWeb = NO;
+    BOOL loginWebFlow = NO;
     
     @synchronized (self) {
 
         // only for personalized LoginWeb [customer]
         if ([NCBrandOptions sharedInstance].use_login_web_personalized) {
             
-            if (_activeLoginWeb == nil) {
+            if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;
@@ -348,20 +341,25 @@
         //
         
         // Login flow : LoginWeb
-        if (loginType == loginModifyPasswordUser) {
+        if (loginType == k_login_Modify_Password) {
             tableAccount *account = [[NCManageDatabase sharedInstance] getAccountActive];
             if (account.loginFlow)
-                loginWeb = YES;
+                loginWebFlow = YES;
         }
             
-        if (loginWeb) {
+        if (loginWebFlow || selector == k_intro_signup) {
             
-            if (_activeLoginWeb == nil) {
+            if (!(_activeLoginWeb.isViewLoaded && _activeLoginWeb.view.window)) {
                 
                 _activeLoginWeb = [CCLoginWeb new];
                 _activeLoginWeb.delegate = delegate;
                 _activeLoginWeb.loginType = loginType;
-                _activeLoginWeb.urlBase = self.activeUrl;
+                
+                if (selector == k_intro_signup) {
+                    _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginPreferredProviders];
+                } else {
+                    _activeLoginWeb.urlBase = self.activeUrl;
+                }
 
                 dispatch_async(dispatch_get_main_queue(), ^ {
                     [_activeLoginWeb presentModalWithDefaultTheme:delegate];
@@ -370,7 +368,7 @@
             
         } else {
             
-            if (_activeLogin == nil) {
+            if (!(_activeLogin.isViewLoaded && _activeLogin.view.window)) {
                 
                 _activeLogin = [[UIStoryboard storyboardWithName:@"CCLogin" bundle:nil] instantiateViewControllerWithIdentifier:@"CCLoginNextcloud"];
                 _activeLogin.delegate = delegate;
@@ -381,7 +379,6 @@
                 });
             }
         }
-        
     }
 }
 
@@ -397,170 +394,127 @@
     self.activeUserID = activeUserID;
     self.activePassword = activePassword;
     
-    self.directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];
-    
     // Setting Account to CCNetworking
     [[CCNetworking sharedNetworking] settingAccount];
+    [CCNetworking sharedNetworking].delegate = [NCNetworkingMain sharedInstance];
 }
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Push Notification =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)subscribingNextcloudServerFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    NSLog(@"[LOG] Error Subscribing Nextcloud Server %@", message);
-}
-
-- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
-{
-    [application registerForRemoteNotifications];
-}
-
-/* Remove comment for activate Firebase and push notification */
-
-/*
-- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
+- (void)subscribingNextcloudServerPushNotification
 {
     // test
-    if (self.activeAccount.length == 0)
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
         return;
     
-    // FIREBASE registered token
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
     
-    [[FIRInstanceID instanceID] setAPNSToken:deviceToken type:FIRInstanceIDAPNSTokenTypeSandbox];
-    NSString *pushToken = [[FIRInstanceID instanceID] token];
-    // NSString *pushToken = [[[[deviceToken description] stringByReplacingOccurrencesOfString: @"<" withString: @""] stringByReplacingOccurrencesOfString: @">" withString: @""] stringByReplacingOccurrencesOfString: @" " withString: @""];
-    
+    [[NCPushNotificationEncryption sharedInstance] generatePushNotificationsKeyPair];
+
+    NSString *pushToken = [CCUtility getPushNotificationToken];
     NSString *pushTokenHash = [[NCEndToEndEncryption sharedManager] createSHA512:pushToken];
-    NSDictionary *devicePushKey = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"DevicePushKey-Info" ofType:@"plist"]];
+    NSString *devicePublicKey = [[NSString alloc] initWithData:[NCPushNotificationEncryption sharedInstance].ncPNPublicKey encoding:NSUTF8StringEncoding];
     
-#ifdef DEBUG
-    NSString *devicePublicKey = [devicePushKey objectForKey:@"devicePublicKeyDevelopment"];
-#else
-    NSString *devicePublicKey = [devicePushKey objectForKey:@"devicePublicKeyProduction"];
-#endif
+    self.pnDeviceIdentifier = nil;
+    self.pnDeviceIdentifierSignature = nil;
+    self.pnPublicKey = nil;
     
-    if ([devicePublicKey length] > 0 && [pushTokenHash length] > 0) {
-        
-        NSLog(@"[LOG] Firebase InstanceID push token: %@", pushToken);
-        
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:app.activeAccount];
-    
-        NSDictionary *options = [[NSDictionary alloc] initWithObjectsAndKeys:pushToken, @"pushToken", pushTokenHash, @"pushTokenHash", devicePublicKey, @"devicePublicKey", nil];
-        
-        metadataNet.action = actionSubscribingNextcloudServer;
-        metadataNet.options = options;
-        [app addNetworkingOperationQueue:app.netQueue delegate:self metadataNet:metadataNet];
-    }    
-}
-*/
-
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
-{
-    NSLog(@"[LOG] Error register remote notification %@", error);
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-    
-    UIApplicationState state = [application applicationState];
-    
-    if (state == UIApplicationStateInactive || state == UIApplicationStateBackground) {
-        
-        NSLog(@"[LOG] Receive Notification on Inactive or Background state");
-        
-    } else {
-        
-        NSLog(@"[LOG] Receive Notification on Active state");
-    }
-    
-    // If you are receiving a notification message while your app is in the background,
-    // this callback will not be fired till the user taps on the notification launching the application.
-    // TODO: Handle data of notification
-    
-    // Print message ID.
-    //if (userInfo[kGCMMessageIDKey]) {
-    //    NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
-    //}
-    
-    // Print full message.
-    NSLog(@"[LOG] %@", userInfo);
-
-}
-
-- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
-{
-    UIApplicationState state = [application applicationState];
-    
-    // Print message ID.
-    //if (userInfo[kGCMMessageIDKey]) {
-    //    NSLog(@"Message ID: %@", userInfo[kGCMMessageIDKey]);
-    //}
-    
-    // Print full message.
-    NSLog(@"[LOG] %@", userInfo);
-
-    
-    if (state == UIApplicationStateBackground || (state == UIApplicationStateInactive)) {
-        
-    } else if (state == UIApplicationStateInactive) {
-        
-        // user tapped notification
-        completionHandler(UIBackgroundFetchResultNewData);
-        
-    } else {
-        
-        // app is active
-        completionHandler(UIBackgroundFetchResultNoData);
-    }
-}
-
-/* Remove comment for activate Firebase and push notification */
-
-#pragma FIREBASE
-/*
-- (void)tokenRefreshNotification:(NSNotification *)notification {
-    
-    // Note that this callback will be fired everytime a new token is generated, including the first
-    // time. So if you need to retrieve the token as soon as it is available this is where that
-    // should be done.
-    
-    NSString *refreshedToken = [[FIRInstanceID instanceID] token];
-    NSLog(@"[LOG] InstanceID token: %@", refreshedToken);
-    
-    // Connect to FCM since connection may have failed when attempted before having a token.
-    [self connectToFcm];
-    
-    // TODO: If necessary send token to application server.
-}
-
-- (void)connectToFcm {
-    
-    // Won't connect since there is no token
-    if (![[FIRInstanceID instanceID] token]) {
-        return;
-    }
-    
-    // Disconnect previous FCM connection if it exists.
-    [[FIRMessaging messaging] disconnect];
-    
-    [[FIRMessaging messaging] connectWithCompletion:^(NSError * _Nullable error) {
-        if (error != nil) {
-            NSLog(@"[LOG] Unable to connect to FCM. %@", error);
-        } else {
-            NSLog(@"[LOG] Connected to FCM.");
-        }
+    [ocNetworking subscribingPushNotificationServer:self.activeUrl pushToken:pushToken Hash:pushTokenHash devicePublicKey:devicePublicKey success:^(NSString *deviceIdentifier, NSString *deviceIdentifierSignature, NSString *publicKey) {
+        NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
+        self.pnDeviceIdentifier = deviceIdentifier;
+        self.pnDeviceIdentifierSignature = deviceIdentifierSignature;
+        self.pnPublicKey = publicKey;
+    } failure:^(NSString *message, NSInteger errorCode) {
+        NSLog(@"[LOG] Subscribed to Push Notification server & proxy successfully.");
     }];
 }
 
-#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-// Receive data message on iOS 10 devices while app is in the foreground.
-- (void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
-    // Print full message
-    NSLog(@"[LOG] %@", remoteMessage.appData);
+- (void)unsubscribingNextcloudServerPushNotification
+{
+    // test
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
+    
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:self.activeUser withUserID:self.activeUserID withPassword:self.activePassword withUrl:self.activeUrl];
+
+    [ocNetworking unsubscribingPushNotificationServer:self.activeUrl deviceIdentifier:self.pnDeviceIdentifier deviceIdentifierSignature:self.pnDeviceIdentifierSignature publicKey:self.pnPublicKey success:^{
+        NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+    } failure:^(NSString *message, NSInteger errorCode) {
+        NSLog(@"[LOG] Unsubscribed to Push Notification server & proxy successfully.");
+    }];
 }
-#endif
-*/
+
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler
+{
+    //Called when a notification is delivered to a foreground app.
+    completionHandler(UNNotificationPresentationOptionAlert);
+}
+
+-(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(nonnull UNNotificationResponse *)response withCompletionHandler:(nonnull void (^)(void))completionHandler
+{
+    NSString *message = [response.notification.request.content.userInfo objectForKey:@"subject"];
+    
+    if (message && [NCPushNotificationEncryption sharedInstance].ncPNPrivateKey) {
+        
+        NSData *privateKey = [CCUtility getPushNotificationPrivateKey];
+        NSString *decryptedMessage = [[NCPushNotificationEncryption sharedInstance] decryptPushNotification:message withDevicePrivateKey:privateKey];
+        if (decryptedMessage) {
+           
+            NSData *data = [decryptedMessage dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            NSString *app = [json objectForKey:@"app"];
+            
+            if ([app isEqualToString:@"spreed"] == NO) {
+                
+                UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+                UINavigationController *navigationControllerMore;
+                UITabBarController *tabBarController;
+                
+                if (splitViewController.isCollapsed) {
+                    
+                    tabBarController = splitViewController.viewControllers.firstObject;
+                    for (UINavigationController *nvc in tabBarController.viewControllers) {
+                        
+                        if ([nvc.topViewController isKindOfClass:[CCDetail class]])
+                            [nvc popToRootViewControllerAnimated:NO];
+                        
+                        if ([nvc.topViewController isKindOfClass:[CCMore class]])
+                            navigationControllerMore = nvc;
+                    }
+                    
+                } else {
+                    
+                    UINavigationController *nvcDetail = splitViewController.viewControllers.lastObject;
+                    [nvcDetail popToRootViewControllerAnimated:NO];
+                    
+                    tabBarController = splitViewController.viewControllers.firstObject;
+                }
+                
+                if (tabBarController)
+                    [tabBarController setSelectedIndex: k_tabBarApplicationIndexMore];
+                if (navigationControllerMore)
+                    [navigationControllerMore performSegueWithIdentifier:@"segueActivity" sender:navigationControllerMore];
+            }
+        }
+    }
+    completionHandler();
+}
+
+#pragma FIREBASE
+
+- (void)messaging:(FIRMessaging *)messaging didReceiveRegistrationToken:(NSString *)fcmToken
+{
+    // test
+    if (self.activeAccount.length == 0 || self.maintenanceMode)
+        return;
+    
+    NSLog(@"FCM registration token: %@", fcmToken);
+    [CCUtility setPushNotificationToken:fcmToken];
+    
+    [self subscribingNextcloudServerPushNotification];
+}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Quick Actions - ShotcutItem =====
@@ -570,15 +524,15 @@
 {
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
 
-    UIApplicationShortcutIcon *shortcutPhotosIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionPhotos"];
+    UIApplicationShortcutIcon *shortcutMediaIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionMedia"];
     UIApplicationShortcutIcon *shortcutUploadIcon = [UIApplicationShortcutIcon iconWithTemplateImageName:@"quickActionUpload"];
     
-    UIApplicationShortcutItem *shortcutPhotos = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.photos", bundleId] localizedTitle:NSLocalizedString(@"_photo_camera_", nil) localizedSubtitle:nil icon:shortcutPhotosIcon userInfo:nil];
+    UIApplicationShortcutItem *shortcutMedia = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.media", bundleId] localizedTitle:NSLocalizedString(@"_media_", nil) localizedSubtitle:nil icon:shortcutMediaIcon userInfo:nil];
     UIApplicationShortcutItem *shortcutUpload = [[UIApplicationShortcutItem alloc] initWithType:[NSString stringWithFormat:@"%@.upload", bundleId] localizedTitle:NSLocalizedString(@"_upload_file_", nil) localizedSubtitle:nil icon:shortcutUploadIcon userInfo:nil];
    
     // add the array to our app
-    if (shortcutUpload && shortcutPhotos)
-        [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutPhotos];
+    if (shortcutUpload && shortcutMedia)
+        [UIApplication sharedApplication].shortcutItems = @[shortcutUpload, shortcutMedia];
 }
 
 - (void)application:(UIApplication *)application performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem completionHandler:(void (^)(BOOL))completionHandler
@@ -594,7 +548,7 @@
     
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
     
-    NSString *shortcutPhotos = [NSString stringWithFormat:@"%@.photos", bundleId];
+    NSString *shortcutMedia = [NSString stringWithFormat:@"%@.media", bundleId];
     NSString *shortcutUpload = [NSString stringWithFormat:@"%@.upload", bundleId];
     NSString *shortcutUploadEncrypted = [NSString stringWithFormat:@"%@.uploadEncrypted", bundleId];
         
@@ -676,7 +630,7 @@
         handled = YES;
     }
     
-    else if ([shortcutItem.type isEqualToString:shortcutPhotos] && self.activeAccount) {
+    else if ([shortcutItem.type isEqualToString:shortcutMedia] && self.activeAccount) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
 
@@ -691,7 +645,7 @@
                         [nvc popToRootViewControllerAnimated:NO];
                 }
             
-                [tbc setSelectedIndex: k_tabBarApplicationIndexPhotos];
+                [tbc setSelectedIndex: k_tabBarApplicationIndexMedia];
 
             } else {
             
@@ -699,7 +653,7 @@
                 [nvcDetail popToRootViewControllerAnimated:NO];
             
                 UITabBarController *tbc = splitViewController.viewControllers.firstObject;
-                [tbc setSelectedIndex: k_tabBarApplicationIndexPhotos];
+                [tbc setSelectedIndex: k_tabBarApplicationIndexMedia];
             }
         });
         
@@ -816,10 +770,10 @@
     if (self.maintenanceMode)
         return;
     
-    NSInteger total = 0;
-    
-    // Total
-    total = [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:NO] + [[CCNetworking sharedNetworking] getNumDownloadInProgressWWan:YES] + [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:NO] + [[CCNetworking sharedNetworking] getNumUploadInProgressWWan:YES];
+    NSInteger counterDownload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status = %d OR status == %d OR status == %d)", self.activeAccount, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:@"fileName" ascending:true] count];
+    NSInteger counterUpload = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d)", self.activeAccount, k_metadataStatusWaitUpload, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+
+    NSInteger total = counterDownload + counterUpload;
     
     [UIApplication sharedApplication].applicationIconBadgeNumber = total;
     
@@ -835,9 +789,6 @@
             [tbItem setBadgeValue:[NSString stringWithFormat:@"%li", (unsigned long)total]];
         } else {
             [tbItem setBadgeValue:nil];
-            
-            NSDictionary* userInfo = @{@"fileID": @"", @"serverUrl": @"", @"progress": [NSNumber numberWithFloat:0]};
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
         }
     }
 }
@@ -874,14 +825,14 @@
     // (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
     item.title = @"";
-    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[UIColor clearColor]];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[UIColor clearColor]];
     item.enabled = false;
     
-    // Photos
-    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPhotos];
-    [item setTitle:NSLocalizedString(@"_photo_camera_", nil)];
-    item.image = [UIImage imageNamed:@"photos"];
-    item.selectedImage = [UIImage imageNamed:@"photos"];
+    // Media
+    item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
+    [item setTitle:NSLocalizedString(@"_media_", nil)];
+    item.image = [UIImage imageNamed:@"media"];
+    item.selectedImage = [UIImage imageNamed:@"media"];
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
@@ -890,7 +841,7 @@
     item.selectedImage = [UIImage imageNamed:@"tabBarMore"];
     
     // Plus Button
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
     UIButton *buttonPlus = [UIButton buttonWithType:UIButtonTypeCustom];
     buttonPlus.tag = 99;
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
@@ -911,7 +862,6 @@
         constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:+5];
     }
     [tabBarController.view addConstraint:constraint];
-    
     
     multiplier = 0.8 * (tabBarController.tabBar.frame.size.height - safeAreaBottom) / tabBarController.tabBar.frame.size.height;
     // Width
@@ -957,7 +907,7 @@
     
     UIButton *buttonPlus = [tabBarController.view viewWithTag:99];
     
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [buttonPlus setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
     
@@ -1025,7 +975,7 @@
     } else if (index == k_tabBarApplicationIndexFavorite) {
         if (self.activeFavorites.serverUrl)
             serverUrl = self.activeFavorites.serverUrl;
-    } else if (index == k_tabBarApplicationIndexPhotos) {
+    } else if (index == k_tabBarApplicationIndexMedia) {
         serverUrl = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:self.activeUrl];
     }
     
@@ -1070,7 +1020,7 @@
     UITabBarController *tabBarController = [splitViewController.viewControllers firstObject];
     
     UIButton *button = [tabBarController.view viewWithTag:99];
-    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] color:[NCBrandColor sharedInstance].brandElement];
+    UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
     
     [button setBackgroundImage:buttonImage forState:UIControlStateNormal];
     [button setBackgroundImage:buttonImage forState:UIControlStateHighlighted];
@@ -1103,7 +1053,7 @@
         
         while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
             
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", self.activeAccount, serverUrl]];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.activeAccount, serverUrl]];
             
             if (directory.lock) {
                 isBlockZone = true;
@@ -1163,7 +1113,7 @@
         
         while (![serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:_activeUrl]]) {
             
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", self.activeAccount, serverUrl]];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", self.activeAccount, serverUrl]];
             
             if (directory.lock) {
                 isBlockZone = true;
@@ -1233,16 +1183,13 @@
 {
     NSLog(@"[LOG] Start perform Fetch With Completion Handler");
     
-    // verify Upload
-    [self verifyUploadInErrorOrWait];
-    
     // Verify new photo
     [[NCAutoUpload sharedInstance] initStateAutoUpload];
     
     // after 20 sec
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         
-        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session != ''", self.activeAccount] sorted:nil ascending:NO];
+        NSArray *records = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != ''", self.activeAccount] sorted:nil ascending:NO];
         
         if ([records count] > 0) {
             completionHandler(UIBackgroundFetchResultNewData);
@@ -1288,139 +1235,25 @@
     [netQueue addOperation:operation];
 }
 
-// Notification change session
-- (void)sessionChanged:(NSNotification *)notification
-{
-    NSURLSession *session;
-    NSString *fileID;
-    NSURLSessionTask *task;
-    
-    for (id object in notification.object) {
-        
-        if ([object isKindOfClass:[NSURLSession class]])
-            session = object;
-        
-        if ([object isKindOfClass:[NSString class]])
-            fileID = object;
-        
-        if ([object isKindOfClass:[NSURLSessionTask class]])
-            task = object;
-    }
-    
-    /*
-    Task
-    */
-    if (fileID && [_listChangeTask objectForKey:fileID])
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self changeTask:fileID];
-        });
-        
-    /* 
-    Session
-    */
-    if (session) {
-                
-        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
-            
-            unsigned long numDownload = [downloadTasks count];
-            unsigned long numUpload = [uploadTasks count];
-        
-            NSLog(@"[LOG] Num Download in queue %lu, num upload in queue %lu", numDownload, numUpload);
-        }];
-    }
-}
-
-- (void)changeTask:(NSString *)fileID
-{
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-    if (!metadata) return;
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl) return;
-    
-    if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"stopUpload"]) {
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:nil sessionError:@"" sessionSelector:nil sessionSelectorPost:nil sessionTaskIdentifier:k_taskIdentifierStop predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-        
-    }
-    else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadUpload"]) {
-        
-        // V 1.8 if upload_session_wwan change in upload_session
-        if ([metadata.session isEqualToString:k_upload_session_wwan])
-            metadata.session = k_upload_session;
-        
-        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus:k_taskStatusResume delegate:nil];
-    }
-    else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"reloadDownload"]) {
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-        
-        [[CCNetworking sharedNetworking] downloadFile:metadata.fileName fileID:fileID serverUrl:serverUrl selector:metadata.sessionSelector selectorPost:metadata.sessionSelectorPost session:k_download_session taskStatus:k_taskStatusResume delegate:self.activeMain];
-    }
-    else if ([[_listChangeTask objectForKey:metadata.fileID] isEqualToString:@"cancelUpload"]) {
-        
-        // remove the file
-        
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, fileID] error:nil];
-        [[NSFileManager defaultManager] removeItemAtPath:[NSString stringWithFormat:@"%@/%@.ico", self.directoryUser, fileID] error:nil];
-        
-        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID] clearDateReadDirectoryID:nil];
-    }
-    else if ([[_listChangeTask objectForKey:fileID] isEqualToString:@"cancelDownload"]) {
-        
-        [[NCManageDatabase sharedInstance] setMetadataSession:@"" sessionError:@"" sessionSelector:@"" sessionSelectorPost:@"" sessionTaskIdentifier:k_taskIdentifierDone predicate:[NSPredicate predicateWithFormat:@"fileID = %@", fileID]];
-    }
-    
-    // remove ChangeTask (fileID) from the list
-    [_listChangeTask removeObjectForKey:fileID];
-    
-    // delete progress
-    [_listProgressMetadata removeObjectForKey:fileID];
-    
-    // Progress Task
-    NSDictionary* userInfo = @{@"fileID": (fileID), @"serverUrl": (serverUrl), @"cryptated": ([NSNumber numberWithBool:NO]), @"progress": ([NSNumber numberWithFloat:0.0])};
-    
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"NotificationProgressTask" object:nil userInfo:userInfo];
-
-    // Refresh
-    if (_activeMain && [_listChangeTask count] == 0) {
-        [_activeMain reloadDatasource:serverUrl];
-    }
-}
-
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Process Auto Upload < k_timerProcess seconds > =====
+#pragma mark ===== Process Load Download/Upload < k_timerProcess seconds > =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)processAutoDownloadUpload
-{
+- (void)loadAutoDownloadUpload
+{    
+    tableMetadata *metadataForUpload, *metadataForDownload;
+    long counterDownload = 0, counterUpload = 0;
+    NSUInteger sizeDownload = 0, sizeUpload = 0;
+    
     // Test Maintenance
     if (self.maintenanceMode)
         return;
     
-    // BACKGROND & FOREGROUND
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        
-        // ONLY BACKGROUND
-        NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
-        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUploadBackground] waitUntilDone:NO];
-        
-    } else {
-        
-        // ONLY FOREFROUND
-        NSLog(@"[LOG] -PROCESS-AUTO-UPLOAD-");
-        [self performSelectorOnMainThread:@selector(loadAutoDownloadUpload:) withObject:[NSNumber numberWithInt:k_maxConcurrentOperationDownloadUpload] waitUntilDone:NO];
-    }
-}
-
-- (void)loadAutoDownloadUpload:(NSNumber *)maxConcurrent
-{
-    CCMetadataNet *metadataNet;
-        
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueUpload];
-        if (metadataNet) {
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND e2eEncrypted = 1", self.activeAccount, metadataNet.serverUrl]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading]];
+        if (metadata) {
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]];
             if (directory != nil)
                 return;
         }
@@ -1428,50 +1261,96 @@
     
     // Stop Timer
     [_timerProcessAutoDownloadUpload invalidate];
+    NSArray *metadatasDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading] sorted:nil ascending:true];
+    NSArray *metadatasUpload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:nil ascending:true];
     
-    NSInteger maxConcurrentDownloadUpload = [maxConcurrent integerValue];
+    // Counter
+    counterDownload = [metadatasDownload count];
+    counterUpload = [metadatasUpload count];
     
-    NSInteger counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
-    NSInteger counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
-    NSInteger counterUploadInLock = [[[NCManageDatabase sharedInstance] getQueueUploadWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND lock = true", self.activeAccount]] count];
+    // Size
+    for (tableMetadata *metadata in metadatasDownload) {
+        sizeDownload = sizeDownload + metadata.size;
+    }
+    for (tableMetadata *metadata in metadatasUpload) {
+        sizeUpload = sizeUpload + metadata.size;
+    }
+  
+    NSLog(@"%@", [NSString stringWithFormat:@"[LOG] -PROCESS-AUTO-UPLOAD- | Download %ld - %@ | Upload %ld - %@", counterDownload, [CCUtility transformedSize:sizeDownload], counterUpload, [CCUtility transformedSize:sizeUpload]]);
 
-    NSInteger counterNewUpload = 0;
+    // ------------------------- <selector Download> -------------------------
     
-    // ------------------------- <selector Auto Download> -------------------------
-    
-    while (counterDownloadInSession < maxConcurrentDownloadUpload) {
+    while (counterDownload < k_maxConcurrentOperationDownload) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] getQueueDownload];
-        if (metadataNet) {
+        metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", _activeAccount, k_metadataStatusWaitDownload]];
+        if (metadataForDownload) {
             
-            [[CCNetworking sharedNetworking] downloadFile:metadataNet.fileName fileID:metadataNet.fileID serverUrl:metadataNet.serverUrl selector:metadataNet.selector selectorPost:metadataNet.selectorPost session:metadataNet.session taskStatus:metadataNet.taskStatus delegate:self.activeMain];
+            metadataForDownload.status = k_metadataStatusInDownload;
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForDownload];
             
-        } else
+            [[CCNetworking sharedNetworking] downloadFile:metadata taskStatus:k_taskStatusResume];
+            
+            counterDownload++;
+            sizeDownload = sizeDownload + metadata.size;
+        } else {
             break;
+        }
+    }
+  
+    // ------------------------- <selector Upload> -------------------------
+    
+    while (counterUpload < k_maxConcurrentOperationUpload) {
         
-        counterDownloadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataDownload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataDownloadWWan] count];
+        if (sizeUpload > k_maxSizeOperationUpload) {
+            break;
+        }
+        
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadFile, k_metadataStatusWaitUpload]];
+        if (metadataForUpload) {
+            
+            if ([metadataForUpload.session isEqualToString:k_upload_session_extension]) {
+                metadataForUpload.session = k_upload_session;
+            }
+            
+            metadataForUpload.status = k_metadataStatusInUpload;
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+            
+            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+            
+            counterUpload++;
+            sizeUpload = sizeUpload + metadata.size;
+        } else {
+            break;
+        }
     }
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
-        
-        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUpload session:nil];
-        if (metadataNet) {
-            
-            [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
-            
-            counterNewUpload++;
+    while (counterUpload < k_maxConcurrentOperationUpload) {
+
+        if (sizeUpload > k_maxSizeOperationUpload) {
+            break;
         }
         
-        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
+        metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUpload, k_metadataStatusWaitUpload]];
+        if (metadataForUpload) {
+            
+            metadataForUpload.status = k_metadataStatusInUpload;
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+            
+            [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+            
+            counterUpload++;
+            sizeUpload = sizeUpload + metadata.size;
+        } else {
+            break;
+        }
     }
-    
+  
     // ------------------------- <selector Auto Upload All> ----------------------
     
     // Verify num error k_maxErrorAutoUploadAll after STOP (100)
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionSelector = %@ AND sessionTaskIdentifier = %i", _activeAccount, selectorUploadAutoUploadAll, k_taskIdentifierError] sorted:nil ascending:NO];
-    
+    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %i", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusUploadError] sorted:nil ascending:NO];
     NSInteger errorCount = [metadatas count];
     
     if (errorCount >= k_maxErrorAutoUploadAll) {
@@ -1482,96 +1361,110 @@
 
     } else {
         
-        if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
-            
-            metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadAutoUploadAll session:nil];
-            if (metadataNet) {
-                
-                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
-                
-                counterNewUpload++;
+        while (counterUpload < k_maxConcurrentOperationUpload) {
+
+            if (sizeUpload > k_maxSizeOperationUpload) {
+                break;
             }
             
-            counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
+            metadataForUpload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND sessionSelector == %@ AND status == %d", _activeAccount, selectorUploadAutoUploadAll, k_metadataStatusWaitUpload]];
+            if (metadataForUpload) {
+                
+                metadataForUpload.status = k_metadataStatusInUpload;
+                tableMetadata *metadata = [[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+                
+                [[CCNetworking sharedNetworking] uploadFile:metadata taskStatus:k_taskStatusResume];
+                
+                counterUpload++;
+                sizeUpload = sizeUpload + metadata.size;
+            } else {
+                break;
+            }
         }
     }
     
-    // ------------------------- <selector Upload File> -------------------------
-    
-    if (counterUploadInSessionAndInLock < maxConcurrentDownloadUpload && counterUploadInLock < 1) {
+    // ------------------------- < END > ----------------------
+
+    // No Download/upload available ? --> remove errors for retry
+    //
+    if (counterDownload+counterUpload == 0) {
         
-        metadataNet = [[NCManageDatabase sharedInstance] lockQueueUploadWithSelector:selectorUploadFile session:nil];
-        if (metadataNet) {
+        NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", _activeAccount, k_metadataStatusDownloadError, k_metadataStatusUploadError] sorted:nil ascending:NO];
+        for (tableMetadata *metadata in metadatas) {
             
-            if ([metadataNet.session isEqualToString:k_upload_session_extension]) {
-                
-                NSString *atPath = [NSString stringWithFormat:@"%@/%@", metadataNet.path, metadataNet.fileName];
-                NSString *toPath = [NSString stringWithFormat:@"%@/%@", self.directoryUser, metadataNet.fileName];
-                [CCUtility copyFileAtPath:atPath toPath:toPath];
-                
-                metadataNet.fileID = @"";
-                metadataNet.session = k_upload_session;
-                
-                [[CCNetworking sharedNetworking] uploadFile:metadataNet.fileName serverUrl:metadataNet.serverUrl assetLocalIdentifier:metadataNet.assetLocalIdentifier path:self.directoryUser session:metadataNet.session taskStatus:k_taskStatusResume selector:metadataNet.selector selectorPost:metadataNet.selectorPost errorCode:0 delegate:_activeMain];
-                
-            } else {
-                
-                [[CCNetworking sharedNetworking] uploadFileFromAssetLocalIdentifier:metadataNet delegate:_activeMain];
-            }
+            if (metadata.status == k_metadataStatusDownloadError)
+                metadata.status = k_metadataStatusWaitDownload;
+            else if (metadata.status == k_metadataStatusUploadError)
+                metadata.status = k_metadataStatusWaitUpload;
             
-            
-            counterNewUpload++;
+            (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
         }
-        
-        counterUploadInSessionAndInLock = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count] + [[[NCManageDatabase sharedInstance] getQueueUploadInLock] count];
     }
     
     // Start Timer
-    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(processAutoDownloadUpload) userInfo:nil repeats:YES];
+    _timerProcessAutoDownloadUpload = [NSTimer scheduledTimerWithTimeInterval:k_timerProcessAutoDownloadUpload target:self selector:@selector(loadAutoDownloadUpload) userInfo:nil repeats:YES];
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Process Verify =====
+#pragma mark ===== Verify internal error in Download/Upload  =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)verifyLockOnLoadAutoUpload
+- (void)verifyInternalErrorDownloadingUploading
 {
     // Test Maintenance
     if (self.maintenanceMode || self.activeAccount.length == 0)
         return;
     
-    NSInteger counterUploadInSession = [[[NCManageDatabase sharedInstance] getTableMetadataUpload] count] + [[[NCManageDatabase sharedInstance] getTableMetadataUploadWWan] count];
-    NSArray *tableMetadatasInLock = [[NCManageDatabase sharedInstance] getQueueUploadInLock];
-     
-    if (counterUploadInSession == 0 && [tableMetadatasInLock count] > 0) {
-     
-        // Unlock
-        for (tableMetadata *metadata in tableMetadatasInLock) {
-            if ([[NCManageDatabase sharedInstance] isTableInvalidated:metadata] == NO)
-                [[NCManageDatabase sharedInstance] unlockQueueUploadWithAssetLocalIdentifier:metadata.assetLocalIdentifier];
-        }
+    NSArray *recordsInDownloading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_download_session_extension, k_metadataStatusDownloading] sorted:nil ascending:true];
+        
+    for (tableMetadata *metadata in recordsInDownloading) {
+            
+        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
+            
+        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+                
+            NSURLSessionTask *findTask;
+                
+            for (NSURLSessionTask *task in downloadTasks) {
+                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
+                    findTask = task;
+                }
+            }
+                
+            if (!findTask) {
+                    
+                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+                metadata.status = k_metadataStatusWaitDownload;
+                    
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            }
+        }];
     }
-}
-
-- (void)verifyUploadInErrorOrWait
-{
-    // Test Maintenance
-    if (self.maintenanceMode || self.activeAccount.length == 0)
-        return;
-    
-    NSMutableSet *directoryIDs = [NSMutableSet new];
-    
-    NSArray *metadatas = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND session CONTAINS 'upload' AND (sessionTaskIdentifier = %i OR sessionTaskIdentifier = %i)", _activeAccount, k_taskIdentifierError, k_taskIdentifierWaitStart] sorted:nil ascending:NO];
-    
-    NSLog(@"[LOG] Verify re upload in error n. %lu", (unsigned long)[metadatas count]);
-    
-    for (tableMetadata *metadata in metadatas) {
         
-        [[CCNetworking sharedNetworking] uploadFileMetadata:metadata taskStatus: k_taskStatusResume delegate:nil];
+    NSArray *recordsInUploading = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND session != %@ AND status == %d", self.activeAccount, k_upload_session_extension, k_metadataStatusUploading] sorted:nil ascending:true];
         
-        [directoryIDs addObject:metadata.directoryID];
-        
-        NSLog(@"[LOG] Re upload file : %@", metadata.fileName);
+    for (tableMetadata *metadata in recordsInUploading) {
+            
+        NSURLSession *session = [[CCNetworking sharedNetworking] getSessionfromSessionDescription:metadata.session];
+            
+        [session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+                
+            NSURLSessionTask *findTask;
+                
+            for (NSURLSessionTask *task in uploadTasks) {
+                if (task.taskIdentifier == metadata.sessionTaskIdentifier) {
+                    findTask = task;
+                }
+            }
+                
+            if (!findTask) {
+                    
+                metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+                metadata.status = k_metadataStatusWaitUpload;
+                    
+                (void)[[NCManageDatabase sharedInstance] addMetadata:metadata];
+            }
+        }];
     }
 }
 
@@ -1585,9 +1478,9 @@
 }
 
 // Method called from iOS system to send a file from other app.
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<NSString *,id> *)options
 {
-    NSLog(@"[LOG] URL from %@ application", sourceApplication);
+    NSError *error;
     NSLog(@"[LOG] the path is: %@", url.path);
         
     NSArray *splitedUrl = [url.path componentsSeparatedByString:@"/"];
@@ -1595,20 +1488,21 @@
     
     if (self.activeAccount) {
         
-        [[NSFileManager defaultManager]moveItemAtPath:[[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Inbox"] stringByAppendingPathComponent:self.fileNameUpload] toPath:[NSString stringWithFormat:@"%@/%@", self.directoryUser, self.fileNameUpload] error:nil];
+        [[NSFileManager defaultManager]removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:nil];
+        [[NSFileManager defaultManager]moveItemAtPath:url.path toPath:[NSTemporaryDirectory() stringByAppendingString:self.fileNameUpload] error:&error];
         
-        UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
-        UINavigationController *splitNavigationController = [splitViewController.viewControllers firstObject];
-        
-        UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [splitNavigationController presentViewController:navigationController animated:YES completion:nil];
-        });
+        if (error == nil) {
+            
+            UISplitViewController *splitViewController = (UISplitViewController *)self.window.rootViewController;
+            UINavigationController *splitNavigationController = [splitViewController.viewControllers firstObject];
+            
+            UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"CCUploadFromOtherUpp" bundle:nil] instantiateViewControllerWithIdentifier:@"CCUploadNavigationViewController"];
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                [splitNavigationController presentViewController:navigationController animated:YES completion:nil];
+            });
+        }
     }
-    
-    // remove from InBox
-    [[NSFileManager defaultManager] removeItemAtPath:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Inbox"] error:nil];
     
     return YES;
 }
@@ -1670,6 +1564,32 @@
 
         [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:nil];
         [[NCManageDatabase sharedInstance] setClearAllDateReadDirectory];
+    }
+    
+    if (([actualVersion compare:@"2.22.0" options:NSNumericSearch] == NSOrderedAscending)) {
+     
+        NSArray *records = [[NCManageDatabase sharedInstance] getTableLocalFilesWithPredicate:[NSPredicate predicateWithFormat:@"#size > 0"] sorted:@"account" ascending:NO];
+        
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+            
+            NSString *account = @"";
+            NSString *directoryUser = @"";
+            NSString *fileName;
+            
+            for (tableLocalFile *record in records) {
+                if (![account isEqualToString:record.account]) {
+                    tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountWithPredicate:[NSPredicate predicateWithFormat:@"account == %@", record.account]];
+                    if (tableAccount) {
+                        directoryUser = [CCUtility getDirectoryActiveUser:tableAccount.user activeUrl:tableAccount.url];
+                        account = record.account;
+                    }
+                }
+                fileName = [NSString stringWithFormat:@"%@/%@", directoryUser, record.fileID];
+                if (![directoryUser isEqualToString:@""] && [[NSFileManager defaultManager] fileExistsAtPath:fileName]) {
+                    [CCUtility moveFileAtPath:fileName toPath:[CCUtility getDirectoryProviderStorageFileID:record.fileID fileNameView:record.fileName]];
+                }
+            }
+        });
     }
     
     return YES;

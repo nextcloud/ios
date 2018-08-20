@@ -23,7 +23,7 @@
 
 import Foundation
 
-// MARK: - CreateMenuAdd
+// MARK: -
 
 class CreateMenuAdd: NSObject {
     
@@ -65,19 +65,19 @@ class CreateMenuAdd: NSObject {
         
         actionSheet.cancelButtonTitle = NSLocalizedString("_cancel_", comment: "")
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "photos"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_photos_videos_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "media"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFotoVideoPlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFilePlain))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_text_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_text_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file_txt"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFileText))
         })
         
-        actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), color: colorIcon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+        actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:2, color: colorIcon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.returnCreate(Int(k_returnCreateFolderPlain))
         })
         
@@ -85,12 +85,14 @@ class CreateMenuAdd: NSObject {
     }
 }
 
-// MARK: - CreateFormUploadAssets
+// MARK: -
 
 @objc protocol createFormUploadAssetsDelegate {
     
     func dismissFormUploadAssets()
 }
+
+// MARK: -
 
 class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
@@ -136,24 +138,31 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
+        
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
-        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
         row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
-        // Section: Folder Photo
+        // Section Switch
         
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "useFolderPhoto", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_photo_camera_", comment: ""))
+        // Folder Photo
+        
+        row = XLFormRowDescriptor(tag: "useFolderMedia", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_media_", comment: ""))
         row.value = 0
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         section.addFormRow(row)
         
+        // Use Sub folder
         row = XLFormRowDescriptor(tag: "useSubFolder", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
-        row.hidden = "$\("useFolderPhoto") == 0"
+        row.hidden = "$\("useFolderMedia") == 0"
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         
         let tableAccount = NCManageDatabase.sharedInstance.getAccountActive()
         
@@ -164,12 +173,18 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         }
         section.addFormRow(row)
 
-        // Section: Add File Name Type
+        // Maintain the original fileName
+        
+        row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
+        row.value = CCUtility.getOriginalFileName(k_keyFileNameOriginal)
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
+        section.addFormRow(row)
+        
+        // Add File Name Type
 
-        section = XLFormSectionDescriptor.formSection()
-        form.addFormSection(section)
-
-        row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_filenametype_photo_video_", comment: ""))
+        row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
+        row.hidden = "$\("maintainOriginalFileName") == 1"
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.value = CCUtility.getFileNameType(k_keyFileNameType)
         section.addFormRow(row)
         
@@ -178,8 +193,10 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
-        
+        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: (NSLocalizedString("_filename_", comment: ""))+":")
+        row.hidden = "$\("maintainOriginalFileName") == 1"
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
+
         let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameMask)
         if fileNameMask.count > 0 {
             row.value = fileNameMask
@@ -188,15 +205,14 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         // Section: Preview File Name
         
-        //section = XLFormSectionDescriptor.formSection()
-        //form.addFormSection(section)
-        
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
+
         row.height = 180
         row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "backgroundColor" as NSCopying)
         row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "textView.backgroundColor" as NSCopying)
 
         row.disabled = true
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         section.addFormRow(row)
         
         self.form = form
@@ -206,7 +222,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
         
-        if formRow.tag == "useFolderPhoto" {
+        if formRow.tag == "useFolderMedia" {
             
             if (formRow.value! as AnyObject).boolValue  == true {
                 
@@ -226,6 +242,10 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
             } else{
                 
             }
+        }
+        else if formRow.tag == "maintainOriginalFileName" {
+            CCUtility.setOriginalFileName((formRow.value! as AnyObject).boolValue, key: k_keyFileNameOriginal)
+            self.reloadForm()
         }
         else if formRow.tag == "addFileNameType" {
             CCUtility.setFileNameType((formRow.value! as AnyObject).boolValue, key: k_keyFileNameType)
@@ -307,49 +327,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.form.delegate = self
     }
 
-    //MARK: TableView
-
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        
-        switch section {
-        
-        case 0:
-            let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
-            
-            if buttonDestinationFolder.isHidden() {
-                return ""
-            } else {
-                return "    " + NSLocalizedString("_destination_folder_", comment: "")
-            }
-        case 1:
-            return "    " + NSLocalizedString("_use_folder_photos_", comment: "")
-        case 2:
-            return "    " + NSLocalizedString("_add_filenametype_", comment: "")
-        case 3:
-            return "    " + NSLocalizedString("_rename_filename_", comment: "")
-        case 4:
-            return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm")
-        default:
-            return ""
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        
-        switch section {
-           
-        /*
-        case 2:
-            let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "maskFileName")!
-            let text = self.writePreviewFileName(buttonDestinationFolder)
-            return text
-        */
-            
-        default:
-            return ""
-        }
-    }
-
     // MARK: - Action
 
     func moveServerUrl(to serverUrlTo: String!, title: String!) {
@@ -372,7 +349,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         self.dismiss(animated: true, completion: {
             
-            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderPhoto")!
+            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderMedia")!
             let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
             var useSubFolder : Bool = false
             
@@ -395,10 +372,14 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     
     func previewFileName(valueRename : String?) -> String {
         
-        var returnString : String = ""
+        var returnString: String = ""
         let asset = assets[0] as! PHAsset
         
-        if let valueRename = valueRename {
+        if (CCUtility.getOriginalFileName(k_keyFileNameOriginal)) {
+            
+            return (NSLocalizedString("_filename_", comment: "") + ": " + (asset.value(forKey: "filename") as! String))
+            
+        } else if let valueRename = valueRename {
             
             let valueRenameTrimming = valueRename.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             
@@ -408,18 +389,18 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
                 CCUtility.setFileNameMask(valueRename, key: k_keyFileNameMask)
                 self.form.delegate = self
                 
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)
                 
             } else {
                 
                 CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
+                returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)
             }
             
         } else {
             
             CCUtility.setFileNameMask("", key: k_keyFileNameMask)
-            returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType)
+            returnString = CCUtility.createFileName(asset.value(forKey: "filename"), fileDate: asset.creationDate, fileType: asset.mediaType, keyFileName: nil, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)
         }
         
         return String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM,MMM,DD,YY,YYYY and HH,hh,mm,ss,ampm") + ":" + "\n\n" + returnString
@@ -447,6 +428,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
     }
     
 }
+
+// MARK: -
 
 class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
     
@@ -489,9 +472,10 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection()
         form.addFormSection(section)
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
-        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
         row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
@@ -501,6 +485,7 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         form.addFormSection(section)
         
         row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.value = fileName
         section.addFormRow(row)
         
@@ -587,22 +572,18 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         let ext = (name as! NSString).pathExtension.uppercased()
         var fileNameSave = ""
         
-        switch ext
-        {
-            case "":
-                fileNameSave = name as! String + ".txt"
-            
-            case "TXT":
-                fileNameSave = name as! String
-            
-            default:
-                fileNameSave = (name as! NSString).deletingPathExtension + ".txt"
+        if (ext == "") {
+            fileNameSave = name as! String + ".txt"
+        } else if (CCUtility.isDocumentModifiableExtension(ext)) {
+            fileNameSave = name as! String
+        } else {
+            fileNameSave = (name as! NSString).deletingPathExtension + ".txt"
         }
         
         guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
             return
         }
-        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND fileNameView = %@", appDelegate.activeAccount, directoryID, fileNameSave))
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave))
         
         if (metadata != nil) {
             
@@ -612,29 +593,48 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                self.dismissAndUpload(fileNameSave)
+                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, directoryID: directoryID)
             }
             
             alertController.addAction(cancelAction)
             alertController.addAction(overwriteAction)
             
             self.present(alertController, animated: true, completion:nil)
-        } else {
             
-           dismissAndUpload(fileNameSave)
+        } else {
+           let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
+           dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
         }
     }
     
-    func dismissAndUpload(_ fileNameSave: String) {
+    func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String) {
         
         self.dismiss(animated: true, completion: {
             
             let data = self.text.data(using: .utf8)
-            let success = FileManager.default.createFile(atPath: "\(self.appDelegate.directoryUser!)/\(fileNameSave)", contents: data, attributes: nil)
+            let success = FileManager.default.createFile(atPath: CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave), contents: data, attributes: nil)
             
             if success {
-                CCNetworking.shared().uploadFile(fileNameSave, serverUrl: self.serverUrl, assetLocalIdentifier: nil, path:self.appDelegate.directoryUser!, session: k_upload_session, taskStatus: Int(k_taskStatusResume), selector: nil, selectorPost: nil, errorCode: 0, delegate: self.appDelegate.activeMain)
+                
+                let metadataForUpload = tableMetadata()
+                
+                metadataForUpload.account = self.appDelegate.activeAccount
+                metadataForUpload.date = NSDate()
+                metadataForUpload.directoryID = directoryID
+                metadataForUpload.fileID = fileID
+                metadataForUpload.fileName = fileNameSave
+                metadataForUpload.fileNameView = fileNameSave
+                metadataForUpload.session = k_upload_session
+                metadataForUpload.sessionSelector = selectorUploadFile
+                metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+                self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
+                
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
+                
             } else {
+                
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             }
         })

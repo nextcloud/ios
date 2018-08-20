@@ -337,9 +337,10 @@
          return;
     
     tableAccount *tableAccount = [[NCManageDatabase sharedInstance] getAccountActive];
-    NSMutableArray *metadataNetFull = [NSMutableArray new];
+    NSMutableArray *metadataFull = [NSMutableArray new];
     NSString *autoUploadPath = [[NCManageDatabase sharedInstance] getAccountAutoUploadPath:appDelegate.activeUrl];
-
+    NSString *serverUrl, *prevServerUrl, *directoryID;
+    
     // Check Asset : NEW or FULL
     PHFetchResult *newAssetToUpload = [self getCameraRollAssets:tableAccount selector:selector alignPhotoLibrary:NO];
     
@@ -363,8 +364,8 @@
         }
     });
     
-    // Create the folder for Photos & if request the subfolders
-    if(![[NCAutoUpload sharedInstance] createAutoUploadFolderPhotosWithSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector]) {
+    // Create the folder for auto upload & if request the subfolders
+    if(![[NCAutoUpload sharedInstance] createAutoUploadFolderWithSubFolder:tableAccount.autoUploadCreateSubfolder assets:newAssetToUpload selector:selector]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             // end loading
             [_hud hideHud];
@@ -374,11 +375,10 @@
     
     for (PHAsset *asset in newAssetToUpload) {
         
-        NSString *serverUrl;
         NSDate *assetDate = asset.creationDate;
         PHAssetMediaType assetMediaType = asset.mediaType;
         NSString *session;
-        NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameAutoUploadMask keyFileNameType:k_keyFileNameAutoUploadType];
+        NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameAutoUploadMask keyFileNameType:k_keyFileNameAutoUploadType keyFileNameOriginal:k_keyFileNameOriginalAutoUpload];
 
         // Select type of session
         
@@ -395,44 +395,47 @@
         [formatter setDateFormat:@"MM"];
         NSString *monthString = [formatter stringFromDate:assetDate];
         
+        // get directoryID
         if (tableAccount.autoUploadCreateSubfolder)
             serverUrl = [NSString stringWithFormat:@"%@/%@/%@", autoUploadPath, yearString, monthString];
         else
             serverUrl = autoUploadPath;
         
-        CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-        
-        metadataNet.assetLocalIdentifier = asset.localIdentifier;
-        if ([selector isEqualToString:selectorUploadAutoUploadAll]) {
-            // Option 
-            if ([[NCBrandOptions sharedInstance] use_storeLocalAutoUploadAll] == true)
-                metadataNet.selectorPost = nil;
-            else
-                metadataNet.selectorPost = selectorUploadRemovePhoto;
-        } else {
-            metadataNet.selectorPost = nil;
+        if (![serverUrl isEqualToString:prevServerUrl]) {
+            directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrl];
+            prevServerUrl = serverUrl;
         }
         
-        metadataNet.fileName = fileName;
-        metadataNet.path = appDelegate.directoryUser;
-        metadataNet.selector = selector;
-        metadataNet.serverUrl = serverUrl;
-        metadataNet.session = session;
-        metadataNet.sessionError = @"";
-        metadataNet.sessionID = @"";
-        metadataNet.taskStatus = k_taskStatusResume;
+        // Check il file already exists
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@", directoryID, fileName]];
+        if (!metadata) {
         
-        [metadataNetFull addObject:metadataNet];
-        
-        // Update database Auto Upload
-        if ([selector isEqualToString:selectorUploadAutoUpload])
-            [self addQueueUploadAndPhotoLibrary:metadataNet asset:asset];
+            tableMetadata *metadataForUpload = [tableMetadata new];
+            
+            metadataForUpload.account = appDelegate.activeAccount;
+            metadataForUpload.assetLocalIdentifier = asset.localIdentifier;
+            metadataForUpload.date = [NSDate new];
+            metadataForUpload.directoryID = directoryID;
+            metadataForUpload.fileID = [directoryID stringByAppendingString:fileName];
+            metadataForUpload.fileName = fileName;
+            metadataForUpload.fileNameView = fileName;
+            metadataForUpload.session = session;
+            metadataForUpload.sessionSelector = selector;
+            metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
+            metadataForUpload.status = k_metadataStatusWaitUpload;
+
+            [metadataFull addObject:metadataForUpload];
+            
+            // Update database Auto Upload
+            if ([selector isEqualToString:selectorUploadAutoUpload])
+                [self addQueueUploadAndPhotoLibrary:metadataForUpload asset:asset];
+        }
     }
     
     // Insert all assets (Full) in tableQueueUpload
-    if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataNetFull count] > 0) {
+    if ([selector isEqualToString:selectorUploadAutoUploadAll] && [metadataFull count] > 0) {
     
-        [[NCManageDatabase sharedInstance] addQueueUploadWithMetadatasNet:metadataNetFull];
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadataFull serverUrl:serverUrl];
         
         // Update icon badge number
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -444,25 +447,28 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [_hud hideHud];
     });
+    
+    // reload
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:nil fileID:nil action:k_action_NULL];
 }
 
-- (void)addQueueUploadAndPhotoLibrary:(CCMetadataNet *)metadataNet asset:(PHAsset *)asset
+- (void)addQueueUploadAndPhotoLibrary:(tableMetadata *)metadata asset:(PHAsset *)asset
 {
     @synchronized(self) {
         
-        if ([[NCManageDatabase sharedInstance] addQueueUploadWithMetadataNet:metadataNet] != nil) {
+        if ([[NCManageDatabase sharedInstance] addMetadata:metadata] != nil) {
         
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileNameView fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Auto Upload, add new asset" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
         
         } else {
     
-            [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileNameView fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Auto Upload, asset already present or db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+            [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Auto Upload, asset already present or db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
         }
     
         // Add asset in table Photo Library
-        if ([metadataNet.selector isEqualToString:selectorUploadAutoUpload]) {
+        if ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload]) {
             if (![[NCManageDatabase sharedInstance] addPhotoLibrary:@[asset]]) {
-                [[NCManageDatabase sharedInstance] addActivityClient:metadataNet.fileNameView fileID:metadataNet.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadataNet.selector note:@"Add Photo Library, db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
+                [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:metadata.assetLocalIdentifier action:k_activityDebugActionAutoUpload selector:metadata.sessionSelector note:@"Add Photo Library, db in write transaction" type:k_activityTypeInfo verbose:k_activityVerboseHigh activeUrl:appDelegate.activeUrl];
             }
         }
         
@@ -474,10 +480,10 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Create Folder SubFolder Auto Upload Folder Photos ====
+#pragma mark ===== Create Folder SubFolder Auto Upload Folder Photos/Videos ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (BOOL)createAutoUploadFolderPhotosWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
+- (BOOL)createAutoUploadFolderWithSubFolder:(BOOL)useSubFolder assets:(PHFetchResult *)assets selector:(NSString *)selector
 {
     NSString *fileID;
     NSError *error;
@@ -488,7 +494,7 @@
     
     if (error == nil) {
         
-        tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", appDelegate.activeAccount, autoUploadPath]];
+        tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, autoUploadPath]];
         if (!tableDirectory)
             (void)[[NCManageDatabase sharedInstance] addDirectoryWithEncrypted:encrypted favorite:false fileID:fileID permissions:nil serverUrl:autoUploadPath];
         
@@ -544,8 +550,8 @@
             
             PHFetchResult *result = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeSmartAlbumUserLibrary options:nil];
             
-            NSPredicate *predicateImage = [NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeImage];
-            NSPredicate *predicateVideo = [NSPredicate predicateWithFormat:@"mediaType = %i", PHAssetMediaTypeVideo];
+            NSPredicate *predicateImage = [NSPredicate predicateWithFormat:@"mediaType == %i", PHAssetMediaTypeImage];
+            NSPredicate *predicateVideo = [NSPredicate predicateWithFormat:@"mediaType == %i", PHAssetMediaTypeVideo];
             NSPredicate *predicate;
 
             NSMutableArray *newAssets =[NSMutableArray new];

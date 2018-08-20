@@ -44,9 +44,8 @@ class NCBrandColor: NSObject {
     @objc public var textView:              UIColor = .black
     @objc public var seperator:             UIColor = UIColor(red: 235.0/255.0, green: 235.0/255.0, blue: 235.0/255.0, alpha: 1.0)
     @objc public var tabBar:                UIColor = .white
-    @objc public var transferBackground:    UIColor = UIColor(red: 178.0/255.0, green: 244.0/255.0, blue: 258.0/255.0, alpha: 0.1)
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
-    @objc public let gray:                  UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 1.0)
+    @objc public let icon:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
     @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
 
@@ -69,41 +68,41 @@ class NCBrandColor: NSObject {
         return instance
     }()
     
-    @objc public let brand:                           String = "Nextcloud"
-    @objc public let mailMe:                          String = "ios@nextcloud.com"
-    @objc public let textCopyrightNextcloudiOS:       String = "Nextcloud for iOS %@ © 2018 T.W.S. Inc."
-    @objc public let textCopyrightNextcloudServer:    String = "Nextcloud Server %@"
-    @objc public let loginBaseUrl:                    String = "https://cloud.twsweb.it"
-    @objc public let pushNotificationServer:          String = "https://push-notifications.nextcloud.com"
-    @objc public let linkLoginProvider:               String = "https://nextcloud.com/providers"
-    @objc public let textLoginProvider:               String = "_login_bottom_label_"
-    @objc public let middlewarePingUrl:               String = ""
-    @objc public let webLoginAutenticationProtocol:   String = "nc://"                                          // example "abc://"
+    @objc public let brand:                             String = "Nextcloud"
+    @objc public let mailMe:                            String = "ios@nextcloud.com"
+    @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2018 T.W.S. Inc."
+    @objc public let textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
+    @objc public let loginBaseUrl:                      String = "https://cloud.twsweb.it"
+    @objc public let loginPreferredProviders:           String = "https://nextcloud.com/register";
+    @objc public let pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
+    @objc public let linkLoginProvider:                 String = "https://nextcloud.com/providers"
+    @objc public let textLoginProvider:                 String = "_login_bottom_label_"
+    @objc public let middlewarePingUrl:                 String = ""
+    @objc public let webLoginAutenticationProtocol:     String = "nc://"                                          // example "abc://"
     // Personalized
-    @objc public let webCloseViewProtocolPersonalized:String = ""                                               // example "abc://change/plan"      Don't touch me !!
-    @objc public let folderBrandAutoUpload:           String = ""                                               // example "_auto_upload_folder_"   Don't touch me !!
+    @objc public let webCloseViewProtocolPersonalized:  String = ""                                               // example "abc://change/plan"      Don't touch me !!
+    @objc public let folderBrandAutoUpload:             String = ""                                               // example "_auto_upload_folder_"   Don't touch me !!
 
     // Auto Upload default folder
-    @objc public var folderDefaultAutoUpload:         String = "Photos"
+    @objc public var folderDefaultAutoUpload:           String = "Photos"
     
     // Capabilities Group
-    @objc public let capabilitiesGroups:              String = "group.it.twsweb.Crypto-Cloud"
+    @objc public let capabilitiesGroups:                String = "group.it.twsweb.Crypto-Cloud"
     
     // Options
-    @objc public let use_login_web_personalized:      Bool = false                                              // Don't touch me !!
-    @objc public let use_firebase:                    Bool = false
-    @objc public let use_default_auto_upload:         Bool = false
-    @objc public let use_themingColor:                Bool = true
-    @objc public let use_themingBackground:           Bool = true
-    @objc public let use_middlewarePing:              Bool = false
-    @objc public let use_storeLocalAutoUploadAll:     Bool = false
+    @objc public let use_login_web_personalized:        Bool = false                                              // Don't touch me !!
+    @objc public let use_default_auto_upload:           Bool = false
+    @objc public let use_themingColor:                  Bool = true
+    @objc public let use_themingBackground:             Bool = true
+    @objc public let use_middlewarePing:                Bool = false
+    @objc public let use_storeLocalAutoUploadAll:       Bool = false
     
-    @objc public let disable_intro:                   Bool = false
-    @objc public let disable_linkLoginProvider:       Bool = false
-    @objc public let disable_request_login_url:       Bool = false
-    @objc public let disable_multiaccount:            Bool = false
-    @objc public let disable_manage_account:          Bool = false
-    @objc public let disable_more_external_site:      Bool = false
+    @objc public let disable_intro:                     Bool = false
+    @objc public let disable_linkLoginProvider:         Bool = false
+    @objc public let disable_request_login_url:         Bool = false
+    @objc public let disable_multiaccount:              Bool = false
+    @objc public let disable_manage_account:            Bool = false
+    @objc public let disable_more_external_site:        Bool = false
     
     override init() {
         

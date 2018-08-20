@@ -114,7 +114,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharesNoFiles"] color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sharesNoFiles"] multiplier:2 color:[NCBrandColor sharedInstance].graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -140,15 +140,21 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download Thumbnail <Delegate> ====
+#pragma mark ==== Download Thumbnail ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
 {
-    if (errorCode == 0) {
-        
-        [self reloadDatasource];
-    }
+    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
+    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
+    
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    
+    [ocNetworking downloadPreviewWithMetadata:metadata serverUrl:serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
+        if (errorCode == 0 && [[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+        }
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -188,6 +194,7 @@
     metadataNet.action = actionUnShare;
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = metadata.fileName;
+    metadataNet.fileNameView = metadata.fileNameView;
     metadataNet.selector = selectorUnshare;
     metadataNet.serverUrl = tableShare.serverUrl;
     
@@ -232,7 +239,7 @@
     
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
         if (directoryID)
-            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName = %@", directoryID, table.fileName]];
     }
         
     if (metadata) return YES;
@@ -247,7 +254,7 @@
         
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
         if (directoryID) {
-            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
+            tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, table.fileName]];
         
             [self removeShares:metadata tableShare:table];
         }
@@ -309,30 +316,31 @@
         return cell;
     
     if (directoryID.length > 0)
-         metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
+         metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, table.fileName]];
     
     if (metadata) {
         
         if (metadata.directory) {
             
-            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
+            cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         
         } else {
             
-            cell.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, metadata.fileID]];
+            cell.fileImageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
 
             if (cell.fileImageView.image == nil) {
                 
-                if (metadata.thumbnailExists)
-                    [[CCActions sharedInstance] downloadTumbnail:metadata delegate:self];
-                else
+                if (metadata.thumbnailExists && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+                    [self downloadThumbnail:metadata serverUrl:table.serverUrl indexPath:indexPath];
+                } else {
                     cell.fileImageView.image = [UIImage imageNamed:metadata.iconName];
+                }
             }
         }
         
     } else {
         
-        cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] color:[NCBrandColor sharedInstance].brandElement];
+        cell.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         
         CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
             
@@ -365,7 +373,7 @@
         
         NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:table.serverUrl];
         if (directoryID)
-            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND fileName = %@", appDelegate.activeAccount, directoryID, table.fileName]];
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileName == %@", directoryID, table.fileName]];
 
         if (metadata) {
         

@@ -35,16 +35,21 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     @IBOutlet weak var progressQuota: UIProgressView!
 
     var functionMenu = [OCExternalSites]()
+    var externalSiteMenu = [OCExternalSites]()
     var settingsMenu = [OCExternalSites]()
     var quotaMenu = [OCExternalSites]()
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    var menuExternalSite: [tableExternalSites]?
+    var listExternalSite: [tableExternalSites]?
     var tabAccount : tableAccount?
     
-    //var loginWeb : CCLoginWeb!
-
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        
+        appDelegate.activeMore = self
+    }
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -81,12 +86,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         // Clear
         functionMenu.removeAll()
+        externalSiteMenu.removeAll()
         settingsMenu.removeAll()
         quotaMenu.removeAll()
         labelQuotaExternalSite.text = ""
         
-        // ITEM : Transfer
         var item = OCExternalSites.init()
+
+        // ITEM : Transfer
+        item = OCExternalSites.init()
         item.name = "_transfers_"
         item.icon = "load"
         item.url = "segueTransfers"
@@ -110,11 +118,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {
         
-            menuExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites()
+            listExternalSite = NCManageDatabase.sharedInstance.getAllExternalSites()
             
-            if menuExternalSite != nil {
+            if listExternalSite != nil {
                 
-                for table in menuExternalSite! {
+                for table in listExternalSite! {
             
                     item = OCExternalSites.init()
             
@@ -124,7 +132,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
                     if (table.type == "link") {
                         item.icon = "world"
-                        functionMenu.append(item)
+                        externalSiteMenu.append(item)
                     }
                     if (table.type == "settings") {
                         item.icon = "settings"
@@ -179,7 +187,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         self.view.backgroundColor = NCBrandColor.sharedInstance.brand
         
-        if let theminBackgroundFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/themingBackground.png") {
+        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-themingBackground.png"
+        
+        if let theminBackgroundFile = UIImage.init(contentsOfFile: fileNamePath) {
             themingBackground.image = theminBackgroundFile
         } else {
             themingBackground.image = #imageLiteral(resourceName: "themingBackground")
@@ -192,7 +202,10 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     @objc func changeUserProfile() {
      
-        if let themingAvatarFile = UIImage.init(contentsOfFile: "\(appDelegate.directoryUser!)/avatar.png") {
+        let fileNamePath = CCUtility.getDirectoryUserData() + "/" + CCUtility.getStringUser(appDelegate.activeUser, activeUrl: appDelegate.activeUrl) + "-avatar.png"
+        var quota: String = ""
+        
+        if let themingAvatarFile = UIImage.init(contentsOfFile: fileNamePath) {
             themingAvatar.image = themingAvatarFile
         } else {
             themingAvatar.image = UIImage.init(named: "moreAvatar")
@@ -226,8 +239,18 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         }
 
         progressQuota.progressTintColor = NCBrandColor.sharedInstance.brandElement
-                
-        let quota : String = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
+        
+        switch Double(tabAccount.quotaTotal) {
+        case Double(k_quota_space_not_computed):
+            quota = "0"
+        case Double(k_quota_space_unknown):
+            quota = NSLocalizedString("_quota_space_unknown_", comment: "")
+        case Double(k_quota_space_unlimited):
+            quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
+        default:
+            quota = CCUtility.transformedSize(Double(tabAccount.quotaTotal))
+        }
+        
         let quotaUsed : String = CCUtility.transformedSize(Double(tabAccount.quotaUsed))
                 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
@@ -235,13 +258,17 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     func numberOfSections(in tableView: UITableView) -> Int {
         
-        return 2
+        if (externalSiteMenu.count == 0) {
+            return 2
+        } else {
+            return 3
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
         if (section == 0) {
-            return 10
+            return 0.1
         } else {
             return 30
         }
@@ -254,10 +281,25 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // Menu Normal
         if (section == 0) {
             cont = functionMenu.count
-        }
-        // Menu Settings
-        if (section == 1) {
-            cont = settingsMenu.count
+        } else {
+            switch (numberOfSections(in: tableView)) {
+            case 2:
+                // Menu Settings
+                if (section == 1) {
+                    cont = settingsMenu.count
+                }
+            case 3:
+                // Menu External Site
+                if (section == 1) {
+                    cont = externalSiteMenu.count
+                }
+                // Menu Settings
+                if (section == 2) {
+                    cont = settingsMenu.count
+                }
+            default:
+                cont = 0
+            }
         }
         
         return cont
@@ -266,6 +308,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! CCCellMore
+        var item: OCExternalSites = OCExternalSites.init()
 
         // change color selection and disclosure indicator
         let selectionColor : UIView = UIView.init()
@@ -277,23 +320,26 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         // Menu Normal
         if (indexPath.section == 0) {
             
-            let item = functionMenu[indexPath.row]
+            item = functionMenu[indexPath.row]
             
-            cell.imageIcon?.image = UIImage.init(named: item.icon)
-            cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.sharedInstance.textView
-
+        } else {
+            
+            // Menu External Site
+            if (numberOfSections(in: tableView) == 3 && indexPath.section == 1) {
+                
+                item = externalSiteMenu[indexPath.row]
+            }
+            
+            // Menu Settings
+            if ((numberOfSections(in: tableView) == 2 && indexPath.section == 1) || (numberOfSections(in: tableView) == 3 && indexPath.section == 2)) {
+                
+                item = settingsMenu[indexPath.row]
+            }
         }
         
-        // Menu Settings
-        if (indexPath.section == 1) {
-            
-            let item = settingsMenu[indexPath.row]
-            
-            cell.imageIcon?.image = UIImage.init(named: item.icon)
-            cell.labelText?.text = NSLocalizedString(item.name, comment: "")
-            cell.labelText.textColor = NCBrandColor.sharedInstance.textView
-        }
+        cell.imageIcon?.image = CCGraphics.changeThemingColorImage(UIImage.init(named: item.icon), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+        cell.labelText?.text = NSLocalizedString(item.name, comment: "")
+        cell.labelText.textColor = NCBrandColor.sharedInstance.textView
         
         return cell
     }
@@ -305,13 +351,16 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         
         // Menu Function
         if indexPath.section == 0 {
-            
             item = functionMenu[indexPath.row]
         }
         
+        // Menu External Site
+        if (numberOfSections(in: tableView) == 3 && indexPath.section == 1) {
+            item = externalSiteMenu[indexPath.row]
+        }
+        
         // Menu Settings
-        if indexPath.section == 1 {
-            
+        if ((numberOfSections(in: tableView) == 2 && indexPath.section == 1) || (numberOfSections(in: tableView) == 3 && indexPath.section == 2)) {
             item = settingsMenu[indexPath.row]
         }
         
@@ -334,14 +383,14 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             if (self.splitViewController?.isCollapsed)! {
                 
-                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: true)
+                let webVC = SwiftWebVC(urlString: item.url, hideToolbar: false)
                 webVC.delegate = self
                 self.navigationController?.pushViewController(webVC, animated: true)
                 self.navigationController?.navigationBar.isHidden = false
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: item.url)
+                let webVC = SwiftModalWebVC(urlString: item.url, theme: .dark, color: UIColor.clear, colorText: UIColor.black, doneButtonVisible: true)
                 webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
@@ -355,7 +404,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                 let manageAccount = CCManageAccount()
                 manageAccount.delete(self.appDelegate.activeAccount)
                 
-                self.appDelegate.openLoginView(self, loginType: loginAddForced)
+                self.appDelegate.openLoginView(self, loginType: Int(k_login_Add_Forced), selector: Int(k_intro_login))
             }
             
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
@@ -399,17 +448,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
     
     func loginSuccess(_ loginType: NSInteger) {
         
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "initializeMain"), object: nil, userInfo: nil)
         
         appDelegate.selectedTabBarController(Int(k_tabBarApplicationIndexFile))
-    }
-    
-    func loginClose() {
-        appDelegate.activeLogin = nil
-    }
-    
-    func loginWebClose() {
-        appDelegate.activeLoginWeb = nil
+        
+        appDelegate.subscribingNextcloudServerPushNotification()
     }
 }
 
@@ -444,6 +487,10 @@ extension CCMore: SwiftModalWebVCDelegate, SwiftWebVCDelegate{
     
     public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         decisionHandler(.allow)
+    }
+    
+    public func webDismiss() {
+        print("Web dismiss.")
     }
 }
 

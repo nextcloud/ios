@@ -94,7 +94,7 @@
         case 0:
             if (row == 0) {
                                 
-                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, appDelegate.fileNameUpload] error:nil];
+                NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] error:nil];
                 NSString *fileSize = [CCUtility transformedSize:[[fileAttributes objectForKey:NSFileSize] longValue]];
                 nameLabel = (UILabel *)[cell viewWithTag:100]; nameLabel.text = [NSString stringWithFormat:@"%@ - %@", appDelegate.fileNameUpload, fileSize];
             }
@@ -173,8 +173,31 @@
 
 -(void)upload
 {
-    [[CCNetworking sharedNetworking] uploadFile:appDelegate.fileNameUpload serverUrl:serverUrlLocal assetLocalIdentifier:nil path:appDelegate.directoryUser session:k_upload_session taskStatus: k_taskStatusResume selector:@"" selectorPost:@"" errorCode:0 delegate:nil];
+    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:serverUrlLocal];
+    NSString *fileName = [[NCUtility sharedInstance] createFileName:appDelegate.fileNameUpload directoryID:directoryID];
+    NSString *fileID = [directoryID stringByAppendingString:appDelegate.fileNameUpload];
     
+    tableMetadata *metadataForUpload = [tableMetadata new];
+    
+    metadataForUpload.account = appDelegate.activeAccount;
+    metadataForUpload.date = [NSDate new];
+    metadataForUpload.directoryID = directoryID;
+    metadataForUpload.fileID = fileID;
+    metadataForUpload.fileName = fileName;
+    metadataForUpload.fileNameView = fileName;
+    metadataForUpload.session = k_upload_session;
+    metadataForUpload.sessionSelector = selectorUploadFile;
+    metadataForUpload.status = k_metadataStatusWaitUpload;
+    
+    // Prepare file and directory
+    [CCUtility copyFileAtPath:[NSTemporaryDirectory() stringByAppendingString:appDelegate.fileNameUpload] toPath:[CCUtility getDirectoryProviderStorageFileID:metadataForUpload.fileID fileNameView:fileName]];
+    
+    // Add Medtadata for upload
+    (void)[[NCManageDatabase sharedInstance] addMetadata:metadataForUpload];
+    [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+    
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrlLocal fileID:fileID action:k_action_NULL];
+
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

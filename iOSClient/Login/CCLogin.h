@@ -32,17 +32,10 @@
 @protocol CCLoginDelegate <NSObject>
 
 - (void) loginSuccess:(NSInteger)loginType;
-- (void) loginClose;
 
 @end
 
 @interface CCLogin : UIViewController <UITextFieldDelegate, NSURLSessionTaskDelegate, NSURLSessionDelegate, CCCertificateDelegate, OCNetworkingDelegate>
-
-typedef enum {
-    loginAdd = 0,
-    loginAddForced = 1,
-    loginModifyPasswordUser = 2
-} enumLoginType;
 
 @property (nonatomic, weak) id <CCLoginDelegate> delegate;
 
@@ -58,14 +51,13 @@ typedef enum {
 
 @property (nonatomic, weak) IBOutlet UIImageView *loadingBaseUrl;
 
-@property (nonatomic, weak) IBOutlet UILabel *bottomLabel;
+@property (nonatomic, weak) IBOutlet UILabel *preferredProviders;
 
 @property (nonatomic, weak) IBOutlet UIButton *login;
 @property (nonatomic, weak) IBOutlet UIButton *annulla;
 @property (nonatomic, weak) IBOutlet UIButton *toggleVisiblePassword;
 @property (nonatomic, weak) IBOutlet UIButton *loginTypeView;
 
-
-@property enumLoginType loginType;
+@property NSInteger loginType;
 
 @end

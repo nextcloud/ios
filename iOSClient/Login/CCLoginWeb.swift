@@ -5,29 +5,36 @@
 //  Created by Marino Faggiana on 07/04/17.
 //  Copyright © 2017 TWS. All rights reserved.
 //
+//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import UIKit
 
 @objc protocol CCLoginDelegateWeb: class {
     func loginSuccess(_: NSInteger)
-    func loginWebClose()
+    @objc optional func webDismiss()
 }
 
 public class CCLoginWeb: UIViewController {
-
-    /*
-    @objc enum enumLoginTypeWeb : NSInteger {
-        case loginAdd = 0
-        case loginAddForced = 1
-        case loginModifyPasswordUser = 2
-    }
-    */
-    
+   
     @objc weak var delegate: CCLoginDelegateWeb?
-    @objc var loginType = loginAdd
+    @objc var loginType: NSInteger = Int(k_login_Add)
     @objc var urlBase = ""
     
-    var viewController : UIViewController?
+    var viewController: UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var doneButtonVisible: Bool = false
     
@@ -36,12 +43,13 @@ public class CCLoginWeb: UIViewController {
         var urlString = urlBase
         self.viewController = vc
         
-        if (loginType == loginAdd || loginType == loginModifyPasswordUser) {
+        if (loginType == k_login_Add || loginType == k_login_Modify_Password) {
             doneButtonVisible = true
         }
         
-        if (NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
-            urlString =  urlBase+flowEndpoint
+        // ADD k_flowEndpoint for Web Flow
+        if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.loginPreferredProviders) {
+            urlString =  urlBase+k_flowEndpoint
         }
         
         let webVC = SwiftModalWebVC(urlString: urlString, theme: .custom, color: NCBrandColor.sharedInstance.customer, colorText: NCBrandColor.sharedInstance.customerText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
@@ -85,7 +93,7 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     let account : String = "\(username) \(serverUrl)"
                 
                     // Login Flow
-                    if (loginType == loginModifyPasswordUser && NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
+                    if (loginType == k_login_Modify_Password && NCBrandOptions.sharedInstance.use_login_web_personalized == false) {
                         
                         // Verify if change the active account
                         guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
@@ -105,13 +113,16 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         
-                        self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
-                        self.delegate?.loginWebClose()
+                        self.delegate?.loginSuccess(NSInteger(loginType))
+                        self.delegate?.webDismiss?()
 
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
                     
-                    if (loginType == loginAdd || loginType == loginAddForced) {
+                    if (loginType == k_login_Add || loginType == k_login_Add_Forced) {
+                        
+                        // LOGOUT
+                        appDelegate.unsubscribingNextcloudServerPushNotification()
                         
                         // Add new account
                         NCManageDatabase.sharedInstance.deleteAccount(account)
@@ -124,8 +135,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                         
                         appDelegate.settingActiveAccount(account, activeUrl: serverUrl, activeUser: username, activeUserID: tableAccount.userID, activePassword: password)
                         
-                        self.delegate?.loginSuccess(NSInteger(loginType.rawValue))
-                        self.delegate?.loginWebClose()
+                        self.delegate?.loginSuccess(NSInteger(loginType))
+                        self.delegate?.webDismiss?()
 
                         self.viewController?.dismiss(animated: true, completion: nil)
                     }
@@ -138,8 +149,8 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
         print("Finished loading. Success: \(success).")
     }
     
-    public func loginWebClose() {
-        self.delegate?.loginWebClose()
+    public func webDismiss() {
+        self.delegate?.webDismiss?()
     }
     
     public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {

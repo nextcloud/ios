@@ -144,119 +144,53 @@
     return newImage;
 }
 
-
-+ (UIImage *)createNewImageFrom:(NSString *)fileName directoryUser:(NSString *)directoryUser fileNameTo:(NSString *)fileNameTo extension:(NSString *)extension size:(NSString *)size imageForUpload:(BOOL)imageForUpload typeFile:(NSString *)typeFile writePreview:(BOOL)writePreview optimizedFileName:(BOOL)optimizedFileName
++ (UIImage *)createNewImageFrom:(NSString *)fileName fileID:(NSString *)fileID extension:(NSString *)extension filterGrayScale:(BOOL)filterGrayScale typeFile:(NSString *)typeFile writeImage:(BOOL)writeImage
 {
     UIImage *originalImage;
     UIImage *scaleImage;
-    CGRect rect;
-    CGFloat width, height;
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:fileID fileNameView:fileName];
     
-    NSString *ext = [extension lowercaseString];
-    
-    if ([[directoryUser substringFromIndex: [directoryUser length] - 1] isEqualToString:@"/"]) directoryUser = [directoryUser substringToIndex:[directoryUser length]-1];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]]) return nil;
+    if (![CCUtility fileProviderStorageExists:fileID fileNameView:fileName]) return nil;
     
     // only viedo / image
     if (![typeFile isEqualToString: k_metadataTypeFile_image] && ![typeFile isEqualToString: k_metadataTypeFile_video]) return nil;
     
     if ([typeFile isEqualToString: k_metadataTypeFile_image]) {
         
-        originalImage = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName]];
+        originalImage = [UIImage imageWithContentsOfFile:fileNamePath];
     }
     
     if ([typeFile isEqualToString: k_metadataTypeFile_video]) {
         
         // create symbolik link for read video file in temp
         [[NSFileManager defaultManager] removeItemAtPath:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"] error:nil];
-        [[NSFileManager defaultManager] linkItemAtPath:[NSString stringWithFormat:@"%@/%@", directoryUser, fileName] toPath:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"] error:nil];
+        [[NSFileManager defaultManager] linkItemAtPath:fileNamePath toPath:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"] error:nil];
         
         originalImage = [self generateImageFromVideo:[NSTemporaryDirectory() stringByAppendingString:@"tempvideo.mp4"]];
     }
     
-    if ([size isEqualToString:@"xs"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(32, 32)];
-    if ([size isEqualToString:@"s"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(64, 64)];
-    if ([size isEqualToString:@"m"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(128, 128)];
-    if ([size isEqualToString:@"l"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(640, 640)];
-    if ([size isEqualToString:@"xl"]) scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(1024, 1024)];
+    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
+    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
+    scaleImage = [self scaleImage:originalImage toSize:CGSizeMake(width, height)];
     scaleImage = [UIImage imageWithData:UIImageJPEGRepresentation(scaleImage, 0.5f)];
     
-    // it is request write photo preview ?
-    if (writePreview && scaleImage) {
+    // it is request write photo  ?
+    if (writeImage && scaleImage) {
         
-        if (imageForUpload) {
-            
-            // write image preview in tmp for plist
-            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSTemporaryDirectory() stringByAppendingString:fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+        if (filterGrayScale) {
             
             // if it is preview for Upload then trasform it in gray scale
-            //TODO: Crash with swift
             scaleImage = [self grayscale:scaleImage];
-            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName] atomically: YES];
             
         } else {
             
-            [self saveIcoWithEtag:fileNameTo image:scaleImage writeToFile:[NSString stringWithFormat:@"%@/%@.ico", directoryUser, fileNameTo] copy:NO move:NO fromPath:nil toPath:nil];
+            [UIImagePNGRepresentation(scaleImage) writeToFile:[CCUtility getDirectoryProviderStorageIconFileID:fileID fileNameView:fileName] atomically: YES];
         }
-    }
-    
-    // Optimized photos resolution
-    // Resize image 640 x 480 ( with proportion : 1,333)
-    if (originalImage.size.height < originalImage.size.width) {
-        
-        // (lanscape)
-        
-        width = 640;
-        height = 480;
-        
-    } else {
-        
-        // (portrait)
-        
-        height = 640;
-        width = 480;
-    }
-    
-    // Optimized photos resolution
-    if ([typeFile isEqualToString: k_metadataTypeFile_image] && [ext isEqualToString:@"gif"] == NO && optimizedFileName && scaleImage && (originalImage.size.width > width || originalImage.size.height > height)) {
-        
-        // conversion scale proportion
-        if (height > width) {
-            
-            float proportion = originalImage.size.height / originalImage.size.width;
-            width = height / proportion;
-            
-        } else {
-            
-            float proportion = originalImage.size.width / originalImage.size.height;
-            height = width / proportion;
-        }
-        
-        rect = CGRectMake(0,0,width,height);
-        
-        UIGraphicsBeginImageContext(rect.size);
-        [originalImage drawInRect:rect];
-        UIImage *resizeImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        
-        resizeImage = [UIImage imageWithData:UIImageJPEGRepresentation(resizeImage, 0.5f)];
-        if (resizeImage) [UIImagePNGRepresentation(resizeImage) writeToFile:[NSString stringWithFormat:@"%@/%@", directoryUser, fileNameTo] atomically: YES];
     }
     
     return scaleImage;
-}
-
-+ (void)saveIcoWithEtag:(NSString *)fileID image:(UIImage *)image writeToFile:(NSString *)writeToFile copy:(BOOL)copy move:(BOOL)move fromPath:(NSString *)fromPath toPath:(NSString *)toPath
-{
-    if (writeToFile)
-        [UIImagePNGRepresentation(image) writeToFile:writeToFile atomically: YES];
-
-    if (copy)
-        [CCUtility copyFileAtPath:fromPath toPath:toPath];
-
-    if (move)
-        [[NSFileManager defaultManager] moveItemAtPath:fromPath toPath:toPath error:nil];
 }
 
 + (UIColor *)colorFromHexString:(NSString *)hexString
@@ -268,9 +202,9 @@
     return [UIColor colorWithRed:((rgbValue & 0xFF0000) >> 16)/255.0 green:((rgbValue & 0xFF00) >> 8)/255.0 blue:(rgbValue & 0xFF)/255.0 alpha:1.0];
 }
 
-+ (UIImage *)changeThemingColorImage:(UIImage *)image color:(UIColor *)color
++ (UIImage *)changeThemingColorImage:(UIImage *)image multiplier:(NSInteger)multiplier color:(UIColor *)color
 {
-    CGRect rect = CGRectMake(0, 0, image.size.width*2, image.size.height*2);
+    CGRect rect = CGRectMake(0, 0, image.size.width*multiplier, image.size.height*multiplier);
     UIGraphicsBeginImageContext(rect.size);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextClipToMask(context, rect, image.CGImage);
@@ -410,11 +344,13 @@ Color difference is determined by the following formula:
     return theImage;
 }
 
-+ (void)addImageToTitle:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle navigationItem:(UINavigationItem *)navigationItem
++ (void)addImageToTitle:(NSString *)title colorTitle:(UIColor *)colorTitle imageTitle:(UIImage *)imageTitle imageRight:(BOOL)imageRight navigationItem:(UINavigationItem *)navigationItem
 {
     UIView *navView = [UIView new];
     
     UILabel *label = [UILabel new];
+    if (imageRight)
+        title = [NSString stringWithFormat:@"     %@", title];
     label.text = title;
     [label sizeToFit];
     label.center = navView.center;
@@ -425,7 +361,13 @@ Color difference is determined by the following formula:
     UIImageView *image = [UIImageView new];
     image.image = imageTitle;
     CGFloat imageAspect = image.image.size.width/image.image.size.height;
-    image.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
+    
+    if (imageRight) {
+        image.frame = CGRectMake(label.intrinsicContentSize.width+label.frame.origin.x+correct, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
+    } else {
+        image.frame = CGRectMake(label.frame.origin.x-label.frame.size.height*imageAspect, label.frame.origin.y+correct/2, label.frame.size.height*imageAspect-correct, label.frame.size.height-correct);
+    }
+    
     image.contentMode = UIViewContentModeScaleAspectFit;
     
     [navView addSubview:label];

@@ -47,7 +47,7 @@
     return self;
 }
 
-// From Photos
+// From Media
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -249,7 +249,7 @@
             [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadFull" state:NO];
 
             // remove
-            [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:appDelegate.activeAccount];
+            [[NCManageDatabase sharedInstance] clearMetadatasUpload];
         }
         
         [self reloadForm];
@@ -294,9 +294,7 @@
             
         } else {
             
-            [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:appDelegate.activeAccount];
-            
-            [[CCNetworking sharedNetworking] settingSessionsDownload:NO upload:YES taskStatus:k_taskStatusCancel activeAccount:appDelegate.activeAccount activeUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl];
+            [[NCManageDatabase sharedInstance] clearMetadatasUpload];
             
             [[NCManageDatabase sharedInstance] setAccountAutoUploadProperty:@"autoUploadFull" state:NO];
         }

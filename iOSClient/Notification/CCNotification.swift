@@ -87,9 +87,9 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                 let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
                 
                 metadataNet.action = actionSetNotificationServer
-                metadataNet.assetLocalIdentifier = "\(notification.idNotification)"
-                metadataNet.options = "DELETE"
-                metadataNet.serverUrl = "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(metadataNet.assetLocalIdentifier!)"
+                metadataNet.optionString = "\(notification.idNotification)"
+                metadataNet.optionAny = "DELETE"
+                metadataNet.serverUrl = "\(self.appDelegate.activeUrl!)/\(k_url_acces_remote_notification_api)/\(metadataNet.optionString!)"
 
                 self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
             }
@@ -116,9 +116,9 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
                             let metadataNet = CCMetadataNet.init(account: self.appDelegate.activeAccount)!
                             
                             metadataNet.action = actionSetNotificationServer
-                            metadataNet.assetLocalIdentifier = "\(notification.idNotification)"
+                            metadataNet.optionString = "\(notification.idNotification)"
                             metadataNet.serverUrl =  (actionNotification as! OCNotificationsAction).link
-                            metadataNet.options = (actionNotification as! OCNotificationsAction).type
+                            metadataNet.optionAny = (actionNotification as! OCNotificationsAction).type
                             
                             self.appDelegate.addNetworkingOperationQueue(self.appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
                         }
@@ -164,14 +164,14 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             var image : UIImage?
             
             if let urlIcon = urlIcon {
-                let pathFileName = (appDelegate.directoryUser) + "/" + (urlIcon.lastPathComponent)
+                let pathFileName = CCUtility.getDirectoryUserData() + "/" + urlIcon.lastPathComponent
                 image = UIImage(contentsOfFile: pathFileName)
             }
             
             if let image = image {
                 cell.icon.image = image
             } else {
-                cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), color: NCBrandColor.sharedInstance.brandElement)
+                cell.icon.image = CCGraphics.changeThemingColorImage(#imageLiteral(resourceName: "notification"), multiplier:2, color: NCBrandColor.sharedInstance.brandElement)
             }
             
             //
@@ -203,7 +203,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             
             let listOfNotifications = appDelegate.listOfNotifications as NSArray as! [OCNotifications]
             
-            if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.assetLocalIdentifier)})  {
+            if let index = listOfNotifications.index(where: {$0.idNotification == Int(metadataNet.optionString)})  {
                 appDelegate.listOfNotifications.removeObject(at: index)
             }
             
@@ -238,7 +238,7 @@ class CCNotification: UITableViewController, OCNetworkingDelegate {
             DispatchQueue.main.async() { () -> Void in
                 
                 do {
-                    let pathFileName = (self.appDelegate.directoryUser) + "/" + fileName
+                    let pathFileName = CCUtility.getDirectoryUserData() + "/" + fileName
                     try data.write(to: URL(fileURLWithPath: pathFileName), options: .atomic)
                     
                     self.reloadDatasource()

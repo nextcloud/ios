@@ -29,6 +29,7 @@
 #import "AHKActionSheet.h"
 #import "MGSwipeTableCell.h"
 #import "CCCellMain.h"
+#import "CCCellMainTransfer.h"
 #import "CCUtility.h"
 #import "CCMain.h"
 #import "CCGraphics.h"
@@ -44,9 +45,10 @@
 @property (nonatomic, strong) NSString *titleViewControl;
 
 @property (nonatomic, weak) CCDetail *detailViewController;
-@property (nonatomic, strong) UIDocumentInteractionController *docController;
 
-- (void)reloadDatasource;
+- (void)shouldPerformSegue;
+- (void)openIn:(tableMetadata *)metadata;
+- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action;
 - (void)listingFavorites;
 - (void)addFavoriteFolder:(NSString *)serverUrl;
 

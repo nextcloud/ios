@@ -41,7 +41,6 @@
 @interface CCNetworking : NSObject <NSURLSessionTaskDelegate, NSURLSessionDelegate, NSURLSessionDownloadDelegate>
 
 @property (nonatomic, weak) id <CCNetworkingDelegate> delegate;
-@property (nonatomic, strong) NSMutableDictionary *delegates;
 
 + (CCNetworking *)sharedNetworking;
 
@@ -55,31 +54,22 @@
 - (NSArray *)getUploadTasksExtensionSession;
 
 - (void)invalidateAndCancelAllSession;
-- (void)settingSessionsDownload:(BOOL)download upload:(BOOL)upload taskStatus:(NSInteger)taskStatus activeAccount:(NSString *)activeAccount activeUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 // Download
-- (void)downloadFile:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost session:(NSString *)session taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
+- (void)downloadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 // Upload
-- (void)uploadFileFromAssetLocalIdentifier:(CCMetadataNet *)metadataNet delegate:(id)delegate;
-- (void)uploadFile:(NSString *)fileName serverUrl:(NSString *)serverUrl assetLocalIdentifier:(NSString *)assetLocalIdentifier path:(NSString *)path session:(NSString *)session taskStatus:(NSInteger)taskStatus selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorCode:(NSInteger)errorCode delegate:(id)delegate;
-- (void)uploadFileMetadata:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus delegate:(id)delegate;
-
-// Utility
-
-- (NSInteger)getNumDownloadInProgressWWan:(BOOL)WWan;
-- (NSInteger)getNumUploadInProgressWWan:(BOOL)WWan;
+- (void)uploadFile:(tableMetadata *)metadata taskStatus:(NSInteger)taskStatus;
 
 @end
 
 @protocol CCNetworkingDelegate <NSObject>
 
-@optional - (void)reloadDatasource:(NSString *)serverUrl;
+@optional - (void)downloadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionDownloadTask *)task serverUrl:(NSString *)serverUrl;
+@optional  - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
-@optional  - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
-
-@optional - (void)uploadStart:(NSString *)fileID task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl;
-@optional - (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector selectorPost:(NSString *)selectorPost errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
+@optional - (void)uploadStart:(NSString *)fileID account:(NSString *)account task:(NSURLSessionUploadTask *)task serverUrl:(NSString *)serverUrl;
+@optional - (void)uploadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID assetLocalIdentifier:(NSString *)assetLocalIdentifier serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 
 @end
 
@@ -91,7 +81,6 @@
 
 @property (nonatomic, strong) NSString *account;
 @property (nonatomic, strong) NSString *action;
-@property (nonatomic, strong) NSString *assetLocalIdentifier;
 @property (nonatomic, strong) NSArray *contentType;
 @property (nonatomic, strong) NSDate *date;
 @property (nonatomic, weak) id delegate;
@@ -100,8 +89,6 @@
 @property (nonatomic, strong) NSString *directoryID;
 @property (nonatomic, strong) NSString *directoryIDTo;
 @property (nonatomic, strong) NSString *encryptedMetadata;
-@property NSInteger errorCode;
-@property NSInteger errorRetry;
 @property (nonatomic, strong) NSString *etag;
 @property (nonatomic, strong) NSString *expirationTime;
 @property (nonatomic, strong) NSString *fileID;
@@ -110,24 +97,17 @@
 @property (nonatomic, strong) NSString *fileNameView;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *keyCipher;
-@property (nonatomic, strong) id options;
+@property (nonatomic, strong) id optionAny;
+@property (nonatomic, strong) NSString *optionString;
 @property (nonatomic, strong) NSString *password;
-@property (nonatomic, strong) NSString *path;
 @property NSInteger priority;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *serverUrlTo;
 @property (nonatomic, strong) NSString *selector;
-@property (nonatomic, strong) NSString *selectorPost;
-@property (nonatomic, strong) NSString *session;
-@property (nonatomic, strong) NSString *sessionError;
-@property (nonatomic, strong) NSString *sessionID;
-@property NSInteger sessionTaskIdentifier;
 @property (nonatomic, strong) NSString *share;
 @property NSInteger shareeType;
 @property NSInteger sharePermission;
 @property double size;
-@property (nonatomic, strong) NSURLSessionTask *task;
-@property NSInteger taskStatus;
 
 - (id)initWithAccount:(NSString *)withAccount;
 - (id)copyWithZone:(NSZone *)zone;

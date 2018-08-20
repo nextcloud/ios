@@ -182,24 +182,21 @@
 
 + (BOOL)getOptimizedPhoto
 {
-    return [[UICKeyChainStore stringForKey:@"optimizedphoto" service:k_serviceShareKeyChain] boolValue];
+    NSString *result = [UICKeyChainStore stringForKey:@"optimizedphoto" service:k_serviceShareKeyChain];
+    
+    if (result == nil) {
+        
+        [self setOptimizedPhoto:YES];
+        return YES;
+    }
+    
+    return [result boolValue];
 }
 
 + (void)setOptimizedPhoto:(BOOL)resize
 {
     NSString *sOptimizedPhoto = (resize) ? @"true" : @"false";
     [UICKeyChainStore setString:sOptimizedPhoto forKey:@"optimizedphoto" service:k_serviceShareKeyChain];
-}
-
-+ (BOOL)getUploadAndRemovePhoto
-{
-    return [[UICKeyChainStore stringForKey:@"uploadremovephoto" service:k_serviceShareKeyChain] boolValue];
-}
-
-+ (void)setUploadAndRemovePhoto:(BOOL)remove
-{
-    NSString *sRemovePhoto = (remove) ? @"true" : @"false";
-    [UICKeyChainStore setString:sRemovePhoto forKey:@"uploadremovephoto" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getOrderSettings
@@ -257,19 +254,29 @@
     [UICKeyChainStore setString:groupby forKey:@"groupby" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getIntroMessage:(NSString *)type
++ (BOOL)getIntro
 {
-    NSString *key = [INTRO_MessageType stringByAppendingString:type];
+    // Set compatibility old version don't touch me
+    if ([[UICKeyChainStore stringForKey:[INTRO_MessageType stringByAppendingString:@"Intro"] service:k_serviceShareKeyChain] boolValue] == YES) {
+        [CCUtility setIntro:YES];
+        return YES;
+    }
+    
+    return [[UICKeyChainStore stringForKey:@"intro" service:k_serviceShareKeyChain] boolValue];
+}
+
++ (BOOL)getIntroMessageOldVersion
+{
+    NSString *key = [INTRO_MessageType stringByAppendingString:@"Intro"];
     
     return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
 }
 
-+ (void)setIntroMessage:(NSString *)type set:(BOOL)set
++ (void)setIntro:(BOOL)set
 {
-    NSString *key = [INTRO_MessageType stringByAppendingString:type];
-    NSString *sSet = (set) ? @"true" : @"false";
+    NSString *sIntro = (set) ? @"true" : @"false";
+    [UICKeyChainStore setString:sIntro forKey:@"intro" service:k_serviceShareKeyChain];
 
-    [UICKeyChainStore setString:sSet forKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getIncrementalNumber
@@ -361,6 +368,17 @@
 {
     NSString *sDirectoryOnTop = (directoryOnTop) ? @"true" : @"false";
     [UICKeyChainStore setString:sDirectoryOnTop forKey:@"directoryOnTop" service:k_serviceShareKeyChain];
+}
+
++ (BOOL)getOriginalFileName:(NSString *)key
+{
+    return [[UICKeyChainStore stringForKey:key service:k_serviceShareKeyChain] boolValue];
+}
+
++ (void)setOriginalFileName:(BOOL)value key:(NSString *)key
+{
+    NSString *sValue = (value) ? @"true" : @"false";
+    [UICKeyChainStore setString:sValue forKey:key service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getFileNameMask:(NSString *)key
@@ -527,6 +545,36 @@
     [UICKeyChainStore setString:sDisable forKey:@"disablefilesapp" service:k_serviceShareKeyChain];
 }
 
++ (void)setPushNotificationPublicKey:(NSData *)data
+{
+    [UICKeyChainStore setData:data forKey:@"ncPNPublicKey" service:k_serviceShareKeyChain];
+}
+
++ (NSData *)getPushNotificationPublicKey
+{
+    return [UICKeyChainStore dataForKey:@"ncPNPublicKey" service:k_serviceShareKeyChain];
+}
+
++ (void)setPushNotificationPrivateKey:(NSData *)data
+{
+    [UICKeyChainStore setData:data forKey:@"ncPNPrivateKey" service:k_serviceShareKeyChain];
+}
+
++ (NSData *)getPushNotificationPrivateKey
+{
+    return [UICKeyChainStore dataForKey:@"ncPNPrivateKey" service:k_serviceShareKeyChain];
+}
+
++ (void)setPushNotificationToken:(NSString *)token
+{
+    [UICKeyChainStore setString:token forKey:@"ncPushToken" service:k_serviceShareKeyChain];
+}
+
++ (NSString *)getPushNotificationToken
+{
+    return [UICKeyChainStore stringForKey:@"ncPushToken" service:k_serviceShareKeyChain];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====
 #pragma --------------------------------------------------------------------------------------------
@@ -637,9 +685,14 @@
     return [NSString stringWithFormat:@"%@", randomString];
 }
 
-+ (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType
++ (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal
 {
     BOOL addFileNameType = NO;
+    
+    // Original FileName ?
+    if ([self getOriginalFileName:keyFileNameOriginal]) {
+        return fileName;
+    }
     
     NSString *numberFileName;
     if ([fileName length] > 8) numberFileName = [fileName substringWithRange:NSMakeRange(04, 04)];
@@ -735,8 +788,8 @@
 
 + (NSURL *)getDirectoryGroup
 {
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    return dirGroup;
+    NSURL *path = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
+    return path;
 }
 
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl
@@ -744,7 +797,24 @@
     if (activeUrl == nil)
         return @"";
     
-    return [activeUrl stringByAppendingString:webDAV];
+    return [activeUrl stringByAppendingString:k_webDAV];
+}
+
++ (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
+{
+    NSString *baseUrl = [activeUrl lowercaseString];
+    NSString *dirUserBaseUrl = @"";
+
+    if ([activeUser length] && [baseUrl length]) {
+        
+        if ([baseUrl hasPrefix:@"https://"]) baseUrl = [baseUrl substringFromIndex:8];
+        if ([baseUrl hasPrefix:@"http://"]) baseUrl = [baseUrl substringFromIndex:7];
+        
+        dirUserBaseUrl = [NSString stringWithFormat:@"%@-%@", activeUser, baseUrl];
+        dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
+    }
+    
+    return dirUserBaseUrl;
 }
 
 // Return path of User
@@ -765,7 +835,7 @@
         dirUserBaseUrl = [[self removeForbiddenCharactersFileSystem:dirUserBaseUrl] lowercaseString];
     } else return @"";
     
-    dirApplicationUserGroup = [[dirGroup URLByAppendingPathComponent:appApplicationSupport] path];
+    dirApplicationUserGroup = [[dirGroup URLByAppendingPathComponent:k_appApplicationSupport] path];
     dirUserBaseUrl = [NSString stringWithFormat:@"%@/%@", dirApplicationUserGroup, dirUserBaseUrl];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath: dirUserBaseUrl]) {
@@ -794,21 +864,79 @@
 // Return the path of directory Cetificates
 + (NSString *)getDirectoryCerificates
 {
-    NSURL *dirGroup = [CCUtility getDirectoryGroup];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appCertificates] path];
     
-    NSString *dir = [[dirGroup URLByAppendingPathComponent:appCertificates] path];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dir])
-        [[NSFileManager defaultManager] createDirectoryAtPath:dir withIntermediateDirectories:YES attributes:nil error:nil];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
-    return dir;
+    return path;
+}
+
++ (NSString *)getDirectoryUserData
+{
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appUserData] path];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    return path;
 }
 
 + (NSString *)getDirectoryProviderStorage
 {
-    NSURL *dirGroup = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[NCBrandOptions sharedInstance].capabilitiesGroups];
-    NSString *dir = [[dirGroup URLByAppendingPathComponent:k_DirectoryProviderStorage] path];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_DirectoryProviderStorage] path];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
 
-    return dir;
+    return path;
+}
+
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID
+{
+    NSString *path = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorage], fileID];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+
+    return path;
+}
+
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
+{
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
+    
+    // if do not exists create file 0 length
+    if ([[NSFileManager defaultManager] fileExistsAtPath:fileNamePath] == NO) {
+        [[NSFileManager defaultManager] createFileAtPath:fileNamePath contents:nil attributes:nil];
+    }
+    
+    return fileNamePath;
+}
+
++ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView
+{
+    return [NSString stringWithFormat:@"%@/%@.ico", [self getDirectoryProviderStorageFileID:fileID], fileNameView];
+}
+
++ (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView
+{
+    NSString *fileNamePath = [self getDirectoryProviderStorageFileID:fileID fileNameView:fileNameView];
+    
+    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
+    
+    if (fileSize > 0) return true;
+    else return false;
+}
+
++ (BOOL)fileProviderStorageIconExists:(NSString *)fileID fileNameView:(NSString *)fileNameView
+{
+    NSString *fileNamePath = [self getDirectoryProviderStorageIconFileID:fileID fileNameView:fileNameView];
+    
+    unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil] fileSize];
+    
+    if (fileSize > 0) return true;
+    else return false;
 }
 
 + (NSString *)getTitleSectionDate:(NSDate *)date
@@ -907,6 +1035,13 @@
     return (NSArray *)datesSubFolder;
 }
 
++ (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension
+{
+    // Use UPPERCASE extension :
+    
+    return [@[@"TXT", @"MD", @"MARKDOWN", @"ORG"] containsObject:fileExtension];
+}
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------
@@ -924,7 +1059,7 @@
     
     if (depth) {
         
-        NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eEncrypted = 1 AND serverUrl BEGINSWITH %@", account, serverUrl] sorted:@"serverUrl" ascending:false];
+        NSArray *directories = [[NCManageDatabase sharedInstance] getTablesDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl BEGINSWITH %@", account, serverUrl] sorted:@"serverUrl" ascending:false];
         for (tableDirectory *directory in directories) {
             if ([serverUrl containsString:directory.serverUrl])
                 return true;
@@ -932,7 +1067,7 @@
         
     } else {
         
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND e2eEncrypted = 1 AND serverUrl = %@", account, serverUrl]];
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND e2eEncrypted == 1 AND serverUrl == %@", account, serverUrl]];
         if (directory != nil)
             return true;
     }
@@ -964,7 +1099,7 @@
     return metadata;
 }
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser isFolderEncrypted:(BOOL)isFolderEncrypted
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted
 {
     tableMetadata *metadata = [tableMetadata new];
     NSString *fileNameView;
@@ -974,7 +1109,7 @@
     
     // E2EE find the fileName for fileNameView
     if (isFolderEncrypted) {
-        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@ AND fileNameIdentifier = %@", activeAccount, serverUrl, fileName]];
+        tableE2eEncryption *tableE2eEncryption = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", activeAccount, serverUrl, fileName]];
         if (tableE2eEncryption)
             fileNameView = tableE2eEncryption.fileName;
     }
@@ -993,6 +1128,7 @@
     metadata.etag = itemDto.etag;
     metadata.size = itemDto.size;
     metadata.sessionTaskIdentifier = k_taskIdentifierDone;
+    metadata.status = k_metadataStatusNormal;
     metadata.typeFile = @"";
     
     [self insertTypeFileIconName:fileNameView metadata:metadata];
@@ -1044,8 +1180,8 @@
             metadata.typeFile = k_metadataTypeFile_audio;
             metadata.iconName = @"file_audio";
         }
-        // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") [MD]
-        else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [ext isEqualToString:@"MD"]) {
+        // Type Document [DOC] [PDF] [XLS] [TXT] (RTF = "public.rtf" - ODT = "org.oasis-open.opendocument.text") + isDocumentModifiableExtension
+        else if (UTTypeConformsTo(fileUTI, kUTTypeContent) || [CCUtility isDocumentModifiableExtension:ext]) {
             metadata.typeFile = k_metadataTypeFile_document;
             metadata.iconName = @"document";
             
@@ -1063,7 +1199,7 @@
                 metadata.iconName = @"file_xls";
             }
             
-            if ([typeFile isEqualToString:@"public.plain-text"] || [ext isEqualToString:@"MD"]) {
+            if ([typeFile isEqualToString:@"public.plain-text"] || [CCUtility isDocumentModifiableExtension:ext]) {
                 metadata.iconName = @"file_txt";
             }
             
@@ -1100,29 +1236,17 @@
     return returnFileUTI;
 }
 
-+ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNameView:(NSString *)fileNameView directory:(NSString *)directory activeAccount:(NSString *)activeAccount
++ (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata
 {
-    tableMetadata *metadata = [[tableMetadata alloc] init];
-    
-    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", directory, fileName];
+    NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileName];
     
     NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:fileNamePath error:nil];
     
-    metadata.account = activeAccount;
     metadata.date = attributes[NSFileModificationDate];
-    
-    BOOL isDirectory;
-    [[NSFileManager defaultManager] fileExistsAtPath:fileNamePath isDirectory:&isDirectory];
-    metadata.directory = isDirectory;
-    
-    metadata.fileID = fileName;
-    metadata.directoryID = directory;
-    metadata.fileName = fileName;
-    metadata.fileNameView = fileName;
     metadata.size = [attributes[NSFileSize] longValue];
     metadata.thumbnailExists = false;
     
-    [self insertTypeFileIconName:fileNameView metadata:metadata];
+    [self insertTypeFileIconName:metadata.fileNameView metadata:metadata];
     
     return metadata;
 }

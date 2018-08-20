@@ -506,6 +506,8 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
                             success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id _Nonnull response))success
                             failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull operation, id  _Nullable responseObject, NSError * _Nonnull error))failure;
 
+- (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString * _Nonnull)serverPath ofFilePath:(NSString *_Nonnull)filePath  withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
 #pragma mark - Notification
 
 ///-----------------------------------
@@ -552,10 +554,14 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  *
  */
 
-- (void)subscribingNextcloudServerPush:(NSString * _Nonnull)serverPath authorizationToken:(NSString * _Nonnull)authorizationToken pushTokenHash:(NSString * _Nonnull)pushTokenHash devicePublicKey:(NSString * _Nonnull)devicePublicKey proxyServerPath:(NSString * _Nonnull)proxyServerPath onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
+- (void)subscribingNextcloudServerPush:(NSString * _Nonnull)serverPath pushTokenHash:(NSString * _Nonnull)pushTokenHash devicePublicKey:(NSString * _Nonnull)devicePublicKey proxyServerPath:(NSString * _Nonnull)proxyServerPath onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
+
+- (void)unsubscribingNextcloudServerPush:(NSString * _Nonnull)serverPath onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
 
 
-- (void)subscribingPushProxy:(NSString * _Nonnull)serverPath authorizationToken:(NSString * _Nonnull)authorizationToken pushToken:(NSString * _Nonnull)pushToken deviceIdentifier:(NSString * _Nonnull)deviceIdentifier deviceIdentifierSignature:(NSString * _Nonnull)deviceIdentifierSignature userPublicKey:(NSString * _Nonnull)userPublicKey onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
+- (void)subscribingPushProxy:(NSString * _Nonnull)serverPath pushToken:(NSString * _Nonnull)pushToken deviceIdentifier:(NSString * _Nonnull)deviceIdentifier deviceIdentifierSignature:(NSString * _Nonnull)deviceIdentifierSignature publicKey:(NSString * _Nonnull)publicKey onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
+
+- (void)unsubscribingPushProxy:(NSString * _Nonnull)serverPath deviceIdentifier:(NSString * _Nonnull)deviceIdentifier deviceIdentifierSignature:(NSString * _Nonnull)deviceIdentifierSignature publicKey:(NSString * _Nonnull)publicKey onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
 
 ///-----------------------------------
 /// @name Get the server Notification

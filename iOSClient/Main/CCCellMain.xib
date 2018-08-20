@@ -19,7 +19,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="65" y="16" width="430" height="18"/>
+                        <rect key="frame" x="65" y="13" width="430" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -30,7 +30,7 @@
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="5">
                         <rect key="frame" x="15" y="10" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="kM5-Uf-S8Z"/>
@@ -78,7 +78,7 @@
                     <constraint firstAttribute="bottom" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="14" id="2Ay-YK-f66"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="Fw2-NW-hsK" secondAttribute="trailing" constant="-10" id="32q-iB-1GU"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="5" secondAttribute="bottom" constant="-9.5" id="3A5-mA-6Hh"/>
-                    <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="top" constant="16" id="4ds-S3-swp"/>
+                    <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="top" constant="13" id="4ds-S3-swp"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leading" constant="15" id="5es-ma-EXb"/>
                     <constraint firstItem="qhJ-el-R92" firstAttribute="leading" secondItem="p7I-KN-FVZ" secondAttribute="trailing" constant="10" id="8Kc-xa-mlh"/>
                     <constraint firstItem="aRp-Ql-cyA" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="DOx-77-6Mg"/>

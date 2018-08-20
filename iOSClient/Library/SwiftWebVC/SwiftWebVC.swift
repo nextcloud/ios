@@ -13,7 +13,7 @@ public protocol SwiftWebVCDelegate: class {
     func didReceiveServerRedirectForProvisionalNavigation(url: URL)
     func didFinishLoading(success: Bool)
     func didFinishLoading(success: Bool, url: URL)
-    func loginWebClose()
+    func webDismiss()
     func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
 }
 
@@ -176,7 +176,7 @@ public class SwiftWebVC: UIViewController {
     
     override public func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag, completion: {
-            self.delegate!.loginWebClose()
+            self.delegate?.webDismiss()
         })        
     }
     

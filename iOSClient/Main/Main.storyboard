@@ -218,10 +218,10 @@
             </objects>
             <point key="canvasLocation" x="9212" y="1216.9950738916257"/>
         </scene>
-        <!--Photos-->
+        <!--Media-->
         <scene sceneID="kWr-RF-gdq">
             <objects>
-                <collectionViewController id="1Ca-6H-d29" customClass="CCPhotos" sceneMemberID="viewController">
+                <collectionViewController id="1Ca-6H-d29" customClass="CCMedia" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" id="zkC-IW-U7O">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -240,10 +240,10 @@
                                     <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wv7-Pl-1S9">
+                                        <imageView userInteractionEnabled="NO" tag="100" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="wv7-Pl-1S9" userLabel="Image">
                                             <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
                                         </imageView>
-                                        <visualEffectView hidden="YES" opaque="NO" tag="200" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vaz-kb-VZC">
+                                        <visualEffectView hidden="YES" opaque="NO" tag="200" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vaz-kb-VZC" userLabel="VisualEffect">
                                             <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
                                             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="zTo-QZ-xyF">
                                                 <rect key="frame" x="0.0" y="0.0" width="75" height="75"/>
@@ -252,11 +252,18 @@
                                             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <blurEffect style="extraLight"/>
                                         </visualEffectView>
-                                        <imageView hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sj1-BH-NWl">
+                                        <imageView hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="300" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sj1-BH-NWl" userLabel="ImageCheckled">
                                             <rect key="frame" x="25" y="25" width="25" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="25" id="8D0-Br-VLn"/>
                                                 <constraint firstAttribute="width" constant="25" id="JTW-Py-sqE"/>
+                                            </constraints>
+                                        </imageView>
+                                        <imageView hidden="YES" opaque="NO" userInteractionEnabled="NO" tag="400" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ie8-HI-w6E" userLabel="ImageVideo">
+                                            <rect key="frame" x="55" y="61" width="20" height="14"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="20" id="Ehd-rd-RIc"/>
+                                                <constraint firstAttribute="height" constant="14" id="Yam-RU-2Qc"/>
                                             </constraints>
                                         </imageView>
                                     </subviews>
@@ -266,7 +273,9 @@
                                     <constraint firstItem="wv7-Pl-1S9" firstAttribute="bottom" secondItem="Vaz-kb-VZC" secondAttribute="bottom" id="8nn-9h-h8F"/>
                                     <constraint firstItem="sj1-BH-NWl" firstAttribute="centerX" secondItem="zTo-QZ-xyF" secondAttribute="centerX" id="Aou-FC-rhP"/>
                                     <constraint firstItem="wv7-Pl-1S9" firstAttribute="trailing" secondItem="Vaz-kb-VZC" secondAttribute="trailing" id="CGZ-Ir-z0l"/>
+                                    <constraint firstItem="ie8-HI-w6E" firstAttribute="top" secondItem="zTo-QZ-xyF" secondAttribute="bottom" constant="-14" id="FlS-6N-OuF"/>
                                     <constraint firstItem="wv7-Pl-1S9" firstAttribute="top" secondItem="ax6-Kq-EOT" secondAttribute="top" id="H2J-n2-czF"/>
+                                    <constraint firstItem="ie8-HI-w6E" firstAttribute="leading" secondItem="zTo-QZ-xyF" secondAttribute="trailing" constant="-20" id="NkC-RJ-YOg"/>
                                     <constraint firstItem="wv7-Pl-1S9" firstAttribute="leading" secondItem="Vaz-kb-VZC" secondAttribute="leading" id="TKe-Ml-mj4"/>
                                     <constraint firstItem="wv7-Pl-1S9" firstAttribute="top" secondItem="Vaz-kb-VZC" secondAttribute="top" id="V3X-qR-o1I"/>
                                     <constraint firstAttribute="trailing" secondItem="wv7-Pl-1S9" secondAttribute="trailing" id="WRD-6l-xgj"/>
@@ -546,11 +555,11 @@
             </objects>
             <point key="canvasLocation" x="5857" y="1218"/>
         </scene>
-        <!--Photos-->
+        <!--Media-->
         <scene sceneID="IuY-Iu-oAm">
             <objects>
-                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Photos" image="photos" id="5cw-bP-7It"/>
+                <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" userLabel="Media" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Media" image="media" id="5cw-bP-7It"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ixg-Pw-TNO">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
@@ -797,11 +806,11 @@
         <image name="disclosureIndicator" width="13" height="14"/>
         <image name="favorite" width="25" height="25"/>
         <image name="folder" width="25" height="25"/>
-        <image name="photos" width="25" height="25"/>
+        <image name="media" width="25" height="25"/>
         <image name="tabBarMore" width="25" height="25"/>
         <image name="tabBarPlus" width="40" height="40"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="2Qm-A6-CfB"/>
+        <segue reference="op6-ow-K8v"/>
     </inferredMetricsTieBreakers>
 </document>

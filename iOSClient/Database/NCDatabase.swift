@@ -179,7 +179,6 @@ class tableLocalFile: Object {
     @objc dynamic var account = ""
     @objc dynamic var date = NSDate()
     @objc dynamic var etag = ""
-    @objc dynamic var etagFPE = ""
     @objc dynamic var exifDate = NSDate()
     @objc dynamic var exifLatitude = ""
     @objc dynamic var exifLongitude = ""
@@ -207,16 +206,13 @@ class tableMetadata: Object {
     @objc dynamic var fileName = ""
     @objc dynamic var fileNameView = ""
     @objc dynamic var iconName = ""
-    @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionError = ""
-    @objc dynamic var sessionID = ""
     @objc dynamic var sessionSelector = ""
-    @objc dynamic var sessionSelectorPost = ""
-    @objc dynamic var sessionTaskIdentifier: Int = -1
+    @objc dynamic var sessionTaskIdentifier: Int = 0
     @objc dynamic var size: Double = 0
-    @objc dynamic var status: Double = 0
+    @objc dynamic var status: Int = 0
     @objc dynamic var thumbnailExists: Bool = false
     @objc dynamic var typeFile = ""
     
@@ -226,6 +222,35 @@ class tableMetadata: Object {
     
     override static func indexedProperties() -> [String] {
         return ["directoryID"]
+    }
+}
+
+class tablePhotos: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var directory: Bool = false
+    @objc dynamic var directoryID = ""
+    @objc dynamic var e2eEncrypted: Bool = false
+    @objc dynamic var etag = ""
+    @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileID = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var fileNameView = ""
+    @objc dynamic var iconName = ""
+    @objc dynamic var permissions = ""
+    @objc dynamic var session = ""
+    @objc dynamic var sessionError = ""
+    @objc dynamic var sessionSelector = ""
+    @objc dynamic var sessionTaskIdentifier: Int = 0
+    @objc dynamic var size: Double = 0
+    @objc dynamic var status: Int = 0
+    @objc dynamic var thumbnailExists: Bool = false
+    @objc dynamic var typeFile = ""
+    
+    override static func primaryKey() -> String {
+        return "fileID"
     }
 }
 
@@ -241,40 +266,6 @@ class tablePhotoLibrary: Object {
     override static func primaryKey() -> String {
         return "idAsset"
     }
-}
-
-class tableQueueDownload: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var fileID = ""
-    @objc dynamic var selector = ""
-    @objc dynamic var selectorPost = ""
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var session = ""
-
-    override static func primaryKey() -> String {
-        return "fileID"
-    }
-}
-
-class tableQueueUpload: Object {
-    
-    @objc dynamic var account = ""
-    @objc dynamic var assetLocalIdentifier = ""
-    @objc dynamic var date = NSDate()
-    @objc dynamic var errorCode: Int = 0
-    @objc dynamic var fileName = ""
-    @objc dynamic var fileNameView = ""
-    @objc dynamic var lock: Bool = false
-    @objc dynamic var path: String?
-    @objc dynamic var selector = ""
-    @objc dynamic var selectorPost = ""
-    @objc dynamic var serverUrl = ""
-    @objc dynamic var session = ""
-    @objc dynamic var sessionError = ""
-    @objc dynamic var sessionID = ""
-    @objc dynamic var sessionTaskIdentifier: Int = -1
-    @objc dynamic var size: Double = 0
 }
 
 class tableShare: Object {

@@ -23,17 +23,6 @@
 
 #import <UIKit/UIKit.h>
 
-extern NSString *const appApplicationSupport;
-extern NSString *const appDatabaseNextcloud;
-extern NSString *const appCertificates;
-
-extern NSString *const serverStatus;
-
-extern NSString *const webDAV;
-extern NSString *const dav;
-
-extern NSString *const flowEndpoint;
-
 #ifndef EXTENSION
 
 //AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
@@ -50,11 +39,27 @@ extern NSString *const flowEndpoint;
 
 #endif
 
-// UUID
-#define k_UUID_SIM                                      @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
+// Directory on Group
+#define k_appApplicationSupport                         @"Library/Application Support"
+#define k_appDatabaseNextcloud                          @"Library/Application Support/Nextcloud"
+#define k_appUserData                                   @"Library/Application Support/UserData"
+#define k_appCertificates                               @"Library/Application Support/Certificates"
+
+// Server Status
+#define k_serverStatus                                  @"/status.php"
+
+// webDAV & DAV
+#define k_webDAV                                        @"/remote.php/webdav"
+#define k_dav                                           @"/remote.php/dav"
+
+// Login Flow
+#define k_flowEndpoint                                  @"/index.php/login/flow"
 
 // Passphrase test EndToEnd Encryption
 #define k_passphrase_test                               @"more over television factory tendency independence international intellectual impress interest sentence pony"
+
+// UUID
+#define k_UUID_SIM                                      @"4BACFE4A-61A6-44B1-9A85-13FD167565AB"
 
 #define k_dismissAfterSecond                            4
 
@@ -73,9 +78,15 @@ extern NSString *const flowEndpoint;
 // Name Default DB
 #define k_databaseDefault                               @"nextcloud.realm"
 
-// Intro
-#define k_Intro                                         @"Intro"
-#define k_Intro_no_cryptocloud                          @"IntroNoCryptoCloud"
+// Intro selector
+#define k_intro_login                                   0
+#define k_intro_signup                                  1
+
+// Login
+#define k_login_Add                                     0
+#define k_login_Add_Forced                              1
+#define k_login_Add_SignUp                              2
+#define k_login_Modify_Password                         3
 
 // Picker select image
 #define k_pickerControllerMax                           1000.0
@@ -93,8 +104,6 @@ extern NSString *const flowEndpoint;
 #define k_permission_can_delete                         @"D"
 #define k_permission_can_rename                         @"N"
 #define k_permission_can_move                           @"V"
-
-#define k_networkingSessionNotification                 @"networkingSessionNotification"
 
 // Session
 #define k_domain_session_queue                          @"it.twsweb.Crypto-Cloud"
@@ -122,24 +131,48 @@ extern NSString *const flowEndpoint;
 #define k_metadataKeyedUnarchiver                       @"it.twsweb.nextcloud.metadata"
 
 // TaskIdentifier
-#define k_taskIdentifierDone                            -1
-#define k_taskIdentifierStop                            -2
-#define k_taskIdentifierWaitStart                       -3
-#define k_taskIdentifierError                           -99999
-#define k_taskIdentifierNULL                            99999
+#define k_taskIdentifierDone                            0
 
 // TaskStatus
 #define k_taskStatusCancel                              -1
 #define k_taskStatusResume                              -2
 #define k_taskStatusSuspend                             -3
 
-#define k_timerVerifySession                            10
+// Metadata : Status
+//
+// 1) wait download/upload
+// 2) in download/upload
+// 3) downloading/uploading
+// 4) done or error
+//
+#define k_metadataStatusNormal                          0
+#define k_metadataStatusHide                            1
+
+#define k_metadataStatusWaitDownload                    2
+#define k_metadataStatusInDownload                      3
+#define k_metadataStatusDownloading                     4
+#define k_metadataStatusDownloadError                   5
+
+#define k_metadataStatusWaitUpload                      6
+#define k_metadataStatusInUpload                        7
+#define k_metadataStatusUploading                       8
+#define k_metadataStatusUploadError                     9
+
+// Timer
 #define k_timerProcessAutoDownloadUpload                5
 #define k_timerUpdateApplicationIconBadgeNumber         3
 
-#define k_maxConcurrentOperation                         10
-#define k_maxConcurrentOperationDownloadUpload           10
-#define k_maxConcurrentOperationDownloadUploadBackground 1
+// ConcurrentOperation
+#define k_maxHTTPConnectionsPerHost                     5
+#define k_maxConcurrentOperation                        10
+#define k_maxConcurrentOperationDownload                5
+#define k_maxConcurrentOperationUpload                  5
+
+// Max Size Operation
+#define k_maxSizeOperationUpload                        524288000   // 500 MB
+
+// Max Cache Proxy Video
+#define k_maxHTTPCache                                  10737418240 // 10GB
 
 // Error
 #define k_CCErrorTaskNil                                -9999
@@ -153,10 +186,6 @@ extern NSString *const flowEndpoint;
 #define k_minCharsSearch                                2
 
 // Metadata.Net SELECTOR
-#define selectorAddFavorite                             @"addFavorite"
-#define selectorCreateFolder                            @"createFolder"
-#define selectorDelete                                  @"delete"
-#define selectorDownloadThumbnail                       @"downloadThumbnail"
 #define selectorDownloadSynchronize                     @"downloadSynchronize"
 #define selectorGetUserAndGroup                         @"getUserAndGroup"
 #define selectorLoadFileView                            @"loadFileView"
@@ -172,7 +201,6 @@ extern NSString *const flowEndpoint;
 #define selectorReadFileFolder                          @"readFileFolder"
 #define selectorReadFileFolderWithDownload              @"readFileFolderWithDownload"
 #define selectorReadFolder                              @"readFolder"
-#define selectorReadFolderForced                        @"readFolderForced"
 #define selectorReadFolderWithDownload                  @"readFolderWithDownload"
 #define selectorReadShare                               @"readShare"
 #define selectorRename                                  @"rename"
@@ -185,12 +213,8 @@ extern NSString *const flowEndpoint;
 #define selectorUploadAutoUpload                        @"uploadAutoUpload"
 #define selectorUploadAutoUploadAll                     @"uploadAutoUploadAll"
 #define selectorUploadFile                              @"uploadFile"
-#define selectorUploadRemovePhoto                       @"uploadRemovePhoto"
 
 // Metadata.Net ACTION
-#define actionCreateFolder                              @"createFolder"
-#define actionDeleteFileDirectory                       @"deleteFileOrFolder"
-#define actionDownloadThumbnail                         @"downloadThumbnail"
 #define actionGetActivityServer                         @"getActivityServer"
 #define actionGetCapabilities                           @"getCapabilitiesOfServer"
 #define actionGetUserAndGroup                           @"getUserAndGroup"
@@ -199,17 +223,14 @@ extern NSString *const flowEndpoint;
 #define actionGetSharePermissionsFile                   @"getSharePermissionsFile"
 #define actionGetExternalSitesServer                    @"getExternalSitesServer"
 #define actionMiddlewarePing                            @"middlewarePing"
-#define actionListingFavorites                          @"listingFavorites"
 #define actionMoveFileOrFolder                          @"moveFileOrFolder"
 #define actionReadFile                                  @"readFile"
 #define actionReadFolder                                @"readFolder"
 #define actionReadShareServer                           @"readShareServer"
 #define actionSearch                                    @"search"
 #define actionSetNotificationServer                     @"setNotificationServer"
-#define actionSettingFavorite                           @"settingFavorite"
 #define actionShare                                     @"share"
 #define actionShareWith                                 @"shareWith"
-#define actionSubscribingNextcloudServer                @"subscribingNextcloudServer"
 #define actionUnShare                                   @"unShare"
 #define actionUpdateShare                               @"updateShare"
 
@@ -230,19 +251,11 @@ extern NSString *const flowEndpoint;
 #define k_metadataTypeFile_unknown                      @"unknow"
 #define k_metadataTypeFile_video                        @"video"
 
-// Metadata : Status
-#define k_metadataStatusNormal                          0
-#define k_metadataStatusHide                            1
-#define k_metadataStatusInUpload                        2
-#define k_metadataStatusUploading                       3
-#define k_metadataStatusInDownload                      4
-#define k_metadataStatusDownloading                     5
-
 // TabBar button
 #define k_tabBarApplicationIndexFile                    0
 #define k_tabBarApplicationIndexFavorite                1
 #define k_tabBarApplicationIndexPlusHide                2
-#define k_tabBarApplicationIndexPhotos                  3
+#define k_tabBarApplicationIndexMedia                   3
 #define k_tabBarApplicationIndexMore                    4
 
 // Filename Mask and Type
@@ -250,6 +263,8 @@ extern NSString *const flowEndpoint;
 #define k_keyFileNameType                               @"fileNameType"
 #define k_keyFileNameAutoUploadMask                     @"fileNameAutoUploadMask"
 #define k_keyFileNameAutoUploadType                     @"fileNameAutoUploadType"
+#define k_keyFileNameOriginal                           @"fileNameOriginal"
+#define k_keyFileNameOriginalAutoUpload                 @"fileNameOriginalAutoUpload"
 
 // Activity
 #define k_activityVerboseDefault                        0
@@ -260,7 +275,6 @@ extern NSString *const flowEndpoint;
 
 #define k_activityDebugActionDownload                   @"Download"
 #define k_activityDebugActionDownloadPicker             @"Download Picker"
-#define k_activityDebugActionDownloadThumbnail          @"Download Thumbnail"
 #define k_activityDebugActionUpload                     @"Upload"
 #define k_activityDebugActionUploadPicker               @"Upload Picker"
 #define k_activityDebugActionUploadShare                @"Upload Share"
@@ -270,8 +284,10 @@ extern NSString *const flowEndpoint;
 #define k_activityDebugActionCreateFolder               @"Create Folder"
 #define k_activityDebugActionDeleteFileFolder           @"Delete File-Folder"
 #define k_activityDebugActionGetNotification            @"Get Notification Server"
-#define k_activityDebugActionPushProxy                  @"Subscribing Push Proxy"
-#define k_activityDebugActionServerPush                 @"Subscribing Server Push"
+#define k_activityDebugActionSubscribingServerPush      @"Subscribing Server Push"
+#define k_activityDebugActionUnsubscribingServerPush    @"Unsubscribing Server Push"
+#define k_activityDebugActionSubscribingPushProxy       @"Subscribing Push Proxy"
+#define k_activityDebugActionUnsubscribingPushProxy     @"Unsubscribing Push Proxy"
 #define k_activityDebugActionCapabilities               @"Capabilities Of Server"
 #define k_activityDebugActionEndToEndEncryption         @"End To End Encryption "
 
@@ -281,9 +297,13 @@ extern NSString *const flowEndpoint;
 // Flow Version
 #define k_flow_version_available                        12
 
-//
+// Directory File Provider Storage
 #define k_DirectoryProviderStorage                      @"File Provider Storage"
 
+// Cell Reload Data Source
+#define k_action_NULL                                   0
+#define k_action_MOD                                    1
+#define k_action_DEL                                    2
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

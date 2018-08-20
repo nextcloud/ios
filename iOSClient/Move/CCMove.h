@@ -34,7 +34,7 @@
 
 @protocol CCMoveDelegate;
 
-@interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, OCNetworkingDelegate, BKPasscodeViewControllerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
+@interface CCMove : UITableViewController <UIAlertViewDelegate, UITableViewDelegate, BKPasscodeViewControllerDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate>
 
 @property (nonatomic, weak) id <CCMoveDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;

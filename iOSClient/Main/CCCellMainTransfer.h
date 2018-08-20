@@ -22,32 +22,16 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "MGSwipeTableCell.h"
+#import "PKDownloadButton.h"
 
-@interface CCCellMainTransfer : MGSwipeTableCell
+@interface CCCellMainTransfer : UITableViewCell
 
 @property(nonatomic, weak) IBOutlet UIImageView *file;
 @property(nonatomic, weak) IBOutlet UIImageView *status;
-@property(nonatomic, weak) IBOutlet UIImageView *favorite;
-@property(nonatomic, weak) IBOutlet UIImageView *local;
-@property(nonatomic, weak) IBOutlet UIImageView *shared;
-@property(nonatomic, weak) IBOutlet UIImageView *more;
 
 @property(nonatomic, weak) IBOutlet UILabel *labelTitle;
 @property(nonatomic, weak) IBOutlet UILabel *labelInfoFile;
 
-@property(nonatomic, weak) IBOutlet UIProgressView *progressView;
-@property(nonatomic, weak) IBOutlet UIButton *cancelTaskButton;
-@property(nonatomic, weak) IBOutlet UIButton *reloadTaskButton;
-@property(nonatomic, weak) IBOutlet UIButton *stopTaskButton;
-
-@property(nonatomic, strong) UIImage *imageTitleSegue;
-
-//Last position of the scroll of the swipe
-@property (nonatomic, assign) CGFloat lastContentOffset;
-
-//Index path of the cell swipe gesture ocured
-@property (nonatomic, strong) NSIndexPath *indexPath;
-
+@property(nonatomic, weak) IBOutlet PKStopDownloadButton *transferButton;
 
 @end

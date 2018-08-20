@@ -118,7 +118,7 @@
         // Modify Account
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"changePassword" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_change_password_", nil)];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[UIImage imageNamed:@"rename"] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
         row.action.formSelector = @selector(changePassword:);
@@ -131,7 +131,7 @@
             // New Account nextcloud
             row = [XLFormRowDescriptor formRowDescriptorWithTag:@"addAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_add_account_", nil)];
             [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-            [row.cellConfig setObject:[UIImage imageNamed:@"add"] forKey:@"imageView.image"];
+            [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"add"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
             [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
             [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
             row.action.formSelector = @selector(addAccount:);
@@ -142,7 +142,7 @@
         row = [XLFormRowDescriptor formRowDescriptorWithTag:@"delAccount" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_delete_account_", nil)];
         [row.cellConfig setObject:[UIColor redColor] forKey:@"textLabel.textColor"];
         [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] color:[UIColor redColor]] forKey:@"imageView.image"];
+        [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[UIColor redColor]] forKey:@"imageView.image"];
         [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
         row.action.formSelector = @selector(answerDelAccount:);
         if (listAccount.count == 0) row.disabled = @YES;
@@ -201,18 +201,11 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
+    
+    [appDelegate subscribingNextcloudServerPushNotification];
 }
 
-- (void)loginClose
-{
-    appDelegate.activeLogin = nil;
-}
-
-- (void)loginWebClose
-{
-    appDelegate.activeLoginWeb = nil;
-}
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark === Add Account ===
@@ -222,8 +215,9 @@
 {
     [self deselectFormRow:sender];
     
-    // Verify session in progress
-    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+    NSInteger transferInprogress = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+    
+    if (transferInprogress > 0) {
         [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
         return;
     }
@@ -231,13 +225,8 @@
     [appDelegate.netQueue cancelAllOperations];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:loginAdd];
+        [appDelegate openLoginView:self loginType:k_login_Add selector:k_intro_login];
     });
-}
-
-- (void)addAccountForced
-{
-    [appDelegate openLoginView:self loginType:loginAddForced];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -248,8 +237,9 @@
 {    
     [self deselectFormRow:sender];
     
-    // Verify session in progress
-    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+    NSInteger transferInprogress = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+    
+    if (transferInprogress > 0) {
         [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
         return;
     }
@@ -257,7 +247,7 @@
     [appDelegate.netQueue cancelAllOperations];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.3 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-        [appDelegate openLoginView:self loginType:loginModifyPasswordUser];
+        [appDelegate openLoginView:self loginType:k_login_Modify_Password selector:k_intro_login];
     });
 }
 
@@ -267,11 +257,14 @@
 
 - (void)deleteAccount:(NSString *)account
 {
-    // Verify session in progress
-    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+    NSInteger transferInprogress = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+
+    if (transferInprogress > 0) {
         [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
         return;
     }
+    
+    [appDelegate unsubscribingNextcloudServerPushNotification];
     
     [appDelegate.netQueue cancelAllOperations];
     
@@ -283,9 +276,8 @@
     [[NCManageDatabase sharedInstance] clearTable:[tableExternalSites class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableLocalFile class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableMetadata class] account:account];
+    [[NCManageDatabase sharedInstance] clearTable:[tablePhotos class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tablePhotoLibrary class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueDownload class] account:account];
-    [[NCManageDatabase sharedInstance] clearTable:[tableQueueUpload class] account:account];
     [[NCManageDatabase sharedInstance] clearTable:[tableShare class] account:account];
     
     // Clear active user
@@ -310,7 +302,7 @@
         if ([listAccount count] > 0)
             [self ChangeDefaultAccount:listAccount[0]];
         else {
-            [self addAccountForced];
+            [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
         }
     }]];
     
@@ -331,8 +323,9 @@
 
 - (void)ChangeDefaultAccount:(NSString *)account
 {
-    // Verify session in progress
-    if ([[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND sessionTaskIdentifier > 0", appDelegate.activeAccount] sorted:nil ascending:NO] count] > 0) {
+    NSInteger transferInprogress = [[[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", appDelegate.activeAccount, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusInUpload, k_metadataStatusUploading] sorted:@"fileName" ascending:true] count];
+    
+    if (transferInprogress > 0) {
         [JDStatusBarNotification showWithStatus:NSLocalizedString(@"_transfers_in_queue_", nil) dismissAfter:k_dismissAfterSecond styleName:JDStatusBarStyleDefault];
         return;
     }
@@ -347,9 +340,11 @@
             [appDelegate settingActiveAccount:tableAccount.account activeUrl:tableAccount.url activeUser:tableAccount.user activeUserID:tableAccount.userID activePassword:tableAccount.password];
  
             // Init home
-            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
             
             [self UpdateForm];
+            
+            [appDelegate subscribingNextcloudServerPushNotification];
         }
     });
 }
@@ -363,7 +358,7 @@
     NSArray *listAccount = [[NCManageDatabase sharedInstance] getAccounts];
     
     if (listAccount.count == 0) {
-        [self addAccountForced];
+        [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
         return;
     }
     
@@ -372,7 +367,9 @@
     pickerAccount.rowDescriptor.selectorOptions = listAccount;
     pickerAccount.rowDescriptor.value = appDelegate.activeAccount;
     
-    UIImage *avatar = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/avatar.png", appDelegate.directoryUser]];
+    NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@-avatar.png", [CCUtility getDirectoryUserData], [CCUtility getStringUser:appDelegate.activeUser activeUrl:appDelegate.activeUrl]];
+
+    UIImage *avatar = [UIImage imageWithContentsOfFile:fileNamePath];
     if (avatar) {
     
         avatar = [CCGraphics scaleImage:avatar toSize:CGSizeMake(40, 40) isAspectRation:YES];
@@ -390,7 +387,6 @@
         
         avatar = [UIImage imageNamed:@"avatarBN"];
     }
-    
     
     [pickerAccount.rowDescriptor.cellConfig setObject:avatar forKey:@"imageView.image"];
 

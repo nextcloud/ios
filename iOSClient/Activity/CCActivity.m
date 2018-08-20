@@ -96,7 +96,7 @@
 {
     [super viewDidAppear:animated];
     
-    [self reloadDatasource];
+    [self getActivity];
 }
 
 - (void)changeTheming
@@ -129,7 +129,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"activityNoRecord"] color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"activityNoRecord"] multiplier:2 color:[NCBrandColor sharedInstance].graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -139,6 +139,24 @@
     NSDictionary *attributes = @{NSFontAttributeName:[UIFont boldSystemFontOfSize:20.0f], NSForegroundColorAttributeName:[UIColor lightGrayColor]};
     
     return [[NSAttributedString alloc] initWithString:text attributes:attributes];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark - ==== Datasource ====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)getActivity
+{
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+    [ocNetworking getActivityServer:^(NSArray *listOfActivity) {
+        
+        [[NCManageDatabase sharedInstance] addActivityServer:listOfActivity];
+        [self reloadDatasource];
+        
+    } failure:^(NSString *message, NSInteger errorCode) {
+        
+        [self reloadDatasource];
+    }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -156,13 +174,14 @@
     NSDate *sixDaysAgo = [[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:-k_daysOfActivity toDate:[NSDate date] options:0];
         
     if (_verbose)
-        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND date > %@", appDelegate.activeAccount, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account == %@ AND date > %@", appDelegate.activeAccount, sixDaysAgo];
     else
-        predicate = [NSPredicate predicateWithFormat:@"account = %@ AND verbose = %lu AND date > %@", appDelegate.activeAccount, k_activityVerboseDefault, sixDaysAgo];
+        predicate = [NSPredicate predicateWithFormat:@"account == %@ AND verbose == %lu AND date > %@", appDelegate.activeAccount, k_activityVerboseDefault, sixDaysAgo];
 
     _sectionDataSource = [[NCManageDatabase sharedInstance] getActivityWithPredicate:predicate];
         
     [self reloadCollection];
+    
 }
 
 - (void)reloadCollection
@@ -193,19 +212,15 @@
     
     if (activity.fileID.length > 0) {
      
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", activity.fileID]];
         
         if (metadata && ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload])) {
             
-            /*
-            if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", app.directoryUser, activity.fileID]]) {
+            if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
                 return 1;
             } else {
                 return 0;
             }
-            */
-            
-            return 1;
         }
     }
     
@@ -325,13 +340,13 @@
     
     if (activity.fileID.length > 0) {
         
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
+        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", activity.fileID]];
         
         if (metadata && ([activity.action isEqual: k_activityDebugActionDownload] || [activity.action isEqual: k_activityDebugActionUpload])) {
             
-             if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, activity.fileID]]) {
+             if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
              
-                 imageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, activity.fileID]];
+                 imageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
                  
              } else {
                  
@@ -349,9 +364,9 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     tableActivity *activity = [_sectionDataSource objectAtIndex:indexPath.section];
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID = %@", activity.fileID]];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", activity.fileID]];
     
-    BOOL existsFile = [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@", appDelegate.directoryUser, activity.fileID]];
+    BOOL existsFile = [CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView];
     
     if (metadata && existsFile) {
         

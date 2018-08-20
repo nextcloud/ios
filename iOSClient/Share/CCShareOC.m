@@ -124,14 +124,14 @@
     
     [self reloadData];
     
-    if ([[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, self.metadata.fileID]]) {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]]) {
         
-        self.fileImageView.image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", appDelegate.directoryUser, self.metadata.fileID]];
+        self.fileImageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:self.metadata.fileID fileNameView:self.metadata.fileNameView]];
         
     } else {
         
         if (self.metadata.directory)
-            self.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
+            self.fileImageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         else
             self.fileImageView.image = [UIImage imageNamed:self.metadata.iconName];
 
@@ -455,7 +455,7 @@
     [self.tableView endEditing:YES];
     
     // reload delegate
-    [self.delegate reloadDatasource:[[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID]];
+    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:self.metadata.directoryID] fileID:self.metadata.fileID action:k_action_MOD];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }

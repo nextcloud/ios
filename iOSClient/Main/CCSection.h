@@ -26,7 +26,7 @@
 @interface CCSectionDataSourceMetadata : NSObject
     
 @property (nonatomic, strong) NSMutableDictionary *allRecordsDataSource;
-@property (nonatomic, strong) NSMutableArray *allEtag;
+@property (nonatomic, strong) NSMutableArray *allFileID;
 @property (nonatomic, strong) NSMutableArray *sections;
 @property (nonatomic, strong) NSMutableDictionary *sectionArrayRow;
 @property (nonatomic, strong) NSMutableDictionary *fileIDIndexPath;
@@ -44,7 +44,7 @@
 
 @interface CCSectionMetadata : NSObject
 
-+ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)records listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField activeAccount:(NSString *)activeAccount;
++ (CCSectionDataSourceMetadata *)creataDataSourseSectionMetadata:(NSArray *)arrayMetadatas listProgressMetadata:(NSMutableDictionary *)listProgressMetadata groupByField:(NSString *)groupByField filterFileID:(NSArray *)filterFileID filterTypeFileImage:(BOOL)filterTypeFileImage filterTypeFileVideo:(BOOL)filterTypeFileVideo activeAccount:(NSString *)activeAccount;
 
 + (void)removeAllObjectsSectionDataSource:(CCSectionDataSourceMetadata *)sectionDataSource;
 

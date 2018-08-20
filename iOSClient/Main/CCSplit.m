@@ -119,7 +119,7 @@
     self.build = [CCUtility setBuild];
     
     // init home
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -131,60 +131,48 @@
     // Brand
     if ([NCBrandOptions sharedInstance].disable_intro) {
         
-        [CCUtility setIntroMessage:k_Intro set:YES];
-        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
+        [CCUtility setIntro:YES];
+        if (appDelegate.activeAccount.length == 0) {
+            [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+        }
     
-        [self introWillFinish:nil type:nil wasSkipped:NO];
-
     } else {
     
-        // -1-
-        if ([CCUtility getIntroMessage:k_Intro] == NO) {
+        if ([CCUtility getIntro] == NO) {
         
-            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro];
+            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view];
             [_intro show];
         
-        }
-        
-        // -2-
-        /*
-        else if ([CCUtility getIntroMessage:k_Intro_no_cryptocloud] == NO) {
-            
-            _intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
-            [_intro show];
-        }
-        */
-        
-        // NO INTRO
-        else {
-            
-            [self introWillFinish:nil type:nil wasSkipped:NO];
+        } else {
+            if (appDelegate.activeAccount.length == 0) {
+                [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+            }
         }
     }
 }
 
-- (void)introWillFinish:(EAIntroView *)introView type:(NSString *)type wasSkipped:(BOOL)wasSkipped
+- (void)introFinishSelector:(NSInteger)selector
 {
-    // -1-
-    if ([type isEqualToString:k_Intro]) {
-        
-        [CCUtility setIntroMessage:k_Intro set:YES];
-        // next
-        //_intro = [[CCIntro alloc] initWithDelegate:self delegateView:self.view type:k_Intro_no_cryptocloud];
-        //[_intro show];
-        //
-        //return;
-    }
+    [CCUtility setIntro:YES];
     
-    // -2-
-    /*
-    if ([type isEqualToString:k_Intro_no_cryptocloud]) {
-        
-        [CCUtility setIntroMessage:k_Intro_no_cryptocloud set:YES];
+    switch (selector) {
+            
+        case k_intro_login:
+            {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+                    if (appDelegate.activeAccount.length == 0) {
+                        [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_login];
+                    }
+                });
+            }
+            break;
+            
+        case k_intro_signup:
+            {
+                [appDelegate openLoginView:self loginType:k_login_Add_Forced selector:k_intro_signup];
+            }
+            break;
     }
-    */
-    // check account
-    [self performSelector:@selector(newAccount) withObject:nil afterDelay:0.1];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -193,29 +181,9 @@
 
 - (void)loginSuccess:(NSInteger)loginType
 {
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil];
-}
-
-- (void)loginClose
-{
-    appDelegate.activeLogin = nil;
-}
-
-- (void)loginWebClose
-{
-    appDelegate.activeLoginWeb = nil;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== newAccount =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)newAccount
-{
-    if (appDelegate.activeAccount.length == 0) {
+    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"initializeMain" object:nil userInfo:nil];
     
-        [appDelegate openLoginView:self loginType:loginAddForced];
-    }
+    [appDelegate subscribingNextcloudServerPushNotification];
 }
 
 #pragma --------------------------------------------------------------------------------------------

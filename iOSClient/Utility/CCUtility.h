@@ -73,9 +73,6 @@
 + (BOOL)getOptimizedPhoto;
 + (void)setOptimizedPhoto:(BOOL)resize;
 
-+ (BOOL)getUploadAndRemovePhoto;
-+ (void)setUploadAndRemovePhoto:(BOOL)remove;
-
 + (NSString *)getOrderSettings;
 + (void)setOrderSettings:(NSString *)order;
 
@@ -85,8 +82,8 @@
 + (NSString *)getGroupBySettings;
 + (void)setGroupBySettings:(NSString *)groupby;
 
-+ (BOOL)getIntroMessage:(NSString *)type;
-+ (void)setIntroMessage:(NSString *)type set:(BOOL)set;
++ (BOOL)getIntro;
++ (void)setIntro:(BOOL)set;
 
 + (NSString *)getIncrementalNumber;
 
@@ -110,6 +107,9 @@
 
 + (BOOL)getDirectoryOnTop;
 + (void)setDirectoryOnTop:(BOOL)directoryOnTop;
+
++ (BOOL)getOriginalFileName:(NSString *)key;
++ (void)setOriginalFileName:(BOOL)value key:(NSString *)key;
 
 + (NSString *)getFileNameMask:(NSString *)key;
 + (void)setFileNameMask:(NSString *)mask key:(NSString *)key;
@@ -148,6 +148,13 @@
 + (BOOL)getDisableFilesApp;
 + (void)setDisableFilesApp:(BOOL)disable;
 
++ (void)setPushNotificationPublicKey:(NSData *)data;
++ (NSData *)getPushNotificationPublicKey;
++ (void)setPushNotificationPrivateKey:(NSData *)data;
++ (NSData *)getPushNotificationPrivateKey;
++ (void)setPushNotificationToken:(NSString *)token;
++ (NSString *)getPushNotificationToken;
+
 // ===== Varius =====
 
 + (NSString *)getUserAgent;
@@ -162,15 +169,22 @@
 + (NSString *)stringAppendServerUrl:(NSString *)serverUrl addFileName:(NSString *)addFileName;
 
 + (NSString *)createRandomString:(int)numChars;
-+ (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType;
++ (NSString *)createFileName:fileName fileDate:(NSDate *)fileDate fileType:(PHAssetMediaType)fileType keyFileName:(NSString *)keyFileName keyFileNameType:(NSString *)keyFileNameType keyFileNameOriginal:(NSString *)keyFileNameOriginal;
 
 + (NSURL *)getDirectoryGroup;
 + (NSString *)getHomeServerUrlActiveUrl:(NSString *)activeUrl;
++ (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryDocuments;
 + (NSString *)getDirectoryAudio;
 + (NSString *)getDirectoryCerificates;
++ (NSString *)getDirectoryUserData;
 + (NSString *)getDirectoryProviderStorage;
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID;
++ (NSString *)getDirectoryProviderStorageFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
++ (NSString *)getDirectoryProviderStorageIconFileID:(NSString *)fileID fileNameView:(NSString *)fileNameView;
++ (BOOL)fileProviderStorageExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
++ (BOOL)fileProviderStorageIconExists:(NSString *)fileID fileNameView:(NSString *)fileNameView;
 
 + (NSString *)getTitleSectionDate:(NSDate *)date;
 
@@ -183,6 +197,8 @@
 
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
++ (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;
@@ -192,10 +208,9 @@
 
 + (tableMetadata *)createMetadataWithAccount:(NSString *)account date:(NSDate *)date directory:(BOOL)directory fileID:(NSString *)fileID directoryID:(NSString *)directoryID fileName:(NSString *)fileName etag:(NSString *)etag size:(double)size status:(double)status;
 
-+ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount directoryUser:(NSString *)directoryUser isFolderEncrypted:(BOOL)isFolderEncrypted;
++ (tableMetadata *)trasformedOCFileToCCMetadata:(OCFileDto *)itemDto fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl directoryID:(NSString *)directoryID autoUploadFileName:(NSString *)autoUploadFileName autoUploadDirectory:(NSString *)autoUploadDirectory activeAccount:(NSString *)activeAccount isFolderEncrypted:(BOOL)isFolderEncrypted;
 
-+ (tableMetadata *)insertFileSystemInMetadata:(NSString *)fileName fileNameView:(NSString *)fileNameView directory:(NSString *)directory activeAccount:(NSString *)activeAccount;
-
++ (tableMetadata *)insertFileSystemInMetadata:(tableMetadata *)metadata;
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata;
 
 // ===== Third parts =====

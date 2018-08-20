@@ -47,8 +47,7 @@
     
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
-    self.preferredContentSize = CGSizeMake(640, 640);
-    //detailVC?.preferredContentSize = CGSize(width: 0, height: 380)
+    self.preferredContentSize = CGSizeMake(self.view.frame.size.width - 50, self.view.frame.size.width - 50);
     
     NSURL *url = [[NSBundle mainBundle] URLForResource:@"loading" withExtension:@"gif"];
     
@@ -56,7 +55,7 @@
     
     _imagePreview.contentMode = UIViewContentModeCenter;
 
-    [self downloadThumbnail:_metadata];
+    [self downloadThumbnail];
 }
 
 // E' apparso
@@ -79,8 +78,17 @@
         
         NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadata.directoryID];
         
-        if (serverUrl)
-            [[CCNetworking sharedNetworking] downloadFile:_metadata.fileName fileID:_metadata.fileID serverUrl:serverUrl selector:selectorOpenIn selectorPost:nil session:k_download_session taskStatus:k_taskStatusResume delegate:self.delegate];
+        if (serverUrl) {
+            
+            _metadata.session = k_download_session;
+            _metadata.sessionError = @"";
+            _metadata.sessionSelector = selectorOpenIn;
+            _metadata.status = k_metadataStatusWaitDownload;
+            
+            // Add Metadata for Download
+            (void)[[NCManageDatabase sharedInstance] addMetadata:_metadata];
+            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+        }
     }];
     
     return @[previewAction1];
@@ -90,53 +98,30 @@
 #pragma mark ==== Download Thumbnail ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)downloadThumbnailSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)downloadThumbnail
 {
-    // Check Active Account
-    if (![metadataNet.account isEqualToString:appDelegate.activeAccount])
-        return;
+    CGFloat width = [[NCUtility sharedInstance] getScreenWidthForPreview];
+    CGFloat height = [[NCUtility sharedInstance] getScreenHeightForPreview];
     
-    if (errorCode == 0) {
-        
-        UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.pvw",appDelegate.directoryUser, _metadata.fileID]];
-        
-        _imagePreview.image = image;
-        _imagePreview.contentMode = UIViewContentModeScaleToFill;
-        
-        self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
-        
-    } else {
-        
-        [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-        
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
-}
-
-- (void)downloadThumbnail:(tableMetadata *)metadata
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
     
-    NSString *serverUrl = appDelegate.activeMain.serverUrl;
-    
-    metadataNet.action = actionDownloadThumbnail;
-    metadataNet.fileID = metadata.fileID;
-    metadataNet.fileName = [self returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl];
-    metadataNet.options = @"l";
-    metadataNet.priority = NSOperationQueuePriorityLow;
-    metadataNet.selector = selectorDownloadThumbnail;
-    metadataNet.serverUrl = serverUrl;
-    
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-}
-
-- (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl
-{
-    NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl] withString:@""], metadataFileName];
-    
-    if ([fileName hasPrefix:@"/"]) fileName = [fileName substringFromIndex:1];
-    
-    return fileName;
+    [ocNetworking downloadPreviewWithMetadata:_metadata serverUrl:appDelegate.activeMain.serverUrl withWidth:width andHeight:height completion:^(NSString *message, NSInteger errorCode) {
+        
+        if (errorCode == 0) {
+            
+            UIImage *image = [UIImage imageWithContentsOfFile:[NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:_metadata.fileID], _metadata.fileNameView]];
+            
+            _imagePreview.image = image;
+            _imagePreview.contentMode = UIViewContentModeScaleToFill;
+            
+            self.preferredContentSize = CGSizeMake(image.size.width, image.size.height);
+            
+        } else {
+            
+            [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
+    }];
 }
 
 @end

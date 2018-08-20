@@ -6,8 +6,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
-        <capability name="Alignment constraints to the first baseline" minToolsVersion="6.0"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -20,105 +18,76 @@
                 <rect key="frame" x="0.0" y="0.0" width="600" height="59.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC">
-                        <rect key="frame" x="65" y="16" width="421" height="18"/>
+                    <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QNC-8X-DAC" userLabel="labelTitle">
+                        <rect key="frame" x="65" y="13" width="480" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ">
-                        <rect key="frame" x="65" y="31" width="421" height="15"/>
+                    <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p7I-KN-FVZ" userLabel="labelInfoFile">
+                        <rect key="frame" x="65" y="31" width="480" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.63921568627450975" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5" userLabel="File">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="5" userLabel="file">
                         <rect key="frame" x="15" y="10" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="40" id="kM5-Uf-S8Z"/>
                             <constraint firstAttribute="height" constant="40" id="l9C-BW-ogy"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH" userLabel="Image">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DQR-yN-JaH" userLabel="status">
                         <rect key="frame" x="10" y="40" width="15" height="15"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="15" id="bgo-QS-x7k"/>
                             <constraint firstAttribute="width" constant="15" id="g4P-aH-jOh"/>
                         </constraints>
                     </imageView>
-                    <progressView opaque="NO" tag="40" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Q4M-4B-abs">
-                        <rect key="frame" x="65" y="52" width="421" height="2"/>
-                    </progressView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eGg-ei-EiX" userLabel="Cancel Task Button">
-                        <rect key="frame" x="486" y="5" width="50" height="50"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="50" id="IOy-Uo-T2K"/>
-                            <constraint firstAttribute="height" constant="50" id="Zjh-5E-j3e"/>
-                        </constraints>
-                        <state key="normal">
-                            <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        </state>
-                    </button>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kaz-0H-BSt">
-                        <rect key="frame" x="539" y="6" width="50" height="50"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="50" id="7rT-Yp-IRn"/>
-                            <constraint firstAttribute="width" constant="50" id="Czm-WN-sbo"/>
-                        </constraints>
-                        <state key="normal">
-                            <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        </state>
-                    </button>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Dge-D1-XMk" userLabel="Stop Task Button">
-                        <rect key="frame" x="539" y="5" width="50" height="50"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="50" id="5ET-gL-uPM"/>
-                            <constraint firstAttribute="height" constant="50" id="Exd-l9-KUV"/>
-                        </constraints>
-                        <state key="normal">
-                            <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        </state>
-                    </button>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dhS-83-mLd" userLabel="transferButton" customClass="PKStopDownloadButton">
+                        <rect key="frame" x="558" y="14.5" width="29" height="29"/>
+                        <color key="tintColor" cocoaTouchSystemColor="scrollViewTexturedBackgroundColor"/>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="radius">
+                                <real key="value" value="15"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="stopButtonWidth">
+                                <real key="value" value="10"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="progress">
+                                <real key="value" value="0.0"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="filledLineWidth">
+                                <real key="value" value="2"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="emptyLineWidth">
+                                <real key="value" value="1"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
                 </subviews>
                 <color key="tintColor" red="1" green="0.5" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                 <constraints>
-                    <constraint firstAttribute="centerY" secondItem="eGg-ei-EiX" secondAttribute="centerY" constant="-0.25" id="05v-7z-AMN"/>
                     <constraint firstItem="QNC-8X-DAC" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="0Oa-uE-QbX"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="sQq-jC-UEV" secondAttribute="leading" constant="15" id="1B0-QJ-6w2"/>
-                    <constraint firstAttribute="trailing" secondItem="5" secondAttribute="trailing" constant="545" id="1gX-zZ-TEK"/>
+                    <constraint firstItem="p7I-KN-FVZ" firstAttribute="leading" secondItem="5" secondAttribute="trailing" constant="10" id="4Xt-42-ra7"/>
                     <constraint firstItem="5" firstAttribute="leading" secondItem="DQR-yN-JaH" secondAttribute="trailing" constant="-10" id="6Op-l4-GTN"/>
                     <constraint firstItem="DQR-yN-JaH" firstAttribute="top" secondItem="5" secondAttribute="bottom" constant="-10" id="CGn-pQ-QmD"/>
-                    <constraint firstItem="Kaz-0H-BSt" firstAttribute="top" secondItem="eGg-ei-EiX" secondAttribute="top" constant="0.5" id="LDS-P0-NC6"/>
-                    <constraint firstAttribute="trailingMargin" secondItem="Kaz-0H-BSt" secondAttribute="trailing" constant="-9" id="Mfy-V9-Ezo"/>
-                    <constraint firstItem="Q4M-4B-abs" firstAttribute="leading" secondItem="p7I-KN-FVZ" secondAttribute="leading" id="MgY-Ht-CES"/>
-                    <constraint firstItem="Q4M-4B-abs" firstAttribute="top" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="6" id="MvY-lo-siU"/>
-                    <constraint firstItem="Kaz-0H-BSt" firstAttribute="baseline" secondItem="Dge-D1-XMk" secondAttribute="baseline" constant="1" id="R1y-g5-Bri"/>
-                    <constraint firstItem="Dge-D1-XMk" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="53" id="Tad-UN-Ttn"/>
-                    <constraint firstItem="Dge-D1-XMk" firstAttribute="leading" secondItem="Kaz-0H-BSt" secondAttribute="leading" id="Vc0-qc-qvs"/>
-                    <constraint firstItem="Dge-D1-XMk" firstAttribute="baseline" secondItem="eGg-ei-EiX" secondAttribute="baseline" id="YY9-7o-8ag"/>
                     <constraint firstItem="5" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="asW-ir-Cfb"/>
-                    <constraint firstItem="Dge-D1-XMk" firstAttribute="firstBaseline" secondItem="eGg-ei-EiX" secondAttribute="firstBaseline" id="b1Y-qH-GES"/>
-                    <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="top" constant="16" id="d78-LV-sUw"/>
-                    <constraint firstItem="Q4M-4B-abs" firstAttribute="trailing" secondItem="p7I-KN-FVZ" secondAttribute="trailing" id="dbN-pC-qTS"/>
-                    <constraint firstItem="Dge-D1-XMk" firstAttribute="firstBaseline" secondItem="Kaz-0H-BSt" secondAttribute="firstBaseline" constant="-1" id="eFj-cr-a0P"/>
-                    <constraint firstItem="eGg-ei-EiX" firstAttribute="leading" secondItem="Kaz-0H-BSt" secondAttribute="trailing" constant="-103" id="iuz-Vg-6UE"/>
-                    <constraint firstItem="Q4M-4B-abs" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="leading" id="n4M-Ua-KyP"/>
-                    <constraint firstItem="Q4M-4B-abs" firstAttribute="trailing" secondItem="QNC-8X-DAC" secondAttribute="trailing" id="nN0-sV-pWO"/>
-                    <constraint firstItem="Dge-D1-XMk" firstAttribute="top" secondItem="Kaz-0H-BSt" secondAttribute="top" constant="-1" id="v44-o1-gG7"/>
+                    <constraint firstItem="QNC-8X-DAC" firstAttribute="top" secondItem="sQq-jC-UEV" secondAttribute="top" constant="13" id="d78-LV-sUw"/>
+                    <constraint firstItem="dhS-83-mLd" firstAttribute="centerY" secondItem="sQq-jC-UEV" secondAttribute="centerY" id="eA9-jd-n75"/>
+                    <constraint firstAttribute="trailing" secondItem="dhS-83-mLd" secondAttribute="trailing" constant="13" id="j62-Bl-LTq"/>
+                    <constraint firstAttribute="bottom" secondItem="p7I-KN-FVZ" secondAttribute="bottom" constant="13.5" id="ofO-Ef-6wt"/>
+                    <constraint firstItem="dhS-83-mLd" firstAttribute="leading" secondItem="QNC-8X-DAC" secondAttribute="trailing" constant="13" id="vgg-Ni-Tci"/>
+                    <constraint firstItem="dhS-83-mLd" firstAttribute="leading" secondItem="p7I-KN-FVZ" secondAttribute="trailing" constant="13" id="zUF-S2-yOW"/>
                 </constraints>
             </tableViewCellContentView>
-            <constraints>
-                <constraint firstAttribute="bottom" secondItem="Q4M-4B-abs" secondAttribute="bottom" constant="6" id="AzC-rK-ZMp"/>
-            </constraints>
             <connections>
-                <outlet property="cancelTaskButton" destination="eGg-ei-EiX" id="08u-FB-UcL"/>
                 <outlet property="file" destination="5" id="h6v-aL-JbR"/>
                 <outlet property="labelInfoFile" destination="p7I-KN-FVZ" id="bIH-yL-aSv"/>
                 <outlet property="labelTitle" destination="QNC-8X-DAC" id="coV-Xj-n1Q"/>
-                <outlet property="progressView" destination="Q4M-4B-abs" id="Ouc-sW-VLX"/>
-                <outlet property="reloadTaskButton" destination="Kaz-0H-BSt" id="hOL-f8-R0r"/>
                 <outlet property="status" destination="DQR-yN-JaH" id="neR-jW-zwL"/>
-                <outlet property="stopTaskButton" destination="Dge-D1-XMk" id="UZF-RR-oCy"/>
+                <outlet property="transferButton" destination="dhS-83-mLd" id="eza-fH-eAU"/>
             </connections>
             <point key="canvasLocation" x="414" y="244"/>
         </tableViewCell>

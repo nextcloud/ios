@@ -52,10 +52,6 @@
 //Url to access to Capabilities API
 #define k_url_capabilities @"ocs/v1.php/cloud/capabilities"
 
-//Url to access to Remote Thumbnails
-//api/v1/thumbnail/{x}/{y}/{file}
-#define k_url_thumbnails @"index.php/apps/files/api/v1/thumbnail"
-
 //Url to access to Remote Notification API
 #define k_url_acces_remote_notification_api @"ocs/v2.php/apps/notifications/api/v2/notifications"
 
@@ -110,6 +106,10 @@
 //Name of the container to configure NSURLSessions
 #define k_shared_container_identifier @"group.com.owncloud.iOSmobileapp";
 
+// Quota return value
+#define k_quota_space_not_computed  -1
+#define k_quota_space_unknown       -2
+#define k_quota_space_unlimited     -3
 
 
 

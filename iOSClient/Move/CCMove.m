@@ -31,7 +31,6 @@
     NSString *activeUrl;
     NSString *activeUser;
     NSString *activeUserID;
-    NSString *directoryUser;
     
     BOOL _loadingFolder;
     
@@ -58,7 +57,6 @@
         activeUrl = recordAccount.url;
         activeUser = recordAccount.user;
         activeUserID = recordAccount.userID;
-        directoryUser = [CCUtility getDirectoryActiveUser:activeUser activeUrl:activeUrl];
         
     } else {
         
@@ -81,9 +79,9 @@
         
         tableCapabilities *capabilities = [[NCManageDatabase sharedInstance] getCapabilites];
         if ([capabilities.themingColor isEqualToString:@"#FFFFFF"])
-            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor blackColor]]];
+            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] multiplier:2 color:[UIColor blackColor]]];
         else
-            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] color:[UIColor whiteColor]]];
+            image = [[UIImageView alloc] initWithImage:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"navigationLogo"] multiplier:2 color:[UIColor whiteColor]]];
 
         [self.navigationController.navigationBar.topItem setTitleView:image];
         self.title = @"Home";
@@ -111,7 +109,7 @@
     _autoUploadDirectory = [[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:activeUrl];
     
     // read file->folder
-    [self readFileReloadFolder];
+    [self readFile];
 }
 
 // Apparirà
@@ -270,73 +268,53 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-// MARK: - NetWorking
+// MARK: - Read File
 
-- (void)addNetworkingQueue:(CCMetadataNet *)metadataNet
+- (void)readFile
 {
-    OCnetworking *operation = [[OCnetworking alloc] initWithDelegate:self metadataNet:metadataNet withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
+
+    [ocNetworking readFile:nil serverUrl:_serverUrl account:activeAccount success:^(tableMetadata *metadata) {
         
-    _networkingOperationQueue.maxConcurrentOperationCount = k_maxConcurrentOperation;
-    [_networkingOperationQueue addOperation:operation];
-}
-
-// MARK: - Read Folder
-
-- (void)readFileSuccessFailure:(CCMetadataNet *)metadataNet metadata:(tableMetadata *)metadata message:(NSString *)message errorCode:(NSInteger)errorCode
-{
-    if (errorCode == 0) {
-    
-        if ([metadataNet.selector isEqualToString:selectorReadFileReloadFolder]) {
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", activeAccount, _serverUrl]];
             
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", metadataNet.account, metadataNet.serverUrl]];
-            
-            if ([metadata.etag isEqualToString:directory.etag] == NO) {
+        if ([metadata.etag isEqualToString:directory.etag] == NO) {
                 
-                [self readFolder];
-            }
+            [self readFolder];
         }
-    } else {
+        
+    } failure:^(NSString *message, NSInteger errorCode) {
         [self readFolder];
-    }
-}
-
-- (void)readFileReloadFolder
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
-    
-    metadataNet.action = actionReadFile;
-    metadataNet.priority = NSOperationQueuePriorityHigh;
-    metadataNet.selector = selectorReadFileReloadFolder;
-    metadataNet.serverUrl = _serverUrl;
-    
-    [self addNetworkingQueue:metadataNet];
+    }];
 }
 
 // MARK: - Read Folder
 
-- (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)readFolder
 {
-    if (errorCode == 0) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
+
+    [ocNetworking readFolder:_serverUrl depth:@"1" account:activeAccount success:^(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID) {
         
-        NSMutableArray *metadatasToInsertInDB = [NSMutableArray new];
-     
         // Update directory etag
-        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:metadataNet.serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:_serverUrl serverUrlTo:nil etag:metadataFolder.etag fileID:metadataFolder.fileID encrypted:metadataFolder.e2eEncrypted];
+        [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d)", directoryID, k_metadataStatusNormal, k_metadataStatusHide] clearDateReadDirectoryID:directoryID];
+        [[NCManageDatabase sharedInstance] setDateReadDirectoryWithDirectoryID:directoryID];
         
-        for (tableMetadata *metadata in metadatas) {
-            
-            // Insert in Array
-            [metadatasToInsertInDB addObject:metadata];
-        }
-
+        NSArray *metadatasInDownload = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError] sorted:nil ascending:NO];
+        
         // insert in Database
-        metadatas = [[NCManageDatabase sharedInstance] addMetadatas:metadatasToInsertInDB serverUrl:metadataNet.serverUrl];
-
+        (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatas serverUrl:_serverUrl];
+        // reinsert metadatas in Download
+        if (metadatasInDownload) {
+            (void)[[NCManageDatabase sharedInstance] addMetadatas:metadatasInDownload serverUrl:_serverUrl];
+        }
+        
         _loadingFolder = NO;
         
         [self.tableView reloadData];
         
-    } else {
+    } failure:^(NSString *message, NSInteger errorCode) {
         
         _loadingFolder = NO;
         self.move.enabled = NO;
@@ -349,59 +327,29 @@
         }]];
         
         [self presentViewController:alertController animated:YES completion:nil];
-    }
-}
+        
+    }];
 
-- (void)readFolder
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
-    
-    metadataNet.action = actionReadFolder;
-    metadataNet.date = nil;
-    metadataNet.depth = @"1";
-    metadataNet.selector = selectorReadFolder;
-    metadataNet.serverUrl = _serverUrl;
-    
-    [self addNetworkingQueue:metadataNet];
-    
-    //
     _loadingFolder = YES;
     [self.tableView reloadData];
 }
 
 // MARK: - Create Folder
 
-- (void)createFolderSuccessFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
+- (void)createFolder:(NSString *)fileNameFolder
 {
-    if (errorCode == 0) {
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:activeUser withUserID:activeUserID withPassword:activePassword withUrl:activeUrl];
     
+    [ocNetworking createFolder:fileNameFolder serverUrl:_serverUrl account:activeAccount success:^(NSString *fileID, NSDate *date) {
         [self readFolder];
-        
-    } else {
-      
+    } failure:^(NSString *message, NSInteger errorCode) {
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
         
         [alertController addAction: [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         }]];
         
         [self presentViewController:alertController animated:YES completion:nil];
-    }
-}
-
-- (void)createFolder:(NSString *)fileNameFolder
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:activeAccount];
-    
-    fileNameFolder = [CCUtility removeForbiddenCharactersServer:fileNameFolder];
-    if (![fileNameFolder length]) return;
-    
-    metadataNet.action = actionCreateFolder;
-    metadataNet.fileName = fileNameFolder;
-    metadataNet.selector = selectorCreateFolder;
-    metadataNet.selectorPost = selectorReadFolderForced;
-    metadataNet.serverUrl = _serverUrl;
-    
-    [self addNetworkingQueue:metadataNet];
+    }];
 }
 
 // MARK: - Table
@@ -417,8 +365,8 @@
     if (!directoryID) return 0;
     NSPredicate *predicate;
     
-    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account == %@ AND directoryID = %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true", directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true AND e2eEncrypted == false", directoryID];
     
     NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
     
@@ -443,10 +391,13 @@
     if (!directoryID)
         return cell;
     
-    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true", directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true AND e2eEncrypted == false", directoryID];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:indexPath.row];
+    
+    // Create Directory Provider Storage FileID
+    [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
     
     // colors
     cell.textLabel.textColor = [UIColor blackColor];
@@ -454,13 +405,14 @@
     cell.detailTextLabel.text = @"";
     
     if (metadata.e2eEncrypted)
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] color:[NCBrandColor sharedInstance].brandElement];
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderPhotos"] color:[NCBrandColor sharedInstance].brandElement];
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     else
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] color:[NCBrandColor sharedInstance].brandElement];
+        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     
     cell.textLabel.text = metadata.fileNameView;
+    cell.accessoryType = UITableViewCellAccessoryNone;
     
     return cell;
 }
@@ -481,8 +433,8 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return;
     
-    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID = %@ AND directory = true", activeAccount, directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"account = %@ AND directoryID == %@ AND directory = true AND e2eEncrypted = false", activeAccount, directoryID];
+    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true", directoryID];
+    else predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true AND e2eEncrypted == false", directoryID];
     
     tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:index.row];
     
@@ -491,7 +443,7 @@
         
     // Se siamo in presenza di una directory bloccata E è attivo il block E la sessione PASSWORD Lock è senza data ALLORA chiediamo la password per procedere
         
-    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account = %@ AND serverUrl = %@", activeAccount, lockServerUrl]];
+    tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", activeAccount, lockServerUrl]];
         
     if (directory.lock && [[CCUtility getBlockCode] length] && controlPasscode) {
             

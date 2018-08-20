@@ -28,6 +28,5 @@
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 
-- (void)reloadDatasource;
-
+- (void)reloadDatasource:(NSString *)fileID action:(NSInteger)action;
 @end
