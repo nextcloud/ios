@@ -35,6 +35,8 @@
     NSString *autoUploadFileName;
     NSString *autoUploadDirectory;
     
+    UIDocumentInteractionController *docController;
+    
     // Datasource
     CCSectionDataSourceMetadata *sectionDataSource;
 }
@@ -297,7 +299,7 @@
 {
     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
         
-    UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+    docController = [UIDocumentInteractionController interactionControllerWithURL:url];
     docController.delegate = self;
         
     NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];

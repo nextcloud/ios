@@ -57,6 +57,7 @@
     NSDate *_lockUntilDate;
 
     UIRefreshControl *_refreshControl;
+    UIDocumentInteractionController *docController;
 
     CCHud *_hud;
     
@@ -2335,7 +2336,7 @@
 {
     NSURL *url = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
     
-    UIDocumentInteractionController *docController = [UIDocumentInteractionController interactionControllerWithURL:url];
+    docController = [UIDocumentInteractionController interactionControllerWithURL:url];
     docController.delegate = self;
     
     NSIndexPath *indexPath = [sectionDataSource.fileIDIndexPath objectForKey:metadata.fileID];
