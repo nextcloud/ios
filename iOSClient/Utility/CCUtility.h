@@ -199,6 +199,8 @@
 
 + (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
 
++ (NSString *)getDirectoryPDFGenerator;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;

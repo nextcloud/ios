@@ -276,6 +276,9 @@
 		F758B452212C516300515F55 /* Quadrilateral.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B439212C516300515F55 /* Quadrilateral.swift */; };
 		F758B453212C516300515F55 /* ReviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B43B212C516300515F55 /* ReviewViewController.swift */; };
 		F758B454212C516300515F55 /* Transformable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B43D212C516300515F55 /* Transformable.swift */; };
+		F758B45A212C564000515F55 /* Scan.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F758B457212C564000515F55 /* Scan.storyboard */; };
+		F758B45E212C569D00515F55 /* ScanCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45D212C569C00515F55 /* ScanCell.swift */; };
+		F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B45F212C56A400515F55 /* ScanCollectionView.swift */; };
 		F75AC2431F1F62450073EC19 /* NCManageAutoUploadFileName.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */; };
 		F75ADF451DC75FFE008A7347 /* CCLogin.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */; };
 		F75AE3C71E9D12900088BB09 /* SwiftyAvatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */; };
@@ -1034,6 +1037,9 @@
 		F758B439212C516300515F55 /* Quadrilateral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Quadrilateral.swift; sourceTree = "<group>"; };
 		F758B43B212C516300515F55 /* ReviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReviewViewController.swift; sourceTree = "<group>"; };
 		F758B43D212C516300515F55 /* Transformable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transformable.swift; sourceTree = "<group>"; };
+		F758B457212C564000515F55 /* Scan.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Scan.storyboard; sourceTree = "<group>"; };
+		F758B45D212C569C00515F55 /* ScanCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanCell.swift; sourceTree = "<group>"; };
+		F758B45F212C56A400515F55 /* ScanCollectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScanCollectionView.swift; sourceTree = "<group>"; };
 		F75AC2421F1F62450073EC19 /* NCManageAutoUploadFileName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCManageAutoUploadFileName.swift; sourceTree = "<group>"; };
 		F75ADF441DC75FFE008A7347 /* CCLogin.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCLogin.storyboard; sourceTree = "<group>"; };
 		F75AE3C61E9D12900088BB09 /* SwiftyAvatar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyAvatar.swift; sourceTree = "<group>"; };
@@ -2375,6 +2381,9 @@
 		F758B41E212C516300515F55 /* Scan */ = {
 			isa = PBXGroup;
 			children = (
+				F758B45F212C56A400515F55 /* ScanCollectionView.swift */,
+				F758B45D212C569C00515F55 /* ScanCell.swift */,
+				F758B457212C564000515F55 /* Scan.storyboard */,
 				F758B41F212C516300515F55 /* WeScan */,
 			);
 			path = Scan;
@@ -3677,6 +3686,7 @@
 				F7D4233D1F0596AC009C9782 /* Reader-Button-N@3x.png in Resources */,
 				F73B4EF21F470D9100BBEE4B /* EUCTWFreq.tab in Resources */,
 				F700222C1EC479840080073F /* Custom.xcassets in Resources */,
+				F758B45A212C564000515F55 /* Scan.storyboard in Resources */,
 				F77B0EFE1D118A16002130FE /* CCUploadFromOtherUpp.storyboard in Resources */,
 				F7D4246E1F063B82009C9782 /* CTAssetsPickerController.bundle in Resources */,
 				F762CB991EACB84400B38484 /* icon-success.png in Resources */,
@@ -4047,6 +4057,7 @@
 				F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */,
 				F73B4F091F470D9100BBEE4B /* nsEUCKRProber.cpp in Sources */,
 				F7D424711F063B82009C9782 /* CTAssetsViewControllerTransition.m in Sources */,
+				F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */,
 				F762CB021EACB66200B38484 /* XLFormSliderCell.m in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F70022CB1EC4C9100080073F /* OCSharedDto.m in Sources */,
@@ -4264,6 +4275,7 @@
 				F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */,
 				F758B454212C516300515F55 /* Transformable.swift in Sources */,
 				F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */,
+				F758B45E212C569D00515F55 /* ScanCell.swift in Sources */,
 				F70022FE1EC4C9100080073F /* UtilsFramework.m in Sources */,
 				F7D424561F063B82009C9782 /* NSNumberFormatter+CTAssetsPickerController.m in Sources */,
 				F70022AA1EC4C9100080073F /* AFURLRequestSerialization.m in Sources */,

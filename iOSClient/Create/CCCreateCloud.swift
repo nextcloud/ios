@@ -69,7 +69,7 @@ class CreateMenuAdd: NSObject {
             appDelegate.activeMain.openAssetsPickerController()
         })
         
-        if #available(iOS 10.0, *) {
+        if #available(iOS 11.0, *) {
             actionSheet.addButton(withTitle: NSLocalizedString("_scans_document_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
                 NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
             })
@@ -705,11 +705,12 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         }
         
         let fileName = CCUtility.createFileName("scan", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
-        let fileNamePath = CCUtility.getDirectoryGroup().appendingPathComponent(k_DirectoryProviderStorage).appendingPathComponent(fileName)
+        let fileNamePath = CCUtility.getDirectoryPDFGenerator() + "/" + fileName
         
         do {
-            try UIImagePNGRepresentation(image)?.write(to: fileNamePath, options: .atomic)
+            try UIImagePNGRepresentation(image)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
         } catch { }
+        
         
         
         //        let imageData = UIImageJPEGRepresentation(imageBN, 0.8)!
