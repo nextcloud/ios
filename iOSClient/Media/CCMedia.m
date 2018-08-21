@@ -49,11 +49,11 @@
     BOOL collectionViewReloadDataInProgress;
     
     // Remenu
-    REMenu *reMainMenu;
-    REMenuItem *mainMenuselectMediaFolder;
-    REMenuItem *mainMenufilterImage;
-    REMenuItem *mainMenufilterVideo;
-    REMenuItem *mainMenuselectItems;
+    REMenu *menu;
+    REMenuItem *menuSelectMediaFolder;
+    REMenuItem *menuFilterImage;
+    REMenuItem *menuFilterVideo;
+    REMenuItem *menuSelectItems;
 }
 @end
 
@@ -162,6 +162,8 @@
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
+    [menu close];
+    
     // Before rotation
     
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
@@ -175,6 +177,7 @@
             // Landscape
         }
         
+        [self.collectionView reloadData];
     }];
 }
 
@@ -182,22 +185,22 @@
 #pragma mark ===== Gestione Grafica Window =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)toggleReMainMenu
+- (void)openMenu
 {
-    if (reMainMenu.isOpen) {
+    if (menu.isOpen) {
         
-        [reMainMenu close];
+        [menu close];
         
     } else {
         
         [self createReMainMenu];
-        [reMainMenu showFromNavigationController:self.navigationController];
+        [menu showFromNavigationController:self.navigationController];
         
         // Backgroun reMenu & (Gesture)
-        [self createReMenuBackgroundView:appDelegate.reMainMenu];
+        [self createReMenuBackgroundView:menu];
         
-        _singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(toggleReMainMenu)];
-        [_reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
+        self.singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openMenu)];
+        [self.reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
     }
 }
 
@@ -219,6 +222,8 @@
     UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
     CGRect globalPositionMenu = [menu.menuView convertRect:menu.menuView.bounds toView:rootController.view];
     
+    self.reMenuBackgroundView = [UIView new];
+    self.reMenuBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
     self.reMenuBackgroundView.frame = CGRectMake(0, computeNavigationBarOffset, globalPositionMenu.size.width,  rootController.view.frame.size.height);
     
     [UIView animateWithDuration:0.2 animations:^{
@@ -236,35 +241,35 @@
 
 - (void)createReMainMenu
 {
-    mainMenuselectItems = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+    menuSelectItems = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         if ([sectionDataSource.allRecordsDataSource count] > 0) {
             [self editingModeYES];
         }
     }];
     
-    mainMenuselectMediaFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_media_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+    menuSelectMediaFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_media_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         [self selectStartDirectoryPhotosTab];
     }];
     
     if (filterTypeFileImage) {
-        mainMenufilterImage = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewimage_show_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"imageno"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        menuFilterImage = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewimage_show_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"imageno"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
             filterTypeFileImage = NO;
             [self reloadDatasource:nil action:k_action_NULL];
         }];
     } else {
-        mainMenufilterImage = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewimage_hide_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"imageyes"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        menuFilterImage = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewimage_hide_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"imageyes"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
             filterTypeFileImage = YES;
             [self reloadDatasource:nil action:k_action_NULL];
         }];
     }
     
     if (filterTypeFileVideo) {
-        mainMenufilterVideo = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewvideo_show_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"videono"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        menuFilterVideo = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewvideo_show_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"videono"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
             filterTypeFileVideo = NO;
             [self reloadDatasource:nil action:k_action_NULL];
         }];
     } else {
-        mainMenufilterVideo = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewvideo_hide_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"videoyes"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        menuFilterVideo = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewvideo_hide_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"videoyes"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
             filterTypeFileVideo = YES;
             [self reloadDatasource:nil action:k_action_NULL];
         }];
@@ -272,51 +277,51 @@
     
     // REMENU --------------------------------------------------------------------------------------------------------------
     
-    reMainMenu = [[REMenu alloc] initWithItems:@[mainMenuselectItems, mainMenuselectMediaFolder, mainMenufilterImage, mainMenufilterVideo]];
+    menu = [[REMenu alloc] initWithItems:@[menuSelectItems, menuSelectMediaFolder, menuFilterImage, menuFilterVideo]];
     
-    reMainMenu.imageOffset = CGSizeMake(5, -1);
+    menu.imageOffset = CGSizeMake(5, -1);
     
-    reMainMenu.separatorOffset = CGSizeMake(50.0, 0.0);
-    reMainMenu.imageOffset = CGSizeMake(0, 0);
-    reMainMenu.waitUntilAnimationIsComplete = NO;
+    menu.separatorOffset = CGSizeMake(50.0, 0.0);
+    menu.imageOffset = CGSizeMake(0, 0);
+    menu.waitUntilAnimationIsComplete = NO;
     
-    reMainMenu.separatorHeight = 0.5;
-    reMainMenu.separatorColor = [NCBrandColor sharedInstance].seperator;
+    menu.separatorHeight = 0.5;
+    menu.separatorColor = [NCBrandColor sharedInstance].seperator;
     
-    reMainMenu.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
-    reMainMenu.textColor = [UIColor blackColor];
-    reMainMenu.textAlignment = NSTextAlignmentLeft;
-    reMainMenu.textShadowColor = nil;
-    reMainMenu.textOffset = CGSizeMake(50, 0.0);
-    reMainMenu.font = [UIFont systemFontOfSize:14.0];
+    menu.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+    menu.textColor = [UIColor blackColor];
+    menu.textAlignment = NSTextAlignmentLeft;
+    menu.textShadowColor = nil;
+    menu.textOffset = CGSizeMake(50, 0.0);
+    menu.font = [UIFont systemFontOfSize:14.0];
     
-    reMainMenu.highlightedBackgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
-    reMainMenu.highlightedSeparatorColor = nil;
-    reMainMenu.highlightedTextColor = [UIColor blackColor];
-    reMainMenu.highlightedTextShadowColor = nil;
-    reMainMenu.highlightedTextShadowOffset = CGSizeMake(0, 0);
+    menu.highlightedBackgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
+    menu.highlightedSeparatorColor = nil;
+    menu.highlightedTextColor = [UIColor blackColor];
+    menu.highlightedTextShadowColor = nil;
+    menu.highlightedTextShadowOffset = CGSizeMake(0, 0);
     
-    reMainMenu.subtitleTextColor = [UIColor colorWithWhite:0.425 alpha:1];
-    reMainMenu.subtitleTextAlignment = NSTextAlignmentLeft;
-    reMainMenu.subtitleTextShadowColor = nil;
-    reMainMenu.subtitleTextShadowOffset = CGSizeMake(0, 0.0);
-    reMainMenu.subtitleTextOffset = CGSizeMake(50, 0.0);
-    reMainMenu.subtitleFont = [UIFont systemFontOfSize:12.0];
+    menu.subtitleTextColor = [UIColor colorWithWhite:0.425 alpha:1];
+    menu.subtitleTextAlignment = NSTextAlignmentLeft;
+    menu.subtitleTextShadowColor = nil;
+    menu.subtitleTextShadowOffset = CGSizeMake(0, 0.0);
+    menu.subtitleTextOffset = CGSizeMake(50, 0.0);
+    menu.subtitleFont = [UIFont systemFontOfSize:12.0];
     
-    reMainMenu.subtitleHighlightedTextColor = [UIColor lightGrayColor];
-    reMainMenu.subtitleHighlightedTextShadowColor = nil;
-    reMainMenu.subtitleHighlightedTextShadowOffset = CGSizeMake(0, 0);
+    menu.subtitleHighlightedTextColor = [UIColor lightGrayColor];
+    menu.subtitleHighlightedTextShadowColor = nil;
+    menu.subtitleHighlightedTextShadowOffset = CGSizeMake(0, 0);
     
-    reMainMenu.borderWidth = 0.3;
-    reMainMenu.borderColor =  [UIColor lightGrayColor];
+    menu.borderWidth = 0.3;
+    menu.borderColor =  [UIColor lightGrayColor];
     
-    reMainMenu.animationDuration = 0.2;
-    reMainMenu.closeAnimationDuration = 0.2;
+    menu.animationDuration = 0.2;
+    menu.closeAnimationDuration = 0.2;
     
-    reMainMenu.bounce = NO;
+    menu.bounce = NO;
     
     __weak typeof(self) weakSelf = self;
-    [appDelegate.reMainMenu setClosePreparationBlock:^{
+    [menu setClosePreparationBlock:^{
         
         // Backgroun reMenu (Gesture)
         [weakSelf.reMenuBackgroundView removeFromSuperview];
@@ -352,7 +357,7 @@
     }
     
     // Button Item RIGHT
-    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationControllerMenu"] style:UIBarButtonItemStylePlain target:self action:@selector(toggleReMainMenu)];
+    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationControllerMenu"] style:UIBarButtonItemStylePlain target:self action:@selector(openMenu)];
     
     self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
     self.navigationItem.leftBarButtonItems = nil;
