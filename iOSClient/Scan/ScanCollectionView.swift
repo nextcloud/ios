@@ -21,6 +21,8 @@ class DragDropViewController: UIViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
+        
         //CollectionView-1 drag and drop configuration
         self.collectionView1.dragInteractionEnabled = true
         self.collectionView1.dragDelegate = self
@@ -31,13 +33,16 @@ class DragDropViewController: UIViewController
         self.collectionView2.dropDelegate = self
         self.collectionView2.dragDelegate = self
         self.collectionView2.reorderingCadence = .fast //default value - .immediate
-        
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        
+
         loadImage()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+    }
     
     private func loadImage() {
         do {
