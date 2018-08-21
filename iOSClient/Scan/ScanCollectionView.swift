@@ -32,6 +32,9 @@ class DragDropViewController: UIViewController
         self.collectionView2.dragDelegate = self
         self.collectionView2.reorderingCadence = .fast //default value - .immediate
         
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        
         loadImage()
     }
     
