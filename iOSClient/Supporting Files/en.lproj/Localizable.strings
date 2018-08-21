@@ -559,4 +559,16 @@
 "_e2e_error_mark_folder_"           = "Encrypt folder";
 "_e2e_error_directory_not_empty_"   = "The directory is not empty";
 
+// Scan Document
+
+/* The title on the navigation bar of the Scanning screen. */
+"wescan.scanning.title"             = "Scanning";
+/* The "Next" button on the right side of the navigation bar on the Edit screen. */
+"wescan.edit.button.next"           = "Next";
+/* The title on the navigation bar of the Edit screen. */
+"wescan.edit.title"                 = "Edit Scan";
+/* The "Done" button on the right side of the navigation bar on the Review screen. */
+"wescan.review.button.done"         = "Done";
+/* The title on the navigation bar of the Review screen. */
+"wescan.review.title"               = "Review";
 
