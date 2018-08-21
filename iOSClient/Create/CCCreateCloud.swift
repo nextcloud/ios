@@ -441,7 +441,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
 
 // MARK: -
 
-class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
+class CreateFormUploadFileText: XLFormViewController, CCMoveDelegate {
     
     var serverUrl = ""
     var titleServerUrl = ""
