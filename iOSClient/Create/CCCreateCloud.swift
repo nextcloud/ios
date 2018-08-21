@@ -69,6 +69,12 @@ class CreateMenuAdd: NSObject {
             appDelegate.activeMain.openAssetsPickerController()
         })
         
+        if #available(iOS 10.0, *) {
+            actionSheet.addButton(withTitle: NSLocalizedString("_scans_document_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+                NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
+            })
+        }
+        
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.openImportDocumentPicker()
         })
@@ -668,6 +674,93 @@ class CreateFormUploadFile: XLFormViewController, CCMoveDelegate {
         
         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
         self.present(navigationController, animated: true, completion: nil)
+    }
+}
+
+//MARK: -
+
+class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
+    
+    @objc static let sharedInstance: NCCreateScanDocument = {
+        let instance = NCCreateScanDocument()
+        return instance
+    }()
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    @available(iOS 10, *)
+    func openScannerDocument(viewController: UIViewController) {
+        let scannerVC = ImageScannerController()
+        scannerVC.imageScannerDelegate = self
+        viewController.present(scannerVC, animated: true, completion: nil)
+    }
+    
+    @available(iOS 10, *)
+    func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
+        
+        scanner.dismiss(animated: true, completion: nil)
+        
+        guard let image = getScannedImage(inputImage: results.scannedImage) else {
+            return
+        }
+        
+        let fileName = CCUtility.createFileName("scan", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+        let fileNamePath = CCUtility.getDirectoryGroup().appendingPathComponent(k_DirectoryProviderStorage).appendingPathComponent(fileName)
+        
+        do {
+            try UIImagePNGRepresentation(image)?.write(to: fileNamePath, options: .atomic)
+        } catch { }
+        
+        
+        //        let imageData = UIImageJPEGRepresentation(imageBN, 0.8)!
+        //        try? imageData.write(to: fileNamePath)
+        
+        /*
+         do {
+         let page: [PDFPage] = [
+         .whitePage(PDFPageSize.A4),
+         .image(imageBN)
+         ]
+         
+         let path = CCUtility.getDirectoryGroup().appendingPathComponent(k_DirectoryProviderStorage).path+"/"+"scan1.pdf"
+         try PDFGenerator.generate(page, to: path)
+         
+         } catch let error {
+         print(error)
+         }
+         */
+    }
+    
+    @available(iOS 10, *)
+    func imageScannerControllerDidCancel(_ scanner: ImageScannerController) {
+        scanner.dismiss(animated: true, completion: nil)
+    }
+    
+    @available(iOS 10, *)
+    func imageScannerController(_ scanner: ImageScannerController, didFailWithError error: Error) {
+        appDelegate.messageNotification("_error_", description: error.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+        print(error)
+    }
+    
+    func getScannedImage(inputImage: UIImage) -> UIImage? {
+        
+        let openGLContext = EAGLContext(api: .openGLES2)
+        let context = CIContext(eaglContext: openGLContext!)
+        
+        let filter = CIFilter(name: "CIColorControls")
+        let coreImage = CIImage(image: inputImage)
+        
+        filter?.setValue(coreImage, forKey: kCIInputImageKey)
+        //Key value are changable according to your need.
+        filter?.setValue(7, forKey: kCIInputContrastKey)
+        filter?.setValue(1, forKey: kCIInputSaturationKey)
+        filter?.setValue(1.2, forKey: kCIInputBrightnessKey)
+        
+        if let outputImage = filter?.value(forKey: kCIOutputImageKey) as? CIImage {
+            let output = context.createCGImage(outputImage, from: outputImage.extent)
+            return UIImage(cgImage: output!)
+        }
+        return nil
     }
 }
 

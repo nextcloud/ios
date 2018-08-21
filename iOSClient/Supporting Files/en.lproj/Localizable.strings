@@ -561,6 +561,8 @@
 
 // Scan Document
 
+"_scans_document_"                   = "Scans document";
+
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";
 /* The "Next" button on the right side of the navigation bar on the Edit screen. */
