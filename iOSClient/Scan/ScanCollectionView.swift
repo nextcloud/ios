@@ -38,7 +38,7 @@ class DragDropViewController: UIViewController
     
     private func loadImage() {
         do {
-            let directoryContents = try FileManager.default.contentsOfDirectory(atPath: CCUtility.getDirectoryPDFGenerator()!)
+            let directoryContents = try FileManager.default.contentsOfDirectory(atPath: CCUtility.getDirectoryScan()!)
             for fileName in directoryContents {
                 items1.append(fileName)
             }
@@ -129,7 +129,7 @@ extension DragDropViewController : UICollectionViewDataSource
         {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as! ScanCell
             
-            let fileNamePath = CCUtility.getDirectoryPDFGenerator() + "/" + self.items1[indexPath.row]
+            let fileNamePath = CCUtility.getDirectoryScan() + "/" + self.items1[indexPath.row]
             let data = try? Data(contentsOf: fileNamePath.url)
             cell.customImageView?.image = UIImage(data: data!)
             cell.customLabel.text = self.items1[indexPath.row].capitalized
@@ -139,7 +139,7 @@ extension DragDropViewController : UICollectionViewDataSource
         {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! ScanCell
             
-            let fileNamePath = CCUtility.getDirectoryPDFGenerator() + "/" + self.items2[indexPath.row]
+            let fileNamePath = CCUtility.getDirectoryScan() + "/" + self.items2[indexPath.row]
             let data = try? Data(contentsOf: fileNamePath.url)
             cell.customImageView?.image = UIImage(data: data!)
             cell.customLabel.text = self.items2[indexPath.row].capitalized

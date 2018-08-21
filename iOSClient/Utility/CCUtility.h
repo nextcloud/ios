@@ -199,7 +199,7 @@
 
 + (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
 
-+ (NSString *)getDirectoryPDFGenerator;
++ (NSString *)getDirectoryScan;
 
 // ===== E2E Encrypted =====
 

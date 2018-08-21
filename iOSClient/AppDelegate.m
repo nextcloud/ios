@@ -94,8 +94,8 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath: path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
-    // create Directory PDFGenerator
-    path = [[dirGroup URLByAppendingPathComponent:k_appPDFGenerator] path];
+    // create Directory Scan
+    path = [[dirGroup URLByAppendingPathComponent:k_appScan] path];
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     

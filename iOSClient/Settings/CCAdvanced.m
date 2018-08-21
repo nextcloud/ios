@@ -348,6 +348,7 @@
         
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryScan] error:nil];
         
         [self emptyDocumentsDirectory];
         NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
@@ -466,7 +467,7 @@
             [CCUtility deleteAllChainStore];
             
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
-
+            
             [self emptyDocumentsDirectory];
             
             [self emptyLibraryDirectory];

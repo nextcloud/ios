@@ -44,7 +44,7 @@
 #define k_appDatabaseNextcloud                          @"Library/Application Support/Nextcloud"
 #define k_appUserData                                   @"Library/Application Support/UserData"
 #define k_appCertificates                               @"Library/Application Support/Certificates"
-#define k_appPDFGenerator                               @"Library/Application Support/PDFGenerator"
+#define k_appScan                                       @"Library/Application Support/Scan"
 #define k_DirectoryProviderStorage                      @"File Provider Storage"
 
 // Server Status

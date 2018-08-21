@@ -700,15 +700,15 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         
         scanner.dismiss(animated: true, completion: nil)
         
-        guard let image = getScannedImage(inputImage: results.scannedImage) else {
-            return
-        }
+        //guard let image = getScannedImage(inputImage: results.scannedImage) else {
+        //    return
+        //}
         
         let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
-        let fileNamePath = CCUtility.getDirectoryPDFGenerator() + "/" + fileName
+        let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
         
         do {
-            try UIImagePNGRepresentation(image)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+            try UIImagePNGRepresentation(results.scannedImage)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
         } catch { }
         
         let storyboard = UIStoryboard(name: "Scan", bundle: nil)
@@ -745,27 +745,6 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     func imageScannerController(_ scanner: ImageScannerController, didFailWithError error: Error) {
         appDelegate.messageNotification("_error_", description: error.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
         print(error)
-    }
-    
-    func getScannedImage(inputImage: UIImage) -> UIImage? {
-        
-        let openGLContext = EAGLContext(api: .openGLES2)
-        let context = CIContext(eaglContext: openGLContext!)
-        
-        let filter = CIFilter(name: "CIColorControls")
-        let coreImage = CIImage(image: inputImage)
-        
-        filter?.setValue(coreImage, forKey: kCIInputImageKey)
-        //Key value are changable according to your need.
-        filter?.setValue(7, forKey: kCIInputContrastKey)
-        filter?.setValue(1, forKey: kCIInputSaturationKey)
-        filter?.setValue(1.2, forKey: kCIInputBrightnessKey)
-        
-        if let outputImage = filter?.value(forKey: kCIOutputImageKey) as? CIImage {
-            let output = context.createCGImage(outputImage, from: outputImage.extent)
-            return UIImage(cgImage: output!)
-        }
-        return nil
     }
 }
 

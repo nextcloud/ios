@@ -1042,9 +1042,9 @@
     return [@[@"TXT", @"MD", @"MARKDOWN", @"ORG"] containsObject:fileExtension];
 }
 
-+ (NSString *)getDirectoryPDFGenerator
++ (NSString *)getDirectoryScan
 {
-    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appPDFGenerator] path];
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appScan] path];
     
     if (![[NSFileManager defaultManager] fileExistsAtPath:path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
