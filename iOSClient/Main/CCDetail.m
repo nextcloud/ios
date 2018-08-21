@@ -138,8 +138,10 @@
     // remove Observer AVPlayer
     if (isMediaObserver) {
         isMediaObserver = NO;
-        [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
+        @try{
+            [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
+        }@catch(id anException) { }
     }
 }
 
