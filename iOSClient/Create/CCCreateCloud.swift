@@ -704,13 +704,17 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
             return
         }
         
-        let fileName = CCUtility.createFileName("scan", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+        let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
         let fileNamePath = CCUtility.getDirectoryPDFGenerator() + "/" + fileName
         
         do {
             try UIImagePNGRepresentation(image)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
         } catch { }
         
+        let storyboard = UIStoryboard(name: "Scan", bundle: nil)
+        let controller = storyboard.instantiateInitialViewController()! //(withIdentifier: "ScanNC")
+        controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+        appDelegate.activeMain.present(controller, animated: true, completion: nil)
         
         
         //        let imageData = UIImageJPEGRepresentation(imageBN, 0.8)!

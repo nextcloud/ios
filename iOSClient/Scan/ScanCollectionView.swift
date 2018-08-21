@@ -1,10 +1,4 @@
 //
-//  DragDropViewController.swift
-//  DragAndDropInCollectionView
-//
-//  Created by Payal Gupta on 06/11/17.
-//  Copyright © 2017 Payal Gupta. All rights reserved.
-//
 
 import UIKit
 
@@ -45,15 +39,14 @@ class DragDropViewController: UIViewController
     private func loadImage() {
         do {
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: CCUtility.getDirectoryPDFGenerator()!)
-            for x in directoryContents {
-                
+            for fileName in directoryContents {
+                items1.append(fileName)
             }
         }
         catch {
             print(error.localizedDescription)
         }
     }
-    
     
     //MARK: Private Methods
     
@@ -135,14 +128,20 @@ extension DragDropViewController : UICollectionViewDataSource
         if collectionView == self.collectionView1
         {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as! ScanCell
-            cell.customImageView?.image = UIImage(named: self.items1[indexPath.row])
+            
+            let fileNamePath = CCUtility.getDirectoryPDFGenerator() + "/" + self.items1[indexPath.row]
+            let data = try? Data(contentsOf: fileNamePath.url)
+            cell.customImageView?.image = UIImage(data: data!)
             cell.customLabel.text = self.items1[indexPath.row].capitalized
             return cell
         }
         else
         {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! ScanCell
-            cell.customImageView?.image = UIImage(named: self.items2[indexPath.row])
+            
+            let fileNamePath = CCUtility.getDirectoryPDFGenerator() + "/" + self.items2[indexPath.row]
+            let data = try? Data(contentsOf: fileNamePath.url)
+            cell.customImageView?.image = UIImage(data: data!)
             cell.customLabel.text = self.items2[indexPath.row].capitalized
             return cell
         }
