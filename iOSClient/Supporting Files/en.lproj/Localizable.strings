@@ -561,7 +561,8 @@
 
 // Scan Document
 
-"_scans_document_"                   = "Scans document";
+"_scans_document_"                  = "Scans document";
+"_scanned_images_"                  = "Scanned images";
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";

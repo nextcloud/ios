@@ -117,7 +117,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
 #if DEBUG
         // ITEM : Scan
         item = OCExternalSites.init()
-        item.name = "_scan_"
+        item.name = "_scanned_images_"
         item.icon = "scan"
         item.url = "Scanopen"
         functionMenu.append(item)
