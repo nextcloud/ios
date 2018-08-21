@@ -454,6 +454,7 @@
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(nonnull UNNotificationResponse *)response withCompletionHandler:(nonnull void (^)(void))completionHandler
 {
+    /*
     NSString *message = [response.notification.request.content.userInfo objectForKey:@"subject"];
     
     if (message && [NCPushNotificationEncryption sharedInstance].ncPNPrivateKey) {
@@ -499,6 +500,7 @@
             }
         }
     }
+    */
     completionHandler();
 }
 
