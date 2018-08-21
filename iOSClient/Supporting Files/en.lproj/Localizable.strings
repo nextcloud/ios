@@ -389,6 +389,14 @@
 "_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
 
+// Media
+
+"_select_media_folder_"         = "Select the \"Media\" folder";
+"_media_viewimage_show_"        = "Show images";
+"_media_viewimage_hide_"        = "Hide images";
+"_media_viewvideo_show_"        = "Show video";
+"_media_viewvideo_hide_"        = "Hide video";
+
 // Files Preview
 
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
