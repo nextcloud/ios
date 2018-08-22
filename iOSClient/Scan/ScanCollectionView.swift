@@ -49,7 +49,7 @@ class DragDropViewController: UIViewController
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
-        loadImage()
+        loadImage(atPath: CCUtility.getDirectoryScan(), items: &items1)
     }
     
     @IBAction func cancelAction(sender: UIBarButtonItem) {
@@ -60,19 +60,21 @@ class DragDropViewController: UIViewController
         
     }
     
-    private func loadImage() {
+    //MARK: Private Methods
+    
+    private func loadImage(atPath: String, items: inout [String]) {
         do {
-            let directoryContents = try FileManager.default.contentsOfDirectory(atPath: CCUtility.getDirectoryScan()!)
+            let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
             for fileName in directoryContents {
-                items1.append(fileName)
+                if fileName != "Select" && fileName.first != "." {
+                    items.append(fileName)
+                }
             }
         }
         catch {
             print(error.localizedDescription)
         }
     }
-    
-    //MARK: Private Methods
     
     /// This method moves a cell from source indexPath to destination indexPath within the same collection view. It works for only 1 item. If multiple items selected, no reordering happens.
     ///
