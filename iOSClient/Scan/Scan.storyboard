@@ -83,7 +83,7 @@
                                 </connections>
                             </collectionView>
                             <imageView userInteractionEnabled="NO" alpha="0.80000000000000004" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Cem-9x-d8O">
-                                <rect key="frame" x="0.0" y="257" width="375" height="410"/>
+                                <rect key="frame" x="0.0" y="257" width="375" height="366"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your Board" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHy-9G-ngy">
                                 <rect key="frame" x="0.0" y="257" width="375" height="30"/>
@@ -96,7 +96,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="fGo-qU-AYi">
-                                <rect key="frame" x="0.0" y="292" width="375" height="375"/>
+                                <rect key="frame" x="0.0" y="292" width="375" height="331"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="9Sn-Y3-S86">
                                     <size key="itemSize" width="100" height="100"/>
@@ -165,7 +165,7 @@
                             <constraint firstItem="Cem-9x-d8O" firstAttribute="top" secondItem="jwq-kF-6Nq" secondAttribute="bottom" constant="10" id="DAv-ec-qU8"/>
                             <constraint firstItem="jwq-kF-6Nq" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="ELU-RG-o16"/>
                             <constraint firstItem="fGo-qU-AYi" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Ew2-9q-DKl"/>
-                            <constraint firstAttribute="bottom" secondItem="fGo-qU-AYi" secondAttribute="bottom" id="Eza-ZC-K9z"/>
+                            <constraint firstAttribute="bottom" secondItem="fGo-qU-AYi" secondAttribute="bottom" constant="44" id="Eza-ZC-K9z"/>
                             <constraint firstItem="YHy-9G-ngy" firstAttribute="top" secondItem="Cem-9x-d8O" secondAttribute="top" id="Rf5-5j-Ctt"/>
                             <constraint firstItem="Cem-9x-d8O" firstAttribute="trailing" secondItem="fGo-qU-AYi" secondAttribute="trailing" id="SaR-bw-LHt"/>
                             <constraint firstItem="Cem-9x-d8O" firstAttribute="bottom" secondItem="fGo-qU-AYi" secondAttribute="bottom" id="aJX-RZ-dYz"/>
@@ -176,10 +176,23 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
-                    <navigationItem key="navigationItem" id="zeb-Ex-mE8"/>
+                    <navigationItem key="navigationItem" id="zeb-Ex-mE8">
+                        <barButtonItem key="leftBarButtonItem" title="Cancel" id="9KU-yn-lBS" userLabel="Cancel">
+                            <connections>
+                                <action selector="cancelActionWithSender:" destination="BYZ-38-t0r" id="NrA-pA-mQ4"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Save" id="LAS-W8-RG6">
+                            <connections>
+                                <action selector="saveActionWithSender:" destination="BYZ-38-t0r" id="k1e-Qy-ks2"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
+                        <outlet property="cancel" destination="9KU-yn-lBS" id="zw7-9b-sq4"/>
                         <outlet property="collectionView1" destination="jwq-kF-6Nq" id="Bur-i1-50r"/>
                         <outlet property="collectionView2" destination="fGo-qU-AYi" id="TcD-xi-MVI"/>
+                        <outlet property="save" destination="LAS-W8-RG6" id="Dan-xp-JAB"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -189,7 +202,7 @@
         <!--Navigation Controller-->
         <scene sceneID="CuH-8W-IGw">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="bdK-eL-mz4" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" toolbarHidden="NO" id="bdK-eL-mz4" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" translucent="NO" id="xl6-fB-rBw">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
@@ -197,6 +210,7 @@
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <toolbar key="toolbar" opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="byl-bn-jhW">
+                        <rect key="frame" x="0.0" y="623" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </toolbar>
                     <connections>

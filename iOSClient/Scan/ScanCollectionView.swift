@@ -17,11 +17,17 @@ class DragDropViewController: UIViewController
     @IBOutlet weak var collectionView1: UICollectionView!
     @IBOutlet weak var collectionView2: UICollectionView!
     
+    @IBOutlet weak var cancel: UIBarButtonItem!
+    @IBOutlet weak var save: UIBarButtonItem!
+
+    
     //MARK: View Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
+        cancel.title = NSLocalizedString("_cancel_", comment: "")
+        save.title = NSLocalizedString("_save_", comment: "")
         
         //CollectionView-1 drag and drop configuration
         self.collectionView1.dragInteractionEnabled = true
@@ -42,6 +48,14 @@ class DragDropViewController: UIViewController
         
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+    }
+    
+    @IBAction func cancelAction(sender: UIBarButtonItem) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func saveAction(sender: UIBarButtonItem) {
+        
     }
     
     private func loadImage() {
