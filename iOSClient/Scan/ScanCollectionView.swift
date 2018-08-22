@@ -13,6 +13,8 @@ class DragDropViewController: UIViewController
     //Data Source for CollectionView-2
     private var items2 = [String]()
 
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+
     //MARK: Outlets
     @IBOutlet weak var collectionView1: UICollectionView!
     @IBOutlet weak var collectionView2: UICollectionView!
@@ -25,10 +27,6 @@ class DragDropViewController: UIViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
-        cancel.title = NSLocalizedString("_cancel_", comment: "")
-        save.title = NSLocalizedString("_save_", comment: "")
-        
         //CollectionView-1 drag and drop configuration
         self.collectionView1.dragInteractionEnabled = true
         self.collectionView1.dragDelegate = self
@@ -39,15 +37,19 @@ class DragDropViewController: UIViewController
         self.collectionView2.dropDelegate = self
         self.collectionView2.dragDelegate = self
         self.collectionView2.reorderingCadence = .fast //default value - .immediate
-
-        loadImage()
+        
+        self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
+        cancel.title = NSLocalizedString("_cancel_", comment: "")
+        save.title = NSLocalizedString("_save_", comment: "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
-        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        
+        loadImage()
     }
     
     @IBAction func cancelAction(sender: UIBarButtonItem) {
