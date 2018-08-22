@@ -63,6 +63,7 @@ class DragDropViewController: UIViewController
     //MARK: Private Methods
     
     private func loadImage(atPath: String, items: inout [String]) {
+        
         do {
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
             for fileName in directoryContents {
@@ -74,6 +75,14 @@ class DragDropViewController: UIViewController
         catch {
             print(error.localizedDescription)
         }
+    }
+    
+    func filter(image: UIImage, contrast: Double) -> UIImage? {
+        
+        let ciImage = CIImage(image: image)!
+        let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": contrast])
+        
+        return UIImage(ciImage: imageFilter)
     }
     
     /// This method moves a cell from source indexPath to destination indexPath within the same collection view. It works for only 1 item. If multiple items selected, no reordering happens.
@@ -166,8 +175,14 @@ extension DragDropViewController : UICollectionViewDataSource
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! ScanCell
             
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + self.items2[indexPath.row]
-            let data = try? Data(contentsOf: fileNamePath.url)
-            cell.customImageView?.image = UIImage(data: data!)
+            guard let data = try? Data(contentsOf: fileNamePath.url) else {
+                return cell
+            }
+            guard let image = UIImage(data: data) else {
+                return cell
+            }
+            let imageFiletr = self.filter(image: image, contrast: 1)
+            cell.customImageView?.image = imageFiletr
             cell.customLabel.text = self.items2[indexPath.row].capitalized
             return cell
         }
