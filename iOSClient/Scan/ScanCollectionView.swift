@@ -1,23 +1,45 @@
 //
+//  ScanCollectionView.swift
+//  Nextcloud iOS
+//
+//  Created by Marino Faggiana on 21/08/18.
+//  Copyright (c) 2018 TWS. All rights reserved.
+//
+//  Author Marino Faggiana <m.faggiana@twsweb.it>
+//
+//  This program is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 import UIKit
 
 @available(iOS 11, *)
 
-class DragDropViewController: UIViewController
-{
-    //MARK: Private Properties
-    //Data Source for CollectionView-1
-    private var items1 = [String]()
+class DragDropViewController: UIViewController {
     
-    //Data Source for CollectionView-2
-    private var items2 = [String]()
+    //MARK: Private Properties
+    //Data Source for collectionViewSource
+    private var itemsSource = [String]()
+    
+    //Data Source for collectionViewDestination
+    private var itemsDestination = [String]()
 
+    //AppDelegate
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     //MARK: Outlets
-    @IBOutlet weak var collectionView1: UICollectionView!
-    @IBOutlet weak var collectionView2: UICollectionView!
+    @IBOutlet weak var collectionViewSource: UICollectionView!
+    @IBOutlet weak var collectionViewDestination: UICollectionView!
     
     @IBOutlet weak var cancel: UIBarButtonItem!
     @IBOutlet weak var save: UIBarButtonItem!
@@ -27,16 +49,14 @@ class DragDropViewController: UIViewController
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //CollectionView-1 drag and drop configuration
-        self.collectionView1.dragInteractionEnabled = true
-        self.collectionView1.dragDelegate = self
-        self.collectionView1.dropDelegate = self
+        self.collectionViewSource.dragInteractionEnabled = true
+        self.collectionViewSource.dragDelegate = self
+        self.collectionViewSource.dropDelegate = self
         
-        //CollectionView-2 drag and drop configuration
-        self.collectionView2.dragInteractionEnabled = true
-        self.collectionView2.dropDelegate = self
-        self.collectionView2.dragDelegate = self
-        self.collectionView2.reorderingCadence = .fast //default value - .immediate
+        self.collectionViewDestination.dragInteractionEnabled = true
+        self.collectionViewDestination.dropDelegate = self
+        self.collectionViewDestination.dragDelegate = self
+        self.collectionViewDestination.reorderingCadence = .fast //default value - .immediate
         
         self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
         cancel.title = NSLocalizedString("_cancel_", comment: "")
@@ -49,15 +69,17 @@ class DragDropViewController: UIViewController
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
-        loadImage(atPath: CCUtility.getDirectoryScan(), items: &items1)
+        loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
     }
     
+    //MARK: Button Action
+
     @IBAction func cancelAction(sender: UIBarButtonItem) {
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func saveAction(sender: UIBarButtonItem) {
-        
+        // open create cloud
     }
     
     //MARK: Private Methods
@@ -71,8 +93,7 @@ class DragDropViewController: UIViewController
                     items.append(fileName)
                 }
             }
-        }
-        catch {
+        } catch {
             print(error.localizedDescription)
         }
     }
@@ -91,30 +112,35 @@ class DragDropViewController: UIViewController
     ///   - coordinator: coordinator obtained from performDropWith: UICollectionViewDropDelegate method
     ///   - destinationIndexPath: indexpath of the collection view where the user drops the element
     ///   - collectionView: collectionView in which reordering needs to be done.
-    private func reorderItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView)
-    {
+    private func reorderItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
+        
         let items = coordinator.items
-        if items.count == 1, let item = items.first, let sourceIndexPath = item.sourceIndexPath
-        {
+        
+        if items.count == 1, let item = items.first, let sourceIndexPath = item.sourceIndexPath {
+            
             var dIndexPath = destinationIndexPath
-            if dIndexPath.row >= collectionView.numberOfItems(inSection: 0)
-            {
+            
+            if dIndexPath.row >= collectionView.numberOfItems(inSection: 0) {
                 dIndexPath.row = collectionView.numberOfItems(inSection: 0) - 1
             }
+            
             collectionView.performBatchUpdates({
-                if collectionView === self.collectionView2
-                {
-                    self.items2.remove(at: sourceIndexPath.row)
-                    self.items2.insert(item.dragItem.localObject as! String, at: dIndexPath.row)
+                
+                if collectionView === self.collectionViewDestination {
+                    
+                    self.itemsDestination.remove(at: sourceIndexPath.row)
+                    self.itemsDestination.insert(item.dragItem.localObject as! String, at: dIndexPath.row)
+                    
+                } else {
+                    
+                    self.itemsSource.remove(at: sourceIndexPath.row)
+                    self.itemsSource.insert(item.dragItem.localObject as! String, at: dIndexPath.row)
                 }
-                else
-                {
-                    self.items1.remove(at: sourceIndexPath.row)
-                    self.items1.insert(item.dragItem.localObject as! String, at: dIndexPath.row)
-                }
+                
                 collectionView.deleteItems(at: [sourceIndexPath])
                 collectionView.insertItems(at: [dIndexPath])
             })
+            
             coordinator.drop(items.first!.dragItem, toItemAt: dIndexPath)
         }
     }
@@ -128,20 +154,24 @@ class DragDropViewController: UIViewController
     private func copyItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView)
     {
         collectionView.performBatchUpdates({
+            
             var indexPaths = [IndexPath]()
-            for (index, item) in coordinator.items.enumerated()
-            {
+            
+            for (index, item) in coordinator.items.enumerated() {
+                
                 let indexPath = IndexPath(row: destinationIndexPath.row + index, section: destinationIndexPath.section)
-                if collectionView === self.collectionView2
-                {
-                    self.items2.insert(item.dragItem.localObject as! String, at: indexPath.row)
+                if collectionView === self.collectionViewDestination {
+                    
+                    self.itemsDestination.insert(item.dragItem.localObject as! String, at: indexPath.row)
+                    
+                } else {
+                    
+                    self.itemsSource.insert(item.dragItem.localObject as! String, at: indexPath.row)
                 }
-                else
-                {
-                    self.items1.insert(item.dragItem.localObject as! String, at: indexPath.row)
-                }
+                
                 indexPaths.append(indexPath)
             }
+            
             collectionView.insertItems(at: indexPaths)
         })
     }
@@ -151,39 +181,44 @@ class DragDropViewController: UIViewController
 
 @available(iOS 11, *)
 
-extension DragDropViewController : UICollectionViewDataSource
-{
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int
-    {
-        return collectionView == self.collectionView1 ? self.items1.count : self.items2.count
+extension DragDropViewController : UICollectionViewDataSource {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        return collectionView == self.collectionViewSource ? self.itemsSource.count : self.itemsDestination.count
     }
     
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
-    {
-        if collectionView == self.collectionView1
-        {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if collectionView == self.collectionViewSource {
+            
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as! ScanCell
             
-            let fileNamePath = CCUtility.getDirectoryScan() + "/" + self.items1[indexPath.row]
+            let fileNamePath = CCUtility.getDirectoryScan() + "/" + self.itemsSource[indexPath.row]
             let data = try? Data(contentsOf: fileNamePath.url)
+            
             cell.customImageView?.image = UIImage(data: data!)
-            cell.customLabel.text = self.items1[indexPath.row].capitalized
+            cell.customLabel.text = self.itemsSource[indexPath.row].capitalized
+            
             return cell
-        }
-        else
-        {
+            
+        } else {
+            
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! ScanCell
             
-            let fileNamePath = CCUtility.getDirectoryScan() + "/" + self.items2[indexPath.row]
+            let fileNamePath = CCUtility.getDirectoryScan() + "/" + self.itemsDestination[indexPath.row]
+            
             guard let data = try? Data(contentsOf: fileNamePath.url) else {
                 return cell
             }
+            
             guard let image = UIImage(data: data) else {
                 return cell
             }
-            let imageFiletr = self.filter(image: image, contrast: 1)
-            cell.customImageView?.image = imageFiletr
-            cell.customLabel.text = self.items2[indexPath.row].capitalized
+            
+            cell.customImageView?.image = self.filter(image: image, contrast: 1)
+            cell.customLabel.text = self.itemsDestination[indexPath.row].capitalized
+            
             return cell
         }
     }
@@ -195,32 +230,38 @@ extension DragDropViewController : UICollectionViewDataSource
 
 extension DragDropViewController : UICollectionViewDragDelegate
 {
-    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem]
-    {
-        let item = collectionView == collectionView1 ? self.items1[indexPath.row] : self.items2[indexPath.row]
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        
+        let item = collectionView == collectionViewSource ? self.itemsSource[indexPath.row] : self.itemsDestination[indexPath.row]
         let itemProvider = NSItemProvider(object: item as NSString)
         let dragItem = UIDragItem(itemProvider: itemProvider)
+        
         dragItem.localObject = item
+        
         return [dragItem]
     }
     
-    func collectionView(_ collectionView: UICollectionView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem]
-    {
-        let item = collectionView == collectionView1 ? self.items1[indexPath.row] : self.items2[indexPath.row]
+    func collectionView(_ collectionView: UICollectionView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
+        
+        let item = collectionView == collectionViewSource ? self.itemsSource[indexPath.row] : self.itemsDestination[indexPath.row]
         let itemProvider = NSItemProvider(object: item as NSString)
         let dragItem = UIDragItem(itemProvider: itemProvider)
+        
         dragItem.localObject = item
+        
         return [dragItem]
     }
     
-    func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters?
-    {
-        if collectionView == collectionView1
-        {
+    func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
+        
+        if collectionView == collectionViewSource {
+            
             let previewParameters = UIDragPreviewParameters()
             previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 25, y: 25, width: 120, height: 120))
             return previewParameters
         }
+        
+        
         return nil
     }
 }
@@ -229,62 +270,59 @@ extension DragDropViewController : UICollectionViewDragDelegate
 
 @available(iOS 11, *)
 
-extension DragDropViewController : UICollectionViewDropDelegate
-{
-    func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool
-    {
+extension DragDropViewController : UICollectionViewDropDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
+        
         return session.canLoadObjects(ofClass: NSString.self)
     }
     
-    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal
-    {
-        if collectionView === self.collectionView1
-        {
-            if collectionView.hasActiveDrag
-            {
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        
+        if collectionView === self.collectionViewSource {
+            
+            if collectionView.hasActiveDrag {
                 return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
-            }
-            else
-            {
+            } else {
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
-        }
-        else
-        {
-            if collectionView.hasActiveDrag
-            {
+            
+        } else {
+            
+            if collectionView.hasActiveDrag {
                 return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
-            }
-            else
-            {
+            } else {
                 return UICollectionViewDropProposal(operation: .copy, intent: .insertAtDestinationIndexPath)
             }
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator)
-    {
+    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+        
         let destinationIndexPath: IndexPath
-        if let indexPath = coordinator.destinationIndexPath
-        {
+        
+        if let indexPath = coordinator.destinationIndexPath {
+            
             destinationIndexPath = indexPath
-        }
-        else
-        {
+            
+        } else {
+            
             // Get last index path of table view.
             let section = collectionView.numberOfSections - 1
             let row = collectionView.numberOfItems(inSection: section)
+            
             destinationIndexPath = IndexPath(row: row, section: section)
         }
         
-        switch coordinator.proposal.operation
-        {
+        switch coordinator.proposal.operation {
+            
         case .move:
             self.reorderItems(coordinator: coordinator, destinationIndexPath:destinationIndexPath, collectionView: collectionView)
             break
             
         case .copy:
             self.copyItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
+            break
             
         default:
             return
