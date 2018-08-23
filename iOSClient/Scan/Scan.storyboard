@@ -18,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="jwq-kF-6Nq">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="jwq-kF-6Nq" userLabel="collectionViewSource">
                                 <rect key="frame" x="0.0" y="72" width="375" height="175"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
@@ -95,7 +95,7 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="fGo-qU-AYi">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="fGo-qU-AYi" userLabel="collectionViewDestination">
                                 <rect key="frame" x="0.0" y="292" width="375" height="331"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="9Sn-Y3-S86">
@@ -190,8 +190,8 @@
                     </navigationItem>
                     <connections>
                         <outlet property="cancel" destination="9KU-yn-lBS" id="zw7-9b-sq4"/>
-                        <outlet property="collectionView1" destination="jwq-kF-6Nq" id="Bur-i1-50r"/>
-                        <outlet property="collectionView2" destination="fGo-qU-AYi" id="TcD-xi-MVI"/>
+                        <outlet property="collectionViewDestination" destination="fGo-qU-AYi" id="ATh-9Q-SWs"/>
+                        <outlet property="collectionViewSource" destination="jwq-kF-6Nq" id="6hn-7D-P8K"/>
                         <outlet property="save" destination="LAS-W8-RG6" id="Dan-xp-JAB"/>
                     </connections>
                 </viewController>

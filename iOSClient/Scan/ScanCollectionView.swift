@@ -160,6 +160,7 @@ class DragDropViewController: UIViewController {
             for (index, item) in coordinator.items.enumerated() {
                 
                 let indexPath = IndexPath(row: destinationIndexPath.row + index, section: destinationIndexPath.section)
+                
                 if collectionView === self.collectionViewDestination {
                     
                     self.itemsDestination.insert(item.dragItem.localObject as! String, at: indexPath.row)
@@ -173,6 +174,35 @@ class DragDropViewController: UIViewController {
             }
             
             collectionView.insertItems(at: indexPaths)
+        })
+    }
+    
+    private func moveItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView)
+    {
+        collectionView.performBatchUpdates({
+
+            var indexPathsFrom = [IndexPath]()
+            var indexPathsTo = [IndexPath]()
+            
+            for (index, item) in coordinator.items.enumerated() {
+                
+                let sourceIndexPath = item.sourceIndexPath
+                let indexPath = IndexPath(row: destinationIndexPath.row + index, section: destinationIndexPath.section)
+                
+                if collectionView === self.collectionViewDestination {
+                    
+                    self.itemsDestination.insert(item.dragItem.localObject as! String, at: indexPath.row) // array
+                    
+                } else {
+                    
+                    self.itemsSource.insert(item.dragItem.localObject as! String, at: indexPath.row) // array
+                }
+                
+//                indexPathsFrom.append(item.sourceIndexPath!)
+                indexPathsTo.append(indexPath)
+            }
+            
+            collectionView.insertItems(at: indexPathsTo)
         })
     }
 }
@@ -279,7 +309,7 @@ extension DragDropViewController : UICollectionViewDropDelegate {
     
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         
-        if collectionView === self.collectionViewSource {
+        if collectionView == self.collectionViewSource {
             
             if collectionView.hasActiveDrag {
                 return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
@@ -317,11 +347,11 @@ extension DragDropViewController : UICollectionViewDropDelegate {
         switch coordinator.proposal.operation {
             
         case .move:
-            self.reorderItems(coordinator: coordinator, destinationIndexPath:destinationIndexPath, collectionView: collectionView)
+            self.reorderItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
             break
             
         case .copy:
-            self.copyItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
+            self.moveItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
             break
             
         default:
