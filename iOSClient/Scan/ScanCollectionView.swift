@@ -114,7 +114,10 @@ class DragDropViewController: UIViewController {
         let ciImage = CIImage(image: image)!
         let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": 1])
         
-        return UIImage(ciImage: imageFilter)
+        let context:CIContext = CIContext.init(options: nil)
+        let cgImage:CGImage = context.createCGImage(imageFilter, from: imageFilter.extent)!
+        let image:UIImage = UIImage.init(cgImage: cgImage)
+        return image
     }
     
     /// This method moves a cell from source indexPath to destination indexPath within the same collection view. It works for only 1 item. If multiple items selected, no reordering happens.
@@ -184,7 +187,7 @@ class DragDropViewController: UIViewController {
                     guard let image =  UIImage(data: data) else {
                         return
                     }
-                    guard let imageFilter =  self.filter(image: image) else {
+                    guard let imageFilter = self.filter(image: image) else {
                         return
                     }
                     
