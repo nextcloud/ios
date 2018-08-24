@@ -975,6 +975,13 @@
     }
 }
 
++ (void)removeFileAtPath:(NSString *)atPath
+{
+    if ([[NSFileManager defaultManager] fileExistsAtPath:atPath]) {
+        [[NSFileManager defaultManager] removeItemAtPath:atPath error:nil];
+    }
+}
+
 + (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
 {
     NSString *file;

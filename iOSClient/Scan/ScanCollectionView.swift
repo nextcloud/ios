@@ -76,6 +76,7 @@ class DragDropViewController: UIViewController {
         labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
             
         loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
+        loadImage(atPath: CCUtility.getDirectoryScanSelect(), items: &itemsDestination)
     }
     
     //MARK: Button Action
@@ -169,6 +170,12 @@ class DragDropViewController: UIViewController {
                 
                 if collectionView === self.collectionViewDestination {
                     
+                    let fileName = item.dragItem.localObject as! String
+                    let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
+                    let fileNamePathTo = CCUtility.getDirectoryScanSelect() + "/" + fileName
+                    
+                    CCUtility.copyFile(atPath: fileNamePathAt, toPath: fileNamePathTo)
+                    
                     self.itemsDestination.insert(item.dragItem.localObject as! String, at: indexPath.row)
                     
                 } else {
@@ -180,32 +187,6 @@ class DragDropViewController: UIViewController {
             }
             
             collectionView.insertItems(at: indexPaths)
-        })
-    }
-    
-    private func moveItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView)
-    {
-        collectionView.performBatchUpdates({
-
-            var indexPathsTo = [IndexPath]()
-            
-            for (index, item) in coordinator.items.enumerated() {
-                
-                let indexPath = IndexPath(row: destinationIndexPath.row + index, section: destinationIndexPath.section)
-                
-                if collectionView === self.collectionViewDestination {
-                    
-                    self.itemsDestination.insert(item.dragItem.localObject as! String, at: indexPath.row) // array
-                    
-                } else {
-                    
-                    self.itemsSource.insert(item.dragItem.localObject as! String, at: indexPath.row) // array
-                }
-                
-                indexPathsTo.append(indexPath)
-            }
-            
-            collectionView.insertItems(at: indexPathsTo)
         })
     }
 }
@@ -275,6 +256,18 @@ extension DragDropViewController : UICollectionViewDataSource {
         let buttonPosition:CGPoint =  sender.convert(.zero, to: self.collectionViewDestination)
         let indexPath:IndexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition)!
         
+        // Remove file only if exist 1 item
+        var cont = 0
+        for item in itemsDestination {
+            if item == self.itemsDestination[indexPath.row] {
+                cont += 1
+            }
+        }
+        
+        if cont == 1 {
+            let fileNameAtPath = CCUtility.getDirectoryScanSelect() + "/" + self.itemsDestination[indexPath.row]
+            CCUtility.removeFile(atPath: fileNameAtPath)
+        }
         self.itemsDestination.remove(at: indexPath.row)
         
         self.collectionViewDestination.reloadData()
@@ -373,7 +366,7 @@ extension DragDropViewController : UICollectionViewDropDelegate {
             break
             
         case .copy:
-            self.moveItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
+            self.copyItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
             break
             
         default:
