@@ -25,38 +25,34 @@
                                     <constraint firstAttribute="height" constant="175" id="0Wb-eO-Qiu"/>
                                 </constraints>
                                 <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="Dhy-fV-Qmr">
-                                    <size key="itemSize" width="171" height="171"/>
+                                    <size key="itemSize" width="150" height="150"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell1" id="Lca-vD-NY2" customClass="ScanCell" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="2" width="171" height="171"/>
+                                        <rect key="frame" x="0.0" y="12.5" width="150" height="150"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                            <rect key="frame" x="0.0" y="0.0" width="171" height="171"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="150" height="150"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sam-7M-bIk">
-                                                    <rect key="frame" x="0.0" y="0.0" width="171" height="171"/>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sam-7M-bIk">
+                                                    <rect key="frame" x="10" y="10" width="130" height="130"/>
                                                 </imageView>
-                                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pin" translatesAutoresizingMaskIntoConstraints="NO" id="hal-g8-MFX" userLabel="del">
-                                                    <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="20" id="Pgm-M8-yw8"/>
-                                                        <constraint firstAttribute="height" constant="20" id="xn4-R6-KKK"/>
-                                                    </constraints>
-                                                </imageView>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="06r-jm-ARX">
+                                                    <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" backgroundImage="deleteImagePage"/>
+                                                </button>
                                             </subviews>
                                         </view>
                                         <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="sam-7M-bIk" secondAttribute="trailing" id="8AX-l8-Lm0"/>
-                                            <constraint firstItem="sam-7M-bIk" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" id="YId-9R-Qgw"/>
-                                            <constraint firstItem="hal-g8-MFX" firstAttribute="centerX" secondItem="Lca-vD-NY2" secondAttribute="centerX" constant="-75.5" id="fq5-gq-RTm"/>
-                                            <constraint firstItem="hal-g8-MFX" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" id="oCn-ib-r5i"/>
-                                            <constraint firstItem="sam-7M-bIk" firstAttribute="leading" secondItem="Lca-vD-NY2" secondAttribute="leading" id="pbq-jr-YKl"/>
-                                            <constraint firstAttribute="bottom" secondItem="sam-7M-bIk" secondAttribute="bottom" id="zD5-jG-EEP"/>
+                                            <constraint firstAttribute="trailing" secondItem="sam-7M-bIk" secondAttribute="trailing" constant="10" id="8AX-l8-Lm0"/>
+                                            <constraint firstItem="sam-7M-bIk" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" constant="10" id="YId-9R-Qgw"/>
+                                            <constraint firstItem="sam-7M-bIk" firstAttribute="leading" secondItem="Lca-vD-NY2" secondAttribute="leading" constant="10" id="pbq-jr-YKl"/>
+                                            <constraint firstAttribute="bottom" secondItem="sam-7M-bIk" secondAttribute="bottom" constant="10" id="zD5-jG-EEP"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="customImageView" destination="sam-7M-bIk" id="mgQ-wh-sSH"/>
@@ -98,10 +94,10 @@
                                             <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chrome" translatesAutoresizingMaskIntoConstraints="NO" id="sdV-W7-Hkd">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chrome" translatesAutoresizingMaskIntoConstraints="NO" id="sdV-W7-Hkd">
                                                     <rect key="frame" x="10" y="10" width="80" height="80"/>
                                                 </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="False Color" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wcM-U8-GLh">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Page" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wcM-U8-GLh">
                                                     <rect key="frame" x="10" y="70" width="80" height="20"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.39940068490000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
@@ -114,7 +110,7 @@
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wSg-Gm-0s3">
                                                     <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <state key="normal" title="Button" backgroundImage="no_red"/>
+                                                    <state key="normal" backgroundImage="deleteImagePage"/>
                                                 </button>
                                             </subviews>
                                         </view>
@@ -207,7 +203,6 @@
     </scenes>
     <resources>
         <image name="chrome" width="738" height="738"/>
-        <image name="no_red" width="25" height="25"/>
-        <image name="pin" width="600" height="564"/>
+        <image name="deleteImagePage" width="25" height="25"/>
     </resources>
 </document>
