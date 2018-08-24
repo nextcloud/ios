@@ -577,7 +577,10 @@ class NCMainCommon: NSObject {
                     self.appDelegate.filterFileID.remove(metadata.fileID)
                     
                     completionErrorCode = errorCode
-                    completionMessage = message!
+                    completionMessage = ""
+                    if message != nil {
+                        completionMessage = message!
+                    }
                 }
                 
                 if count == metadatas.count {
