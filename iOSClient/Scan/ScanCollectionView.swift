@@ -109,10 +109,10 @@ class DragDropViewController: UIViewController {
         }
     }
     
-    func filter(image: UIImage, contrast: Double) -> UIImage? {
+    func filter(image: UIImage) -> UIImage? {
         
         let ciImage = CIImage(image: image)!
-        let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": contrast])
+        let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": 1])
         
         return UIImage(ciImage: imageFilter)
     }
@@ -178,7 +178,23 @@ class DragDropViewController: UIViewController {
                     let fileNamePathAt = CCUtility.getDirectoryScan() + "/" + fileName
                     let fileNamePathTo = CCUtility.getDirectoryScanSelect() + "/" + fileName
                     
-                    CCUtility.copyFile(atPath: fileNamePathAt, toPath: fileNamePathTo)
+                    guard let data = try? Data(contentsOf: fileNamePathAt.url) else {
+                        return
+                    }
+                    guard let image =  UIImage(data: data) else {
+                        return
+                    }
+                    guard let imageFilter =  self.filter(image: image) else {
+                        return
+                    }
+                    
+                    let imageData = UIImageJPEGRepresentation(imageFilter, 0.8)!
+                    
+                    do {
+                        try imageData.write(to: fileNamePathTo.url)
+                    } catch {
+                        return
+                    }
                     
                     self.itemsDestination.insert(item.dragItem.localObject as! String, at: indexPath.row)
                     
@@ -237,7 +253,7 @@ extension DragDropViewController : UICollectionViewDataSource {
                 return cell
             }
             
-            cell.customImageView?.image = self.filter(image: image, contrast: 1)
+            cell.customImageView?.image = self.filter(image: image)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
             cell.delete.addTarget(self, action: #selector(deleteDestination(_:)), for: .touchUpInside)
             
