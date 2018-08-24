@@ -681,6 +681,248 @@ class CreateFormUploadFileText: XLFormViewController, CCMoveDelegate {
 
 //MARK: -
 
+class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
+    
+    var serverUrl = ""
+    var titleServerUrl = ""
+    var arrayFileName = [String]()
+    var fileName = "scan.pdf"
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    convenience init(serverUrl: String, arrayFileName: [String]) {
+        
+        self.init()
+        
+        if serverUrl == CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl) {
+            titleServerUrl = "/"
+        } else {
+            titleServerUrl = (serverUrl as NSString).lastPathComponent
+        }
+        
+        self.serverUrl = serverUrl
+        self.arrayFileName = arrayFileName
+        
+        initializeForm()
+    }
+    
+    //MARK: XLFormDescriptorDelegate
+    
+    func initializeForm() {
+        
+        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
+        form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
+        
+        var section : XLFormSectionDescriptor
+        var row : XLFormRowDescriptor
+        
+        // Section: Destination Folder
+        
+        section = XLFormSectionDescriptor.formSection()
+        form.addFormSection(section)
+        row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
+        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
+        row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
+        row.action.formSelector = #selector(changeDestinationFolder(_:))
+        section.addFormRow(row)
+        
+        // Section: File Name
+        
+        section = XLFormSectionDescriptor.formSection()
+        form.addFormSection(section)
+        
+        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
+        row.value = fileName
+        section.addFormRow(row)
+        
+        self.form = form
+    }
+    
+    override func formRowDescriptorValueHasChanged(_ formRow: XLFormRowDescriptor!, oldValue: Any!, newValue: Any!) {
+        
+        super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
+        
+        if formRow.tag == "fileName" {
+            
+            self.form.delegate = nil
+            
+            if let fileNameNew = formRow.value {
+                self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as! String)
+            }
+            
+            self.title = fileName
+            
+            self.form.delegate = self
+        }
+    }
+    
+    // MARK: - View Life Cycle
+    
+    override func viewDidLoad() {
+        
+        super.viewDidLoad()
+        
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(save))
+        
+        self.navigationItem.rightBarButtonItem = saveButton
+        
+        self.navigationController?.navigationBar.isTranslucent = false
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
+        self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        
+        self.reloadForm()
+    }
+    
+    func reloadForm() {
+        
+        self.form.delegate = nil
+        
+        let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+        buttonDestinationFolder.title = self.titleServerUrl
+        
+        self.title = fileName
+        
+        self.tableView.reloadData()
+        
+        self.form.delegate = self
+    }
+    
+    // MARK: - Action
+    
+    func moveServerUrl(to serverUrlTo: String!, title: String!) {
+        
+        self.serverUrl = serverUrlTo
+        
+        if let title = title {
+            
+            self.titleServerUrl = title
+            
+        } else {
+            
+            self.titleServerUrl = "/"
+        }
+        
+        self.reloadForm()
+    }
+    
+    @objc func save() {
+        
+        let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+        guard let name = rowFileName.value else {
+            return
+        }
+        let ext = (name as! NSString).pathExtension.uppercased()
+        var fileNameSave = ""
+        
+        if (ext == "") {
+            fileNameSave = name as! String + ".pdf"
+        } else {
+            fileNameSave = (name as! NSString).deletingPathExtension + ".pdf"
+        }
+        
+        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
+            return
+        }
+        let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave))
+        
+        if (metadata != nil) {
+            
+            let alertController = UIAlertController(title: fileNameSave, message: NSLocalizedString("_file_already_exists_", comment: ""), preferredStyle: .alert)
+            
+            let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default) { (action:UIAlertAction) in
+            }
+            
+            let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
+                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, directoryID: directoryID)
+            }
+            
+            alertController.addAction(cancelAction)
+            alertController.addAction(overwriteAction)
+            
+            self.present(alertController, animated: true, completion:nil)
+            
+        } else {
+            let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl)!
+            dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
+        }
+    }
+    
+    func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String) {
+        
+        self.dismiss(animated: true, completion: {
+            
+            do {
+                
+                var pdfPages = [PDFPage]()
+                let fileNameGeneratePDF = CCUtility.getDirectoryScanSelect() + "/" + fileNameSave
+                
+                for fileNameImage in self.arrayFileName {
+                    let fileNameImagePath = CCUtility.getDirectoryScanSelect() + "/" + fileNameImage
+                    let page = PDFPage.imagePath(fileNameImagePath)
+                    pdfPages.append(page)
+                }
+        
+                try PDFGenerator.generate(pdfPages, to: fileNameGeneratePDF)
+                
+                /*
+                let metadataForUpload = tableMetadata()
+                
+                metadataForUpload.account = self.appDelegate.activeAccount
+                metadataForUpload.date = NSDate()
+                metadataForUpload.directoryID = directoryID
+                metadataForUpload.fileID = fileID
+                metadataForUpload.fileName = fileNameSave
+                metadataForUpload.fileNameView = fileNameSave
+                metadataForUpload.session = k_upload_session
+                metadataForUpload.sessionSelector = selectorUploadFile
+                metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+                
+                _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+                self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
+                
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
+                */
+                
+            } catch {
+                self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+            }
+        })
+    }
+    
+    func cancel() {
+        
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @objc func changeDestinationFolder(_ sender: XLFormRowDescriptor) {
+        
+        self.deselectFormRow(sender)
+        
+        let storyboard : UIStoryboard = UIStoryboard(name: "CCMove", bundle: nil)
+        let navigationController = storyboard.instantiateViewController(withIdentifier: "CCMove") as! UINavigationController
+        let viewController : CCMove = navigationController.topViewController as! CCMove
+        
+        viewController.delegate = self;
+        viewController.tintColor = NCBrandColor.sharedInstance.brandText
+        viewController.barTintColor = NCBrandColor.sharedInstance.brand
+        viewController.tintColorTitle = NCBrandColor.sharedInstance.brandText
+        viewController.move.title = NSLocalizedString("_select_", comment: "");
+        viewController.networkingOperationQueue =  appDelegate.netQueue
+        // E2EE
+        viewController.includeDirectoryE2EEncryption = true;
+        
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
+        self.present(navigationController, animated: true, completion: nil)
+    }
+}
+
 class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     
     @objc static let sharedInstance: NCCreateScanDocument = {

@@ -86,7 +86,11 @@ class DragDropViewController: UIViewController {
     }
     
     @IBAction func saveAction(sender: UIBarButtonItem) {
-        // open create cloud
+        
+        if itemsDestination.count > 0 {
+            let formViewController = CreateFormUploadScanDocument.init(serverUrl: appDelegate.activeMain.serverUrl, arrayFileName: self.itemsDestination)
+            self.navigationController?.pushViewController(formViewController, animated: true)
+        }
     }
     
     //MARK: Private Methods
