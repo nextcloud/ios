@@ -56,7 +56,7 @@
     NSUInteger _failedAttempts;
     NSDate *_lockUntilDate;
 
-    UIRefreshControl *_refreshControl;
+    UIRefreshControl *refreshControl;
     UIDocumentInteractionController *docController;
 
     CCHud *_hud;
@@ -303,8 +303,8 @@
         [appDelegate changeTheming:self];
     
     // Refresh control
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
-    _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
+    refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
+    refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
 
     // color searchbar
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
@@ -434,7 +434,7 @@
 
 - (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
 {
-    if (_loadingFolder && _refreshControl.isRefreshing == NO) {
+    if (_loadingFolder && refreshControl.isRefreshing == NO) {
     
         UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         activityView.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
@@ -513,31 +513,34 @@
 
 - (void)createRefreshControl
 {
-    _refreshControl = [UIRefreshControl new];
+    refreshControl = [UIRefreshControl new];
     
     if (@available(iOS 10, *)) {
-        _tableView.refreshControl = _refreshControl;
+        _tableView.refreshControl = refreshControl;
     } else {
-        [_tableView addSubview:_refreshControl];
+        [_tableView addSubview:refreshControl];
     }
        
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
-    _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
+    refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
+    refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
     
-    [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
+    [refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)deleteRefreshControl
 {
-    [_refreshControl endRefreshing];
+    [refreshControl endRefreshing];
     
     for (UIView *subview in [_tableView subviews]) {
-        if (subview == _refreshControl)
+        if (subview == refreshControl)
             [subview removeFromSuperview];
     }
     
-    _tableView.refreshControl = nil;
-    _refreshControl = nil;
+    if (@available(iOS 10, *)) {
+        self.tableView.refreshControl = nil;
+    }
+    
+    refreshControl = nil;
 }
 
 - (void)refreshControlTarget
@@ -1245,7 +1248,7 @@
 - (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // stoprefresh
-    [_refreshControl endRefreshing];
+    [refreshControl endRefreshing];
     
     // Check Active Account
     if (![metadataNet.account isEqualToString:metadataNet.account])
@@ -1362,7 +1365,7 @@
     // init control
     if (!serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode) {
         
-        [_refreshControl endRefreshing];
+        [refreshControl endRefreshing];
         return;
     }
     
