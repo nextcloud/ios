@@ -305,15 +305,10 @@ extension DragDropViewController : UICollectionViewDragDelegate
     
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
         
-        if collectionView == collectionViewSource {
-            
-            let previewParameters = UIDragPreviewParameters()
-            previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 25, y: 25, width: 120, height: 120))
-            return previewParameters
-        }
-        
-        
-        return nil
+        let previewParameters = UIDragPreviewParameters()
+        previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 100, height: 100))
+         
+        return previewParameters
     }
 }
 
