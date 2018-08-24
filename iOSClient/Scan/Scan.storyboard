@@ -56,6 +56,7 @@
                                         </constraints>
                                         <connections>
                                             <outlet property="customImageView" destination="sam-7M-bIk" id="mgQ-wh-sSH"/>
+                                            <outlet property="delete" destination="06r-jm-ARX" id="gbZ-kz-MoL"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -126,6 +127,7 @@
                                         <connections>
                                             <outlet property="customImageView" destination="sdV-W7-Hkd" id="edM-S1-vkM"/>
                                             <outlet property="customLabel" destination="wcM-U8-GLh" id="BhF-OG-y3p"/>
+                                            <outlet property="delete" destination="wSg-Gm-0s3" id="x0Y-P4-EXF"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>

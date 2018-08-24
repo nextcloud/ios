@@ -187,12 +187,10 @@ class DragDropViewController: UIViewController {
     {
         collectionView.performBatchUpdates({
 
-            var indexPathsFrom = [IndexPath]()
             var indexPathsTo = [IndexPath]()
             
             for (index, item) in coordinator.items.enumerated() {
                 
-                let sourceIndexPath = item.sourceIndexPath
                 let indexPath = IndexPath(row: destinationIndexPath.row + index, section: destinationIndexPath.section)
                 
                 if collectionView === self.collectionViewDestination {
@@ -204,7 +202,6 @@ class DragDropViewController: UIViewController {
                     self.itemsSource.insert(item.dragItem.localObject as! String, at: indexPath.row) // array
                 }
                 
-//                indexPathsFrom.append(item.sourceIndexPath!)
                 indexPathsTo.append(indexPath)
             }
             
@@ -231,10 +228,14 @@ extension DragDropViewController : UICollectionViewDataSource {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as! ScanCell
             
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + self.itemsSource[indexPath.row]
-            let data = try? Data(contentsOf: fileNamePath.url)
             
-            cell.customImageView?.image = UIImage(data: data!)
+            guard let data = try? Data(contentsOf: fileNamePath.url) else {
+                return cell
+            }
             
+            cell.customImageView?.image = UIImage(data: data)
+            cell.delete.addTarget(self, action: #selector(deleteSource(_:)), for: .touchUpInside)
+
             return cell
             
         } else {
@@ -253,9 +254,24 @@ extension DragDropViewController : UICollectionViewDataSource {
             
             cell.customImageView?.image = self.filter(image: image, contrast: 1)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
+            cell.delete.addTarget(self, action: #selector(deleteDestination(_:)), for: .touchUpInside)
             
             return cell
         }
+    }
+    
+    @objc func deleteSource(_ sender: UIButton) {
+        
+        let buttonPosition:CGPoint =  sender.convert(.zero, to: self.collectionViewSource)
+        let indexPath:IndexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition)!
+    }
+    
+    @objc func deleteDestination(_ sender:UIButton) {
+        
+        let buttonPosition:CGPoint =  sender.convert(.zero, to: self.collectionViewDestination)
+        let indexPath:IndexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition)!
+        
+        
     }
 }
 
