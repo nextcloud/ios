@@ -43,6 +43,8 @@ class DragDropViewController: UIViewController {
     
     @IBOutlet weak var cancel: UIBarButtonItem!
     @IBOutlet weak var save: UIBarButtonItem!
+    
+    @IBOutlet weak var labelTitlePDFzone: UILabel!
 
     
     //MARK: View Lifecycle Methods
@@ -61,6 +63,7 @@ class DragDropViewController: UIViewController {
         self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
+        labelTitlePDFzone.text = NSLocalizedString("_scan_label_PDF_zone_", comment: "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -69,6 +72,9 @@ class DragDropViewController: UIViewController {
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
+        labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
+        labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
+            
         loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
     }
     
@@ -228,7 +234,6 @@ extension DragDropViewController : UICollectionViewDataSource {
             let data = try? Data(contentsOf: fileNamePath.url)
             
             cell.customImageView?.image = UIImage(data: data!)
-            cell.customLabel.text = self.itemsSource[indexPath.row].capitalized
             
             return cell
             
@@ -247,7 +252,7 @@ extension DragDropViewController : UICollectionViewDataSource {
             }
             
             cell.customImageView?.image = self.filter(image: image, contrast: 1)
-            cell.customLabel.text = self.itemsDestination[indexPath.row].capitalized
+            cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
             
             return cell
         }
@@ -357,6 +362,10 @@ extension DragDropViewController : UICollectionViewDropDelegate {
         default:
             return
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
+        self.collectionViewDestination.reloadData()
     }
 }
 

@@ -41,18 +41,8 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sam-7M-bIk">
                                                     <rect key="frame" x="0.0" y="0.0" width="171" height="171"/>
                                                 </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="False Color" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8rT-k8-LDG">
-                                                    <rect key="frame" x="0.0" y="141" width="171" height="30"/>
-                                                    <color key="backgroundColor" white="0.0" alpha="0.39940068493150682" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="30" id="Gt5-fB-Xuh"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" name="AvenirNext-DemiBold" family="Avenir Next" pointSize="16"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pin" translatesAutoresizingMaskIntoConstraints="NO" id="hal-g8-MFX">
-                                                    <rect key="frame" x="75" y="0.0" width="20" height="20"/>
+                                                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pin" translatesAutoresizingMaskIntoConstraints="NO" id="hal-g8-MFX" userLabel="del">
+                                                    <rect key="frame" x="0.0" y="0.0" width="20" height="20"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="20" id="Pgm-M8-yw8"/>
                                                         <constraint firstAttribute="height" constant="20" id="xn4-R6-KKK"/>
@@ -62,18 +52,14 @@
                                         </view>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="sam-7M-bIk" secondAttribute="trailing" id="8AX-l8-Lm0"/>
-                                            <constraint firstAttribute="bottom" secondItem="8rT-k8-LDG" secondAttribute="bottom" id="HkL-pv-AiK"/>
-                                            <constraint firstItem="8rT-k8-LDG" firstAttribute="leading" secondItem="Lca-vD-NY2" secondAttribute="leading" id="JSn-IA-OnC"/>
                                             <constraint firstItem="sam-7M-bIk" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" id="YId-9R-Qgw"/>
-                                            <constraint firstItem="hal-g8-MFX" firstAttribute="centerX" secondItem="Lca-vD-NY2" secondAttribute="centerX" id="fq5-gq-RTm"/>
+                                            <constraint firstItem="hal-g8-MFX" firstAttribute="centerX" secondItem="Lca-vD-NY2" secondAttribute="centerX" constant="-75.5" id="fq5-gq-RTm"/>
                                             <constraint firstItem="hal-g8-MFX" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" id="oCn-ib-r5i"/>
                                             <constraint firstItem="sam-7M-bIk" firstAttribute="leading" secondItem="Lca-vD-NY2" secondAttribute="leading" id="pbq-jr-YKl"/>
-                                            <constraint firstAttribute="trailing" secondItem="8rT-k8-LDG" secondAttribute="trailing" id="uov-gi-lrg"/>
                                             <constraint firstAttribute="bottom" secondItem="sam-7M-bIk" secondAttribute="bottom" id="zD5-jG-EEP"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="customImageView" destination="sam-7M-bIk" id="mgQ-wh-sSH"/>
-                                            <outlet property="customLabel" destination="8rT-k8-LDG" id="p1z-pt-hc5"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -113,10 +99,10 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="chrome" translatesAutoresizingMaskIntoConstraints="NO" id="sdV-W7-Hkd">
-                                                    <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                                                    <rect key="frame" x="10" y="10" width="80" height="80"/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="False Color" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wcM-U8-GLh">
-                                                    <rect key="frame" x="0.0" y="80" width="100" height="20"/>
+                                                    <rect key="frame" x="10" y="70" width="80" height="20"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.39940068490000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="8He-ef-19r"/>
@@ -125,25 +111,21 @@
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pin" translatesAutoresizingMaskIntoConstraints="NO" id="Oqn-2D-BJZ">
-                                                    <rect key="frame" x="37.5" y="0.0" width="25" height="25"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="25" id="CIo-X0-2bG"/>
-                                                        <constraint firstAttribute="width" constant="25" id="G4M-4F-17k"/>
-                                                    </constraints>
-                                                </imageView>
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wSg-Gm-0s3">
+                                                    <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <state key="normal" title="Button" backgroundImage="no_red"/>
+                                                </button>
                                             </subviews>
                                         </view>
                                         <constraints>
-                                            <constraint firstItem="Oqn-2D-BJZ" firstAttribute="centerX" secondItem="Pph-tY-PGX" secondAttribute="centerX" id="707-32-Ywx"/>
-                                            <constraint firstItem="wcM-U8-GLh" firstAttribute="leading" secondItem="Pph-tY-PGX" secondAttribute="leading" id="EXk-95-OKd"/>
-                                            <constraint firstItem="sdV-W7-Hkd" firstAttribute="top" secondItem="Pph-tY-PGX" secondAttribute="top" id="G76-6T-Zpt"/>
-                                            <constraint firstAttribute="trailing" secondItem="sdV-W7-Hkd" secondAttribute="trailing" id="Jia-SE-8bu"/>
-                                            <constraint firstAttribute="bottom" secondItem="sdV-W7-Hkd" secondAttribute="bottom" id="Ljw-b9-Sp8"/>
-                                            <constraint firstItem="Oqn-2D-BJZ" firstAttribute="top" secondItem="Pph-tY-PGX" secondAttribute="top" id="U5w-vx-7AQ"/>
-                                            <constraint firstItem="sdV-W7-Hkd" firstAttribute="leading" secondItem="Pph-tY-PGX" secondAttribute="leading" id="kwQ-gl-6Bj"/>
-                                            <constraint firstAttribute="bottom" secondItem="wcM-U8-GLh" secondAttribute="bottom" id="qat-UY-DBH"/>
-                                            <constraint firstAttribute="trailing" secondItem="wcM-U8-GLh" secondAttribute="trailing" id="rLg-WD-x2l"/>
+                                            <constraint firstItem="wcM-U8-GLh" firstAttribute="leading" secondItem="Pph-tY-PGX" secondAttribute="leading" constant="10" id="EXk-95-OKd"/>
+                                            <constraint firstItem="sdV-W7-Hkd" firstAttribute="top" secondItem="Pph-tY-PGX" secondAttribute="top" constant="10" id="G76-6T-Zpt"/>
+                                            <constraint firstAttribute="trailing" secondItem="sdV-W7-Hkd" secondAttribute="trailing" constant="10" id="Jia-SE-8bu"/>
+                                            <constraint firstAttribute="bottom" secondItem="sdV-W7-Hkd" secondAttribute="bottom" constant="10" id="Ljw-b9-Sp8"/>
+                                            <constraint firstItem="sdV-W7-Hkd" firstAttribute="leading" secondItem="Pph-tY-PGX" secondAttribute="leading" constant="10" id="kwQ-gl-6Bj"/>
+                                            <constraint firstAttribute="bottom" secondItem="wcM-U8-GLh" secondAttribute="bottom" constant="10" id="qat-UY-DBH"/>
+                                            <constraint firstAttribute="trailing" secondItem="wcM-U8-GLh" secondAttribute="trailing" constant="10" id="rLg-WD-x2l"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="customImageView" destination="sdV-W7-Hkd" id="edM-S1-vkM"/>
@@ -192,6 +174,7 @@
                         <outlet property="cancel" destination="9KU-yn-lBS" id="zw7-9b-sq4"/>
                         <outlet property="collectionViewDestination" destination="fGo-qU-AYi" id="ATh-9Q-SWs"/>
                         <outlet property="collectionViewSource" destination="jwq-kF-6Nq" id="6hn-7D-P8K"/>
+                        <outlet property="labelTitlePDFzone" destination="YHy-9G-ngy" id="hQk-4n-stD"/>
                         <outlet property="save" destination="LAS-W8-RG6" id="Dan-xp-JAB"/>
                     </connections>
                 </viewController>
@@ -224,6 +207,7 @@
     </scenes>
     <resources>
         <image name="chrome" width="738" height="738"/>
+        <image name="no_red" width="25" height="25"/>
         <image name="pin" width="600" height="564"/>
     </resources>
 </document>
