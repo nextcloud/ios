@@ -264,6 +264,10 @@ extension DragDropViewController : UICollectionViewDataSource {
         
         let buttonPosition:CGPoint =  sender.convert(.zero, to: self.collectionViewSource)
         let indexPath:IndexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition)!
+        
+        self.itemsSource.remove(at: indexPath.row)
+        
+        self.collectionViewSource.reloadData()
     }
     
     @objc func deleteDestination(_ sender:UIButton) {
@@ -271,7 +275,9 @@ extension DragDropViewController : UICollectionViewDataSource {
         let buttonPosition:CGPoint =  sender.convert(.zero, to: self.collectionViewDestination)
         let indexPath:IndexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition)!
         
+        self.itemsDestination.remove(at: indexPath.row)
         
+        self.collectionViewDestination.reloadData()
     }
 }
 
