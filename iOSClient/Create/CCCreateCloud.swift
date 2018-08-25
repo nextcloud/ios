@@ -883,7 +883,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             CCUtility.removeFile(atPath: fileNameImagePath)
         }
         
-        //Remove plist in reader
+        //Remove plist in reader for cache
         let filePlistReader = CCUtility.getDirectoryReaderMetadata() + "/" + (fileNameSave as NSString).deletingPathExtension + ".plist"
         CCUtility.removeFile(atPath: filePlistReader)
         
