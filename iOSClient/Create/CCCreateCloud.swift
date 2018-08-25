@@ -840,7 +840,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
-                self.dismissAndUpload(fileNameSave, fileID: metadata!.fileID, directoryID: directoryID)
+                self.dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
             }
             
             alertController.addAction(cancelAction)
@@ -859,9 +859,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         self.dismiss(animated: true, completion: {
             
             do {
-                
                 var pdfPages = [PDFPage]()
-                let fileNameGeneratePDF = CCUtility.getDirectoryScanSelect() + "/" + fileNameSave
                 
                 for fileNameImage in self.arrayFileName {
                     let fileNameImagePath = CCUtility.getDirectoryScanSelect() + "/" + fileNameImage
@@ -869,9 +867,12 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
                     pdfPages.append(page)
                 }
         
+                guard let fileNameGeneratePDF = CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave) else {
+                    return
+                }
+
                 try PDFGenerator.generate(pdfPages, to: fileNameGeneratePDF)
                 
-                /*
                 let metadataForUpload = tableMetadata()
                 
                 metadataForUpload.account = self.appDelegate.activeAccount
@@ -888,7 +889,6 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
                 self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
                 
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
-                */
                 
             } catch {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
