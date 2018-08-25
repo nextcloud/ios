@@ -856,44 +856,44 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     
     func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String) {
         
-        self.dismiss(animated: true, completion: {
-            
-            do {
-                var pdfPages = [PDFPage]()
-                
-                for fileNameImage in self.arrayFileName {
-                    let fileNameImagePath = CCUtility.getDirectoryScanSelect() + "/" + fileNameImage
-                    let page = PDFPage.imagePath(fileNameImagePath)
-                    pdfPages.append(page)
-                }
+        guard let fileNameGeneratePDF = CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave) else {
+            self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+            return
+        }
         
-                guard let fileNameGeneratePDF = CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave) else {
-                    return
-                }
-
-                try PDFGenerator.generate(pdfPages, to: fileNameGeneratePDF)
-                
-                let metadataForUpload = tableMetadata()
-                
-                metadataForUpload.account = self.appDelegate.activeAccount
-                metadataForUpload.date = NSDate()
-                metadataForUpload.directoryID = directoryID
-                metadataForUpload.fileID = fileID
-                metadataForUpload.fileName = fileNameSave
-                metadataForUpload.fileNameView = fileNameSave
-                metadataForUpload.session = k_upload_session
-                metadataForUpload.sessionSelector = selectorUploadFile
-                metadataForUpload.status = Int(k_metadataStatusWaitUpload)
-                
-                _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
-                self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
-                
-                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
-                
-            } catch {
-                self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
-            }
-        })
+        var pdfPages = [PDFPage]()
+        
+        for fileNameImage in self.arrayFileName {
+            let fileNameImagePath = CCUtility.getDirectoryScanSelect() + "/" + fileNameImage
+            let page = PDFPage.imagePath(fileNameImagePath)
+            pdfPages.append(page)
+        }
+        
+        do {
+            try PDFGenerator.generate(pdfPages, to: fileNameGeneratePDF)
+        } catch {
+            self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+            return
+        }
+        
+        let metadataForUpload = tableMetadata()
+        
+        metadataForUpload.account = self.appDelegate.activeAccount
+        metadataForUpload.date = NSDate()
+        metadataForUpload.directoryID = directoryID
+        metadataForUpload.fileID = fileID
+        metadataForUpload.fileName = fileNameSave
+        metadataForUpload.fileNameView = fileNameSave
+        metadataForUpload.session = k_upload_session
+        metadataForUpload.sessionSelector = selectorUploadFile
+        metadataForUpload.status = Int(k_metadataStatusWaitUpload)
+        
+        _ = NCManageDatabase.sharedInstance.addMetadata(metadataForUpload)
+        self.appDelegate.perform(#selector(self.appDelegate.loadAutoDownloadUpload), on: Thread.main, with: nil, waitUntilDone: true)
+        
+        NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
+        
+        self.dismiss(animated: true, completion: nil)
     }
     
     func cancel() {
