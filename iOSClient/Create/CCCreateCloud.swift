@@ -72,7 +72,7 @@ class CreateMenuAdd: NSObject {
 #if DEBUG
         if #available(iOS 11.0, *) {
             actionSheet.addButton(withTitle: NSLocalizedString("_scans_document_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-                NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
+                NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain, openScan: true)
             })
         }
 #endif
@@ -932,11 +932,13 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var viewController: UIViewController?
+    var openScan: Bool = false
     
     @available(iOS 10, *)
-    func openScannerDocument(viewController: UIViewController) {
+    func openScannerDocument(viewController: UIViewController, openScan: Bool) {
         
         self.viewController = viewController
+        self.openScan = openScan
         
         let scannerVC = ImageScannerController()
         scannerVC.imageScannerDelegate = self
@@ -946,41 +948,23 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     @available(iOS 10, *)
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
         
-        scanner.dismiss(animated: true, completion: nil)
-        
-        //guard let image = getScannedImage(inputImage: results.scannedImage) else {
-        //    return
-        //}
-        
-        let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
-        let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
-        
-        do {
-            try UIImagePNGRepresentation(results.scannedImage)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
-        } catch { }
-        
-        let storyboard = UIStoryboard(name: "Scan", bundle: nil)
-        let controller = storyboard.instantiateInitialViewController()!
-        controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-        self.viewController?.present(controller, animated: true, completion: nil)        
-        
-        //        let imageData = UIImageJPEGRepresentation(imageBN, 0.8)!
-        //        try? imageData.write(to: fileNamePath)
-        
-        /*
-         do {
-         let page: [PDFPage] = [
-         .whitePage(PDFPageSize.A4),
-         .image(imageBN)
-         ]
-         
-         let path = CCUtility.getDirectoryGroup().appendingPathComponent(k_DirectoryProviderStorage).path+"/"+"scan1.pdf"
-         try PDFGenerator.generate(page, to: path)
-         
-         } catch let error {
-         print(error)
-         }
-         */
+        scanner.dismiss(animated: true, completion: {
+            
+            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+            let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
+            
+            do {
+                try UIImagePNGRepresentation(results.scannedImage)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+            } catch { }
+            
+            if (self.openScan) {
+                let storyboard = UIStoryboard(name: "Scan", bundle: nil)
+                let controller = storyboard.instantiateInitialViewController()!
+                
+                controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+                self.viewController?.present(controller, animated: true, completion: nil)
+            }
+        })
     }
     
     @available(iOS 10, *)
