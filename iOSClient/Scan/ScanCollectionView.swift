@@ -200,7 +200,7 @@ class DragDropViewController: UIViewController {
                         return
                     }
                     
-                    let imageData = UIImageJPEGRepresentation(imageFilter, 0.8)!
+                    let imageData = UIImageJPEGRepresentation(imageFilter, 0.5)!
                     
                     do {
                         try imageData.write(to: fileNamePathTo.url)

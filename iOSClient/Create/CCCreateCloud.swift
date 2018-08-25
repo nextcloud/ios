@@ -856,13 +856,14 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     
     func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String) {
         
+        var pdfPages = [PDFPage]()
+
         guard let fileNameGeneratePDF = CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave) else {
             self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             return
         }
         
-        var pdfPages = [PDFPage]()
-        
+        //Generate PDF
         for fileNameImage in self.arrayFileName {
             let fileNameImagePath = CCUtility.getDirectoryScanSelect() + "/" + fileNameImage
             let page = PDFPage.imagePath(fileNameImagePath)
@@ -874,6 +875,12 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         } catch {
             self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             return
+        }
+        
+        //Remove images processed
+        for fileNameImage in self.arrayFileName {
+            let fileNameImagePath = CCUtility.getDirectoryScanSelect() + "/" + fileNameImage
+            CCUtility.removeFile(atPath: fileNameImagePath)
         }
         
         let metadataForUpload = tableMetadata()
