@@ -99,7 +99,7 @@ class DragDropViewController: UIViewController {
     
     @IBAction func add(sender: UIButton) {
         
-        
+        NCCreateScanDocument.sharedInstance.openScannerDocument()
     }
     
     //MARK: Private Methods

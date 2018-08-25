@@ -72,7 +72,7 @@ class CreateMenuAdd: NSObject {
 #if DEBUG
         if #available(iOS 11.0, *) {
             actionSheet.addButton(withTitle: NSLocalizedString("_scans_document_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-                NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
+                NCCreateScanDocument.sharedInstance.openScannerDocument()
             })
         }
 #endif
@@ -933,10 +933,10 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @available(iOS 10, *)
-    func openScannerDocument(viewController: UIViewController) {
+    func openScannerDocument() {
         let scannerVC = ImageScannerController()
         scannerVC.imageScannerDelegate = self
-        viewController.present(scannerVC, animated: true, completion: nil)
+        appDelegate.window.rootViewController?.present(scannerVC, animated: true, completion: nil)
     }
     
     @available(iOS 10, *)
