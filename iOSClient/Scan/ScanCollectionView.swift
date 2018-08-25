@@ -405,5 +405,9 @@ extension DragDropViewController : UICollectionViewDropDelegate {
             return
         }
     }
+    
+    func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
+        self.collectionViewDestination.reloadData()
+    }
 }
 
