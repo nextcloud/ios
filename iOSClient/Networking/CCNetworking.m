@@ -1135,10 +1135,7 @@
 #endif
         
         // Add Local
-        if (![CCUtility getOptimizedPhoto]) {
-            
-            [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
-        }
+        [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
         
 #ifndef EXTENSION
         
@@ -1152,6 +1149,8 @@
         // Optimization
         if (([CCUtility getOptimizedPhoto] || [metadata.sessionSelector isEqualToString:selectorUploadAutoUploadAll]) && ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video]) && isE2EEDirectory == NO) {
             
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
+
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
         }
         
