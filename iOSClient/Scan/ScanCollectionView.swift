@@ -43,7 +43,9 @@ class DragDropViewController: UIViewController {
     
     @IBOutlet weak var cancel: UIBarButtonItem!
     @IBOutlet weak var save: UIBarButtonItem!
-    
+
+    @IBOutlet weak var add: UIButton!
+
     @IBOutlet weak var labelTitlePDFzone: UILabel!
 
     
@@ -64,6 +66,8 @@ class DragDropViewController: UIViewController {
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_PDF_zone_", comment: "")
+        
+        add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -91,6 +95,11 @@ class DragDropViewController: UIViewController {
             let formViewController = CreateFormUploadScanDocument.init(serverUrl: appDelegate.activeMain.serverUrl, arrayFileName: self.itemsDestination)
             self.navigationController?.pushViewController(formViewController, animated: true)
         }
+    }
+    
+    @IBAction func add(sender: UIButton) {
+        
+        
     }
     
     //MARK: Private Methods

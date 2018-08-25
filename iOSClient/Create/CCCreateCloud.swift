@@ -958,8 +958,7 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         let storyboard = UIStoryboard(name: "Scan", bundle: nil)
         let controller = storyboard.instantiateInitialViewController()!
         controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-        appDelegate.activeMain.present(controller, animated: true, completion: nil)
-        
+        appDelegate.window.rootViewController?.present(controller, animated: true, completion: nil)        
         
         //        let imageData = UIImageJPEGRepresentation(imageBN, 0.8)!
         //        try? imageData.write(to: fileNamePath)
