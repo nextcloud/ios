@@ -72,7 +72,7 @@ class CreateMenuAdd: NSObject {
 #if DEBUG
         if #available(iOS 11.0, *) {
             actionSheet.addButton(withTitle: NSLocalizedString("_scans_document_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-                NCCreateScanDocument.sharedInstance.openScannerDocument()
+                NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain)
             })
         }
 #endif
@@ -931,12 +931,16 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var viewController: UIViewController?
     
     @available(iOS 10, *)
-    func openScannerDocument() {
+    func openScannerDocument(viewController: UIViewController) {
+        
+        self.viewController = viewController
+        
         let scannerVC = ImageScannerController()
         scannerVC.imageScannerDelegate = self
-        appDelegate.window.rootViewController?.present(scannerVC, animated: true, completion: nil)
+        self.viewController?.present(scannerVC, animated: true, completion: nil)
     }
     
     @available(iOS 10, *)
@@ -958,7 +962,7 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         let storyboard = UIStoryboard(name: "Scan", bundle: nil)
         let controller = storyboard.instantiateInitialViewController()!
         controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
-        appDelegate.window.rootViewController?.present(controller, animated: true, completion: nil)        
+        self.viewController?.present(controller, animated: true, completion: nil)        
         
         //        let imageData = UIImageJPEGRepresentation(imageBN, 0.8)!
         //        try? imageData.write(to: fileNamePath)
