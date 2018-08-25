@@ -840,6 +840,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             }
             
             let overwriteAction = UIAlertAction(title: NSLocalizedString("_overwrite_", comment: ""), style: .cancel) { (action:UIAlertAction) in
+                NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND fileNameView == %@", directoryID, fileNameSave), clearDateReadDirectoryID: directoryID)
                 self.dismissAndUpload(fileNameSave, fileID: directoryID + fileNameSave, directoryID: directoryID)
             }
             
@@ -883,10 +884,11 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             CCUtility.removeFile(atPath: fileNameImagePath)
         }
         
-        //Remove plist in reader for cache
+        //Remove plist in reader for cache issue
         let filePlistReader = CCUtility.getDirectoryReaderMetadata() + "/" + (fileNameSave as NSString).deletingPathExtension + ".plist"
         CCUtility.removeFile(atPath: filePlistReader)
         
+        //Create metadata for upload
         let metadataForUpload = tableMetadata()
         
         metadataForUpload.account = self.appDelegate.activeAccount
