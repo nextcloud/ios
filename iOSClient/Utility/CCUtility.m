@@ -853,6 +853,13 @@
     return [paths objectAtIndex:0];
 }
 
++ (NSString *)getDirectoryReaderMetadata
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    
+    return [NSString stringWithFormat:@"%@/Reader Metadata", [paths objectAtIndex:0]];
+}
+
 // Return the path of directory Audio
 + (NSString *)getDirectoryAudio
 {

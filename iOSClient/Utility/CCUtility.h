@@ -176,6 +176,7 @@
 + (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryDocuments;
++ (NSString *)getDirectoryReaderMetadata;
 + (NSString *)getDirectoryAudio;
 + (NSString *)getDirectoryCerificates;
 + (NSString *)getDirectoryUserData;
