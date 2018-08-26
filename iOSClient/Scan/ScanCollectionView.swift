@@ -73,6 +73,8 @@ class DragDropViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        itemsSource.removeAll()
+
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
@@ -247,6 +249,7 @@ extension DragDropViewController : UICollectionViewDataSource {
             }
             
             cell.customImageView?.image = UIImage(data: data)
+            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
             cell.delete.addTarget(self, action: #selector(deleteSource(_:)), for: .touchUpInside)
 
             return cell
@@ -267,6 +270,7 @@ extension DragDropViewController : UICollectionViewDataSource {
             
             cell.customImageView?.image = self.filter(image: image)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
+            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
             cell.delete.addTarget(self, action: #selector(deleteDestination(_:)), for: .touchUpInside)
             
             return cell
@@ -278,6 +282,8 @@ extension DragDropViewController : UICollectionViewDataSource {
         let buttonPosition:CGPoint =  sender.convert(.zero, to: self.collectionViewSource)
         let indexPath:IndexPath = self.collectionViewSource.indexPathForItem(at: buttonPosition)!
         
+        let fileNameAtPath = CCUtility.getDirectoryScan() + "/" + self.itemsSource[indexPath.row]
+        CCUtility.removeFile(atPath: fileNameAtPath)
         self.itemsSource.remove(at: indexPath.row)
         
         self.collectionViewSource.reloadData()

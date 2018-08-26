@@ -44,7 +44,7 @@
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="06r-jm-ARX">
                                                     <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <state key="normal" backgroundImage="deleteImagePage"/>
+                                                    <state key="normal" backgroundImage="no_red"/>
                                                 </button>
                                             </subviews>
                                         </view>
@@ -98,7 +98,7 @@
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wSg-Gm-0s3">
                                                     <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <state key="normal" backgroundImage="deleteImagePage"/>
+                                                    <state key="normal" backgroundImage="no_red"/>
                                                 </button>
                                             </subviews>
                                         </view>
@@ -212,6 +212,6 @@
     </scenes>
     <resources>
         <image name="add" width="25" height="25"/>
-        <image name="deleteImagePage" width="25" height="25"/>
+        <image name="no_red" width="25" height="25"/>
     </resources>
 </document>
