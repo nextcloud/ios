@@ -74,7 +74,7 @@ class DragDropViewController: UIViewController {
         super.viewWillAppear(animated)
         
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+//        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
         labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
