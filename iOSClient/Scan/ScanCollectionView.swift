@@ -73,16 +73,14 @@ class DragDropViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        itemsSource.removeAll()
-
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
         labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
-            
+        
         loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
-        loadImage(atPath: CCUtility.getDirectoryScanSelect(), items: &itemsDestination)
+//        loadImage(atPath: CCUtility.getDirectoryScanSelect(), items: &itemsDestination)
     }
     
     //MARK: Button Action
@@ -108,6 +106,8 @@ class DragDropViewController: UIViewController {
     
     private func loadImage(atPath: String, items: inout [String]) {
         
+        items.removeAll()
+
         do {
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
             for fileName in directoryContents {
