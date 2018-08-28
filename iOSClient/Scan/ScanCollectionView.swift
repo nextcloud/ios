@@ -74,13 +74,13 @@ class DragDropViewController: UIViewController {
         super.viewWillAppear(animated)
         
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-//        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
         labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
         
         loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
-//        loadImage(atPath: CCUtility.getDirectoryScanSelect(), items: &itemsDestination)
+        
+        self.collectionViewSource.reloadData()
     }
     
     //MARK: Button Action
@@ -249,7 +249,7 @@ extension DragDropViewController : UICollectionViewDataSource {
             }
             
             cell.customImageView?.image = UIImage(data: data)
-            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
+//            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
             cell.delete.addTarget(self, action: #selector(deleteSource(_:)), for: .touchUpInside)
 
             return cell
@@ -270,7 +270,7 @@ extension DragDropViewController : UICollectionViewDataSource {
             
             cell.customImageView?.image = self.filter(image: image)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
-            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
+//            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
             cell.delete.addTarget(self, action: #selector(deleteDestination(_:)), for: .touchUpInside)
             
             return cell
@@ -343,7 +343,11 @@ extension DragDropViewController : UICollectionViewDragDelegate
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
         
         let previewParameters = UIDragPreviewParameters()
-        previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 100, height: 100))
+        if collectionView == self.collectionViewSource {
+            previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 100, height: 100))
+        } else {
+            previewParameters.visiblePath = UIBezierPath(rect: CGRect(x: 20, y: 20, width: 80, height: 80))
+        }
          
         return previewParameters
     }
@@ -385,11 +389,11 @@ extension DragDropViewController : UICollectionViewDropDelegate {
         let destinationIndexPath: IndexPath
         
         if let indexPath = coordinator.destinationIndexPath {
-            
+        
             destinationIndexPath = indexPath
-            
+        
         } else {
-            
+        
             // Get last index path of table view.
             let section = collectionView.numberOfSections - 1
             let row = collectionView.numberOfItems(inSection: section)

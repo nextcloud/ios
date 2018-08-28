@@ -961,15 +961,14 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     @available(iOS 10, *)
     func imageScannerController(_ scanner: ImageScannerController, didFinishScanningWithResults results: ImageScannerResults) {
         
+        let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+        let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
+            
+        do {
+            try UIImagePNGRepresentation(results.scannedImage)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+        } catch { }
+        
         scanner.dismiss(animated: true, completion: {
-            
-            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
-            let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
-            
-            do {
-                try UIImagePNGRepresentation(results.scannedImage)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
-            } catch { }
-            
             if (self.openScan) {
                 let storyboard = UIStoryboard(name: "Scan", bundle: nil)
                 let controller = storyboard.instantiateInitialViewController()!
@@ -988,7 +987,6 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
     @available(iOS 10, *)
     func imageScannerController(_ scanner: ImageScannerController, didFailWithError error: Error) {
         appDelegate.messageNotification("_error_", description: error.localizedDescription, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
-        print(error)
     }
 }
 
