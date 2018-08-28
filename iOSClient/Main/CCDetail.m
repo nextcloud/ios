@@ -913,6 +913,10 @@
 
 - (void)viewPDF:(NSString *)password
 {
+    // remove cache PDF
+    NSString *filePlistReader = [NSString stringWithFormat:@"%@/%@.plist", [CCUtility getDirectoryReaderMetadata], self.metadataDetail.fileNameView.stringByDeletingPathExtension];
+    [CCUtility removeFileAtPath:filePlistReader];
+    
     NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView];
     
     if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] == NO) {

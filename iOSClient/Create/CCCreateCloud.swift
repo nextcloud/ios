@@ -877,10 +877,6 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             return
         }
         
-        //Remove plist in reader for cache issue
-        //let filePlistReader = CCUtility.getDirectoryReaderMetadata() + "/" + (fileNameSave as NSString).deletingPathExtension + ".plist"
-        //CCUtility.removeFile(atPath: filePlistReader)
-        
         //Create metadata for upload
         let metadataForUpload = tableMetadata()
         
