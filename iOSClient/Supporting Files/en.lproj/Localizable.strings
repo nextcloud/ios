@@ -85,7 +85,7 @@
 "_initialization_"          = "Initialization";
 "_experimental_"            = "Experimental";
 "_select_dir_media_tab_"    = "Select as folder \"Media\"";
-
+"_error_creation_file_"     = "Ops! Could not create the file";
 
 // App
 
@@ -139,7 +139,7 @@
 "_proceed_"                     = "Proceed";
 "_delete_cache_"                = "Delete cache";
 "_want_delete_cache_"           = "Do you want to delete the cache?";
-"_delete_cache_and_db_"         = "Yes and clear the internal library and the transfers";
+"_delete_cache_and_db_"         = "Yes and remove the transfers in progress";
 "_want_delete_thumbnails_"      = "Do you want to delete all thumbnails too?";
 "_mail_deleted_"                = "Email deleted";
 "_mail_saved_"                  = "Email saved";
@@ -389,6 +389,14 @@
 "_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
 
+// Media
+
+"_select_media_folder_"         = "Select the \"Media\" folder";
+"_media_viewimage_show_"        = "Show images";
+"_media_viewimage_hide_"        = "Hide images";
+"_media_viewvideo_show_"        = "Show video";
+"_media_viewvideo_hide_"        = "Hide video";
+
 // Files Preview
 
 "_insert_password_pfd_"         = "Secured PDF. Enter password";
@@ -551,4 +559,21 @@
 "_e2e_error_mark_folder_"           = "Encrypt folder";
 "_e2e_error_directory_not_empty_"   = "The directory is not empty";
 
+// Scan Document
+
+"_scans_document_"                  = "Scans document";
+"_scanned_images_"                  = "Scanned images";
+"_scan_document_pdf_page_"          = "Page";
+"_scan_label_PDF_zone_"             = "Drag below the images for make your PDF document";
+
+/* The title on the navigation bar of the Scanning screen. */
+"wescan.scanning.title"             = "Scanning";
+/* The "Next" button on the right side of the navigation bar on the Edit screen. */
+"wescan.edit.button.next"           = "Next";
+/* The title on the navigation bar of the Edit screen. */
+"wescan.edit.title"                 = "Edit Scan";
+/* The "Done" button on the right side of the navigation bar on the Review screen. */
+"wescan.review.button.done"         = "Done";
+/* The title on the navigation bar of the Review screen. */
+"wescan.review.title"               = "Review";
 

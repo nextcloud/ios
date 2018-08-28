@@ -56,7 +56,7 @@
     NSUInteger _failedAttempts;
     NSDate *_lockUntilDate;
 
-    UIRefreshControl *_refreshControl;
+    UIRefreshControl *refreshControl;
     UIDocumentInteractionController *docController;
 
     CCHud *_hud;
@@ -303,8 +303,8 @@
         [appDelegate changeTheming:self];
     
     // Refresh control
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
-    _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
+    refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
+    refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
 
     // color searchbar
     self.searchController.searchBar.barTintColor = [NCBrandColor sharedInstance].brand;
@@ -434,7 +434,7 @@
 
 - (UIView *)customViewForEmptyDataSet:(UIScrollView *)scrollView
 {
-    if (_loadingFolder && _refreshControl.isRefreshing == NO) {
+    if (_loadingFolder && refreshControl.isRefreshing == NO) {
     
         UIActivityIndicatorView *activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         activityView.transform = CGAffineTransformMakeScale(1.5f, 1.5f);
@@ -513,31 +513,34 @@
 
 - (void)createRefreshControl
 {
-    _refreshControl = [UIRefreshControl new];
+    refreshControl = [UIRefreshControl new];
     
     if (@available(iOS 10, *)) {
-        _tableView.refreshControl = _refreshControl;
+        _tableView.refreshControl = refreshControl;
     } else {
-        [_tableView addSubview:_refreshControl];
+        [_tableView addSubview:refreshControl];
     }
        
-    _refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
-    _refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
+    refreshControl.tintColor = [NCBrandColor sharedInstance].brandText;
+    refreshControl.backgroundColor = [NCBrandColor sharedInstance].brand;
     
-    [_refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
+    [refreshControl addTarget:self action:@selector(refreshControlTarget) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)deleteRefreshControl
 {
-    [_refreshControl endRefreshing];
+    [refreshControl endRefreshing];
     
     for (UIView *subview in [_tableView subviews]) {
-        if (subview == _refreshControl)
+        if (subview == refreshControl)
             [subview removeFromSuperview];
     }
     
-    _tableView.refreshControl = nil;
-    _refreshControl = nil;
+    if (@available(iOS 10, *)) {
+        self.tableView.refreshControl = nil;
+    }
+    
+    refreshControl = nil;
 }
 
 - (void)refreshControlTarget
@@ -861,83 +864,6 @@
         
         [self presentViewController:navigationController animated:YES completion:nil];
     }];
-}
-
-// New folder or new photo or video
-- (void)returnCreate:(NSInteger)type
-{
-    switch (type) {
-            
-        case k_returnCreateFolderPlain: {
-            
-            NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
-            NSString *message;
-            UIAlertController *alertController;
-            
-            if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
-                message = @"/";
-            } else {
-                message = [serverUrl lastPathComponent];
-            }
-            
-            alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_on_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
-
-            [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-                
-                textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
-            }];
-            
-            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
-                NSLog(@"[LOG] Cancel action");
-            }];
-            
-            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                
-                UITextField *fileName = alertController.textFields.firstObject;
-                [self createFolder:fileName.text serverUrl:serverUrl];
-            }];
-            
-            okAction.enabled = NO;
-            
-            [alertController addAction:cancelAction];
-            [alertController addAction:okAction];
-            
-            [self presentViewController:alertController animated:YES completion:nil];
-        }
-            break;
-        case k_returnCreateFotoVideoPlain: {
-            
-            [self openAssetsPickerController];
-        }
-            break;
-        case k_returnCreateFilePlain: {
-            
-            [self openImportDocumentPicker];
-        }
-            break;
-            
-        case k_returnCreateFotoVideoEncrypted: {
-            
-            [self openAssetsPickerController];
-        }
-            break;
-        case k_returnCreateFileEncrypted: {
-            
-            [self openImportDocumentPicker];
-        }
-            break;
-    
-        case k_returnCreateFileText: {
-            
-            UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"NCText" bundle:nil] instantiateViewControllerWithIdentifier:@"NCText"];
-                        
-            navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
-
-            [self presentViewController:navigationController animated:YES completion:nil];
-        }
-            break;
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -1322,7 +1248,7 @@
 - (void)readFolderSuccessFailure:(CCMetadataNet *)metadataNet metadataFolder:(tableMetadata *)metadataFolder metadatas:(NSArray *)metadatas message:(NSString *)message errorCode:(NSInteger)errorCode
 {
     // stoprefresh
-    [_refreshControl endRefreshing];
+    [refreshControl endRefreshing];
     
     // Check Active Account
     if (![metadataNet.account isEqualToString:metadataNet.account])
@@ -1439,7 +1365,7 @@
     // init control
     if (!serverUrl || !appDelegate.activeAccount || appDelegate.maintenanceMode) {
         
-        [_refreshControl endRefreshing];
+        [refreshControl endRefreshing];
         return;
     }
     
@@ -1900,6 +1826,44 @@
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Create folder =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)createFolder
+{
+    NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
+    NSString *message;
+    UIAlertController *alertController;
+    
+    if ([serverUrl isEqualToString:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]]) {
+        message = @"/";
+    } else {
+        message = [serverUrl lastPathComponent];
+    }
+    
+    alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_create_folder_on_",nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        [textField addTarget:self action:@selector(minCharTextFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+        
+        textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
+    }];
+    
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_",nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        NSLog(@"[LOG] Cancel action");
+    }];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        
+        UITextField *fileName = alertController.textFields.firstObject;
+        [self createFolder:fileName.text serverUrl:serverUrl];
+    }];
+    
+    okAction.enabled = NO;
+    
+    [alertController addAction:cancelAction];
+    [alertController addAction:okAction];
+    
+    [self presentViewController:alertController animated:YES completion:nil];
+}
 
 - (void)createFolder:(NSString *)fileNameFolder serverUrl:(NSString *)serverUrl
 {

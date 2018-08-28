@@ -176,6 +176,7 @@
 + (NSString *)getStringUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 + (NSString *)getDirectoryDocuments;
++ (NSString *)getDirectoryReaderMetadata;
 + (NSString *)getDirectoryAudio;
 + (NSString *)getDirectoryCerificates;
 + (NSString *)getDirectoryUserData;
@@ -190,6 +191,7 @@
 
 + (void)moveFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
 + (void)copyFileAtPath:(NSString *)atPath toPath:(NSString *)toPath;
++ (void)removeFileAtPath:(NSString *)atPath;
 + (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl;
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl;
@@ -198,6 +200,9 @@
 + (NSArray *)createNameSubFolder:(PHFetchResult *)assets;
 
 + (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
+
++ (NSString *)getDirectoryScan;
++ (NSString *)getDirectoryScanSelect;
 
 // ===== E2E Encrypted =====
 

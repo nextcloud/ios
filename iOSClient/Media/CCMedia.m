@@ -47,6 +47,13 @@
     // Fix Crash Thumbnail + collectionView ReloadData ?
     NSInteger counterThumbnail;
     BOOL collectionViewReloadDataInProgress;
+    
+    // Remenu
+    REMenu *menu;
+    REMenuItem *menuSelectMediaFolder;
+    REMenuItem *menuFilterImage;
+    REMenuItem *menuFilterVideo;
+    REMenuItem *menuSelectItems;
 }
 @end
 
@@ -155,6 +162,8 @@
 {
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
+    [menu close];
+    
     // Before rotation
     
     [coordinator animateAlongsideTransition:nil completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
@@ -168,12 +177,157 @@
             // Landscape
         }
         
+        [self.collectionView reloadData];
     }];
 }
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Gestione Grafica Window =====
 #pragma --------------------------------------------------------------------------------------------
+
+- (void)openMenu
+{
+    if (menu.isOpen) {
+        
+        [menu close];
+        
+    } else {
+        
+        [self createReMainMenu];
+        [menu showFromNavigationController:self.navigationController];
+        
+        // Backgroun reMenu & (Gesture)
+        [self createReMenuBackgroundView:menu];
+        
+        self.singleFingerTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(openMenu)];
+        [self.reMenuBackgroundView addGestureRecognizer:_singleFingerTap];
+    }
+}
+
+- (void)createReMenuBackgroundView:(REMenu *)menu
+{
+    CGFloat safeAreaBottom = 0;
+    CGFloat safeAreaTop = 0;
+    CGFloat statusBar = 0;
+    
+    if (@available(iOS 11, *)) {
+        safeAreaTop = [UIApplication sharedApplication].delegate.window.safeAreaInsets.top;
+        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    }
+    if ([UIApplication sharedApplication].isStatusBarHidden) {
+        statusBar = 13;
+    }
+    
+    CGFloat computeNavigationBarOffset = [menu computeNavigationBarOffset];
+    UIViewController *rootController = [[[[UIApplication sharedApplication]delegate] window] rootViewController];
+    CGRect globalPositionMenu = [menu.menuView convertRect:menu.menuView.bounds toView:rootController.view];
+    
+    self.reMenuBackgroundView = [UIView new];
+    self.reMenuBackgroundView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    self.reMenuBackgroundView.frame = CGRectMake(0, computeNavigationBarOffset, globalPositionMenu.size.width,  rootController.view.frame.size.height);
+    
+    [UIView animateWithDuration:0.2 animations:^{
+        
+        CGFloat minimum = safeAreaBottom + self.tabBarController.tabBar.frame.size.height;
+        CGFloat y =  rootController.view.frame.size.height - menu.menuView.frame.size.height - globalPositionMenu.origin.y + statusBar;
+        
+        if (y>minimum) {
+            
+            self.reMenuBackgroundView.frame = CGRectMake(0, rootController.view.frame.size.height, globalPositionMenu.size.width, - y);
+            [self.tabBarController.view addSubview:self.reMenuBackgroundView];
+        }
+    }];
+}
+
+- (void)createReMainMenu
+{
+    menuSelectItems = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        if ([sectionDataSource.allRecordsDataSource count] > 0) {
+            [self editingModeYES];
+        }
+    }];
+    
+    menuSelectMediaFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_media_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        [self selectStartDirectoryPhotosTab];
+    }];
+    
+    if (filterTypeFileImage) {
+        menuFilterImage = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewimage_show_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"imageno"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+            filterTypeFileImage = NO;
+            [self reloadDatasource:nil action:k_action_NULL];
+        }];
+    } else {
+        menuFilterImage = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewimage_hide_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"imageyes"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+            filterTypeFileImage = YES;
+            [self reloadDatasource:nil action:k_action_NULL];
+        }];
+    }
+    
+    if (filterTypeFileVideo) {
+        menuFilterVideo = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewvideo_show_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"videono"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+            filterTypeFileVideo = NO;
+            [self reloadDatasource:nil action:k_action_NULL];
+        }];
+    } else {
+        menuFilterVideo = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewvideo_hide_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"videoyes"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+            filterTypeFileVideo = YES;
+            [self reloadDatasource:nil action:k_action_NULL];
+        }];
+    }
+    
+    // REMENU --------------------------------------------------------------------------------------------------------------
+    
+    menu = [[REMenu alloc] initWithItems:@[menuSelectItems, menuSelectMediaFolder, menuFilterImage, menuFilterVideo]];
+    
+    menu.imageOffset = CGSizeMake(5, -1);
+    
+    menu.separatorOffset = CGSizeMake(50.0, 0.0);
+    menu.imageOffset = CGSizeMake(0, 0);
+    menu.waitUntilAnimationIsComplete = NO;
+    
+    menu.separatorHeight = 0.5;
+    menu.separatorColor = [NCBrandColor sharedInstance].seperator;
+    
+    menu.backgroundColor = [NCBrandColor sharedInstance].backgroundView;
+    menu.textColor = [UIColor blackColor];
+    menu.textAlignment = NSTextAlignmentLeft;
+    menu.textShadowColor = nil;
+    menu.textOffset = CGSizeMake(50, 0.0);
+    menu.font = [UIFont systemFontOfSize:14.0];
+    
+    menu.highlightedBackgroundColor = [[NCBrandColor sharedInstance] getColorSelectBackgrond];
+    menu.highlightedSeparatorColor = nil;
+    menu.highlightedTextColor = [UIColor blackColor];
+    menu.highlightedTextShadowColor = nil;
+    menu.highlightedTextShadowOffset = CGSizeMake(0, 0);
+    
+    menu.subtitleTextColor = [UIColor colorWithWhite:0.425 alpha:1];
+    menu.subtitleTextAlignment = NSTextAlignmentLeft;
+    menu.subtitleTextShadowColor = nil;
+    menu.subtitleTextShadowOffset = CGSizeMake(0, 0.0);
+    menu.subtitleTextOffset = CGSizeMake(50, 0.0);
+    menu.subtitleFont = [UIFont systemFontOfSize:12.0];
+    
+    menu.subtitleHighlightedTextColor = [UIColor lightGrayColor];
+    menu.subtitleHighlightedTextShadowColor = nil;
+    menu.subtitleHighlightedTextShadowOffset = CGSizeMake(0, 0);
+    
+    menu.borderWidth = 0.3;
+    menu.borderColor =  [UIColor lightGrayColor];
+    
+    menu.animationDuration = 0.2;
+    menu.closeAnimationDuration = 0.2;
+    
+    menu.bounce = NO;
+    
+    __weak typeof(self) weakSelf = self;
+    [menu setClosePreparationBlock:^{
+        
+        // Backgroun reMenu (Gesture)
+        [weakSelf.reMenuBackgroundView removeFromSuperview];
+        [weakSelf.reMenuBackgroundView removeGestureRecognizer:weakSelf.singleFingerTap];
+    }];
+}
 
 - (void)setUINavigationBarDefault
 {
@@ -199,36 +353,14 @@
     self.navigationItem.title = title;
     
     if (isSearchMode) {
-        [CCGraphics addImageToTitle:title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:YES navigationItem:self.navigationItem];
+        [CCGraphics addImageToTitle:title colorTitle:[NCBrandColor sharedInstance].brandText imageTitle:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"load"] multiplier:2 color:[NCBrandColor sharedInstance].brandText] imageRight:NO navigationItem:self.navigationItem];
     }
     
     // Button Item RIGHT
-    UIBarButtonItem *buttonSelect = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"select"] style:UIBarButtonItemStylePlain target:self action:@selector(editingModeYES)];
+    UIBarButtonItem *buttonMore = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navigationControllerMenu"] style:UIBarButtonItemStylePlain target:self action:@selector(openMenu)];
     
-    if ([sectionDataSource.allRecordsDataSource count] > 0) {
-        self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonSelect, nil];
-    } else {
-        self.navigationItem.rightBarButtonItems = nil;
-    }
-    
-    // Button Item LEFT
-    UIBarButtonItem *buttonStartDirectoryPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"folderMedia"] style:UIBarButtonItemStylePlain target:self action:@selector(selectStartDirectoryPhotosTab)];
-    
-    UIBarButtonItem *buttonImageFilterYesPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"imageno"] style:UIBarButtonItemStylePlain target:self action:@selector(buttonVideoFilterYes)];
-    UIBarButtonItem *buttonImageFilterNoPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"imageyes"] style:UIBarButtonItemStylePlain target:self action:@selector(buttonVideoFilterNo)];
-    
-    UIBarButtonItem *buttonVideoFilterYesPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"videono"] style:UIBarButtonItemStylePlain target:self action:@selector(buttonImageFilterNo)];
-    UIBarButtonItem *buttonVideoFilterNoPhotosTab = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"videoyes"] style:UIBarButtonItemStylePlain target:self action:@selector(buttonImageFilterYes)];
-
-    if (filterTypeFileImage && filterTypeFileVideo) {
-        self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, buttonImageFilterYesPhotosTab, buttonVideoFilterYesPhotosTab,nil];
-    } else if (filterTypeFileImage) {
-        self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, buttonImageFilterYesPhotosTab, buttonVideoFilterNoPhotosTab,nil];
-    } else if (filterTypeFileVideo) {
-        self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, buttonImageFilterNoPhotosTab, buttonVideoFilterYesPhotosTab,nil];
-    } else {
-        self.navigationItem.leftBarButtonItems = [[NSArray alloc] initWithObjects:buttonStartDirectoryPhotosTab, buttonImageFilterNoPhotosTab, buttonVideoFilterNoPhotosTab,nil];
-    }
+    self.navigationItem.rightBarButtonItems = [[NSArray alloc] initWithObjects:buttonMore, nil];
+    self.navigationItem.leftBarButtonItems = nil;
 }
 
 - (void)setUINavigationBarSelected
@@ -524,43 +656,6 @@
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Filter Image Video====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)buttonImageFilterYes
-{
-    filterTypeFileImage = !filterTypeFileImage;
-    [self reloadDatasource:nil action:k_action_NULL];
-}
-
-- (void)buttonImageFilterNo
-{
-    if (filterTypeFileVideo) {
-        filterTypeFileVideo = NO;
-    } else {
-        filterTypeFileImage = !filterTypeFileImage;
-    }
-    [self reloadDatasource:nil action:k_action_NULL];
-}
-
-- (void)buttonVideoFilterYes
-{
-    if (filterTypeFileImage) {
-        filterTypeFileImage = NO;
-    } else {
-        filterTypeFileVideo = !filterTypeFileVideo;
-    }
-    [self reloadDatasource:nil action:k_action_NULL];
-}
-
-- (void)buttonVideoFilterNo
-{
-    filterTypeFileVideo = !filterTypeFileVideo;
-    [self reloadDatasource:nil action:k_action_NULL];
-}
-
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Search Photo/Video ====

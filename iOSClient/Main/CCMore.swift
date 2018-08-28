@@ -113,6 +113,17 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         item.icon = "share"
         item.url = "segueShares"
         functionMenu.append(item)
+
+/*
+#if DEBUG
+        // ITEM : Scan
+        item = OCExternalSites.init()
+        item.name = "_scanned_images_"
+        item.icon = "scan"
+        item.url = "Scanopen"
+        functionMenu.append(item)
+#endif
+*/
         
         // ITEM : External
         
@@ -376,7 +387,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             //let nameStoryboard = item.url.substring(from: item.url.index(item.url.startIndex, offsetBy: 4))
             
             let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
-            let controller = storyboard.instantiateViewController(withIdentifier: nameStoryboard)
+            let controller = storyboard.instantiateInitialViewController()! //instantiateViewController(withIdentifier: nameStoryboard)
             self.present(controller, animated: true, completion: nil)
             
         } else if item.url.contains("//") {

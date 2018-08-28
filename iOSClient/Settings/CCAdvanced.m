@@ -173,7 +173,7 @@
     [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     [appDelegate aspectTabBar:self.tabBarController.tabBar hidden:NO];
     
-    [self recalculateSize];
+    //[self recalculateSize];
 }
 
 - (void)changeTheming
@@ -348,6 +348,7 @@
         
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryUserData] error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryScan] error:nil];
         
         [self emptyDocumentsDirectory];
         NSArray* tmpDirectory = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:NSTemporaryDirectory() error:NULL];
@@ -356,7 +357,7 @@
         
         [KTVHTTPCache cacheDeleteAllCaches];
         
-        [self recalculateSize];
+        //[self recalculateSize];
         
         // Clear Database
         
@@ -420,6 +421,7 @@
     [self presentViewController:alertController animated:YES completion:nil];
 }
 
+/*
 - (void)recalculateSize
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -437,6 +439,7 @@
         self.form.delegate = self;
     });
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark == Exit Nextcloud ==
@@ -466,7 +469,7 @@
             [CCUtility deleteAllChainStore];
             
             [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorage] error:nil];
-
+            
             [self emptyDocumentsDirectory];
             
             [self emptyLibraryDirectory];

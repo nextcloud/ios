@@ -55,7 +55,6 @@
 
 @property (nonatomic, weak) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) tableMetadata *metadata;
-@property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) NSString *titleMain;
 @property (nonatomic, weak) CCShareOC *shareOC;
@@ -75,7 +74,6 @@
 - (void)copyFileToPasteboard:(tableMetadata *)metadata;
 
 - (void)closeAllMenu;
-- (void)returnCreate:(NSInteger)type;
 
 - (void)setUINavigationBarDefault;
 
@@ -89,6 +87,10 @@
 - (void)openWindowShare:(tableMetadata *)metadata;
 - (void)clearDateReadDataSource:(NSNotification *)notification;
 - (void)cancelSearchBar;
+
+- (void)openAssetsPickerController;
+- (void)openImportDocumentPicker;
+- (void)createFolder;
 
 @end
 

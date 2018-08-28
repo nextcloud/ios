@@ -853,6 +853,13 @@
     return [paths objectAtIndex:0];
 }
 
++ (NSString *)getDirectoryReaderMetadata
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES);
+    
+    return [NSString stringWithFormat:@"%@/Reader Metadata", [paths objectAtIndex:0]];
+}
+
 // Return the path of directory Audio
 + (NSString *)getDirectoryAudio
 {
@@ -975,6 +982,13 @@
     }
 }
 
++ (void)removeFileAtPath:(NSString *)atPath
+{
+    if ([[NSFileManager defaultManager] fileExistsAtPath:atPath]) {
+        [[NSFileManager defaultManager] removeItemAtPath:atPath error:nil];
+    }
+}
+
 + (void)removeAllFileID_UPLOAD_ActiveUser:(NSString *)activeUser activeUrl:(NSString *)activeUrl
 {
     NSString *file;
@@ -1040,6 +1054,26 @@
     // Use UPPERCASE extension :
     
     return [@[@"TXT", @"MD", @"MARKDOWN", @"ORG"] containsObject:fileExtension];
+}
+
++ (NSString *)getDirectoryScan
+{
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appScan] path];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    return path;
+}
+
++ (NSString *)getDirectoryScanSelect
+{
+    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appScanSelect] path];
+    
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    return path;
 }
 
 #pragma --------------------------------------------------------------------------------------------

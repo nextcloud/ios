@@ -43,6 +43,8 @@
 @property (nonatomic, weak) CCDetail *detailViewController;
 @property (nonatomic, strong) tableMetadata *metadata;
 @property (nonatomic, strong) NSMutableArray *addMetadatasFromUpload;
+@property (nonatomic, strong) UIView *reMenuBackgroundView;
+@property (nonatomic, strong) UITapGestureRecognizer *singleFingerTap;
 
 - (void)downloadFileSuccessFailure:(NSString *)fileName fileID:(NSString *)fileID serverUrl:(NSString *)serverUrl selector:(NSString *)selector errorMessage:(NSString *)errorMessage errorCode:(NSInteger)errorCode;
 

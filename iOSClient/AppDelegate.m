@@ -94,6 +94,14 @@
     if (![[NSFileManager defaultManager] fileExistsAtPath: path])
         [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     
+    // create Directory Scan + ScanSelect
+    path = [[dirGroup URLByAppendingPathComponent:k_appScan] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    path = [[dirGroup URLByAppendingPathComponent:k_appScanSelect] path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+    
     // Verify upgrade
     if ([self upgrade]) {
     
@@ -454,6 +462,7 @@
 
 -(void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(nonnull UNNotificationResponse *)response withCompletionHandler:(nonnull void (^)(void))completionHandler
 {
+    /*
     NSString *message = [response.notification.request.content.userInfo objectForKey:@"subject"];
     
     if (message && [NCPushNotificationEncryption sharedInstance].ncPNPrivateKey) {
@@ -499,6 +508,7 @@
             }
         }
     }
+    */
     completionHandler();
 }
 

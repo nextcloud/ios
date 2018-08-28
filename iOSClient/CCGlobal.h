@@ -44,6 +44,10 @@
 #define k_appDatabaseNextcloud                          @"Library/Application Support/Nextcloud"
 #define k_appUserData                                   @"Library/Application Support/UserData"
 #define k_appCertificates                               @"Library/Application Support/Certificates"
+#define k_appScan                                       @"Library/Application Support/Scan"
+#define k_appScanSelect                                 @"Library/Application Support/Scan/Select"
+
+#define k_DirectoryProviderStorage                      @"File Provider Storage"
 
 // Server Status
 #define k_serverStatus                                  @"/status.php"
@@ -66,14 +70,6 @@
 #define k_daysOfActivity                                7
 
 #define k_maxErrorAutoUploadAll                         100
-
-#define k_returnCreateFolderPlain                       0
-#define k_returnCreateFotoVideoPlain                    1
-#define k_returnCreateFilePlain                         2
-#define k_returnCreateFolderEncrypted                   3
-#define k_returnCreateFotoVideoEncrypted                4
-#define k_returnCreateFileEncrypted                     5
-#define k_returnCreateFileText                          6
 
 // Name Default DB
 #define k_databaseDefault                               @"nextcloud.realm"
@@ -296,9 +292,6 @@
 
 // Flow Version
 #define k_flow_version_available                        12
-
-// Directory File Provider Storage
-#define k_DirectoryProviderStorage                      @"File Provider Storage"
 
 // Cell Reload Data Source
 #define k_action_NULL                                   0
