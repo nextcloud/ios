@@ -687,6 +687,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     var titleServerUrl = ""
     var arrayImages = [UIImage]()
     var fileName = "scan.pdf"
+    var compressionQuality: Double = 0.5
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -728,6 +729,22 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
+        // Section: Quality
+        
+        section = XLFormSectionDescriptor.formSection()
+        form.addFormSection(section)
+        
+        row = XLFormRowDescriptor(tag: "compressionQuality", rowType: XLFormRowDescriptorTypeSlider, title: NSLocalizedString("_quality_image_title_", comment: ""))
+        row.value = 0.5
+        row.cellConfigAtConfigure.setObject(0.8, forKey: "slider.maximumValue" as NSCopying)
+        row.cellConfigAtConfigure.setObject(0.1, forKey: "slider.minimumValue" as NSCopying)
+        row.cellConfigAtConfigure.setObject(2, forKey: "steps" as NSCopying)
+        row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
+        row.cellConfig.setObject(NSTextAlignment.center.rawValue, forKey: "textLabel.textAlignment" as NSCopying)
+        
+        section.addFormRow(row)
+
         // Section: File Name
         
         section = XLFormSectionDescriptor.formSection()
@@ -745,18 +762,35 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
         
+        self.form.delegate = nil
+
         if formRow.tag == "fileName" {
-            
-            self.form.delegate = nil
             
             if let fileNameNew = formRow.value {
                 self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as! String)
             }
             
             self.title = fileName
-            
-            self.form.delegate = self
         }
+        
+        if formRow.tag == "compressionQuality" {
+            
+            let newQuality = newValue as? NSNumber
+            compressionQuality = (newQuality?.doubleValue)!
+            
+            if compressionQuality >= 0.0 && compressionQuality <= 0.3  {
+                formRow.title = NSLocalizedString("_quality_image_title_", comment: "") + " " + NSLocalizedString("_quality_low_", comment: "")
+                compressionQuality = 0.1
+            } else if compressionQuality >= 0.4 && compressionQuality <= 0.6 {
+                formRow.title = NSLocalizedString("_quality_image_title_", comment: "") + " " + NSLocalizedString("_quality_medium_", comment: "")
+                compressionQuality = 0.5
+            } else if compressionQuality >= 0.7 && compressionQuality <= 1.0 {
+                formRow.title = NSLocalizedString("_quality_image_title_", comment: "") + " " + NSLocalizedString("_quality_high_", comment: "")
+                compressionQuality = 0.8
+            }
+        }
+        
+        self.form.delegate = self
     }
     
     // MARK: - View Life Cycle
@@ -866,7 +900,11 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         //Generate PDF
         for image in self.arrayImages {
-            let page = PDFPage.image(image)
+            guard let data = UIImageJPEGRepresentation(image, CGFloat(compressionQuality)) else {
+                self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+                return
+            }
+            let page = PDFPage.image(UIImage(data: data)!)
             pdfPages.append(page)
         }
         

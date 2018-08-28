@@ -567,6 +567,10 @@
 "_scan_label_PDF_zone_"             = "Drag below the images for make your PDF document";
 "_filter_original_"                 = "Original";
 "_filter_grayscale_"                = "Grayscale";
+"_quality_image_title_"             = "Image quality";
+"_quality_high_"                    = "Large file size of high quality";
+"_quality_medium_"                  = "Average file size of medium quality";
+"_quality_low_"                     = "Small file size of low quality";
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";
