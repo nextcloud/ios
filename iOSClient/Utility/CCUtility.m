@@ -1066,16 +1066,6 @@
     return path;
 }
 
-+ (NSString *)getDirectoryScanSelect
-{
-    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appScanSelect] path];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    return path;
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------

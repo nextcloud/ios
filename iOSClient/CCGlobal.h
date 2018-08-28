@@ -45,7 +45,6 @@
 #define k_appUserData                                   @"Library/Application Support/UserData"
 #define k_appCertificates                               @"Library/Application Support/Certificates"
 #define k_appScan                                       @"Library/Application Support/Scan"
-#define k_appScanSelect                                 @"Library/Application Support/Scan/Select"
 
 #define k_DirectoryProviderStorage                      @"File Provider Storage"
 

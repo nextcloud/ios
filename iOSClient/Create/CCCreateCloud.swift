@@ -685,12 +685,12 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     
     var serverUrl = ""
     var titleServerUrl = ""
-    var arrayFileName = [String]()
+    var arrayImages = [UIImage]()
     var fileName = "scan.pdf"
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    convenience init(serverUrl: String, arrayFileName: [String]) {
+    convenience init(serverUrl: String, arrayImages: [UIImage]) {
         
         self.init()
         
@@ -701,7 +701,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         }
         
         self.serverUrl = serverUrl
-        self.arrayFileName = arrayFileName
+        self.arrayImages = arrayImages
         
         initializeForm()
     }
@@ -865,9 +865,8 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         }
         
         //Generate PDF
-        for fileNameImage in self.arrayFileName {
-            let fileNameImagePath = CCUtility.getDirectoryScanSelect() + "/" + fileNameImage
-            let page = PDFPage.imagePath(fileNameImagePath)
+        for image in self.arrayImages {
+            let page = PDFPage.image(image)
             pdfPages.append(page)
         }
         
@@ -876,12 +875,6 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         } catch {
             self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             return
-        }
-        
-        //Remove images processed
-        for fileNameImage in self.arrayFileName {
-            let fileNameImagePath = CCUtility.getDirectoryScanSelect() + "/" + fileNameImage
-            CCUtility.removeFile(atPath: fileNameImagePath)
         }
         
         //Remove plist in reader for cache issue
