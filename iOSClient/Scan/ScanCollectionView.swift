@@ -27,8 +27,6 @@ import UIKit
 
 class DragDropViewController: UIViewController {
     
-    //MARK: Private Properties
-    
     //Data Source for collectionViewSource
     private var itemsSource = [String]()
     
@@ -41,14 +39,14 @@ class DragDropViewController: UIViewController {
     //MARK: Outlets
     @IBOutlet weak var collectionViewSource: UICollectionView!
     @IBOutlet weak var collectionViewDestination: UICollectionView!
-    
     @IBOutlet weak var cancel: UIBarButtonItem!
     @IBOutlet weak var save: UIBarButtonItem!
-
     @IBOutlet weak var add: UIButton!
-
     @IBOutlet weak var labelTitlePDFzone: UILabel!
-
+    @IBOutlet weak var segmentControlFilter: UISegmentedControl!
+    
+    // filter
+    private var filterGrayscale = true;
     
     //MARK: View Lifecycle Methods
     override func viewDidLoad() {
@@ -67,7 +65,9 @@ class DragDropViewController: UIViewController {
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_PDF_zone_", comment: "")
-        
+        segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 0)
+        segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 1)
+
         add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
     }
     
@@ -78,6 +78,8 @@ class DragDropViewController: UIViewController {
         
         labelTitlePDFzone.textColor = NCBrandColor.sharedInstance.brandText
         labelTitlePDFzone.backgroundColor = NCBrandColor.sharedInstance.brand
+        
+        segmentControlFilter.tintColor = NCBrandColor.sharedInstance.brand
         
         loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
         
@@ -93,7 +95,14 @@ class DragDropViewController: UIViewController {
     @IBAction func saveAction(sender: UIBarButtonItem) {
         
         if imagesDestination.count > 0 {
-            let formViewController = CreateFormUploadScanDocument.init(serverUrl: appDelegate.activeMain.serverUrl, arrayImages: self.imagesDestination)
+            
+            var images = [UIImage]()
+
+            for image in imagesDestination {
+                images.append(filter(image: image)!)
+            }
+            
+            let formViewController = CreateFormUploadScanDocument.init(serverUrl: appDelegate.activeMain.serverUrl, arrayImages: images)
             self.navigationController?.pushViewController(formViewController, animated: true)
         }
     }
@@ -101,6 +110,23 @@ class DragDropViewController: UIViewController {
     @IBAction func add(sender: UIButton) {
         
         NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: self, openScan: false)
+    }
+    
+    @IBAction func indexChanged(_ sender: AnyObject) {
+        
+        switch segmentControlFilter.selectedSegmentIndex
+        {
+        case 0:
+            // Grayscale
+            filterGrayscale = true
+        case 1:
+            // Original
+            filterGrayscale = false
+        default:
+            break
+        }
+        
+        self.collectionViewDestination.reloadData()
     }
     
     //MARK: Private Methods
@@ -122,6 +148,10 @@ class DragDropViewController: UIViewController {
     }
     
     func filter(image: UIImage) -> UIImage? {
+        
+        if filterGrayscale == false {
+            return image
+        }
         
         let ciImage = CIImage(image: image)!
         let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": 1])
@@ -200,17 +230,12 @@ class DragDropViewController: UIViewController {
                     guard let image =  UIImage(data: data) else {
                         return
                     }
-                    guard let imageFilter = self.filter(image: image) else {
-                        return
-                    }
-                    
-                    self.imagesDestination.insert(imageFilter, at: indexPath.row)
+                   
+                    self.imagesDestination.insert(image, at: indexPath.row)
                     
                 } else {
                     
                     // NOT PERMITTED
-                    //self.itemsSource.insert(item.dragItem.localObject as! String, at: indexPath.row)
-                    
                     return
                 }
                 

@@ -565,6 +565,8 @@
 "_scanned_images_"                  = "Scanned images";
 "_scan_document_pdf_page_"          = "Page";
 "_scan_label_PDF_zone_"             = "Drag below the images for make your PDF document";
+"_filter_original_"                 = "Original";
+"_filter_grayscale_"                = "Grayscale";
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";
