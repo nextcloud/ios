@@ -711,7 +711,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     
     func initializeForm() {
         
-        let form : XLFormDescriptor = XLFormDescriptor() as XLFormDescriptor
+        let form : XLFormDescriptor = XLFormDescriptor(title: NSLocalizedString("_save_settings_", comment: "")) as XLFormDescriptor
         form.rowNavigationOptions = XLFormRowNavigationOptions.stopDisableRow
         
         var section : XLFormSectionDescriptor
@@ -781,7 +781,6 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
                 self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as! String)
             }
             
-            self.title = self.fileName
             formRow.value = self.fileName
             
             self.updateFormRow(formRow)
@@ -820,8 +819,6 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         super.viewDidLoad()
         
-        self.title = self.fileName
-
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(save))
         self.navigationItem.rightBarButtonItem = saveButton
         
