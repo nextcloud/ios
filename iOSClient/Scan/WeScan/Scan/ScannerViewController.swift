@@ -60,6 +60,9 @@ final class ScannerViewController: UIViewController {
         quadView.removeQuadrilateral()
         captureSessionManager?.start()
         UIApplication.shared.isIdleTimerDisabled = true
+        
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
     }
     
     override func viewDidLayoutSubviews() {
