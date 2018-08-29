@@ -719,22 +719,23 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         // Section: Destination Folder
         
-        section = XLFormSectionDescriptor.formSection()
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_save_path_", comment: ""))
         form.addFormSection(section)
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
         let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
         row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
         row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
+        row.cellConfig.setObject(NSTextAlignment.left.rawValue, forKey: "textLabel.textAlignment" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
         section.addFormRow(row)
         
         // Section: Quality
         
-        section = XLFormSectionDescriptor.formSection()
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_quality_image_title_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "compressionQuality", rowType: XLFormRowDescriptorTypeSlider, title: NSLocalizedString("_quality_image_title_", comment: ""))
+        row = XLFormRowDescriptor(tag: "compressionQuality", rowType: XLFormRowDescriptorTypeSlider)
         row.value = 0.5
         row.cellConfigAtConfigure.setObject(0.8, forKey: "slider.maximumValue" as NSCopying)
         row.cellConfigAtConfigure.setObject(0.1, forKey: "slider.minimumValue" as NSCopying)
@@ -745,9 +746,11 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         section.addFormRow(row)
 
         row = XLFormRowDescriptor(tag: "descriptionQuality", rowType: XLFormRowDescriptorTypeInfo, title: NSLocalizedString("_quality_medium_", comment: ""))
-        row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 14.0), forKey: "textLabel.font" as NSCopying)
-        row.cellConfig.setObject(NSTextAlignment.center.rawValue, forKey: "textLabel.textAlignment" as NSCopying)
+        row.cellStyle = UITableViewCellStyle.default
+        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.center.rawValue
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 14.0)
+        row.cellConfig["textLabel.textColor"] = UIColor.black
+
         section.addFormRow(row)
 
         // Section: File Name
@@ -759,7 +762,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.value = fileName
         section.addFormRow(row)
-        
+       
         self.form = form
     }
     
@@ -775,27 +778,32 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
                 self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as! String)
             }
             
-            self.title = fileName
+            self.title = self.fileName
+            formRow.value = self.fileName
+            
+            self.updateFormRow(formRow)
             
             self.form.delegate = self
         }
         
         if formRow.tag == "compressionQuality" {
             
-            let descriptionQuality : XLFormRowDescriptor  = self.form.formRow(withTag: "descriptionQuality")!
+            let row : XLFormRowDescriptor  = self.form.formRow(withTag: "descriptionQuality")!
             let newQuality = newValue as? NSNumber
             compressionQuality = (newQuality?.doubleValue)!
             
             if compressionQuality >= 0.0 && compressionQuality <= 0.3  {
-                descriptionQuality.title = NSLocalizedString("_quality_low_", comment: "")
+                row.title = NSLocalizedString("_quality_low_", comment: "")
                 compressionQuality = 0.1
             } else if compressionQuality >= 0.4 && compressionQuality <= 0.6 {
-                descriptionQuality.title = NSLocalizedString("_quality_medium_", comment: "")
+                row.title = NSLocalizedString("_quality_medium_", comment: "")
                 compressionQuality = 0.5
             } else if compressionQuality >= 0.7 && compressionQuality <= 1.0 {
-                descriptionQuality.title = NSLocalizedString("_quality_high_", comment: "")
+                row.title = NSLocalizedString("_quality_high_", comment: "")
                 compressionQuality = 0.8
             }
+            
+            self.updateFormRow(row)
         }
     }
     
@@ -805,8 +813,9 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         super.viewDidLoad()
         
+        self.title = self.fileName
+
         let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(save))
-        
         self.navigationItem.rightBarButtonItem = saveButton
         
         self.navigationController?.navigationBar.isTranslucent = false
@@ -815,23 +824,12 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+//        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
-        self.reloadForm()
-    }
-    
-    func reloadForm() {
         
-        self.form.delegate = nil
-        
-        let buttonDestinationFolder : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
-        buttonDestinationFolder.title = self.titleServerUrl
-        
-        self.title = fileName
-        
-        self.tableView.reloadData()
-        
-        self.form.delegate = self
+//        let row : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+//        let rowCell = row.cell(forForm: self)
+//        rowCell.becomeFirstResponder()
     }
     
     // MARK: - Action
@@ -849,7 +847,10 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             self.titleServerUrl = "/"
         }
         
-        self.reloadForm()
+        // Update
+        let row : XLFormRowDescriptor  = self.form.formRow(withTag: "ButtonDestinationFolder")!
+        row.title = self.titleServerUrl
+        self.updateFormRow(row)
     }
     
     @objc func save() {
