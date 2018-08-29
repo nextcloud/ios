@@ -156,6 +156,7 @@
                                 <segments>
                                     <segment title="First"/>
                                     <segment title="Second"/>
+                                    <segment title="Third"/>
                                 </segments>
                                 <connections>
                                     <action selector="indexChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="yeI-C2-uGJ"/>

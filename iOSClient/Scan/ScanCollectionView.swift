@@ -44,9 +44,14 @@ class DragDropViewController: UIViewController {
     @IBOutlet weak var add: UIButton!
     @IBOutlet weak var labelTitlePDFzone: UILabel!
     @IBOutlet weak var segmentControlFilter: UISegmentedControl!
-    
+
     // filter
-    private var filterGrayscale = true;
+    enum typeFilter {
+        case original
+        case grayScale
+        case bn
+    }
+    private var filter: typeFilter = typeFilter.grayScale
     
     //MARK: View Lifecycle Methods
     override func viewDidLoad() {
@@ -66,7 +71,8 @@ class DragDropViewController: UIViewController {
         save.title = NSLocalizedString("_save_", comment: "")
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_PDF_zone_", comment: "")
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 0)
-        segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 1)
+        segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 1)
+        segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 2)
 
         add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
     }
@@ -125,10 +131,13 @@ class DragDropViewController: UIViewController {
         {
         case 0:
             // Grayscale
-            filterGrayscale = true
+            filter = typeFilter.grayScale
         case 1:
             // Original
-            filterGrayscale = false
+            filter = typeFilter.bn
+        case 2:
+            // Original
+            filter = typeFilter.original
         default:
             break
         }
@@ -145,7 +154,7 @@ class DragDropViewController: UIViewController {
         do {
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
             for fileName in directoryContents {
-                if fileName != "Select" && fileName.first != "." {
+                if fileName.first != "." {
                     items.append(fileName)
                 }
             }
@@ -156,12 +165,22 @@ class DragDropViewController: UIViewController {
     
     func filter(image: UIImage) -> UIImage? {
         
-        if filterGrayscale == false {
+        var inputContrast: Double = 0
+        
+        if filter == typeFilter.original {
             return image
         }
         
+        if filter == typeFilter.grayScale {
+            inputContrast = 1
+        }
+        
+        if filter == typeFilter.bn {
+            inputContrast = 4
+        }
+        
         let ciImage = CIImage(image: image)!
-        let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": 1])
+        let imageFilter = ciImage.applyingFilter("CIColorControls", parameters: ["inputSaturation": 0, "inputContrast": inputContrast])
         
         let context:CIContext = CIContext.init(options: nil)
         let cgImage:CGImage = context.createCGImage(imageFilter, from: imageFilter.extent)!

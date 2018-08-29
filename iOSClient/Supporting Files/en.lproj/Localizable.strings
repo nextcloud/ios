@@ -568,6 +568,7 @@
 "_scan_document_pdf_page_"          = "Page";
 "_scan_label_PDF_zone_"             = "Drag below the images for make your PDF document";
 "_filter_original_"                 = "Original";
+"_filter_bn_"                       = "Black and White";
 "_filter_grayscale_"                = "Grayscale";
 "_quality_image_title_"             = "Image quality";
 "_quality_high_"                    = "Large file size of high quality";
