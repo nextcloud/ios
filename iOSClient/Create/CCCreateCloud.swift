@@ -743,6 +743,8 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         row.value = 0.5
         row.title = NSLocalizedString("_quality_medium_", comment: "")
         
+        row.cellConfig["slider.minimumTrackTintColor"] = NCBrandColor.sharedInstance.brand
+
         row.cellConfig["slider.maximumValue"] = 1
         row.cellConfig["slider.minimumValue"] = 0
         row.cellConfig["steps"] = 2
@@ -750,7 +752,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.center.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = UIColor.black
-        
+                
         section.addFormRow(row)
 
         // Section: File Name
