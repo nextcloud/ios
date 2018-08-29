@@ -721,13 +721,17 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_save_path_", comment: ""))
         form.addFormSection(section)
+        
         row = XLFormRowDescriptor(tag: "ButtonDestinationFolder", rowType: XLFormRowDescriptorTypeButton, title: self.titleServerUrl)
-        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
-        row.cellConfig.setObject(imageFolder, forKey: "imageView.image" as NSCopying)
-        row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
-        row.cellConfig.setObject(NSTextAlignment.left.rawValue, forKey: "textLabel.textAlignment" as NSCopying)
         row.action.formSelector = #selector(changeDestinationFolder(_:))
+
+        let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
+        row.cellConfig["imageView.image"] = imageFolder
+
+        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.left.rawValue
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textLabel.textColor"] = UIColor.black
+        
         section.addFormRow(row)
         
         // Section: Quality
@@ -737,15 +741,19 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         row = XLFormRowDescriptor(tag: "compressionQuality", rowType: XLFormRowDescriptorTypeSlider)
         row.value = 0.5
-        row.cellConfigAtConfigure.setObject(0.8, forKey: "slider.maximumValue" as NSCopying)
-        row.cellConfigAtConfigure.setObject(0.1, forKey: "slider.minimumValue" as NSCopying)
-        row.cellConfigAtConfigure.setObject(2, forKey: "steps" as NSCopying)
-        row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
-        row.cellConfig.setObject(NSTextAlignment.center.rawValue, forKey: "textLabel.textAlignment" as NSCopying)
+        
+        row.cellConfig["slider.maximumValue"] = 0.8
+        row.cellConfig["slider.minimumValue"] = 0.1
+        row.cellConfig["steps"] = 2
+
+        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.center.rawValue
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textLabel.textColor"] = UIColor.black
+        
         section.addFormRow(row)
 
         row = XLFormRowDescriptor(tag: "descriptionQuality", rowType: XLFormRowDescriptorTypeInfo, title: NSLocalizedString("_quality_medium_", comment: ""))
+        
         row.cellStyle = UITableViewCellStyle.default
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.center.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 14.0)
@@ -755,12 +763,15 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
 
         // Section: File Name
         
-        section = XLFormSectionDescriptor.formSection()
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
-        row.value = fileName
+        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount)
+        row.value = self.fileName
+
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 14.0)
+        row.cellConfig["textLabel.textColor"] = UIColor.black
+        
         section.addFormRow(row)
        
         self.form = form
