@@ -741,24 +741,16 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         row = XLFormRowDescriptor(tag: "compressionQuality", rowType: XLFormRowDescriptorTypeSlider)
         row.value = 0.5
+        row.title = NSLocalizedString("_quality_medium_", comment: "")
         
-        row.cellConfig["slider.maximumValue"] = 0.8
-        row.cellConfig["slider.minimumValue"] = 0.1
+        row.cellConfig["slider.maximumValue"] = 1
+        row.cellConfig["slider.minimumValue"] = 0
         row.cellConfig["steps"] = 2
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.center.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = UIColor.black
         
-        section.addFormRow(row)
-
-        row = XLFormRowDescriptor(tag: "descriptionQuality", rowType: XLFormRowDescriptorTypeInfo, title: NSLocalizedString("_quality_medium_", comment: ""))
-        
-        row.cellStyle = UITableViewCellStyle.default
-        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.center.rawValue
-        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 14.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
-
         section.addFormRow(row)
 
         // Section: File Name
@@ -799,22 +791,26 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         if formRow.tag == "compressionQuality" {
             
-            let row : XLFormRowDescriptor  = self.form.formRow(withTag: "descriptionQuality")!
+            self.form.delegate = nil
+            
+            //let row : XLFormRowDescriptor  = self.form.formRow(withTag: "descriptionQuality")!
             let newQuality = newValue as? NSNumber
             compressionQuality = (newQuality?.doubleValue)!
             
             if compressionQuality >= 0.0 && compressionQuality <= 0.3  {
-                row.title = NSLocalizedString("_quality_low_", comment: "")
+                formRow.title = NSLocalizedString("_quality_low_", comment: "")
                 compressionQuality = 0.1
             } else if compressionQuality >= 0.4 && compressionQuality <= 0.6 {
-                row.title = NSLocalizedString("_quality_medium_", comment: "")
+                formRow.title = NSLocalizedString("_quality_medium_", comment: "")
                 compressionQuality = 0.5
             } else if compressionQuality >= 0.7 && compressionQuality <= 1.0 {
-                row.title = NSLocalizedString("_quality_high_", comment: "")
+                formRow.title = NSLocalizedString("_quality_high_", comment: "")
                 compressionQuality = 0.8
             }
             
-            self.updateFormRow(row)
+            self.updateFormRow(formRow)
+            
+            self.form.delegate = self
         }
     }
     
@@ -835,6 +831,8 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+//        self.tableView.sectionHeaderHeight = 10
+//        self.tableView.sectionFooterHeight = 10
 //        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         
         
