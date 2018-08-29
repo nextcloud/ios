@@ -742,7 +742,12 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
         row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.cellConfig.setObject(NSTextAlignment.center.rawValue, forKey: "textLabel.textAlignment" as NSCopying)
-        
+        section.addFormRow(row)
+
+        row = XLFormRowDescriptor(tag: "descriptionQuality", rowType: XLFormRowDescriptorTypeInfo, title: NSLocalizedString("_quality_medium_", comment: ""))
+        row.cellConfig.setObject(UIColor.black, forKey: "textLabel.textColor" as NSCopying)
+        row.cellConfig.setObject(UIFont.systemFont(ofSize: 14.0), forKey: "textLabel.font" as NSCopying)
+        row.cellConfig.setObject(NSTextAlignment.center.rawValue, forKey: "textLabel.textAlignment" as NSCopying)
         section.addFormRow(row)
 
         // Section: File Name
@@ -762,35 +767,36 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
         
-        self.form.delegate = nil
-
         if formRow.tag == "fileName" {
+            
+            self.form.delegate = nil
             
             if let fileNameNew = formRow.value {
                 self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as! String)
             }
             
             self.title = fileName
+            
+            self.form.delegate = self
         }
         
         if formRow.tag == "compressionQuality" {
             
+            let descriptionQuality : XLFormRowDescriptor  = self.form.formRow(withTag: "descriptionQuality")!
             let newQuality = newValue as? NSNumber
             compressionQuality = (newQuality?.doubleValue)!
             
             if compressionQuality >= 0.0 && compressionQuality <= 0.3  {
-                formRow.title = NSLocalizedString("_quality_image_title_", comment: "") + " " + NSLocalizedString("_quality_low_", comment: "")
+                descriptionQuality.title = NSLocalizedString("_quality_low_", comment: "")
                 compressionQuality = 0.1
             } else if compressionQuality >= 0.4 && compressionQuality <= 0.6 {
-                formRow.title = NSLocalizedString("_quality_image_title_", comment: "") + " " + NSLocalizedString("_quality_medium_", comment: "")
+                descriptionQuality.title = NSLocalizedString("_quality_medium_", comment: "")
                 compressionQuality = 0.5
             } else if compressionQuality >= 0.7 && compressionQuality <= 1.0 {
-                formRow.title = NSLocalizedString("_quality_image_title_", comment: "") + " " + NSLocalizedString("_quality_high_", comment: "")
+                descriptionQuality.title = NSLocalizedString("_quality_high_", comment: "")
                 compressionQuality = 0.8
             }
         }
-        
-        self.form.delegate = self
     }
     
     // MARK: - View Life Cycle
