@@ -81,6 +81,13 @@ class DragDropViewController: UIViewController {
         
         segmentControlFilter.tintColor = NCBrandColor.sharedInstance.brand
         
+        // Save button
+        if imagesDestination.count == 0 {
+            save.isEnabled = false
+        } else {
+            save.isEnabled = true
+        }
+        
         loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
         
         self.collectionViewSource.reloadData()
@@ -308,10 +315,16 @@ extension DragDropViewController : UICollectionViewDataSource {
         let buttonPosition:CGPoint =  sender.convert(.zero, to: self.collectionViewDestination)
         let indexPath:IndexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition)!
         
-       
         self.imagesDestination.remove(at: indexPath.row)
         
         self.collectionViewDestination.reloadData()
+        
+        // Save button
+        if imagesDestination.count == 0 {
+            save.isEnabled = false
+        } else {
+            save.isEnabled = true
+        }
     }
 }
 
@@ -442,7 +455,15 @@ extension DragDropViewController : UICollectionViewDropDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
+        
         self.collectionViewDestination.reloadData()
+        
+        // Save button
+        if imagesDestination.count == 0 {
+            save.isEnabled = false
+        } else {
+            save.isEnabled = true
+        }
     }
 }
 
