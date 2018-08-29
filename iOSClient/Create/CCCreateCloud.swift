@@ -1005,9 +1005,19 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         
         let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
         let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
-            
+        
+        // A4 74 DPI : 595 x 842 px 
+        
+        var image = results.scannedImage
+        let imageWidthInPixels = image.size.width * results.scannedImage.scale
+        let imageHeightInPixels = image.size.height * results.scannedImage.scale
+        
+        if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
+            image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
+        }
+        
         do {
-            try UIImagePNGRepresentation(results.scannedImage)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+            try UIImagePNGRepresentation(image)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
         } catch { }
         
         scanner.dismiss(animated: true, completion: {
