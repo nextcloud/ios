@@ -462,27 +462,35 @@ extension DragDropViewController : UICollectionViewDropDelegate {
         
         let destinationIndexPath: IndexPath
         
-        if let indexPath = coordinator.destinationIndexPath {
-        
-            destinationIndexPath = indexPath
-        
-        } else {
-        
+        switch coordinator.proposal.operation {
+            
+        case .move:
+            
+            if let indexPath = coordinator.destinationIndexPath {
+                
+                destinationIndexPath = indexPath
+                
+            } else {
+                
+                // Get last index path of table view.
+                let section = collectionView.numberOfSections - 1
+                let row = collectionView.numberOfItems(inSection: section)
+                
+                destinationIndexPath = IndexPath(row: row, section: section)
+            }
+            self.reorderItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
+            
+            break
+            
+        case .copy:
+            
             // Get last index path of table view.
             let section = collectionView.numberOfSections - 1
             let row = collectionView.numberOfItems(inSection: section)
             
             destinationIndexPath = IndexPath(row: row, section: section)
-        }
-        
-        switch coordinator.proposal.operation {
-            
-        case .move:
-            self.reorderItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
-            break
-            
-        case .copy:
             self.copyItems(coordinator: coordinator, destinationIndexPath: destinationIndexPath, collectionView: collectionView)
+            
             break
             
         default:
