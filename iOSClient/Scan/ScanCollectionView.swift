@@ -53,6 +53,8 @@ class DragDropViewController: UIViewController {
     }
     private var filter: typeFilter = typeFilter.grayScale
     
+    override var canBecomeFirstResponder: Bool { return true }
+    
     //MARK: View Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,7 +78,7 @@ class DragDropViewController: UIViewController {
 
         add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
         
-        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(pasteImage(_:)))
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressGesture(recognizer:)))
         add.addGestureRecognizer(longPressRecognizer)
     }
     
@@ -98,8 +100,6 @@ class DragDropViewController: UIViewController {
         }
         
         loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
-        
-        self.collectionViewSource.reloadData()
     }
     
     //MARK: Button Action
@@ -164,6 +164,8 @@ class DragDropViewController: UIViewController {
         } catch {
             print(error.localizedDescription)
         }
+        
+        self.collectionViewSource.reloadData()
     }
     
     func filter(image: UIImage) -> UIImage? {
@@ -275,17 +277,49 @@ class DragDropViewController: UIViewController {
         })
     }
     
-    @objc func pasteImage(_ sender: AnyObject) {
+    // MARK: - UIGestureRecognizerv - Paste
+    
+    @objc func handleLongPressGesture(recognizer: UIGestureRecognizer) {
         
         let pasteboard = UIPasteboard.general
-        let data = pasteboard.data(forPasteboardType: kUTTypeFileURL as String)
         
-        if let data = pasteboard.data(forPasteboardType: kUTTypeFileURL as String),
-            let str = String(data: data, encoding: .utf8),
-            let url = URL(string: str),
-            let image = UIImage(contentsOfFile: str)
-        {
-            print("ciao")
+        if let recognizerView = recognizer.view, let recognizerSuperView = recognizerView.superview, pasteboard.hasImages {
+            
+            recognizerView.becomeFirstResponder()
+
+            UIMenuController.shared.menuItems = [UIMenuItem(title: "Paste", action: #selector(pasteImage))]
+            UIMenuController.shared.setTargetRect(recognizerView.frame, in: recognizerSuperView)
+            UIMenuController.shared.setMenuVisible(true, animated:true)
+        }
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(pasteImage) {
+            return true
+        }
+        return false
+    }
+    
+    @objc func pasteImage() {
+        
+        let pasteboard = UIPasteboard.general
+        
+        if pasteboard.hasImages {
+            
+            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
+            let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
+            
+            guard let image = pasteboard.image else {
+                return
+            }
+            
+            do {
+                try UIImagePNGRepresentation(image)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+            } catch {
+                return
+            }
+            
+            loadImage(atPath: CCUtility.getDirectoryScan(), items: &itemsSource)
         }
     }
 }
