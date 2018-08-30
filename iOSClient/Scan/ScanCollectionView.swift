@@ -312,8 +312,17 @@ class DragDropViewController: UIViewController {
             let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
             
-            guard let image = pasteboard.image else {
+            guard var image = pasteboard.image else {
                 return
+            }
+            
+            // A4 74 DPI : 595 x 842 px
+            
+            let imageWidthInPixels = image.size.width * image.scale
+            let imageHeightInPixels = image.size.height * image.scale
+            
+            if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
+                image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
             }
             
             do {
