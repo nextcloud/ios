@@ -69,13 +69,11 @@ class CreateMenuAdd: NSObject {
             appDelegate.activeMain.openAssetsPickerController()
         })
         
-#if DEBUG
         if #available(iOS 11.0, *) {
             actionSheet.addButton(withTitle: NSLocalizedString("_scans_document_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
                 NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain, openScan: true)
             })
         }
-#endif
         
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.openImportDocumentPicker()

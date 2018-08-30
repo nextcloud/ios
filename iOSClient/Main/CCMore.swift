@@ -114,14 +114,12 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         item.url = "segueShares"
         functionMenu.append(item)
 
-#if DEBUG
         // ITEM : Scan
         item = OCExternalSites.init()
         item.name = "_scanned_images_"
         item.icon = "scan"
         item.url = "Scanopen"
         functionMenu.append(item)
-#endif
         
         // ITEM : External
         
