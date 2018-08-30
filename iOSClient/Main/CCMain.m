@@ -856,10 +856,8 @@
         NSString *serverUrl = [appDelegate getTabBarControllerActiveServerUrl];
         
         CreateFormUploadAssets *form = [[CreateFormUploadAssets alloc] initWithServerUrl:serverUrl assets:assets cryptated:NO session:k_upload_session delegate:self];
-        form.title = NSLocalizedString(@"_upload_photos_videos_", nil);
-            
+        
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:form];
-            
         [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
         
         [self presentViewController:navigationController animated:YES completion:nil];

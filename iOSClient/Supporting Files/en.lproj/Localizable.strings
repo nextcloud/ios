@@ -88,6 +88,7 @@
 "_error_creation_file_"     = "Ops! Could not create the file";
 "_save_path_"               = "Save path";
 "_save_settings_"           = "Save settings";
+"_mode_filename_"           = "Filename mode";
 
 // App
 
