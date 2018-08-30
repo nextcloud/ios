@@ -75,6 +75,9 @@ class DragDropViewController: UIViewController {
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 2)
 
         add.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "add"), multiplier:2, color: NCBrandColor.sharedInstance.brand), for: .normal)
+        
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(pasteImage(_:)))
+        add.addGestureRecognizer(longPressRecognizer)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -270,6 +273,20 @@ class DragDropViewController: UIViewController {
             
             collectionView.insertItems(at: indexPaths)
         })
+    }
+    
+    @objc func pasteImage(_ sender: AnyObject) {
+        
+        let pasteboard = UIPasteboard.general
+        let data = pasteboard.data(forPasteboardType: kUTTypeFileURL as String)
+        
+        if let data = pasteboard.data(forPasteboardType: kUTTypeFileURL as String),
+            let str = String(data: data, encoding: .utf8),
+            let url = URL(string: str),
+            let image = UIImage(contentsOfFile: str)
+        {
+            print("ciao")
+        }
     }
 }
 
