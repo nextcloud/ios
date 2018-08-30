@@ -281,12 +281,12 @@ class DragDropViewController: UIViewController {
     
     @objc func handleLongPressGesture(recognizer: UIGestureRecognizer) {
         
+        self.becomeFirstResponder()
+        
         let pasteboard = UIPasteboard.general
         
         if let recognizerView = recognizer.view, let recognizerSuperView = recognizerView.superview, pasteboard.hasImages {
             
-            recognizerView.becomeFirstResponder()
-
             UIMenuController.shared.menuItems = [UIMenuItem(title: "Paste", action: #selector(pasteImage))]
             UIMenuController.shared.setTargetRect(recognizerView.frame, in: recognizerSuperView)
             UIMenuController.shared.setMenuVisible(true, animated:true)
