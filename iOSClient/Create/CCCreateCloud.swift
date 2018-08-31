@@ -868,9 +868,16 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             fileType = newValue as! String
             
             let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
-            guard let name = rowFileName.value else {
+            let rowPassword : XLFormRowDescriptor  = self.form.formRow(withTag: "password")!
+            
+            // rowFileName
+            guard var name = rowFileName.value else {
                 return
             }
+            if name as! String == "" {
+                name = "scan"
+            }
+            
             let ext = (name as! NSString).pathExtension.uppercased()
             var newFileName = ""
             
@@ -881,7 +888,19 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             }
             
             rowFileName.value = newFileName
+            
             self.updateFormRow(rowFileName)
+            
+            // rowPassword
+            if fileType == "JPG" {
+                rowPassword.value = ""
+                password = PDFPassword("")
+                rowPassword.disabled = true
+            } else {
+                rowPassword.disabled = false
+            }
+            
+            self.updateFormRow(rowPassword)
         }
     }
     
