@@ -115,11 +115,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         functionMenu.append(item)
 
         // ITEM : Scan
-        item = OCExternalSites.init()
-        item.name = "_scanned_images_"
-        item.icon = "scan"
-        item.url = "Scanopen"
-        functionMenu.append(item)
+        if #available(iOS 11.0, *) {
+            item = OCExternalSites.init()
+            item.name = "_scanned_images_"
+            item.icon = "scan"
+            item.url = "Scanopen"
+            functionMenu.append(item)
+        }
         
         // ITEM : External
         
