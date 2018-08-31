@@ -71,7 +71,7 @@ class DragDropViewController: UIViewController {
         self.navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
-        labelTitlePDFzone.text = NSLocalizedString("_scan_label_PDF_zone_", comment: "")
+        labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
         segmentControlFilter.setTitle(NSLocalizedString("_filter_grayscale_", comment: ""), forSegmentAt: 0)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_bn_", comment: ""), forSegmentAt: 1)
         segmentControlFilter.setTitle(NSLocalizedString("_filter_original_", comment: ""), forSegmentAt: 2)

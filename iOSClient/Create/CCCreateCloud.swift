@@ -696,6 +696,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     var fileName = "scan.pdf"
     var password : PDFPassword = ""
     var compressionQuality: Double = 0.5
+    var fileType = "PDF"
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -765,27 +766,43 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
 
         // Section: Password
         
-        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_password_", comment: ""))
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_pdf_password_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "password", rowType: XLFormRowDescriptorTypeAccount)
+        row = XLFormRowDescriptor(tag: "password", rowType: XLFormRowDescriptorTypePassword)
         
-        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 14.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textColor"] = UIColor.black
         
         section.addFormRow(row)
         
-        // Section: File Name
+        // Section: File
         
-        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_file_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount)
+        if arrayImages.count == 1 {
+            row = XLFormRowDescriptor(tag: "filetype", rowType: XLFormRowDescriptorTypeSelectorSegmentedControl, title: NSLocalizedString("_file_type_", comment: ""))
+            row.selectorOptions = ["PDF","JPG"]
+            row.value = "PDF"
+            
+            row.cellConfig["tintColor"] = NCBrandColor.sharedInstance.brand
+            row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+            row.cellConfig["textLabel.textColor"] = UIColor.black
+            
+            section.addFormRow(row)
+        }
+        
+        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
 
-        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 14.0)
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
         row.cellConfig["textLabel.textColor"] = UIColor.black
         
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        row.cellConfig["textField.textColor"] = UIColor.black
+
         section.addFormRow(row)
        
         self.form = form
@@ -799,8 +816,12 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             
             self.form.delegate = nil
             
-            if let fileNameNew = formRow.value {
-                self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as! String)
+            let fileNameNew = newValue as? String
+            
+            if fileNameNew != nil {
+                self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew)
+            } else {
+                self.fileName = ""
             }
             
             formRow.value = self.fileName
@@ -841,6 +862,26 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             } else {
                 password = PDFPassword("")
             }
+        }
+        
+        if formRow.tag == "filetype" {
+            fileType = newValue as! String
+            
+            let rowFileName : XLFormRowDescriptor  = self.form.formRow(withTag: "fileName")!
+            guard let name = rowFileName.value else {
+                return
+            }
+            let ext = (name as! NSString).pathExtension.uppercased()
+            var newFileName = ""
+            
+            if (ext == "") {
+                newFileName = name as! String + "." + fileType.lowercased()
+            } else {
+                newFileName = (name as! NSString).deletingPathExtension + "." + fileType.lowercased()
+            }
+            
+            rowFileName.value = newFileName
+            self.updateFormRow(rowFileName)
         }
     }
     
@@ -896,13 +937,17 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         guard let name = rowFileName.value else {
             return
         }
+        if name as! String == "" {
+            return
+        }
+        
         let ext = (name as! NSString).pathExtension.uppercased()
         var fileNameSave = ""
         
         if (ext == "") {
-            fileNameSave = name as! String + ".pdf"
+            fileNameSave = name as! String + "." + fileType.lowercased()
         } else {
-            fileNameSave = (name as! NSString).deletingPathExtension + ".pdf"
+            fileNameSave = (name as! NSString).deletingPathExtension + "." + fileType.lowercased()
         }
         
         guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(self.serverUrl) else {
@@ -935,28 +980,46 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     
     func dismissAndUpload(_ fileNameSave: String, fileID: String, directoryID: String) {
         
-        var pdfPages = [PDFPage]()
-
-        guard let fileNameGeneratePDF = CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave) else {
+        guard let fileNameGenerateExport = CCUtility.getDirectoryProviderStorageFileID(fileID, fileNameView: fileNameSave) else {
             self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             return
         }
         
-        //Generate PDF
-        for image in self.arrayImages {
-            guard let data = UIImageJPEGRepresentation(image, CGFloat(compressionQuality)) else {
+        if fileType == "PDF" {
+        
+            var pdfPages = [PDFPage]()
+
+            //Generate PDF
+            for image in self.arrayImages {
+                guard let data = UIImageJPEGRepresentation(image, CGFloat(compressionQuality)) else {
+                    self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+                    return
+                }
+                let page = PDFPage.image(UIImage(data: data)!)
+                pdfPages.append(page)
+            }
+            
+            do {
+                try PDFGenerator.generate(pdfPages, to: fileNameGenerateExport, password: password)
+            } catch {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
                 return
             }
-            let page = PDFPage.image(UIImage(data: data)!)
-            pdfPages.append(page)
         }
         
-        do {
-            try PDFGenerator.generate(pdfPages, to: fileNameGeneratePDF, password: password)
-        } catch {
-            self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
-            return
+        if fileType == "JPG" {
+            
+            guard let data = UIImageJPEGRepresentation(self.arrayImages[0], CGFloat(compressionQuality)) else {
+                self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+                return
+            }
+            
+            do {
+                try data.write(to: NSURL.fileURL(withPath: fileNameGenerateExport), options: .atomic)
+            } catch {
+                self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
+                return
+            }
         }
         
         //Create metadata for upload

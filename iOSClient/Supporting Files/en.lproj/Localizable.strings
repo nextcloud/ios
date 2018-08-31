@@ -91,6 +91,7 @@
 "_mode_filename_"           = "Filename mode";
 "_warning_owncloud_"        = "You are connected to an ownCloud server. This is untested and unsupported, use at your own risk. To upgrade to Nextcloud, see https://nextcloud.com/migration";
 "_warning_unsupported_"     = "You are using an unsupported version of Nextcloud. For the safety of your data we strongly recommend updating to the latest stable Nextcloud";
+"_file_"                    = "File";
 
 // App
 
@@ -569,7 +570,7 @@
 "_scans_document_"                  = "Scans document";
 "_scanned_images_"                  = "Scanned images";
 "_scan_document_pdf_page_"          = "Page";
-"_scan_label_PDF_zone_"             = "Drag below the images for make your PDF document";
+"_scan_label_document_zone_"        = "Drag images down for document creation";
 "_filter_original_"                 = "Original";
 "_filter_bn_"                       = "Black & White";
 "_filter_grayscale_"                = "Grayscale";
@@ -577,6 +578,8 @@
 "_quality_high_"                    = "Large file size of high quality";
 "_quality_medium_"                  = "Average file size of medium quality";
 "_quality_low_"                     = "Small file size of low quality";
+"_file_type_"                       = "File type";
+"_pdf_password_"                    = "PDF Password";
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";
