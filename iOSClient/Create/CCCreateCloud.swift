@@ -694,6 +694,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     var titleServerUrl = ""
     var arrayImages = [UIImage]()
     var fileName = "scan.pdf"
+    var password : PDFPassword = ""
     var compressionQuality: Double = 0.5
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -762,6 +763,18 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
                 
         section.addFormRow(row)
 
+        // Section: Password
+        
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_password_", comment: ""))
+        form.addFormSection(section)
+        
+        row = XLFormRowDescriptor(tag: "password", rowType: XLFormRowDescriptorTypeAccount)
+        
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 14.0)
+        row.cellConfig["textLabel.textColor"] = UIColor.black
+        
+        section.addFormRow(row)
+        
         // Section: File Name
         
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
@@ -819,6 +832,15 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             self.updateFormRow(formRow)
             
             self.form.delegate = self
+        }
+        
+        if formRow.tag == "password" {
+            let stringPassword = newValue as? String
+            if stringPassword != nil {
+                password = PDFPassword(stringPassword!)
+            } else {
+                password = PDFPassword("")
+            }
         }
     }
     
@@ -931,7 +953,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         }
         
         do {
-            try PDFGenerator.generate(pdfPages, to: fileNameGeneratePDF)
+            try PDFGenerator.generate(pdfPages, to: fileNameGeneratePDF, password: password)
         } catch {
             self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
             return
