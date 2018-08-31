@@ -69,12 +69,6 @@ class CreateMenuAdd: NSObject {
             appDelegate.activeMain.openAssetsPickerController()
         })
         
-        if #available(iOS 11.0, *) {
-            actionSheet.addButton(withTitle: NSLocalizedString("_scans_document_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
-                NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain, openScan: true)
-            })
-        }
-        
         actionSheet.addButton(withTitle: NSLocalizedString("_upload_file_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "file"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.openImportDocumentPicker()
         })
@@ -86,6 +80,12 @@ class CreateMenuAdd: NSObject {
             controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
             appDelegate.activeMain.present(controller, animated: true, completion: nil)
         })
+        
+        if #available(iOS 11.0, *) {
+            actionSheet.addButton(withTitle: NSLocalizedString("_scans_document_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "scan"), multiplier:2, color: colorGray), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0, type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
+                NCCreateScanDocument.sharedInstance.openScannerDocument(viewController: appDelegate.activeMain, openScan: true)
+            })
+        }
         
         actionSheet.addButton(withTitle: NSLocalizedString("_create_folder_", comment: ""), image: CCGraphics.changeThemingColorImage(UIImage(named: "folder"), multiplier:2, color: colorIcon), backgroundColor: NCBrandColor.sharedInstance.backgroundView, height: 50.0 ,type: AHKActionSheetButtonType.default, handler: {(AHKActionSheet) -> Void in
             appDelegate.activeMain.createFolder()
