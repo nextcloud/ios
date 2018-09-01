@@ -57,7 +57,6 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.value = CCUtility.getOriginalFileName(k_keyFileNameOriginalAutoUpload)
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
 
         section.addFormRow(row)
         
@@ -68,7 +67,6 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.hidden = "$\("maintainOriginalFileName") == 1"
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
 
         section.addFormRow(row)
                 
@@ -77,7 +75,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: (NSLocalizedString("_filename_", comment: ""))+":")
+        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: (NSLocalizedString("_filename_", comment: "")))
         let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameAutoUploadMask)
         if fileNameMask.count > 0 {
             row.value = fileNameMask
@@ -85,19 +83,21 @@ class NCManageAutoUploadFileName: XLFormViewController {
         row.hidden = "$\("maintainOriginalFileName") == 1"
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
+        
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         
         section.addFormRow(row)
         
         // Section: Preview File Name
         
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.height = 180
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "backgroundColor" as NSCopying)
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "textView.backgroundColor" as NSCopying)
-        
         row.disabled = true
+        
+        row.cellConfig["textView.backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
+        
         section.addFormRow(row)
         
         self.form = form

@@ -155,9 +155,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig["imageView.image"] = imageFolder
         
-        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.left.rawValue
+        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
         
         section.addFormRow(row)
         
@@ -166,7 +165,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row.value = 0
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
         
         section.addFormRow(row)
         
@@ -181,7 +179,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row.hidden = "$\("useFolderMedia") == 0"
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
 
         section.addFormRow(row)
         
@@ -196,7 +193,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row.value = CCUtility.getOriginalFileName(k_keyFileNameOriginal)
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
         
         section.addFormRow(row)
         
@@ -207,7 +203,6 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row.hidden = "$\("maintainOriginalFileName") == 1"
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
 
         section.addFormRow(row)
         
@@ -216,7 +211,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: (NSLocalizedString("_filename_", comment: ""))+":")
+        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: (NSLocalizedString("_filename_", comment: "")))
         let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameMask)
         if fileNameMask.count > 0 {
             row.value = fileNameMask
@@ -224,20 +219,21 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         row.hidden = "$\("maintainOriginalFileName") == 1"
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
-    
+        
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+
         section.addFormRow(row)
         
         // Section: Preview File Name
         
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
-
         row.height = 180
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "backgroundColor" as NSCopying)
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "textView.backgroundColor" as NSCopying)
-
         row.disabled = true
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
+
+        row.cellConfig["textView.backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
+        
         section.addFormRow(row)
         
         self.form = form
@@ -501,9 +497,8 @@ class CreateFormUploadFileText: XLFormViewController, CCMoveDelegate {
         let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig["imageView.image"] = imageFolder
         
-        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.left.rawValue
+        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
         
         section.addFormRow(row)
         
@@ -512,11 +507,14 @@ class CreateFormUploadFileText: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount)
+        
+        row = XLFormRowDescriptor(tag: "fileName", rowType: XLFormRowDescriptorTypeAccount, title: NSLocalizedString("_filename_", comment: ""))
         row.value = self.fileName
-
-        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 14.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
+        
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
         
         section.addFormRow(row)
         
@@ -737,9 +735,8 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         let imageFolder = CCGraphics.changeThemingColorImage(UIImage(named: "folder")!, multiplier:2, color: NCBrandColor.sharedInstance.brandElement) as UIImage
         row.cellConfig["imageView.image"] = imageFolder
 
-        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.left.rawValue
+        row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
         
         section.addFormRow(row)
         
@@ -760,8 +757,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
 
         row.cellConfig["textLabel.textAlignment"] = NSTextAlignment.center.rawValue
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
-                
+        
         section.addFormRow(row)
 
         // Section: Password
@@ -769,16 +765,18 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_pdf_password_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "password", rowType: XLFormRowDescriptorTypePassword)
+        row = XLFormRowDescriptor(tag: "password", rowType: XLFormRowDescriptorTypePassword, title: NSLocalizedString("_password_", comment: ""))
         
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = UIColor.black
         
         section.addFormRow(row)
         
         // Section: File
         
-        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_file_", comment: ""))
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_file_creation_", comment: ""))
         form.addFormSection(section)
         
         if arrayImages.count == 1 {
@@ -788,7 +786,6 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             
             row.cellConfig["tintColor"] = NCBrandColor.sharedInstance.brand
             row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-            row.cellConfig["textLabel.textColor"] = UIColor.black
             
             section.addFormRow(row)
         }
@@ -797,11 +794,9 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         row.value = self.fileName
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textLabel.textColor"] = UIColor.black
         
         row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
         row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
-        row.cellConfig["textField.textColor"] = UIColor.black
 
         section.addFormRow(row)
        
