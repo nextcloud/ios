@@ -225,7 +225,7 @@
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:@"" withUserID:@"" withPassword:@"" withUrl:nil];
-    [ocNetworking serverStatus:self.baseUrl.text source:self success:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor) {
+    [ocNetworking serverStatus:self.baseUrl.text success:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor) {
         
         self.loadingBaseUrl.hidden = YES;
         self.login.enabled = YES;
@@ -461,7 +461,6 @@
 -(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
 {
     // The pinnning check
-    
     if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
         completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
     } else {

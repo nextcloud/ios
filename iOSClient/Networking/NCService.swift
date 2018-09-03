@@ -110,8 +110,8 @@ class NCService: NSObject, OCNetworkingDelegate {
     
     private func requestServerStatus() {
 
-        let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        ocNetworking?.serverStatus(appDelegate.activeUrl, source: self, success: { (serverProductName, versionMajor, versionMicro, versionMinor) in
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        ocNetworking?.serverStatus(appDelegate.activeUrl, success: { (serverProductName, versionMajor, versionMicro, versionMinor) in
             
             if serverProductName == "owncloud" {
                 self.appDelegate.messageNotification("_warning_", description: "_warning_owncloud_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
