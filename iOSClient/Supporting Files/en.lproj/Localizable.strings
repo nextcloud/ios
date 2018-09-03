@@ -62,6 +62,7 @@
 "_scan_fingerprint_"        = "Scan fingerprint to authenticate";
 "_no_active_account_"       = "No account found";
 "_info_"                    = "Info";
+"_warning_"                 = "Warning";
 "_email_"                   = "Email";
 "_save_exit_"               = "Do you want to exit without saving?";
 "_video_"                   = "Video";
