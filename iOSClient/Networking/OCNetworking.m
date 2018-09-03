@@ -129,7 +129,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Check Server =====
+#pragma mark ===== Server =====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)checkServer:(NSString *)serverUrl success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
@@ -159,6 +159,81 @@
     
         failure(message, errorCode);
     }];
+}
+
+- (void)serverStatus:(NSString *)serverUrl success:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+     NSString *urlTest = [serverUrl stringByAppendingString:k_serverStatus];
+    
+    // Remove stored cookies
+    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    for (NSHTTPCookie *cookie in [storage cookies])
+    {
+        [storage deleteCookie:cookie];
+    }
+    
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlTest] cachePolicy:0 timeoutInterval:20.0];
+    [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
+    [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
+    
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+        
+        if (error) {
+            
+            NSString *message;
+            NSInteger errorCode;
+            
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+            errorCode = httpResponse.statusCode;
+            
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                errorCode = error.code;
+            
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+            
+            failure(message, errorCode);
+            
+        } else {
+            
+            NSString *serverProductName = @"";
+            NSString *serverVersion = @"0.0.0";
+            NSString *serverVersionString = @"0.0.0";
+            
+            NSInteger versionMajor = 0;
+            NSInteger versionMicro = 0;
+            NSInteger versionMinor = 0;
+            
+            NSError *error;
+            NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+            
+            if (error) {
+                failure(error.description, error.code);
+                return;
+            }
+            
+            serverProductName = [[jsongParsed valueForKey:@"productname"] lowercaseString];
+            serverVersion = [jsongParsed valueForKey:@"version"];
+            serverVersionString = [jsongParsed valueForKey:@"versionstring"];
+            
+            NSArray *arrayVersion = [serverVersionString componentsSeparatedByString:@"."];
+            if (arrayVersion.count >= 3) {
+                versionMajor = [arrayVersion[0] integerValue];
+                versionMicro = [arrayVersion[1] integerValue];
+                versionMinor = [arrayVersion[2] integerValue];
+            }
+            
+            success(serverProductName, versionMajor, versionMicro, versionMinor);
+        }
+    }];
+    
+    [task resume];
 }
 
 #pragma --------------------------------------------------------------------------------------------

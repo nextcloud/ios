@@ -35,7 +35,7 @@ class NCService: NSObject, OCNetworkingDelegate {
     //MARK: -
     //MARK: Start Services API NC
     
-    @objc func startRequestServicesServer() {
+    @objc public func startRequestServicesServer() {
    
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -47,9 +47,9 @@ class NCService: NSObject, OCNetworkingDelegate {
     }
 
     //MARK: -
-    //MARK: Request Service API NC
+    //MARK: Internal request Service API NC
     
-    @objc func requestServerCapabilities() {
+    @objc private func requestServerCapabilities() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -63,7 +63,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func requestUserProfile() {
+    @objc private func requestUserProfile() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -77,7 +77,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func requestActivityServer() {
+    @objc private func requestActivityServer() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -91,7 +91,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func middlewarePing() {
+    @objc public func middlewarePing() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
