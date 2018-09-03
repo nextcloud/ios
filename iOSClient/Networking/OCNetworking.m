@@ -163,7 +163,7 @@
 
 - (void)serverStatus:(NSString *)serverUrl success:(void(^)(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
-     NSString *urlTest = [serverUrl stringByAppendingString:k_serverStatus];
+    NSString *urlTest = [serverUrl stringByAppendingString:k_serverStatus];
     
     // Remove stored cookies
     NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
@@ -198,7 +198,9 @@
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
-            failure(message, errorCode);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                failure(message, errorCode);
+            });
             
         } else {
             
@@ -229,7 +231,9 @@
                 versionMinor = [arrayVersion[2] integerValue];
             }
             
-            success(serverProductName, versionMajor, versionMicro, versionMinor);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                success(serverProductName, versionMajor, versionMicro, versionMinor);
+            });
         }
     }];
     

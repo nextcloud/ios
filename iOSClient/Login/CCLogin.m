@@ -31,14 +31,6 @@
 {
     AppDelegate *appDelegate;
     UIView *rootView;
-    
-    NSString *serverProductName;
-    NSString *serverVersion;
-    NSString *serverVersionString;
-    
-    NSInteger versionMajor;
-    NSInteger versionMicro;
-    NSInteger versionMinor;
 }
 @end
 
@@ -232,77 +224,55 @@
     if ([self.baseUrl.text hasSuffix:@"/"])
         self.baseUrl.text = [self.baseUrl.text substringToIndex:[self.baseUrl.text length] - 1];
     
-    // add status.php for valid test url
-    NSString *urlTest = [self.baseUrl.text stringByAppendingString:k_serverStatus];
-    
-    // Remove stored cookies
-    NSHTTPCookieStorage *storage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-    for (NSHTTPCookie *cookie in [storage cookies])
-    {
-        [storage deleteCookie:cookie];
-    }
-    
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlTest] cachePolicy:0 timeoutInterval:20.0];
-    [request addValue:[CCUtility getUserAgent] forHTTPHeaderField:@"User-Agent"];
-    [request addValue:@"true" forHTTPHeaderField:@"OCS-APIRequest"];
-
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:self delegateQueue:nil];
+    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:self metadataNet:nil withUser:@"" withUserID:@"" withPassword:@"" withUrl:nil];
+    [ocNetworking serverStatus:self.baseUrl.text success:^(NSString *serverProductName, NSInteger versionMajor, NSInteger versionMicro, NSInteger versionMinor) {
         
-    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+        self.loadingBaseUrl.hidden = YES;
+        self.login.enabled = YES;
+        
+        // Login Flow
+        if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
             
-        dispatch_async(dispatch_get_main_queue(), ^{
-                
-            self.loadingBaseUrl.hidden = YES;
-            self.login.enabled = YES;
+            appDelegate.activeLoginWeb = [CCLoginWeb new];
+            appDelegate.activeLoginWeb.loginType = _loginType;
+            appDelegate.activeLoginWeb.delegate = self;
+            appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
             
-            if (error) {
-                    
-                if ([error code] == NSURLErrorServerCertificateUntrusted) {
-                        
-                    [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:self delegate:self];
-                        
-                } else {
-                        
-                    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:[error localizedDescription] preferredStyle:UIAlertControllerStyleAlert];
-                    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
-                        
-                    [alertController addAction:okAction];
-                    [self presentViewController:alertController animated:YES completion:nil];
-                }
-
-            } else {
-                    
-                [self serverStatus:data];
-                
-                // Login Flow
-                if (_user.hidden && _password.hidden && versionMajor >= k_flow_version_available) {
-                    
-                    appDelegate.activeLoginWeb = [CCLoginWeb new];
-                    appDelegate.activeLoginWeb.loginType = _loginType;
-                    appDelegate.activeLoginWeb.delegate = self;
-                    appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
-                    
-                    [appDelegate.activeLoginWeb presentModalWithDefaultTheme:self];
-                }
-                
-                // NO Login Flow available
-                if (versionMajor < k_flow_version_available) {
-                    
-                    [self.loginTypeView setHidden:YES];
-
-                    _imageUser.hidden = NO;
-                    _user.hidden = NO;
-                    _imagePassword.hidden = NO;
-                    _password.hidden = NO;
-                    
-                    [_user becomeFirstResponder];
-                }
-            }
-        });
+            [appDelegate.activeLoginWeb presentModalWithDefaultTheme:self];
+        }
+        
+        // NO Login Flow available
+        if (versionMajor < k_flow_version_available) {
+            
+            [self.loginTypeView setHidden:YES];
+            
+            _imageUser.hidden = NO;
+            _user.hidden = NO;
+            _imagePassword.hidden = NO;
+            _password.hidden = NO;
+            
+            [_user becomeFirstResponder];
+        }
+        
+    } failure:^(NSString *message, NSInteger errorCode) {
+        
+        self.loadingBaseUrl.hidden = YES;
+        self.login.enabled = YES;
+        
+        if (errorCode == NSURLErrorServerCertificateUntrusted) {
+            
+            [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:message viewController:self delegate:self];
+            
+        } else {
+            
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_connection_error_", nil) message:message preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];
+            
+            [alertController addAction:okAction];
+            [self presentViewController:alertController animated:YES completion:nil];
+        }
+        
     }];
-        
-    [task resume];
 }
 
 - (void)trustedCerticateAccepted
@@ -314,45 +284,6 @@
 {
     if (_loginType == k_login_Modify_Password)
         [self handleAnnulla:self];
-}
-
--(void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler
-{
-    // The pinnning check
-    
-    if ([[CCCertificate sharedManager] checkTrustedChallenge:challenge]) {
-        completionHandler(NSURLSessionAuthChallengeUseCredential, [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust]);
-    } else {
-        completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
-    }
-}
-
-- (void)serverStatus:(NSData *)data
-{
-    serverProductName = @"";
-    serverVersion = @"0.0.0";
-    serverVersionString = @"0.0.0";
-    
-    versionMajor = 0;
-    versionMicro = 0;
-    versionMinor = 0;
-    
-    NSError *error;
-    NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-    
-    if (error)
-        return;
-    
-    serverProductName = [jsongParsed valueForKey:@"productname"];
-    serverVersion = [jsongParsed valueForKey:@"version"];
-    serverVersionString = [jsongParsed valueForKey:@"versionstring"];
-
-    NSArray *arrayVersion = [serverVersionString componentsSeparatedByString:@"."];
-    if (arrayVersion.count >= 3) {
-        versionMajor = [arrayVersion[0] integerValue];
-        versionMicro = [arrayVersion[1] integerValue];
-        versionMinor = [arrayVersion[2] integerValue];
-    }
 }
 
 #pragma --------------------------------------------------------------------------------------------
