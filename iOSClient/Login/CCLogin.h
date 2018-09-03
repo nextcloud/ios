@@ -35,7 +35,7 @@
 
 @end
 
-@interface CCLogin : UIViewController <UITextFieldDelegate, CCCertificateDelegate, OCNetworkingDelegate>
+@interface CCLogin : UIViewController <UITextFieldDelegate, NSURLSessionTaskDelegate, NSURLSessionDelegate, CCCertificateDelegate, OCNetworkingDelegate>
 
 @property (nonatomic, weak) id <CCLoginDelegate> delegate;
 
