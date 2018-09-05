@@ -216,6 +216,14 @@
             for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
                 if ([richdocumentMimetype containsString:mimeType]) {
                     NSLog(@"Collabora");
+                    
+                    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+                    
+                    [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
+                        
+                    } failure:^(NSString *message, NSInteger errorCode) {
+                        
+                    }];
                 }
             }
         }
