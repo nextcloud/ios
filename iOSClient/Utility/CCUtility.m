@@ -186,8 +186,8 @@
     
     if (result == nil) {
         
-        [self setOptimizedPhoto:YES];
-        return YES;
+        [self setOptimizedPhoto:NO];
+        return NO;
     }
     
     return [result boolValue];
