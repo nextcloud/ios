@@ -83,4 +83,7 @@
 @property (nonatomic) BOOL isEndToEndEncryptionEnabled;
 @property (nonatomic, strong) NSString *endToEndEncryptionVersion;
 
+// Richdocuments
+@property (nonatomic, strong) NSArray *RichdocumentsMimetypes;
+
 @end

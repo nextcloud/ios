@@ -1478,6 +1478,14 @@
                     if ([endToEndEncryption valueForKey:@"api-version"] && ![[endToEndEncryption valueForKey:@"api-version"] isEqual:[NSNull null]])
                         capabilities.endToEndEncryptionVersion = [endToEndEncryption valueForKey:@"api-version"];
                 }
+                
+                //Richdocuments
+                
+                NSDictionary *richdocuments = [capabilitiesDict valueForKey:@"richdocuments"];
+                
+                if (richdocuments!= nil && [richdocuments count] > 0) {
+                    capabilities.RichdocumentsMimetypes = [richdocuments valueForKey:@"mimetypes"];
+                }
             }
         
             successRequest(response, capabilities, request.redirectedServer);

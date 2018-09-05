@@ -38,6 +38,8 @@
         self.notificationPush = @"";
         
         self.spreedFeatures = @"";
+        
+        self.RichdocumentsMimetypes = [NSArray new];
     }
     return self;
 }
