@@ -206,7 +206,7 @@
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
         
 #if DEBUG
-        // Collabora
+        // Richdocument editor
         NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
         NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
         
