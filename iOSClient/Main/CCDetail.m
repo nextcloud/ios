@@ -204,10 +204,12 @@
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
+        
+#if DEBUG
+        // Collabora
         NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
         NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
         
-        // Collabora
         if (richdocumentsMimetypes.count > 0 & mimeType != nil && [mimeType componentsSeparatedByString:@"."].count > 2) {
             NSArray *mimeTypeArray = [mimeType componentsSeparatedByString:@"."];
             NSString* mimeType = [NSString stringWithFormat:@"%@.%@",mimeTypeArray[mimeTypeArray.count-2], mimeTypeArray[mimeTypeArray.count-1]];
@@ -217,6 +219,7 @@
                 }
             }
         }
+#endif
         
         if ([fileNameExtension isEqualToString:@"PDF"]) {
             
