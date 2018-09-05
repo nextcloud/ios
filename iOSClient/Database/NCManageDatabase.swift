@@ -668,8 +668,9 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.versionString = capabilities.versionString
                 resultCapabilities.endToEndEncryption = capabilities.isEndToEndEncryptionEnabled
                 resultCapabilities.endToEndEncryptionVersion = capabilities.endToEndEncryptionVersion
+                resultCapabilities.richdocumentsMimetypes.removeAll()
                 for mimeType in capabilities.richdocumentsMimetypes {
-                    resultCapabilities.RichdocumentsMimetypes.append(mimeType as! String)
+                    resultCapabilities.richdocumentsMimetypes.append(mimeType as! String)
                 }
                 
                 if result == nil {
@@ -756,6 +757,22 @@ class NCManageDatabase: NSObject {
             }
         }
         return result
+    }
+    
+    @objc func getRichdocumentsMimetypes() -> [String]? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
+            return nil
+        }
+        
+        return Array(result.richdocumentsMimetypes)
     }
     
     //MARK: -

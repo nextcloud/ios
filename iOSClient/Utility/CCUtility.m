@@ -1160,6 +1160,30 @@
     return metadata;
 }
 
++ (NSString *)getMimeType:(NSString *)fileNameView
+{
+    CFStringRef fileUTI = nil;
+    NSString *returnFileUTI = nil;
+    
+    if ([fileNameView isEqualToString:@"."]) {
+        
+        return returnFileUTI;
+        
+    } else {
+        CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
+        NSString *ext = (__bridge NSString *)fileExtension;
+        ext = ext.uppercaseString;
+        fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+        
+        if (fileUTI != nil) {
+            returnFileUTI = (__bridge NSString *)fileUTI;
+            CFRelease(fileUTI);
+        }
+    }
+    
+    return returnFileUTI;
+}
+
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata
 {
     CFStringRef fileUTI = nil;

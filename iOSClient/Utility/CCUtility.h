@@ -203,6 +203,8 @@
 
 + (NSString *)getDirectoryScan;
 
++ (NSString *)getMimeType:(NSString *)fileNameView;
+
 // ===== E2E Encrypted =====
 
 + (NSString *)generateRandomIdentifier;
