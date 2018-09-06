@@ -221,6 +221,8 @@
                     
                     [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
                         
+                        [[NCRichdocument sharedInstance] viewRichDocumentAt:link navigationViewController:self.navigationController];
+                        
                     } failure:^(NSString *message, NSInteger errorCode) {
                         
                         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
