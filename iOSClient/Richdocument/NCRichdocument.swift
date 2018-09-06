@@ -34,9 +34,9 @@ class NCRichdocument: NSObject, SwiftWebVCDelegate {
 
     @objc func viewRichDocumentAt(_ link: String, navigationViewController: UINavigationController) {
         
-        let webVC = SwiftWebVC(urlString: link, hideToolbar: false)
+        let webVC = SwiftWebVC(urlString: link, hideToolbar: true)
         webVC.delegate = self
-        navigationViewController.pushViewController(webVC, animated: true)
+        navigationViewController.setViewControllers([webVC], animated: true) //pushViewController(webVC, animated: true)
     }
     
     func didStartLoading() {
