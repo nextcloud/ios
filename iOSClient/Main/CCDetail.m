@@ -223,6 +223,9 @@
                         
                     } failure:^(NSString *message, NSInteger errorCode) {
                         
+                        [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                        [self backNavigationController];
+                        return;
                     }];
                 }
             }
