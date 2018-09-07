@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.22.3] - 2018-09-07
 - See https://github.com/nextcloud/ios/milestone/38
+- Scan documents and create multipage pdfs or jpg
 
 ## [2.22.2] - 2018-08-28
 - See https://github.com/nextcloud/ios/milestone/37
