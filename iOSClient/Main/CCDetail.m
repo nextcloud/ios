@@ -205,6 +205,7 @@
         
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
         
+/*
 #if DEBUG
         // Richdocument editor
         NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
@@ -233,7 +234,7 @@
             }
         }
 #endif
-        
+*/
         if ([fileNameExtension isEqualToString:@"PDF"]) {
             
             self.edgesForExtendedLayout = UIRectEdgeBottom;
