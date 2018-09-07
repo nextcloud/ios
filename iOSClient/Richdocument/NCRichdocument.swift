@@ -36,7 +36,7 @@ class NCRichdocument: NSObject, SwiftWebVCDelegate {
         
         let webVC = SwiftWebVC(urlString: link, hideToolbar: true)
         webVC.delegate = self
-        navigationViewController.setViewControllers([webVC], animated: true) //pushViewController(webVC, animated: true)
+        navigationViewController.setViewControllers([webVC], animated: false)
     }
     
     func didStartLoading() {
