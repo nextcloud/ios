@@ -23,47 +23,64 @@
 
 import Foundation
 
-class NCRichdocument: NSObject, SwiftWebVCDelegate {
+class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     
     @objc static let sharedInstance: NCRichdocument = {
         let instance = NCRichdocument()
         return instance
     }()
     
+    var webView: WKWebView?
+    var request: URLRequest!
+    var viewDetail: CCDetail?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    @objc func viewRichDocumentAt(_ link: String, navigationViewController: UINavigationController) {
+    @objc func viewRichDocumentAt(_ link: String, viewDetail: CCDetail) {
         
-        let webVC = SwiftWebVC(urlString: link, hideToolbar: true)
-        webVC.delegate = self
-        if navigationViewController.viewControllers.count > 1 {
-            navigationViewController.setViewControllers([navigationViewController.viewControllers.first!, webVC], animated: false)
+        self.viewDetail = viewDetail
+        
+        let contentController = WKUserContentController()
+        contentController.add(self, name: "RichDocumentsMobileInterface")
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController = contentController
+        
+        webView = WKWebView(frame: viewDetail.view.bounds, configuration: configuration)
+        webView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        webView?.navigationDelegate = self
+        
+        self.request = URLRequest(url: URL(string: link)!)
+        self.request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+        let language = NSLocale.preferredLanguages[0] as String
+        self.request.addValue(language, forHTTPHeaderField: "Accept-Language")
+        
+        let userAgent : String = CCUtility.getUserAgent()
+        webView!.customUserAgent = userAgent
+        webView!.load(self.request!)
+        
+        viewDetail.view.addSubview(webView!)
+    }
+    
+    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        print("WKScriptMessage");
+    }
+    
+    public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        if let serverTrust = challenge.protectionSpace.serverTrust {
+            completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: serverTrust))
         } else {
-            navigationViewController.setViewControllers([webVC], animated: false)
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential, nil);
         }
     }
     
-    func didStartLoading() {
-        print("Started loading.")
+    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        print("didStartProvisionalNavigation");
     }
     
-    func didReceiveServerRedirectForProvisionalNavigation(url: URL) {
-        
+    public func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+        print("didReceiveServerRedirectForProvisionalNavigation");
     }
     
-    func didFinishLoading(success: Bool) {
-        print("Finished loading. Success: \(success).")
-    }
-    
-    func didFinishLoading(success: Bool, url: URL) {
-        print("Finished loading. Success: \(success).")
-    }
-    
-    func webDismiss() {
-        print("Web dismiss.")
-    }
-    
-    func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        decisionHandler(.allow)
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        print("didFinish");
     }
 }
