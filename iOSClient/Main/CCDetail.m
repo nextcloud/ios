@@ -250,7 +250,7 @@
         }
     }
     
-    self.title = _metadataDetail.fileNameView;
+    self.navigationController.navigationBar.topItem.title =  _metadataDetail.fileNameView;
 }
 
 #pragma --------------------------------------------------------------------------------------------
