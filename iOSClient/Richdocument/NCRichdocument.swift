@@ -30,9 +30,7 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         return instance
     }()
     
-    var webView: WKWebView?
-    var request: URLRequest!
-    var viewDetail: CCDetail?
+    var viewDetail: CCDetail!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc func viewRichDocumentAt(_ link: String, viewDetail: CCDetail) {
@@ -44,20 +42,20 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = contentController
         
-        webView = WKWebView(frame: viewDetail.view.bounds, configuration: configuration)
-        webView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        webView?.navigationDelegate = self
+        let webView = WKWebView(frame: viewDetail.view.bounds, configuration: configuration)
+        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        webView.navigationDelegate = self
         
-        self.request = URLRequest(url: URL(string: link)!)
-        self.request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
+        var request = URLRequest(url: URL(string: link)!)
+        request.addValue("true", forHTTPHeaderField: "OCS-APIRequest")
         let language = NSLocale.preferredLanguages[0] as String
-        self.request.addValue(language, forHTTPHeaderField: "Accept-Language")
+        request.addValue(language, forHTTPHeaderField: "Accept-Language")
         
         let userAgent : String = CCUtility.getUserAgent()
-        webView!.customUserAgent = userAgent
-        webView!.load(self.request!)
+        webView.customUserAgent = userAgent
+        webView.load(request)
         
-        viewDetail.view.addSubview(webView!)
+        viewDetail.view.addSubview(webView)
     }
     
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
