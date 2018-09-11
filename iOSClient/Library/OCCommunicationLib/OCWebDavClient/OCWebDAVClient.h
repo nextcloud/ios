@@ -656,4 +656,6 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 
 - (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath fileID:(NSString * _Nonnull)fileID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
+- (void)createAssetRichdocuments:(NSString *_Nonnull)serverPath path:(NSString *_Nonnull)path onCommunication:(OCCommunication *_Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
 @end

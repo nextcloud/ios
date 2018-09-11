@@ -2229,6 +2229,40 @@
     }];
 }
 
+- (void)createAssetRichdocumentsWithFileName:(NSString *)fileName serverUrl:(NSString *)serverUrl success:(void(^)(NSString *link))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+    
+    [communication createAssetRichdocuments:[_activeUrl stringByAppendingString:@"/"] path:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer) {
+        
+        success(url);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        // Activity
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        
+        failure(message, errorCode);
+    }];
+}
+
 @end
 
 #pragma --------------------------------------------------------------------------------------------

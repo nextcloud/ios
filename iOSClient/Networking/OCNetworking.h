@@ -74,6 +74,7 @@
 - (void)unsubscribingPushNotificationServer:(NSString *)url deviceIdentifier:(NSString *)deviceIdentifier deviceIdentifierSignature:(NSString *)deviceIdentifierSignature publicKey:(NSString *)publicKey success:(void (^)(void))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
 - (void)createLinkRichdocumentsWithFileID:(NSString *)fileID success:(void(^)(NSString *link))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
+- (void)createAssetRichdocumentsWithFileName:(NSString *)fileName serverUrl:(NSString *)serverUrl success:(void(^)(NSString *link))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
 @end
 
