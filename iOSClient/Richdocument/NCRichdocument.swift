@@ -62,12 +62,16 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         
         if (message.name == "RichDocumentsMobileInterface") {
+            
             if message.body as! String == "close" {
 
                 self.webView.removeFromSuperview()
                 
                 self.viewDetail.navigationController?.popToRootViewController(animated: true)
                 self.viewDetail.navigationController?.navigationBar.topItem?.title = ""
+            }
+            
+            if message.body as! String == "insertGraphic" {
             }
         }
     }

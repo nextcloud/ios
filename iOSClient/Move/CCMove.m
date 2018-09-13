@@ -364,9 +364,8 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return 0;
     NSPredicate *predicate;
-    
-    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true", directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true AND e2eEncrypted == false", directoryID];
+
+    predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true AND e2eEncrypted == %@", directoryID, [NSNumber numberWithBool:self.includeDirectoryE2EEncryption]];
     
     NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
     
