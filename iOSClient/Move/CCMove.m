@@ -431,7 +431,25 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self performSegueDirectoryWithControlPasscode:YES];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:indexPath.row];
+    
+    if (metadata.directory) {
+        
+        [self performSegueDirectoryWithControlPasscode:YES];
+        
+    } else {
+        
+        if (self.selectFile) {
+            
+            if ([self.delegate respondsToSelector:@selector(dismissMove)])
+                [self.delegate dismissMove];
+            
+            if ([self.delegate respondsToSelector:@selector(selectMetadata:serverUrl:)])
+                [self.delegate selectMetadata:metadata serverUrl:_serverUrl];
+            
+            [self dismissViewControllerAnimated:YES completion:nil];
+        }
+    }
 }
 
 // MARK: - Navigation
@@ -492,9 +510,12 @@
     
     viewController.delegate = self.delegate;
     viewController.includeDirectoryE2EEncryption = self.includeDirectoryE2EEncryption;
+    viewController.includeImages = self.includeImages;
     viewController.move.title = self.move.title;
     viewController.hideCreateFolder = self.hideCreateFolder;
-    viewController.networkingOperationQueue = _networkingOperationQueue;
+    viewController.hideMoveutton = self.hideMoveutton;
+    viewController.selectFile = self.selectFile;
+    viewController.networkingOperationQueue = self.networkingOperationQueue;
 
     viewController.passMetadata = metadata;
     viewController.serverUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:nomeDir];

@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
+class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, CCMoveDelegate {
     
     @objc static let sharedInstance: NCRichdocument = {
         let instance = NCRichdocument()
@@ -59,6 +59,8 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         viewDetail.view.addSubview(webView)
     }
     
+    //MARK: -
+
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         
         if (message.name == "RichDocumentsMobileInterface") {
@@ -72,10 +74,36 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
             }
             
             if message.body as! String == "insertGraphic" {
+                
+                let storyboard = UIStoryboard(name: "CCMove", bundle: nil)
+                let movieNavigationController = storyboard.instantiateViewController(withIdentifier: "CCMove") as! UINavigationController
+                let moveViewController = movieNavigationController.topViewController as! CCMove
+                
+                moveViewController.delegate = self
+                moveViewController.hideMoveutton = true
+                moveViewController.hideCreateFolder = true
+                moveViewController.tintColor = NCBrandColor.sharedInstance.brandText
+                moveViewController.barTintColor = NCBrandColor.sharedInstance.brand
+                moveViewController.tintColorTitle = NCBrandColor.sharedInstance.brandText
+                moveViewController.networkingOperationQueue = appDelegate.netQueue
+                moveViewController.includeImages = true
+                moveViewController.includeDirectoryE2EEncryption = false
+                moveViewController.selectFile = true
+                
+                movieNavigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+                self.viewDetail.present(movieNavigationController, animated: true, completion: nil)
             }
         }
     }
     
+    //MARK: -
+    
+    func select(_ metadata: tableMetadata!, serverUrl: String!) {
+        
+    }
+    
+    //MARK: -
+
     public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if let serverTrust = challenge.protectionSpace.serverTrust {
             completionHandler(Foundation.URLSession.AuthChallengeDisposition.useCredential, URLCredential(trust: serverTrust))
@@ -95,4 +123,5 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         print("didFinish");
     }
+    
 }

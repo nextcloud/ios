@@ -38,10 +38,14 @@
 
 @property (nonatomic, weak) id <CCMoveDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue *networkingOperationQueue;
+
 @property BOOL includeDirectoryE2EEncryption;
 @property BOOL includeImages;
+
 @property BOOL hideCreateFolder;
 @property BOOL hideMoveutton;
+
+@property BOOL selectFile;
 
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) tableMetadata *passMetadata;
@@ -63,8 +67,8 @@
 
 @protocol CCMoveDelegate <NSObject>
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title;
-
+@optional - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title;
 @optional - (void)dismissMove;
+@optional - (void)selectMetadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl;
 
 @end
