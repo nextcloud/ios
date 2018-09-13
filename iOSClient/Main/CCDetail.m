@@ -214,8 +214,8 @@
                     
                     [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
                         
-                        [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
                         [[NCRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
+                        [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
 
                     } failure:^(NSString *message, NSInteger errorCode) {
                         

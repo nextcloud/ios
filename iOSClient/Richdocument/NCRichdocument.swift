@@ -63,17 +63,11 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         
         if (message.name == "RichDocumentsMobileInterface") {
             if message.body as! String == "close" {
-                print("\(message.body)")
+
+                self.webView.removeFromSuperview()
                 
-
-                for view in self.viewDetail.view.subviews{
-                    if view.tag < 900 {
-                        view.removeFromSuperview()
-                    }
-                }
-
                 self.viewDetail.navigationController?.popToRootViewController(animated: true)
-                
+                self.viewDetail.navigationController?.navigationBar.topItem?.title = ""
             }
         }
     }
