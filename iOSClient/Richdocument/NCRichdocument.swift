@@ -102,7 +102,10 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, CC
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         ocNetworking?.createAssetRichdocuments(withFileName: metadata.fileName, serverUrl: serverUrl, success: { (url) in
-            print(url)
+
+            let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url!)')"
+            self.webView.evaluateJavaScript(functionJS, completionHandler: { (result, error) in })
+            
         }, failure: { (message, errorCode) in
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
         })
