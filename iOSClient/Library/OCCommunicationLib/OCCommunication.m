@@ -2773,7 +2773,7 @@
 
 - (void)createAssetRichdocuments:(NSString *)serverPath path:(NSString *)path onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
     
-    serverPath = [serverPath stringByAppendingString:k_url_create_link_mobile_editor];
+    serverPath = [serverPath stringByAppendingString:k_url_insert_assets_to_collabora];
     serverPath = [serverPath stringByAppendingString:@"?format=json"];
     
     OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
@@ -2790,32 +2790,15 @@
         
         if (jsongParsed && jsongParsed.allKeys > 0) {
             
-            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
-            NSDictionary *meta = [ocs valueForKey:@"meta"];
-            NSDictionary *data = [ocs valueForKey:@"data"];
-            
-            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
-            
-            if (statusCode == kOCUserProfileAPISuccessful) {
-                
-                if ([data valueForKey:@"url"] && ![[data valueForKey:@"url"] isKindOfClass:[NSNull class]]) {
+            if ([jsongParsed valueForKey:@"url"] && ![[jsongParsed valueForKey:@"url"] isKindOfClass:[NSNull class]]) {
                     
-                    NSString *url = [data valueForKey:@"url"];
-                    successRequest(response, url, request.redirectedServer);
+                NSString *url = [jsongParsed valueForKey:@"url"];
+                successRequest(response, url, request.redirectedServer);
                     
-                } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
-                }
-                
             } else {
-                
-                NSString *message = (NSString *)[meta objectForKey:@"message"];
-                if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
-                }
-                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+                failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
             }
-            
+                
         } else {
             failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
         }

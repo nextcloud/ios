@@ -100,6 +100,12 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, CC
     
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
         
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        ocNetworking?.createAssetRichdocuments(withFileName: metadata.fileName, serverUrl: serverUrl, success: { (url) in
+            print(url)
+        }, failure: { (message, errorCode) in
+            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: Int(k_CCErrorInternalError))
+        })
     }
     
     //MARK: -

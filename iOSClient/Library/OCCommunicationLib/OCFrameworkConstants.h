@@ -73,6 +73,9 @@
 //Url to access to Mobile Editor OCS API
 #define k_url_create_link_mobile_editor @"ocs/v2.php/apps/richdocuments/api/v1/document"
 
+//Url to insert files directly from your Nextcloud to a Collabora Online document
+#define k_url_insert_assets_to_collabora @"apps/richdocuments/assets"
+
 //Version of the server that have share API
 #define k_version_support_shared [NSArray arrayWithObjects:  @"5", @"0", @"27", nil]
 
