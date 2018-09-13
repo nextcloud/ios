@@ -170,6 +170,9 @@
 
 - (void)viewFile
 {
+    // Title
+    self.navigationController.navigationBar.topItem.title =  _metadataDetail.fileNameView;
+
     // verifico se esiste l'icona e se la posso creare
     if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]] == NO) {
         [CCGraphics createNewImageFrom:self.metadataDetail.fileNameView fileID:self.metadataDetail.fileID extension:[self.metadataDetail.fileNameView pathExtension] filterGrayScale:NO typeFile:self.metadataDetail.typeFile writeImage:YES];
@@ -200,48 +203,57 @@
     // DOCUMENT
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
+        BOOL openCollabora = false;
+        
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
         
         // Richdocument editor
         NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
         NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
         
-        if (richdocumentsMimetypes.count > 0 & mimeType != nil && [mimeType componentsSeparatedByString:@"."].count > 2) {
-            NSArray *mimeTypeArray = [mimeType componentsSeparatedByString:@"."];
-            NSString* mimeType = [NSString stringWithFormat:@"%@.%@",mimeTypeArray[mimeTypeArray.count-2], mimeTypeArray[mimeTypeArray.count-1]];
-            for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
-                if ([richdocumentMimetype containsString:mimeType]) {
-                    
-                    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-                    
-                    [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
-                        
-                        [[NCRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
-
-                    } failure:^(NSString *message, NSInteger errorCode) {
-                        
-                        [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-                        [self.navigationController popViewControllerAnimated:YES];
-                        return;
-                    }];
-                }
-            }
-            
-        } else if ([fileNameExtension isEqualToString:@"PDF"]) {
+        if ([fileNameExtension isEqualToString:@"PDF"]) {
             
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self createToolbar];
             [self viewPDF:@""];
             
-        } else {
-            
-            self.edgesForExtendedLayout = UIRectEdgeBottom;
-            [self createToolbar];
-            [self viewDocument];
+            return;
         }
+        
+        // Very if mimeType is compatible with Collabora
+        if (richdocumentsMimetypes.count > 0 & mimeType != nil && [mimeType componentsSeparatedByString:@"."].count > 2) {
+            
+            NSArray *mimeTypeArray = [mimeType componentsSeparatedByString:@"."];
+            NSString *mimeType = [NSString stringWithFormat:@"%@.%@",mimeTypeArray[mimeTypeArray.count-2], mimeTypeArray[mimeTypeArray.count-1]];
+            
+            for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
+                if ([richdocumentMimetype containsString:mimeType]) {
+                    openCollabora = true;
+                }
+            }
+        }
+
+        if (openCollabora) {
+            
+            OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+            
+            [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
+                
+                [[NCRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
+                
+            } failure:^(NSString *message, NSInteger errorCode) {
+                
+                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                [self.navigationController popViewControllerAnimated:YES];
+            }];
+            
+            return;
+        }
+        
+        self.edgesForExtendedLayout = UIRectEdgeBottom;
+        [self createToolbar];
+        [self viewDocument];
     }
-    
-    self.navigationController.navigationBar.topItem.title =  _metadataDetail.fileNameView;
 }
 
 #pragma --------------------------------------------------------------------------------------------
