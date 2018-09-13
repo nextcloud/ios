@@ -31,6 +31,7 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     }()
     
     var viewDetail: CCDetail!
+    var webView: WKWebView!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
     @objc func viewRichDocumentAt(_ link: String, viewDetail: CCDetail) {
@@ -42,7 +43,7 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = contentController
         
-        let webView = WKWebView(frame: viewDetail.view.bounds, configuration: configuration)
+        webView = WKWebView(frame: viewDetail.view.bounds, configuration: configuration)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         webView.navigationDelegate = self
         
@@ -63,6 +64,16 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
         if (message.name == "RichDocumentsMobileInterface") {
             if message.body as! String == "close" {
                 print("\(message.body)")
+                
+
+                for view in self.viewDetail.view.subviews{
+                    if view.tag < 900 {
+                        view.removeFromSuperview()
+                    }
+                }
+
+                self.viewDetail.navigationController?.popToRootViewController(animated: true)
+                
             }
         }
     }

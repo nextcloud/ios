@@ -155,11 +155,6 @@
     }
 }
 
-- (void)backNavigationController
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 - (void)changeToDisplayMode
 {
     if (_readerPDFViewController)
@@ -205,7 +200,6 @@
         
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
         
-#if DEBUG
         // Richdocument editor
         NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
         NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
@@ -215,26 +209,24 @@
             NSString* mimeType = [NSString stringWithFormat:@"%@.%@",mimeTypeArray[mimeTypeArray.count-2], mimeTypeArray[mimeTypeArray.count-1]];
             for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
                 if ([richdocumentMimetype containsString:mimeType]) {
-                    NSLog(@"Collabora");
                     
                     OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
                     
                     [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
                         
+                        [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
                         [[NCRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
-                        
+
                     } failure:^(NSString *message, NSInteger errorCode) {
                         
                         [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-                        [self backNavigationController];
+                        [self.navigationController popViewControllerAnimated:YES];
                         return;
                     }];
                 }
             }
-        }
-#endif
-
-        if ([fileNameExtension isEqualToString:@"PDF"]) {
+            
+        } else if ([fileNameExtension isEqualToString:@"PDF"]) {
             
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self createToolbar];
@@ -313,7 +305,7 @@
     
     if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] == NO) {
         
-        [self backNavigationController];
+        [self.navigationController popViewControllerAnimated:YES];
         return;
     }
     
@@ -847,7 +839,7 @@
     } else {
         [appDelegate messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
-        [self backNavigationController];
+        [self.navigationController popViewControllerAnimated:YES];
     }
 }
 
@@ -1103,7 +1095,7 @@
             if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] == NO) {
             
                 // exit
-                [self backNavigationController];
+                [self.navigationController popViewControllerAnimated:YES];
             
             } else {
                 
@@ -1119,7 +1111,7 @@
                         
                         // exit
                         if ([self.photoDataSource count] == 0) {
-                            [self backNavigationController];
+                            [self.navigationController popViewControllerAnimated:YES];
                         }
                     }
                 }
