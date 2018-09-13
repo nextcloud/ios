@@ -203,13 +203,9 @@
     // DOCUMENT
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
-        BOOL openCollabora = false;
+        BOOL openWithRichDocument = false;
         
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
-        
-        // Richdocument editor
-        NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
-        NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
         
         if ([fileNameExtension isEqualToString:@"PDF"]) {
             
@@ -220,7 +216,10 @@
             return;
         }
         
-        // Very if mimeType is compatible with Collabora
+        // Very if mimeType is compatible with Rich Document viewer
+        NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
+        NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
+        
         if (richdocumentsMimetypes.count > 0 & mimeType != nil && [mimeType componentsSeparatedByString:@"."].count > 2) {
             
             NSArray *mimeTypeArray = [mimeType componentsSeparatedByString:@"."];
@@ -228,12 +227,12 @@
             
             for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
                 if ([richdocumentMimetype containsString:mimeType]) {
-                    openCollabora = true;
+                    openWithRichDocument = true;
                 }
             }
         }
 
-        if (openCollabora) {
+        if (openWithRichDocument) {
             
             OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
             
