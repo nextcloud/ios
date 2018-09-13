@@ -37,6 +37,8 @@
     // Automatic Upload Folder
     NSString *_autoUploadFileName;
     NSString *_autoUploadDirectory;
+    
+    NSPredicate *predicateDataSource;
 }
 @end
 
@@ -126,6 +128,11 @@
     if (self.hideCreateFolder) {
         [self.create setEnabled:NO];
         [self.create setTintColor: [UIColor clearColor]];
+    }
+    
+    if (self.hideMoveutton) {
+        [self.move setEnabled:NO];
+        [self.move setTintColor: [UIColor clearColor]];
     }
 }
 
@@ -363,11 +370,11 @@
 {
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return 0;
-    NSPredicate *predicate;
 
-    predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true AND e2eEncrypted == %@", directoryID, [NSNumber numberWithBool:self.includeDirectoryE2EEncryption]];
+    if (self.includeImages) predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == %@ AND (directory == true OR typeFile == 'image')", directoryID, [NSNumber numberWithBool:self.includeDirectoryE2EEncryption]];
+    else predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == %@ AND directory == true", directoryID, [NSNumber numberWithBool:self.includeDirectoryE2EEncryption]];
     
-    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicate sorted:nil ascending:NO];
+    NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicateDataSource sorted:nil ascending:NO];
     
     if (result)
         return [result count];
@@ -377,8 +384,6 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSPredicate *predicate;
-    
     static NSString *CellIdentifier = @"MyCustomCell";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
@@ -386,14 +391,7 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
     
-    NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
-    if (!directoryID)
-        return cell;
-    
-    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true", directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true AND e2eEncrypted == false", directoryID];
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:indexPath.row];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:indexPath.row];
     
     // Create Directory Provider Storage FileID
     [CCUtility getDirectoryProviderStorageFileID:metadata.fileID];
@@ -403,13 +401,28 @@
     
     cell.detailTextLabel.text = @"";
     
-    if (metadata.e2eEncrypted)
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
-    else
-        cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    if (metadata.directory) {
     
+        if (metadata.e2eEncrypted)
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+        else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+        else
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+        
+    } else {
+        
+        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
+            cell.imageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        } else {
+            if (metadata.iconName.length > 0) {
+                cell.imageView.image = [UIImage imageNamed:metadata.iconName];
+            } else {
+                cell.imageView.image = [UIImage imageNamed:@"file"];
+            }
+        }
+    }
+
     cell.textLabel.text = metadata.fileNameView;
     cell.accessoryType = UITableViewCellAccessoryNone;
     
@@ -426,16 +439,12 @@
 - (void)performSegueDirectoryWithControlPasscode:(BOOL)controlPasscode
 {
     NSString *nomeDir;
-    NSPredicate *predicate;
 
     NSIndexPath *index = [self.tableView indexPathForSelectedRow];
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return;
     
-    if (self.includeDirectoryE2EEncryption) predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true", directoryID];
-    else predicate = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true AND e2eEncrypted == false", directoryID];
-    
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicate sorted:@"fileName" ascending:YES index:index.row];
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataAtIndexWithPredicate:predicateDataSource sorted:@"fileName" ascending:YES index:index.row];
     
     // lockServerUrl
     NSString *lockServerUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:metadata.fileName];

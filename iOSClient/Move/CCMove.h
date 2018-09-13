@@ -41,6 +41,7 @@
 @property BOOL includeDirectoryE2EEncryption;
 @property BOOL includeImages;
 @property BOOL hideCreateFolder;
+@property BOOL hideMoveutton;
 
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) tableMetadata *passMetadata;
