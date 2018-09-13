@@ -106,6 +106,9 @@
     self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     self.navigationController.navigationBar.topItem.title = @"";
     
+    // Color Navigation Controller
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+
     // TabBar
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
@@ -192,7 +195,6 @@
         self.edgesForExtendedLayout = UIRectEdgeAll;
         [self createToolbar];
         [self viewMedia];
-        [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     }
     
     // DOCUMENT
@@ -215,7 +217,6 @@
                     [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
                         
                         [[NCRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
-                        [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
 
                     } failure:^(NSString *message, NSInteger errorCode) {
                         
@@ -231,14 +232,12 @@
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self createToolbar];
             [self viewPDF:@""];
-            [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
             
         } else {
             
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self createToolbar];
             [self viewDocument];
-            [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
         }
     }
     
