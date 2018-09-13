@@ -59,7 +59,12 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler {
     }
     
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        print("WKScriptMessage");
+        
+        if (message.name == "RichDocumentsMobileInterface") {
+            if message.body as! String == "close" {
+                print("\(message.body)")
+            }
+        }
     }
     
     public func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
