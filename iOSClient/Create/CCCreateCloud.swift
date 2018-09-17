@@ -691,7 +691,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     var serverUrl = ""
     var titleServerUrl = ""
     var arrayImages = [UIImage]()
-    var fileName = "scan.pdf"
+    var fileName = CCUtility.createFileNameDate("scan", extension: "pdf")
     var password : PDFPassword = ""
     var compressionQuality: Double = 0.5
     var fileType = "PDF"
@@ -870,7 +870,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
                 return
             }
             if name as! String == "" {
-                name = "scan"
+                name = CCUtility.createFileNameDate("scan", extension: "pdf")
             }
             
             let ext = (name as! NSString).pathExtension.uppercased()
