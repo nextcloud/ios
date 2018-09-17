@@ -103,7 +103,8 @@ class NCBrandColor: NSObject {
     @objc public let disable_multiaccount:              Bool = false
     @objc public let disable_manage_account:            Bool = false
     @objc public let disable_more_external_site:        Bool = false
-    
+    @objc public let disable_share_file:                Bool = false
+
     override init() {
         
         if folderBrandAutoUpload != "" {
