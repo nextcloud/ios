@@ -45,6 +45,8 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, CC
         
         webView = WKWebView(frame: viewDetail.view.bounds, configuration: configuration)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//        webView.scrollView.showsHorizontalScrollIndicator = true
+//        webView.scrollView.showsVerticalScrollIndicator = true
         webView.navigationDelegate = self
         
         var request = URLRequest(url: URL(string: link)!)
@@ -90,7 +92,7 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, CC
                 moveViewController.includeDirectoryE2EEncryption = false
                 moveViewController.selectFile = true
                 
-                movieNavigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
+                movieNavigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 self.viewDetail.present(movieNavigationController, animated: true, completion: nil)
             }
         }

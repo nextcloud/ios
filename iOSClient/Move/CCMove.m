@@ -412,8 +412,10 @@
         
     } else {
         
-        if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]]) {
-            cell.imageView.image = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        UIImage *thumb = [UIImage imageWithContentsOfFile:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]];
+        
+        if (thumb) {
+            cell.imageView.image = thumb;
         } else {
             if (metadata.iconName.length > 0) {
                 cell.imageView.image = [UIImage imageNamed:metadata.iconName];
