@@ -29,10 +29,10 @@ class CreateMenuAdd: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    let fontButton = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: UIColor.black]
-    let fontEncrypted = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.encrypted as UIColor]
-    let fontCancel = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue-Bold", size: 17)!, NSAttributedStringKey.foregroundColor: UIColor.black]
-    let fontDisable = [NSAttributedStringKey.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedStringKey.foregroundColor: UIColor.darkGray]
+    let fontButton = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedString.Key.foregroundColor: UIColor.black]
+    let fontEncrypted = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.encrypted as UIColor]
+    let fontCancel = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue-Bold", size: 17)!, NSAttributedString.Key.foregroundColor: UIColor.black]
+    let fontDisable = [NSAttributedString.Key.font:UIFont(name: "HelveticaNeue", size: 16)!, NSAttributedString.Key.foregroundColor: UIColor.darkGray]
 
     let colorLightGray = UIColor(red: 250.0/255.0, green: 250.0/255.0, blue: 250.0/255.0, alpha: 1)
     let colorGray = UIColor(red: 150.0/255.0, green: 150.0/255.0, blue: 150.0/255.0, alpha: 1)
@@ -308,8 +308,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         super.viewDidLoad()
         
-        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(cancel))
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(save))
+        let cancelButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(cancel))
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         
         self.navigationItem.leftBarButtonItem = cancelButton
         self.navigationItem.rightBarButtonItem = saveButton
@@ -317,9 +317,9 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
         
         self.reloadForm()
     }
@@ -530,7 +530,7 @@ class CreateFormUploadFileText: XLFormViewController, CCMoveDelegate {
             self.form.delegate = nil
             
             if let fileNameNew = formRow.value {
-                 self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as! String)
+                 self.fileName = CCUtility.removeForbiddenCharactersServer(fileNameNew as? String)
             }
         
             formRow.value = self.fileName
@@ -548,15 +548,15 @@ class CreateFormUploadFileText: XLFormViewController, CCMoveDelegate {
         
         super.viewDidLoad()
         
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(save))
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         self.navigationItem.rightBarButtonItem = saveButton
         
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
     }
     
     // MARK: - Action
@@ -905,15 +905,15 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         super.viewDidLoad()
         
-        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItemStyle.plain, target: self, action: #selector(save))
+        let saveButton : UIBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_save_", comment: ""), style: UIBarButtonItem.Style.plain, target: self, action: #selector(save))
         self.navigationItem.rightBarButtonItem = saveButton
         
         self.navigationController?.navigationBar.isTranslucent = false
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
-        self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
+        self.tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
 //        self.tableView.sectionHeaderHeight = 10
 //        self.tableView.sectionFooterHeight = 10
 //        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
@@ -1005,7 +1005,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
 
             //Generate PDF
             for image in self.arrayImages {
-                guard let data = UIImageJPEGRepresentation(image, CGFloat(compressionQuality)) else {
+                guard let data = image.jpegData(compressionQuality: CGFloat(compressionQuality)) else {
                     self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
                     return
                 }
@@ -1023,7 +1023,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         if fileType == "JPG" {
             
-            guard let data = UIImageJPEGRepresentation(self.arrayImages[0], CGFloat(compressionQuality)) else {
+            guard let data = self.arrayImages[0].jpegData(compressionQuality: CGFloat(compressionQuality)) else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
                 return
             }
@@ -1123,7 +1123,7 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         }
         
         do {
-            try UIImagePNGRepresentation(image)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+            try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
         } catch { }
         
         scanner.dismiss(animated: true, completion: {

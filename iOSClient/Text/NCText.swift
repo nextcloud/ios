@@ -46,13 +46,13 @@ class NCText: UIViewController, UITextViewDelegate {
         
         super.viewDidLoad()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShowHandle(info:)), name: .UIKeyboardWillShow, object: nil)
-        NotificationCenter.default.addObserver(self, selector:#selector(self.keyboardWillHideHandle), name: .UIKeyboardWillHide, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShowHandle(info:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector:#selector(self.keyboardWillHideHandle), name: UIResponder.keyboardWillHideNotification, object: nil)
 
         self.navigationController?.navigationBar.topItem?.title = NSLocalizedString("_untitled_txt_", comment: "")
         self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
         self.navigationController?.navigationBar.tintColor = NCBrandColor.sharedInstance.brandText
-        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.sharedInstance.brandText]
         self.navigationController?.navigationBar.isTranslucent = false
 
         self.navigationController?.toolbar.barTintColor = NCBrandColor.sharedInstance.brandText
@@ -99,7 +99,7 @@ class NCText: UIViewController, UITextViewDelegate {
         let frameView = self.view.convert(self.view.bounds, to: self.view.window)
         let endView = frameView.origin.y + frameView.size.height
         
-        if let keyboardSize = (info.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue, let _ = self.view.window?.frame {
+        if let keyboardSize = (info.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue, let _ = self.view.window?.frame {
             
             if endView - keyboardSize.origin.y > 0 {
                 bottomConstraint.constant = endView - keyboardSize.origin.y

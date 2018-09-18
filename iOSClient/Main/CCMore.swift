@@ -324,7 +324,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         selectionColor.backgroundColor = NCBrandColor.sharedInstance.getColorSelectBackgrond()
         cell.selectedBackgroundView = selectionColor
         
-        cell.accessoryType = UITableViewCellAccessoryType.disclosureIndicator
+        cell.accessoryType = UITableViewCell.AccessoryType.disclosureIndicator
         
         // Menu Normal
         if (indexPath.section == 0) {

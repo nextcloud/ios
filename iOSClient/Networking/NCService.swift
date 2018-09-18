@@ -164,7 +164,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                             return
                         }
                     
-                        if let data = UIImagePNGRepresentation(image) {
+                        if let data = image.pngData() {
                             try? data.write(to: URL(fileURLWithPath: fileNamePath))
                         }
                     
@@ -282,7 +282,7 @@ class NCService: NSObject, OCNetworkingDelegate {
                         return
                     }
                 
-                    if let data = UIImagePNGRepresentation(image) {
+                    if let data = image.pngData() {
                         try? data.write(to: URL(fileURLWithPath: fileNamePath))
                     }
                 

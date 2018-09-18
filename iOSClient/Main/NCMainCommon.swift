@@ -199,8 +199,8 @@ class NCMainCommon: NSObject {
             // NORMAL
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "CellMain", for: indexPath) as! CCCellMain
-            cell.separatorInset = UIEdgeInsetsMake(0, 60, 0, 0)
-            cell.accessoryType = UITableViewCellAccessoryType.none
+            cell.separatorInset = UIEdgeInsets.init(top: 0, left: 60, bottom: 0, right: 0)
+            cell.accessoryType = UITableViewCell.AccessoryType.none
             cell.file.image = nil
             cell.status.image = nil
             cell.favorite.image = nil
@@ -327,8 +327,8 @@ class NCMainCommon: NSObject {
             // TRASNFER
             
             let cell = tableView.dequeueReusableCell(withIdentifier: "CellMainTransfer", for: indexPath) as! CCCellMainTransfer
-            cell.separatorInset = UIEdgeInsetsMake(0, 60, 0, 0)
-            cell.accessoryType = UITableViewCellAccessoryType.none
+            cell.separatorInset = UIEdgeInsets.init(top: 0, left: 60, bottom: 0, right: 0)
+            cell.accessoryType = UITableViewCell.AccessoryType.none
             cell.file.image = nil
             cell.status.image = nil
             
@@ -653,7 +653,7 @@ class CCMainTabBarController : UITabBarController, UITabBarControllerDelegate {
         // Disable interaction during animation
         view.isUserInteractionEnabled = false
             
-        UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: UIViewAnimationOptions.curveEaseOut, animations: {
+        UIView.animate(withDuration: 0.3, delay: 0.0, usingSpringWithDamping: 1, initialSpringVelocity: 0, options: UIView.AnimationOptions.curveEaseOut, animations: {
                 
             // Slide the views by -offset
             fromView.center = CGPoint(x: fromView.center.x - offset, y: fromView.center.y);
@@ -716,7 +716,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             }
             
             // open View File
-            if selector == selectorLoadFileView && UIApplication.shared.applicationState == UIApplicationState.active {
+            if selector == selectorLoadFileView && UIApplication.shared.applicationState == UIApplication.State.active {
             
                 if metadata.typeFile == k_metadataTypeFile_compress || metadata.typeFile == k_metadataTypeFile_unknown {
                 
@@ -741,7 +741,7 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             }
             
             // Open in...
-            if selector == selectorOpenIn && UIApplication.shared.applicationState == UIApplicationState.active {
+            if selector == selectorOpenIn && UIApplication.shared.applicationState == UIApplication.State.active {
 
                 if appDelegate.activeMain.view.window != nil {
                     appDelegate.activeMain.open(in: metadata)

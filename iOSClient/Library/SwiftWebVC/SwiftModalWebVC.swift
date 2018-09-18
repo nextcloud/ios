@@ -54,7 +54,7 @@ public class SwiftModalWebVC: UINavigationController {
         super.init(rootViewController: webViewController)
 
         let doneButton = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCDismiss"),
-                                         style: UIBarButtonItemStyle.plain,
+                                         style: UIBarButtonItem.Style.plain,
                                          target: webViewController,
                                          action: #selector(SwiftWebVC.doneButtonTapped))
     
