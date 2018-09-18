@@ -95,6 +95,10 @@ class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, CC
                 movieNavigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
                 self.viewDetail.present(movieNavigationController, animated: true, completion: nil)
             }
+            
+            if message.body as! String == "share" {
+                appDelegate.activeMain.openWindowShare(viewDetail.metadataDetail)
+            }
         }
     }
     

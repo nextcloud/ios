@@ -2752,14 +2752,22 @@
     appDelegate.deleteItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_delete_selected_files_", nil) subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"delete"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         [self deleteFile];
     }];
-
+    
     // E2EE
     if (_metadataFolder.e2eEncrypted) {
-        appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.downloadItem, appDelegate.saveItem, appDelegate.deleteItem]];
+        if ([NCBrandOptions sharedInstance].disable_openin_file) {
+            appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.downloadItem, appDelegate.deleteItem]];
+        } else {
+            appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.downloadItem, appDelegate.saveItem, appDelegate.deleteItem]];
+        }
     } else {
-        appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem, appDelegate.deleteItem]];
+        if ([NCBrandOptions sharedInstance].disable_openin_file) {
+            appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.moveItem, appDelegate.downloadItem, appDelegate.deleteItem]];
+        } else {
+            appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem, appDelegate.deleteItem]];
+        }
     }
-    
+
     appDelegate.reSelectMenu.imageOffset = CGSizeMake(5, -1);
     
     appDelegate.reSelectMenu.separatorOffset = CGSizeMake(50.0, 0.0);
@@ -2858,7 +2866,11 @@
         
         UIMenuItem *pasteFilesItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"_paste_files_", nil) action:@selector(pasteFiles:)];
         
-        [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, nil]];
+        if ([NCBrandOptions sharedInstance].disable_openin_file) {
+            [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, pasteFileItem, pasteFilesItem, nil]];
+        } else {
+            [menuController setMenuItems:[NSArray arrayWithObjects:copyFileItem, copyFilesItem, openinFileItem, pasteFileItem, pasteFilesItem, nil]];
+        }
         
         [menuController setTargetRect:CGRectMake(touchPoint.x, touchPoint.y, 0.0f, 0.0f) inView:self.tableView];
         [menuController setMenuVisible:YES animated:YES];
@@ -3625,15 +3637,17 @@
                                         }];
         }
         
-        [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
-                                  image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                        backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                 height: 50.0
-                                   type:AHKActionSheetButtonTypeDefault
-                                handler:^(AHKActionSheet *as) {
-                                    [self performSelector:@selector(DownloadOpenIn:) withObject:self.metadata];
-                                }];
+        if (![NCBrandOptions sharedInstance].disable_openin_file) {
         
+            [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil)
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                     height: 50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        [self performSelector:@selector(DownloadOpenIn:) withObject:self.metadata];
+                                    }];
+        }
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_rename_", nil)
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"rename"] multiplier:2 color:[NCBrandColor sharedInstance].icon]

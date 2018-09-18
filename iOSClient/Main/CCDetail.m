@@ -277,7 +277,9 @@
     fixedSpaceMini.width = 25;
     
     buttonModifyTxt = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyTxtButtonPressed:)];
-    buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
+    if (![NCBrandOptions sharedInstance].disable_openin_file) {
+        buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
+    }
     buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
@@ -527,7 +529,11 @@
     }
     
     // PhotoBrowser
-    self.photoBrowser.displayActionButton = YES;
+    if ([NCBrandOptions sharedInstance].disable_openin_file) {
+        self.photoBrowser.displayActionButton = NO;
+    } else {
+        self.photoBrowser.displayActionButton = YES;
+    }
     self.photoBrowser.displayDeleteButton = YES;
     if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
         self.photoBrowser.displayShareButton = NO;

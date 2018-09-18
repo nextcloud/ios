@@ -248,29 +248,18 @@ static void * MWVideoPlayerObservation = &MWVideoPlayerObservation;
         [items addObject:flexSpace];
     }
 
-    // Right - Action
-    if (_actionButton) {
-        
-        if (_deleteButton) {
-            
-            [items addObject:_deleteButton];
-            [items addObject:fixedSpaceMini];
-        }
-        if (_shareButton) {
-            
-            [items addObject:_shareButton];
-            [items addObject:fixedSpaceMini];
-        }
-        [items addObject:_actionButton];
-        
-    } else {
-        
-        // We're not showing the toolbar so try and show in top right
-        if (_actionButton)
-            self.navigationItem.rightBarButtonItem = _actionButton;
-        [items addObject:fixedSpace];
+    if (_deleteButton) {
+        [items addObject:_deleteButton];
+        [items addObject:fixedSpaceMini];
     }
-
+    if (_shareButton) {
+        [items addObject:_shareButton];
+        [items addObject:fixedSpaceMini];
+    }
+    if (_actionButton) {
+        [items addObject:_actionButton];
+    }
+    
     // Toolbar visibility
     [_toolbar setItems:items];
     BOOL hideToolbar = YES;
