@@ -107,6 +107,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>The use of Camera is used to scan documet</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app requires Face ID permission to authenticate using Face recognition.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>The use of GPS is used to detect new photos from camera roll, continued use of GPS running in the background can dramatically decrease battery life.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
