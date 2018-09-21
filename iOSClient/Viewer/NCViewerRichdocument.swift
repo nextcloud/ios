@@ -1,5 +1,5 @@
 //
-//  NCRichdocument.swift
+//  NCViewerRichdocument.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 06/09/18.
