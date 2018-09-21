@@ -64,6 +64,10 @@ class NCViewerMedia: NSObject {
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.itemDidFinishPlaying(notification:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
         appDelegate.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+        
+        viewDetail.isMediaObserver = true
+        
+        appDelegate.player.play()
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
@@ -87,6 +91,20 @@ class NCViewerMedia: NSObject {
     
     func saveCacheToFileProvider() {
         
+        if !CCUtility.fileProviderStorageExists(self.metadata.fileID, fileNameView:self.metadata.fileNameView) {
+            guard let url = KTVHTTPCache.cacheCompleteFileURLIfExisted(with: self.videoURLProxy) else {
+                return
+            }
+            
+            CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(self.metadata.fileID, fileNameView: self.metadata.fileNameView))
+            NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
+            KTVHTTPCache.cacheDelete(with: self.videoURL)
+            
+            // reload Data Source
+            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: NCManageDatabase.sharedInstance.getServerUrl(self.metadata.directoryID), fileID: self.metadata.fileID, action: k_action_MOD)
+            
+            // Enabled Button Action (the file is in local)
+            self.viewDetail.buttonAction.isEnabled = true
+        }
     }
-    
 }
