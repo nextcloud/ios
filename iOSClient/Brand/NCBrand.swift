@@ -98,7 +98,7 @@ class NCBrandColor: NSObject {
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
     
     @objc public let disable_intro:                     Bool = false
-    @objc public let disable_linkLoginProvider:         Bool = false
+    @objc public let disable_linkLoginProvider:         Bool = true
     @objc public let disable_request_login_url:         Bool = false
     @objc public let disable_multiaccount:              Bool = false
     @objc public let disable_manage_account:            Bool = false
