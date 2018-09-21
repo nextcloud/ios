@@ -41,7 +41,6 @@
     UIDocumentInteractionController *docController;
     
     UIBarButtonItem *buttonModifyTxt;
-    UIBarButtonItem *buttonAction;
     UIBarButtonItem *buttonShare;
     UIBarButtonItem *buttonDelete;
     
@@ -53,7 +52,6 @@
     
     NSURL *videoURLProxy;
     NSURL *videoURL;
-    BOOL isMediaObserver;
 }
 @end
 
@@ -139,8 +137,8 @@
     }
     
     // remove Observer AVPlayer
-    if (isMediaObserver) {
-        isMediaObserver = NO;
+    if (self.isMediaObserver) {
+        self.isMediaObserver = NO;
         @try{
             [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
             [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
@@ -179,8 +177,8 @@
     }
     
     // remove Observer AVPlayer
-    if (isMediaObserver) {
-        isMediaObserver = NO;
+    if (self.isMediaObserver) {
+        self.isMediaObserver = NO;
         [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
         [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
     }
@@ -278,21 +276,21 @@
     
     buttonModifyTxt = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyTxtButtonPressed:)];
     if (![NCBrandOptions sharedInstance].disable_openin_file) {
-        buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
+        self.buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
     }
     buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
     if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
         if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
-            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
         else
-            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
     } else {
         if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
-            [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
         else
-            [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
     }
     
     [self.toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
@@ -408,7 +406,7 @@
         [KTVHTTPCache downloadSetAdditionalHeaders:header];
         
         // Disable Button Action (the file is in download via Proxy Server)
-        buttonAction.enabled = false;
+        self.buttonAction.enabled = false;
     }
     
     appDelegate.player = [AVPlayer playerWithURL:videoURLProxy];
@@ -423,7 +421,7 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
     [appDelegate.player addObserver:self forKeyPath:@"rate" options:0 context:nil];
-    isMediaObserver = YES;
+    self.isMediaObserver = YES;
 
     [appDelegate.player play];
 }
@@ -460,7 +458,7 @@
             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:self.metadataDetail.directoryID] fileID:self.metadataDetail.fileID action:k_action_MOD];
             
             // Enabled Button Action (the file is in local)
-            buttonAction.enabled = true;
+            self.buttonAction.enabled = true;
         }
     }
 }

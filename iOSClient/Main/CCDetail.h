@@ -44,6 +44,10 @@
 // Document
 @property (nonatomic, strong) WKWebView *webView;
 
+// Media
+@property (nonatomic, strong) UIBarButtonItem *buttonAction;
+@property BOOL isMediaObserver;
+
 // Photo
 @property (nonatomic, strong) NSMutableArray *photoDataSource;
 @property (nonatomic, strong) MWPhotoBrowser *photoBrowser;

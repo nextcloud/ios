@@ -47,6 +47,9 @@ class NCViewerMedia: NSObject {
             let authValue = "Basic " + authData.base64EncodedString(options: [])
             let header = [authValue:"Authorization", CCUtility.getUserAgent():"User-Agent"] as [String : String]
             KTVHTTPCache.downloadSetAdditionalHeaders(header)
+            
+            // Disable Button Action (the file is in download via Proxy Server)
+            viewDetail.buttonAction.isEnabled = false
         }
         
         appDelegate.player = AVPlayer(url: videoURLProxy)
@@ -58,6 +61,32 @@ class NCViewerMedia: NSObject {
         viewDetail.addChild(appDelegate.playerController)
         viewDetail.view.addSubview(appDelegate.playerController.view)
         appDelegate.playerController.didMove(toParent: viewDetail)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.itemDidFinishPlaying(notification:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+        appDelegate.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        
+        if keyPath == "rate" {
+            if appDelegate.player?.rate != nil {
+                print("start")
+            } else {
+                print("stop")
+            }
+            
+            saveCacheToFileProvider()
+        }
+    }
+    
+    @objc func itemDidFinishPlaying(notification: NSNotification) {
+        
+        let player = notification.object as! AVPlayerItem
+        player.seek(to: CMTime.zero)
+    }
+    
+    func saveCacheToFileProvider() {
+        
     }
     
 }
