@@ -19,11 +19,12 @@ class NCViewerMedia: NSObject {
     var viewDetail: CCDetail!
     var metadata: tableMetadata!
     var videoURL: URL!
-    var videoURLProxy: URL!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
     @objc func viewMedia(_ metadata: tableMetadata, viewDetail: CCDetail, width: Int, height: Int) {
         
+        var videoURLProxy: URL!
+
         self.viewDetail = viewDetail
         self.metadata = metadata
         
@@ -32,18 +33,23 @@ class NCViewerMedia: NSObject {
         }
         
         if CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+        
             self.videoURL = URL(string: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
-            self.videoURLProxy = videoURL
+            videoURLProxy = videoURL
+        
         } else {
+            
             guard let stringURL = (serverUrl + "/" + metadata.fileName).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
                 return
             }
+            
             self.videoURL = URL(string: stringURL)
-            self.videoURLProxy = KTVHTTPCache.proxyURL(withOriginalURL: self.videoURL)
+            videoURLProxy = KTVHTTPCache.proxyURL(withOriginalURL: self.videoURL)
             
             guard let authData = (appDelegate.activeUser + ":" + appDelegate.activePassword).data(using: .utf8) else {
                 return
             }
+            
             let authValue = "Basic " + authData.base64EncodedString(options: [])
             let header = [authValue:"Authorization", CCUtility.getUserAgent():"User-Agent"] as [String : String]
             KTVHTTPCache.downloadSetAdditionalHeaders(header)
@@ -92,7 +98,7 @@ class NCViewerMedia: NSObject {
     func saveCacheToFileProvider() {
         
         if !CCUtility.fileProviderStorageExists(self.metadata.fileID, fileNameView:self.metadata.fileNameView) {
-            guard let url = KTVHTTPCache.cacheCompleteFileURLIfExisted(with: self.videoURLProxy) else {
+            guard let url = KTVHTTPCache.cacheCompleteFileURLIfExisted(with: self.videoURL) else {
                 return
             }
             
