@@ -238,7 +238,7 @@
             
             [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
                 
-                [[NCRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
+                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
                 
             } failure:^(NSString *message, NSInteger errorCode) {
                 

@@ -2736,12 +2736,12 @@
 			path = JDStatusBarNotification;
 			sourceTree = "<group>";
 		};
-		F790110C21415BA900D7B136 /* Richdocument */ = {
+		F79630EC215526B60015EEA5 /* Viewer */ = {
 			isa = PBXGroup;
 			children = (
 				F790110D21415BF600D7B136 /* NCRichdocument.swift */,
 			);
-			path = Richdocument;
+			path = Viewer;
 			sourceTree = "<group>";
 		};
 		F7A3214D1E9E2A070069AD1B /* Favorites */ = {
@@ -3348,6 +3348,7 @@
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
+				F79630EC215526B60015EEA5 /* Viewer */,
 				F7B0C1701EE8397E0033AC24 /* AutoUpload */,
 				F720E02A1E48C74C001A4B9E /* Actions */,
 				F7A321621E9E37960069AD1B /* Activity */,
@@ -3364,7 +3365,6 @@
 				F7C5259A1E3B441D00FFE02C /* Notification */,
 				F7FCFFD51D70798C000E6E29 /* PeekPop */,
 				F7BE6E2A1D2D5C3B00106933 /* QuickActions */,
-				F790110C21415BA900D7B136 /* Richdocument */,
 				F7FE125B1BAC03FB0041924B /* Security */,
 				F7ACE4281BAC0268006C0017 /* Settings */,
 				F728CE741BF6322C00E69702 /* Share */,

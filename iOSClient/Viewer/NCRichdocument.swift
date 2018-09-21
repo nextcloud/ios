@@ -23,10 +23,10 @@
 
 import Foundation
 
-class NCRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, CCMoveDelegate {
+class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandler, CCMoveDelegate {
     
-    @objc static let sharedInstance: NCRichdocument = {
-        let instance = NCRichdocument()
+    @objc static let sharedInstance: NCViewerRichdocument = {
+        let instance = NCViewerRichdocument()
         return instance
     }()
     
