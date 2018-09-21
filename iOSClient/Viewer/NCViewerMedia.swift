@@ -79,6 +79,7 @@ class NCViewerMedia: NSObject {
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
         if keyPath == "rate" {
+            
             if appDelegate.player?.rate != nil {
                 print("start")
             } else {
