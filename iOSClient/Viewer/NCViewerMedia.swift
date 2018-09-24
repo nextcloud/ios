@@ -34,7 +34,7 @@ class NCViewerMedia: NSObject {
         
         if CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
         
-            self.videoURL = URL(string: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
+            self.videoURL = URL(fileURLWithPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView))
             videoURLProxy = videoURL
         
         } else {
@@ -88,6 +88,11 @@ class NCViewerMedia: NSObject {
             
             saveCacheToFileProvider()
         }
+    }
+    
+    @objc func removeObserverAVPlayerItemDidPlayToEndTime () {
+        
+         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
     }
     
     @objc func itemDidFinishPlaying(notification: NSNotification) {
