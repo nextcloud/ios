@@ -408,8 +408,6 @@
 		F78071091EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F780710A1EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m in Sources */ = {isa = PBXBuildFile; fileRef = F78071081EDAB65800EAFFF6 /* NSNotificationCenter+MainThread.m */; };
 		F78295311F962EFA00A572F5 /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
-		F784FA28210F672E00256C26 /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */; };
-		F784FA29210F672E00256C26 /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA27210F672E00256C26 /* KTVHTTPCache.framework */; };
 		F784FA2E210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */; };
 		F784FA2F210F6FC000256C26 /* KTVCocoaHTTPServer.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA26210F672E00256C26 /* KTVCocoaHTTPServer.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		F784FA30210F6FC500256C26 /* KTVHTTPCache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F784FA27210F672E00256C26 /* KTVHTTPCache.framework */; };
@@ -1800,12 +1798,10 @@
 				F72D1000210B6638009C96B7 /* FirebaseInstanceID.framework in Frameworks */,
 				F7BB14961D5B62C000ECEE68 /* libcrypto.a in Frameworks */,
 				F7BB14971D5B62C000ECEE68 /* libssl.a in Frameworks */,
-				F784FA28210F672E00256C26 /* KTVCocoaHTTPServer.framework in Frameworks */,
 				F784FA30210F6FC500256C26 /* KTVHTTPCache.framework in Frameworks */,
 				F72D1001210B6638009C96B7 /* FirebaseCoreDiagnostics.framework in Frameworks */,
 				F72D0FFA210B6638009C96B7 /* FirebaseMessaging.framework in Frameworks */,
 				F72D0FFC210B6638009C96B7 /* FirebaseAnalytics.framework in Frameworks */,
-				F784FA29210F672E00256C26 /* KTVHTTPCache.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3548,7 +3544,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0940;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = TWS;
 				TargetAttributes = {
 					F71459B41D12E3B700CAFEEC = {
