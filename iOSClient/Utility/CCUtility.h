@@ -202,7 +202,8 @@
 + (BOOL)isDocumentModifiableExtension:(NSString *)fileExtension;
 
 + (NSString *)getDirectoryScan;
-+ (NSString *)getDirectoryScanSelect;
+
++ (NSString *)getMimeType:(NSString *)fileNameView;
 
 // ===== E2E Encrypted =====
 

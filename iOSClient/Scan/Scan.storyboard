@@ -41,10 +41,10 @@
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sam-7M-bIk">
                                                     <rect key="frame" x="20" y="20" width="100" height="100"/>
                                                 </imageView>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="06r-jm-ARX">
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="06r-jm-ARX">
                                                     <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <state key="normal" backgroundImage="no_red"/>
+                                                    <state key="normal" image="deleteScan"/>
                                                 </button>
                                             </subviews>
                                         </view>
@@ -68,25 +68,28 @@
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="fGo-qU-AYi" userLabel="collectionViewDestination">
                                 <rect key="frame" x="0.0" y="278" width="375" height="339"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="339" id="nTl-vy-iQ8"/>
+                                </constraints>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="9Sn-Y3-S86">
-                                    <size key="itemSize" width="140" height="140"/>
+                                    <size key="itemSize" width="120" height="120"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell2" id="Pph-tY-PGX" customClass="ScanCell" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="140" height="140"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                            <rect key="frame" x="0.0" y="0.0" width="140" height="140"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="120" height="120"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sdV-W7-Hkd">
-                                                    <rect key="frame" x="20" y="20" width="100" height="100"/>
+                                                    <rect key="frame" x="20" y="20" width="80" height="80"/>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Page" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wcM-U8-GLh">
-                                                    <rect key="frame" x="20" y="100" width="100" height="20"/>
+                                                    <rect key="frame" x="20" y="100" width="80" height="20"/>
                                                     <color key="backgroundColor" white="0.0" alpha="0.39940068490000002" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="8He-ef-19r"/>
@@ -95,10 +98,10 @@
                                                     <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wSg-Gm-0s3">
+                                                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wSg-Gm-0s3">
                                                     <rect key="frame" x="0.0" y="0.0" width="25" height="25"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <state key="normal" backgroundImage="no_red"/>
+                                                    <state key="normal" image="deleteScan"/>
                                                 </button>
                                             </subviews>
                                         </view>
@@ -108,7 +111,7 @@
                                             <constraint firstAttribute="trailing" secondItem="sdV-W7-Hkd" secondAttribute="trailing" constant="20" id="Jia-SE-8bu"/>
                                             <constraint firstAttribute="bottom" secondItem="sdV-W7-Hkd" secondAttribute="bottom" constant="20" id="Ljw-b9-Sp8"/>
                                             <constraint firstItem="sdV-W7-Hkd" firstAttribute="leading" secondItem="Pph-tY-PGX" secondAttribute="leading" constant="20" id="kwQ-gl-6Bj"/>
-                                            <constraint firstAttribute="bottom" secondItem="wcM-U8-GLh" secondAttribute="bottom" constant="20" id="qat-UY-DBH"/>
+                                            <constraint firstAttribute="bottom" secondItem="wcM-U8-GLh" secondAttribute="bottom" id="qat-UY-DBH"/>
                                             <constraint firstAttribute="trailing" secondItem="wcM-U8-GLh" secondAttribute="trailing" constant="20" id="rLg-WD-x2l"/>
                                         </constraints>
                                         <connections>
@@ -144,6 +147,21 @@
                                     <action selector="addWithSender:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bkr-97-4RR"/>
                                 </connections>
                             </button>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="b3i-bF-ITj">
+                                <rect key="frame" x="16" y="629" width="343" height="28"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="343" id="BL3-tS-haJ"/>
+                                    <constraint firstAttribute="height" constant="27" id="Kx0-Zp-wJh"/>
+                                </constraints>
+                                <segments>
+                                    <segment title="First"/>
+                                    <segment title="Second"/>
+                                    <segment title="Third"/>
+                                </segments>
+                                <connections>
+                                    <action selector="indexChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="yeI-C2-uGJ"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -153,11 +171,13 @@
                             <constraint firstItem="0Gy-eG-A0f" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="18" id="BNZ-HM-6yi"/>
                             <constraint firstItem="jwq-kF-6Nq" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="57" id="ELU-RG-o16"/>
                             <constraint firstItem="fGo-qU-AYi" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="Ew2-9q-DKl"/>
-                            <constraint firstAttribute="bottom" secondItem="fGo-qU-AYi" secondAttribute="bottom" constant="50" id="Eza-ZC-K9z"/>
                             <constraint firstItem="YHy-9G-ngy" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="FvJ-EK-Evb"/>
                             <constraint firstItem="0Gy-eG-A0f" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="72" id="O4H-NJ-Mot"/>
                             <constraint firstItem="fGo-qU-AYi" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="aU0-Bn-B6T"/>
                             <constraint firstItem="jwq-kF-6Nq" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="8" id="dyH-ym-lrb"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="b3i-bF-ITj" secondAttribute="bottom" constant="11" id="iCt-vj-sDA"/>
+                            <constraint firstItem="b3i-bF-ITj" firstAttribute="top" secondItem="fGo-qU-AYi" secondAttribute="bottom" constant="12" id="kGQ-oN-ccm"/>
+                            <constraint firstItem="b3i-bF-ITj" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="p4i-a8-soi"/>
                             <constraint firstItem="fGo-qU-AYi" firstAttribute="top" secondItem="YHy-9G-ngy" secondAttribute="bottom" constant="8" id="x2i-aj-hzf"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
@@ -181,6 +201,7 @@
                         <outlet property="collectionViewSource" destination="jwq-kF-6Nq" id="6hn-7D-P8K"/>
                         <outlet property="labelTitlePDFzone" destination="YHy-9G-ngy" id="hQk-4n-stD"/>
                         <outlet property="save" destination="LAS-W8-RG6" id="Dan-xp-JAB"/>
+                        <outlet property="segmentControlFilter" destination="b3i-bF-ITj" id="lPr-xp-LVI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -211,6 +232,6 @@
     </scenes>
     <resources>
         <image name="add" width="25" height="25"/>
-        <image name="no_red" width="25" height="25"/>
+        <image name="deleteScan" width="25" height="25"/>
     </resources>
 </document>

@@ -57,7 +57,7 @@ class NCManageDatabase: NSObject {
         let config = Realm.Configuration(
         
             fileURL: dirGroup?.appendingPathComponent("\(k_appDatabaseNextcloud)/\(k_databaseDefault)"),
-            schemaVersion: 27,
+            schemaVersion: 28,
             
             // 10 : Version 2.18.0
             // 11 : Version 2.18.2
@@ -77,6 +77,7 @@ class NCManageDatabase: NSObject {
             // 25 : Version 2.21.3.1
             // 26 : Version 2.22.0.4
             // 27 : Version 2.22.0.7
+            // 28 : Version 2.22.3.5
             
             migrationBlock: { migration, oldSchemaVersion in
                 // We haven’t migrated anything yet, so oldSchemaVersion == 0
@@ -667,7 +668,11 @@ class NCManageDatabase: NSObject {
                 resultCapabilities.versionString = capabilities.versionString
                 resultCapabilities.endToEndEncryption = capabilities.isEndToEndEncryptionEnabled
                 resultCapabilities.endToEndEncryptionVersion = capabilities.endToEndEncryptionVersion
-            
+                resultCapabilities.richdocumentsMimetypes.removeAll()
+                for mimeType in capabilities.richdocumentsMimetypes {
+                    resultCapabilities.richdocumentsMimetypes.append(mimeType as! String)
+                }
+                
                 if result == nil {
                     realm.add(resultCapabilities)
                 }
@@ -752,6 +757,22 @@ class NCManageDatabase: NSObject {
             }
         }
         return result
+    }
+    
+    @objc func getRichdocumentsMimetypes() -> [String]? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableCapabilities.self).filter("account = %@", tableAccount.account).first else {
+            return nil
+        }
+        
+        return Array(result.richdocumentsMimetypes)
     }
     
     //MARK: -

@@ -46,47 +46,58 @@ class NCManageAutoUploadFileName: XLFormViewController {
         var section : XLFormSectionDescriptor
         var row : XLFormRowDescriptor
 
-        section = XLFormSectionDescriptor.formSection()
+        // Section Mode filename
+
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_mode_filename_", comment: ""))
         form.addFormSection(section)
         
         // Maintain the original fileName
         
         row = XLFormRowDescriptor(tag: "maintainOriginalFileName", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_maintain_original_filename_", comment: ""))
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.value = CCUtility.getOriginalFileName(k_keyFileNameOriginalAutoUpload)
+
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+
         section.addFormRow(row)
         
         // Add File Name Type
         
         row = XLFormRowDescriptor(tag: "addFileNameType", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_add_filenametype_", comment: ""))
-        row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.value = CCUtility.getFileNameType(k_keyFileNameAutoUploadType)
+        row.hidden = "$\("maintainOriginalFileName") == 1"
+
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+
         section.addFormRow(row)
                 
         // Section: Rename File Name
         
-        section = XLFormSectionDescriptor.formSection()
+        section = XLFormSectionDescriptor.formSection(withTitle: NSLocalizedString("_filename_", comment: ""))
         form.addFormSection(section)
         
-        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: (NSLocalizedString("_filename_", comment: ""))+":")
-        row.hidden = "$\("maintainOriginalFileName") == 1"
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
+        row = XLFormRowDescriptor(tag: "maskFileName", rowType: XLFormRowDescriptorTypeAccount, title: (NSLocalizedString("_filename_", comment: "")))
         let fileNameMask : String = CCUtility.getFileNameMask(k_keyFileNameAutoUploadMask)
         if fileNameMask.count > 0 {
             row.value = fileNameMask
         }
+        row.hidden = "$\("maintainOriginalFileName") == 1"
+        
+        row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
+        
+        row.cellConfig["textField.textAlignment"] = NSTextAlignment.right.rawValue
+        row.cellConfig["textField.font"] = UIFont.systemFont(ofSize: 15.0)
+        
         section.addFormRow(row)
         
         // Section: Preview File Name
         
         row = XLFormRowDescriptor(tag: "previewFileName", rowType: XLFormRowDescriptorTypeTextView, title: "")
-        row.cellConfig.setObject(UIFont.systemFont(ofSize: 15.0), forKey: "textLabel.font" as NSCopying)
         row.height = 180
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "backgroundColor" as NSCopying)
-        row.cellConfig.setObject(NCBrandColor.sharedInstance.backgroundView, forKey: "textView.backgroundColor" as NSCopying)
-        
         row.disabled = true
+        
+        row.cellConfig["textView.backgroundColor"] = NCBrandColor.sharedInstance.backgroundView
+        row.cellConfig["textView.font"] = UIFont.systemFont(ofSize: 14.0)
+        
         section.addFormRow(row)
         
         self.form = form
@@ -146,9 +157,7 @@ class NCManageAutoUploadFileName: XLFormViewController {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
         
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.none
-        
-        self.tableView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
-        
+                
         self.reloadForm()
     }
     

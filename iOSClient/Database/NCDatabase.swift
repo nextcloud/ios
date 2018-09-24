@@ -93,6 +93,7 @@ class tableCapabilities: Object {
     @objc dynamic var versionString = ""
     @objc dynamic var endToEndEncryption: Bool = false
     @objc dynamic var endToEndEncryptionVersion = ""
+    let richdocumentsMimetypes = List<String>()
 }
 
 class tableCertificates: Object {

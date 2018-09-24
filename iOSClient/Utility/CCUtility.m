@@ -186,8 +186,8 @@
     
     if (result == nil) {
         
-        [self setOptimizedPhoto:YES];
-        return YES;
+        [self setOptimizedPhoto:NO];
+        return NO;
     }
     
     return [result boolValue];
@@ -1066,16 +1066,6 @@
     return path;
 }
 
-+ (NSString *)getDirectoryScanSelect
-{
-    NSString *path = [[[CCUtility getDirectoryGroup] URLByAppendingPathComponent:k_appScanSelect] path];
-    
-    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-        [[NSFileManager defaultManager] createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-    
-    return path;
-}
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== E2E Encrypted =====
 #pragma --------------------------------------------------------------------------------------------
@@ -1168,6 +1158,30 @@
     [self insertTypeFileIconName:fileNameView metadata:metadata];
  
     return metadata;
+}
+
++ (NSString *)getMimeType:(NSString *)fileNameView
+{
+    CFStringRef fileUTI = nil;
+    NSString *returnFileUTI = nil;
+    
+    if ([fileNameView isEqualToString:@"."]) {
+        
+        return returnFileUTI;
+        
+    } else {
+        CFStringRef fileExtension = (__bridge CFStringRef)[fileNameView pathExtension];
+        NSString *ext = (__bridge NSString *)fileExtension;
+        ext = ext.uppercaseString;
+        fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+        
+        if (fileUTI != nil) {
+            returnFileUTI = (__bridge NSString *)fileUTI;
+            CFRelease(fileUTI);
+        }
+    }
+    
+    return returnFileUTI;
 }
 
 + (NSString *)insertTypeFileIconName:(NSString *)fileNameView metadata:(tableMetadata *)metadata

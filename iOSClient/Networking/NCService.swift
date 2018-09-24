@@ -35,7 +35,7 @@ class NCService: NSObject, OCNetworkingDelegate {
     //MARK: -
     //MARK: Start Services API NC
     
-    @objc func startRequestServicesServer() {
+    @objc public func startRequestServicesServer() {
    
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -44,12 +44,13 @@ class NCService: NSObject, OCNetworkingDelegate {
         self.requestUserProfile()
         self.requestServerCapabilities()
         self.requestActivityServer()
+        self.requestServerStatus()
     }
 
     //MARK: -
-    //MARK: Request Service API NC
+    //MARK: Internal request Service API NC
     
-    @objc func requestServerCapabilities() {
+    private func requestServerCapabilities() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -63,7 +64,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func requestUserProfile() {
+    private func requestUserProfile() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -77,7 +78,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func requestActivityServer() {
+    private func requestActivityServer() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -91,7 +92,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
     }
     
-    @objc func middlewarePing() {
+    @objc public func middlewarePing() {
         
         if (appDelegate.activeAccount == nil || appDelegate.activeAccount.count == 0 || appDelegate.maintenanceMode == true) {
             return
@@ -105,6 +106,22 @@ class NCService: NSObject, OCNetworkingDelegate {
         metadataNet.serverUrl = NCBrandOptions.sharedInstance.middlewarePingUrl
         
         //appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
+    }
+    
+    private func requestServerStatus() {
+
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        ocNetworking?.serverStatus(appDelegate.activeUrl, success: { (serverProductName, versionMajor, versionMicro, versionMinor) in
+            
+            if serverProductName == "owncloud" {
+                self.appDelegate.messageNotification("_warning_", description: "_warning_owncloud_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+            } else if versionMajor <= k_nextcloud_unsupported {
+                self.appDelegate.messageNotification("_warning_", description: "_warning_unsupported_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: Int(k_CCErrorInternalError))
+            }
+            
+        }, failure: { (message, errorCode) in
+            //
+        })
     }
     
     //MARK: -
@@ -220,7 +237,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         }
     }
     
-    @objc func getUserProfileSuccessFailure(_ metadataNet: CCMetadataNet!, userProfile: OCUserProfile?, message: String?, errorCode: Int) {
+   func getUserProfileSuccessFailure(_ metadataNet: CCMetadataNet!, userProfile: OCUserProfile?, message: String?, errorCode: Int) {
         
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {
@@ -286,7 +303,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         }
     }
     
-    @objc func getExternalSitesServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfExternalSites: [Any]?, message: String?, errorCode: Int) {
+    func getExternalSitesServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfExternalSites: [Any]?, message: String?, errorCode: Int) {
         
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {
@@ -313,7 +330,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         }
     }
     
-    @objc func getActivityServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfActivity: [Any]?, message: String?, errorCode: Int) {
+    func getActivityServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfActivity: [Any]?, message: String?, errorCode: Int) {
         
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {
@@ -340,7 +357,7 @@ class NCService: NSObject, OCNetworkingDelegate {
         }
     }
     
-    @objc func getNotificationServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfNotifications: [Any]?, message: String?, errorCode: Int) {
+    func getNotificationServerSuccessFailure(_ metadataNet: CCMetadataNet!, listOfNotifications: [Any]?, message: String?, errorCode: Int) {
     
         // Check Active Account
         if (metadataNet.account != appDelegate.activeAccount) {

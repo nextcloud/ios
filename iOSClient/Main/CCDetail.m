@@ -205,6 +205,36 @@
         
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
         
+/*
+#if DEBUG
+        // Richdocument editor
+        NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
+        NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
+        
+        if (richdocumentsMimetypes.count > 0 & mimeType != nil && [mimeType componentsSeparatedByString:@"."].count > 2) {
+            NSArray *mimeTypeArray = [mimeType componentsSeparatedByString:@"."];
+            NSString* mimeType = [NSString stringWithFormat:@"%@.%@",mimeTypeArray[mimeTypeArray.count-2], mimeTypeArray[mimeTypeArray.count-1]];
+            for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
+                if ([richdocumentMimetype containsString:mimeType]) {
+                    NSLog(@"Collabora");
+                    
+                    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+                    
+                    [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
+                        
+                        [[NCRichdocument sharedInstance] viewRichDocumentAt:link navigationViewController:self.navigationController];
+                        
+                    } failure:^(NSString *message, NSInteger errorCode) {
+                        
+                        [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                        [self backNavigationController];
+                        return;
+                    }];
+                }
+            }
+        }
+#endif
+*/
         if ([fileNameExtension isEqualToString:@"PDF"]) {
             
             self.edgesForExtendedLayout = UIRectEdgeBottom;
@@ -913,6 +943,10 @@
 
 - (void)viewPDF:(NSString *)password
 {
+    // remove cache PDF
+    NSString *filePlistReader = [NSString stringWithFormat:@"%@/%@.plist", [CCUtility getDirectoryReaderMetadata], self.metadataDetail.fileNameView.stringByDeletingPathExtension];
+    [CCUtility removeFileAtPath:filePlistReader];
+    
     NSString *fileNamePath = [CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView];
     
     if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] == NO) {

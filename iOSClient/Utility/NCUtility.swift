@@ -105,4 +105,15 @@ class NCUtility: NSObject {
         
         return screenWidth
     }
+    
+    @objc func convertFileIDClientToFileIDServer(_ fileID: NSString) -> String {
+        
+        let split = fileID.components(separatedBy: "oc")
+        if split.count == 2 {
+            let fileIDServerInt = CLongLong(split[0])
+            return String(describing: fileIDServerInt ?? 0)
+        }
+        
+        return fileID as String
+    }
 }

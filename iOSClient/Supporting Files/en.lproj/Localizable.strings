@@ -62,6 +62,7 @@
 "_scan_fingerprint_"        = "Scan fingerprint to authenticate";
 "_no_active_account_"       = "No account found";
 "_info_"                    = "Info";
+"_warning_"                 = "Warning";
 "_email_"                   = "Email";
 "_save_exit_"               = "Do you want to exit without saving?";
 "_video_"                   = "Video";
@@ -86,6 +87,11 @@
 "_experimental_"            = "Experimental";
 "_select_dir_media_tab_"    = "Select as folder \"Media\"";
 "_error_creation_file_"     = "Ops! Could not create the file";
+"_save_path_"               = "Save path";
+"_save_settings_"           = "Save settings";
+"_mode_filename_"           = "Filename mode";
+"_warning_owncloud_"        = "You are connected to an ownCloud server. This is untested and unsupported, use at your own risk. To upgrade to Nextcloud, see https://nextcloud.com/migration";
+"_warning_unsupported_"     = "You are using an unsupported version of Nextcloud. For the safety of your data we strongly recommend updating to the latest stable Nextcloud";
 
 // App
 
@@ -218,7 +224,7 @@
 
 "_optimized_photos_"            = "Optimized photo resolution";
 "_upload_del_photos_"           = "Remove files after upload";
-"_optimized_photos_how_"        = "View, if possible, only a low-resolution photos.";
+"_optimized_photos_how_"        = "View, if possible, only low-resolution photos.";
 "_upload_del_photos_how_"       = "Files will be removed from device memory after they’ve been uploaded to your cloud. They will remain in the camera roll. Just download the files to see them.";
 "_show_hidden_files_"           = "Show hidden files";
 "_format_compatibility_"        = "Most Compatible";
@@ -564,7 +570,18 @@
 "_scans_document_"                  = "Scans document";
 "_scanned_images_"                  = "Scanned images";
 "_scan_document_pdf_page_"          = "Page";
-"_scan_label_PDF_zone_"             = "Drag below the images for make your PDF document";
+"_scan_label_document_zone_"        = "Drag images down for document creation";
+"_filter_original_"                 = "Original";
+"_filter_bn_"                       = "Black & White";
+"_filter_grayscale_"                = "Grayscale";
+"_quality_image_title_"             = "Image quality";
+"_quality_high_"                    = "Large file size of high quality";
+"_quality_medium_"                  = "Average file size of medium quality";
+"_quality_low_"                     = "Small file size of low quality";
+"_file_type_"                       = "File type";
+"_pdf_password_"                    = "PDF Password";
+"_file_creation_"                   = "File creation";
+
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";

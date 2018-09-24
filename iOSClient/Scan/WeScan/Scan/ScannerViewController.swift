@@ -35,7 +35,7 @@ final class ScannerViewController: UIViewController {
     }()
 
     lazy private var closeButton: CloseButton = {
-        let button = CloseButton(frame: CGRect(x: 0, y: 0, width: 18, height: 18))
+        let button = CloseButton(frame: CGRect(x: 0, y: 0, width: 20, height: 20))
         button.addTarget(self, action: #selector(cancelImageScannerController(_:)), for: .touchUpInside)
         return button
     }()
@@ -60,6 +60,9 @@ final class ScannerViewController: UIViewController {
         quadView.removeQuadrilateral()
         captureSessionManager?.start()
         UIApplication.shared.isIdleTimerDisabled = true
+        
+        self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedStringKey.foregroundColor: NCBrandColor.sharedInstance.brandText]
+        self.navigationController?.navigationBar.barTintColor = NCBrandColor.sharedInstance.brand
     }
     
     override func viewDidLayoutSubviews() {

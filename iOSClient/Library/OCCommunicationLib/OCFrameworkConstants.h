@@ -70,6 +70,9 @@
 //Url to access to End To End Encryption API
 #define k_url_client_side_encryption @"ocs/v2.php/apps/end_to_end_encryption/api/v1"
 
+//Url to access to Mobile Editor OCS API
+#define k_url_create_link_mobile_editor @"ocs/v2.php/apps/richdocuments/api/v1/document"
+
 //Version of the server that have share API
 #define k_version_support_shared [NSArray arrayWithObjects:  @"5", @"0", @"27", nil]
 

@@ -1478,6 +1478,14 @@
                     if ([endToEndEncryption valueForKey:@"api-version"] && ![[endToEndEncryption valueForKey:@"api-version"] isEqual:[NSNull null]])
                         capabilities.endToEndEncryptionVersion = [endToEndEncryption valueForKey:@"api-version"];
                 }
+                
+                //Richdocuments
+                
+                NSDictionary *richdocuments = [capabilitiesDict valueForKey:@"richdocuments"];
+                
+                if (richdocuments!= nil && [richdocuments count] > 0) {
+                    capabilities.RichdocumentsMimetypes = [richdocuments valueForKey:@"mimetypes"];
+                }
             }
         
             successRequest(response, capabilities, request.redirectedServer);
@@ -2705,7 +2713,65 @@
     }];
 }
 
-#pragma mark - Clear Cache
+#pragma mark - Manage Mobile Editor OCS API
+
+- (void)createLinkRichdocuments:(NSString *)serverPath fileID:(NSString *)fileID onCommunication:(OCCommunication *)sharedOCComunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer))successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest {
+    
+    serverPath = [serverPath stringByAppendingString:k_url_create_link_mobile_editor];
+    serverPath = [serverPath stringByAppendingString:@"?format=json"];
+    
+    OCWebDAVClient *request = [[OCWebDAVClient alloc] init];
+    request = [self getRequestWithCredentials:request];
+    
+    [request createLinkRichdocuments:serverPath fileID:fileID onCommunication:sharedOCComunication success:^(NSHTTPURLResponse *operation, id response) {
+        
+        NSData *responseData = (NSData*) response;
+        
+        //Parse
+        NSError *error;
+        NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingMutableContainers error:&error];
+        NSLog(@"[LOG] Link richdocuments : %@",jsongParsed);
+        
+        if (jsongParsed && jsongParsed.allKeys > 0) {
+            
+            NSDictionary *ocs = [jsongParsed valueForKey:@"ocs"];
+            NSDictionary *meta = [ocs valueForKey:@"meta"];
+            NSDictionary *data = [ocs valueForKey:@"data"];
+            
+            NSInteger statusCode = [[meta valueForKey:@"statuscode"] integerValue];
+            
+            if (statusCode == kOCUserProfileAPISuccessful) {
+                
+                if ([data valueForKey:@"url"] && ![[data valueForKey:@"url"] isKindOfClass:[NSNull class]]) {
+                    
+                    NSString *link = [data valueForKey:@"url"];
+                    successRequest(response, link, request.redirectedServer);
+                    
+                } else {
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                }
+                
+            } else {
+                
+                NSString *message = (NSString *)[meta objectForKey:@"message"];
+                if ([message isKindOfClass:[NSNull class]]) {
+                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                }
+                failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
+            }
+            
+        } else {
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+        }
+  
+    } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
+        
+        //Return error
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+#pragma mark - Manage Mobile Editor OCS API
 
 - (void)eraseURLCache
 {
