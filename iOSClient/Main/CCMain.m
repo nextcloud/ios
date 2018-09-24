@@ -1112,6 +1112,7 @@
     
     for (PHAsset *asset in assets) {
         
+        tableMetadata *metadata;
         NSString *fileName = [CCUtility createFileName:[asset valueForKey:@"filename"] fileDate:asset.creationDate fileType:asset.mediaType keyFileName:k_keyFileNameMask keyFileNameType:k_keyFileNameType keyFileNameOriginal:k_keyFileNameOriginal];
         
         NSDate *assetDate = asset.creationDate;
@@ -1150,11 +1151,20 @@
         metadataForUpload.size = [[NCUtility sharedInstance] getFileSizeWithAsset:asset];
         metadataForUpload.status = k_metadataStatusWaitUpload;
         
+        NSString *fileNameExtension = [fileName pathExtension];
+        NSString *fileNameWithoutExtension = [fileName stringByDeletingPathExtension];
+        
+        if ([[fileNameExtension lowercaseString] isEqualToString:@"heic"] && [CCUtility getFormatCompatibility]) {
+            NSString *fileNameCompatibility = [fileNameWithoutExtension stringByAppendingString:@".jpg"];
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@", directoryID, fileNameCompatibility]];
+        } else {
+            metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@", directoryID, fileName]];
+        }
+        
         // Check il file already exists
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND fileNameView == %@", directoryID, fileName]];
         if (metadata) {
             
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileName message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:fileNameWithoutExtension message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
             
             UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_cancel_", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
                 // NO OVERWITE
