@@ -51,8 +51,7 @@ class NCViewerMedia: NSObject {
             }
             
             let authValue = "Basic " + authData.base64EncodedString(options: [])
-            let header = [authValue:"Authorization", CCUtility.getUserAgent():"User-Agent"] as [String : String]
-            KTVHTTPCache.downloadSetAdditionalHeaders(header)
+            KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
             
             // Disable Button Action (the file is in download via Proxy Server)
             viewDetail.buttonAction.isEnabled = false
