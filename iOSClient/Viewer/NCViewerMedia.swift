@@ -137,12 +137,12 @@ class NCViewerMedia: NSObject {
         }
     
         KTVHTTPCache.tokenSetURLFilter { (url) -> URL? in
-            print("URL Filter reviced URL : \(url!)")
+            print("URL Filter reviced URL : " + String(describing: url))
             return url
         }
         
         KTVHTTPCache.downloadSetUnsupportContentTypeFilter { (url, contentType) -> Bool in
-            print("Unsupport Content-Type Filter reviced URL : \(url!) \(contentType!)")
+            print("Unsupport Content-Type Filter reviced URL : " + String(describing: url) + " " + String(describing: contentType))
             return false
         }
     }
