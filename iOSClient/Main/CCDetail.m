@@ -49,9 +49,6 @@
     
     NSMutableOrderedSet *dataSourceDirectoryID;
     NSString *fileNameExtension;
-    
-    NSURL *videoURLProxy;
-    NSURL *videoURL;
 }
 @end
 
@@ -94,12 +91,6 @@
 
     self.imageBackground.image = [UIImage imageNamed:@"backgroundDetail"];
     
-    // Proxy
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [self setupHTTPCache];
-    });
-    
     // Change bar bottom line shadow and remove title back button <"title"
     self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     self.navigationController.navigationBar.topItem.title = @"";
@@ -140,8 +131,7 @@
     if (self.isMediaObserver) {
         self.isMediaObserver = NO;
         @try{
-            [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
+            [[NCViewerMedia sharedInstance] removeObserver];
         }@catch(id anException) { }
     }
 }
@@ -179,8 +169,7 @@
     // remove Observer AVPlayer
     if (self.isMediaObserver) {
         self.isMediaObserver = NO;
-        [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
+        [[NCViewerMedia sharedInstance] removeObserver];
     }
     
     // IMAGE
@@ -384,110 +373,7 @@
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID];
-    if (!serverUrl)
-        return;
-    
-    if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]) {
-    
-        videoURL = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]];
-        videoURLProxy = videoURL;
-        
-    } else {
-    
-        videoURL = [NSURL URLWithString:[[NSString stringWithFormat:@"%@/%@", serverUrl, _metadataDetail.fileName] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
-        videoURLProxy = [KTVHTTPCache proxyURLWithOriginalURL:videoURL];
-
-        NSMutableDictionary *header = [NSMutableDictionary new];
-        NSData *authData = [[NSString stringWithFormat:@"%@:%@", appDelegate.activeUser, appDelegate.activePassword] dataUsingEncoding:NSUTF8StringEncoding];
-        NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
-        [header setValue:authValue forKey:@"Authorization"];
-        [header setValue:[CCUtility getUserAgent] forKey:@"User-Agent"];        
-        [KTVHTTPCache downloadSetAdditionalHeaders:header];
-        
-        // Disable Button Action (the file is in download via Proxy Server)
-        self.buttonAction.enabled = false;
-    }
-    
-    appDelegate.player = [AVPlayer playerWithURL:videoURLProxy];
-    appDelegate.playerController = [AVPlayerViewController new];
-
-    appDelegate.playerController.player = appDelegate.player;
-    appDelegate.playerController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
-    appDelegate.playerController.allowsPictureInPicturePlayback = false;
-    [self addChildViewController:appDelegate.playerController];
-    [self.view addSubview:appDelegate.playerController.view];
-    [appDelegate.playerController didMoveToParentViewController:self];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
-    [appDelegate.player addObserver:self forKeyPath:@"rate" options:0 context:nil];
-    self.isMediaObserver = YES;
-
-    [appDelegate.player play];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"rate"]) {
-        if ([appDelegate.player rate]) {
-            NSLog(@"start");
-        }
-        else {
-            NSLog(@"pause");
-        }
-        [self saveCacheToFileProvider];
-    }
-}
-
-- (void)itemDidFinishPlaying:(NSNotification *)notification
-{
-    AVPlayerItem *player = [notification object];
-    [player seekToTime:kCMTimeZero];    
-}
-
-- (void)saveCacheToFileProvider
-{
-    if (![CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]) {
-        NSURL *url = [KTVHTTPCache cacheCompleteFileURLIfExistedWithURL:videoURL];
-        if (url) {
-            
-            [CCUtility copyFileAtPath:[url path] toPath:[CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]];
-            [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:self.metadataDetail];
-            [KTVHTTPCache cacheDeleteCacheWithURL:videoURL];
-            
-            // reload Data Source
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:self.metadataDetail.directoryID] fileID:self.metadataDetail.fileID action:k_action_MOD];
-            
-            // Enabled Button Action (the file is in local)
-            self.buttonAction.enabled = true;
-        }
-    }
-}
-
-- (void)setupHTTPCache
-{
-    [KTVHTTPCache cacheSetMaxCacheLength:k_maxHTTPCache];
-    
-#if TARGET_IPHONE_SIMULATOR
-    [KTVHTTPCache logSetConsoleLogEnable:YES];
-#endif
-    
-    NSError * error;
-    [KTVHTTPCache proxyStart:&error];
-    if (error) {
-        NSLog(@"Proxy Start Failure, %@", error);
-    } else {
-        NSLog(@"Proxy Start Success");
-    }
-    
-    [KTVHTTPCache tokenSetURLFilter:^NSURL * (NSURL * URL) {
-        NSLog(@"URL Filter reviced URL : %@", URL);
-        return URL;
-    }];
-    
-    [KTVHTTPCache downloadSetUnsupportContentTypeFilter:^BOOL(NSURL * URL, NSString * contentType) {
-        NSLog(@"Unsupport Content-Type Filter reviced URL : %@, %@", URL, contentType);
-        return NO;
-    }];
+    [[NCViewerMedia sharedInstance] viewMedia:self.metadataDetail viewDetail:self width:self.view.bounds.size.width height:self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom];
 }
 
 #pragma --------------------------------------------------------------------------------------------

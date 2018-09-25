@@ -12,8 +12,9 @@ import KTVHTTPCache
 class NCViewerMedia: NSObject {
     
     @objc static let sharedInstance: NCViewerMedia = {
-        let instance = NCViewerMedia()
-        return instance
+        let viewMedia = NCViewerMedia()
+        viewMedia.setupHTTPCache()
+        return viewMedia
     }()
 
     var viewDetail: CCDetail!
@@ -83,7 +84,7 @@ class NCViewerMedia: NSObject {
         
         if keyPath != nil && keyPath == "rate" {
             
-            if appDelegate.player?.rate != nil {
+            if appDelegate.player.rate == 1 {
                 print("start")
             } else {
                 print("stop")
@@ -108,16 +109,12 @@ class NCViewerMedia: NSObject {
         }
     }
     
-    @objc func removeObserverAVPlayerItemDidPlayToEndTime() {
+    @objc func removeObserver() {
         
+        appDelegate.player.removeObserver(self, forKeyPath: "rate", context: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
     }
     
-    @objc func removeObserverRate() {
-
-        appDelegate.player.removeObserver(self, forKeyPath: "rate", context: nil)
-    }
-
     @objc func setupHTTPCache() {
         
         var error: NSError?
