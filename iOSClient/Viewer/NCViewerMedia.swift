@@ -67,7 +67,11 @@ class NCViewerMedia: NSObject {
         viewDetail.view.addSubview(appDelegate.playerController.view)
         appDelegate.playerController.didMove(toParent: viewDetail)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.itemDidFinishPlaying(notification:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
+            let player = notification.object as! AVPlayerItem
+            player.seek(to: CMTime.zero)
+        }
+        
         appDelegate.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
         
         viewDetail.isMediaObserver = true
@@ -77,7 +81,7 @@ class NCViewerMedia: NSObject {
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         
-        if keyPath == "rate" {
+        if keyPath != nil && keyPath == "rate" {
             
             if appDelegate.player?.rate != nil {
                 print("start")
@@ -85,40 +89,35 @@ class NCViewerMedia: NSObject {
                 print("stop")
             }
             
-            saveCacheToFileProvider()
-        }
-    }
-    
-    @objc func removeObserverAVPlayerItemDidPlayToEndTime () {
-        
-         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
-    }
-    
-    @objc func itemDidFinishPlaying(notification: NSNotification) {
-        
-        let player = notification.object as! AVPlayerItem
-        player.seek(to: CMTime.zero)
-    }
-    
-    func saveCacheToFileProvider() {
-        
-        if !CCUtility.fileProviderStorageExists(self.metadata.fileID, fileNameView:self.metadata.fileNameView) {
-            guard let url = KTVHTTPCache.cacheCompleteFileURLIfExisted(with: self.videoURL) else {
-                return
+            // Save cache
+            if !CCUtility.fileProviderStorageExists(self.metadata.fileID, fileNameView:self.metadata.fileNameView) {
+                guard let url = KTVHTTPCache.cacheCompleteFileURLIfExisted(with: self.videoURL) else {
+                    return
+                }
+                
+                CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(self.metadata.fileID, fileNameView: self.metadata.fileNameView))
+                NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
+                KTVHTTPCache.cacheDelete(with: self.videoURL)
+                
+                // reload Data Source
+                NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: NCManageDatabase.sharedInstance.getServerUrl(self.metadata.directoryID), fileID: self.metadata.fileID, action: k_action_MOD)
+                
+                // Enabled Button Action (the file is in local)
+                self.viewDetail.buttonAction.isEnabled = true
             }
-            
-            CCUtility.copyFile(atPath: url.path, toPath: CCUtility.getDirectoryProviderStorageFileID(self.metadata.fileID, fileNameView: self.metadata.fileNameView))
-            NCManageDatabase.sharedInstance.addLocalFile(metadata: self.metadata)
-            KTVHTTPCache.cacheDelete(with: self.videoURL)
-            
-            // reload Data Source
-            NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: NCManageDatabase.sharedInstance.getServerUrl(self.metadata.directoryID), fileID: self.metadata.fileID, action: k_action_MOD)
-            
-            // Enabled Button Action (the file is in local)
-            self.viewDetail.buttonAction.isEnabled = true
         }
     }
     
+    @objc func removeObserverAVPlayerItemDidPlayToEndTime() {
+        
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: nil)
+    }
+    
+    @objc func removeObserverRate() {
+
+        appDelegate.player.removeObserver(self, forKeyPath: "rate", context: nil)
+    }
+
     @objc func setupHTTPCache() {
         
         var error: NSError?
