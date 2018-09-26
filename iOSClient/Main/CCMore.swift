@@ -119,7 +119,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             item = OCExternalSites.init()
             item.name = "_scanned_images_"
             item.icon = "scan"
-            item.url = "Scanopen"
+            item.url = "openStoryboardScan"
             functionMenu.append(item)
         }
         
@@ -378,12 +378,9 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             
             self.navigationController?.performSegue(withIdentifier: item.url, sender: self)
         
-        } else if item.url.contains("open") && !item.url.contains("//") {
+        } else if item.url.contains("openStoryboard") && !item.url.contains("//") {
             
-            let nameStoryboard = String(item.url[..<item.url.index(item.url.startIndex, offsetBy: 4)])
-            
-            //let nameStoryboard = item.url.substring(from: item.url.index(item.url.startIndex, offsetBy: 4))
-            
+            let nameStoryboard =  item.url.replacingOccurrences(of: "openStoryboard", with: "")
             let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
             let controller = storyboard.instantiateInitialViewController()! //instantiateViewController(withIdentifier: nameStoryboard)
             self.present(controller, animated: true, completion: nil)
