@@ -843,10 +843,10 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             if compressionQuality >= 0.0 && compressionQuality <= 0.3  {
                 formRow.title = NSLocalizedString("_quality_low_", comment: "")
                 dpiQuality = typeDpiQuality.low
-            } else if compressionQuality >= 0.4 && compressionQuality <= 0.6 {
+            } else if compressionQuality > 0.3 && compressionQuality <= 0.6 {
                 formRow.title = NSLocalizedString("_quality_medium_", comment: "")
                 dpiQuality = typeDpiQuality.medium
-            } else if compressionQuality >= 0.7 && compressionQuality <= 1.0 {
+            } else if compressionQuality > 0.6 && compressionQuality <= 1.0 {
                 formRow.title = NSLocalizedString("_quality_high_", comment: "")
                 dpiQuality = typeDpiQuality.hight
             }
@@ -1012,23 +1012,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             //Generate PDF
             for var image in self.arrayImages {
                 
-                let imageWidthInPixels = image.size.width * image.scale
-                let imageHeightInPixels = image.size.height * image.scale
-                
-                switch dpiQuality {
-                case typeDpiQuality.low:                        // 72 DPI
-                    if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
-                        image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
-                    }
-                case typeDpiQuality.medium:                     // 150 DPI
-                    if imageWidthInPixels > 1240 || imageHeightInPixels > 1754  {
-                        image = CCGraphics.scale(image, to: CGSize(width: 1240, height: 1754), isAspectRation: true)
-                    }
-                case typeDpiQuality.hight:                      // 200 DPI
-                    if imageWidthInPixels > 1654 || imageHeightInPixels > 2339  {
-                        image = CCGraphics.scale(image, to: CGSize(width: 1654, height: 2339), isAspectRation: true)
-                    }
-                }
+                image = changeImageFromQuality(image, dpiQuality: dpiQuality)
                 
                 guard let data = image.jpegData(compressionQuality: 0.5) else {
                     self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
@@ -1048,7 +1032,9 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         if fileType == "JPG" {
             
-            guard let data = self.arrayImages[0].jpegData(compressionQuality: CGFloat(0.5)) else {
+            let image =  changeImageFromQuality(self.arrayImages[0], dpiQuality: dpiQuality)
+            
+            guard let data = image.jpegData(compressionQuality: CGFloat(0.5)) else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
                 return
             }
@@ -1106,6 +1092,29 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         navigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
         self.present(navigationController, animated: true, completion: nil)
+    }
+    
+    func changeImageFromQuality(_ image: UIImage, dpiQuality: typeDpiQuality) -> UIImage {
+        
+        let imageWidthInPixels = image.size.width * image.scale
+        let imageHeightInPixels = image.size.height * image.scale
+        
+        switch dpiQuality {
+        case typeDpiQuality.low:                        // 72 DPI
+            if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
+                return CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
+            }
+        case typeDpiQuality.medium:                     // 150 DPI
+            if imageWidthInPixels > 1240 || imageHeightInPixels > 1754  {
+                return CCGraphics.scale(image, to: CGSize(width: 1240, height: 1754), isAspectRation: true)
+            }
+        case typeDpiQuality.hight:                      // 200 DPI
+            if imageWidthInPixels > 1654 || imageHeightInPixels > 2339  {
+                return CCGraphics.scale(image, to: CGSize(width: 1654, height: 2339), isAspectRation: true)
+            }
+        }
+        
+        return image
     }
 }
 
