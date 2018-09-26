@@ -1935,6 +1935,7 @@
 				F78F6FAF1CC8CCB700F4EA25 /* CCSection.m */,
 				F792A77B1BC7C45400C9388E /* CCSplit.h */,
 				F792A77C1BC7C45400C9388E /* CCSplit.m */,
+				F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */,
 				F7D6650620FF341600BFBA9E /* NCMainCommon.swift */,
 			);
 			path = Main;
@@ -3230,14 +3231,6 @@
 			path = Media;
 			sourceTree = "<group>";
 		};
-		F7ECBA6B1E239DCD003E6328 /* Create */ = {
-			isa = PBXGroup;
-			children = (
-				F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */,
-			);
-			path = Create;
-			sourceTree = "<group>";
-		};
 		F7F54CAC1E5B143100E19C62 /* Library */ = {
 			isa = PBXGroup;
 			children = (
@@ -3351,7 +3344,6 @@
 				F7B0C1701EE8397E0033AC24 /* AutoUpload */,
 				F720E02A1E48C74C001A4B9E /* Actions */,
 				F7A321621E9E37960069AD1B /* Activity */,
-				F7ECBA6B1E239DCD003E6328 /* Create */,
 				F7BAAD951ED5A63D00B7EAD4 /* Database */,
 				F7A3214D1E9E2A070069AD1B /* Favorites */,
 				F7F54CAC1E5B143100E19C62 /* Library */,
