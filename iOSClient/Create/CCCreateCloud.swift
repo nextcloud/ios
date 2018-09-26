@@ -688,12 +688,18 @@ class CreateFormUploadFileText: XLFormViewController, CCMoveDelegate {
 
 class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     
+    enum typeDpiQuality {
+        case low
+        case medium
+        case hight
+    }
+    var dpiQuality: typeDpiQuality = typeDpiQuality.medium
+    
     var serverUrl = ""
     var titleServerUrl = ""
     var arrayImages = [UIImage]()
     var fileName = CCUtility.createFileNameDate("scan", extension: "pdf")
     var password : PDFPassword = ""
-    var compressionQuality: Double = 0.5
     var fileType = "PDF"
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -832,17 +838,17 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             
             //let row : XLFormRowDescriptor  = self.form.formRow(withTag: "descriptionQuality")!
             let newQuality = newValue as? NSNumber
-            compressionQuality = (newQuality?.doubleValue)!
+            let compressionQuality = (newQuality?.doubleValue)!
             
             if compressionQuality >= 0.0 && compressionQuality <= 0.3  {
                 formRow.title = NSLocalizedString("_quality_low_", comment: "")
-                compressionQuality = 0.1
+                dpiQuality = typeDpiQuality.low
             } else if compressionQuality >= 0.4 && compressionQuality <= 0.6 {
                 formRow.title = NSLocalizedString("_quality_medium_", comment: "")
-                compressionQuality = 0.5
+                dpiQuality = typeDpiQuality.medium
             } else if compressionQuality >= 0.7 && compressionQuality <= 1.0 {
                 formRow.title = NSLocalizedString("_quality_high_", comment: "")
-                compressionQuality = 0.8
+                dpiQuality = typeDpiQuality.hight
             }
             
             self.updateFormRow(formRow)
@@ -1004,8 +1010,27 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             var pdfPages = [PDFPage]()
 
             //Generate PDF
-            for image in self.arrayImages {
-                guard let data = image.jpegData(compressionQuality: CGFloat(compressionQuality)) else {
+            for var image in self.arrayImages {
+                
+                let imageWidthInPixels = image.size.width * image.scale
+                let imageHeightInPixels = image.size.height * image.scale
+                
+                switch dpiQuality {
+                case typeDpiQuality.low:                        // 72 DPI
+                    if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
+                        image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
+                    }
+                case typeDpiQuality.medium:                     // 150 DPI
+                    if imageWidthInPixels > 1240 || imageHeightInPixels > 1754  {
+                        image = CCGraphics.scale(image, to: CGSize(width: 1240, height: 1754), isAspectRation: true)
+                    }
+                case typeDpiQuality.hight:                      // 200 DPI
+                    if imageWidthInPixels > 1654 || imageHeightInPixels > 2339  {
+                        image = CCGraphics.scale(image, to: CGSize(width: 1654, height: 2339), isAspectRation: true)
+                    }
+                }
+                
+                guard let data = image.jpegData(compressionQuality: 0.5) else {
                     self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
                     return
                 }
@@ -1023,7 +1048,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         if fileType == "JPG" {
             
-            guard let data = self.arrayImages[0].jpegData(compressionQuality: CGFloat(compressionQuality)) else {
+            guard let data = self.arrayImages[0].jpegData(compressionQuality: CGFloat(0.5)) else {
                 self.appDelegate.messageNotification("_error_", description: "_error_creation_file_", visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.info, errorCode: 0)
                 return
             }
@@ -1112,18 +1137,8 @@ class NCCreateScanDocument : NSObject, ImageScannerControllerDelegate {
         let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
         let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
         
-        // A4 74 DPI : 595 x 842 px 
-        
-        var image = results.scannedImage
-        let imageWidthInPixels = image.size.width * results.scannedImage.scale
-        let imageHeightInPixels = image.size.height * results.scannedImage.scale
-        
-        if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
-            image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
-        }
-        
         do {
-            try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+            try results.scannedImage.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
         } catch { }
         
         scanner.dismiss(animated: true, completion: {
