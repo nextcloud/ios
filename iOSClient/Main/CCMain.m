@@ -37,7 +37,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <CCActionsRenameDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
     AppDelegate *appDelegate;
         
@@ -1604,6 +1604,39 @@
 
 - (void)renameSuccess:(CCMetadataNet *)metadataNet
 {
+    // Rename metadata
+    (void) [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:metadataNet.fileNameTo fileID:metadataNet.fileID];
+    
+    if (metadataNet.directory) {
+        
+        NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
+        NSString *serverUrlTo = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileNameTo];
+
+        tableDirectory *directoryTable = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+        if (directoryTable == nil) {
+            [self renameMoveFileOrFolderFailure:metadataNet message:@"Internal error, ServerUrl not found" errorCode:0];
+            return;
+        }
+        
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:nil fileID:nil encrypted:directoryTable.e2eEncrypted];
+
+    } else {
+        
+        [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadataNet.fileID date:nil exifDate:nil exifLatitude:nil exifLongitude:nil fileName:metadataNet.fileNameTo etag:nil];
+        
+        // Move file system
+
+        NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadataNet.fileID], metadataNet.fileName];
+        NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadataNet.fileID], metadataNet.fileNameTo];
+        
+        [[NSFileManager defaultManager] moveItemAtPath:atPath toPath:toPath error:nil];
+        
+        NSString *atPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadataNet.fileID fileNameView:metadataNet.fileName];
+        NSString *toPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadataNet.fileID fileNameView:metadataNet.fileNameTo];
+        
+        [[NSFileManager defaultManager] moveItemAtPath:atPathIcon toPath:toPathIcon error:nil];
+    }
+    
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:metadataNet.fileID action:k_action_MOD];
 }
 
@@ -1657,12 +1690,57 @@
     } else  {
         
         // Plain
-        [[CCActions sharedInstance] renameFileOrFolder:metadata fileName:fileName delegate:self];
+        
+        NSString *fileNameNew = [CCUtility removeForbiddenCharactersServer:fileName];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        
+        if ([fileName length] == 0 || [fileName isEqualToString:metadata.fileNameView]) {
+            return;
+        }
+        
+        // Verify if exists the fileName TO
+        OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+        
+        [ocNetworking readFile:fileNameNew serverUrl:serverUrl account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
+            
+            UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            }];
+            [alert addAction:ok];
+            [self presentViewController:alert animated:YES completion:nil];
+            
+        } failure:^(NSString *message, NSInteger errorCode) {
+            
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+            
+            metadataNet.action = actionMoveFileOrFolder;
+            metadataNet.directory = metadata.directory;
+            metadataNet.fileID = metadata.fileID;
+            metadataNet.fileName = metadata.fileName;
+            metadataNet.fileNameTo = fileNameNew;
+            metadataNet.fileNameView = metadata.fileNameView;
+            metadataNet.selector = selectorRename;
+            metadataNet.serverUrl = serverUrl;
+            metadataNet.serverUrlTo = serverUrl;
+            
+            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        }];
     }
 }
 
 - (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if ([message length] > 0) {
+        
+        if ([metadataNet.selector isEqualToString:selectorRename]) {
+            [appDelegate messageNotification:@"_rename_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+        
+        if ([metadataNet.selector isEqualToString:selectorMove]) {
+            [appDelegate messageNotification:@"_move_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+    }
+    
     if ([metadataNet.selector isEqualToString:selectorMove]) {
         
         [_hud hideHud];
