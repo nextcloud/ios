@@ -6,12 +6,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### [2.22.4] - 2018-xx-xx
-- See https://github.com/nextcloud/ios/milestone/39
+### [2.22.5] - 2018-xx-xx
+- See https://github.com/nextcloud/ios/milestone/40
 
-## [2.22.3] - 2018-09-07
+## [2.22.4] - 2018-09-26
+- See https://github.com/nextcloud/ios/milestone/39
+- Fix for issue with Apple App Store. 
+- Scanning documents: Added placeholders for filename of export file
+
+## [2.22.3] - 2018-09-24
 - See https://github.com/nextcloud/ios/milestone/38
-- Scan documents and create multipage pdfs or jpg
+- Added scanning documents with camera (required iOS 11 or more)
 
 ## [2.22.2] - 2018-08-28
 - See https://github.com/nextcloud/ios/milestone/37
