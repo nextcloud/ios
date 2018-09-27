@@ -93,7 +93,7 @@ public final class ImageScannerController: UINavigationController {
     }
     
     internal func flashToBlack() {
-        view.bringSubview(toFront: blackFlashView)
+        view.bringSubviewToFront(blackFlashView)
         blackFlashView.isHidden = false
         let flashDuration = DispatchTime.now() + 0.05
         DispatchQueue.main.asyncAfter(deadline: flashDuration) {

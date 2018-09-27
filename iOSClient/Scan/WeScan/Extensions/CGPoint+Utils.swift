@@ -26,7 +26,7 @@ extension CGPoint {
     ///   - point: The second point to compare this instance with.
     /// - Returns: True if the given `CGPoint` is within the given distance of this instance of `CGPoint`.
     func isWithin(delta: CGFloat, ofPoint point: CGPoint) -> Bool {
-        return (fabs(x - point.x) <= delta) && (fabs(y - point.y) <= delta)
+        return (abs(x - point.x) <= delta) && (abs(y - point.y) <= delta)
     }
     
     /// Returns the same `CGPoint` in the cartesian coordinate system.

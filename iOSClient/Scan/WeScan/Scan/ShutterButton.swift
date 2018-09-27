@@ -37,7 +37,7 @@ final class ShutterButton: UIControl {
         layer.addSublayer(innerCircleLayer)
         backgroundColor = .clear
         isAccessibilityElement = true
-        accessibilityTraits = UIAccessibilityTraitButton
+        accessibilityTraits = UIAccessibilityTraits.button
         impactFeedbackGenerator.prepare()
     }
     
@@ -71,7 +71,7 @@ final class ShutterButton: UIControl {
         }
         animation.values = values
         animation.isRemovedOnCompletion = false
-        animation.fillMode = kCAFillModeForwards
+        animation.fillMode = CAMediaTimingFillMode.forwards
         animation.duration = isHighlighted ? 0.35 : 0.10
         
         innerCircleLayer.add(animation, forKey: "transform")

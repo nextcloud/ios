@@ -444,11 +444,11 @@
         <scene sceneID="zJM-E9-jgK">
             <objects>
                 <viewController storyboardIdentifier="CCDetailVC" extendedLayoutIncludesOpaqueBars="YES" id="zg6-hy-EbU" customClass="CCDetail" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="cUA-lB-tGG">
+                    <view key="view" tag="900" contentMode="scaleToFill" id="cUA-lB-tGG">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="backgroundDetail" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
+                            <imageView userInteractionEnabled="NO" tag="999" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" preservesSuperviewLayoutMargins="YES" image="backgroundDetail" translatesAutoresizingMaskIntoConstraints="NO" id="zlU-MP-ZVs">
                                 <rect key="frame" x="76" y="327.66666666666669" width="223" height="157"/>
                             </imageView>
                         </subviews>

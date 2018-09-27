@@ -36,7 +36,7 @@ class CCloadItemData: NSObject {
             
             for item : NSExtensionItem in inputItems {
                 
-                if let attachments = item.attachments as? [NSItemProvider] {
+                if let attachments = item.attachments {
                     
                     if attachments.isEmpty {
                         
@@ -65,7 +65,7 @@ class CCloadItemData: NSObject {
                                         
                                         print("item as UIImage")
                                         
-                                        if let pngImageData = UIImagePNGRepresentation(image) {
+                                        if let pngImageData = image.pngData() {
                                         
                                             let fileName = "\(dateFormatter.string(from: Date()))\(conuter).png"
                                             let filenamePath = directory + "/" + fileName
@@ -167,7 +167,6 @@ class CCloadItemData: NSObject {
                                     
                                 } else {
                                     
-                                    print("ERROR: \(error)")
                                     hud.performSelector(onMainThread: #selector(CCHud.hideHud), with: nil, waitUntilDone: false)
                                 }
                             })

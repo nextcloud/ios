@@ -1,3 +1,39 @@
+3.9.0 Release notes (2018-09-10)
+=============================================================
+
+### Enhancements
+
+* Expose RLMSyncUser.refreshToken publicly so that it can be used for custom
+  HTTP requests to Realm Object Server.
+* Add RLMSyncSession.connectionState, which reports whether the session is
+  currently connected to the Realm Object Server or if it is offline.
+* Add `-suspend` and `-resume` methods to `RLMSyncSession` to enable manually
+  pausing data synchronization.
+* Add support for limiting the number of objects matched by a query-based sync
+  subscription. This requires a server running ROS 3.10.1 or newer.
+
+### Bugfixes
+
+* Fix crash when getting the description of a `MigrationObject` which has
+  `List` properties.
+* Fix crash when calling `dynamicList()` on a `MigrationObject`.
+
+3.8.0 Release notes (2018-09-05)
+=============================================================
+
+### Enhancements
+
+* Remove some old and no longer applicable migration logic which created an
+  unencrypted file in the sync metadata directory containing a list of ROS URLs
+  connected to.
+* Add support for pinning SSL certificates used for https and realms
+  connections by setting `RLMSyncManager.sharedManager.pinnedCertificatePaths`
+  in obj-c and `SyncManager.shared.pinnedCertificatePaths` in Swift.
+
+### Bugfixes
+
+* Fix warnings when building Realm as a static framework with CocoaPods.
+
 3.7.6 Release notes (2018-08-08)
 =============================================================
 

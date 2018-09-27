@@ -60,7 +60,7 @@ final class QuadrilateralView: UIView {
                 return
             }
             quadLayer.fillColor = isHighlighted ? UIColor.clear.cgColor : UIColor(white: 0.0, alpha: 0.6).cgColor
-            isHighlighted ? bringSubview(toFront: quadView) : sendSubview(toBack: quadView)
+            isHighlighted ? bringSubviewToFront(quadView) : sendSubviewToBack(quadView)
         }
     }
     

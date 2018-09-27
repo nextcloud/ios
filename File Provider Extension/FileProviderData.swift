@@ -62,7 +62,7 @@ class FileProviderData: NSObject {
     
     func setupActiveAccount() -> Bool {
         
-        if CCUtility.getDisableFilesApp() {
+        if CCUtility.getDisableFilesApp() || NCBrandOptions.sharedInstance.disable_openin_file {
             return false
         }
         

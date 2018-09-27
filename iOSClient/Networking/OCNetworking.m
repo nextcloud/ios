@@ -181,60 +181,60 @@
     
     NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
         
-        if (error) {
-            
-            NSString *message;
-            NSInteger errorCode;
-            
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
-            errorCode = httpResponse.statusCode;
-            
-            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
-                errorCode = error.code;
-            
-            // Error
-            if (errorCode == 503)
-                message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
-            else
-                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
-                failure(message, errorCode);
-            });
-            
-        } else {
-            
-            NSString *serverProductName = @"";
-            NSString *serverVersion = @"0.0.0";
-            NSString *serverVersionString = @"0.0.0";
-            
-            NSInteger versionMajor = 0;
-            NSInteger versionMicro = 0;
-            NSInteger versionMinor = 0;
-            
-            NSError *error;
-            NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+        dispatch_sync(dispatch_get_main_queue(), ^{
             
             if (error) {
-                failure(error.description, error.code);
-                return;
-            }
-            
-            serverProductName = [[jsongParsed valueForKey:@"productname"] lowercaseString];
-            serverVersion = [jsongParsed valueForKey:@"version"];
-            serverVersionString = [jsongParsed valueForKey:@"versionstring"];
-            
-            NSArray *arrayVersion = [serverVersionString componentsSeparatedByString:@"."];
-            if (arrayVersion.count >= 3) {
-                versionMajor = [arrayVersion[0] integerValue];
-                versionMicro = [arrayVersion[1] integerValue];
-                versionMinor = [arrayVersion[2] integerValue];
-            }
-            
-            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                NSString *message;
+                NSInteger errorCode;
+                
+                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse*)response;
+                errorCode = httpResponse.statusCode;
+                
+                if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                    errorCode = error.code;
+                
+                // Error
+                if (errorCode == 503)
+                    message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+                else
+                    message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+                
+                failure(message, errorCode);
+                
+            } else {
+                
+                NSString *serverProductName = @"";
+                NSString *serverVersion = @"0.0.0";
+                NSString *serverVersionString = @"0.0.0";
+                
+                NSInteger versionMajor = 0;
+                NSInteger versionMicro = 0;
+                NSInteger versionMinor = 0;
+                
+                NSError *error;
+                NSDictionary *jsongParsed = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+                
+                if (error) {
+                    failure(error.description, error.code);
+                    return;
+                }
+                
+                serverProductName = [[jsongParsed valueForKey:@"productname"] lowercaseString];
+                serverVersion = [jsongParsed valueForKey:@"version"];
+                serverVersionString = [jsongParsed valueForKey:@"versionstring"];
+                
+                NSArray *arrayVersion = [serverVersionString componentsSeparatedByString:@"."];
+                if (arrayVersion.count >= 3) {
+                    versionMajor = [arrayVersion[0] integerValue];
+                    versionMicro = [arrayVersion[1] integerValue];
+                    versionMinor = [arrayVersion[2] integerValue];
+                }
+                
                 success(serverProductName, versionMajor, versionMicro, versionMinor);
-            });
-        }
+            }
+        });
+        
     }];
     
     [task resume];
@@ -2207,6 +2207,40 @@
     [communication createLinkRichdocuments:[_activeUrl stringByAppendingString:@"/"] fileID:fileIDServer onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *link, NSString *redirectedServer) {
         
         success(link);
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        // Activity
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        
+        failure(message, errorCode);
+    }];
+}
+
+- (void)createAssetRichdocumentsWithFileName:(NSString *)fileName serverUrl:(NSString *)serverUrl success:(void(^)(NSString *link))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    NSString *fileNamePath = [CCUtility returnFileNamePathFromFileName:fileName serverUrl:serverUrl activeUrl:_activeUrl];
+    
+    [communication createAssetRichdocuments:[_activeUrl stringByAppendingString:@"/"] path:fileNamePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *url, NSString *redirectedServer) {
+        
+        success(url);
         
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
         

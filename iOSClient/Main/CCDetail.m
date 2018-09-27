@@ -41,7 +41,6 @@
     UIDocumentInteractionController *docController;
     
     UIBarButtonItem *buttonModifyTxt;
-    UIBarButtonItem *buttonAction;
     UIBarButtonItem *buttonShare;
     UIBarButtonItem *buttonDelete;
     
@@ -50,10 +49,6 @@
     
     NSMutableOrderedSet *dataSourceDirectoryID;
     NSString *fileNameExtension;
-    
-    NSURL *videoURLProxy;
-    NSURL *videoURL;
-    BOOL isMediaObserver;
 }
 @end
 
@@ -96,16 +91,13 @@
 
     self.imageBackground.image = [UIImage imageNamed:@"backgroundDetail"];
     
-    // Proxy
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [self setupHTTPCache];
-    });
-    
     // Change bar bottom line shadow and remove title back button <"title"
     self.navigationController.navigationBar.shadowImage = [CCGraphics generateSinglePixelImageWithColor:[NCBrandColor sharedInstance].brand];
     self.navigationController.navigationBar.topItem.title = @"";
     
+    // Color Navigation Controller
+    [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+
     // TabBar
     self.tabBarController.tabBar.hidden = YES;
     self.tabBarController.tabBar.translucent = YES;
@@ -136,11 +128,10 @@
     }
     
     // remove Observer AVPlayer
-    if (isMediaObserver) {
-        isMediaObserver = NO;
+    if (self.isMediaObserver) {
+        self.isMediaObserver = NO;
         @try{
-            [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
-            [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
+            [[NCViewerMedia sharedInstance] removeObserver];
         }@catch(id anException) { }
     }
 }
@@ -155,11 +146,6 @@
     }
 }
 
-- (void)backNavigationController
-{
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 - (void)changeToDisplayMode
 {
     if (_readerPDFViewController)
@@ -172,16 +158,18 @@
 
 - (void)viewFile
 {
+    // Title
+    self.navigationController.navigationBar.topItem.title =  _metadataDetail.fileNameView;
+
     // verifico se esiste l'icona e se la posso creare
     if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]] == NO) {
         [CCGraphics createNewImageFrom:self.metadataDetail.fileNameView fileID:self.metadataDetail.fileID extension:[self.metadataDetail.fileNameView pathExtension] filterGrayScale:NO typeFile:self.metadataDetail.typeFile writeImage:YES];
     }
     
     // remove Observer AVPlayer
-    if (isMediaObserver) {
-        isMediaObserver = NO;
-        [appDelegate.player removeObserver:self forKeyPath:@"rate" context:nil];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
+    if (self.isMediaObserver) {
+        self.isMediaObserver = NO;
+        [[NCViewerMedia sharedInstance] removeObserver];
     }
     
     // IMAGE
@@ -197,61 +185,61 @@
         self.edgesForExtendedLayout = UIRectEdgeAll;
         [self createToolbar];
         [self viewMedia];
-        [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
     }
     
     // DOCUMENT
     if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_document]) {
         
+        BOOL openWithRichDocument = false;
+        
         fileNameExtension = [[self.metadataDetail.fileNameView pathExtension] uppercaseString];
         
-/*
-#if DEBUG
-        // Richdocument editor
-        NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
-        NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
-        
-        if (richdocumentsMimetypes.count > 0 & mimeType != nil && [mimeType componentsSeparatedByString:@"."].count > 2) {
-            NSArray *mimeTypeArray = [mimeType componentsSeparatedByString:@"."];
-            NSString* mimeType = [NSString stringWithFormat:@"%@.%@",mimeTypeArray[mimeTypeArray.count-2], mimeTypeArray[mimeTypeArray.count-1]];
-            for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
-                if ([richdocumentMimetype containsString:mimeType]) {
-                    NSLog(@"Collabora");
-                    
-                    OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
-                    
-                    [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
-                        
-                        [[NCRichdocument sharedInstance] viewRichDocumentAt:link navigationViewController:self.navigationController];
-                        
-                    } failure:^(NSString *message, NSInteger errorCode) {
-                        
-                        [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
-                        [self backNavigationController];
-                        return;
-                    }];
-                }
-            }
-        }
-#endif
-*/
         if ([fileNameExtension isEqualToString:@"PDF"]) {
             
             self.edgesForExtendedLayout = UIRectEdgeBottom;
             [self createToolbar];
             [self viewPDF:@""];
-            [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
             
-        } else {
-            
-            self.edgesForExtendedLayout = UIRectEdgeBottom;
-            [self createToolbar];
-            [self viewDocument];
-            [appDelegate aspectNavigationControllerBar:self.navigationController.navigationBar online:[appDelegate.reachability isReachable] hidden:NO];
+            return;
         }
+        
+        // Very if mimeType is compatible with Rich Document viewer
+        NSString *mimeType = [CCUtility getMimeType:self.metadataDetail.fileNameView];
+        NSArray *richdocumentsMimetypes = [[NCManageDatabase sharedInstance] getRichdocumentsMimetypes];
+        
+        if (richdocumentsMimetypes.count > 0 & mimeType != nil && [mimeType componentsSeparatedByString:@"."].count > 2) {
+            
+            NSArray *mimeTypeArray = [mimeType componentsSeparatedByString:@"."];
+            NSString *mimeType = [NSString stringWithFormat:@"%@.%@",mimeTypeArray[mimeTypeArray.count-2], mimeTypeArray[mimeTypeArray.count-1]];
+            
+            for (NSString *richdocumentMimetype in richdocumentsMimetypes) {
+                if ([richdocumentMimetype containsString:mimeType]) {
+                    openWithRichDocument = true;
+                }
+            }
+        }
+
+        if (openWithRichDocument) {
+            
+            OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+            
+            [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
+                
+                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
+                
+            } failure:^(NSString *message, NSInteger errorCode) {
+                
+                [appDelegate messageNotification:@"_error_" description:message visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+                [self.navigationController popViewControllerAnimated:YES];
+            }];
+            
+            return;
+        }
+        
+        self.edgesForExtendedLayout = UIRectEdgeBottom;
+        [self createToolbar];
+        [self viewDocument];
     }
-    
-    self.title = _metadataDetail.fileNameView;
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -276,20 +264,22 @@
     fixedSpaceMini.width = 25;
     
     buttonModifyTxt = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyTxtButtonPressed:)];
-    buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
+    if (![NCBrandOptions sharedInstance].disable_openin_file) {
+        self.buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
+    }
     buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
     buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
     
     if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
         if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
-            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
         else
-            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
     } else {
         if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
-            [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
         else
-            [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, buttonAction,  nil]];
+            [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
     }
     
     [self.toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
@@ -314,7 +304,7 @@
     
     if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] == NO) {
         
-        [self backNavigationController];
+        [self.navigationController popViewControllerAnimated:YES];
         return;
     }
     
@@ -383,110 +373,7 @@
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID];
-    if (!serverUrl)
-        return;
-    
-    if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]) {
-    
-        videoURL = [NSURL fileURLWithPath:[CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]];
-        videoURLProxy = videoURL;
-        
-    } else {
-    
-        videoURL = [NSURL URLWithString:[[NSString stringWithFormat:@"%@/%@", serverUrl, _metadataDetail.fileName] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]];
-        videoURLProxy = [KTVHTTPCache proxyURLWithOriginalURL:videoURL];
-
-        NSMutableDictionary *header = [NSMutableDictionary new];
-        NSData *authData = [[NSString stringWithFormat:@"%@:%@", appDelegate.activeUser, appDelegate.activePassword] dataUsingEncoding:NSUTF8StringEncoding];
-        NSString *authValue = [NSString stringWithFormat: @"Basic %@",[authData base64EncodedStringWithOptions:0]];
-        [header setValue:authValue forKey:@"Authorization"];
-        [header setValue:[CCUtility getUserAgent] forKey:@"User-Agent"];        
-        [KTVHTTPCache downloadSetAdditionalHeaders:header];
-        
-        // Disable Button Action (the file is in download via Proxy Server)
-        buttonAction.enabled = false;
-    }
-    
-    appDelegate.player = [AVPlayer playerWithURL:videoURLProxy];
-    appDelegate.playerController = [AVPlayerViewController new];
-
-    appDelegate.playerController.player = appDelegate.player;
-    appDelegate.playerController.view.frame = CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom);
-    appDelegate.playerController.allowsPictureInPicturePlayback = false;
-    [self addChildViewController:appDelegate.playerController];
-    [self.view addSubview:appDelegate.playerController.view];
-    [appDelegate.playerController didMoveToParentViewController:self];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(itemDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:[appDelegate.player currentItem]];
-    [appDelegate.player addObserver:self forKeyPath:@"rate" options:0 context:nil];
-    isMediaObserver = YES;
-
-    [appDelegate.player play];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"rate"]) {
-        if ([appDelegate.player rate]) {
-            NSLog(@"start");
-        }
-        else {
-            NSLog(@"pause");
-        }
-        [self saveCacheToFileProvider];
-    }
-}
-
-- (void)itemDidFinishPlaying:(NSNotification *)notification
-{
-    AVPlayerItem *player = [notification object];
-    [player seekToTime:kCMTimeZero];    
-}
-
-- (void)saveCacheToFileProvider
-{
-    if (![CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]) {
-        NSURL *url = [KTVHTTPCache cacheCompleteFileURLIfExistedWithURL:videoURL];
-        if (url) {
-            
-            [CCUtility copyFileAtPath:[url path] toPath:[CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView]];
-            [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:self.metadataDetail];
-            [KTVHTTPCache cacheDeleteCacheWithURL:videoURL];
-            
-            // reload Data Source
-            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:[[NCManageDatabase sharedInstance] getServerUrl:self.metadataDetail.directoryID] fileID:self.metadataDetail.fileID action:k_action_MOD];
-            
-            // Enabled Button Action (the file is in local)
-            buttonAction.enabled = true;
-        }
-    }
-}
-
-- (void)setupHTTPCache
-{
-    [KTVHTTPCache cacheSetMaxCacheLength:k_maxHTTPCache];
-    
-#if TARGET_IPHONE_SIMULATOR
-    [KTVHTTPCache logSetConsoleLogEnable:YES];
-#endif
-    
-    NSError * error;
-    [KTVHTTPCache proxyStart:&error];
-    if (error) {
-        NSLog(@"Proxy Start Failure, %@", error);
-    } else {
-        NSLog(@"Proxy Start Success");
-    }
-    
-    [KTVHTTPCache tokenSetURLFilter:^NSURL * (NSURL * URL) {
-        NSLog(@"URL Filter reviced URL : %@", URL);
-        return URL;
-    }];
-    
-    [KTVHTTPCache downloadSetUnsupportContentTypeFilter:^BOOL(NSURL * URL, NSString * contentType) {
-        NSLog(@"Unsupport Content-Type Filter reviced URL : %@, %@", URL, contentType);
-        return NO;
-    }];
+    [[NCViewerMedia sharedInstance] viewMedia:self.metadataDetail viewDetail:self width:self.view.bounds.size.width height:self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -526,7 +413,11 @@
     }
     
     // PhotoBrowser
-    self.photoBrowser.displayActionButton = YES;
+    if ([NCBrandOptions sharedInstance].disable_openin_file) {
+        self.photoBrowser.displayActionButton = NO;
+    } else {
+        self.photoBrowser.displayActionButton = YES;
+    }
     self.photoBrowser.displayDeleteButton = YES;
     if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
         self.photoBrowser.displayShareButton = NO;
@@ -848,7 +739,7 @@
     } else {
         [appDelegate messageNotification:@"_download_selected_files_" description:@"_error_download_photobrowser_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
         
-        [self backNavigationController];
+        [self.navigationController popViewControllerAnimated:YES];
     }
 }
 
@@ -1104,7 +995,7 @@
             if ([self.metadataDetail.typeFile isEqualToString: k_metadataTypeFile_image] == NO) {
             
                 // exit
-                [self backNavigationController];
+                [self.navigationController popViewControllerAnimated:YES];
             
             } else {
                 
@@ -1120,7 +1011,7 @@
                         
                         // exit
                         if ([self.photoDataSource count] == 0) {
-                            [self backNavigationController];
+                            [self.navigationController popViewControllerAnimated:YES];
                         }
                     }
                 }

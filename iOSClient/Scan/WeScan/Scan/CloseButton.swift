@@ -18,7 +18,7 @@ final class CloseButton: UIControl {
         layer.addSublayer(xLayer)
         backgroundColor = .clear
         isAccessibilityElement = true
-        accessibilityTraits = UIAccessibilityTraitButton
+        accessibilityTraits = UIAccessibilityTraits.button
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -32,7 +32,7 @@ final class CloseButton: UIControl {
         xLayer.path = pathForX(inRect: rect.insetBy(dx: xLayer.lineWidth / 2, dy: xLayer.lineWidth / 2)).cgPath
         xLayer.fillColor = UIColor.clear.cgColor
         xLayer.strokeColor = NCBrandColor.sharedInstance.brandText.cgColor
-        xLayer.lineCap = kCALineCapRound
+        xLayer.lineCap = CAShapeLayerLineCap.round
     }
     
     private func pathForX(inRect rect: CGRect) -> UIBezierPath {

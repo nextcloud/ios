@@ -281,7 +281,7 @@ class DragDropViewController: UIViewController {
     
     @objc func handleLongPressGesture(recognizer: UIGestureRecognizer) {
         
-        if recognizer.state == UIGestureRecognizerState.began {
+        if recognizer.state == UIGestureRecognizer.State.began {
         
             self.becomeFirstResponder()
             
@@ -326,7 +326,7 @@ class DragDropViewController: UIViewController {
             }
             
             do {
-                try UIImagePNGRepresentation(image)?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
+                try image.pngData()?.write(to: NSURL.fileURL(withPath: fileNamePath), options: .atomic)
             } catch {
                 return
             }

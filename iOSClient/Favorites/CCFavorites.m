@@ -506,7 +506,7 @@
     }];
     
     // NO Directory
-    if (metadata.directory == NO) {
+    if (metadata.directory == NO && [NCBrandOptions sharedInstance].disable_openin_file == NO) {
         
         [actionSheet addButtonWithTitle:NSLocalizedString(@"_open_in_", nil) image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"openFile"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement] backgroundColor:[NCBrandColor sharedInstance].backgroundView height: 50.0 type:AHKActionSheetButtonTypeDefault handler:^(AHKActionSheet *as) {
             [self.tableView setEditing:NO animated:YES];
