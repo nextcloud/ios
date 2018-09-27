@@ -711,7 +711,20 @@
             isSearchMode = YES;
             [self editingModeNO];
             
-            [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+            
+            metadataNet.action = actionSearch;
+            metadataNet.contentType = @[@"image/%", @"video/%"];
+            metadataNet.date = [NSDate distantPast];
+            metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory];
+            metadataNet.fileName = @"";
+            metadataNet.etag = metadata.etag;
+            metadataNet.depth = @"infinity";
+            metadataNet.priority = NSOperationQueuePriorityHigh;
+            metadataNet.selector = selectorSearchContentType;
+            metadataNet.serverUrl = startDirectory;
+            
+            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
             
         } else {
             [self reloadDatasource:nil action:k_action_NULL];

@@ -29,11 +29,6 @@ import Foundation
     func renameMoveFileOrFolderFailure(_ metadataNet: CCMetadataNet, message: NSString, errorCode: NSInteger)
 }
 
-@objc protocol CCActionsSearchDelegate {
-    
-    func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [Any], message: NSString, errorCode: NSInteger)
-}
-
 class CCActions: NSObject {
     
     //MARK: Shared Instance
@@ -165,40 +160,6 @@ class CCActions: NSObject {
         }
         
         metadataNet.delegate?.renameMoveFileOrFolderFailure(metadataNet, message: message as NSString, errorCode: errorCode)
-    }
-    
-    // --------------------------------------------------------------------------------------------
-    // MARK: Search
-    // --------------------------------------------------------------------------------------------
-    
-    @objc func search(_ serverUrl: String, fileName: String, etag: String, depth: String, date: Date?, contenType: [String]?, selector: String, delegate: AnyObject) {
-        
-        guard let directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) else {
-            return
-        }
-        
-        // Search DAV API
-            
-        let metadataNet: CCMetadataNet = CCMetadataNet.init(account: appDelegate.activeAccount)
-        
-        metadataNet.action = actionSearch
-        metadataNet.contentType = contenType
-        metadataNet.date = date
-        metadataNet.delegate = delegate
-        metadataNet.directoryID = directoryID
-        metadataNet.fileName = fileName
-        metadataNet.etag = etag
-        metadataNet.depth = depth
-        metadataNet.priority = Operation.QueuePriority.high.rawValue
-        metadataNet.selector = selector
-        metadataNet.serverUrl = serverUrl
-
-        appDelegate.addNetworkingOperationQueue(appDelegate.netQueue, delegate: self, metadataNet: metadataNet)
-    }
-    
-    @objc func searchSuccessFailure(_ metadataNet: CCMetadataNet, metadatas: [tableMetadata], message: NSString, errorCode: NSInteger) {
-        
-        metadataNet.delegate?.searchSuccessFailure(metadataNet, metadatas: metadatas, message: message, errorCode: errorCode)
     }
 }
 

@@ -37,7 +37,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <CCActionsRenameDelegate, CCActionsSearchDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
+@interface CCMain () <CCActionsRenameDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
     AppDelegate *appDelegate;
         
@@ -1447,8 +1447,21 @@
 {
     NSString *startDirectory = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     
-    [[CCActions sharedInstance] search:startDirectory fileName:_searchFileName etag:@"" depth:@"infinity" date:nil contenType:nil selector:selectorSearchFiles delegate:self];
-
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+    
+    metadataNet.action = actionSearch;
+    metadataNet.contentType = nil;
+    metadataNet.date = nil;
+    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory];
+    metadataNet.fileName = _searchFileName;
+    metadataNet.etag = @"";
+    metadataNet.depth = @"infinity";
+    metadataNet.priority = NSOperationQueuePriorityHigh;
+    metadataNet.selector = selectorSearchFiles;
+    metadataNet.serverUrl = startDirectory;
+    
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+    
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
     
