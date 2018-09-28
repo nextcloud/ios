@@ -30,6 +30,88 @@ class NCViewerDocumentWeb: NSObject {
         return instance
     }()
     
-    var viewDetail: CCDetail!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    @objc func viewDocumentWebAt(_ metadata: tableMetadata, viewDetail: CCDetail, width: Int, height: Int) {
+        
+        if !CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
+            viewDetail.navigationController?.popViewController(animated: true)
+            return
+        }
+        
+        let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
+        let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
+
+        do {
+            try FileManager.default.removeItem(atPath:fileNamePath)
+        } catch { }
+        
+        do {
+            try FileManager.default.linkItem(atPath: CCUtility.getDirectoryProviderStorageFileID(metadata.fileID, fileNameView: metadata.fileNameView), toPath: fileNamePath)
+        } catch {
+            print("error")
+            return
+        }
+        
+        let url = URL.init(fileURLWithPath: fileNamePath)
+
+        let preferences = WKPreferences()
+        let configuration = WKWebViewConfiguration()
+
+        preferences.javaScriptEnabled = true
+        configuration.preferences = preferences
+        
+        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: width, height: height), configuration: configuration)
+        webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        webView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
+        webView.isOpaque = false
+        
+        if fileNameExtension == "CSS" || fileNameExtension == "PY" || fileNameExtension == "XML" || fileNameExtension == "JS" {
+            
+            do {
+                let dataFile = try String(contentsOf: url, encoding: String.Encoding(rawValue: String.Encoding.ascii.rawValue))
+                
+                if UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiom.phone {
+                    webView.loadHTMLString("<div style='font-size:40;font-family:Sans-Serif;'><pre>" + dataFile, baseURL: nil)
+                } else {
+                    webView.loadHTMLString("<div style='font-size:20;font-family:Sans-Serif;'><pre>" + dataFile, baseURL: nil)
+                }
+                
+            } catch {
+                print("error")
+            }
+            
+        } else if CCUtility.isDocumentModifiableExtension(fileNameExtension) {
+            
+            let session = URLSession(configuration: URLSessionConfiguration.default)
+            var request = URLRequest(url: url)
+            request.httpMethod = "HEAD"
+            
+            let task = session.dataTask(with: request) { (data, response, error) in
+                
+                guard let data = data else {
+                    return
+                }
+                guard let response = response else {
+                    return
+                }
+                
+                DispatchQueue.main.async {
+                    
+                    guard let encodingName = NCUchardet.sharedNUCharDet()?.encodingStringDetect(with: data) else {
+                        return
+                    }
+                    webView.load(data, mimeType: response.mimeType!, characterEncodingName: encodingName, baseURL: url)
+                }
+            }
+            
+            task.resume()
+            
+        } else {
+            
+            webView.load(URLRequest(url: url))
+        }
+        
+        viewDetail.view.addSubview(webView)
+    }
 }

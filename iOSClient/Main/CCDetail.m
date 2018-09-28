@@ -302,63 +302,7 @@
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
-    if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] == NO) {
-        
-        [self.navigationController popViewControllerAnimated:YES];
-        return;
-    }
-    
-    NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNameView];
-    
-    [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
-    [[NSFileManager defaultManager] linkItemAtPath:[CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] toPath:fileNamePath error:nil];
-    
-    NSURL *url = [NSURL fileURLWithPath:fileNamePath];
-
-    WKPreferences *wkPreferences = [[WKPreferences alloc] init];
-    wkPreferences.javaScriptEnabled = true;
-    WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
-    wkConfig.preferences = wkPreferences;
-    
-    self.webView = [[WKWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom)) configuration:wkConfig];
-    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-    [self.webView setBackgroundColor:[NCBrandColor sharedInstance].backgroundView];
-    [self.webView setOpaque:NO];
-    
-    if ( [fileNameExtension isEqualToString:@"CSS"] || [fileNameExtension isEqualToString:@"PY"] || [fileNameExtension isEqualToString:@"XML"] || [fileNameExtension isEqualToString:@"JS"] ) {
-        
-        NSString *dataFile = [[NSString alloc] initWithData:[NSData dataWithContentsOfURL:url] encoding:NSASCIIStringEncoding];
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"40",@"Sans-Serif",dataFile] baseURL:nil];
-        }else{
-            [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"20",@"Sans-Serif",dataFile] baseURL:nil];
-        }
-        
-    } else if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
-        
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
-        
-        NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:url];
-        [headRequest setHTTPMethod:@"HEAD"];
-        
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:headRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *encodingName = [[NCUchardet sharedNUCharDet] encodingStringDetectWithData:data];
-                [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:encodingName baseURL:url];
-            });
-        }];
-        
-        [task resume];
-        
-    } else {
-        
-        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:url]];
-    }
-    
-    [self.view addSubview:self.webView];
+    [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail viewDetail:self width:self.view.bounds.size.width height:self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom];
 }
 
 #pragma --------------------------------------------------------------------------------------------
