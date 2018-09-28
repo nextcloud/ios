@@ -184,7 +184,7 @@
         
         self.edgesForExtendedLayout = UIRectEdgeAll;
         [self createToolbar];
-        [self viewMedia];
+        [[NCViewerMedia sharedInstance] viewMedia:self.metadataDetail detail:self];
     }
     
     // DOCUMENT
@@ -237,8 +237,8 @@
         }
         
         self.edgesForExtendedLayout = UIRectEdgeBottom;
+        [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
         [self createToolbar];
-        [self viewDocument];
     }
 }
 
@@ -288,36 +288,6 @@
     self.toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
 
     [self.view addSubview:self.toolbar];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== View Document =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)viewDocument
-{
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
-    
-    [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self width:self.view.bounds.size.width height:self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== View Media =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)viewMedia
-{
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
-    
-    [[NCViewerMedia sharedInstance] viewMedia:self.metadataDetail viewDetail:self width:self.view.bounds.size.width height:self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom];
 }
 
 #pragma --------------------------------------------------------------------------------------------

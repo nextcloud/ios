@@ -31,12 +31,21 @@ class NCViewerDocumentWeb: NSObject {
     }()
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var safeAreaBottom: Int = 0
     
-    @objc func viewDocumentWebAt(_ metadata: tableMetadata, detail: CCDetail, width: Int, height: Int) {
+    @objc func viewDocumentWebAt(_ metadata: tableMetadata, detail: CCDetail) {
         
         if !CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
             detail.navigationController?.popViewController(animated: true)
             return
+        }
+        
+        guard let rootView = UIApplication.shared.keyWindow else {
+            return
+        }
+        
+        if #available(iOS 11.0, *) {
+            safeAreaBottom = Int(rootView.safeAreaInsets.bottom)
         }
         
         let fileNamePath = NSTemporaryDirectory() + metadata.fileNameView
@@ -61,7 +70,7 @@ class NCViewerDocumentWeb: NSObject {
         preferences.javaScriptEnabled = true
         configuration.preferences = preferences
         
-        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: width, height: height), configuration: configuration)
+        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: Int(rootView.bounds.size.width), height: Int(rootView.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom), configuration: configuration)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         webView.backgroundColor = NCBrandColor.sharedInstance.backgroundView
         webView.isOpaque = false
@@ -114,77 +123,4 @@ class NCViewerDocumentWeb: NSObject {
         
         detail.view.addSubview(webView)
     }
-    
-    func createToolbar(detail: CCDetail) {
-
-        var safeAreaBottom: CGFloat = 0
-        
-        guard let rootView = UIApplication.shared.keyWindow else {
-            return
-        }
-        if #available(iOS 11.0, *) {
-            safeAreaBottom = rootView.safeAreaInsets.bottom
-        }
-        
-        guard let detailView = detail.view else {
-            return
-        }
-
-        let toolbar = UITabBar(frame: CGRect(x: 0 as CGFloat, y: detailView.bounds.size.height - CGFloat(k_detail_Toolbar_Height) - safeAreaBottom, width: detailView.bounds.size.width, height: CGFloat(k_detail_Toolbar_Height)))
-        
-        let flexible = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: detail, action: nil)
-        let fixedSpaceMini = UIBarButtonItem.init(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: detail, action: nil)
-        fixedSpaceMini.width = 25
-        
-       
-        
-        
-    }
-    
-    
-    /*
- - (void)createToolbar
- {
- CGFloat safeAreaBottom = 0;
- NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:_metadataDetail.directoryID];
- if (!serverUrl)
- return;
- 
- if (@available(iOS 11, *)) {
- safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
- }
- 
- self.toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom, self.view.bounds.size.width, TOOLBAR_HEIGHT)];
- 
- UIBarButtonItem *flexible = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:self action:nil];
- UIBarButtonItem *fixedSpaceMini = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:self action:nil];
- fixedSpaceMini.width = 25;
- 
- buttonModifyTxt = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"actionSheetModify"] style:UIBarButtonItemStylePlain target:self action:@selector(modifyTxtButtonPressed:)];
- if (![NCBrandOptions sharedInstance].disable_openin_file) {
- self.buttonAction = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"openFile"] style:UIBarButtonItemStylePlain target:self action:@selector(actionButtonPressed:)];
- }
- buttonShare  = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"share"] style:UIBarButtonItemStylePlain target:self action:@selector(shareButtonPressed:)];
- buttonDelete = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteButtonPressed:)];
- 
- if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
- if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
- [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
- else
- [self.toolbar setItems:[NSArray arrayWithObjects: buttonModifyTxt, flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
- } else {
- if ([CCUtility isFolderEncrypted:serverUrl account:appDelegate.activeAccount]) // E2EE
- [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, self.buttonAction,  nil]];
- else
- [self.toolbar setItems:[NSArray arrayWithObjects: flexible, buttonDelete, fixedSpaceMini, buttonShare, fixedSpaceMini, self.buttonAction,  nil]];
- }
- 
- [self.toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin];
- 
- self.toolbar.barTintColor = [NCBrandColor sharedInstance].tabBar;
- self.toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
- 
- [self.view addSubview:self.toolbar];
- }
- */
 }
