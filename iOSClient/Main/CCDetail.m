@@ -225,7 +225,7 @@
             
             [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
                 
-                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
+                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link detail:self];
                 
             } failure:^(NSString *message, NSInteger errorCode) {
                 
@@ -302,7 +302,7 @@
         safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
     }
     
-    [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail viewDetail:self width:self.view.bounds.size.width height:self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom];
+    [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self width:self.view.bounds.size.width height:self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom];
 }
 
 #pragma --------------------------------------------------------------------------------------------

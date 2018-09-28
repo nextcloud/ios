@@ -30,20 +30,20 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         return instance
     }()
     
-    var viewDetail: CCDetail!
+    var detail: CCDetail!
     var webView: WKWebView!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
 
-    @objc func viewRichDocumentAt(_ link: String, viewDetail: CCDetail) {
+    @objc func viewRichDocumentAt(_ link: String, detail: CCDetail) {
         
-        self.viewDetail = viewDetail
+        self.detail = detail
         
         let contentController = WKUserContentController()
         contentController.add(self, name: "RichDocumentsMobileInterface")
         let configuration = WKWebViewConfiguration()
         configuration.userContentController = contentController
         
-        webView = WKWebView(frame: viewDetail.view.bounds, configuration: configuration)
+        webView = WKWebView(frame: detail.view.bounds, configuration: configuration)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 //        webView.scrollView.showsHorizontalScrollIndicator = true
 //        webView.scrollView.showsVerticalScrollIndicator = true
@@ -58,7 +58,7 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
         webView.customUserAgent = userAgent
         webView.load(request)
         
-        viewDetail.view.addSubview(webView)
+        detail.view.addSubview(webView)
     }
     
     //MARK: -
@@ -71,8 +71,8 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
 
                 self.webView.removeFromSuperview()
                 
-                self.viewDetail.navigationController?.popToRootViewController(animated: true)
-                self.viewDetail.navigationController?.navigationBar.topItem?.title = ""
+                self.detail.navigationController?.popToRootViewController(animated: true)
+                self.detail.navigationController?.navigationBar.topItem?.title = ""
             }
             
             if message.body as! String == "insertGraphic" {
@@ -93,11 +93,11 @@ class NCViewerRichdocument: NSObject, WKNavigationDelegate, WKScriptMessageHandl
                 moveViewController.selectFile = true
                 
                 movieNavigationController.modalPresentationStyle = UIModalPresentationStyle.formSheet
-                self.viewDetail.present(movieNavigationController, animated: true, completion: nil)
+                self.detail.present(movieNavigationController, animated: true, completion: nil)
             }
             
             if message.body as! String == "share" {
-                appDelegate.activeMain.openWindowShare(viewDetail.metadataDetail)
+                appDelegate.activeMain.openWindowShare(self.detail.metadataDetail)
             }
         }
     }
