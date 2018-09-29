@@ -71,7 +71,7 @@ class NCViewerMedia: NSObject {
         appDelegate.playerController = AVPlayerViewController()
         
         appDelegate.playerController.player = appDelegate.player
-        appDelegate.playerController.view.frame = CGRect(x: 0, y: 0, width: Int(rootView.bounds.size.width), height: Int(rootView.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom)
+        appDelegate.playerController.view.frame = CGRect(x: 0, y: 0, width: Int(rootView.bounds.size.width), height: Int(rootView.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1)
         appDelegate.playerController.allowsPictureInPicturePlayback = false
         detail.addChild(appDelegate.playerController)
         detail.view.addSubview(appDelegate.playerController.view)

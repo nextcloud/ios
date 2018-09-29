@@ -237,8 +237,8 @@
         }
         
         self.edgesForExtendedLayout = UIRectEdgeBottom;
-        [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
         [self createToolbar];
+        [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
     }
 }
 
