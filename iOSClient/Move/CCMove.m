@@ -371,8 +371,22 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return 0;
 
-    if (self.includeImages) predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == %@ AND (directory == true OR typeFile == 'image')", directoryID, [NSNumber numberWithBool:self.includeDirectoryE2EEncryption]];
-    else predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == %@ AND directory == true", directoryID, [NSNumber numberWithBool:self.includeDirectoryE2EEncryption]];
+    if (self.includeDirectoryE2EEncryption) {
+        
+        if (self.includeImages) {
+            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND (directory == true OR typeFile == 'image')", directoryID];
+        } else {
+            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true", directoryID];
+        }
+        
+    } else {
+        
+        if (self.includeImages) {
+            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", directoryID];
+        } else {
+            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == false AND directory == true", directoryID];
+        }
+    }
     
     NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicateDataSource sorted:nil ascending:NO];
     
