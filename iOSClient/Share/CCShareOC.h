@@ -59,7 +59,7 @@
 
 @protocol CCShareOCDelegate
 
-- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password;
+- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission;
 - (void)unShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl;
 - (void)updateShare:(NSString *)share metadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password expirationTime:(NSString *)expirationTime permission:(NSInteger)permission;
 

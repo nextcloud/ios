@@ -457,6 +457,10 @@
 "_share_permission_owner_"          = "Owner";
 "_share_permission_date_"           = "Date";
 "_share_permission_email_"          = "Notification via email";
+"_share_link_readonly_"             = "Read only";
+"_share_link_modify_"               = "Allow editing";
+"_share_link_upload_"               = "File drop (upload only)";
+"_share_link_upload_modify_"        = "Allow upload and editing";
 
 // ShareInfoCMOC
 

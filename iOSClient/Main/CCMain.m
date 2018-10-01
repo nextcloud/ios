@@ -2145,7 +2145,7 @@
     [self tableViewReloadData];
 }
 
-- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password
+- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
@@ -2153,6 +2153,7 @@
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
     metadataNet.fileNameView = metadata.fileNameView;
+    metadataNet.sharePermission = permission;
     metadataNet.password = password;
     metadataNet.selector = selectorShare;
     metadataNet.serverUrl = serverUrl;

@@ -605,7 +605,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     [operation resume];
 }
 
-- (void)shareByLinkFileOrFolderByServer:(NSString *)serverPath andPath:(NSString *) filePath andPassword:(NSString *)password
+- (void)shareByLinkFileOrFolderByServer:(NSString *)serverPath andPath:(NSString *) filePath andPassword:(NSString *)password andPermission:(NSInteger)permission
                         onCommunication:(OCCommunication *)sharedOCCommunication
                                 success:(void(^)(NSHTTPURLResponse *, id))success
                                 failure:(void(^)(NSHTTPURLResponse *, id  _Nullable responseObject, NSError *))failure {
@@ -614,7 +614,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
     _requestMethod = @"POST";
     
     NSMutableURLRequest *request = [self sharedRequestWithMethod:_requestMethod path:serverPath parameters:nil timeout:k_timeout_webdav];
-    _postStringForShare = [NSString stringWithFormat: @"path=%@&shareType=3&password=%@",filePath,password];
+    _postStringForShare = [NSString stringWithFormat: @"path=%@&shareType=3&permissions=%lu&password=%@",filePath,permission,password];
     [request setHTTPBody:[_postStringForShare dataUsingEncoding:NSUTF8StringEncoding]];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication success:success failure:failure];
