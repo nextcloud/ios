@@ -64,8 +64,7 @@
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"shareLinkSwitch" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_share_link_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
-    
-    
+
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"shareLinkPermission" rowType:XLFormRowDescriptorTypePicker];
     row.height = 70;
     [section addFormRow:row];
@@ -74,7 +73,6 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
     
-   
     // Expiration date
     
     section = [XLFormSectionDescriptor formSection];
@@ -188,12 +186,30 @@
     
     XLFormRowDescriptor *rowSendLinkTo = [self.form formRowWithTag:@"sendLinkTo"];
 
-    // Password
-    if ([[self.itemShareLink shareWith] length] > 0 && self.itemShareLink.shareType == shareTypeLink)
-        rowPassword.value = [self.itemShareLink shareWith];
-    else
-        rowPassword.value = @"";
-
+    // Share Link
+    if ([self.shareLink length] > 0) {
+        
+        [rowShareLinkSwitch setValue:@1];
+        
+        rowShareLinkPermission.disabled = @NO;
+        rowPassword.disabled = @NO;
+        rowExpirationDate.disabled = @NO;
+        rowExpirationDateSwitch.disabled = @NO;
+        
+        rowSendLinkTo.disabled = @NO;
+        
+    } else {
+        
+        [rowShareLinkSwitch setValue:@0];
+        
+        rowShareLinkPermission.disabled = @YES;
+        rowPassword.disabled = @YES;
+        rowExpirationDate.disabled = @YES;
+        rowExpirationDateSwitch.disabled = @YES;
+        
+        rowSendLinkTo.disabled = @YES;
+    }
+    
     // Permission
     if (self.metadata.directory) {
         rowShareLinkPermission.selectorOptions = @[NSLocalizedString(@"_share_link_readonly_", nil), NSLocalizedString(@"_share_link_upload_modify_", nil), NSLocalizedString(@"_share_link_upload_", nil)];
@@ -217,27 +233,15 @@
             default:
                 break;
         }
+    } else {
+        rowShareLinkPermission.value = NSLocalizedString(@"_share_link_readonly_", nil);
     }
     
-    // Share Link
-    if ([self.shareLink length] > 0) {
-        
-        [rowShareLinkSwitch setValue:@1];
-        
-        rowExpirationDate.disabled = @NO;
-        rowExpirationDateSwitch.disabled = @NO;
-
-        rowSendLinkTo.disabled = @NO;
-        
-    } else {
-        
-        [rowShareLinkSwitch setValue:@0];
-        
-        rowExpirationDate.disabled = @YES;
-        rowExpirationDateSwitch.disabled = @YES;
-        
-        rowSendLinkTo.disabled = @YES;
-    }
+    // Password
+    if ([[self.itemShareLink shareWith] length] > 0 && self.itemShareLink.shareType == shareTypeLink)
+        rowPassword.value = [self.itemShareLink shareWith];
+    else
+        rowPassword.value = @"";
     
     // Expiration Date
     if (self.itemShareLink.expirationDate) {
@@ -364,15 +368,13 @@
 {
     [super formRowDescriptorValueHasChanged:rowDescriptor oldValue:oldValue newValue:newValue];
     
-    OCSharedDto *shareDto = [appDelegate.sharesID objectForKey:self.shareLink];
+    //OCSharedDto *shareDto = [appDelegate.sharesID objectForKey:self.shareLink];
     
     if ([rowDescriptor.tag isEqualToString:@"shareLinkSwitch"]) {
         
         if ([[rowDescriptor.value valueData] boolValue] == YES) {
             
-            XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
-            
-            [self.delegate share:self.metadata serverUrl:self.serverUrl password:rowPassword.value permission:[self getShareLinkPermission]];
+            [self.delegate share:self.metadata serverUrl:self.serverUrl password:@"" permission:1];
             [self disableForm];
             
         } else {
@@ -385,9 +387,7 @@
     
     if ([rowDescriptor.tag isEqualToString:@"shareLinkPermission"]) {
         
-        XLFormRowDescriptor *rowPassword = [self.form formRowWithTag:@"password"];
-
-        [self.delegate share:self.metadata serverUrl:self.serverUrl password:rowPassword.value permission:[self getShareLinkPermission]];
+        [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:nil permission:[self getShareLinkPermission:newValue]];
         [self disableForm];
     }
     
@@ -396,7 +396,7 @@
         // remove expiration date
         if ([[rowDescriptor.value valueData] boolValue] == NO) {
             
-            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:@"" permission:shareDto.permissions];
+            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:@"" permission:0];
             [self disableForm];
             
         } else {
@@ -405,7 +405,7 @@
             XLFormRowDescriptor *rowExpirationDate = [self.form formRowWithTag:@"expirationDate"];
             NSString *expirationDate = [self convertDateInServerFormat:rowExpirationDate.value];
             
-            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:shareDto.permissions];
+            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0];
             [self disableForm];
         }
     }
@@ -436,7 +436,7 @@
 {
     [super endEditing:rowDescriptor];
     
-    OCSharedDto *shareDto = [appDelegate.sharesID objectForKey:self.shareLink];
+    //OCSharedDto *shareDto = [appDelegate.sharesID objectForKey:self.shareLink];
     
     if ([rowDescriptor.tag isEqualToString:@"expirationDate"]) {
         
@@ -447,7 +447,7 @@
         
             NSString *expirationDate = [self convertDateInServerFormat:rowDescriptor.value];
         
-            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:shareDto.permissions];
+            [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:nil expirationTime:expirationDate permission:0];
             [self disableForm];
         }
         
@@ -465,20 +465,12 @@
             
         } else {
             
-            /*
-            if (password == nil) {
-                
-                [self reloadData];
-                return;
-            }
-            */
-             
             if (password == nil)
                 password = @"";
             
             if (self.shareLink) {
                 
-                [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:password expirationTime:nil permission:shareDto.permissions];
+                [self.delegate updateShare:self.shareLink metadata:self.metadata serverUrl:self.serverUrl password:password expirationTime:nil permission:0];
                 [self disableForm];
             }
         }
@@ -551,17 +543,15 @@
     return [now dateByAddingTimeInterval:60*60*24*daysToAdd];
 }
 
-- (NSInteger)getShareLinkPermission
+- (NSInteger)getShareLinkPermission:(NSString *)value
 {
-    XLFormRowDescriptor *row = [self.form formRowWithTag:@"shareLinkPermission"];
-
-    if ([row.value isEqualToString:NSLocalizedString(@"_share_link_readonly_", nil)]) {
+    if ([value isEqualToString:NSLocalizedString(@"_share_link_readonly_", nil)]) {
         return 1;
-    } else if ([row.value isEqualToString:NSLocalizedString(@"_share_link_modify_", nil)]) {
+    } else if ([value isEqualToString:NSLocalizedString(@"_share_link_modify_", nil)]) {
         return 3;
-    } else if ([row.value isEqualToString:NSLocalizedString(@"_share_link_upload_", nil)]) {
+    } else if ([value isEqualToString:NSLocalizedString(@"_share_link_upload_", nil)]) {
         return 4;
-    } else if ([row.value isEqualToString:NSLocalizedString(@"_share_link_upload_modify_", nil)]) {
+    } else if ([value isEqualToString:NSLocalizedString(@"_share_link_upload_modify_", nil)]) {
         return 15;
     } else {
         return 1;
