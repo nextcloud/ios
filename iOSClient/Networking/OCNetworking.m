@@ -230,11 +230,11 @@
                     versionMajor = [arrayVersion[0] integerValue];
                 } else if (arrayVersion.count == 2) {
                     versionMajor = [arrayVersion[0] integerValue];
-                    versionMicro = [arrayVersion[1] integerValue];
+                    versionMinor = [arrayVersion[1] integerValue];
                 } else if (arrayVersion.count >= 3) {
                     versionMajor = [arrayVersion[0] integerValue];
-                    versionMicro = [arrayVersion[1] integerValue];
-                    versionMinor = [arrayVersion[2] integerValue];
+                    versionMinor = [arrayVersion[1] integerValue];
+                    versionMicro = [arrayVersion[2] integerValue];
                 }
                 
                 success(serverProductName, versionMajor, versionMicro, versionMinor);
