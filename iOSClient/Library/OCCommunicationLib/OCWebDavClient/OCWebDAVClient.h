@@ -663,6 +663,6 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 /// Trashbin
 ///-----------------------------------
 
-- (void)listTrashbinPath:(NSString *)path user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response, NSString *token))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *, NSString *token))failure;
+- (void)listTrashbinPath:(NSString *)path user:(NSString *)user userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication withUserSessionToken:(NSString *)token success:(void(^)(NSHTTPURLResponse *operation, id response, NSString *token))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *, NSString *token))failure;
 
 @end

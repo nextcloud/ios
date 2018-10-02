@@ -2814,12 +2814,16 @@
 
 - (void)listingTrashbin:(NSString *)path withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest
 {
+    if (!token){
+        token = @"no token";
+    }
+    
     path = [path encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request listTrashbinPath:path user:_user userID:_userID onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+    [request listTrashbinPath:path user:_user userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
         
         NSData *responseData = (NSData*) responseObject;
         
