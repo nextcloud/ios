@@ -1218,7 +1218,26 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
     NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:[NSString stringWithFormat:@"%@/trashbin/%@/trash", path, userID] parameters:nil timeout:k_timeout_webdav];
     
-    [request setHTTPBody:[@"<?xml version=\"1.0\" encoding=\"UTF-8\"?><D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\"><D:prop><D:resourcetype/><D:getlastmodified/><size xmlns=\"http://owncloud.org/ns\"/><favorite xmlns=\"http://owncloud.org/ns\"/><id xmlns=\"http://owncloud.org/ns\"/><D:getcontentlength/><D:getetag/><permissions xmlns=\"http://owncloud.org/ns\"/><D:getcontenttype/><nc:is-encrypted/></D:prop></D:propfind>" dataUsingEncoding:NSUTF8StringEncoding]];
+    NSString *body = [NSString stringWithFormat: @""
+                      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                      "<D:propfind xmlns:D=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">"
+                      "<D:prop>"
+                      "<D:resourcetype/>"
+                      "<D:getlastmodified/>"
+                      "<oc:size/>"
+                      "<oc:favorite/>"
+                      "<oc:fileid/>"
+                      "<D:getcontentlength/>"
+                      "<D:getetag/>"
+                      "<oc:permissions/>"
+                      "<nc:is-encrypted/>"
+                      "<nc:trashbin-filename/>"
+                      "<nc:trashbin-original-location/>"
+                      "<nc:trashbin-deletion-time/>"
+                      "</D:prop>"
+                      "</D:propfind>"];
+
+    [request setHTTPBody:[body dataUsingEncoding:NSUTF8StringEncoding]];
     [request setValue:@"application/xml" forHTTPHeaderField:@"Content-Type"];
     
     OCHTTPRequestOperation *operation = [self mr_operationWithRequest:request onCommunication:sharedOCCommunication withUserSessionToken:token success:success failure:failure];

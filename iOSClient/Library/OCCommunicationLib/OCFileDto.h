@@ -48,6 +48,8 @@
 @property (nonatomic, copy) NSString *ocId;
 @property BOOL isFavorite;
 @property BOOL isEncrypted;
-
+@property (nonatomic, copy) NSString *trashbinFileName;
+@property (nonatomic, copy) NSString *trashbinOriginalLocation;
+@property long trashbinDeletionTime;
 
 @end

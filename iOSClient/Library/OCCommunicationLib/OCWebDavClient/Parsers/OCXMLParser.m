@@ -239,6 +239,12 @@ NSString *OCCWebDAVURIKey           = @"uri";
         _currentFile.permissions = _xmlChars;
     } else if ([elementName isEqualToString:@"nc:is-encrypted"]) {
         _currentFile.isEncrypted = [_xmlChars boolValue];
+    }else if ([elementName isEqualToString:@"nc:trashbin-filename"]) {
+        _currentFile.trashbinFileName = _xmlChars;
+    }else if ([elementName isEqualToString:@"nc:trashbin-original-location"]) {
+        _currentFile.trashbinOriginalLocation = _xmlChars;
+    }else if ([elementName isEqualToString:@"nc:trashbin-deletion-time"]) {
+        _currentFile.trashbinDeletionTime = (long)[_xmlChars longLongValue];
     }
 }
 

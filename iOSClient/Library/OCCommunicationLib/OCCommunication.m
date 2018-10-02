@@ -2825,11 +2825,7 @@
     
     [request listTrashbinPath:path user:_user userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
         
-        NSData *responseData = (NSData*) responseObject;
-        
-        //            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-        //            NSLog(@"newStrReadFolder: %@", newStr);
-        
+        NSData *responseData = (NSData *)responseObject;
         OCXMLParser *parser = [[OCXMLParser alloc]init];
         [parser initParserWithData:responseData];
         NSMutableArray *directoryList = [parser.directoryList mutableCopy];

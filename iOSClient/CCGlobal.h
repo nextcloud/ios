@@ -292,6 +292,9 @@
 // Flow Version
 #define k_flow_version_available                        12
 
+// Trash Version
+#define k_trash_version_available                       14
+
 // Cell Reload Data Source
 #define k_action_NULL                                   0
 #define k_action_MOD                                    1
