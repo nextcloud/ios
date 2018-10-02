@@ -2269,6 +2269,15 @@
     }];
 }
 
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  Trash OCS API =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)listingTrashs:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSArray *metadatas))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    
+}
+
 @end
 
 #pragma --------------------------------------------------------------------------------------------

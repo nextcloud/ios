@@ -10,4 +10,10 @@ import Foundation
 
 class NCTrash: UICollectionViewController {
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+    }
+    
+    
 }
