@@ -2273,9 +2273,20 @@
 #pragma mark =====  Trash OCS API =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)listingTrashs:(NSString *)serverUrl account:(NSString *)account success:(void(^)(NSArray *metadatas))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)listingTrashs:(void(^)(NSArray *metadatas))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    NSString *path = [_activeUrl stringByAppendingString:k_dav];
+
+    [communication listingTrashbin:path withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+        NSLog(@"ok");
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
+        NSLog(@"error");
+    }];
 }
 
 @end
