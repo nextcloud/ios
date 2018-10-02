@@ -2810,6 +2810,34 @@
     }];
 }
 
+#pragma mark - Trash API
+
+- (void)listingTrashbin:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest
+{
+    path = [path encodeString:NSUTF8StringEncoding];
+    
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request listTrashbinPath:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+        if (successRequest) {
+            NSData *responseData = (NSData*) responseObject;
+            
+//            NSString* newStr = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+//            NSLog(@"newStrReadFolder: %@", newStr);
+            
+            OCXMLParser *parser = [[OCXMLParser alloc]init];
+            [parser initParserWithData:responseData];
+            NSMutableArray *directoryList = [parser.directoryList mutableCopy];
+            
+            //Return success
+            successRequest(response, directoryList, request.redirectedServer, token);
+        }
+    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
+        NSLog(@"Failure");
+        failureRequest(response, error, token, request.redirectedServer);
+    }];
+}
 
 #pragma mark - Manage Mobile Editor OCS API
 

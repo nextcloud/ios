@@ -123,6 +123,13 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             functionMenu.append(item)
         }
         
+        // ITEM : Trash
+        item = OCExternalSites.init()
+        item.name = "_trash_"
+        item.icon = "trash"
+        item.url = "segueTrash"
+        functionMenu.append(item)
+
         // ITEM : External
         
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {
