@@ -12,9 +12,6 @@ class NCTrash: UICollectionViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
-
-    //NSString *userID = [_userID stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-    //NSString *serverPath = [NSString stringWithFormat:@"%@%@/%@trashbin/%@/trash", serverUrl, k_dav, path, userID];
     
     override func viewDidLoad() {
         super.viewDidLoad()

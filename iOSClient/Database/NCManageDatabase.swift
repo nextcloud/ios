@@ -2526,5 +2526,20 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func getTrash(filePath: String) -> tableTrash? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        let results = realm.objects(tableTrash.self).filter("account = %@ AND filePath = %@", tableAccount.account, filePath)
+
+        
+        return tableTrash.init(value: results)
+    }
+    
     //MARK: -
 }
