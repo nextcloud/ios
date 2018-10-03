@@ -2482,4 +2482,49 @@ class NCManageDatabase: NSObject {
     }
     
     //MARK: -
+    //MARK: Table Trash
+    
+    @objc func addTrashs(_ trashs: [tableTrash]) -> [tableTrash]? {
+        
+        guard self.getAccountActive() != nil else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                for trash in trashs {
+                    realm.add(trash, update: true)
+                }
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+            return nil
+        }
+        
+        return Array(trashs.map { tableTrash.init(value:$0) })
+    }
+    
+    @objc func deleteTrash(filePath: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        let results = realm.objects(tableTrash.self).filter("account = %@ AND filePath = %@", tableAccount.account, filePath)
+        realm.delete(results)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
+    //MARK: -
 }
