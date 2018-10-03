@@ -11,13 +11,14 @@ import Foundation
 class NCTrash: UICollectionViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    var path = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
-        ocNetworking?.listingTrash({ (item) in
+        ocNetworking?.listingTrash(appDelegate.activeUrl, path: path, account: appDelegate.activeAccount, success: { (item) in
             
         }, failure: { (message, errorCode) in
             

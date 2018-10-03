@@ -2270,22 +2270,63 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark =====  Trash OCS API =====
+#pragma mark =====  Trash =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)listingTrash:(void(^)(NSArray *items))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)listingTrash:(NSString *)serverUrl path:(NSString *)path account:(NSString *)account success:(void(^)(NSArray *items))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    NSString *path = [_activeUrl stringByAppendingString:k_dav];
+    //NSString *path = [_activeUrl stringByAppendingString:k_dav];
 
-    [communication listingTrash:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
-        NSLog(@"ok");
+    [communication listingTrash:serverUrl path:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+        
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:account]) {
+            
+            failure(NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil), k_CCErrorUserNotAvailble);
+            
+        } else {
+            
+            // Check items > 0
+            if ([items count] == 0) {
+                
+#ifndef EXTENSION
+                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                
+                [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+#endif
+                failure(NSLocalizedStringFromTable(@"Read Folder WebDAV : [items NULL] please fix", @"Server error", nil), k_CCErrorInternalError);
+                
+            } else {
+                
+               
+              
+            }
+        }
+        
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
-        NSLog(@"error");
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        // Activity
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        
+        failure(message, errorCode);
     }];
 }
 

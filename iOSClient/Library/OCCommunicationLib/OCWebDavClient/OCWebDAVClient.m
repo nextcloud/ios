@@ -1208,15 +1208,13 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
 
 #pragma mark - Trash
 
-- (void)listTrash:(NSString *)path userID:(NSString *)userID onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response, NSString *token))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *, NSString *token))failure
+- (void)listTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response, NSString *token))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *, NSString *token))failure
 {
     NSParameterAssert(success);
     
     _requestMethod = @"PROPFIND";
     
-    userID = [userID stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
-
-    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:[NSString stringWithFormat:@"%@/trashbin/%@/trash", path, userID] parameters:nil timeout:k_timeout_webdav];
+    NSMutableURLRequest *request = [self requestWithMethod:_requestMethod path:path parameters:nil timeout:k_timeout_webdav];
     
     NSString *body = [NSString stringWithFormat: @""
                       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -1224,13 +1222,8 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                       "<D:prop>"
                       "<D:resourcetype/>"
                       "<D:getlastmodified/>"
-                      "<oc:size/>"
-                      "<oc:favorite/>"
-                      "<oc:fileid/>"
+                      "<id xmlns=\"http://owncloud.org/ns\"/>"
                       "<D:getcontentlength/>"
-                      "<D:getetag/>"
-                      "<oc:permissions/>"
-                      "<nc:is-encrypted/>"
                       "<nc:trashbin-filename/>"
                       "<nc:trashbin-original-location/>"
                       "<nc:trashbin-deletion-time/>"

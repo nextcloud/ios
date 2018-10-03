@@ -2812,14 +2812,15 @@
 
 #pragma mark - Trash
 
-- (void)listingTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest
+- (void)listingTrash:(NSString *)serverUrl path:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest
 {
-    path = [path encodeString:NSUTF8StringEncoding];
-    
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request listTrash:path userID:_userID onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+    NSString *userID = [_userID stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+    NSString *serverPath = [NSString stringWithFormat:@"%@%@/%@trashbin/%@/trash", serverUrl, k_dav, path, userID];
+    
+    [request listTrash:serverPath onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
         
         OCXMLParser *parser = [OCXMLParser new];
         [parser initParserWithData:responseObject];
