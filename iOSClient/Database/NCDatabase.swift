@@ -289,7 +289,6 @@ class tableTag: Object {
     }
 }
 
-/*
 class tableTrash: Object {
     
     @objc dynamic var account = ""
@@ -310,4 +309,3 @@ class tableTrash: Object {
         return "fileID"
     }
 }
-*/

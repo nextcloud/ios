@@ -2280,8 +2280,6 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    //NSString *path = [_activeUrl stringByAppendingString:k_dav];
-
     [communication listingTrash:serverUrl path:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         
         // Test active account
@@ -2304,8 +2302,34 @@
                 
             } else {
                 
-               
-              
+                NSMutableArray *listTrash = [NSMutableArray new];
+                
+                //OCFileDto *itemDtoFolder = [items objectAtIndex:0];
+
+                if ([items count] > 1) {
+                    for (NSUInteger i=1; i < [items count]; i++) {
+                        
+                        OCFileDto *itemDto = [items objectAtIndex:i];
+                        tableTrash *trash = [tableTrash new];
+                        
+                        trash.account = account;
+                        trash.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
+                        trash.directory = itemDto.isDirectory;
+                        trash.fileID = itemDto.ocId;
+                        trash.fileName = itemDto.fileName;
+                        trash.filePath = itemDto.filePath;
+                        trash.size = itemDto.size;
+                        trash.trashbinFileName = itemDto.trashbinFileName;
+                        trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
+                        trash.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
+
+                        [CCUtility insertTypeFileIconName:trash.trashbinFileName metadata:(tableMetadata *)trash];
+
+                        [listTrash addObject:trash];
+                    }
+                }
+                
+                success(listTrash);
             }
         }
         
