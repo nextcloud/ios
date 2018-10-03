@@ -128,7 +128,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         if capabilities != nil && capabilities!.versionMajor >= Int(k_trash_version_available) {
             
             item = OCExternalSites.init()
-            item.name = "_trash_"
+            item.name = "_trash_view_"
             item.icon = "trash"
             item.url = "segueTrash"
             functionMenu.append(item)

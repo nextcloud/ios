@@ -598,3 +598,7 @@
 /* The title on the navigation bar of the Review screen. */
 "wescan.review.title"               = "Review";
 
+// Trah
+
+"_trash_view_"                      = "Deleted files";
+
