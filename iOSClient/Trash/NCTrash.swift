@@ -26,12 +26,15 @@ class NCTrash: UICollectionViewController {
         
         if path == "" {
             let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
-            path = appDelegate.activeUrl + k_dav + "/trashbin/" + userID! + "/trash"
+            path = k_dav + "/trashbin/" + userID! + "/trash/"
         }
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
-        ocNetworking?.listingTrash(path, account: appDelegate.activeAccount, success: { (item) in
+        ocNetworking?.listingTrash(appDelegate.activeUrl, path:path, account: appDelegate.activeAccount, success: { (item) in
+            
+            NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
+            _ = NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
             
         }, failure: { (message, errorCode) in
             
