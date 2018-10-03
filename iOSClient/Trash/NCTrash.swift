@@ -16,10 +16,11 @@ class NCTrash: UICollectionViewController {
         super.viewDidLoad()
 
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        ocNetworking?.listingTrashs({ ([Any]?) in
-
+        
+        ocNetworking?.listingTrash({ (item) in
+            
         }, failure: { (message, errorCode) in
-           
+            
         })
     }
     

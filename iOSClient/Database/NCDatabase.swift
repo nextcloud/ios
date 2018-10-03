@@ -288,3 +288,36 @@ class tableTag: Object {
         return "fileID"
     }
 }
+
+class tableTrash: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var assetLocalIdentifier = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var directory: Bool = false
+    @objc dynamic var directoryID = ""
+    @objc dynamic var e2eEncrypted: Bool = false
+    @objc dynamic var etag = ""
+    @objc dynamic var favorite: Bool = false
+    @objc dynamic var fileID = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var fileNameView = ""
+    @objc dynamic var iconName = ""
+    @objc dynamic var permissions = ""
+    @objc dynamic var session = ""
+    @objc dynamic var sessionError = ""
+    @objc dynamic var sessionSelector = ""
+    @objc dynamic var sessionTaskIdentifier: Int = 0
+    @objc dynamic var size: Double = 0
+    @objc dynamic var status: Int = 0
+    @objc dynamic var thumbnailExists: Bool = false
+    @objc dynamic var typeFile = ""
+    @objc dynamic var trashbinFileName = ""
+    @objc dynamic var trashbinOriginalLocation = ""
+    @objc dynamic var trashbinDeletionTime = NSDate()
+
+    override static func primaryKey() -> String {
+        return "fileID"
+    }
+}
+

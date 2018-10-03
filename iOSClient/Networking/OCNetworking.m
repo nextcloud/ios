@@ -2273,7 +2273,7 @@
 #pragma mark =====  Trash OCS API =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)listingTrashs:(void(^)(NSArray *metadatas))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+- (void)listingTrash:(void(^)(NSArray *items))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
 {
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
     
@@ -2282,7 +2282,7 @@
     
     NSString *path = [_activeUrl stringByAppendingString:k_dav];
 
-    [communication listingTrashbin:path withUserSessionToken:nil onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
+    [communication listingTrash:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token) {
         NSLog(@"ok");
     } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer) {
         NSLog(@"error");

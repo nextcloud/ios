@@ -2810,33 +2810,26 @@
     }];
 }
 
-#pragma mark - Trash API
+#pragma mark - Trash
 
-- (void)listingTrashbin:(NSString *)path withUserSessionToken:(NSString *)token onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest
+- (void)listingTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest
 {
-    if (!token){
-        token = @"no token";
-    }
-    
     path = [path encodeString:NSUTF8StringEncoding];
     
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request listTrashbinPath:path user:_user userID:_userID onCommunication:sharedOCCommunication withUserSessionToken:token success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+    [request listTrash:path userID:_userID onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
         
-        NSData *responseData = (NSData *)responseObject;
-        OCXMLParser *parser = [[OCXMLParser alloc]init];
-        [parser initParserWithData:responseData];
-        NSMutableArray *directoryList = [parser.directoryList mutableCopy];
+        OCXMLParser *parser = [OCXMLParser new];
+        [parser initParserWithData:responseObject];
+        NSMutableArray *list = [parser.directoryList mutableCopy];
         
-        //Return success
-        successRequest(response, directoryList, request.redirectedServer, token);
+        successRequest(response, list, request.redirectedServer, token);
         
     } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
         
         failureRequest(response, error, token, request.redirectedServer);
-
     }];
 }
 
