@@ -7,8 +7,11 @@
 //
 
 import Foundation
+ 
 
-class NCTrash: UICollectionViewController {
+class NCTrash: UIViewController {
+    
+    @IBOutlet fileprivate weak var collectionView: UICollectionView!
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
@@ -35,8 +38,7 @@ class NCTrash: UICollectionViewController {
             
         }, failure: { (message, errorCode) in
             
+            print("error " + message!)
         })
     }
-    
-    
 }
