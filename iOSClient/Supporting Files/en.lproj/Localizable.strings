@@ -507,6 +507,7 @@
 
 "_destination_folder_"              = "Destination folder";
 "_use_folder_media_"                = "Use the Media folder as destination";
+"_use_folder_auto_upload_"          = "Use the Auto Upload folder as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
 "_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time";

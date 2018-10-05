@@ -51,7 +51,7 @@
     // Remenu
     REMenu *menu;
     REMenuItem *menuSelectMediaFolder;
-    REMenuItem *menuSelectAutomaticUploadFolder;
+//    REMenuItem *menuSelectAutomaticUploadFolder;
     REMenuItem *menuFilterImage;
     REMenuItem *menuFilterVideo;
     REMenuItem *menuSelectItems;
@@ -248,13 +248,15 @@
         }
     }];
     
-    menuSelectAutomaticUploadFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_media_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+    menuSelectMediaFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_media_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         [self selectStartDirectoryPhotosTab];
     }];
     
-    menuSelectMediaFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_automatic_upload_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+    /*
+    menuSelectAutomaticUploadFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_automatic_upload_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         [self selectAutomaticUploadFolder];
     }];
+    */
     
     if (filterTypeFileImage) {
         menuFilterImage = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewimage_show_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"imageno"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
@@ -282,7 +284,7 @@
     
     // REMENU --------------------------------------------------------------------------------------------------------------
     
-    menu = [[REMenu alloc] initWithItems:@[menuSelectItems, menuSelectMediaFolder, menuSelectAutomaticUploadFolder, menuFilterImage, menuFilterVideo]];
+    menu = [[REMenu alloc] initWithItems:@[menuSelectItems, menuSelectMediaFolder, menuFilterImage, menuFilterVideo]];
     
     menu.imageOffset = CGSizeMake(5, -1);
     
@@ -625,7 +627,7 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Change Start directory && Automatic upload directory ====
+#pragma mark ==== Change Start directory ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
@@ -644,6 +646,7 @@
         }
     }
     
+    /*
     if ([type isEqualToString:@"automaticUploadFolder"]) {
         
         if (title == nil) {
@@ -665,6 +668,7 @@
         // Clear data new Auto Upload
         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
     }
+    */
 }
 
 - (void)selectStartDirectoryPhotosTab
@@ -691,6 +695,7 @@
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
+/*
 - (void)selectAutomaticUploadFolder
 {
     UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
@@ -714,6 +719,7 @@
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
+*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Search Photo/Video ====

@@ -158,8 +158,8 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         section.addFormRow(row)
         
-        // User folder Media
-        row = XLFormRowDescriptor(tag: "useFolderMedia", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_media_", comment: ""))
+        // User folder Autoupload
+        row = XLFormRowDescriptor(tag: "useFolderAutoUpload", rowType: XLFormRowDescriptorTypeBooleanSwitch, title: NSLocalizedString("_use_folder_auto_upload_", comment: ""))
         row.value = 0
         
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
@@ -174,7 +174,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         } else {
             row.value = 0
         }
-        row.hidden = "$\("useFolderMedia") == 0"
+        row.hidden = "$\("useFolderAutoUpload") == 0"
 
         row.cellConfig["textLabel.font"] = UIFont.systemFont(ofSize: 15.0)
 
@@ -241,7 +241,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         super.formRowDescriptorValueHasChanged(formRow, oldValue: oldValue, newValue: newValue)
         
-        if formRow.tag == "useFolderMedia" {
+        if formRow.tag == "useFolderAutoUpload" {
             
             if (formRow.value! as AnyObject).boolValue  == true {
                 
@@ -366,7 +366,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
         
         self.dismiss(animated: true, completion: {
             
-            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderMedia")!
+            let useFolderPhotoRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useFolderAutoUpload")!
             let useSubFolderRow : XLFormRowDescriptor  = self.form.formRow(withTag: "useSubFolder")!
             var useSubFolder : Bool = false
             
