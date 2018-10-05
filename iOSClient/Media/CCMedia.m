@@ -674,7 +674,7 @@
     CCMove *viewController = (CCMove *)navigationController.topViewController;
     
     viewController.delegate = self;
-    viewController.move.title = NSLocalizedString(@"_select_dir_media_tab_", nil);
+    viewController.move.title = NSLocalizedString(@"_select_", nil);
     viewController.tintColor = [NCBrandColor sharedInstance].brandText;
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
@@ -698,7 +698,7 @@
     CCMove *viewController = (CCMove *)navigationController.topViewController;
     
     viewController.delegate = self;
-    viewController.move.title = NSLocalizedString(@"_select_automatic_upload_folder_", nil);
+    viewController.move.title = NSLocalizedString(@"_select_", nil);
     viewController.tintColor = [NCBrandColor sharedInstance].brandText;
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
