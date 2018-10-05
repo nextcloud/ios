@@ -752,8 +752,9 @@
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
                 
                 NSError *error = nil;
+                NSString *extensionAsset = [[[asset valueForKey:@"filename"] pathExtension] uppercaseString];
                 
-                if ([dataUTI isEqualToString:@"public.heic"] && [CCUtility getFormatCompatibility]) {
+                if ([extensionAsset isEqualToString:@"HEIC"] && [CCUtility getFormatCompatibility]) {
                     
                     UIImage *image = [UIImage imageWithData:imageData];
                     imageData = UIImageJPEGRepresentation(image, 1.0);

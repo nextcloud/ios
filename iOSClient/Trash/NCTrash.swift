@@ -15,6 +15,7 @@ class NCTrash: UIViewController {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
+    var itemHeight: CGFloat = 180
     
     override func viewDidLoad() {
         super.viewDidLoad()
