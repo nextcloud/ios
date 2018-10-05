@@ -1875,7 +1875,7 @@
 }
 
 // DELEGATE : Move
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
 {
     [_queueSelector removeAllObjects];
     
@@ -3606,26 +3606,6 @@
                                     }];
         }
         
-        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
-            
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        // Settings new folder Automatatic upload
-                                        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:self.metadata.fileName];
-                                        [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:appDelegate.activeUrl];
-                                        
-                                        // Clear data (old) Auto Upload
-                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:_autoUploadDirectory directoryID:nil];
-                                                                                
-                                        [self readFolder:serverUrl];
-                                    }];
-        }
-
         if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock

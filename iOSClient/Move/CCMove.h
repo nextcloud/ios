@@ -49,6 +49,7 @@
 
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) tableMetadata *passMetadata;
+@property (nonatomic, strong) NSString *type;
 
 //BKPasscodeViewController
 @property (nonatomic) NSUInteger failedAttempts;
@@ -67,7 +68,7 @@
 
 @protocol CCMoveDelegate <NSObject>
 
-@optional - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title;
+@optional - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type;
 @optional - (void)dismissMove;
 @optional - (void)selectMetadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl;
 

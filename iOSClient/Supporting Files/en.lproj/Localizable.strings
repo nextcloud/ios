@@ -398,6 +398,8 @@
 // Media
 
 "_select_media_folder_"         = "Select the \"Media\" folder";
+"_select_automatic_upload_folder_" = "Select the \"Automatic upload\" folder";
+"_media_error_select_folder_"   = "Select a valid folder for the \"Automatic upload\"";
 "_media_viewimage_show_"        = "Show images";
 "_media_viewimage_hide_"        = "Hide images";
 "_media_viewvideo_show_"        = "Show video";

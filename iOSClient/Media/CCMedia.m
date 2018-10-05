@@ -51,6 +51,7 @@
     // Remenu
     REMenu *menu;
     REMenuItem *menuSelectMediaFolder;
+    REMenuItem *menuSelectAutomaticUploadFolder;
     REMenuItem *menuFilterImage;
     REMenuItem *menuFilterVideo;
     REMenuItem *menuSelectItems;
@@ -247,8 +248,12 @@
         }
     }];
     
-    menuSelectMediaFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_media_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+    menuSelectAutomaticUploadFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_media_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         [self selectStartDirectoryPhotosTab];
+    }];
+    
+    menuSelectMediaFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_automatic_upload_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        [self selectAutomaticUploadFolder];
     }];
     
     if (filterTypeFileImage) {
@@ -277,7 +282,7 @@
     
     // REMENU --------------------------------------------------------------------------------------------------------------
     
-    menu = [[REMenu alloc] initWithItems:@[menuSelectItems, menuSelectMediaFolder, menuFilterImage, menuFilterVideo]];
+    menu = [[REMenu alloc] initWithItems:@[menuSelectItems, menuSelectMediaFolder, menuSelectAutomaticUploadFolder, menuFilterImage, menuFilterVideo]];
     
     menu.imageOffset = CGSizeMake(5, -1);
     
@@ -620,20 +625,45 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Change Start directory ====
+#pragma mark ==== Change Start directory && Automatic upload directory ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
 {
-    NSString *oldStartDirectoryMediaTabView = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+    if ([type isEqualToString:@"mediaFolder"]) {
+        
+        NSString *oldStartDirectoryMediaTabView = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
+        
+        if (![serverUrlTo isEqualToString:oldStartDirectoryMediaTabView]) {
+            
+            // Save Start Directory
+            [[NCManageDatabase sharedInstance] setAccountStartDirectoryMediaTabView:serverUrlTo];
+            
+            // search PhotoVideo with new start directory
+            [self searchPhotoVideo];
+        }
+    }
     
-    if (![serverUrlTo isEqualToString:oldStartDirectoryMediaTabView]) {
+    if ([type isEqualToString:@"automaticUploadFolder"]) {
         
-        // Save Start Directory
-        [[NCManageDatabase sharedInstance] setAccountStartDirectoryMediaTabView:serverUrlTo];
+        if (title == nil) {
+            [appDelegate messageNotification:@"_error_" description:@"_media_error_select_folder_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+            return;
+        }
         
-        // search PhotoVideo with new start directory
-        [self searchPhotoVideo];
+        NSString *serverUrl = [NSURL URLWithString:serverUrlTo].URLByDeletingLastPathComponent.absoluteString;
+        if ([[serverUrl substringFromIndex:[serverUrl length] - 1] isEqualToString:@"/"])
+            serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+
+        // Clear data (old) Auto Upload
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] directoryID:nil];
+        
+        // Settings new folder Automatatic upload
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:title];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:appDelegate.activeUrl];
+        
+        // Clear data new Auto Upload
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
     }
 }
 
@@ -650,6 +680,34 @@
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
     viewController.networkingOperationQueue = appDelegate.netQueue;
     viewController.hideCreateFolder = YES;
+    
+    // TYPE
+    viewController.type = @"mediaFolder";
+    
+    // E2EE
+    viewController.includeDirectoryE2EEncryption = NO;
+    
+    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
+- (void)selectAutomaticUploadFolder
+{
+    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
+    
+    CCMove *viewController = (CCMove *)navigationController.topViewController;
+    
+    viewController.delegate = self;
+    viewController.move.title = NSLocalizedString(@"_select_automatic_upload_folder_", nil);
+    viewController.tintColor = [NCBrandColor sharedInstance].brandText;
+    viewController.barTintColor = [NCBrandColor sharedInstance].brand;
+    viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
+    viewController.networkingOperationQueue = appDelegate.netQueue;
+    viewController.hideCreateFolder = NO;
+    
+    // TYPE
+    viewController.type = @"automaticUploadFolder";
+    
     // E2EE
     viewController.includeDirectoryE2EEncryption = NO;
     

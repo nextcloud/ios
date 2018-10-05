@@ -145,7 +145,7 @@
 #pragma mark == IBAction ==
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
 {
     if (serverUrlTo) {
         serverUrlLocal = serverUrlTo;

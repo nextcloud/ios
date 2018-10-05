@@ -190,7 +190,7 @@
     if ([self.delegate respondsToSelector:@selector(dismissMove)])
         [self.delegate dismissMove];
     
-    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNameView];
+    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNameView type:self.type];
         
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -531,6 +531,7 @@
     viewController.hideCreateFolder = self.hideCreateFolder;
     viewController.hideMoveutton = self.hideMoveutton;
     viewController.selectFile = self.selectFile;
+    viewController.type = self.type;
     viewController.networkingOperationQueue = self.networkingOperationQueue;
 
     viewController.passMetadata = metadata;

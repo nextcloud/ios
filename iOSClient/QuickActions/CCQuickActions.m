@@ -150,7 +150,7 @@
 #pragma mark ===== Move =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
 {    
     [_mainVC uploadFileAsset:_assets serverUrl:serverUrlTo useSubFolder:NO session:k_upload_session];
 }

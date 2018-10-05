@@ -168,7 +168,7 @@
     self.navigationItem.hidesBackButton = YES;
 }
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
 {
     // DENIED e2e
     if ([CCUtility isFolderEncrypted:serverUrlTo account:self.activeAccount]) {
