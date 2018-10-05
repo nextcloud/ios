@@ -25,7 +25,8 @@
 #import "CCMain.h"
 #import "CCManageLocation.h"
 #import "CCMedia.h"
+#import "CCMove.h"
 
-@interface CCManageAutoUpload : XLFormViewController
+@interface CCManageAutoUpload : XLFormViewController <CCMoveDelegate>
 
 @end

@@ -51,7 +51,6 @@
     // Remenu
     REMenu *menu;
     REMenuItem *menuSelectMediaFolder;
-//    REMenuItem *menuSelectAutomaticUploadFolder;
     REMenuItem *menuFilterImage;
     REMenuItem *menuFilterVideo;
     REMenuItem *menuSelectItems;
@@ -251,12 +250,6 @@
     menuSelectMediaFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_media_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
         [self selectStartDirectoryPhotosTab];
     }];
-    
-    /*
-    menuSelectAutomaticUploadFolder = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_automatic_upload_folder_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-        [self selectAutomaticUploadFolder];
-    }];
-    */
     
     if (filterTypeFileImage) {
         menuFilterImage = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_media_viewimage_show_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"imageno"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
@@ -694,32 +687,6 @@
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:navigationController animated:YES completion:nil];
 }
-
-/*
-- (void)selectAutomaticUploadFolder
-{
-    UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
-    
-    CCMove *viewController = (CCMove *)navigationController.topViewController;
-    
-    viewController.delegate = self;
-    viewController.move.title = NSLocalizedString(@"_select_", nil);
-    viewController.tintColor = [NCBrandColor sharedInstance].brandText;
-    viewController.barTintColor = [NCBrandColor sharedInstance].brand;
-    viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
-    viewController.networkingOperationQueue = appDelegate.netQueue;
-    viewController.hideCreateFolder = NO;
-    
-    // TYPE
-    viewController.type = @"automaticUploadFolder";
-    
-    // E2EE
-    viewController.includeDirectoryE2EEncryption = NO;
-    
-    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
-    [self presentViewController:navigationController animated:YES completion:nil];
-}
-*/
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Search Photo/Video ====

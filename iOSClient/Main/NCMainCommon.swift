@@ -241,7 +241,7 @@ class NCMainCommon: NSObject {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                     cell.imageTitleSegue = UIImage.init(named: "lock")
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderMedia"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                     cell.imageTitleSegue = UIImage.init(named: "media")
                 } else if isShare {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)

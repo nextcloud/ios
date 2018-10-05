@@ -90,6 +90,22 @@
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
     [section addFormRow:row];
 
+    // Auto Upload Directory
+    
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    
+    // Lock active YES/NO
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"autoUploadDirectory" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_autoupload_select_folder_", nil)];
+    row.hidden = [NSString stringWithFormat:@"$%@==0", @"autoUpload"];
+    [row.cellConfig setObject:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:[NCBrandColor sharedInstance].icon] forKey:@"imageView.image"];
+    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
+    [row.cellConfig setObject:[UIColor blackColor] forKey:@"textLabel.textColor"];
+    [row.cellConfig setObject:@(NSTextAlignmentLeft) forKey:@"textLabel.textAlignment"];
+    //[row.cellConfig setObject:@(UITableViewCellAccessoryDisclosureIndicator) forKey:@"accessoryType"];
+    row.action.formSelector = @selector(selectAutomaticUploadFolder);
+    [section addFormRow:row];
+    
     // Auto Upload Photo
     
     section = [XLFormSectionDescriptor formSection];
@@ -442,5 +458,57 @@
     }
     return sectionName;
 }
+
+
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
+{
+   
+     if ([type isEqualToString:@"automaticUploadFolder"]) {
+     
+         if (title == nil) {
+             [appDelegate messageNotification:@"_error_" description:@"_autoupload_error_select_folder_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+             return;
+         }
+         
+         NSString *serverUrl = [NSURL URLWithString:serverUrlTo].URLByDeletingLastPathComponent.absoluteString;
+         if ([[serverUrl substringFromIndex:[serverUrl length] - 1] isEqualToString:@"/"])
+         serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+         
+         // Clear data (old) Auto Upload
+         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] directoryID:nil];
+         
+         // Settings new folder Automatatic upload
+         [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:title];
+         [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:appDelegate.activeUrl];
+         
+         // Clear data new Auto Upload
+         [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
+     }
+    
+}
+
+ - (void)selectAutomaticUploadFolder
+ {
+     UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
+     
+     CCMove *viewController = (CCMove *)navigationController.topViewController;
+     
+     viewController.delegate = self;
+     viewController.move.title = NSLocalizedString(@"_select_", nil);
+     viewController.tintColor = [NCBrandColor sharedInstance].brandText;
+     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
+     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
+     viewController.networkingOperationQueue = appDelegate.netQueue;
+     viewController.hideCreateFolder = NO;
+     
+     // TYPE
+     viewController.type = @"automaticUploadFolder";
+     
+     // E2EE
+     viewController.includeDirectoryE2EEncryption = NO;
+     
+     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+     [self presentViewController:navigationController animated:YES completion:nil];
+ }
 
 @end

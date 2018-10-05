@@ -190,6 +190,8 @@
 // Manage AutoUpload
 
 "_autoupload_"                      = "Auto upload photos/videos";
+"_autoupload_select_folder_"        = "Select the \"Automatic upload\" folder";
+"_autoupload_error_select_folder_"  = "Select a valid folder for the \"Automatic upload\"";
 "_autoupload_background_"           = "Auto upload in the background";
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
@@ -398,8 +400,6 @@
 // Media
 
 "_select_media_folder_"         = "Select the \"Media\" folder";
-"_select_automatic_upload_folder_" = "Select the \"Automatic upload\" folder";
-"_media_error_select_folder_"   = "Select a valid folder for the \"Automatic upload\"";
 "_media_viewimage_show_"        = "Show images";
 "_media_viewimage_hide_"        = "Hide images";
 "_media_viewvideo_show_"        = "Show video";
@@ -506,7 +506,6 @@
 // CreateFormUploadAssets
 
 "_destination_folder_"              = "Destination folder";
-"_use_folder_media_"                = "Use the Media folder as destination";
 "_use_folder_auto_upload_"          = "Use the Auto Upload folder as destination";
 "_rename_filename_"                 = "Rename";
 "_filename_"                        = "Filename";
