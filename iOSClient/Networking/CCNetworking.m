@@ -1064,7 +1064,7 @@
     NSString *errorMessage = @"";
     BOOL isE2EEDirectory = false;
     
-    // E2EE Directory ?
+    // is this a E2EE Directory ?
     if ([CCUtility isFolderEncrypted:serverUrl account:_activeAccount] && [CCUtility isEndToEndEnabled:_activeAccount]) {
         isE2EEDirectory = true;
     }
@@ -1176,8 +1176,11 @@
         [[NCManageDatabase sharedInstance] addActivityClient:metadata.fileNameView fileID:fileID action:k_activityDebugActionUpload selector:metadata.sessionSelector note:serverUrl type:k_activityTypeSuccess verbose:k_activityVerboseDefault activeUrl:_activeUrl];
     }
     
+    // Detect E2EE
+    tableMetadata *e2eeMetadataInSession = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND directoryID == %@ AND e2eEncrypted == 1 AND (status == %d OR status == %d)", _activeAccount, metadata.directoryID, k_metadataStatusInUpload, k_metadataStatusUploading]];
+    
     // E2EE : UNLOCK
-    if (isE2EEDirectory) {
+    if (isE2EEDirectory && e2eeMetadataInSession == nil) {
         
         tableE2eEncryptionLock *tableLock = [[NCManageDatabase sharedInstance] getE2ETokenLockWithServerUrl:serverUrl];
 

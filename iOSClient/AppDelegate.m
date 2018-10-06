@@ -1251,19 +1251,24 @@
     tableMetadata *metadataForUpload, *metadataForDownload;
     long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
-    
+    BOOL isE2EE = false;
+
     // Test Maintenance
     if (self.maintenanceMode)
         return;
     
-    // E2EE : not in background
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading]];
-        if (metadata) {
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]];
-            if (directory != nil)
-                return;
+    // Detect E2EE
+    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading]];
+    if (metadata) {
+        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]];
+        if (directory != nil) {
+            isE2EE = true;
         }
+    }
+    
+    // E2EE : not in background
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && isE2EE) {
+        return;
     }
     
     // Stop Timer
