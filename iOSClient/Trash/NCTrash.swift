@@ -16,10 +16,15 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
     var itemHeight: CGFloat = 60
-    
+    var datasource = [tableTrash]()
+
+    var gridLayout: ListLayout!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell")
+        collectionView.collectionViewLayout = ListLayout(itemHeight: 60)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -35,7 +40,9 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         ocNetworking?.listingTrash(appDelegate.activeUrl, path:path, account: appDelegate.activeAccount, success: { (item) in
             
             NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
-            _ = NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+            self.datasource = NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])!
+            
+            self.collectionView.reloadData()
             
         }, failure: { (message, errorCode) in
             
@@ -45,15 +52,17 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     // MARK: collectionView methods
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 2
+        return datasource.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! NCTrashListCell
         
-        //let image = imagesToDisplay[indexPath.item]
-        //cell.imageView.image = image
+        let tableTrash = datasource[indexPath.item]
         
+        cell.configure(with: nil, title: tableTrash.trashbinFileName, info: "")
+                
         return cell
     }
     

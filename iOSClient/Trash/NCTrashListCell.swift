@@ -15,12 +15,13 @@ class NCTrashListCell: UICollectionViewCell {
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
 
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        
-        imageView.image = nil
-        labelTitle.text = ""
-        labelInfo.text = ""
+    override func awakeFromNib() {
+        super.awakeFromNib()
     }
     
+    public func configure(with image: UIImage?, title: String, info: String) {
+        imageView.image = image
+        labelTitle.text = title
+        labelInfo.text = info
+    }
 }
