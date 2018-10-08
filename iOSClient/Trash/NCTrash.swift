@@ -61,8 +61,20 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         let tableTrash = datasource[indexPath.item]
         
-        cell.configure(with: nil, title: tableTrash.trashbinFileName, info: "")
-                
+        if tableTrash.directory {
+            cell.configure(with: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement), title: tableTrash.trashbinFileName, info: CCUtility.dateDiff(tableTrash.date as Date))
+        } else {
+            
+            var image: UIImage?
+            if tableTrash.iconName.count > 0 {
+                image = UIImage.init(named: tableTrash.iconName)
+            } else {
+                image = UIImage.init(named: "file")
+            }
+            
+            cell.configure(with: image, title: tableTrash.trashbinFileName, info: CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size))
+        }
+        
         return cell
     }
     

@@ -27,25 +27,43 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="Label Title">
-                        <rect key="frame" x="65" y="13" width="525" height="18"/>
+                        <rect key="frame" x="65" y="13" width="415" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXX-71-9Q6" userLabel="Label Info File">
-                        <rect key="frame" x="65" y="31" width="525" height="15"/>
+                        <rect key="frame" x="65" y="31" width="415" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nwZ-pi-Igj" userLabel="restore">
+                        <rect key="frame" x="490" y="0.0" width="55" height="60"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="55" id="5Zc-h7-ZRJ"/>
+                            <constraint firstAttribute="height" constant="60" id="xvo-pN-hfE"/>
+                        </constraints>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="More">
+                        <rect key="frame" x="545" y="0.0" width="55" height="60"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="55" id="05P-NL-pd8"/>
+                            <constraint firstAttribute="height" constant="60" id="Jet-eo-x1M"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
             </view>
             <constraints>
-                <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="AXX-71-9Q6" secondAttribute="trailing" constant="10" id="2TV-xM-Dq8"/>
+                <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="8S3-NI-RXu"/>
+                <constraint firstItem="nwZ-pi-Igj" firstAttribute="leading" secondItem="AXX-71-9Q6" secondAttribute="trailing" constant="10" id="9oy-QL-WsN"/>
+                <constraint firstItem="dgL-g5-Nkc" firstAttribute="leading" secondItem="nwZ-pi-Igj" secondAttribute="trailing" id="GW0-RK-slT"/>
+                <constraint firstItem="nwZ-pi-Igj" firstAttribute="leading" secondItem="UtT-L6-mgW" secondAttribute="trailing" constant="10" id="Hhf-7M-29G"/>
                 <constraint firstItem="UtT-L6-mgW" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="PQ8-0b-fLa"/>
+                <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="QNH-El-hoW"/>
                 <constraint firstItem="AXX-71-9Q6" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="Qvq-r5-AX9"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="bottom" secondItem="AXX-71-9Q6" secondAttribute="bottom" constant="14" id="d06-sn-I3Y"/>
-                <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="UtT-L6-mgW" secondAttribute="trailing" constant="10" id="eK5-8P-xad"/>
+                <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="dgL-g5-Nkc" secondAttribute="trailing" id="fFe-pj-Yzy"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="Gu8-oz-zWa" secondAttribute="leading" constant="15" id="mBb-ff-7HD"/>
                 <constraint firstItem="UtT-L6-mgW" firstAttribute="top" secondItem="Gu8-oz-zWa" secondAttribute="top" constant="13" id="nrY-2F-QZ2"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="qKl-4Y-m5t"/>
@@ -56,6 +74,8 @@
                 <outlet property="imageView" destination="w2m-Vw-hpd" id="3ZB-Tc-gqI"/>
                 <outlet property="labelInfo" destination="AXX-71-9Q6" id="krb-tZ-UQ7"/>
                 <outlet property="labelTitle" destination="UtT-L6-mgW" id="Xv6-zM-2v1"/>
+                <outlet property="more" destination="dgL-g5-Nkc" id="FOg-ZX-Yti"/>
+                <outlet property="restore" destination="nwZ-pi-Igj" id="CHB-Fl-yAZ"/>
             </connections>
             <point key="canvasLocation" x="97.599999999999994" y="129.53523238380811"/>
         </collectionViewCell>

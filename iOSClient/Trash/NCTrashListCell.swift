@@ -14,6 +14,8 @@ class NCTrashListCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
+    @IBOutlet weak var restore: UIImageView!
+    @IBOutlet weak var more: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -23,5 +25,8 @@ class NCTrashListCell: UICollectionViewCell {
         imageView.image = image
         labelTitle.text = title
         labelInfo.text = info
+        
+        restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+        more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
     }
 }
