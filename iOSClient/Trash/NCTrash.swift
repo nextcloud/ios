@@ -9,7 +9,7 @@
 import Foundation
  
 
-class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate {
+class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate, NCTrashListDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     
@@ -58,11 +58,12 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! NCTrashListCell
-        
+        cell.delegate = self
+
         let tableTrash = datasource[indexPath.item]
         
         if tableTrash.directory {
-            cell.configure(with: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement), title: tableTrash.trashbinFileName, info: CCUtility.dateDiff(tableTrash.date as Date))
+            cell.configure(with: tableTrash.fileID ,image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement), title: tableTrash.trashbinFileName, info: CCUtility.dateDiff(tableTrash.date as Date))
         } else {
             
             var image: UIImage?
@@ -72,15 +73,24 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 image = UIImage.init(named: "file")
             }
             
-            cell.configure(with: image, title: tableTrash.trashbinFileName, info: CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size))
+            cell.configure(with: tableTrash.fileID, image: image, title: tableTrash.trashbinFileName, info: CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size))
         }
-        
+                
         return cell
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
+    // MARK: tap cell
+    func tapRestoreDelegate(with fileID: String) {
+        
+    }
+    
+    func tapMoreDelegate(with fileID: String) {
+    
     }
 }
 
