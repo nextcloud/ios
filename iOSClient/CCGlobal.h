@@ -301,7 +301,7 @@
 #define k_action_DEL                                    2
 
 // Nextcloud unsupported
-#define k_nextcloud_unsupported                         12
+#define k_nextcloud_unsupported                         11
 
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
