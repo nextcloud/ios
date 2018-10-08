@@ -862,32 +862,111 @@
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         
-        NSString *errorMessage;
+        NSError *error;
         NSString *fileNameIdentifier;
+        NSString *key;
+        NSString *initializationVector;
+        NSString *authenticationTag;
+        NSString *metadataKey;
+        NSInteger metadataKeyIndex;
         NSString *e2eMetadata;
-        
-        [self encryptedE2EFile:metadata serverUrl:serverUrl account:_activeAccount user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl errorMessage:&errorMessage fileNameIdentifier:&fileNameIdentifier e2eMetadata:&e2eMetadata];
-        
-        if (errorMessage != nil || fileNameIdentifier == nil) {
-            
+
+        // Verify File Size
+        NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] error:&error];
+        NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+        long long fileSize = [fileSizeNumber longLongValue];
+
+        if (fileSize > k_max_filesize_E2E) {
+            // Error for uploadFileFailure
             if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
-                [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:errorMessage errorCode:k_CCErrorInternalError];
+                [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:@"E2E Error file too big" errorCode:k_CCErrorInternalError];
+            }
+            return;
+        }
+        
+        // if new file upload [directoryID + fileName] create a new encrypted filename
+        if ([metadata.fileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileNameView]]) {
+            fileNameIdentifier = [CCUtility generateRandomIdentifier];
+        } else {
+            fileNameIdentifier = metadata.fileName;
+        }
+        
+        if ([[NCEndToEndEncryption sharedManager] encryptFileName:metadata.fileNameView fileNameIdentifier:fileNameIdentifier directory:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
+            
+            tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", _activeAccount, serverUrl]];
+            if (object) {
+                metadataKey = object.metadataKey;
+                metadataKeyIndex = object.metadataKeyIndex;
+            } else {
+                metadataKey = [[[NCEndToEndEncryption sharedManager] generateKey:16] base64EncodedStringWithOptions:0]; // AES_KEY_128_LENGTH
+                metadataKeyIndex = 0;
+            }
+            
+            tableE2eEncryption *addObject = [tableE2eEncryption new];
+            
+            addObject.account = _activeAccount;
+            addObject.authenticationTag = authenticationTag;
+            addObject.fileName = metadata.fileNameView;
+            addObject.fileNameIdentifier = fileNameIdentifier;
+            addObject.fileNamePath = [CCUtility returnFileNamePathFromFileName:metadata.fileNameView serverUrl:serverUrl activeUrl:_activeUrl];
+            addObject.key = key;
+            addObject.initializationVector = initializationVector;
+            addObject.metadataKey = metadataKey;
+            addObject.metadataKeyIndex = metadataKeyIndex;
+            
+            CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[metadata.fileNameView pathExtension], NULL);
+            CFStringRef mimeTypeRef = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
+            if (mimeTypeRef) {
+                addObject.mimeType = (__bridge NSString *)mimeTypeRef;
+            } else {
+                addObject.mimeType = @"application/octet-stream";
+            }
+            
+            addObject.serverUrl = serverUrl;
+            addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
+            
+            // Get the last metadata
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", _activeAccount, serverUrl]];
+            
+            error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&e2eMetadata fileID:directory.fileID user:_activeUser userID:_activeUserID password:_activePassword url:_activeUrl];
+            if (error == nil) {
+                if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:e2eMetadata privateKey:[CCUtility getEndToEndPrivateKey:_activeAccount] serverUrl:serverUrl account:_activeAccount url:_activeUrl] == false) {
+                    
+                    if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+                        [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_e2e_error_decode_metadata_", nil) errorCode:k_CCErrorInternalError];
+                    }
+                    return;
+                }
+            }
+            
+            // write new record e2ee
+            if([[NCManageDatabase sharedInstance] addE2eEncryption:addObject] == NO) {
+                
+                if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+                    [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_e2e_error_create_encrypted_", nil) errorCode:k_CCErrorInternalError];
+                }
+                return;
             }
             
         } else {
             
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                // Now the fileName is fileNameIdentifier && flag e2eEncrypted
-                metadata.fileName = fileNameIdentifier;
-                metadata.e2eEncrypted = YES;
-            
-                // Update Metadata
-                tableMetadata *metadataEncrypted = [[NCManageDatabase sharedInstance] addMetadata:metadata];
-            
-                [self uploadURLSessionMetadata:metadataEncrypted serverUrl:serverUrl taskStatus:taskStatus];
-            });
+            if ([self.delegate respondsToSelector:@selector(uploadFileSuccessFailure:fileID:assetLocalIdentifier:serverUrl:selector:errorMessage:errorCode:)]) {
+                [self.delegate uploadFileSuccessFailure:metadata.fileName fileID:metadata.fileID assetLocalIdentifier:metadata.assetLocalIdentifier serverUrl:serverUrl selector:metadata.sessionSelector errorMessage:NSLocalizedString(@"_e2e_error_create_encrypted_", nil) errorCode:k_CCErrorInternalError];
+            }
+            return;
         }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            // Now the fileName is fileNameIdentifier && flag e2eEncrypted
+            metadata.fileName = fileNameIdentifier;
+            metadata.e2eEncrypted = YES;
+            
+            // Update Metadata
+            tableMetadata *metadataEncrypted = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+            
+            [self uploadURLSessionMetadata:metadataEncrypted serverUrl:serverUrl taskStatus:taskStatus];
+        });
     });
 }
 
@@ -1225,95 +1304,6 @@
     url = [url stringByReplacingOccurrencesOfString:[@"/" stringByAppendingString:fileName] withString:@""];
 
     return url;
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== E2EE End To End Encryption =====
-#pragma --------------------------------------------------------------------------------------------
-// E2EE
-
-- (void)encryptedE2EFile:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl account:(NSString *)account user:(NSString *)user userID:(NSString *)userID password:(NSString *)password url:(NSString *)url errorMessage:(NSString * __autoreleasing *)errorMessage fileNameIdentifier:(NSString **)fileNameIdentifier e2eMetadata:(NSString * __autoreleasing *)e2eMetadata
-{
-    __block NSError *error;
-    NSString *key;
-    NSString *initializationVector;
-    NSString *authenticationTag;
-    NSString *metadataKey;
-    NSInteger metadataKeyIndex;
-    
-    // Verify File Size
-    NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] error:&error];
-    NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
-    long long fileSize = [fileSizeNumber longLongValue];
-        
-    if (fileSize > k_max_filesize_E2E) {
-        // Error for uploadFileFailure
-        *errorMessage = @"E2E Error file too big";
-        return;
-    }
-        
-    // if new file upload [directoryID + fileName] create a new encrypted filename
-    if ([metadata.fileID isEqualToString:[metadata.directoryID stringByAppendingString:metadata.fileNameView]]) {
-        *fileNameIdentifier = [CCUtility generateRandomIdentifier];
-    } else {
-        *fileNameIdentifier = metadata.fileName;
-    }
-   
-    // Write to DB
-    if ([[NCEndToEndEncryption sharedManager] encryptFileName:metadata.fileNameView fileNameIdentifier:*fileNameIdentifier directory:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID] key:&key initializationVector:&initializationVector authenticationTag:&authenticationTag]) {
-        
-        tableE2eEncryption *object = [[NCManageDatabase sharedInstance] getE2eEncryptionWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", _activeAccount, serverUrl]];
-        if (object) {
-            metadataKey = object.metadataKey;
-            metadataKeyIndex = object.metadataKeyIndex;
-        } else {
-            metadataKey = [[[NCEndToEndEncryption sharedManager] generateKey:16] base64EncodedStringWithOptions:0]; // AES_KEY_128_LENGTH
-            metadataKeyIndex = 0;
-        }
-        
-        tableE2eEncryption *addObject = [tableE2eEncryption new];
-        
-        addObject.account = _activeAccount;
-        addObject.authenticationTag = authenticationTag;
-        addObject.fileName = metadata.fileNameView;
-        addObject.fileNameIdentifier = *fileNameIdentifier;
-        addObject.fileNamePath = [CCUtility returnFileNamePathFromFileName:metadata.fileNameView serverUrl:serverUrl activeUrl:_activeUrl];
-        addObject.key = key;
-        addObject.initializationVector = initializationVector;
-        addObject.metadataKey = metadataKey;
-        addObject.metadataKeyIndex = metadataKeyIndex;
-        
-        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[metadata.fileNameView pathExtension], NULL);
-        CFStringRef mimeTypeRef = UTTypeCopyPreferredTagWithClass (UTI, kUTTagClassMIMEType);
-        if (mimeTypeRef) {
-            addObject.mimeType = (__bridge NSString *)mimeTypeRef;
-        } else {
-            addObject.mimeType = @"application/octet-stream";
-        }
-        
-        addObject.serverUrl = serverUrl;
-        addObject.version = [[NCManageDatabase sharedInstance] getEndToEndEncryptionVersion];
-        
-        // Get the last metadata
-        NSString *metadata;
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", account, serverUrl]];
-
-        error = [[NCNetworkingEndToEnd sharedManager] getEndToEndMetadata:&metadata fileID:directory.fileID user:user userID:userID password:password url:url];
-        if (error == nil) {
-            if ([[NCEndToEndMetadata sharedInstance] decoderMetadata:metadata privateKey:[CCUtility getEndToEndPrivateKey:account] serverUrl:serverUrl account:account url:url] == false) {
-                *errorMessage = NSLocalizedString(@"_e2e_error_decode_metadata_", nil);
-                return;
-            }
-        }
-        *e2eMetadata = metadata;
-        
-        // write new record e2ee
-        if([[NCManageDatabase sharedInstance] addE2eEncryption:addObject] == NO)
-            *errorMessage = NSLocalizedString(@"_e2e_error_create_encrypted_", nil);
-        
-    } else {
-        *errorMessage = NSLocalizedString(@"_e2e_error_create_encrypted_", nil);
-    }
 }
 
 @end
