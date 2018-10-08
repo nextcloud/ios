@@ -1253,22 +1253,31 @@
     NSUInteger sizeDownload = 0, sizeUpload = 0;
     BOOL isE2EE = false;
 
+    long maxConcurrentOperationDownload = k_maxConcurrentOperationDownload;
+    long maxConcurrentOperationUpload = k_maxConcurrentOperationUpload;
+
     // Test Maintenance
     if (self.maintenanceMode)
         return;
     
     // Detect E2EE
-    tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading]];
-    if (metadata) {
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]];
-        if (directory != nil) {
+    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status != %d", self.activeAccount, k_metadataStatusNormal] sorted:nil ascending:NO];
+    for (tableMetadata *metadata in metadatasForE2EE) {
+        if ([[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]] != nil) {
             isE2EE = true;
+            break;
         }
     }
     
     // E2EE : not in background
     if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && isE2EE) {
         return;
+    }
+    
+    // E2EE : only 1 operation
+    if (isE2EE) {
+        maxConcurrentOperationDownload = 1;
+        maxConcurrentOperationUpload = 1;
     }
     
     // Stop Timer
@@ -1292,7 +1301,7 @@
 
     // ------------------------- <selector Download> -------------------------
     
-    while (counterDownload < k_maxConcurrentOperationDownload) {
+    while (counterDownload < maxConcurrentOperationDownload) {
         
         metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", _activeAccount, k_metadataStatusWaitDownload]];
         if (metadataForDownload) {
@@ -1311,7 +1320,7 @@
   
     // ------------------------- <selector Upload> -------------------------
     
-    while (counterUpload < k_maxConcurrentOperationUpload) {
+    while (counterUpload < maxConcurrentOperationUpload) {
         
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
@@ -1338,7 +1347,7 @@
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    while (counterUpload < k_maxConcurrentOperationUpload) {
+    while (counterUpload < maxConcurrentOperationUpload) {
 
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
@@ -1373,7 +1382,7 @@
 
     } else {
         
-        while (counterUpload < k_maxConcurrentOperationUpload) {
+        while (counterUpload < maxConcurrentOperationUpload) {
 
             if (sizeUpload > k_maxSizeOperationUpload) {
                 break;
