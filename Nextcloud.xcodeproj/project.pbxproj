@@ -555,6 +555,8 @@
 		F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */ = {isa = PBXBuildFile; fileRef = F7E9C41820F4CA870040CF18 /* CCTransfers.m */; };
 		F7EC9CBC21185F2000F1C5CE /* CCMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = F7EC9CBB21185F2000F1C5CE /* CCMedia.m */; };
 		F7ECBA6D1E239DCD003E6328 /* CCCreateCloud.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */; };
+		F7ED7EDC216B83D5007AB4D9 /* NCTrashListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7ED7EDB216B83D5007AB4D9 /* NCTrashListCell.xib */; };
+		F7ED7EDE216B85DA007AB4D9 /* NCTrashListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7ED7EDD216B85DA007AB4D9 /* NCTrashListCell.swift */; };
 		F7F54CE51E5B14C700E19C62 /* ImageError.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CAF1E5B14C700E19C62 /* ImageError.png */; };
 		F7F54CE61E5B14C700E19C62 /* ImageError@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB01E5B14C700E19C62 /* ImageError@2x.png */; };
 		F7F54CE71E5B14C700E19C62 /* ImageError@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = F7F54CB11E5B14C700E19C62 /* ImageError@3x.png */; };
@@ -1679,6 +1681,8 @@
 		F7EC9CBA21185F2000F1C5CE /* CCMedia.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMedia.h; sourceTree = "<group>"; };
 		F7EC9CBB21185F2000F1C5CE /* CCMedia.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMedia.m; sourceTree = "<group>"; };
 		F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCCreateCloud.swift; sourceTree = "<group>"; };
+		F7ED7EDB216B83D5007AB4D9 /* NCTrashListCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashListCell.xib; sourceTree = "<group>"; };
+		F7ED7EDD216B85DA007AB4D9 /* NCTrashListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashListCell.swift; sourceTree = "<group>"; };
 		F7F0617A1BAACDD300846525 /* CryptoCloud.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptoCloud.pch; sourceTree = "<group>"; };
 		F7F54CAF1E5B14C700E19C62 /* ImageError.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ImageError.png; sourceTree = "<group>"; };
 		F7F54CB01E5B14C700E19C62 /* ImageError@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ImageError@2x.png"; sourceTree = "<group>"; };
@@ -2736,6 +2740,8 @@
 			children = (
 				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
 				F78F74352163781100C2ADAD /* NCTrash.swift */,
+				F7ED7EDB216B83D5007AB4D9 /* NCTrashListCell.xib */,
+				F7ED7EDD216B85DA007AB4D9 /* NCTrashListCell.swift */,
 			);
 			path = Trash;
 			sourceTree = "<group>";
@@ -3728,6 +3734,7 @@
 				F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */,
 				F73D71641F2674A400E233EB /* NCText.storyboard in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
+				F7ED7EDC216B83D5007AB4D9 /* NCTrashListCell.xib in Resources */,
 				F7D423471F0596AC009C9782 /* Reader-Mark-Y.png in Resources */,
 				F7D423431F0596AC009C9782 /* Reader-Export@3x.png in Resources */,
 				F7D4233C1F0596AC009C9782 /* Reader-Button-N@2x.png in Resources */,
@@ -4156,6 +4163,7 @@
 				F7D4245E1F063B82009C9782 /* CTAssetCollectionViewController.m in Sources */,
 				F762CAF91EACB66200B38484 /* XLFormCheckCell.m in Sources */,
 				F7BE6E2F1D2D5C3B00106933 /* CCQuickActions.m in Sources */,
+				F7ED7EDE216B85DA007AB4D9 /* NCTrashListCell.swift in Sources */,
 				F762CB101EACB66200B38484 /* NSPredicate+XLFormAdditions.m in Sources */,
 				F7D424691F063B82009C9782 /* CTAssetsGridViewLayout.m in Sources */,
 				F7D4237E1F0596C6009C9782 /* ReaderDocument.m in Sources */,
