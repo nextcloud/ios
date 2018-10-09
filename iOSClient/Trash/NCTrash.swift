@@ -50,6 +50,23 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         })
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.collectionView.collectionViewLayout.invalidateLayout()
+        }
+    }
+    
+    // MARK: tap cell
+    func tapRestoreDelegate(with fileID: String) {
+        
+    }
+    
+    func tapMoreDelegate(with fileID: String) {
+        
+    }
+    
     // MARK: collectionView methods
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return datasource.count
@@ -77,20 +94,6 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }
                 
         return cell
-    }
-    
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        collectionView.collectionViewLayout.invalidateLayout()
-    }
-    
-    // MARK: tap cell
-    func tapRestoreDelegate(with fileID: String) {
-        
-    }
-    
-    func tapMoreDelegate(with fileID: String) {
-    
     }
 }
 
