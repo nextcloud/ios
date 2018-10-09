@@ -68,6 +68,16 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     // MARK: collectionView methods
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath)
+        return headerView
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return datasource.count
     }
@@ -108,6 +118,8 @@ class ListLayout: UICollectionViewFlowLayout {
         minimumInteritemSpacing = 1
         
         self.itemHeight = itemHeight
+        self.scrollDirection = .vertical
+        self.headerReferenceSize = CGSize(width: 0, height: 30)
     }
     
     required init?(coder aDecoder: NSCoder) {
