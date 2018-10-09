@@ -59,14 +59,14 @@ class NCTrashListCell: UICollectionViewCell {
     }
     
     @objc func tapRestore(sender: UITapGestureRecognizer) {
-        delegate?.tapRestoreDelegate(with: fileID)
+        delegate?.tapRestoreItem(with: fileID)
     }
     @objc func tapMore(sender: UITapGestureRecognizer) {
-        delegate?.tapMoreDelegate(with: fileID)
+        delegate?.tapMoreItem(with: fileID)
     }
 }
 
 protocol NCTrashListDelegate {
-    func tapRestoreDelegate(with fileID: String)
-    func tapMoreDelegate(with fileID: String)
+    func tapRestoreItem(with fileID: String)
+    func tapMoreItem(with fileID: String)
 }

@@ -12,7 +12,7 @@ import Foundation
 class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate, NCTrashListDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
-    
+
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
@@ -25,7 +25,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         super.viewDidLoad()
         
         collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell")
-        collectionView.collectionViewLayout = ListLayout(itemHeight: 60)
+        collectionView.collectionViewLayout = ListLayout(itemHeight: 60)        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -62,12 +62,12 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     // MARK: tap cell
-    func tapRestoreDelegate(with fileID: String) {
-        print("touch restore")
+    func tapRestoreItem(with fileID: String) {
+        print("tap item restore")
     }
     
-    func tapMoreDelegate(with fileID: String) {
-        print("touch more")
+    func tapMoreItem(with fileID: String) {
+        print("tap item more")
     }
     
     // MARK: collectionView methods

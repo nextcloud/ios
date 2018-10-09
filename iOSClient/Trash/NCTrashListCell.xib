@@ -46,17 +46,17 @@
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="More">
-                        <rect key="frame" x="557.5" y="17.5" width="25" height="25"/>
+                        <rect key="frame" x="557" y="17" width="26" height="26"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="25" id="05P-NL-pd8"/>
-                            <constraint firstAttribute="height" constant="25" id="Jet-eo-x1M"/>
+                            <constraint firstAttribute="width" constant="26" id="05P-NL-pd8"/>
+                            <constraint firstAttribute="height" constant="26" id="Jet-eo-x1M"/>
                         </constraints>
                     </imageView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nwZ-pi-Igj" userLabel="restore">
-                        <rect key="frame" x="497.5" y="17.5" width="25" height="25"/>
+                        <rect key="frame" x="497" y="17" width="26" height="26"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="25" id="5Zc-h7-ZRJ"/>
-                            <constraint firstAttribute="height" constant="25" id="xvo-pN-hfE"/>
+                            <constraint firstAttribute="width" constant="26" id="5Zc-h7-ZRJ"/>
+                            <constraint firstAttribute="height" constant="26" id="xvo-pN-hfE"/>
                         </constraints>
                     </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Egg-cb-EhZ" userLabel="Separator">
