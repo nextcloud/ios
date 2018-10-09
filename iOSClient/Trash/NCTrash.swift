@@ -9,7 +9,7 @@
 import Foundation
  
 
-class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashHeaderDelegate {
+class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -26,6 +26,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         super.viewDidLoad()
         
         collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell")
+        collectionView.register(UINib.init(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "cell")
         
         listLayout = ListLayout(itemHeight: 60)
         collectionView.collectionViewLayout = listLayout

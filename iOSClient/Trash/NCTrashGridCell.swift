@@ -19,8 +19,6 @@ class NCTrashGridCell: UICollectionViewCell {
     @IBOutlet weak var more: UIImageView!
     @IBOutlet weak var tapMore: UIImageView!
 
-    @IBOutlet weak var separator: UIView!
-
     var delegate: NCTrashGridDelegate?
     
     var fileID = ""
@@ -30,16 +28,14 @@ class NCTrashGridCell: UICollectionViewCell {
        
         restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trashRestore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trashMore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-        
-        separator.backgroundColor = NCBrandColor.sharedInstance.seperator
-        
-        let tapGestureRestore = UITapGestureRecognizer(target: self, action: #selector(NCTrashListCell.tapRestore(sender:)))
+                
+        let tapGestureRestore = UITapGestureRecognizer(target: self, action: #selector(NCTrashGridCell.tapRestore(sender:)))
         addGestureRecognizer(tapGestureRestore)
         tapGestureRestore.numberOfTapsRequired = 1
         tapRestore.isUserInteractionEnabled = true
         tapRestore.addGestureRecognizer(tapGestureRestore)
         
-        let tapGestureMore = UITapGestureRecognizer(target: self, action: #selector(NCTrashListCell.tapMore(sender:)))
+        let tapGestureMore = UITapGestureRecognizer(target: self, action: #selector(NCTrashGridCell.tapMore(sender:)))
         addGestureRecognizer(tapGestureMore)
         tapGestureMore.numberOfTapsRequired = 1
         tapMore.isUserInteractionEnabled = true
