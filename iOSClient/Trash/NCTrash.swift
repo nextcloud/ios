@@ -9,7 +9,7 @@
 import Foundation
  
 
-class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate, NCTrashListDelegate {
+class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashHeaderDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -25,7 +25,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         super.viewDidLoad()
         
         collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell")
-        collectionView.collectionViewLayout = ListLayout(itemHeight: 60)        
+        collectionView.collectionViewLayout = ListLayout(itemHeight: 60)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -61,7 +61,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }
     }
     
-    // MARK: tap cell
+    // MARK: tap
     func tapRestoreItem(with fileID: String) {
         print("tap item restore")
     }
@@ -70,11 +70,17 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         print("tap item more")
     }
     
+    func tapMoreHeader() {
+        print("tap header more")
+    }
+
     // MARK: collectionView methods
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath)
-        return headerView
+        let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as! NCTrashHeader
+        trashHeader.delegate = self
+        
+        return trashHeader
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {

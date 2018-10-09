@@ -13,6 +13,8 @@ class NCTrashHeader: UICollectionReusableView {
     @IBOutlet weak var tapMore: UIImageView!
     @IBOutlet weak var separator: UIView!
     
+    var delegate: NCTrashHeaderDelegate?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -28,6 +30,11 @@ class NCTrashHeader: UICollectionReusableView {
     }
     
     @objc func tapMore(sender: UITapGestureRecognizer) {
-        print("tap header more")
+        delegate?.tapMoreHeader()
     }
 }
+
+protocol NCTrashHeaderDelegate {
+    func tapMoreHeader()
+}
+

@@ -24,7 +24,6 @@ class NCTrashListCell: UICollectionViewCell {
 
     @IBOutlet weak var separator: UIView!
 
-    
     var delegate: NCTrashListDelegate?
     
     var fileID = ""
