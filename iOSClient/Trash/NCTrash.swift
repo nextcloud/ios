@@ -15,6 +15,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
+    var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var itemHeight: CGFloat = 60
     var datasource = [tableTrash]()
 
@@ -30,6 +31,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        self.navigationItem.title = titleCurrentFolder
+
         if path == "" {
             let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
             path = k_dav + "/trashbin/" + userID! + "/trash/"
@@ -114,6 +117,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
             let ncTrash:NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as! NCTrash
             ncTrash.path = tableTrash.filePath + tableTrash.fileName
+            ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
             self.navigationController?.pushViewController(ncTrash, animated: true)
         }
     }
