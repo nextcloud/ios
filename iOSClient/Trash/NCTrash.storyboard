@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Zaz-Cl-qpZ">
-                                <rect key="frame" x="0.0" y="45" width="375" height="602"/>
+                                <rect key="frame" x="0.0" y="20" width="375" height="598"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="fF1-wd-0xN">
                                     <size key="itemSize" width="50" height="50"/>
@@ -38,8 +38,8 @@
                         <constraints>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" id="1bp-sm-u0X"/>
                             <constraint firstItem="Meh-VD-wWh" firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
-                            <constraint firstItem="Meh-VD-wWh" firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" constant="20" id="aNr-tf-2AH"/>
-                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" constant="25" id="tji-wt-R7s"/>
+                            <constraint firstItem="Meh-VD-wWh" firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" constant="49" id="aNr-tf-2AH"/>
+                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="tji-wt-R7s"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Meh-VD-wWh"/>
                     </view>
