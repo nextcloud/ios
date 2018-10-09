@@ -100,6 +100,7 @@ class ListLayout: UICollectionViewFlowLayout {
     
     init(itemHeight: CGFloat) {
         super.init()
+        
         minimumLineSpacing = 1
         minimumInteritemSpacing = 1
         
