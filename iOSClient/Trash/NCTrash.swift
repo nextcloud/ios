@@ -63,11 +63,11 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     // MARK: tap cell
     func tapRestoreDelegate(with fileID: String) {
-        
+        print("touch restore")
     }
     
     func tapMoreDelegate(with fileID: String) {
-        
+        print("touch more")
     }
     
     // MARK: collectionView methods
@@ -156,9 +156,4 @@ class ListLayout: UICollectionViewFlowLayout {
             super.itemSize = newValue
         }
     }
-    
-    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
-        return proposedContentOffset
-    }
-    
 }
