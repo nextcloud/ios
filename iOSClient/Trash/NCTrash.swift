@@ -105,6 +105,18 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let tableTrash = datasource[indexPath.item]
+        
+        if tableTrash.directory {
+        
+            let ncTrash:NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as! NCTrash
+            ncTrash.path = tableTrash.filePath + tableTrash.fileName
+            self.navigationController?.pushViewController(ncTrash, animated: true)
+        }
+    }
 }
 
 class ListLayout: UICollectionViewFlowLayout {
