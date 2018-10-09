@@ -34,6 +34,7 @@ class NCTrashListCell: UICollectionViewCell {
        
         restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trashRestore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trashMore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+        
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
         
         let tapGestureRestore = UITapGestureRecognizer(target: self, action: #selector(NCTrashListCell.tapRestore(sender:)))
