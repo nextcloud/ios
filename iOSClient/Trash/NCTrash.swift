@@ -19,13 +19,16 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     var itemHeight: CGFloat = 60
     var datasource = [tableTrash]()
 
-    var gridLayout: ListLayout!
+    var listLayout: ListLayout!
+    var gridLayout: GridLayout!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell")
-        collectionView.collectionViewLayout = ListLayout(itemHeight: 60)
+        
+        listLayout = ListLayout(itemHeight: 60)
+        collectionView.collectionViewLayout = listLayout
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -62,12 +65,17 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     // MARK: tap
+    
     func tapRestoreItem(with fileID: String) {
         print("tap item restore")
     }
     
     func tapMoreItem(with fileID: String) {
         print("tap item more")
+    }
+    
+    func tapSwitchHeader() {
+        print("tap header switch")
     }
     
     func tapMoreHeader() {
@@ -77,6 +85,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     // MARK: collectionView methods
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
         let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as! NCTrashHeader
         trashHeader.delegate = self
         
@@ -132,6 +141,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
 class ListLayout: UICollectionViewFlowLayout {
     
     var itemHeight: CGFloat = 60
+    var headerHeight: CGFloat = 30
     
     init(itemHeight: CGFloat) {
         super.init()
@@ -141,7 +151,7 @@ class ListLayout: UICollectionViewFlowLayout {
         
         self.itemHeight = itemHeight
         self.scrollDirection = .vertical
-        self.headerReferenceSize = CGSize(width: 0, height: 30)
+        self.headerReferenceSize = CGSize(width: 0, height: headerHeight)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -153,6 +163,43 @@ class ListLayout: UICollectionViewFlowLayout {
             if let collectionView = collectionView {
                 let itemWidth: CGFloat = collectionView.frame.width
                 return CGSize(width: itemWidth, height: self.itemHeight)
+            }
+            
+            // Default fallback
+            return CGSize(width: 100, height: 100)
+        }
+        set {
+            super.itemSize = newValue
+        }
+    }
+}
+
+class GridLayout: UICollectionViewFlowLayout {
+    
+    var numberOfColumns: Int = 3
+    var headerHeight: CGFloat = 30
+    
+    init(numberOfColumns: Int) {
+        super.init()
+        
+        minimumLineSpacing = 1
+        minimumInteritemSpacing = 1
+        
+        self.numberOfColumns = numberOfColumns
+        self.scrollDirection = .vertical
+        self.headerReferenceSize = CGSize(width: 0, height: headerHeight)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var itemSize: CGSize {
+        get {
+            if let collectionView = collectionView {
+                let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(self.numberOfColumns)) - self.minimumInteritemSpacing
+                let itemHeight: CGFloat = 100.0
+                return CGSize(width: itemWidth, height: itemHeight)
             }
             
             // Default fallback

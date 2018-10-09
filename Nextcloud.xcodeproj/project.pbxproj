@@ -193,6 +193,8 @@
 		F73D71641F2674A400E233EB /* NCText.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73D71631F2674A400E233EB /* NCText.storyboard */; };
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
 		F7417DB3216CE925007D05F5 /* NCTrashHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB2216CE925007D05F5 /* NCTrashHeader.swift */; };
+		F7417DB5216CFE8E007D05F5 /* NCTrashGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7417DB4216CFE8E007D05F5 /* NCTrashGridCell.xib */; };
+		F7417DB7216CFED0007D05F5 /* NCTrashGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB6216CFED0007D05F5 /* NCTrashGridCell.swift */; };
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3720E23FF200417916 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
@@ -920,6 +922,8 @@
 		F73D71631F2674A400E233EB /* NCText.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCText.storyboard; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
 		F7417DB2216CE925007D05F5 /* NCTrashHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashHeader.swift; sourceTree = "<group>"; };
+		F7417DB4216CFE8E007D05F5 /* NCTrashGridCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashGridCell.xib; sourceTree = "<group>"; };
+		F7417DB6216CFED0007D05F5 /* NCTrashGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTrashGridCell.swift; sourceTree = "<group>"; };
 		F7434B5F20E2440600417916 /* FileProviderExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
@@ -2745,6 +2749,8 @@
 				F78F74352163781100C2ADAD /* NCTrash.swift */,
 				F7ED7EDB216B83D5007AB4D9 /* NCTrashListCell.xib */,
 				F7ED7EDD216B85DA007AB4D9 /* NCTrashListCell.swift */,
+				F7417DB4216CFE8E007D05F5 /* NCTrashGridCell.xib */,
+				F7417DB6216CFED0007D05F5 /* NCTrashGridCell.swift */,
 			);
 			path = Trash;
 			sourceTree = "<group>";
@@ -3743,6 +3749,7 @@
 				F7D4233C1F0596AC009C9782 /* Reader-Button-N@2x.png in Resources */,
 				F7D423411F0596AC009C9782 /* Reader-Export.png in Resources */,
 				F77B0F481D118A16002130FE /* synchronized.gif in Resources */,
+				F7417DB5216CFE8E007D05F5 /* NCTrashGridCell.xib in Resources */,
 				F7D4233E1F0596AC009C9782 /* Reader-Email.png in Resources */,
 				F762CB981EACB84400B38484 /* icon-info@2x.png in Resources */,
 				F7D423361F0596AC009C9782 /* AppIcon-167.png in Resources */,
@@ -4296,6 +4303,7 @@
 				F758B448212C516300515F55 /* Array+Utils.swift in Sources */,
 				F758B453212C516300515F55 /* ReviewViewController.swift in Sources */,
 				F7D424701F063B82009C9782 /* CTAssetsPickerNoAssetsView.m in Sources */,
+				F7417DB7216CFED0007D05F5 /* NCTrashGridCell.swift in Sources */,
 				F7D424591F063B82009C9782 /* PHImageManager+CTAssetsPickerController.m in Sources */,
 				F79630EE215527D40015EEA5 /* NCViewerMedia.swift in Sources */,
 				F7CA1ED620E7E3FE002CC65E /* CALayer+PKDownloadButtonAnimations.m in Sources */,

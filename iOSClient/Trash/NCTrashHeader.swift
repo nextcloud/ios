@@ -10,6 +10,7 @@ import Foundation
 
 class NCTrashHeader: UICollectionReusableView {
     
+    @IBOutlet weak var tapSwitch: UIImageView!
     @IBOutlet weak var tapMore: UIImageView!
     @IBOutlet weak var separator: UIView!
     
@@ -22,6 +23,12 @@ class NCTrashHeader: UICollectionReusableView {
         
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
         
+        let tapGestureSwitch = UITapGestureRecognizer(target: self, action: #selector(NCTrashHeader.tapSwitch(sender:)))
+        addGestureRecognizer(tapGestureSwitch)
+        tapGestureSwitch.numberOfTapsRequired = 1
+        tapSwitch.isUserInteractionEnabled = true
+        tapSwitch.addGestureRecognizer(tapGestureSwitch)
+        
         let tapGestureMore = UITapGestureRecognizer(target: self, action: #selector(NCTrashHeader.tapMore(sender:)))
         addGestureRecognizer(tapGestureMore)
         tapGestureMore.numberOfTapsRequired = 1
@@ -29,12 +36,16 @@ class NCTrashHeader: UICollectionReusableView {
         tapMore.addGestureRecognizer(tapGestureMore)
     }
     
+    @objc func tapSwitch(sender: UITapGestureRecognizer) {
+        delegate?.tapSwitchHeader()
+    }
     @objc func tapMore(sender: UITapGestureRecognizer) {
         delegate?.tapMoreHeader()
     }
 }
 
 protocol NCTrashHeaderDelegate {
+    func tapSwitchHeader()
     func tapMoreHeader()
 }
 
