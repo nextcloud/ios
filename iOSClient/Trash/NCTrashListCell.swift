@@ -16,6 +16,8 @@ class NCTrashListCell: UICollectionViewCell {
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var restore: UIImageView!
     @IBOutlet weak var more: UIImageView!
+    @IBOutlet weak var separator: UIView!
+
     
     var delegate: NCTrashListDelegate?
     
@@ -24,6 +26,10 @@ class NCTrashListCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
        
+        restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+        more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+        separator.backgroundColor = NCBrandColor.sharedInstance.seperator
+        
         let tapGestureRestore = UITapGestureRecognizer(target: self, action: #selector(NCTrashListCell.tapRestore(sender:)))
         addGestureRecognizer(tapGestureRestore)
         tapGestureRestore.numberOfTapsRequired = 1
@@ -43,10 +49,7 @@ class NCTrashListCell: UICollectionViewCell {
 
         imageView.image = image
         labelTitle.text = title
-        labelInfo.text = info
-        
-        restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
-        more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+        labelInfo.text = info        
     }
     
     @objc func tapRestore(sender: UITapGestureRecognizer) {
