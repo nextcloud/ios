@@ -16,6 +16,8 @@ class NCTrashGridCell: UICollectionViewCell {
     @IBOutlet weak var restore: UIImageView!
     @IBOutlet weak var tapRestore: UIImageView!
 
+    @IBOutlet weak var labelTitle: UILabel!
+
     @IBOutlet weak var more: UIImageView!
     @IBOutlet weak var tapMore: UIImageView!
 
@@ -40,13 +42,6 @@ class NCTrashGridCell: UICollectionViewCell {
         tapGestureMore.numberOfTapsRequired = 1
         tapMore.isUserInteractionEnabled = true
         tapMore.addGestureRecognizer(tapGestureMore)
-    }
-    
-    public func configure(with fileID: String, image: UIImage?, title: String, info: String) {
-
-        self.fileID = fileID
-
-        imageItem.image = image
     }
     
     @objc func tapRestore(sender: UITapGestureRecognizer) {

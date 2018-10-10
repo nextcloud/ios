@@ -9,14 +9,13 @@
 import Foundation
  
 
-class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderDelegate {
+class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
-    var itemHeight: CGFloat = 60
     var datasource = [tableTrash]()
 
     var listLayout: ListLayout!
@@ -29,7 +28,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         collectionView.register(UINib.init(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
         listLayout = ListLayout(itemHeight: 60)
-        collectionView.collectionViewLayout = listLayout
+        gridLayout = GridLayout(numberOfColumns: 5)
+        collectionView.collectionViewLayout = gridLayout
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -76,7 +76,20 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func tapSwitchHeader() {
-        print("tap header switch")
+        
+        if collectionView.collectionViewLayout == gridLayout {
+            // list layout
+            UIView.animate(withDuration: 0.1, animations: {
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
+            })
+        } else {
+            // grid layout
+            UIView.animate(withDuration: 0.1, animations: {
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
+            })
+        }
     }
     
     func tapMoreHeader() {
@@ -92,6 +105,11 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         return trashHeader
     }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.width, height: 30)
+    }
+    
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -132,7 +150,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         } else {
             
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-grid", for: indexPath) as! NCTrashListCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-grid", for: indexPath) as! NCTrashGridCell
             cell.delegate = self
             
             cell.fileID = tableTrash.fileID
@@ -165,17 +183,13 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
 class ListLayout: UICollectionViewFlowLayout {
     
     var itemHeight: CGFloat = 60
-    var headerHeight: CGFloat = 30
     
     init(itemHeight: CGFloat) {
         super.init()
         
-        minimumLineSpacing = 1
-        minimumInteritemSpacing = 1
-        
         self.itemHeight = itemHeight
         self.scrollDirection = .vertical
-        self.headerReferenceSize = CGSize(width: 0, height: headerHeight)
+        self.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -200,18 +214,16 @@ class ListLayout: UICollectionViewFlowLayout {
 
 class GridLayout: UICollectionViewFlowLayout {
     
-    var numberOfColumns: Int = 3
-    var headerHeight: CGFloat = 30
+    var numberOfColumns: Int = 5
     
     init(numberOfColumns: Int) {
         super.init()
         
-        minimumLineSpacing = 1
-        minimumInteritemSpacing = 1
+        minimumInteritemSpacing = 10
         
         self.numberOfColumns = numberOfColumns
         self.scrollDirection = .vertical
-        self.headerReferenceSize = CGSize(width: 0, height: headerHeight)
+        self.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -222,7 +234,7 @@ class GridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(self.numberOfColumns)) - self.minimumInteritemSpacing
-                let itemHeight: CGFloat = 100.0
+                let itemHeight: CGFloat = itemWidth + 20 + 60
                 return CGSize(width: itemWidth, height: itemHeight)
             }
             

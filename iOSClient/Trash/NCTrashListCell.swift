@@ -49,15 +49,6 @@ class NCTrashListCell: UICollectionViewCell {
         tapMore.addGestureRecognizer(tapGestureMore)
     }
     
-    public func configure(with fileID: String, image: UIImage?, title: String, info: String) {
-
-        self.fileID = fileID
-
-        imageItem.image = image
-        labelTitle.text = title
-        labelInfo.text = info
-    }
-    
     @objc func tapRestore(sender: UITapGestureRecognizer) {
         delegate?.tapRestoreItem(with: fileID)
     }
