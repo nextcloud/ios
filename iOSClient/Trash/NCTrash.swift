@@ -25,8 +25,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell")
-        collectionView.register(UINib.init(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "cell")
+        collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell-list")
+        collectionView.register(UINib.init(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
         listLayout = ListLayout(itemHeight: 60)
         collectionView.collectionViewLayout = listLayout
@@ -103,13 +103,27 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! NCTrashListCell
+        var identifier = ""
+        
+        if collectionView.collectionViewLayout == listLayout {
+            identifier = "cell-list"
+        } else {
+            identifier = "cell-grid"
+        }
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! NCTrashListCell
         cell.delegate = self
 
         let tableTrash = datasource[indexPath.item]
         
+        cell.fileID = tableTrash.fileID
+        cell.labelTitle.text = tableTrash.trashbinFileName
+        
         if tableTrash.directory {
-            cell.configure(with: tableTrash.fileID ,image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement), title: tableTrash.trashbinFileName, info: CCUtility.dateDiff(tableTrash.date as Date))
+            
+            cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+            cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date)
+
         } else {
             
             var image: UIImage?
@@ -119,7 +133,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 image = UIImage.init(named: "file")
             }
             
-            cell.configure(with: tableTrash.fileID, image: image, title: tableTrash.trashbinFileName, info: CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size))
+            cell.imageItem.image = image
+            cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size)
         }
                 
         return cell
