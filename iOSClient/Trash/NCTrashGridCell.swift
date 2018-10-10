@@ -14,12 +14,10 @@ class NCTrashGridCell: UICollectionViewCell {
     @IBOutlet weak var imageItem: UIImageView!
     
     @IBOutlet weak var restore: UIImageView!
-    @IBOutlet weak var tapRestore: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
 
     @IBOutlet weak var more: UIImageView!
-    @IBOutlet weak var tapMore: UIImageView!
 
     var delegate: NCTrashGridDelegate?
     
@@ -34,14 +32,14 @@ class NCTrashGridCell: UICollectionViewCell {
         let tapGestureRestore = UITapGestureRecognizer(target: self, action: #selector(NCTrashGridCell.tapRestore(sender:)))
         addGestureRecognizer(tapGestureRestore)
         tapGestureRestore.numberOfTapsRequired = 1
-        tapRestore.isUserInteractionEnabled = true
-        tapRestore.addGestureRecognizer(tapGestureRestore)
+        restore.isUserInteractionEnabled = true
+        restore.addGestureRecognizer(tapGestureRestore)
         
         let tapGestureMore = UITapGestureRecognizer(target: self, action: #selector(NCTrashGridCell.tapMore(sender:)))
         addGestureRecognizer(tapGestureMore)
         tapGestureMore.numberOfTapsRequired = 1
-        tapMore.isUserInteractionEnabled = true
-        tapMore.addGestureRecognizer(tapGestureMore)
+        more.isUserInteractionEnabled = true
+        more.addGestureRecognizer(tapGestureMore)
     }
     
     @objc func tapRestore(sender: UITapGestureRecognizer) {

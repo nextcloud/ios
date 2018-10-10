@@ -20,59 +20,41 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="ImageItem">
-                        <rect key="frame" x="0.0" y="0.0" width="220" height="228"/>
+                        <rect key="frame" x="0.0" y="0.0" width="220" height="265"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eU3-lY-fKr" userLabel="Label Title">
-                        <rect key="frame" x="0.0" y="228" width="220" height="17"/>
+                        <rect key="frame" x="0.0" y="265" width="220" height="17"/>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="u5S-jk-VdX" userLabel="tapRestore">
-                        <rect key="frame" x="0.0" y="245" width="60" height="60"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="60" id="X2d-a1-gaa"/>
-                            <constraint firstAttribute="width" constant="60" id="kFt-s1-hBy"/>
-                        </constraints>
-                    </imageView>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="b2F-OH-tLj" userLabel="restore">
-                        <rect key="frame" x="17" y="262" width="26" height="26"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="26" id="L0E-5H-HIf"/>
-                            <constraint firstAttribute="width" constant="26" id="Qmu-32-cdJ"/>
-                        </constraints>
-                    </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BAZ-pD-XUh" userLabel="tapMore">
-                        <rect key="frame" x="160" y="245" width="60" height="60"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="60" id="KeR-CV-it5"/>
-                            <constraint firstAttribute="height" constant="60" id="zCg-ZG-RPg"/>
-                        </constraints>
-                    </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3sA-NC-kIg" userLabel="More">
-                        <rect key="frame" x="177" y="262" width="26" height="26"/>
+                        <rect key="frame" x="194" y="282" width="26" height="26"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="26" id="hoH-4o-Tff"/>
                             <constraint firstAttribute="height" constant="26" id="vGK-h7-x3M"/>
+                        </constraints>
+                    </imageView>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="b2F-OH-tLj" userLabel="restore">
+                        <rect key="frame" x="0.0" y="282" width="26" height="26"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="26" id="L0E-5H-HIf"/>
+                            <constraint firstAttribute="width" constant="26" id="Qmu-32-cdJ"/>
                         </constraints>
                     </imageView>
                 </subviews>
             </view>
             <constraints>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="4Yq-Nh-z1l"/>
-                <constraint firstItem="u5S-jk-VdX" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" id="Fzz-oG-ku0"/>
+                <constraint firstItem="b2F-OH-tLj" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" id="7Jp-y7-Y28"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="eU3-lY-fKr" secondAttribute="trailing" id="Lu1-AM-kPq"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
-                <constraint firstItem="BAZ-pD-XUh" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" id="PvL-Zh-yPu"/>
-                <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="BAZ-pD-XUh" secondAttribute="trailing" id="R5r-VT-N0I"/>
-                <constraint firstItem="3sA-NC-kIg" firstAttribute="centerX" secondItem="BAZ-pD-XUh" secondAttribute="centerX" id="Xnl-Jn-Y8H"/>
-                <constraint firstItem="b2F-OH-tLj" firstAttribute="centerY" secondItem="u5S-jk-VdX" secondAttribute="centerY" id="ZW1-bm-DB8"/>
-                <constraint firstItem="b2F-OH-tLj" firstAttribute="centerX" secondItem="u5S-jk-VdX" secondAttribute="centerX" id="aVh-gg-Krs"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
-                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="80" id="eEC-eB-alE"/>
-                <constraint firstItem="u5S-jk-VdX" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="fxs-Ju-143"/>
+                <constraint firstItem="3sA-NC-kIg" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" id="eAl-yv-CrK"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="43" id="eEC-eB-alE"/>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="gZe-FC-8XQ"/>
-                <constraint firstItem="3sA-NC-kIg" firstAttribute="centerY" secondItem="BAZ-pD-XUh" secondAttribute="centerY" id="k1J-aj-7W5"/>
+                <constraint firstItem="b2F-OH-tLj" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="i72-LQ-zRc"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="3sA-NC-kIg" secondAttribute="trailing" id="olr-QB-oyb"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
@@ -82,8 +64,6 @@
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
                 <outlet property="more" destination="3sA-NC-kIg" id="LTq-2s-hq2"/>
                 <outlet property="restore" destination="b2F-OH-tLj" id="bsp-In-8UB"/>
-                <outlet property="tapMore" destination="BAZ-pD-XUh" id="Uxq-lx-bdO"/>
-                <outlet property="tapRestore" destination="u5S-jk-VdX" id="mfd-g7-OtK"/>
             </connections>
             <point key="canvasLocation" x="88" y="161.01949025487258"/>
         </collectionViewCell>

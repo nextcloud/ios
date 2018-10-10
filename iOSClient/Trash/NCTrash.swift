@@ -80,15 +80,19 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
-            UIView.animate(withDuration: 0.1, animations: {
+            UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
+                self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { (_) in
+                    self.collectionView.reloadData()
+                }) 
             })
         } else {
             // grid layout
-            UIView.animate(withDuration: 0.1, animations: {
+            UIView.animate(withDuration: 0.0, animations: {
                 self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
+                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { (_) in
+                    self.collectionView.reloadData()
+                })
             })
         }
     }
@@ -239,7 +243,7 @@ class GridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(self.numberOfColumns)) - self.minimumInteritemSpacing
-                let itemHeight: CGFloat = itemWidth + 20 + 60
+                let itemHeight: CGFloat = itemWidth + 43
                 return CGSize(width: itemWidth, height: itemHeight)
             }
             
