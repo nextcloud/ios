@@ -43,6 +43,12 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             path = k_dav + "/trashbin/" + userID! + "/trash/"
         }
         
+        let results = NCManageDatabase.sharedInstance.getTrash(filePath: path)
+        if (results != nil) {
+            datasource = results!
+            collectionView.reloadData()
+        }
+        
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
         ocNetworking?.listingTrash(appDelegate.activeUrl, path:path, account: appDelegate.activeAccount, success: { (item) in

@@ -2526,7 +2526,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getTrash(filePath: String) -> tableTrash? {
+    @objc func getTrash(filePath: String) -> [tableTrash]? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -2537,8 +2537,7 @@ class NCManageDatabase: NSObject {
         
         let results = realm.objects(tableTrash.self).filter("account = %@ AND filePath = %@", tableAccount.account, filePath)
 
-        
-        return tableTrash.init(value: results)
+        return Array(results.map { tableTrash.init(value:$0) })
     }
     
     //MARK: -
