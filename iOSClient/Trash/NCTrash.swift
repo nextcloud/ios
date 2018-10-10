@@ -103,41 +103,49 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        var identifier = ""
+        let tableTrash = datasource[indexPath.item]
+        var image: UIImage?
+        
+        if tableTrash.iconName.count > 0 {
+            image = UIImage.init(named: tableTrash.iconName)
+        } else {
+            image = UIImage.init(named: "file")
+        }
         
         if collectionView.collectionViewLayout == listLayout {
-            identifier = "cell-list"
-        } else {
-            identifier = "cell-grid"
-        }
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: identifier, for: indexPath) as! NCTrashListCell
-        cell.delegate = self
-
-        let tableTrash = datasource[indexPath.item]
-        
-        cell.fileID = tableTrash.fileID
-        cell.labelTitle.text = tableTrash.trashbinFileName
-        
-        if tableTrash.directory {
             
-            cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-            cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date)
-
-        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-list", for: indexPath) as! NCTrashListCell
+            cell.delegate = self
             
-            var image: UIImage?
-            if tableTrash.iconName.count > 0 {
-                image = UIImage.init(named: tableTrash.iconName)
+            cell.fileID = tableTrash.fileID
+            cell.labelTitle.text = tableTrash.trashbinFileName
+            
+            if tableTrash.directory {
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date)
             } else {
-                image = UIImage.init(named: "file")
+                cell.imageItem.image = image
+                cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size)
             }
             
-            cell.imageItem.image = image
-            cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size)
+            return cell
+        
+        } else {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-grid", for: indexPath) as! NCTrashListCell
+            cell.delegate = self
+            
+            cell.fileID = tableTrash.fileID
+            cell.labelTitle.text = tableTrash.trashbinFileName
+            
+            if tableTrash.directory {
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+            } else {
+                cell.imageItem.image = image
+            }
+            
+            return cell
         }
-                
-        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
