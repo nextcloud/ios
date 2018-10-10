@@ -194,7 +194,7 @@ class ListLayout: UICollectionViewFlowLayout {
         
         self.itemHeight = itemHeight
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        self.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -232,7 +232,7 @@ class GridLayout: UICollectionViewFlowLayout {
         
         self.numberOfColumns = numberOfColumns
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        self.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -243,7 +243,7 @@ class GridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(self.numberOfColumns)) - self.minimumInteritemSpacing
-                let itemHeight: CGFloat = itemWidth + 43
+                let itemHeight: CGFloat = itemWidth + 40
                 return CGSize(width: itemWidth, height: itemHeight)
             }
             
