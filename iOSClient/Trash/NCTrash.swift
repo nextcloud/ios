@@ -29,6 +29,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         listLayout = ListLayout(itemHeight: 60)
         gridLayout = GridLayout(numberOfColumns: 5)
+        
         collectionView.collectionViewLayout = gridLayout
     }
     
@@ -210,6 +211,10 @@ class ListLayout: UICollectionViewFlowLayout {
             super.itemSize = newValue
         }
     }
+    
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        return proposedContentOffset
+    }
 }
 
 class GridLayout: UICollectionViewFlowLayout {
@@ -244,5 +249,9 @@ class GridLayout: UICollectionViewFlowLayout {
         set {
             super.itemSize = newValue
         }
+    }
+    
+    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
+        return proposedContentOffset
     }
 }
