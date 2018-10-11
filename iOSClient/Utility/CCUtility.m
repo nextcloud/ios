@@ -575,6 +575,25 @@
     return [UICKeyChainStore stringForKey:@"ncPushToken" service:k_serviceShareKeyChain];
 }
 
++ (NSString *)getLayoutTrash
+{
+    NSString *layout = [UICKeyChainStore stringForKey:@"layoutTrash" service:k_serviceShareKeyChain];
+    
+    // Default
+    if (layout == nil) {
+        [self setLayoutTrash:@"list"];
+        return @"list";
+    }
+    
+    return layout;
+}
+
++ (void)setLayoutTrash:(NSString *)layout
+{
+    [UICKeyChainStore setString:layout forKey:@"layoutTrash" service:k_serviceShareKeyChain];
+}
+
+
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====
 #pragma --------------------------------------------------------------------------------------------

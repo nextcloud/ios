@@ -155,6 +155,9 @@
 + (void)setPushNotificationToken:(NSString *)token;
 + (NSString *)getPushNotificationToken;
 
++ (NSString *)getLayoutTrash;
++ (void)setLayoutTrash:(NSString *)layout;
+
 // ===== Varius =====
 
 + (NSString *)getUserAgent;

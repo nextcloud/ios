@@ -7,7 +7,6 @@
 //
 
 import Foundation
- 
 
 class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderMenuDelegate {
     
@@ -27,10 +26,14 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell-list")
         collectionView.register(UINib.init(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
-        listLayout = ListLayout(itemHeight: 60)
-        gridLayout = GridLayout(numberOfColumns: 5)
+        listLayout = ListLayout()
+        gridLayout = GridLayout()
         
-        collectionView.collectionViewLayout = gridLayout
+        if CCUtility.getLayoutTrash() == "list" {
+            collectionView.collectionViewLayout = listLayout
+        } else {
+            collectionView.collectionViewLayout = gridLayout
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -96,6 +99,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                     self.collectionView.reloadData()
                 }) 
             })
+            CCUtility.setLayoutTrash("list")
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -104,6 +108,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                     self.collectionView.reloadData()
                 })
             })
+            CCUtility.setLayoutTrash("grid")
         }
     }
     
@@ -205,12 +210,11 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
 
 class ListLayout: UICollectionViewFlowLayout {
     
-    var itemHeight: CGFloat = 60
+    let itemHeight: CGFloat = 60
     
-    init(itemHeight: CGFloat) {
+    override init() {
         super.init()
         
-        self.itemHeight = itemHeight
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
     }
@@ -241,14 +245,14 @@ class ListLayout: UICollectionViewFlowLayout {
 
 class GridLayout: UICollectionViewFlowLayout {
     
-    var numberOfColumns: Int = 5
-    
-    init(numberOfColumns: Int) {
+    let numberOfColumns: Int = 5
+    let itemHeightWithoutImage: CGFloat = 34
+
+    override init() {
         super.init()
         
         minimumInteritemSpacing = 10
         
-        self.numberOfColumns = numberOfColumns
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
@@ -261,7 +265,7 @@ class GridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(self.numberOfColumns)) - self.minimumInteritemSpacing
-                let itemHeight: CGFloat = itemWidth + 34
+                let itemHeight: CGFloat = itemWidth + itemHeightWithoutImage
                 return CGSize(width: itemWidth, height: itemHeight)
             }
             
