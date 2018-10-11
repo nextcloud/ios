@@ -363,7 +363,6 @@ extension DragDropViewController : UICollectionViewDataSource {
             }
             
             cell.customImageView?.image = image
-//            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
             cell.delete.addTarget(self, action: #selector(deleteSource(_:)), for: .touchUpInside)
 
             return cell
@@ -384,8 +383,8 @@ extension DragDropViewController : UICollectionViewDataSource {
             
             cell.customImageView?.image = self.filter(image: image)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
-//            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
             cell.delete.addTarget(self, action: #selector(deleteDestination(_:)), for: .touchUpInside)
+            cell.rotate.addTarget(self, action: #selector(rotateDestination(_:)), for: .touchUpInside)
             
             return cell
         }
@@ -418,6 +417,41 @@ extension DragDropViewController : UICollectionViewDataSource {
         } else {
             save.isEnabled = true
         }
+    }
+    
+    @objc func rotateDestination(_ sender:UIButton) {
+        
+        let buttonPosition:CGPoint =  sender.convert(.zero, to: self.collectionViewDestination)
+        let indexPath:IndexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition)!
+        
+        let image = self.imagesDestination[indexPath.row]
+        imagesDestination[indexPath.row] = image.rotate(radians: .pi/2)!
+        
+        self.collectionViewDestination.reloadData()
+    }
+}
+
+extension UIImage {
+    func rotate(radians: Float) -> UIImage? {
+        var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
+        // Trim off the extremely small float value to prevent core graphics from rounding it up
+        newSize.width = floor(newSize.width)
+        newSize.height = floor(newSize.height)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, true, self.scale)
+        let context = UIGraphicsGetCurrentContext()!
+        
+        // Move origin to middle
+        context.translateBy(x: newSize.width/2, y: newSize.height/2)
+        // Rotate around middle
+        context.rotate(by: CGFloat(radians))
+        // Draw the image at its center
+        self.draw(in: CGRect(x: -self.size.width/2, y: -self.size.height/2, width: self.size.width, height: self.size.height))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
 }
 
