@@ -346,7 +346,7 @@ class CreateFormUploadAssets: XLFormViewController, CCMoveDelegate {
 
     // MARK: - Action
 
-    func moveServerUrl(to serverUrlTo: String!, title: String!) {
+    func moveServerUrl(to serverUrlTo: String!, title: String!, type: String!) {
     
         self.serverUrl = serverUrlTo
         
@@ -559,7 +559,7 @@ class CreateFormUploadFileText: XLFormViewController, CCMoveDelegate {
     
     // MARK: - Action
     
-    func moveServerUrl(to serverUrlTo: String!, title: String!) {
+    func moveServerUrl(to serverUrlTo: String!, title: String!, type: String!) {
         
         self.serverUrl = serverUrlTo
         
@@ -930,7 +930,7 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
     
     // MARK: - Action
     
-    func moveServerUrl(to serverUrlTo: String!, title: String!) {
+    func moveServerUrl(to serverUrlTo: String!, title: String!, type: String!) {
         
         self.serverUrl = serverUrlTo
         
