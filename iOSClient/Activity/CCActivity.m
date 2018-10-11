@@ -129,7 +129,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"activityNoRecord"] multiplier:2 color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"activityNoRecord"] multiplier:1 color:[NCBrandColor sharedInstance].graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView

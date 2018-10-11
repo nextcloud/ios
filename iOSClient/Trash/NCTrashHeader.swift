@@ -19,8 +19,9 @@ class NCTrashHeader: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        tapMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trashMore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-        
+        tapMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+        tapSwitch.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
         
         let tapGestureSwitch = UITapGestureRecognizer(target: self, action: #selector(NCTrashHeader.tapSwitch(sender:)))

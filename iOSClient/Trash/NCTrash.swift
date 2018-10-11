@@ -249,7 +249,7 @@ class GridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(self.numberOfColumns)) - self.minimumInteritemSpacing
-                let itemHeight: CGFloat = itemWidth + 40
+                let itemHeight: CGFloat = itemWidth + 34
                 return CGSize(width: itemWidth, height: itemHeight)
             }
             

@@ -20,26 +20,26 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="ImageItem">
-                        <rect key="frame" x="0.0" y="0.0" width="220" height="268"/>
+                        <rect key="frame" x="0.0" y="0.0" width="220" height="274"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eU3-lY-fKr" userLabel="Label Title">
-                        <rect key="frame" x="0.0" y="268" width="220" height="14.5"/>
+                        <rect key="frame" x="0.0" y="274" width="220" height="14.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3sA-NC-kIg" userLabel="More">
-                        <rect key="frame" x="194" y="282.5" width="26" height="26"/>
+                        <rect key="frame" x="200" y="288.5" width="20" height="20"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="26" id="hoH-4o-Tff"/>
-                            <constraint firstAttribute="height" constant="26" id="vGK-h7-x3M"/>
+                            <constraint firstAttribute="width" constant="20" id="hoH-4o-Tff"/>
+                            <constraint firstAttribute="height" constant="20" id="vGK-h7-x3M"/>
                         </constraints>
                     </imageView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="b2F-OH-tLj" userLabel="restore">
-                        <rect key="frame" x="0.0" y="282.5" width="26" height="26"/>
+                        <rect key="frame" x="0.0" y="288.5" width="20" height="20"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="26" id="L0E-5H-HIf"/>
-                            <constraint firstAttribute="width" constant="26" id="Qmu-32-cdJ"/>
+                            <constraint firstAttribute="height" constant="20" id="L0E-5H-HIf"/>
+                            <constraint firstAttribute="width" constant="20" id="Qmu-32-cdJ"/>
                         </constraints>
                     </imageView>
                 </subviews>
@@ -51,7 +51,7 @@
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
                 <constraint firstItem="3sA-NC-kIg" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" id="eAl-yv-CrK"/>
-                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="40" id="eEC-eB-alE"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="34" id="eEC-eB-alE"/>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="gZe-FC-8XQ"/>
                 <constraint firstItem="b2F-OH-tLj" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="i72-LQ-zRc"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="3sA-NC-kIg" secondAttribute="trailing" id="olr-QB-oyb"/>

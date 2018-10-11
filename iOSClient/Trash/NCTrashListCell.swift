@@ -31,8 +31,8 @@ class NCTrashListCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trashRestore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-        more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "trashMore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+        restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+        more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
         
