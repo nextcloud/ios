@@ -10,8 +10,9 @@ import Foundation
 
 class NCTrashHeader: UICollectionReusableView {
     
-    @IBOutlet weak var tapSwitch: UIImageView!
-    @IBOutlet weak var tapMore: UIImageView!
+    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var buttonSwitch: UIButton!
+    
     @IBOutlet weak var separator: UIView!
     
     var delegate: NCTrashHeaderDelegate?
@@ -19,29 +20,17 @@ class NCTrashHeader: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        tapMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-        tapSwitch.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-
+        buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+        
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
-        
-        let tapGestureSwitch = UITapGestureRecognizer(target: self, action: #selector(NCTrashHeader.tapSwitch(sender:)))
-        addGestureRecognizer(tapGestureSwitch)
-        tapGestureSwitch.numberOfTapsRequired = 1
-        tapSwitch.isUserInteractionEnabled = true
-        tapSwitch.addGestureRecognizer(tapGestureSwitch)
-        
-        let tapGestureMore = UITapGestureRecognizer(target: self, action: #selector(NCTrashHeader.tapMore(sender:)))
-        addGestureRecognizer(tapGestureMore)
-        tapGestureMore.numberOfTapsRequired = 1
-        tapMore.isUserInteractionEnabled = true
-        tapMore.addGestureRecognizer(tapGestureMore)
     }
     
-    @objc func tapSwitch(sender: UITapGestureRecognizer) {
-        delegate?.tapSwitchHeader()
-    }
-    @objc func tapMore(sender: UITapGestureRecognizer) {
+    @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreHeader()
+    }
+    
+    @IBAction func touchUpInsideSwitch(_ sender: Any) {
+        delegate?.tapSwitchHeader()
     }
 }
 

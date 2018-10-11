@@ -118,7 +118,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 30)
+        return CGSize(width: collectionView.frame.width, height: 50)
     }
     
     
