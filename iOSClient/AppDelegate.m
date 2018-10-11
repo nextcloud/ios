@@ -820,14 +820,14 @@
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [UIImage imageNamed:@"folder"];
-    item.selectedImage = [UIImage imageNamed:@"folder"];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:1 color:[NCBrandColor sharedInstance].brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:1 color:[NCBrandColor sharedInstance].brandElement];
     
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [UIImage imageNamed:@"favorite"];
-    item.selectedImage = [UIImage imageNamed:@"favorite"];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:1 color:[NCBrandColor sharedInstance].brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:1 color:[NCBrandColor sharedInstance].brandElement];
     
     // (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
@@ -838,14 +838,14 @@
     // Media
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
     [item setTitle:NSLocalizedString(@"_media_", nil)];
-    item.image = [UIImage imageNamed:@"media"];
-    item.selectedImage = [UIImage imageNamed:@"media"];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"media"] multiplier:1 color:[NCBrandColor sharedInstance].brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"media"] multiplier:1 color:[NCBrandColor sharedInstance].brandElement];
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
     [item setTitle:NSLocalizedString(@"_more_", nil)];
-    item.image = [UIImage imageNamed:@"tabBarMore"];
-    item.selectedImage = [UIImage imageNamed:@"tabBarMore"];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:1 color:[NCBrandColor sharedInstance].brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:1 color:[NCBrandColor sharedInstance].brandElement];
     
     // Plus Button
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];

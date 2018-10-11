@@ -123,7 +123,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             functionMenu.append(item)
         }
         
-#if targetEnvironment(simulator)
+//#if targetEnvironment(simulator)
         // ITEM : Trash
         let capabilities = NCManageDatabase.sharedInstance.getCapabilites()
         if capabilities != nil && capabilities!.versionMajor >= Int(k_trash_version_available) {
@@ -134,7 +134,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             item.url = "segueTrash"
             functionMenu.append(item)
         }
-#endif
+//#endif
         
         // ITEM : External
         if NCBrandOptions.sharedInstance.disable_more_external_site == false {

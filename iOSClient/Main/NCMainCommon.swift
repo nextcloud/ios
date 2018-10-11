@@ -298,13 +298,13 @@ class NCMainCommon: NSObject {
                 
                 // Share
                 if (isShare) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (isMounted) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesLink != nil) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 }
             }
             
@@ -318,7 +318,7 @@ class NCMainCommon: NSObject {
             }
             
             // More Image
-            cell.more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+            cell.more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
             
             return cell
             
@@ -337,7 +337,7 @@ class NCMainCommon: NSObject {
             cell.labelTitle.textColor = UIColor.black
             cell.labelTitle.text = metadata.fileNameView
             
-            cell.transferButton.tintColor = NCBrandColor.sharedInstance.icon
+            cell.transferButton.tintColor = NCBrandColor.sharedInstance.optionItem
             
             var progress: CGFloat = 0.0
             var totalBytes: Double = 0.0
