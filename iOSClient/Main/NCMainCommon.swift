@@ -318,7 +318,7 @@ class NCMainCommon: NSObject {
             }
             
             // More Image
-            cell.more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+            cell.more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 1, color: NCBrandColor.sharedInstance.optionItem)
             
             return cell
             

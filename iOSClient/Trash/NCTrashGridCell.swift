@@ -12,13 +12,14 @@ import UIKit
 class NCTrashGridCell: UICollectionViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
-    
+    @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var more: UIImageView!
     @IBOutlet weak var restore: UIImageView!
 
-    @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var buttonRestore: UIButton!
 
-    @IBOutlet weak var more: UIImageView!
-
+    
     var delegate: NCTrashGridDelegate?
     
     var fileID = ""
@@ -28,25 +29,14 @@ class NCTrashGridCell: UICollectionViewCell {
        
         restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-                
-        let tapGestureRestore = UITapGestureRecognizer(target: self, action: #selector(NCTrashGridCell.tapRestore(sender:)))
-        addGestureRecognizer(tapGestureRestore)
-        tapGestureRestore.numberOfTapsRequired = 1
-        restore.isUserInteractionEnabled = true
-        restore.addGestureRecognizer(tapGestureRestore)
-        
-        let tapGestureMore = UITapGestureRecognizer(target: self, action: #selector(NCTrashGridCell.tapMore(sender:)))
-        addGestureRecognizer(tapGestureMore)
-        tapGestureMore.numberOfTapsRequired = 1
-        more.isUserInteractionEnabled = true
-        more.addGestureRecognizer(tapGestureMore)
     }
     
-    @objc func tapRestore(sender: UITapGestureRecognizer) {
-        delegate?.tapRestoreItem(with: fileID)
-    }
-    @objc func tapMore(sender: UITapGestureRecognizer) {
+    @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreItem(with: fileID)
+    }
+    
+    @IBAction func touchUpInsideRestore(_ sender: Any) {
+        delegate?.tapRestoreItem(with: fileID)
     }
 }
 

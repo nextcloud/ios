@@ -28,13 +28,23 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3sA-NC-kIg" userLabel="More">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3sA-NC-kIg" userLabel="more">
                         <rect key="frame" x="200" y="288.5" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="20" id="hoH-4o-Tff"/>
                             <constraint firstAttribute="height" constant="20" id="vGK-h7-x3M"/>
                         </constraints>
                     </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EJs-Ro-nbe" userLabel="buttonMore">
+                        <rect key="frame" x="200" y="288" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="4Ba-Uy-pX2"/>
+                            <constraint firstAttribute="width" constant="20" id="aRK-GA-Nba"/>
+                        </constraints>
+                        <connections>
+                            <action selector="touchUpInsideMore:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="Bn2-Ww-pz6"/>
+                        </connections>
+                    </button>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="b2F-OH-tLj" userLabel="restore">
                         <rect key="frame" x="0.0" y="288.5" width="20" height="20"/>
                         <constraints>
@@ -42,24 +52,40 @@
                             <constraint firstAttribute="width" constant="20" id="Qmu-32-cdJ"/>
                         </constraints>
                     </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="11Q-pS-XoP" userLabel="buttonRestore">
+                        <rect key="frame" x="0.0" y="288" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="W6l-YK-wnp"/>
+                            <constraint firstAttribute="width" constant="20" id="ttG-cX-ekK"/>
+                        </constraints>
+                        <connections>
+                            <action selector="touchUpInsideRestore:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="fIy-eN-HMs"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
             <constraints>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="4Yq-Nh-z1l"/>
                 <constraint firstItem="b2F-OH-tLj" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" id="7Jp-y7-Y28"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="EJs-Ro-nbe" secondAttribute="bottom" id="HkH-wn-Q1W"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="eU3-lY-fKr" secondAttribute="trailing" id="Lu1-AM-kPq"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
+                <constraint firstItem="11Q-pS-XoP" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="bdS-Qw-LR4"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
                 <constraint firstItem="3sA-NC-kIg" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" id="eAl-yv-CrK"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="34" id="eEC-eB-alE"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="11Q-pS-XoP" secondAttribute="bottom" id="eEI-rQ-ye8"/>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="gZe-FC-8XQ"/>
                 <constraint firstItem="b2F-OH-tLj" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="i72-LQ-zRc"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="EJs-Ro-nbe" secondAttribute="trailing" id="lAE-1v-ez7"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="3sA-NC-kIg" secondAttribute="trailing" id="olr-QB-oyb"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <size key="customSize" width="220" height="303"/>
             <connections>
+                <outlet property="buttonMore" destination="EJs-Ro-nbe" id="zGj-9L-Dpv"/>
+                <outlet property="buttonRestore" destination="11Q-pS-XoP" id="kDT-Cz-C8D"/>
                 <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
                 <outlet property="more" destination="3sA-NC-kIg" id="LTq-2s-hq2"/>
