@@ -28,7 +28,7 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells/>
-                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="header" id="AQ6-rS-Wxb" customClass="NCTrashHeader" customModule="Nextcloud" customModuleProvider="target">
+                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="headerMenu" id="AQ6-rS-Wxb" customClass="NCTrashHeaderMenu" customModule="Nextcloud" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
@@ -48,7 +48,7 @@
                                             </constraints>
                                             <state key="normal" image="switchList"/>
                                             <connections>
-                                                <action selector="touchUpInsideSwitch:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="gyW-3w-jyC"/>
+                                                <action selector="touchUpInsideSwitch:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="b4W-Pc-nCw"/>
                                             </connections>
                                         </button>
                                     </subviews>
@@ -61,8 +61,8 @@
                                         <constraint firstAttribute="bottom" secondItem="hva-qI-4Kl" secondAttribute="bottom" constant="1" id="ixp-nm-HUt"/>
                                     </constraints>
                                     <connections>
-                                        <outlet property="buttonSwitch" destination="gBv-v2-Zec" id="Ad5-mq-XMb"/>
-                                        <outlet property="separator" destination="hva-qI-4Kl" id="3Zy-ap-3kf"/>
+                                        <outlet property="buttonSwitch" destination="gBv-v2-Zec" id="yBa-g0-ChU"/>
+                                        <outlet property="separator" destination="hva-qI-4Kl" id="rP4-bg-nt9"/>
                                     </connections>
                                 </collectionReusableView>
                                 <connections>

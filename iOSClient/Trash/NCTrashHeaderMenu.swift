@@ -1,5 +1,5 @@
 //
-//  NCTrashHeader.swift
+//  NCTrashHeaderMenu.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/2018.
@@ -8,14 +8,14 @@
 
 import Foundation
 
-class NCTrashHeader: UICollectionReusableView {
+class NCTrashHeaderMenu: UICollectionReusableView {
     
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
     
     @IBOutlet weak var separator: UIView!
     
-    var delegate: NCTrashHeaderDelegate?
+    var delegate: NCTrashHeaderMenuDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -26,16 +26,16 @@ class NCTrashHeader: UICollectionReusableView {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreHeader()
+        delegate?.tapMoreHeaderMenu()
     }
     
     @IBAction func touchUpInsideSwitch(_ sender: Any) {
-        delegate?.tapSwitchHeader()
+        delegate?.tapSwitchHeaderMenu()
     }
 }
 
-protocol NCTrashHeaderDelegate {
-    func tapSwitchHeader()
-    func tapMoreHeader()
+protocol NCTrashHeaderMenuDelegate {
+    func tapSwitchHeaderMenu()
+    func tapMoreHeaderMenu()
 }
 

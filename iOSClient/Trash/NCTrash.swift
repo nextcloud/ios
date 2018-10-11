@@ -9,7 +9,7 @@
 import Foundation
  
 
-class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderDelegate {
+class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderMenuDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -82,7 +82,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         print("tap item more")
     }
     
-    func tapSwitchHeader() {
+    func tapSwitchHeaderMenu() {
         
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -103,7 +103,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }
     }
     
-    func tapMoreHeader() {
+    func tapMoreHeaderMenu() {
         print("tap header more")
     }
 
@@ -111,7 +111,15 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
-        let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as! NCTrashHeader
+        let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headerMenu", for: indexPath) as! NCTrashHeaderMenu
+        
+        if collectionView.collectionViewLayout == gridLayout {
+            trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+
+        } else {
+            trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+        }
+        
         trashHeader.delegate = self
         
         return trashHeader
