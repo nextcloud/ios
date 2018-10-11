@@ -2484,10 +2484,10 @@ class NCManageDatabase: NSObject {
     //MARK: -
     //MARK: Table Trash
     
-    @objc func addTrashs(_ trashs: [tableTrash]) -> [tableTrash]? {
+    @objc func addTrashs(_ trashs: [tableTrash]) {
         
         guard self.getAccountActive() != nil else {
-            return nil
+            return
         }
         
         let realm = try! Realm()
@@ -2500,10 +2500,8 @@ class NCManageDatabase: NSObject {
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
-            return nil
+            return
         }
-        
-        return Array(trashs.map { tableTrash.init(value:$0) })
     }
     
     @objc func deleteTrash(filePath: String) {
@@ -2526,7 +2524,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func getTrash(filePath: String) -> [tableTrash]? {
+    @objc func getTrash(filePath: String, sorted: String, ascending: Bool) -> [tableTrash]? {
         
         guard let tableAccount = self.getAccountActive() else {
             return nil
@@ -2535,7 +2533,7 @@ class NCManageDatabase: NSObject {
         let realm = try! Realm()
         realm.refresh()
         
-        let results = realm.objects(tableTrash.self).filter("account = %@ AND filePath = %@", tableAccount.account, filePath)
+        let results = realm.objects(tableTrash.self).filter("account = %@ AND filePath = %@", tableAccount.account, filePath).sorted(byKeyPath: sorted, ascending: ascending)
 
         return Array(results.map { tableTrash.init(value:$0) })
     }

@@ -43,7 +43,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             path = k_dav + "/trashbin/" + userID! + "/trash/"
         }
         
-        let results = NCManageDatabase.sharedInstance.getTrash(filePath: path)
+        let results = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: "fileName", ascending: true)
         if (results != nil) {
             datasource = results!
             collectionView.reloadData()
@@ -54,9 +54,13 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         ocNetworking?.listingTrash(appDelegate.activeUrl, path:path, account: appDelegate.activeAccount, success: { (item) in
             
             NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
-            self.datasource = NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])!
+            NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
             
-            self.collectionView.reloadData()
+            let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: "fileName", ascending: true)
+            if (results != nil) {
+                self.datasource = results!
+                self.collectionView.reloadData()
+            }
             
         }, failure: { (message, errorCode) in
             
