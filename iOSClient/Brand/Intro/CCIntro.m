@@ -139,15 +139,8 @@
     page1.title = NSLocalizedStringFromTable(@"_intro_1_title_", @"Intro", nil);
     page1.titlePositionY = titlePositionY;
     page1.titleColor = [[NCBrandColor sharedInstance] customerText];
-    page1.titleFont = [UIFont systemFontOfSize:20];
+    page1.titleFont = [UIFont systemFontOfSize:23];
 
-    /*
-    page1.desc = NSLocalizedStringFromTable(@"_intro_1_text_",  @"Intro", nil);
-    page1.descPositionY = descPositionY;
-    page1.descColor = [[NCBrandColor sharedInstance] customerText];
-    page1.descFont = [UIFont systemFontOfSize:14];
-    */
-    
     page1.bgColor = [[NCBrandColor sharedInstance] customer];
     page1.showTitleView = YES;
 
@@ -159,14 +152,7 @@
     page2.title = NSLocalizedStringFromTable(@"_intro_2_title_",  @"Intro", nil);
     page2.titlePositionY = titlePositionY;
     page2.titleColor = [[NCBrandColor sharedInstance] customerText];
-    page2.titleFont = [UIFont systemFontOfSize:20];
-    
-    /*
-    page2.desc = NSLocalizedStringFromTable(@"_intro_2_text_",  @"Intro", nil);
-    page2.descPositionY = descPositionY;
-    page2.descColor = [[NCBrandColor sharedInstance] customerText];
-    page2.descFont = [UIFont systemFontOfSize:14];
-    */
+    page2.titleFont = [UIFont systemFontOfSize:23];
     
     page2.bgColor = [[NCBrandColor sharedInstance] customer];
     page2.showTitleView = YES;
@@ -179,14 +165,7 @@
     page3.title = NSLocalizedStringFromTable(@"_intro_3_title_",  @"Intro", nil);
     page3.titlePositionY = titlePositionY;
     page3.titleColor = [[NCBrandColor sharedInstance] customerText];
-    page3.titleFont = [UIFont systemFontOfSize:20];
-    
-    /*
-    page3.desc = NSLocalizedStringFromTable(@"_intro_3_text_",  @"Intro", nil);
-    page3.descPositionY = descPositionY;
-    page3.descColor = [[NCBrandColor sharedInstance] customerText];
-    page3.descFont = [UIFont systemFontOfSize:14];
-    */
+    page3.titleFont = [UIFont systemFontOfSize:23];
     
     page3.bgColor = [[NCBrandColor sharedInstance] customer];
     page3.showTitleView = YES;
@@ -199,14 +178,7 @@
     page4.title = NSLocalizedStringFromTable(@"_intro_4_title_",  @"Intro", nil);
     page4.titlePositionY = titlePositionY;
     page4.titleColor = [[NCBrandColor sharedInstance] customerText];
-    page4.titleFont = [UIFont systemFontOfSize:20];
-    
-    /*
-    page4.desc = NSLocalizedStringFromTable(@"_intro_4_text_",  @"Intro", nil);
-    page4.descPositionY = descPositionY;
-    page4.descColor = [[NCBrandColor sharedInstance] customerText];
-    page4.descFont = [UIFont systemFontOfSize:14];
-    */
+    page4.titleFont = [UIFont systemFontOfSize:23];
     
     page4.bgColor = [[NCBrandColor sharedInstance] customer];
     page4.showTitleView = YES;
