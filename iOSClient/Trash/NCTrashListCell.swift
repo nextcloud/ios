@@ -16,12 +16,12 @@ class NCTrashListCell: UICollectionViewCell {
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     
-    @IBOutlet weak var restore: UIImageView!
-    @IBOutlet weak var tapRestore: UIImageView!
-
     @IBOutlet weak var more: UIImageView!
-    @IBOutlet weak var tapMore: UIImageView!
+    @IBOutlet weak var restore: UIImageView!
 
+    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var buttonRestore: UIButton!
+    
     @IBOutlet weak var separator: UIView!
 
     var delegate: NCTrashListDelegate?
@@ -35,25 +35,14 @@ class NCTrashListCell: UICollectionViewCell {
         more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
-        
-        let tapGestureRestore = UITapGestureRecognizer(target: self, action: #selector(NCTrashListCell.tapRestore(sender:)))
-        addGestureRecognizer(tapGestureRestore)
-        tapGestureRestore.numberOfTapsRequired = 1
-        tapRestore.isUserInteractionEnabled = true
-        tapRestore.addGestureRecognizer(tapGestureRestore)
-        
-        let tapGestureMore = UITapGestureRecognizer(target: self, action: #selector(NCTrashListCell.tapMore(sender:)))
-        addGestureRecognizer(tapGestureMore)
-        tapGestureMore.numberOfTapsRequired = 1
-        tapMore.isUserInteractionEnabled = true
-        tapMore.addGestureRecognizer(tapGestureMore)
     }
     
-    @objc func tapRestore(sender: UITapGestureRecognizer) {
-        delegate?.tapRestoreItem(with: fileID)
-    }
-    @objc func tapMore(sender: UITapGestureRecognizer) {
+    @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreItem(with: fileID)
+    }
+    
+    @IBAction func touchUpInsideRestore(_ sender: Any) {
+        delegate?.tapRestoreItem(with: fileID)
     }
 }
 
