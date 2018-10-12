@@ -22,10 +22,10 @@
 //
 
 #import "CCIntro.h"
-
+#import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
-@interface CCIntro ()
+@interface CCIntro () <SwiftModalWebVCDelegate>
 {
     int titlePositionY;
     int descPositionY;
@@ -74,11 +74,6 @@
 {
     selector = k_intro_signup;
     [self.intro hideWithFadeOutDuration:0.7];
-}
-
-- (void)host:(id)sender
-{
-    
 }
 
 - (void)show
@@ -232,6 +227,44 @@
     
     [self.intro setDelegate:self];
     [self.intro showInView:self.rootView animateDuration:0];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Web =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)host:(id)sender
+{
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:[NCBrandOptions sharedInstance].linkLoginHost];
+    webVC.delegateWeb = self;
+    
+    [appDelegate.window.rootViewController presentViewController:webVC animated:YES completion:nil];
+}
+    
+- (void)didStartLoading
+{
+    
+}
+
+- (void)didReceiveServerRedirectForProvisionalNavigationWithUrl:(NSURL *)url
+{
+    
+}
+
+- (void)didFinishLoadingWithSuccess:(BOOL)success url:(NSURL *)url
+{
+    
+}
+
+- (void)webDismiss
+{
+    
+}
+
+- (void)decidePolicyForNavigationAction:(WKWebView *)webView decidePolicyFor:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
+{
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end

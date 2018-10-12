@@ -8,17 +8,17 @@
 
 import UIKit
 
-public protocol SwiftModalWebVCDelegate: class {
-    func didStartLoading()
-    func didReceiveServerRedirectForProvisionalNavigation(url: URL)
-    func didFinishLoading(success: Bool, url: URL)
-    func webDismiss()
-    func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
+@objc public protocol SwiftModalWebVCDelegate: class {
+    @objc func didStartLoading()
+    @objc func didReceiveServerRedirectForProvisionalNavigation(url: URL)
+    @objc func didFinishLoading(success: Bool, url: URL)
+    @objc func webDismiss()
+    @objc func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
 }
 
 public class SwiftModalWebVC: UINavigationController {
     
-    public weak var delegateWeb: SwiftModalWebVCDelegate?
+    @objc public weak var delegateWeb: SwiftModalWebVCDelegate?
     
     public enum SwiftModalWebVCTheme {
         case lightBlue, lightBlack, dark, custom
@@ -26,7 +26,7 @@ public class SwiftModalWebVC: UINavigationController {
     
     weak var webViewDelegate: UIWebViewDelegate? = nil
     
-    public convenience init(urlString: String) {
+    @objc public convenience init(urlString: String) {
         self.init(pageURL: URL(string: urlString)!)
     }
     
