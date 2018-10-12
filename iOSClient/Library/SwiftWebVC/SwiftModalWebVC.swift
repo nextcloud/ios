@@ -27,7 +27,7 @@ public class SwiftModalWebVC: UINavigationController {
     weak var webViewDelegate: UIWebViewDelegate? = nil
     
     @objc public convenience init(urlString: String) {
-        self.init(pageURL: URL(string: urlString)!)
+        self.init(pageURL: URL(string: urlString)!, theme: .dark, color: UIColor.clear, colorText: UIColor.black, doneButtonVisible: true, hideToolbar: false)
     }
     
     public convenience init(urlString: String, theme: SwiftModalWebVCTheme) {
@@ -53,10 +53,7 @@ public class SwiftModalWebVC: UINavigationController {
         
         super.init(rootViewController: webViewController)
 
-        let doneButton = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCDismiss"),
-                                         style: UIBarButtonItem.Style.plain,
-                                         target: webViewController,
-                                         action: #selector(SwiftWebVC.doneButtonTapped))
+        let doneButton = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCDismiss"), style: UIBarButtonItem.Style.plain, target: webViewController, action: #selector(SwiftWebVC.doneButtonTapped))
     
         switch theme {
         case .lightBlue:
@@ -70,9 +67,9 @@ public class SwiftModalWebVC: UINavigationController {
             webViewController.titleColor = UIColor.black
             UINavigationBar.appearance().barStyle = UIBarStyle.default
         case .dark:
-            doneButton.tintColor = UIColor.white
+            doneButton.tintColor = UIColor.black
             webViewController.buttonColor = UIColor.white
-            webViewController.titleColor = UIColor.groupTableViewBackground
+            webViewController.titleColor = UIColor.black// groupTableViewBackground
             UINavigationBar.appearance().barStyle = UIBarStyle.black
         case .custom:
             doneButton.tintColor = colorText
@@ -142,7 +139,6 @@ extension SwiftModalWebVC: SwiftWebVCDelegate {
     }
     
     public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        
-        self.delegateWeb?.decidePolicyForNavigationAction(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)        
+        self.delegateWeb?.decidePolicyForNavigationAction(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
     }
 }
