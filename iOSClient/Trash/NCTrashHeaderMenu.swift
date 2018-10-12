@@ -32,10 +32,6 @@ class NCTrashHeaderMenu: UICollectionReusableView {
     @IBAction func touchUpInsideSwitch(_ sender: Any) {
         delegate?.tapSwitchHeaderMenu()
     }
-    
-    @IBAction func touchDownSwitch(_ sender: Any) {
-        delegate?.tapSwitchHeaderMenu()
-    }
 }
 
 protocol NCTrashHeaderMenuDelegate {
