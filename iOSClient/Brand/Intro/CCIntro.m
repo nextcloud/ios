@@ -236,7 +236,8 @@
 - (void)host:(id)sender
 {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:[NCBrandOptions sharedInstance].linkLoginHost];
+    
+    SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:[NCBrandOptions sharedInstance].linkLoginHost colorText:[UIColor blackColor] doneButtonVisible:YES hideToolbar:NO];    
     webVC.delegateWeb = self;
     
     [appDelegate.window.rootViewController presentViewController:webVC animated:YES completion:nil];

@@ -20,33 +20,14 @@ public class SwiftModalWebVC: UINavigationController {
     
     @objc public weak var delegateWeb: SwiftModalWebVCDelegate?
     
-    public enum SwiftModalWebVCTheme {
-        case lightBlue, lightBlack, dark, custom
-    }
-    
     weak var webViewDelegate: UIWebViewDelegate? = nil
     
-    @objc public convenience init(urlString: String) {
-        self.init(pageURL: URL(string: urlString)!, theme: .dark, color: UIColor.clear, colorText: UIColor.black, doneButtonVisible: true, hideToolbar: false)
+    @objc public convenience init(urlString: String, colorText: UIColor, doneButtonVisible: Bool, hideToolbar: Bool = false) {
+        let url = URL(string: urlString)!
+        self.init(request: URLRequest(url: url), colorText: colorText, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
     }
     
-    public convenience init(urlString: String, theme: SwiftModalWebVCTheme) {
-        self.init(pageURL: URL(string: urlString)!, theme: theme)
-    }
-    
-    public convenience init(urlString: String, theme: SwiftModalWebVCTheme, color: UIColor, colorText: UIColor, doneButtonVisible: Bool, hideToolbar: Bool = false) {
-        self.init(pageURL: URL(string: urlString)!, theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
-    }
-    
-    public convenience init(pageURL: URL) {
-        self.init(request: URLRequest(url: pageURL))
-    }
-    
-    public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme, color : UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
-        self.init(request: URLRequest(url: pageURL), theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
-    }
-   
-    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color: UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
+    public init(request: URLRequest, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
         
         let webViewController = SwiftWebVC(aRequest: request, hideToolbar: hideToolbar)
         webViewController.storedStatusColor = UINavigationBar.appearance().barStyle
@@ -55,34 +36,12 @@ public class SwiftModalWebVC: UINavigationController {
 
         let doneButton = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCDismiss"), style: UIBarButtonItem.Style.plain, target: webViewController, action: #selector(SwiftWebVC.doneButtonTapped))
     
-        switch theme {
-        case .lightBlue:
-            doneButton.tintColor = nil
-            webViewController.buttonColor = nil
-            webViewController.titleColor = UIColor.black
-            UINavigationBar.appearance().barStyle = UIBarStyle.default
-        case .lightBlack:
-            doneButton.tintColor = UIColor.darkGray
-            webViewController.buttonColor = UIColor.darkGray
-            webViewController.titleColor = UIColor.black
-            UINavigationBar.appearance().barStyle = UIBarStyle.default
-        case .dark:
-            doneButton.tintColor = UIColor.black
-            webViewController.buttonColor = UIColor.white
-            webViewController.titleColor = UIColor.black// groupTableViewBackground
-            UINavigationBar.appearance().barStyle = UIBarStyle.black
-        case .custom:
-            doneButton.tintColor = colorText
-            webViewController.buttonColor = colorText
-            webViewController.titleColor = colorText
-            webViewController.view.backgroundColor = color
-
-            self.navigationBar.isTranslucent = false
-            UINavigationBar.appearance().barTintColor = color
-            
-            self.toolbar.isTranslucent = false
-            self.toolbar.barTintColor = color
-        }
+        doneButton.tintColor = colorText
+        webViewController.buttonColor = colorText
+        webViewController.titleColor = colorText
+        webViewController.view.backgroundColor = UIColor.clear
+        
+        UINavigationBar.appearance().barStyle = UIBarStyle.default
         
         if (doneButtonVisible == true) {
             if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
