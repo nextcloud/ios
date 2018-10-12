@@ -361,7 +361,7 @@
                 _activeLoginWeb.loginType = loginType;
                 
                 if (selector == k_intro_signup) {
-                    _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginPreferredProviders];
+                    _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] linkloginPreferredProviders];
                 } else {
                     _activeLoginWeb.urlBase = self.activeUrl;
                 }

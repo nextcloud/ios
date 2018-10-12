@@ -76,6 +76,11 @@
     [self.intro hideWithFadeOutDuration:0.7];
 }
 
+- (void)host:(id)sender
+{
+    
+}
+
 - (void)show
 {
     [self showIntro];
@@ -89,17 +94,19 @@
     
     if (height <= 568) {
         titleIconPositionY = 20;
+        titlePositionY = height / 2 + 40.0;
+        descPositionY  = height / 2;
+        buttonPosition = height / 2 + 50.0;
     } else {
         titleIconPositionY = 100;
+        titlePositionY = height / 2 + 40.0;
+        descPositionY  = height / 2;
+        buttonPosition = height / 2 + 120.0;
     }
-    
-    titlePositionY = height / 2 + 40.0;
-    descPositionY  = height / 2;
-    buttonPosition = height / 2 + 120.0;
     
     // Button
     
-    UIView *buttonView = [[UIView alloc] initWithFrame:CGRectMake(0,0, self.rootView.bounds.size.width, 100.0)];
+    UIView *buttonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.rootView.bounds.size.width,220)];
     buttonView.userInteractionEnabled = YES ;
     
     UIButton *buttonLogin = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -125,6 +132,18 @@
     [buttonSignUp addTarget:self action:@selector(signUp:) forControlEvents:UIControlEventTouchDown];
         
     [buttonView addSubview:buttonSignUp];
+    
+    UIButton *buttonHost = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    buttonHost.frame = CGRectMake(50.0, 200.0, width - 100.0, 20.0);
+    buttonHost.layer.cornerRadius = 3;
+    buttonHost.clipsToBounds = YES;
+    [buttonHost setTitle:NSLocalizedStringFromTable(@"_host_your_own_server", @"Intro", nil) forState:UIControlStateNormal];
+    buttonHost.titleLabel.font = [UIFont systemFontOfSize:14];
+    [buttonHost setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    buttonHost.backgroundColor = [UIColor clearColor];
+    [buttonHost addTarget:self action:@selector(host:) forControlEvents:UIControlEventTouchDown];
+    
+    [buttonView addSubview:buttonHost];
     
     // Pages
     
