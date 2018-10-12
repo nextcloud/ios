@@ -48,7 +48,7 @@
                                             </constraints>
                                             <state key="normal" image="switchList"/>
                                             <connections>
-                                                <action selector="touchUpInsideSwitch:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="b4W-Pc-nCw"/>
+                                                <action selector="touchDownSwitch:" destination="AQ6-rS-Wxb" eventType="touchDown" id="sOn-g2-gml"/>
                                             </connections>
                                         </button>
                                     </subviews>
