@@ -131,7 +131,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
                 
-        let fileName = appDelegate.activeUrl + "/" + tableTrash.filePath + tableTrash.fileName
+        let fileName = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.activeUrl + "/" + tableTrash.trashbinOriginalLocation
         
         ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
