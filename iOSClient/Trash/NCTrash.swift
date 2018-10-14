@@ -26,6 +26,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell-list")
         collectionView.register(UINib.init(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
+        collectionView.alwaysBounceVertical = true
+
         listLayout = ListLayout()
         gridLayout = GridLayout()
         
