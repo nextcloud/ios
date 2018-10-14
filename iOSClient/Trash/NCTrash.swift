@@ -130,14 +130,25 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+                
+        let fileName = appDelegate.activeUrl + "/" + tableTrash.filePath + tableTrash.fileName
+        let fileNameTo = appDelegate.activeUrl + "/" + tableTrash.trashbinOriginalLocation
         
-        //NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
-        //NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrlTo, _metadataNet.fileNameTo];
-        
-        ocNetworking?.moveFileOrFolder("fileName", fileNameTo: "fileNameTo", success: {
+        ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
+            
+            NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
+            let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: "fileName", ascending: true)
+            if (results != nil) {
+                self.datasource = results!
+                self.collectionView.reloadData()
+            } else {
+                self.datasource.removeAll()
+                self.collectionView.reloadData()
+            }
             
         }, failure: { (message, errorCode) in
             
+            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
         })
     }
     

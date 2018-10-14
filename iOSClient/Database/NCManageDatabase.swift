@@ -2524,6 +2524,30 @@ class NCManageDatabase: NSObject {
         }
     }
     
+    @objc func deleteTrash(fileID: String) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        realm.beginWrite()
+        
+        guard let result = realm.objects(tableTrash.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
+            realm.cancelWrite()
+            return
+        }
+        
+        realm.delete(result)
+        
+        do {
+            try realm.commitWrite()
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
+    
     @objc func getTrash(filePath: String, sorted: String, ascending: Bool) -> [tableTrash]? {
         
         guard let tableAccount = self.getAccountActive() else {
