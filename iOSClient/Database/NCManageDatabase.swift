@@ -2538,5 +2538,21 @@ class NCManageDatabase: NSObject {
         return Array(results.map { tableTrash.init(value:$0) })
     }
     
+    @objc func getTrashItem(fileID: String) -> tableTrash? {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return nil
+        }
+        
+        let realm = try! Realm()
+        realm.refresh()
+        
+        guard let result = realm.objects(tableTrash.self).filter("account = %@ AND fileID = %@", tableAccount.account, fileID).first else {
+            return nil
+        }
+        
+        return tableTrash.init(value: result)
+    }
+    
     //MARK: -
 }

@@ -54,23 +54,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             collectionView.reloadData()
         }
         
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.listingTrash(appDelegate.activeUrl, path:path, account: appDelegate.activeAccount, success: { (item) in
-            
-            NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
-            NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
-            
-            let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: "fileName", ascending: true)
-            if (results != nil) {
-                self.datasource = results!
-                self.collectionView.reloadData()
-            }
-            
-        }, failure: { (message, errorCode) in
-            
-            print("error " + message!)
-        })
+        loadListingTrash()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -84,7 +68,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     // MARK: tap
     
     func tapRestoreItem(with fileID: String) {
-        print("tap item restore")
+        restoreItem(with: fileID)
     }
     
     func tapMoreItem(with fileID: String) {
@@ -117,7 +101,43 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     func tapMoreHeaderMenu() {
         print("tap header more")
     }
-
+    
+    func loadListingTrash() {
+        
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        ocNetworking?.listingTrash(appDelegate.activeUrl, path:path, account: appDelegate.activeAccount, success: { (item) in
+            
+            NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
+            NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
+            
+            let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: "fileName", ascending: true)
+            if (results != nil) {
+                self.datasource = results!
+                self.collectionView.reloadData()
+            }
+            
+        }, failure: { (message, errorCode) in
+            
+            print("error " + message!)
+        })
+    }
+    
+    func restoreItem(with fileID: String) {
+        
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+            return
+        }
+        
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        ocNetworking?.moveFileOrFolder("fileName", fileNameTo: "fileNameTo", success: {
+            
+        }, failure: { (message, errorCode) in
+            
+        })
+    }
+    
     // MARK: collectionView methods
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
@@ -139,7 +159,6 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: collectionView.frame.width, height: 50)
     }
-    
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
