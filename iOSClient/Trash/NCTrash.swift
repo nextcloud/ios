@@ -131,6 +131,9 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
+        //NSString *fileNamePath = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrl, _metadataNet.fileName];
+        //NSString *fileNameToPath = [NSString stringWithFormat:@"%@/%@", _metadataNet.serverUrlTo, _metadataNet.fileNameTo];
+        
         ocNetworking?.moveFileOrFolder("fileName", fileNameTo: "fileNameTo", success: {
             
         }, failure: { (message, errorCode) in
