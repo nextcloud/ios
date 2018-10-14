@@ -15,7 +15,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
-    var datasource = [tableTrash]()
+    var datasource: [tableTrash]?
 
     var listLayout: ListLayout!
     var gridLayout: GridLayout!
@@ -137,15 +137,9 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
             
             NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
-            let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: "fileName", ascending: true)
-            if (results != nil) {
-                self.datasource = results!
-                self.collectionView.reloadData()
-            } else {
-                self.datasource.removeAll()
-                self.collectionView.reloadData()
-            }
-            
+            self.datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: "fileName", ascending: true)
+            self.collectionView.reloadData()
+
         }, failure: { (message, errorCode) in
             
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
@@ -179,12 +173,12 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return datasource.count
+        return datasource?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let tableTrash = datasource[indexPath.item]
+        let tableTrash = datasource![indexPath.item]
         var image: UIImage?
         
         if tableTrash.iconName.count > 0 {
@@ -231,7 +225,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        let tableTrash = datasource[indexPath.item]
+        let tableTrash = datasource![indexPath.item]
         
         if tableTrash.directory {
         
