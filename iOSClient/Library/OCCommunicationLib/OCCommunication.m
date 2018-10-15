@@ -2812,22 +2812,34 @@
 
 #pragma mark - Trash
 
-- (void)listingTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer, NSString *token)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *token, NSString *redirectedServer)) failureRequest
+- (void)listingTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest
 {
     OCWebDAVClient *request = [OCWebDAVClient new];
     request = [self getRequestWithCredentials:request];
     
-    [request listTrash:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject, NSString *token) {
+    [request listTrash:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *response, id responseObject) {
         
         OCXMLParser *parser = [OCXMLParser new];
         [parser initParserWithData:responseObject];
         NSMutableArray *list = [parser.directoryList mutableCopy];
         
-        successRequest(response, list, request.redirectedServer, token);
+        successRequest(response, list, request.redirectedServer);
         
-    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error, NSString *token) {
+    } failure:^(NSHTTPURLResponse *response, id responseData, NSError *error) {
         
-        failureRequest(response, error, token, request.redirectedServer);
+        failureRequest(response, error, request.redirectedServer);
+    }];
+}
+
+- (void)restoreTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest
+{
+    OCWebDAVClient *request = [OCWebDAVClient new];
+    request = [self getRequestWithCredentials:request];
+    
+    [request restoreTrash:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *operation, id response) {
+        
+    } failure:^(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *error) {
+        failureRequest(response, error, request.redirectedServer);
     }];
 }
 
