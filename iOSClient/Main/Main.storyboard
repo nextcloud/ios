@@ -489,7 +489,7 @@
         <scene sceneID="dMv-43-hWy">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="bSZ-tE-FEj" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="File" image="folder" id="Zxv-aS-HGF"/>
+                    <tabBarItem key="tabBarItem" title="File" id="Zxv-aS-HGF"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="cj6-rT-wnB">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
@@ -508,7 +508,7 @@
         <scene sceneID="YSr-JF-a0V">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="hwM-4d-Afb" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Favorites" image="favorite" id="o09-67-hwf"/>
+                    <tabBarItem key="tabBarItem" title="Favorites" id="o09-67-hwf"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="MJw-Bn-5le">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
@@ -558,7 +558,7 @@
         <scene sceneID="IuY-Iu-oAm">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="Npr-vu-PSD" userLabel="Media" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Media" image="media" id="5cw-bP-7It"/>
+                    <tabBarItem key="tabBarItem" title="Media" id="5cw-bP-7It"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ixg-Pw-TNO">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
@@ -593,7 +593,7 @@
         <scene sceneID="4RE-f1-SKU">
             <objects>
                 <navigationController extendedLayoutIncludesOpaqueBars="YES" automaticallyAdjustsScrollViewInsets="NO" id="1Z8-Bx-Dqo" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="More" image="tabBarMore" id="U4f-qS-cgh"/>
+                    <tabBarItem key="tabBarItem" title="More" id="U4f-qS-cgh"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="yVo-p8-ApS">
                         <rect key="frame" x="0.0" y="44" width="375" height="44"/>
@@ -812,10 +812,6 @@
         <image name="avatar" width="25" height="25"/>
         <image name="backgroundDetail" width="160.55999755859375" height="113.51999664306641"/>
         <image name="disclosureIndicator" width="13" height="14"/>
-        <image name="favorite" width="56.25" height="56.25"/>
-        <image name="folder" width="56.25" height="56.25"/>
-        <image name="media" width="56.25" height="56.25"/>
-        <image name="tabBarMore" width="56.25" height="56.25"/>
         <image name="tabBarPlus" width="40" height="40"/>
     </resources>
     <inferredMetricsTieBreakers>
