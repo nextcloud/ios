@@ -1071,16 +1071,16 @@
 #pragma mark =====  Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *message, NSInteger errorCode))completion
+- (void)deleteFileOrFolder:(NSString *)path completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {    
-    NSString *serverFilePath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
+//    NSString *serverFilePath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
     
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication deleteFileOrFolder:serverFilePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication deleteFileOrFolder:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(nil, 0);
         
@@ -1103,7 +1103,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionDeleteFileFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionDeleteFileFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         completion(message, errorCode);
     }];

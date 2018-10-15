@@ -72,7 +72,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func tapMoreItem(with fileID: String) {
-        print("tap item more")
+        deleteItem(with: fileID)
     }
     
     func tapSwitchHeaderMenu() {
@@ -154,6 +154,31 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }, failure: { (message, errorCode) in
             
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        })
+    }
+    
+    func deleteItem(with fileID: String) {
+        
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+            return
+        }
+        
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
+
+        ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
+            
+            if errorCode == 0 {
+                
+                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
+                self.datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: "fileName", ascending: true)
+                self.collectionView.reloadData()
+                
+            } else {
+                
+                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            }
         })
     }
     

@@ -550,7 +550,9 @@ class NCMainCommon: NSObject {
             
             self.appDelegate.filterFileID.add(metadata.fileID)
             
-            ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, completion: { (message, errorCode) in
+            let path = serverUrl + "/" + metadata.fileName
+            
+            ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
                 
                 count += 1
 

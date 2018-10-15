@@ -32,7 +32,10 @@ extension FileProviderExtension {
     func deleteFile(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata, serverUrl: String) {
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, completion: { (message, errorCode) in
+        
+        let path = serverUrl + "/" + metadata.fileName
+        
+        ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
             
             if errorCode == 0 || errorCode == 404 {
                 self.deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)
