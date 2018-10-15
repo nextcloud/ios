@@ -139,7 +139,18 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
             self.datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: "fileName", ascending: true)
             self.collectionView.reloadData()
-
+            
+            // Remove, if exists, fileID in appDelegate.filterFileID
+            for number in 0..<(self.appDelegate.filterFileID.count) {
+                
+                let fileIDDeleted = self.appDelegate.filterFileID[number] as! String
+                
+                if fileIDDeleted.range(of: fileID) != nil {
+                    self.appDelegate.filterFileID.remove(fileIDDeleted)
+                    break
+                }
+            }
+            
         }, failure: { (message, errorCode) in
             
             self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)

@@ -2831,18 +2831,6 @@
     }];
 }
 
-- (void)restoreTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication successRequest:(void(^)(NSHTTPURLResponse *response, NSString *redirectedServer)) successRequest failureRequest:(void(^)(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer)) failureRequest
-{
-    OCWebDAVClient *request = [OCWebDAVClient new];
-    request = [self getRequestWithCredentials:request];
-    
-    [request restoreTrash:path onCommunication:sharedOCCommunication success:^(NSHTTPURLResponse *operation, id response) {
-        
-    } failure:^(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *error) {
-        failureRequest(response, error, request.redirectedServer);
-    }];
-}
-
 #pragma mark - Manage Mobile Editor OCS API
 
 - (void)eraseURLCache
