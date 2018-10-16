@@ -216,15 +216,14 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         let width = NCUtility.sharedInstance.getScreenWidthForPreview()
         let high = NCUtility.sharedInstance.getScreenHeightForPreview()
-        let serverUrl = appDelegate.activeUrl + tableTrash.filePath
+        let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
+        let file = CCUtility.getDirectoryProviderStorageFileID(tableTrash.fileID, fileNameView: tableTrash.fileName) + "/" + tableTrash.fileName + ".ico"
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-
-        /*
-        ocNetworking?.downloadThumbnail(withFileID: tableTrash.fileID, fileName: tableTrash.fileName, fileNameView: tableTrash.fileName, serverUrl: serverUrl, withWidth: width, andHeight: high, completion: { (message, errorCodce) in
+        ocNetworking?.downloadThumbnail(withPath: path, file: file, withWidth: width, andHeight: high, completion: { (message, errorCode) in
             
         })
-        */
+        
     }
     
     // MARK: COLLECTIONVIEW METHODS

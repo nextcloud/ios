@@ -402,6 +402,45 @@
     }
 }
 
+- (void)downloadThumbnailWithPath:(NSString *)path file:(NSString *)file withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
+{    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
+        
+        completion(nil, 0);
+        
+    } else {
+        
+        OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+        
+        [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+        [communication setUserAgent:[CCUtility getUserAgent]];
+        
+        [communication getRemoteThumbnailByServer:_activeUrl ofFilePath:path withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
+            
+            [thumbnail writeToFile:file atomically:YES];
+            
+            completion(nil, 0);
+            
+        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+            
+            NSString *message;
+            
+            NSInteger errorCode = response.statusCode;
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                errorCode = error.code;
+            
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedString(@"_server_error_retry_", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+            
+            completion(message, errorCode);
+        }];
+    }
+}
+
+
 - (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
     NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];

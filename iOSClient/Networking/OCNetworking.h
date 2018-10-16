@@ -50,7 +50,7 @@
 - (NSURLSessionTask *)uploadFileNameServerUrl:(NSString *)fileNameServerUrl fileNameLocalPath:(NSString *)fileNameLocalPath communication:(OCCommunication *)communication success:(void(^)(NSString *fileID, NSString *etag, NSDate *date))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
 
 - (void)downloadThumbnailWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion;
-
+- (void)downloadThumbnailWithPath:(NSString *)path file:(NSString *)file withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion;
 - (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion;
 
 - (void)readFolder:(NSString *)serverUrl depth:(NSString *)depth account:(NSString *)account success:(void(^)(NSArray *metadatas, tableMetadata *metadataFolder, NSString *directoryID))success failure:(void (^)(NSString *message, NSInteger errorCode))failure;
