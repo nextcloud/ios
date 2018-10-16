@@ -36,7 +36,7 @@ public class SwiftModalWebVC: UINavigationController {
 
         let doneButton = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCDismiss"), style: UIBarButtonItem.Style.plain, target: webViewController, action: #selector(SwiftWebVC.doneButtonTapped))
     
-        doneButton.tintColor = colorText
+        doneButton.tintColor = colorDoneButton
         webViewController.buttonColor = colorText
         webViewController.titleColor = colorText
         webViewController.view.backgroundColor = UIColor.clear

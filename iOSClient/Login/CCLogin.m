@@ -116,7 +116,6 @@
     }
 
     if (_loginType == k_login_Add ) {
-        // Login Flow ?
         _imageUser.hidden = YES;
         _user.hidden = YES;
         _imagePassword.hidden = YES;
@@ -124,8 +123,6 @@
     }
     
     if (_loginType == k_login_Add_Forced) {
-        _annulla.hidden = YES;
-        // Login Flow ?
         _imageUser.hidden = YES;
         _user.hidden = YES;
         _imagePassword.hidden = YES;
