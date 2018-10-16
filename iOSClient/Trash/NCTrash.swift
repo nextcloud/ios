@@ -216,7 +216,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         let width = NCUtility.sharedInstance.getScreenWidthForPreview()
         let high = NCUtility.sharedInstance.getScreenHeightForPreview()
-        let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
+        let path = tableTrash.filePath.replacingOccurrences(of: k_dav+"/", with: "") + tableTrash.fileName
         let file = CCUtility.getDirectoryProviderStorageFileID(tableTrash.fileID, fileNameView: tableTrash.fileName) + "/" + tableTrash.fileName + ".ico"
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
@@ -271,7 +271,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName))
         } else {
             if tableTrash.thumbnailExists && !CCUtility.fileProviderStorageIconExists(tableTrash.fileID, fileNameView: tableTrash.fileName) {
-                downloadThumbnail(with: tableTrash, indexPath: indexPath)
+//                downloadThumbnail(with: tableTrash, indexPath: indexPath)
             }
         }
         
