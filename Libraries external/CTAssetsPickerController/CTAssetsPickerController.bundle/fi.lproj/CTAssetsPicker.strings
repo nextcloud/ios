@@ -1,0 +1,49 @@
+/* Navigation bar buttons */
+"Cancel" = "Kumoa";
+"Done" = "Valmis";
+
+/* Default title */
+"Photos" = "Kuvat";
+
+/* No. of selected */
+"%@ Photo Selected" = "%@ kuva valittu";
+"%@ Photos Selected" = "%@ kuvaa valittu";
+"%@ Video Selected" = "%@ video valittu";
+"%@ Videos Selected" = "%@ videota valittu";
+"%@ Items Selected" = "%@ kohdetta valittu";
+
+/* Grid view footer */
+"%@ Photos" = "%@ kuvaa";
+"%@ Videos" = "%@ videota";
+"%@ Photos, %@ Videos" = "%1$@ kuvaa, %2$@ videota";
+
+/* Assets index */
+"%@ of %@" = "%1$@ / %2$@";
+
+/* Messages if privacy is not granted */
+"This app does not have access to your photos or videos." = "Sovelluksella ei ole pääsyä kuviin tai videoihin.";
+"You can enable access in Privacy Settings." = "Voit sallia pääsyn Asetukset-valikossa.";
+
+/* Messages if no assets */
+"No Photos or Videos" = "Ei kuvia tai videoita";
+
+/* The parameter will be replaced by the device model name */
+"You can take photos and videos using the camera, or sync photos and videos onto your %@\nusing iTunes." = "Voit ottaa kuvia ja videokuvata kameralla tai synkroinoida iTunesin avulla kuvia ja videoita %@en.";
+"You can sync photos and videos onto your %@ using iTunes." = "Voit synkroinoida iTunesin avulla kuvia ja videoita %@en.";
+
+/* Accessibility labels */
+"Play" = "Toista";
+"Select" = "Valitse";
+"Deselect" = "Poista";
+
+/* Video duration spell out */
+"hours" = "tuntia";
+"hour" = "tunti";
+"minutes" = "minuuttia";
+"minute" = "minuutti";
+"seconds" = "sekuntia";
+"second" = "sekunti";
+
+/* Error message of playing stream video */
+"Cannot Play Stream Video" = "Cannot Play Stream Video";
+"OK" = "OK";
