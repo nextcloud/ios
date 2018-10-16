@@ -353,9 +353,11 @@
                 [self dismissViewControllerAnimated:YES completion:nil];
                 
             } else {
+
+                // STOP Intro
+                [CCUtility setIntro:YES];
                 
                 // LOGOUT
-                
                 [appDelegate unsubscribingNextcloudServerPushNotification];
                 
                 [[NCManageDatabase sharedInstance] deleteAccount:account];

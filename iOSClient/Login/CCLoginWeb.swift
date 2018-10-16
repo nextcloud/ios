@@ -116,6 +116,9 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     
                     if (loginType == k_login_Add || loginType == k_login_Add_Forced) {
                         
+                        // STOP Intro
+                        CCUtility.setIntro(true)
+                        
                         // LOGOUT
                         appDelegate.unsubscribingNextcloudServerPushNotification()
                         

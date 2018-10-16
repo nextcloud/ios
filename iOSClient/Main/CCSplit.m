@@ -153,8 +153,6 @@
 
 - (void)introFinishSelector:(NSInteger)selector
 {
-    [CCUtility setIntro:YES];
-    
     switch (selector) {
             
         case k_intro_login:

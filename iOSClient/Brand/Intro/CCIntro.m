@@ -108,7 +108,7 @@
     buttonLogin.frame = CGRectMake(50.0, 0.0, width - 100.0, 40.0);
     buttonLogin.layer.cornerRadius = 3;
     buttonLogin.clipsToBounds = YES;
-    [buttonLogin setTitle:[NSLocalizedStringFromTable(@"_log_in_", @"Intro", nil) uppercaseString] forState:UIControlStateNormal];
+    [buttonLogin setTitle:[NSLocalizedString(@"_log_in_", nil) uppercaseString] forState:UIControlStateNormal];
     buttonLogin.titleLabel.font = [UIFont systemFontOfSize:14];
     [buttonLogin setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     buttonLogin.backgroundColor = [[NCBrandColor sharedInstance] customerText];
@@ -120,7 +120,7 @@
     buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
     buttonSignUp.layer.cornerRadius = 3;
     buttonSignUp.clipsToBounds = YES;
-    [buttonSignUp setTitle:[NSLocalizedStringFromTable(@"_sign_up_", @"Intro", nil) uppercaseString] forState:UIControlStateNormal];
+    [buttonSignUp setTitle:[NSLocalizedString(@"_sign_up_", nil) uppercaseString] forState:UIControlStateNormal];
     buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:14];
     [buttonSignUp setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     buttonSignUp.backgroundColor = [UIColor colorWithRed:25.0/255.0 green:89.0/255.0 blue:141.0/255.0 alpha:1.000];
@@ -132,7 +132,7 @@
     buttonHost.frame = CGRectMake(50.0, 200.0, width - 100.0, 20.0);
     buttonHost.layer.cornerRadius = 3;
     buttonHost.clipsToBounds = YES;
-    [buttonHost setTitle:NSLocalizedStringFromTable(@"_host_your_own_server", @"Intro", nil) forState:UIControlStateNormal];
+    [buttonHost setTitle:NSLocalizedString(@"_host_your_own_server", nil) forState:UIControlStateNormal];
     buttonHost.titleLabel.font = [UIFont systemFontOfSize:14];
     [buttonHost setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
     buttonHost.backgroundColor = [UIColor clearColor];
@@ -147,7 +147,7 @@
     page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1"]];
     page1.titleIconPositionY = titleIconPositionY;
 
-    page1.title = NSLocalizedStringFromTable(@"_intro_1_title_", @"Intro", nil);
+    page1.title = NSLocalizedString(@"_intro_1_title_", nil);
     page1.titlePositionY = titlePositionY;
     page1.titleColor = [[NCBrandColor sharedInstance] customerText];
     page1.titleFont = [UIFont systemFontOfSize:23];
@@ -160,7 +160,7 @@
     page2.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro2"]];
     page2.titleIconPositionY = titleIconPositionY;
 
-    page2.title = NSLocalizedStringFromTable(@"_intro_2_title_",  @"Intro", nil);
+    page2.title = NSLocalizedString(@"_intro_2_title_", nil);
     page2.titlePositionY = titlePositionY;
     page2.titleColor = [[NCBrandColor sharedInstance] customerText];
     page2.titleFont = [UIFont systemFontOfSize:23];
@@ -173,7 +173,7 @@
     page3.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro3"]];
     page3.titleIconPositionY = titleIconPositionY;
 
-    page3.title = NSLocalizedStringFromTable(@"_intro_3_title_",  @"Intro", nil);
+    page3.title = NSLocalizedString(@"_intro_3_title_", nil);
     page3.titlePositionY = titlePositionY;
     page3.titleColor = [[NCBrandColor sharedInstance] customerText];
     page3.titleFont = [UIFont systemFontOfSize:23];
@@ -186,7 +186,7 @@
     page4.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro4"]];
     page4.titleIconPositionY = titleIconPositionY;
     
-    page4.title = NSLocalizedStringFromTable(@"_intro_4_title_",  @"Intro", nil);
+    page4.title = NSLocalizedString(@"_intro_4_title_", nil);
     page4.titlePositionY = titlePositionY;
     page4.titleColor = [[NCBrandColor sharedInstance] customerText];
     page4.titleFont = [UIFont systemFontOfSize:23];
