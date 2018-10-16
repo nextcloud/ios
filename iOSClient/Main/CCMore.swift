@@ -408,7 +408,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, doneButtonVisible: true)
+                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true)
                 webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
@@ -450,7 +450,7 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
                 
             } else {
                 
-                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.black, doneButtonVisible: true, hideToolbar: false)
+                let webVC = SwiftModalWebVC(urlString: item.url, colorText: UIColor.white, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: false)
                 webVC.delegateWeb = self
                 self.present(webVC, animated: true, completion: nil)
             }
