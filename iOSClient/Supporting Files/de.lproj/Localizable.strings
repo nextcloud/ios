@@ -137,7 +137,7 @@
 "_contact_by_email_"            = "Kontaktiere uns per E-Mail";
 "_clear_cache_"                 = "Cache löschen (%@ verwendet)";
 "_clear_cache_no_size_"         = "Cache löschen";
-"_exit_"                        = "Beenden";
+"_exit_"                        = "Abmelden";
 "_funct_not_enabled_"           = "Funktionalität nicht aktiviert";
 "_passcode_activate_"           = "Passwortschutz aktiviert";
 "_disabling_passcode_"          = "Passwortschutz deaktivieren";
