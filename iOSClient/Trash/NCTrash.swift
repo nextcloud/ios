@@ -19,6 +19,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
 
     var listLayout: ListLayout!
     var gridLayout: GridLayout!
+    
+    private let refreshControl = UIRefreshControl()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +38,17 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         } else {
             collectionView.collectionViewLayout = gridLayout
         }
+        
+        // Add Refresh Control
+        if #available(iOS 10.0, *) {
+            collectionView.refreshControl = refreshControl
+        } else {
+            collectionView.addSubview(refreshControl)
+        }
+        
+        // Configure Refresh Control
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brand
+        refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -114,7 +127,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         print("tap header more")
     }
     
-    func loadListingTrash() {
+    @objc func loadListingTrash() {
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
@@ -129,9 +142,12 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 self.collectionView.reloadData()
             }
             
+            self.refreshControl.endRefreshing()
+            
         }, failure: { (message, errorCode) in
             
             print("error " + message!)
+            self.refreshControl.endRefreshing()
         })
     }
     
