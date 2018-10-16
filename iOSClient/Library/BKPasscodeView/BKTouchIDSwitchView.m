@@ -40,12 +40,12 @@
     self.messageLabel.numberOfLines = 0;
     self.messageLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.messageLabel.textAlignment = NSTextAlignmentCenter;
-    self.messageLabel.text = NSLocalizedStringFromTable(@"Do you want to use Touch ID for authentication?", @"BKPasscodeView", @"Touch ID를 사용하시겠습니까?");
+    self.messageLabel.text = NSLocalizedString(@"Do you want to use Touch ID for authentication?", nil);
     self.messageLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     [self addSubview:self.messageLabel];
     
     self.titleLabel = [[UILabel alloc] init];
-    self.titleLabel.text = NSLocalizedStringFromTable(@"Enable Touch ID", @"BKPasscodeView", @"Touch ID 사용");
+    self.titleLabel.text = NSLocalizedString(@"Enable Touch ID", nil);
     self.titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     [self addSubview:self.titleLabel];
     
@@ -54,7 +54,7 @@
     
     self.doneButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [self.doneButton.titleLabel setFont:[UIFont systemFontOfSize:20.f]];
-    [self.doneButton setTitle:NSLocalizedStringFromTable(@"Done", @"BKPasscodeView", @"확인") forState:UIControlStateNormal];
+    [self.doneButton setTitle:NSLocalizedString(@"Done", nil) forState:UIControlStateNormal];
     [self.doneButton addTarget:self action:@selector(doneButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self addSubview:self.doneButton];
 }

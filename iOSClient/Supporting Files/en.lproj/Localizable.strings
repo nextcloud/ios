@@ -615,3 +615,80 @@
 "_sign_up_"             = "Sign up with provider";
 "_host_your_own_server" = "Host your own server";
 
+// Error
+
+"_bad_username_password_"               = "Wrong username or password";
+"_cancelled_by_user"                    = "Transfer canceled";
+"_error_folder_destiny_is_the_same_"    = "It is not possible to move the folder into itself";
+"_error_not_permission_"                = "You don't have permission to complete the operation";
+"_error_path_"                          = "Unable to open this file or folder. Please make sure it exists";
+"_file_upload_not_exitst_"              = "The file that you want to upload does not exist";
+"_forbidden_characters_from_server_"    = "The name contains at least one invalid character";
+"_not_connected_internet_"              = "Server connection error";
+"_not_possible_connect_to_server_"      = "It is not possible to connect to the server at this time";
+"_not_possible_create_folder_"          = "Folder could not be created";
+"_server_down_"                         = "Could not establish contact with server";
+"_time_out_"                            = "Timeout, try again";
+"_unknow_response_server_"              = "Unexpected response from server";
+"_user_autentication_required_"         = "User autentication required";
+"_file_directory_locked_"               = "File or directory locked";
+"_ssl_certificate_untrusted_"           = "The certificate for this server is invalid";
+"_internal_server_"                     = "Internal server error";
+"_file_already_exists_"                 = "Could not complete the operation, a file with the same name exists";
+"_file_folder_not_exists_"              = "The source file wasn't found at the specified path";
+"_folder_contents_nochanged_"           = "The folder contents have not changed";
+"_images_invalid_converted_"            = "The image is invalid and cannot be converted to a thumbnail";
+"_method_not_expected_"                 = "Unexpected request method";
+"_reauthenticate_user_"                 = "Access expired, log in again";
+"_server_error_retry_"                  = "The server is temporarily unavailable";
+"_too_many_files_"                      = "Too many files would be involved in this operation";
+"_too_many_request_"                    = "Sending too many requests caused the rate limit to be reached";
+"_user_over_quota_"                     = "Storage quota is reached";
+"_ssl_connection_error_"                = "Connection SSL error, try again";
+"_bad_request_"                         = "Bad request";
+"_webdav_locked_"                       = "WebDAV Locked: Trying to access locked resource";
+"_error_user_not_available_"            = "The user is no longer available";
+"_server_response_error_"               = "Server response content error";
+
+// BKPasscode
+
+"%d Failed Passcode Attempts" = "%d failed passcode attempts";
+"%d Failed Password Attempts" = "%d failed password attempts";
+
+"1 Failed Passcode Attempt" = "1 failed passcode attempt";
+"1 Failed Password Attempt" = "1 failed password attempt";
+
+"Do you want to use Touch ID for authentication?" = "Do you want to use Touch/Face ID for authentication?";
+
+"Done" = "Done";
+
+"Enable Touch ID" = "Enable Touch/Face ID";
+
+"Enter a different passcode. Cannot re-use the same passcode." = "Enter a different passcode. Cannot re-use the same passcode.";
+"Enter a different password. Cannot re-use the same password." = "Enter a different password. Cannot re-use the same password.";
+
+"Enter a passcode" = "Enter a passcode";
+"Enter a password" = "Enter a password";
+
+"Enter your new passcode" = "Enter your new passcode";
+"Enter your new password" = "Enter your new password";
+
+"Enter your old passcode" = "Enter your old passcode";
+"Enter your old password" = "Enter your old password";
+
+"Enter your passcode" = "Enter your passcode";
+"Enter your password" = "Enter your password";
+
+"Invalid Passcode" = "Invalid passcode";
+"Invalid Password" = "Invalid password";
+
+"Passcodes did not match.\nTry again." = "Passcodes did not match.\nTry again.";
+"Password did not match.\nTry again." = "Password did not match.\nTry again.";
+
+"Re-enter your passcode" = "Re-enter your passcode";
+"Re-enter your password" = "Re-enter your password";
+
+"Try again in %d minutes" = "Try again in %d minutes";
+
+"Try again in 1 minute" = "Try again in 1 minute";
+

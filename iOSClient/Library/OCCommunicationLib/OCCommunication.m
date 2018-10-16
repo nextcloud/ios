@@ -1491,7 +1491,7 @@
             successRequest(response, capabilities, request.redirectedServer);
             
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -1671,12 +1671,12 @@
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
     
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -1740,12 +1740,12 @@
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
 
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -1881,13 +1881,13 @@
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
             
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
 
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -1954,13 +1954,13 @@
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
             
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2050,13 +2050,13 @@
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
             
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2104,20 +2104,20 @@
                     successRequest(response, publicKey, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
                 }
                 
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
             
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2162,18 +2162,18 @@
                     successRequest(response, privateKeyChiper, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
                 }
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2218,18 +2218,18 @@
                     successRequest(response, publicKey, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
                 }
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
         //Return success
@@ -2276,18 +2276,18 @@
                     successRequest(response, publicKey, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
                 }
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2332,19 +2332,19 @@
                     successRequest(response, privateKey, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
                 }
                 
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2478,18 +2478,18 @@
                     successRequest(response, token, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_",  nil)], request.redirectedServer);
                 }
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2555,17 +2555,17 @@
                     successRequest(response, encryptedMetadata, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
                 }
             } else {
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2612,18 +2612,18 @@
                     successRequest(response, encryptedMetadata, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
                 }
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2671,18 +2671,18 @@
                     successRequest(response, encryptedMetadata, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
                 }
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2748,20 +2748,20 @@
                     successRequest(response, link, request.redirectedServer);
                     
                 } else {
-                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                    failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
                 }
                 
             } else {
                 
                 NSString *message = (NSString *)[meta objectForKey:@"message"];
                 if ([message isKindOfClass:[NSNull class]]) {
-                    message = NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_response_error_", nil);
                 }
                 failureRequest(response, [UtilsFramework getErrorWithCode:statusCode andCustomMessageFromTheServer:message], request.redirectedServer);
             }
             
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
   
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {
@@ -2796,11 +2796,11 @@
                 successRequest(response, url, request.redirectedServer);
                     
             } else {
-                failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+                failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
             }
                 
         } else {
-            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedStringFromTable(@"_server_response_error_", @"Error", nil)], request.redirectedServer);
+            failureRequest(response, [UtilsFramework getErrorWithCode:k_CCErrorWebdavResponseError andCustomMessageFromTheServer:NSLocalizedString(@"_server_response_error_", nil)], request.redirectedServer);
         }
         
     } failure:^(NSHTTPURLResponse *response, NSData *responseData, NSError *error) {

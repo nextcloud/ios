@@ -501,7 +501,7 @@
     } else {
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:autoUploadPath fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:autoUploadPath fileID:@"" action:k_activityDebugActionAutoUpload selector:selector note:NSLocalizedString(@"_not_possible_create_folder_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:appDelegate.activeUrl];
         
         if ([selector isEqualToString:selectorUploadAutoUploadAll])
             [appDelegate messageNotification:@"_error_" description:@"_error_createsubfolders_upload_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
