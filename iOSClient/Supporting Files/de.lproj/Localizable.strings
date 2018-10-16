@@ -68,7 +68,7 @@
 "_video_"                   = "Video";
 "_overwrite_"               = "Überschreiben";
 "_transfers_in_queue_"      = "Laufende Übertragungen, bitte warten…";
-"_too_errors_automatic_all_"= "Zu viele Fehler. Zur Bestimmung des Problems bitte in das \"Control-Center\" wechseln";
+"_too_errors_automatic_all_"= "Zu viele Fehler. Zur Bestimmung des Problems bitte in das \"Control-Center\" wechseln.";
 "_create_folder_"           = "Ordner erstellen";
 "_create_folder_on_"        = "Ordner erstellen in";
 "_close_"                   = "Schließen";
@@ -115,7 +115,7 @@
 "_logout_"                      = "Abmelden";
 "_quota_space_unlimited_"       = "Unbegrenzt";
 "_quota_space_unknown_"         = "Unbekannt";
-"_quota_using_"                 = "Sie nutzen %@ von %@";
+"_quota_using_"                 = "Speicherplatz: %@ von %@";
 
 // Settings
 
@@ -158,7 +158,7 @@
 "_change_password_"             = "Passwort ändern";
 "_add_account_"                 = "Konto hinzufügen";
 "_delete_account_"              = "Konto löschen";
-"_want_delete_"                 = "Wollen Sie wirklich löschen?";
+"_want_delete_"                 = "Wirklich löschen?";
 "_no_delete_"                   = "Nein, nicht löschen";
 "_yes_delete_"                  = "Ja, löschen";
 "_remove_cache_"                = "Bitte warten, Cache wird gelöscht…";
@@ -180,35 +180,35 @@
 "_user_web_"                    = "Internetseite";
 "_user_twitter_"                = "Twitter";
 "_favorite_offline_"            = "Offline verfügbare Favoriten";
-"_favorite_offline_footer_"     = "Die Offline-Nutzung Ihrer Favoriten-Ordner kann eine Weile dauern und viel Speicherplatz belegen.";
+"_favorite_offline_footer_"     = "Die Offline-Nutzung Ihrer Favoriten-Ordner kann viel Speicherplatz belegen.";
 "_advanced_"                    = "Erweitert";
 "Skip"                          = "Überspringen";
 "Start"                         = "Start";
 "_disable_files_app_"           = "Integration in \"Dateien\"-App";
-"_disable_files_app_footer_"    = "Zugriff auf Dateien durch die \"Dateien\"-App von iOS erlauben / deaktivieren.";
+"_disable_files_app_footer_"    = "Zugriff auf Dateien durch die \"Dateien\"-App von iOS aktivieren/deaktivieren.";
 
 // Manage AutoUpload
 
-"_autoupload_"                      = "Automatisches Hochladen von Bildern/Videos";
+"_autoupload_"                      = "Automatisches Hochladen";
 "_autoupload_background_"           = "Automatisches Hochladen im Hintergrund";
 "_autoupload_photos_"               = "Automatisches Hochladen von Bildern";
 "_autoupload_videos_"               = "Automatisches Hochladen von Videos";
-"_autoupload_description_"          = "Die neuen Fotos/Videos werden in Ihre Cloud hochgeladen ";
-"_autoupload_description_background_"  = "Diese Funktion benötigt GPS um die Erfassung neuer Fotos im Kameraspeicher anzustoßen, sobald sich der Aufenthaltsort erheblich verändert";
+"_autoupload_description_"          = "Neue Fotos & Videos werden in Ihre Cloud hochgeladen.";
+"_autoupload_description_background_"  = "Diese Funktion benötigt GPS um die Erfassung neuer Fotos im Fotoalbum anzustoßen, sobald sich der Aufenthaltsort erheblich verändert.";
 "_autoupload_background_title_"     = "Einschränkungen";
 "_autoupload_background_msg_"       = "Aufgrund von iOS-Beschränkungen ist es aktuell nicht möglich Hintergrundprozesse auszuführen, sofern die GPS-Dienste nicht aktiviert sind. Sobal die Zelle im Mobilfunknetzwerk gewechselt wird, wird das System für kurze Zeit aufgeweckt um zu prüfen, ob Fotos für das Hochladen in die Cloud vorhanden sind.";
 "_autoupload_change_location_"      = "Ordner wechseln";
 "_autoupload_location_now_"         = "Ordner";
 "_autoupload_location_default_"     = "Standardordner wiederherstellen";
-"_autoupload_change_location_footer_" = "Ändere Foto-Ordner der für das 'automatische Hochladen von Kamarafotos' verwandt wird (wenn die Funktion eingeschaltet ist) ";
+"_autoupload_change_location_footer_" = "Ändere Foto-Ordner der für das 'automatische Hochladen von Kamarafotos' verwandt wird (wenn die Funktion eingeschaltet ist).";
 "_autoupload_not_select_home_"      = "Ordner auswählen";
 "_autoupload_save_album_"           = "Kopiere Foto oder Video in das Fotoalbum";
-"_autoupload_fullphotos_"           = "Den kompletten Kameraspeicher hochladen";
-"_autoupload_fullphotos_footer_"    = "Passen Sie die Optionen an bevor Sie hochladen";
-"_autoupload_create_subfolder_"     = "Verwende Unterordner";
-"_autoupload_create_subfolder_footer_" = "Speichere in Unterordnern basierend auf Jahr und Monat";
+"_autoupload_fullphotos_"           = "Komplettes Fotoalbum hochladen";
+"_autoupload_fullphotos_footer_"    = "Alle Fotos oder Videos aus dem Fotoalbum hochladen.";
+"_autoupload_create_subfolder_"     = "Unterordner verwenden";
+"_autoupload_create_subfolder_footer_" = "In Unterordner basierend auf Jahr und Monat speichern.";
 "_autoupload_filenamemask_"         = "Dateinamen-Maske ändern";
-"_autoupload_filenamemask_footer_"  = "Die automatische Dateinamen-Maske ändern";
+"_autoupload_filenamemask_footer_"  = "Die automatische Dateinamen-Maske ändern.";
 
 
 // Manage Help
@@ -225,7 +225,7 @@
 "_optimized_photos_"            = "Optimierte Fotoauflösung";
 "_upload_del_photos_"           = "Dateien nach dem Hochladen entfernen";
 "_optimized_photos_how_"        = "Wenn möglich nur gering auflösende Fotos anzeigen.";
-"_upload_del_photos_how_"       = "Dateien werden von Ihrem Gerätespeicher entfernt, nachdem sie in die Cloud geladen wurden. Sie verbleiben in Ihrem Kameraspeicher. Um sie anzuzeigen, laden Sie die Dateien einfach herunter.";
+"_upload_del_photos_how_"       = "Dateien werden von Ihrem Gerätespeicher entfernt, nachdem sie in die Cloud hochgeladen wurden. Um sie anzuzeigen oder zu speichern, laden Sie die Dateien einfach herunter.";
 "_show_hidden_files_"           = "Versteckte Dateien anzeigen";
 "_format_compatibility_"        = "Maximale Kompatibilität";
 "_format_compatibility_footer_" = "\"Maximale Kompatibilität\" wird die Bilder, wenn möglich, als JPEG speichern.";
@@ -234,7 +234,7 @@
 
 "_connect_server_anyway_"       = "Möchten Sie dennoch eine Verbindung zu diesem Server herstellen?";
 "_connection_error_"            = "Verbindungsfehler";
-"_serverstatus_error_"          = "Fehler bei der Verbindung zum Server. Prüfen Sie die Serveradresse oder die Netzwerkverbindung";
+"_serverstatus_error_"          = "Fehler bei der Verbindung zum Server. Prüfen Sie die Serveradresse oder die Netzwerkverbindung.";
 "_add_your_nextcloud_"          = "Nextcloud-Konto hinzufügen";
 "_login_url_"                   = "Server-Adresse https://…";
 "_login_bottom_label_"          = "Sie haben bislang keinen Server?\nHier klicken um Server-Anbieter zu finden.";
@@ -249,7 +249,7 @@
 "_favorite_"                    = "Favorisieren";
 "_unfavorite_"                  = "Nicht favorisieren";
 "_no_files_uploaded_"           = "Keine Dateien hochgeladen";
-"_tutorial_favorite_view_"      = "Dateien und Ordner, die Sie als Favoriten kennzeichnen, werden hier erscheinen";
+"_tutorial_favorite_view_"      = "Dateien und Ordner, die Sie als Favoriten kennzeichnen, werden hier erscheinen.";
 "_tutorial_offline_view_"       = "Dateien die offline zur Verfügung stehen sollen hier her kopieren. \n\nDie Dateien werden mit Ihrer Cloud synchronisiert.";
 "_tutorial_local_view_"         = "Ihre entpackten Dateien aus der Cloud werden hier angezeigt.\n\nVerbinden Sie sich zu iTunes um diese Dateien zu teilen.";
 "_more_"                        = "Mehr";
@@ -271,8 +271,8 @@
 "_access_photo_location_not_enabled_"       = "Zugriff auf Fotos und Standort nicht freigegeben";
 "_access_photo_location_not_enabled_msg_"   = "Bitte gehen Sie zu den \"Einstellungen\" und schalten Sie die \"Standortdienste\" und \"Fotozugriff\" ein.";
 "_tutorial_photo_view_"                     = "Noch keine hochgeladenen Fotos oder Videos vorhanden";
-"_create_full_upload_"                      = "Archiv wird erstellt, dies kann länge Zeit in Anspruch nehmen. Bitte warten.";
-"_error_createsubfolders_upload_"           = "Fehler beim Erstellen der Unterordner";
+"_create_full_upload_"                      = "Archiv wird erstellt";
+"_error_createsubfolders_upload_"           = "Fehler beim erstellen der Unterordner";
 "_activate_autoupload_"                     = "Automatisches Hochladen aktivieren";
 
 // Utility
@@ -338,20 +338,20 @@
 "_remove_synchronized_folder_"  = "Synchronisierung ausschalten";
 "_synchronized_confirm_"        = "Nach dem Einschalten der Synchronisation werden alle Dateien im Ordner mit dem Server synchronisiert. Fortsetzen?";
 "_offline_folder_confirm_"      = "Nach aktivieren der Offline-Funktion werden alle Dateien in diesem Ordner mit dem Server synchronisiert. Möchten Sie fortfahren?";
-"_file_not_found_reload_"       = "Datei nicht gefunden, herunterziehen um zu aktualisieren";
+"_file_not_found_reload_"       = "Datei nicht gefunden, herunterziehen um zu aktualisieren.";
 "_title_section_download_"      = "HERUNTERLADEN";
 "_title_section_upload_"        = "HOCHLADEN";
-"_group_alphabetic_yes_"        = "✓ Alphabetisch gruppiert";
-"_group_alphabetic_no_"         = "Alphabetisch gruppiert";
-"_group_typefile_yes_"          = "✓ Nach Dateityp gruppiert";
-"_group_typefile_no_"           = "Nach Dateityp gruppiert";
+"_group_alphabetic_yes_"        = "✓ Alphabetisch gruppieren";
+"_group_alphabetic_no_"         = "Alphabetisch gruppieren";
+"_group_typefile_yes_"          = "✓ Nach Dateityp gruppieren";
+"_group_typefile_no_"           = "Nach Dateityp gruppieren";
 "_group_date_yes_"              = "✓ Nach Datum gruppieren";
 "_group_date_no_"               = "Nach Datum gruppieren";
 "_element_"                     = "Element";
 "_elements_"                    = "Elemente";
-"_tite_footer_upload_wwan_"     = " WLAN-Netzwerk benötigt %lu %@ zum Hochladen";
+"_tite_footer_upload_wwan_"     = " WLAN-Verbindung benötigt %lu %@ zum Hochladen";
 "_tite_footer_upload_"          = "%lu %@ zum Hochladen";
-"_tite_footer_download_wwan_"   = " Wi-Fi Netzwerk benötigt %lu %@ zum Herunterladen";
+"_tite_footer_download_wwan_"   = " WLAN-Verbindung benötigt %lu %@ zum Herunterladen";
 "_tite_footer_download_"        = "%lu %@ zum Herunterladen";
 "_limited_dimension_"           = "Maximalgröße erreicht";
 "_save_selected_files_"         = "Bilder und Videos im Fotoalbum speichern";
@@ -419,13 +419,13 @@
 "_date_"                        = "Datum";
 "_share_title_"                 = "Teilen";
 "_add_sharee_"                  = "Benutzer oder Gruppen hinzufügen";
-"_add_sharee_footer_"           = "Sie können diese Ressource teilen, indem Sie Nutzer oder Gruppen hinzufügen. Alle Nutzer und Gruppen entfernen, um eine Freigabe aufzuheben";
+"_add_sharee_footer_"           = "Sie können diese Ressource teilen, indem Sie Nutzer oder Gruppen hinzufügen oder alle Nutzer und Gruppen entfernen, um eine Freigabe aufzuheben.";
 "_find_sharee_title_"           = "Suche";
 "_find_sharee_"                 = "Suche nach Benutzer oder Gruppe…";
-"_find_sharee_footer_"          = "Geben Sie einen Teil des Namens des Nutzers oder der Gruppe nach der gesucht werden soll ein (mindestens 2 Zeichen) gefolgt von einem 'Enter'. Wählen Sie die Nutzer aus, denen der Zugriff auf die Freigabe gestattet werden soll und bestätigen Sie mit 'OK'";
+"_find_sharee_footer_"          = "Geben Sie einen Teil des Namens des Nutzers oder der Gruppe nach der gesucht werden soll ein (mindestens 2 Zeichen) gefolgt von einem 'Enter'. Wählen Sie die Nutzer aus, denen der Zugriff auf die Freigabe gestattet werden soll und bestätigen Sie mit 'OK'.";
 "_user_is_group_"               = "(Gruppe)";
 "_direct_sharee_title_"         = "Teilen";
-"_direct_sharee_footer_"        = "Wenn Sie den Namen schon kennen, geben Sie ihn ein, dann wählen Sie den Freigabenamen und drücken Sie 'Fertig' zum Bestätigen";
+"_direct_sharee_footer_"        = "Wenn Sie den Namen kennen, geben Sie ihn ein, dann wählen Sie den Freigabenamen und drücken Sie 'Fertig' zum Bestätigen.";
 "_direct_sharee_"               = "Benutzernamen eingeben…";
 "_user_sharee_footer_"          = "Tippen um die Berechtigungen zu ändern";
 "_share_type_title_"            = "Typ der Freigabe";
@@ -467,7 +467,7 @@
 
 "_destiny_folder_"                  = "Ordner: %@";
 
-"_no_transfer_"                     = "Noch keine Übertragungen vorhanden";
+"_no_transfer_"                     = "Keine Übertragungen vorhanden";
 "_no_transfer_sub_"                 = "Uploads und Downloads von diesem Gerät werden hier angezeigt";
 "_no_activity_"                     = "Noch keine Aktivitäten vorhanden";
 "_transfers_"                       = "Übertragungen";
@@ -478,7 +478,7 @@
 
 "_list_shares_"                     = "Freigaben";
 "_list_shares_no_files_"            = "Noch keine Freigaben vorhanden";
-"_tutorial_list_shares_view_"       = "Dateien und Ordner, die Sie teilen, werden hier erscheinen";
+"_tutorial_list_shares_view_"       = "Dateien und Ordner, die Sie teilen, werden hier erscheinen.";
 
 // Offline - Local Storage
 
