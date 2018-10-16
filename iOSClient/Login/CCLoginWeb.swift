@@ -36,23 +36,18 @@ public class CCLoginWeb: UIViewController {
     
     var viewController: UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var doneButtonVisible: Bool = false
     
-    @objc func presentModalWithDefaultTheme(_ vc: UIViewController) {
+    @objc func open(_ vc: UIViewController) {
         
         var urlString = urlBase
         self.viewController = vc
-        
-        if (loginType == k_login_Add || loginType == k_login_Modify_Password) {
-            doneButtonVisible = true
-        }
         
         // ADD k_flowEndpoint for Web Flow
         if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders) {
             urlString =  urlBase+k_flowEndpoint
         }
         
-        let webVC = SwiftModalWebVC(urlString: urlString, colorText: NCBrandColor.sharedInstance.nextcloud, doneButtonVisible: doneButtonVisible, hideToolbar: true)
+        let webVC = SwiftModalWebVC(urlString: urlString, colorText: NCBrandColor.sharedInstance.nextcloud, doneButtonVisible: true, hideToolbar: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)

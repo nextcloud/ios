@@ -336,7 +336,7 @@
                 _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb presentModalWithDefaultTheme:delegate];
+                    [_activeLoginWeb open:delegate];
                 });
             }
             return;
@@ -367,7 +367,7 @@
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb presentModalWithDefaultTheme:delegate];
+                    [_activeLoginWeb open:delegate];
                 });
             }
             

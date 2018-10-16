@@ -222,7 +222,7 @@
             appDelegate.activeLoginWeb.delegate = self;
             appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
             
-            [appDelegate.activeLoginWeb presentModalWithDefaultTheme:self];
+            [appDelegate.activeLoginWeb open:self];
         }
         
         // NO Login Flow available
