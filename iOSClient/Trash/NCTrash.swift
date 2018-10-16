@@ -72,7 +72,19 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func tapMoreItem(with fileID: String) {
-        deleteItem(with: fileID)
+        
+        var items = [ActionSheetItem]()
+        
+        items.append(ActionSheetTitle(title: NSLocalizedString("_delete_selected_files_", comment: "")))
+        items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
+        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        
+        let actionSheet = ActionSheet(items: items) { sheet, item in
+            if item is ActionSheetDangerButton { self.deleteItem(with: fileID) }
+            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+        }
+        
+        actionSheet.present(in: self, from: self.view)
     }
     
     func tapSwitchHeaderMenu() {
