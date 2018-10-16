@@ -23,6 +23,7 @@ class NCTrashGridCell: UICollectionViewCell {
     var delegate: NCTrashGridDelegate?
     
     var fileID = ""
+    var indexPath = IndexPath()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -32,15 +33,15 @@ class NCTrashGridCell: UICollectionViewCell {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreItem(with: fileID)
+        delegate?.tapMoreItem(with: fileID, sender: sender)
     }
     
     @IBAction func touchUpInsideRestore(_ sender: Any) {
-        delegate?.tapRestoreItem(with: fileID)
+        delegate?.tapRestoreItem(with: fileID, sender: sender)
     }
 }
 
 protocol NCTrashGridDelegate {
-    func tapRestoreItem(with fileID: String)
-    func tapMoreItem(with fileID: String)
+    func tapRestoreItem(with fileID: String, sender: Any)
+    func tapMoreItem(with fileID: String, sender: Any)
 }

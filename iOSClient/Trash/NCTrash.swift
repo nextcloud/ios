@@ -67,11 +67,11 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     // MARK: tap
     
-    func tapRestoreItem(with fileID: String) {
+    func tapRestoreItem(with fileID: String, sender: Any) {
         restoreItem(with: fileID)
     }
     
-    func tapMoreItem(with fileID: String) {
+    func tapMoreItem(with fileID: String, sender: Any) {
         
         var items = [ActionSheetItem]()
         
@@ -84,7 +84,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
         }
         
-        actionSheet.present(in: self, from: self.view)
+        actionSheet.present(in: self, from: sender as! UIButton)
     }
     
     func tapSwitchHeaderMenu() {
@@ -241,6 +241,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             cell.delegate = self
             
             cell.fileID = tableTrash.fileID
+            cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             
             if tableTrash.directory {
@@ -259,6 +260,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             cell.delegate = self
             
             cell.fileID = tableTrash.fileID
+            cell.indexPath = indexPath
             cell.labelTitle.text = tableTrash.trashbinFileName
             
             if tableTrash.directory {
