@@ -78,7 +78,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }
     }
     
-    // MARK: tap
+    // MARK: TAP EVENT
     
     func tapRestoreItem(with fileID: String, sender: Any) {
         restoreItem(with: fileID)
@@ -126,6 +126,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     func tapMoreHeaderMenu() {
         print("tap header more")
     }
+    
+    // MARK: NC API
     
     @objc func loadListingTrash() {
         
@@ -210,7 +212,22 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         })
     }
     
-    // MARK: collectionView methods
+    func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
+        
+        let width = NCUtility.sharedInstance.getScreenWidthForPreview()
+        let high = NCUtility.sharedInstance.getScreenHeightForPreview()
+        let serverUrl = appDelegate.activeUrl + tableTrash.filePath
+        
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+
+        /*
+        ocNetworking?.downloadThumbnail(withFileID: tableTrash.fileID, fileName: tableTrash.fileName, fileNameView: tableTrash.fileName, serverUrl: serverUrl, withWidth: width, andHeight: high, completion: { (message, errorCodce) in
+            
+        })
+        */
+    }
+    
+    // MARK: COLLECTIONVIEW METHODS
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
@@ -249,6 +266,14 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             image = UIImage.init(named: tableTrash.iconName)
         } else {
             image = UIImage.init(named: "file")
+        }
+        
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName))
+        } else {
+            if tableTrash.thumbnailExists && !CCUtility.fileProviderStorageIconExists(tableTrash.fileID, fileNameView: tableTrash.fileName) {
+                downloadThumbnail(with: tableTrash, indexPath: indexPath)
+            }
         }
         
         if collectionView.collectionViewLayout == listLayout {
