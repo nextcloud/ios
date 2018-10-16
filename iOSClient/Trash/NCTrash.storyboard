@@ -51,9 +51,22 @@
                                                 <action selector="touchUpInsideSwitch:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="wkS-i9-OsH"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qqn-cs-A3P" userLabel="buttonSwitch">
+                                            <rect key="frame" x="340" y="12.5" width="25" height="25"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="25" id="2OK-Fr-IGe"/>
+                                                <constraint firstAttribute="height" constant="25" id="HAe-ET-Q3h"/>
+                                            </constraints>
+                                            <state key="normal" image="moreBig"/>
+                                            <connections>
+                                                <action selector="touchUpInsideMore:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="F2B-LW-hs5"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
+                                        <constraint firstItem="Qqn-cs-A3P" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="Cgb-zq-vQE"/>
+                                        <constraint firstAttribute="trailing" secondItem="Qqn-cs-A3P" secondAttribute="trailing" constant="10" id="FJp-2Z-jvg"/>
                                         <constraint firstItem="gBv-v2-Zec" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" constant="10" id="Glf-95-Dxh"/>
                                         <constraint firstAttribute="trailing" secondItem="hva-qI-4Kl" secondAttribute="trailing" id="Nq8-X5-7Cq"/>
                                         <constraint firstItem="gBv-v2-Zec" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="OEU-E8-r92"/>
@@ -61,6 +74,7 @@
                                         <constraint firstAttribute="bottom" secondItem="hva-qI-4Kl" secondAttribute="bottom" constant="1" id="ixp-nm-HUt"/>
                                     </constraints>
                                     <connections>
+                                        <outlet property="buttonMore" destination="Qqn-cs-A3P" id="9hu-4g-sm5"/>
                                         <outlet property="buttonSwitch" destination="gBv-v2-Zec" id="yBa-g0-ChU"/>
                                         <outlet property="separator" destination="hva-qI-4Kl" id="rP4-bg-nt9"/>
                                     </connections>
@@ -90,6 +104,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="moreBig" width="80" height="80"/>
         <image name="switchList" width="80" height="80"/>
     </resources>
 </document>
