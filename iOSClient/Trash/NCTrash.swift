@@ -99,6 +99,10 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
+    
+    func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
+        return true
+    }
 
     // MARK: TAP EVENT
     
@@ -196,21 +200,23 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         
         ocNetworking?.listingTrash(appDelegate.activeUrl, path:path, account: appDelegate.activeAccount, success: { (item) in
             
+            self.refreshControl.endRefreshing()
+
             NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
             NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
             
             let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: "fileName", ascending: true)
             if (results != nil) {
                 self.datasource = results!
-                self.collectionView.reloadData()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.collectionView.reloadData()
+                }
             }
-            
-            self.refreshControl.endRefreshing()
             
         }, failure: { (message, errorCode) in
             
-            print("error " + message!)
             self.refreshControl.endRefreshing()
+            print("error " + message!)
         })
     }
     
