@@ -8,7 +8,7 @@
 
 import Foundation
 
-class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderMenuDelegate, DropdownMenuDelegate {
+class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -51,6 +51,10 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brand
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
+        
+        // empty Data Source
+        self.collectionView.emptyDataSetDelegate = self;
+        self.collectionView.emptyDataSetSource = self;
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -80,6 +84,22 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }
     }
     
+    // MARK: DZNEmpty Delegate
+    
+    func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
+        return NCBrandColor.sharedInstance.backgroundView
+    }
+    
+    func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "trashNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.graySoft)
+    }
+    
+    func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+        let text = "\n"+NSLocalizedString("_trash_no_trash_", comment: "")
+        let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        return NSAttributedString.init(string: text, attributes: attributes)
+    }
+
     // MARK: TAP EVENT
     
     func tapRestoreItem(with fileID: String, sender: Any) {
