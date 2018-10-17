@@ -106,7 +106,7 @@ open class DropdownMenu: UIView {
         setupGestureView()
         initTableView()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateForOrientationChange(_:)), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateForOrientationChange(_:)), name: UIApplication.willChangeStatusBarOrientationNotification, object: nil)
     }
     
     public init(navigationController: UINavigationController, sections: [DropdownSection], selectedIndexPath: IndexPath = IndexPath(row: 0, section: 0), dispalySectionHeader: Bool = true, sectionHeaderStyle: SectionHeaderStyle = SectionHeaderStyle()) {
@@ -121,7 +121,7 @@ open class DropdownMenu: UIView {
         setupGestureView()
         initTableView()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(self.updateForOrientationChange(_:)), name: UIApplication.didChangeStatusBarOrientationNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.updateForOrientationChange(_:)), name: UIApplication.willChangeStatusBarOrientationNotification, object: nil)
     }
     
     deinit {
@@ -129,7 +129,12 @@ open class DropdownMenu: UIView {
     }
     
     @objc func updateForOrientationChange(_ nofication: Notification) {
+        
         print("UIApplicationWillChangeStatusBarOrientation")
+        
+        self.hideMenu()
+        
+        /*
         var insetTop: CGFloat = 0
         if #available(iOS 11.0, *) {
             insetTop = UIApplication.shared.keyWindow!.safeAreaInsets.top
@@ -158,9 +163,10 @@ open class DropdownMenu: UIView {
             topConstraint?.constant = topOffset
             navigationBarCoverViewHeightConstraint?.constant = topOffset
             UIView.animate(withDuration: 0.1, animations: {
-//                self.windowRootView?.layoutIfNeeded()
+                self.windowRootView?.layoutIfNeeded()
             })
         }
+        */
     }
     
     fileprivate func setupGestureView() {
