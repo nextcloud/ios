@@ -225,7 +225,7 @@
 		F73D71621F2673C200E233EB /* NCText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D71611F2673C200E233EB /* NCText.swift */; };
 		F73D71641F2674A400E233EB /* NCText.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73D71631F2674A400E233EB /* NCText.storyboard */; };
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
-		F7417DB3216CE925007D05F5 /* NCTrashHeaderMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB2216CE925007D05F5 /* NCTrashHeaderMenu.swift */; };
+		F7417DB3216CE925007D05F5 /* NCTrashHeaderFooterMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB2216CE925007D05F5 /* NCTrashHeaderFooterMenu.swift */; };
 		F7417DB5216CFE8E007D05F5 /* NCTrashGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7417DB4216CFE8E007D05F5 /* NCTrashGridCell.xib */; };
 		F7417DB7216CFED0007D05F5 /* NCTrashGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB6216CFED0007D05F5 /* NCTrashGridCell.swift */; };
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
@@ -1022,7 +1022,7 @@
 		F73D71611F2673C200E233EB /* NCText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCText.swift; sourceTree = "<group>"; };
 		F73D71631F2674A400E233EB /* NCText.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCText.storyboard; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
-		F7417DB2216CE925007D05F5 /* NCTrashHeaderMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashHeaderMenu.swift; sourceTree = "<group>"; };
+		F7417DB2216CE925007D05F5 /* NCTrashHeaderFooterMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashHeaderFooterMenu.swift; sourceTree = "<group>"; };
 		F7417DB4216CFE8E007D05F5 /* NCTrashGridCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashGridCell.xib; sourceTree = "<group>"; };
 		F7417DB6216CFED0007D05F5 /* NCTrashGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTrashGridCell.swift; sourceTree = "<group>"; };
 		F7434B5F20E2440600417916 /* FileProviderExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -2867,7 +2867,7 @@
 			isa = PBXGroup;
 			children = (
 				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
-				F7417DB2216CE925007D05F5 /* NCTrashHeaderMenu.swift */,
+				F7417DB2216CE925007D05F5 /* NCTrashHeaderFooterMenu.swift */,
 				F78F74352163781100C2ADAD /* NCTrash.swift */,
 				F7ED7EDB216B83D5007AB4D9 /* NCTrashListCell.xib */,
 				F7ED7EDD216B85DA007AB4D9 /* NCTrashListCell.swift */,
@@ -4257,7 +4257,7 @@
 				F73CC07E1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
-				F7417DB3216CE925007D05F5 /* NCTrashHeaderMenu.swift in Sources */,
+				F7417DB3216CE925007D05F5 /* NCTrashHeaderFooterMenu.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F712ACAF2175E56F0061158E /* NSDateFormatter+CTAssetsPickerController.m in Sources */,
 				F762CB141EACB66200B38484 /* XLFormRightImageButton.m in Sources */,

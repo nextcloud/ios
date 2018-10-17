@@ -41,3 +41,10 @@ protocol NCTrashHeaderMenuDelegate {
     func tapMoreHeaderMenu()
 }
 
+class NCTrashFooterMenu: UICollectionReusableView {
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        
+    }
+}
