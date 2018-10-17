@@ -166,6 +166,10 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         menuView?.showMenu()
     }
     
+    func tapOrderHeaderMenu(sender: Any) {
+        
+    }
+    
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
         
         if indexPath.row == 0 {

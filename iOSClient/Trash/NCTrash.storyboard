@@ -62,9 +62,21 @@
                                                 <action selector="touchUpInsideMore:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="F2B-LW-hs5"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0q4-Qd-ic4" userLabel="buttonOrder">
+                                            <rect key="frame" x="47" y="11" width="191" height="28"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <state key="normal" title="Order">
+                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="touchUpInsideOrder:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="bwn-i4-jiF"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
+                                        <constraint firstItem="0q4-Qd-ic4" firstAttribute="leading" secondItem="gBv-v2-Zec" secondAttribute="trailing" constant="10" id="86t-HS-JzM"/>
+                                        <constraint firstItem="0q4-Qd-ic4" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="APZ-gg-uLs"/>
                                         <constraint firstItem="Qqn-cs-A3P" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="Cgb-zq-vQE"/>
                                         <constraint firstAttribute="trailing" secondItem="Qqn-cs-A3P" secondAttribute="trailing" constant="12" id="FJp-2Z-jvg"/>
                                         <constraint firstItem="gBv-v2-Zec" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" constant="12" id="Glf-95-Dxh"/>
@@ -72,9 +84,11 @@
                                         <constraint firstItem="gBv-v2-Zec" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="OEU-E8-r92"/>
                                         <constraint firstItem="hva-qI-4Kl" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" id="a0G-P5-ZTU"/>
                                         <constraint firstAttribute="bottom" secondItem="hva-qI-4Kl" secondAttribute="bottom" constant="1" id="ixp-nm-HUt"/>
+                                        <constraint firstItem="Qqn-cs-A3P" firstAttribute="leading" secondItem="0q4-Qd-ic4" secondAttribute="trailing" constant="100" id="tog-PK-QII"/>
                                     </constraints>
                                     <connections>
                                         <outlet property="buttonMore" destination="Qqn-cs-A3P" id="9hu-4g-sm5"/>
+                                        <outlet property="buttonOrder" destination="0q4-Qd-ic4" id="A8C-el-YQr"/>
                                         <outlet property="buttonSwitch" destination="gBv-v2-Zec" id="yBa-g0-ChU"/>
                                         <outlet property="separator" destination="hva-qI-4Kl" id="rP4-bg-nt9"/>
                                     </connections>

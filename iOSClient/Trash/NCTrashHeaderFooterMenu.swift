@@ -12,7 +12,7 @@ class NCTrashHeaderMenu: UICollectionReusableView {
     
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
-    
+    @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var separator: UIView!
     
     var delegate: NCTrashHeaderMenuDelegate?
@@ -21,6 +21,8 @@ class NCTrashHeaderMenu: UICollectionReusableView {
         super.awakeFromNib()
         
         buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+        
+        buttonOrder.setTitle("", for: .normal)
         
         buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "moreBig"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
         
@@ -34,11 +36,17 @@ class NCTrashHeaderMenu: UICollectionReusableView {
     @IBAction func touchUpInsideSwitch(_ sender: Any) {
         delegate?.tapSwitchHeaderMenu(sender: sender)
     }
+    
+    @IBAction func touchUpInsideOrder(_ sender: Any) {
+        delegate?.tapOrderHeaderMenu(sender: sender)
+    }
 }
 
 protocol NCTrashHeaderMenuDelegate {
     func tapSwitchHeaderMenu(sender: Any)
     func tapMoreHeaderMenu(sender: Any)
+    func tapOrderHeaderMenu(sender: Any)
+
 }
 
 class NCTrashFooterMenu: UICollectionReusableView {
