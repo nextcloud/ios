@@ -812,7 +812,13 @@
     CGFloat safeAreaBottom = 0;
     
     if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
+            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.right/2;
+            if (safeAreaBottom > 0) safeAreaBottom -= 5;
+        } else {
+            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
+        }
     }
     
     [self aspectTabBar:tabBarController.tabBar hidden:NO];
@@ -866,7 +872,7 @@
     if (safeAreaBottom == 0) {
         constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:multiplier constant:0];
     } else {
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:+5];
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:5];
     }
     [tabBarController.view addConstraint:constraint];
     
