@@ -574,15 +574,17 @@ class NCMainCommon: NSObject {
                         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName))
                     }
                     
-                } else {
-                    
                     self.appDelegate.filterFileID.remove(metadata.fileID)
+                    
+                } else {
                     
                     completionErrorCode = errorCode
                     completionMessage = ""
                     if message != nil {
                         completionMessage = message!
                     }
+                    
+                    self.appDelegate.filterFileID.remove(metadata.fileID)
                 }
                 
                 if count == metadatas.count {
