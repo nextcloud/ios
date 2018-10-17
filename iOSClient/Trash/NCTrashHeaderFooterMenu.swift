@@ -28,17 +28,17 @@ class NCTrashHeaderMenu: UICollectionReusableView {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreHeaderMenu()
+        delegate?.tapMoreHeaderMenu(sender: sender)
     }
     
     @IBAction func touchUpInsideSwitch(_ sender: Any) {
-        delegate?.tapSwitchHeaderMenu()
+        delegate?.tapSwitchHeaderMenu(sender: sender)
     }
 }
 
 protocol NCTrashHeaderMenuDelegate {
-    func tapSwitchHeaderMenu()
-    func tapMoreHeaderMenu()
+    func tapSwitchHeaderMenu(sender: Any)
+    func tapMoreHeaderMenu(sender: Any)
 }
 
 class NCTrashFooterMenu: UICollectionReusableView {

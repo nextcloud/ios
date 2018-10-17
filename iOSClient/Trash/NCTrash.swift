@@ -102,7 +102,11 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         actionSheet.present(in: self, from: sender as! UIButton)
     }
     
-    func tapSwitchHeaderMenu() {
+    func tapSwitchHeaderMenu(sender: Any) {
+        
+        if self.datasource?.count == 0 {
+            return
+        }
         
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -125,7 +129,11 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }
     }
     
-    func tapMoreHeaderMenu() {
+    func tapMoreHeaderMenu(sender: Any) {
+        
+        if self.datasource?.count == 0 {
+            return
+        }
         
         var menuView: DropdownMenu?
         
@@ -142,6 +150,32 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
+        
+        if indexPath.row == 0 {
+            for record: tableTrash in self.datasource! {
+                restoreItem(with: record.fileID)
+            }
+        }
+        
+        if indexPath.row == 1 {
+            
+            var items = [ActionSheetItem]()
+            
+            items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_all_", comment: "")))
+            items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
+            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+            
+            let actionSheet = ActionSheet(items: items) { sheet, item in
+                if item is ActionSheetDangerButton {
+                    for record: tableTrash in self.datasource! {
+                        self.deleteItem(with: record.fileID)
+                    }
+                }
+                if item is ActionSheetCancelButton { return }
+            }
+            
+            actionSheet.present(in: self, from: self.view)
+        }
     }
     
     // MARK: NC API
@@ -256,6 +290,14 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             }
             
             trashHeader.delegate = self
+            
+            if self.datasource?.count == 0 {
+                trashHeader.buttonSwitch.isEnabled = false
+                trashHeader.buttonMore.isEnabled = false
+            } else {
+                trashHeader.buttonSwitch.isEnabled = true
+                trashHeader.buttonMore.isEnabled = true
+            }
             
             return trashHeader
             
