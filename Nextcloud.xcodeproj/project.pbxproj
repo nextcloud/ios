@@ -279,6 +279,10 @@
 		F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037441DBFA91A008FB480 /* ALView+PureLayout.m */; };
 		F750374F1DBFA91A008FB480 /* NSArray+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037461DBFA91A008FB480 /* NSArray+PureLayout.m */; };
 		F75037511DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F75037481DBFA91A008FB480 /* NSLayoutConstraint+PureLayout.m */; };
+		F754EEC921772B6100BB1CDF /* DropdownItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC421772B6100BB1CDF /* DropdownItem.swift */; };
+		F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC521772B6100BB1CDF /* DropUpMenu.swift */; };
+		F754EECB21772B6100BB1CDF /* DropdownMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC721772B6100BB1CDF /* DropdownMenu.swift */; };
+		F754EECC21772B6100BB1CDF /* SectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F754EEC821772B6100BB1CDF /* SectionHeader.swift */; };
 		F755BD9B20594AC7008C5FBB /* NCService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F755BD9A20594AC7008C5FBB /* NCService.swift */; };
 		F758B3E1212C4A6C00515F55 /* PDFPageRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B3D9212C4A6C00515F55 /* PDFPageRenderable.swift */; };
 		F758B3E2212C4A6C00515F55 /* DPIType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F758B3DA212C4A6C00515F55 /* DPIType.swift */; };
@@ -1113,6 +1117,11 @@
 		F7540F2A1D5B238600C3FFA8 /* x509.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509.h; sourceTree = "<group>"; };
 		F7540F2B1D5B238600C3FFA8 /* x509_vfy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		F7540F2C1D5B238600C3FFA8 /* x509v3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x509v3.h; sourceTree = "<group>"; };
+		F754EEC421772B6100BB1CDF /* DropdownItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownItem.swift; sourceTree = "<group>"; };
+		F754EEC521772B6100BB1CDF /* DropUpMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropUpMenu.swift; sourceTree = "<group>"; };
+		F754EEC621772B6100BB1CDF /* DropdownMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DropdownMenu.h; sourceTree = "<group>"; };
+		F754EEC721772B6100BB1CDF /* DropdownMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DropdownMenu.swift; sourceTree = "<group>"; };
+		F754EEC821772B6100BB1CDF /* SectionHeader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionHeader.swift; sourceTree = "<group>"; };
 		F755BD9A20594AC7008C5FBB /* NCService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCService.swift; sourceTree = "<group>"; };
 		F758B3D9212C4A6C00515F55 /* PDFPageRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PDFPageRenderable.swift; sourceTree = "<group>"; };
 		F758B3DA212C4A6C00515F55 /* DPIType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DPIType.swift; sourceTree = "<group>"; };
@@ -2341,6 +2350,18 @@
 			path = openssl;
 			sourceTree = "<group>";
 		};
+		F754EEC321772B6100BB1CDF /* DropdownMenu */ = {
+			isa = PBXGroup;
+			children = (
+				F754EEC421772B6100BB1CDF /* DropdownItem.swift */,
+				F754EEC521772B6100BB1CDF /* DropUpMenu.swift */,
+				F754EEC621772B6100BB1CDF /* DropdownMenu.h */,
+				F754EEC721772B6100BB1CDF /* DropdownMenu.swift */,
+				F754EEC821772B6100BB1CDF /* SectionHeader.swift */,
+			);
+			path = DropdownMenu;
+			sourceTree = "<group>";
+		};
 		F758B3D8212C4A6C00515F55 /* PDFGenerator */ = {
 			isa = PBXGroup;
 			children = (
@@ -3294,6 +3315,7 @@
 			children = (
 				F72AAEC11E5C60C700BB17E1 /* AHKActionSheet */,
 				F73CC0571E813DFF006E3047 /* BKPasscodeView */,
+				F754EEC321772B6100BB1CDF /* DropdownMenu */,
 				F7F54CAD1E5B14C700E19C62 /* MWPhotoBrowser */,
 				F7B4F1C51F44356F00B53B42 /* NCUchardet */,
 				F762CB7B1EACB81000B38484 /* REMenu */,
@@ -4060,6 +4082,7 @@
 				F70022A41EC4C9100080073F /* AFNetworkReachabilityManager.m in Sources */,
 				F762CAFD1EACB66200B38484 /* XLFormInlineSelectorCell.m in Sources */,
 				F77B0DF21D118A16002130FE /* CCUploadFromOtherUpp.m in Sources */,
+				F754EECB21772B6100BB1CDF /* DropdownMenu.swift in Sources */,
 				F758B450212C516300515F55 /* RectangleDetector.swift in Sources */,
 				F77B0DF41D118A16002130FE /* CCMain.m in Sources */,
 				F7E9C41B20F4CA870040CF18 /* CCTransfers.m in Sources */,
@@ -4073,6 +4096,7 @@
 				F73B4F041F470D9100BBEE4B /* nsBig5Prober.cpp in Sources */,
 				F73B4EEF1F470D9100BBEE4B /* CharDistribution.cpp in Sources */,
 				F7B0C0CD1EE7E7750033AC24 /* CCSynchronize.m in Sources */,
+				F754EEC921772B6100BB1CDF /* DropdownItem.swift in Sources */,
 				F77B0DFF1D118A16002130FE /* OCNetworking.m in Sources */,
 				F7622FC82175FCC0000383FF /* ActionSheetOkButton.swift in Sources */,
 				F758B440212C516300515F55 /* CaptureSessionManager.swift in Sources */,
@@ -4086,6 +4110,7 @@
 				F762CB041EACB66200B38484 /* XLFormSwitchCell.m in Sources */,
 				F712AC9E2175E56F0061158E /* CTAssetThumbnailOverlay.m in Sources */,
 				F73B4F0F1F470D9100BBEE4B /* nsMBCSSM.cpp in Sources */,
+				F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */,
 				F712ACA52175E56F0061158E /* CTAssetThumbnailView.m in Sources */,
 				F77B0E031D118A16002130FE /* CCShareInfoCMOC.m in Sources */,
 				F77B0E041D118A16002130FE /* UIImage+animatedGIF.m in Sources */,
@@ -4272,6 +4297,7 @@
 				F762CB121EACB66200B38484 /* UIView+XLFormAdditions.m in Sources */,
 				F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */,
 				F73CC06F1E813DFF006E3047 /* BKPasscodeInputView.m in Sources */,
+				F754EECC21772B6100BB1CDF /* SectionHeader.swift in Sources */,
 				F73CC0751E813DFF006E3047 /* BKPasscodeViewController.m in Sources */,
 				F750374D1DBFA91A008FB480 /* ALView+PureLayout.m in Sources */,
 				F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */,

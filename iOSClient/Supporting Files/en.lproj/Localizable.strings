@@ -603,17 +603,19 @@
 // Trah
 
 "_trash_view_"                      = "Deleted files";
+"_trash_restore_all_"               = "Restore all files";
+"_trash_delete_all_"                = "Empty trash";
 
 // Intro
 
-"_intro_1_title_"       = "Keep your data secure and under your control";
-"_intro_2_title_"       = "Secure collaboration & file exchange";
-"_intro_3_title_"       = "Easy-to-use web mail, calendering & contacts";
-"_intro_4_title_"       = "Screensharing, online meetings & web conferences";
+"_intro_1_title_"                   = "Keep your data secure and under your control";
+"_intro_2_title_"                   = "Secure collaboration & file exchange";
+"_intro_3_title_"                   = "Easy-to-use web mail, calendering & contacts";
+"_intro_4_title_"                   = "Screensharing, online meetings & web conferences";
 
-"_log_in_"              = "Log in";
-"_sign_up_"             = "Sign up with provider";
-"_host_your_own_server" = "Host your own server";
+"_log_in_"                          = "Log in";
+"_sign_up_"                         = "Sign up with provider";
+"_host_your_own_server"             = "Host your own server";
 
 // Error
 

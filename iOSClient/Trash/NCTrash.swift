@@ -8,7 +8,7 @@
 
 import Foundation
 
-class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderMenuDelegate {
+class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderMenuDelegate, DropdownMenuDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -16,9 +16,11 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var datasource: [tableTrash]?
-
+    
     var listLayout: ListLayout!
     var gridLayout: GridLayout!
+    
+    private let highHeader: CGFloat = 50
     
     private let refreshControl = UIRefreshControl()
 
@@ -124,7 +126,22 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func tapMoreHeaderMenu() {
-        print("tap header more")
+        
+        var menuView: DropdownMenu?
+        
+        let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_all_", comment: ""))
+        let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_all_", comment: ""))
+        
+        menuView = DropdownMenu(navigationController: self.navigationController!, items: [item1, item2], selectedRow: -1)
+        menuView?.delegate = self
+        menuView?.rowHeight = 50
+        menuView?.tableView.alwaysBounceVertical = false
+        menuView?.topOffsetY = CGFloat(highHeader-2)
+        menuView?.showMenu()
+        
+    }
+    
+    func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
     }
     
     // MARK: NC API
@@ -288,11 +305,11 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 50)
+        return CGSize(width: collectionView.frame.width, height: highHeader)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 50)
+        return CGSize(width: collectionView.frame.width, height: highHeader)
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
