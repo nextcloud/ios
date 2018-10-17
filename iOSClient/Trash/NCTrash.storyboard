@@ -41,7 +41,7 @@
                                             </constraints>
                                         </view>
                                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBv-v2-Zec" userLabel="buttonSwitch">
-                                            <rect key="frame" x="10" y="12.5" width="25" height="25"/>
+                                            <rect key="frame" x="12" y="12.5" width="25" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="25" id="0mp-3J-eb3"/>
                                                 <constraint firstAttribute="width" constant="25" id="DxY-uU-Znk"/>
@@ -52,7 +52,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qqn-cs-A3P" userLabel="buttonSwitch">
-                                            <rect key="frame" x="340" y="12.5" width="25" height="25"/>
+                                            <rect key="frame" x="338" y="12.5" width="25" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="25" id="2OK-Fr-IGe"/>
                                                 <constraint firstAttribute="height" constant="25" id="HAe-ET-Q3h"/>
@@ -66,8 +66,8 @@
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
                                         <constraint firstItem="Qqn-cs-A3P" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="Cgb-zq-vQE"/>
-                                        <constraint firstAttribute="trailing" secondItem="Qqn-cs-A3P" secondAttribute="trailing" constant="10" id="FJp-2Z-jvg"/>
-                                        <constraint firstItem="gBv-v2-Zec" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" constant="10" id="Glf-95-Dxh"/>
+                                        <constraint firstAttribute="trailing" secondItem="Qqn-cs-A3P" secondAttribute="trailing" constant="12" id="FJp-2Z-jvg"/>
+                                        <constraint firstItem="gBv-v2-Zec" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" constant="12" id="Glf-95-Dxh"/>
                                         <constraint firstAttribute="trailing" secondItem="hva-qI-4Kl" secondAttribute="trailing" id="Nq8-X5-7Cq"/>
                                         <constraint firstItem="gBv-v2-Zec" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="OEU-E8-r92"/>
                                         <constraint firstItem="hva-qI-4Kl" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" id="a0G-P5-ZTU"/>

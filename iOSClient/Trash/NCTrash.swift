@@ -271,7 +271,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             
             if files > 1 {
                 filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(size)
-            } else if folders == 1 {
+            } else if files == 1 {
                 filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
             }
            
