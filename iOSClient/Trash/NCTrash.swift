@@ -104,10 +104,6 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     func tapSwitchHeaderMenu(sender: Any) {
         
-        if self.datasource?.count == 0 {
-            return
-        }
-        
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -130,11 +126,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func tapMoreHeaderMenu(sender: Any) {
-        
-        if self.datasource?.count == 0 {
-            return
-        }
-        
+
         var menuView: DropdownMenu?
         
         let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_all_", comment: ""))
@@ -146,7 +138,6 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.topOffsetY = CGFloat(highHeader-2)
         menuView?.showMenu()
-        
     }
     
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
@@ -173,7 +164,6 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 }
                 if item is ActionSheetCancelButton { return }
             }
-            
             actionSheet.present(in: self, from: self.view)
         }
     }
