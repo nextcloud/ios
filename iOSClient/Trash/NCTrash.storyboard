@@ -82,6 +82,22 @@
                                 <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="footerMenu" id="KIO-gv-emq" customClass="NCTrashFooterMenu" customModule="Nextcloud" customModuleProvider="target">
                                     <rect key="frame" x="0.0" y="50" width="375" height="50"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5ZS-UE-CHl" userLabel="LabelFooter">
+                                            <rect key="frame" x="10" y="17" width="355" height="16"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="5ZS-UE-CHl" firstAttribute="centerY" secondItem="KIO-gv-emq" secondAttribute="centerY" id="5Ip-b9-luC"/>
+                                        <constraint firstAttribute="trailing" secondItem="5ZS-UE-CHl" secondAttribute="trailing" constant="10" id="6rY-5r-1Mf"/>
+                                        <constraint firstItem="5ZS-UE-CHl" firstAttribute="leading" secondItem="KIO-gv-emq" secondAttribute="leading" constant="10" id="JLx-VS-sTx"/>
+                                    </constraints>
+                                    <connections>
+                                        <outlet property="labelFooter" destination="5ZS-UE-CHl" id="zcJ-1o-Jtw"/>
+                                    </connections>
                                 </collectionReusableView>
                                 <connections>
                                     <outlet property="dataSource" destination="EFX-fO-Oip" id="2On-qP-zuG"/>

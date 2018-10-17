@@ -43,6 +43,8 @@ protocol NCTrashHeaderMenuDelegate {
 
 class NCTrashFooterMenu: UICollectionReusableView {
     
+    @IBOutlet weak var labelFooter: UILabel!
+
     override func awakeFromNib() {
         super.awakeFromNib()
         

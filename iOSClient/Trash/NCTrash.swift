@@ -245,7 +245,44 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         } else {
             
             let trashFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerMenu", for: indexPath) as! NCTrashFooterMenu
-
+            
+            trashFooter.labelFooter.textColor = NCBrandColor.sharedInstance.icon
+            
+            var folders: Int = 0, foldersText = ""
+            var files: Int = 0, filesText = ""
+            var size: Double = 0
+            
+            if self.datasource != nil {
+                for record: tableTrash in self.datasource! {
+                    if record.directory {
+                        folders += 1
+                    } else {
+                        files += 1
+                    }
+                    size = size + record.size
+                }
+            }
+            
+            if folders > 1 {
+                foldersText = "\(folders) " + NSLocalizedString("_folders_", comment: "")
+            } else if folders == 1 {
+                foldersText = "1 " + NSLocalizedString("_folder_", comment: "")
+            }
+            
+            if files > 1 {
+                filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(size)
+            } else if folders == 1 {
+                filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
+            }
+           
+            if foldersText == "" {
+                trashFooter.labelFooter.text = filesText
+            } else if filesText == "" {
+                trashFooter.labelFooter.text = foldersText
+            } else {
+                trashFooter.labelFooter.text = foldersText + ", " + filesText
+            }
+            
             return trashFooter
         }
     }
