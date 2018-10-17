@@ -49,12 +49,13 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }
         
         // Configure Refresh Control
-        refreshControl.tintColor = NCBrandColor.sharedInstance.brand
+        refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
+        refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self;
-        self.collectionView.emptyDataSetSource = self;
+        self.collectionView.emptyDataSetSource = self;        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,11 +68,12 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             path = k_dav + "/trashbin/" + userID! + "/trash/"
         }
         
-        let results = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: "fileName", ascending: true)
-        if (results != nil) {
-            datasource = results!
-            collectionView.reloadData()
+        guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: "fileName", ascending: true) else {
+            return
         }
+        
+        self.datasource = datasource
+        collectionView.reloadData()
         
         loadListingTrash()
     }
@@ -188,6 +190,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 }
                 if item is ActionSheetCancelButton { return }
             }
+            
             actionSheet.present(in: self, from: self.view)
         }
     }
