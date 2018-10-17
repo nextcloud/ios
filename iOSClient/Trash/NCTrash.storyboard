@@ -63,7 +63,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0q4-Qd-ic4" userLabel="buttonOrder">
-                                            <rect key="frame" x="47" y="11" width="191" height="28"/>
+                                            <rect key="frame" x="55" y="11" width="183" height="28"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <state key="normal" title="Order">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -75,7 +75,7 @@
                                     </subviews>
                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
-                                        <constraint firstItem="0q4-Qd-ic4" firstAttribute="leading" secondItem="gBv-v2-Zec" secondAttribute="trailing" constant="10" id="86t-HS-JzM"/>
+                                        <constraint firstItem="0q4-Qd-ic4" firstAttribute="leading" secondItem="gBv-v2-Zec" secondAttribute="trailing" constant="18" id="86t-HS-JzM"/>
                                         <constraint firstItem="0q4-Qd-ic4" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="APZ-gg-uLs"/>
                                         <constraint firstItem="Qqn-cs-A3P" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="Cgb-zq-vQE"/>
                                         <constraint firstAttribute="trailing" secondItem="Qqn-cs-A3P" secondAttribute="trailing" constant="12" id="FJp-2Z-jvg"/>

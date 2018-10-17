@@ -299,10 +299,13 @@
 "_file_unpacked_"               = "File unpacked on local storage";
 "_file_saved_local_"            = "File saved on local storage.";
 "_file_not_present_"            = "Error: File not present, please reload.";
+"_order_by_"                    = "Sort by";
 "_order_by_date_"               = "Sort by date";
-"_current_order_name_"          = "(currently sorted by name)";
-"_order_by_name_"               = "Sort by name";
 "_current_order_date_"          = "(currently sorted by date)";
+"_order_by_name_"               = "Sort by name";
+"_current_order_name_"          = "(currently sorted by name)";
+"_order_by_size_"               = "Sort by size";
+"_current_order_size_"          = "(currently sorted by size)";
 "_sort_descending_"             = "Sort descending";
 "_current_sort_ascending_"      = "(currently sorted ascending)";
 "_sort_ascending_"              = "Sort ascending";

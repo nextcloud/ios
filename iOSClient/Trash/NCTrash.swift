@@ -16,8 +16,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var datasource = [tableTrash]()
-    var datasourceSorted = CCUtility.getOrderSettings()
-    var datasourceAscending = CCUtility.getAscendingSettings()
+    var datasourceSorted = ""
+    var datasourceAscending = true
     
     var listLayout: ListLayout!
     var gridLayout: GridLayout!
@@ -70,7 +70,10 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             path = k_dav + "/trashbin/" + userID! + "/trash/"
         }
         
-        guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted!, ascending: datasourceAscending) else {
+        datasourceSorted = CCUtility.getOrderSettings()
+        datasourceAscending = CCUtility.getAscendingSettings()
+        
+        guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending) else {
             return
         }
         
@@ -214,7 +217,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
             NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
             
-            let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted!, ascending: self.datasourceAscending)
+            let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted, ascending: self.datasourceAscending)
             if (results != nil) {
                 self.datasource = results!
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -243,7 +246,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
             
             NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
-            guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted!, ascending: self.datasourceAscending) else {
+            guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted, ascending: self.datasourceAscending) else {
                 return
             }
             self.datasource = datasource
@@ -270,7 +273,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             if errorCode == 0 {
                 
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
-                guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted!, ascending: self.datasourceAscending) else {
+                guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted, ascending: self.datasourceAscending) else {
                     return
                 }
                 self.datasource = datasource
@@ -317,6 +320,21 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             } else {
                 trashHeader.buttonSwitch.isEnabled = true
                 trashHeader.buttonMore.isEnabled = true
+            }
+            
+            // Order
+            var ascending = "  ▽" // da A a Z (∨∧) 
+            if datasourceAscending == false { ascending = "  △" }
+            
+            switch datasourceSorted {
+            case "fileName":
+                trashHeader.buttonOrder.setTitle(NSLocalizedString("_order_by_name_", comment: "") + ascending, for: .normal)
+            case "date":
+                trashHeader.buttonOrder.setTitle(NSLocalizedString("_order_by_date_", comment: "") + ascending, for: .normal)
+            case "size":
+                trashHeader.buttonOrder.setTitle(NSLocalizedString("_order_by_size_", comment: "") + ascending, for: .normal)
+            default:
+                trashHeader.buttonOrder.setTitle(NSLocalizedString("_order_by_", comment: "") + " " + datasourceSorted + ascending, for: .normal)
             }
             
             return trashHeader
