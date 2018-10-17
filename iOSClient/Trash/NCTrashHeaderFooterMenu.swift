@@ -23,6 +23,7 @@ class NCTrashHeaderMenu: UICollectionReusableView {
         buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
         
         buttonOrder.setTitle("", for: .normal)
+        buttonOrder.setTitleColor(NCBrandColor.sharedInstance.icon, for: .normal)
         
         buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "moreBig"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
         
