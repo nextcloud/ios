@@ -213,17 +213,14 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     }
     
     func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
-        
-        let width = NCUtility.sharedInstance.getScreenWidthForPreview()
-        let high = NCUtility.sharedInstance.getScreenHeightForPreview()
-        let path = tableTrash.filePath.replacingOccurrences(of: k_dav+"/", with: "") + tableTrash.fileName
-        let file = CCUtility.getDirectoryProviderStorageFileID(tableTrash.fileID, fileNameView: tableTrash.fileName) + "/" + tableTrash.fileName + ".ico"
-        
+                
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        ocNetworking?.downloadThumbnail(withPath: path, file: file, withWidth: width, andHeight: high, completion: { (message, errorCode) in
-            
-        })
         
+        ocNetworking?.downloadPreviewTrash(withFileID: tableTrash.fileID, fileName: tableTrash.fileName, completion: { (message, errorCode) in
+            if errorCode == 0 && CCUtility.fileProviderStorageIconExists(tableTrash.fileID, fileNameView: tableTrash.fileName) {
+                self.collectionView.reloadItems(at: [indexPath])
+            }
+        })
     }
     
     // MARK: COLLECTIONVIEW METHODS
@@ -271,7 +268,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName))
         } else {
             if tableTrash.thumbnailExists && !CCUtility.fileProviderStorageIconExists(tableTrash.fileID, fileNameView: tableTrash.fileName) {
-//                downloadThumbnail(with: tableTrash, indexPath: indexPath)
+                downloadThumbnail(with: tableTrash, indexPath: indexPath)
             }
         }
         

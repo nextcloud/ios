@@ -402,8 +402,10 @@
     }
 }
 
-- (void)downloadThumbnailWithPath:(NSString *)path file:(NSString *)file withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
-{    
+- (void)downloadPreviewTrashWithFileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *message, NSInteger errorCode))completion
+{
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
+    
     if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
         
         completion(nil, 0);
@@ -415,9 +417,9 @@
         [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
         [communication setUserAgent:[CCUtility getUserAgent]];
         
-        [communication getRemoteThumbnailByServer:_activeUrl ofFilePath:path withWidth:width andHeight:height onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *thumbnail, NSString *redirectedServer) {
+        [communication getRemotePreviewTrashByServer:_activeUrl ofFileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
             
-            [thumbnail writeToFile:file atomically:YES];
+            [preview writeToFile:file atomically:YES];
             
             completion(nil, 0);
             
@@ -439,7 +441,6 @@
         }];
     }
 }
-
 
 - (void)downloadPreviewWithMetadata:(tableMetadata*)metadata serverUrl:(NSString *)serverUrl withWidth:(CGFloat)width andHeight:(CGFloat)height completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {
