@@ -258,8 +258,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                         folders += 1
                     } else {
                         files += 1
+                        size = size + record.size
                     }
-                    size = size + record.size
                 }
             }
             
@@ -337,6 +337,11 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             } else {
                 cell.imageItem.image = image
                 cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size)
+            }
+            
+            // last record: hidden separator
+            if indexPath.row == (datasource?.count)! - 1{
+                cell.separator.isHidden = true
             }
             
             return cell
