@@ -141,6 +141,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { (_) in
                     self.collectionView.reloadData()
+                    self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 }) 
             })
             CCUtility.setLayoutTrash("list")
@@ -150,6 +151,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.gridLayout, animated: false, completion: { (_) in
                     self.collectionView.reloadData()
+                    self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
             CCUtility.setLayoutTrash("grid")
@@ -590,7 +592,7 @@ class GridLayout: UICollectionViewFlowLayout {
     override var itemSize: CGSize {
         get {
             if let collectionView = collectionView {
-                                
+                
                 let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(collectionView.bounds.width / 90.0))
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
                 return CGSize(width: itemWidth, height: itemHeight)
