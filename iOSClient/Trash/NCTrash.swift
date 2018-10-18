@@ -501,11 +501,6 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size)
             }
             
-            // last record: hidden separator
-            if indexPath.row == datasource.count - 1 {
-                cell.separator.isHidden = true
-            }
-            
             return cell
         
         } else {
@@ -578,16 +573,15 @@ class ListLayout: UICollectionViewFlowLayout {
 
 class GridLayout: UICollectionViewFlowLayout {
     
-    let numberOfColumns: Int = 5
-    let itemHeightWithoutImage: CGFloat = 34
+    let numberOfColumns: Int = 3
+    let heightLabelPlusButton: CGFloat = 45
 
     override init() {
         super.init()
         
-        minimumInteritemSpacing = 10
-        
+        minimumInteritemSpacing = 0
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        self.sectionInset = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -597,8 +591,8 @@ class GridLayout: UICollectionViewFlowLayout {
     override var itemSize: CGSize {
         get {
             if let collectionView = collectionView {
-                let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(self.numberOfColumns)) - self.minimumInteritemSpacing
-                let itemHeight: CGFloat = itemWidth + itemHeightWithoutImage
+                let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(self.numberOfColumns+1))
+                let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
                 return CGSize(width: itemWidth, height: itemHeight)
             }
             

@@ -63,7 +63,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0q4-Qd-ic4" userLabel="buttonOrder">
-                                            <rect key="frame" x="55" y="11" width="183" height="28"/>
+                                            <rect key="frame" x="55" y="11" width="233" height="28"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <state key="normal" title="Order">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -84,7 +84,7 @@
                                         <constraint firstItem="gBv-v2-Zec" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="OEU-E8-r92"/>
                                         <constraint firstItem="hva-qI-4Kl" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" id="a0G-P5-ZTU"/>
                                         <constraint firstAttribute="bottom" secondItem="hva-qI-4Kl" secondAttribute="bottom" constant="1" id="ixp-nm-HUt"/>
-                                        <constraint firstItem="Qqn-cs-A3P" firstAttribute="leading" secondItem="0q4-Qd-ic4" secondAttribute="trailing" constant="100" id="tog-PK-QII"/>
+                                        <constraint firstItem="Qqn-cs-A3P" firstAttribute="leading" secondItem="0q4-Qd-ic4" secondAttribute="trailing" constant="50" id="tog-PK-QII"/>
                                     </constraints>
                                     <connections>
                                         <outlet property="buttonMore" destination="Qqn-cs-A3P" id="9hu-4g-sm5"/>
