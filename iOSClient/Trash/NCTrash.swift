@@ -164,6 +164,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_all_", comment: ""))
         
         menuView = DropdownMenu(navigationController: self.navigationController!, items: [item1, item2], selectedRow: -1)
+        menuView?.token = "tapMoreHeaderMenu"
         menuView?.delegate = self
         menuView?.rowHeight = 50
         menuView?.tableView.alwaysBounceVertical = false
@@ -173,34 +174,96 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
     
     func tapOrderHeaderMenu(sender: Any) {
         
+        var menuView: DropdownMenu?
+        var selectedRow = 0
+        
+        let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameAZ"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_a_z_", comment: ""))
+        let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameZA"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_z_a_", comment: ""))
+        let item3 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortDateMoreRecent"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_date_more_recent_", comment: ""))
+        let item4 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortDateLessRecent"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_date_less_recent_", comment: ""))
+        let item5 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortSmallest"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_size_smallest_", comment: ""))
+        let item6 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortLargest"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_size_largest_", comment: ""))
+        
+        switch datasourceSorted {
+        case "fileName":
+            if datasourceAscending == true { item1.style = .highlight; selectedRow = 0 }
+            if datasourceAscending == false { item2.style = .highlight; selectedRow = 1 }
+        case "date":
+            if datasourceAscending == false { item3.style = .highlight; selectedRow = 2 }
+            if datasourceAscending == true { item4.style = .highlight; selectedRow = 3 }
+        case "size":
+            if datasourceAscending == true { item5.style = .highlight; selectedRow = 4 }
+            if datasourceAscending == false { item6.style = .highlight; selectedRow = 5 }
+        default:
+            print("")
+        }
+        
+        menuView = DropdownMenu(navigationController: self.navigationController!, items: [item1, item2, item3, item4, item5, item6], selectedRow: selectedRow)
+        menuView?.token = "tapOrderHeaderMenu"
+        menuView?.delegate = self
+        menuView?.rowHeight = 50
+        menuView?.highlightColor = NCBrandColor.sharedInstance.brand
+        menuView?.tableView.alwaysBounceVertical = false
+        menuView?.topOffsetY = CGFloat(highHeader-2)
+        menuView?.showMenu()
     }
     
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
         
-        if indexPath.row == 0 {
-            for record: tableTrash in self.datasource {
-                restoreItem(with: record.fileID)
+        if dropdownMenu.token == "tapOrderHeaderMenu" {
+            
+            switch indexPath.row {
+                
+            case 0: CCUtility.setOrderSettings("fileName"); CCUtility.setAscendingSettings(true)
+            case 1: CCUtility.setOrderSettings("fileName"); CCUtility.setAscendingSettings(false)
+                
+            case 2: CCUtility.setOrderSettings("date"); CCUtility.setAscendingSettings(false)
+            case 3: CCUtility.setOrderSettings("date"); CCUtility.setAscendingSettings(true)
+                
+            case 4: CCUtility.setOrderSettings("size"); CCUtility.setAscendingSettings(true)
+            case 5: CCUtility.setOrderSettings("size"); CCUtility.setAscendingSettings(false)
+                
+            default: print("")
             }
+            
+            datasourceSorted = CCUtility.getOrderSettings()
+            datasourceAscending = CCUtility.getAscendingSettings()
+            
+            guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending) else {
+                return
+            }
+            
+            self.datasource = datasource
+            collectionView.reloadData()
         }
         
-        if indexPath.row == 1 {
-            
-            var items = [ActionSheetItem]()
-            
-            items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_all_", comment: "")))
-            items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-            
-            let actionSheet = ActionSheet(items: items) { sheet, item in
-                if item is ActionSheetDangerButton {
-                    for record: tableTrash in self.datasource {
-                        self.deleteItem(with: record.fileID)
-                    }
+        if dropdownMenu.token == "tapMoreHeaderMenu" {
+        
+            if indexPath.row == 0 {
+                for record: tableTrash in self.datasource {
+                    restoreItem(with: record.fileID)
                 }
-                if item is ActionSheetCancelButton { return }
             }
             
-            actionSheet.present(in: self, from: self.view)
+            if indexPath.row == 1 {
+                
+                var items = [ActionSheetItem]()
+                
+                items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_all_", comment: "")))
+                items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
+                items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+                
+                let actionSheet = ActionSheet(items: items) { sheet, item in
+                    if item is ActionSheetDangerButton {
+                        for record: tableTrash in self.datasource {
+                            self.deleteItem(with: record.fileID)
+                        }
+                    }
+                    if item is ActionSheetCancelButton { return }
+                }
+                
+                actionSheet.present(in: self, from: self.view)
+            }
         }
     }
     
@@ -322,20 +385,24 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
                 trashHeader.buttonMore.isEnabled = true
             }
             
-            // Order
-            var ascending = "  ▽" // da A a Z (∨∧) 
-            if datasourceAscending == false { ascending = "  △" }
+            // Order (∨∧▽△)
+            var title = ""
             
             switch datasourceSorted {
             case "fileName":
-                trashHeader.buttonOrder.setTitle(NSLocalizedString("_order_by_name_", comment: "") + ascending, for: .normal)
+                if datasourceAscending == true { title = NSLocalizedString("_order_by_name_a_z_", comment: "") }
+                if datasourceAscending == false { title = NSLocalizedString("_order_by_name_z_a_", comment: "") }
             case "date":
-                trashHeader.buttonOrder.setTitle(NSLocalizedString("_order_by_date_", comment: "") + ascending, for: .normal)
+                if datasourceAscending == false { title = NSLocalizedString("_order_by_date_more_recent_", comment: "") }
+                if datasourceAscending == true { title = NSLocalizedString("_order_by_date_less_recent_", comment: "") }
             case "size":
-                trashHeader.buttonOrder.setTitle(NSLocalizedString("_order_by_size_", comment: "") + ascending, for: .normal)
+                if datasourceAscending == true { title = NSLocalizedString("_order_by_size_smallest_", comment: "") }
+                if datasourceAscending == false { title = NSLocalizedString("_order_by_size_largest_", comment: "") }
             default:
-                trashHeader.buttonOrder.setTitle(NSLocalizedString("_order_by_", comment: "") + " " + datasourceSorted + ascending, for: .normal)
+                title = NSLocalizedString("_order_by_", comment: "") + " " + datasourceSorted
             }
+            
+            trashHeader.buttonOrder.setTitle(title + "  ▽", for: .normal)
             
             return trashHeader
             

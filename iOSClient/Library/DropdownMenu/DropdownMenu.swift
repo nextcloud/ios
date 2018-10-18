@@ -53,6 +53,7 @@ open class DropdownMenu: UIView {
     }
     
     open weak var delegate: DropdownMenuDelegate?
+    open var token = ""
     open var animateDuration: TimeInterval = 0.25
     open var backgroudBeginColor: UIColor = UIColor.black.withAlphaComponent(0)
     open var backgroudEndColor = UIColor(white: 0, alpha: 0.4)

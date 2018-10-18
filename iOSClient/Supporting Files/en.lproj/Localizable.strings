@@ -310,6 +310,12 @@
 "_current_sort_ascending_"      = "(currently sorted ascending)";
 "_sort_ascending_"              = "Sort ascending";
 "_current_sort_descending_"     = "(currently sorted descending)";
+"_order_by_name_a_z_"           = "Sort by name (from A to Z)";
+"_order_by_name_z_a_"           = "Sort by name (from Z to A)";
+"_order_by_date_more_recent_"   = "Sort from the most recent";
+"_order_by_date_less_recent_"   = "Sort from the less recent";
+"_order_by_size_smallest_"      = "Sort from the smallest";
+"_order_by_size_largest_"       = "Sort from the largest";
 "_delete_selected_files_"       = "Delete files";
 "_move_selected_files_"         = "Move files";
 "_download_selected_files_"     = "Download files";
