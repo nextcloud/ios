@@ -2714,6 +2714,8 @@
 
     appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem,appDelegate.alphabeticItem, appDelegate.typefileItem, appDelegate.dateItem, appDelegate.directoryOnTopItem]];
     
+    appDelegate.reMainMenu.itemHeight = 40;
+    
     appDelegate.reMainMenu.imageOffset = CGSizeMake(5, -1);
     
     appDelegate.reMainMenu.separatorOffset = CGSizeMake(50.0, 0.0);
@@ -2829,6 +2831,8 @@
             appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem, appDelegate.deleteItem]];
         }
     }
+    
+    appDelegate.reSelectMenu.itemHeight = 50;
 
     appDelegate.reSelectMenu.imageOffset = CGSizeMake(5, -1);
     
