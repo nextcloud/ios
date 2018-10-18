@@ -8,7 +8,7 @@
 
 import Foundation
 
-class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListDelegate, NCTrashGridDelegate, NCTrashHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -91,7 +91,7 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         }
     }
     
-    // MARK: DZNEmpty Delegate
+    // MARK: DZNEmpty
     
     func backgroundColor(forEmptyDataSet scrollView: UIScrollView) -> UIColor? {
         return NCBrandColor.sharedInstance.backgroundView
@@ -210,6 +210,8 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
         menuView?.showMenu()
     }
     
+    // MARK: DROP-DOWN-MENU
+
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
         
         if dropdownMenu.token == "tapOrderHeaderMenu" {
@@ -268,6 +270,25 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             }
         }
     }
+    
+    /*
+    func dropdownMenuWillDismiss(_ dropdownMenu: DropdownMenu) {
+        if dropdownMenu.token == "tapOrderHeaderMenu" {
+            let trashHeader = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(row: 0, section: 0)) as! NCTrashHeaderMenu
+            let title = String(trashHeader.buttonOrder.title(for: .normal)!.dropLast()) + "▽"
+            trashHeader.buttonOrder.setTitle(title, for: .normal)
+        }
+    }
+    
+    func dropdownMenuWillShow(_ dropdownMenu: DropdownMenu) {
+        
+        if dropdownMenu.token == "tapOrderHeaderMenu" {
+            let trashHeader = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(row: 0, section: 0)) as! NCTrashHeaderMenu
+            let title = String(trashHeader.buttonOrder.title(for: .normal)!.dropLast()) + "△"
+            trashHeader.buttonOrder.setTitle(title, for: .normal)
+        }
+    }
+    */
     
     // MARK: NC API
     
@@ -372,7 +393,6 @@ class NCTrash: UIViewController , UICollectionViewDataSource, UICollectionViewDe
             
             if collectionView.collectionViewLayout == gridLayout {
                 trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
-                
             } else {
                 trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
             }
