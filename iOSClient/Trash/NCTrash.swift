@@ -573,7 +573,6 @@ class ListLayout: UICollectionViewFlowLayout {
 
 class GridLayout: UICollectionViewFlowLayout {
     
-    let numberOfColumns: Int = 3
     let heightLabelPlusButton: CGFloat = 45
 
     override init() {
@@ -591,7 +590,8 @@ class GridLayout: UICollectionViewFlowLayout {
     override var itemSize: CGSize {
         get {
             if let collectionView = collectionView {
-                let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(self.numberOfColumns+1))
+                                
+                let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(collectionView.bounds.width / 90.0))
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
                 return CGSize(width: itemWidth, height: itemHeight)
             }
