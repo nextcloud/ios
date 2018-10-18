@@ -90,12 +90,16 @@
 // Remenu
 @property (nonatomic, strong) REMenu *reMainMenu;
 @property (nonatomic, strong) REMenuItem *selezionaItem;
-@property (nonatomic, strong) REMenuItem *directoryOnTopItem;
-@property (nonatomic, strong) REMenuItem *ordinaItem;
-@property (nonatomic, strong) REMenuItem *ascendenteItem;
+@property (nonatomic, strong) REMenuItem *sortFileNameAZItem;
+@property (nonatomic, strong) REMenuItem *sortFileNameZAItem;
+@property (nonatomic, strong) REMenuItem *sortDateMoreRecentItem;
+@property (nonatomic, strong) REMenuItem *sortDateLessRecentItem;
+@property (nonatomic, strong) REMenuItem *sortSmallestItem;
+@property (nonatomic, strong) REMenuItem *sortLargestItem;
 @property (nonatomic, strong) REMenuItem *alphabeticItem;
 @property (nonatomic, strong) REMenuItem *typefileItem;
 @property (nonatomic, strong) REMenuItem *dateItem;
+@property (nonatomic, strong) REMenuItem *directoryOnTopItem;
 
 @property (nonatomic, strong) REMenu *reSelectMenu;
 @property (nonatomic, strong) REMenuItem *selectAllItem;
