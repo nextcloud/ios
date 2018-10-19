@@ -1,5 +1,5 @@
 //
-//  NCTrashGridCell.swift
+//  NCActionSheetHeaderView.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 08/10/2018.
