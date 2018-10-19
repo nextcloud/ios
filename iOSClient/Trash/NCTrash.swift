@@ -218,54 +218,73 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     func tapRestoreItem(with fileID: String, sender: Any) {
-        restoreItem(with: fileID)
+        
+        if !isEditMode {
+            restoreItem(with: fileID)
+        } else {
+            let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
+            let indexPath = collectionView.indexPathForItem(at: buttonPosition)
+            collectionView(self.collectionView, didSelectItemAt: indexPath!)
+        }
     }
     
     func tapMoreItem(with fileID: String, sender: Any) {
-        
-        var items = [ActionSheetItem]()
-        
-        items.append(ActionSheetTitle(title: NSLocalizedString("_delete_selected_files_", comment: "")))
-        items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
-        let actionSheet = ActionSheet(items: items) { sheet, item in
-            if item is ActionSheetDangerButton { self.deleteItem(with: fileID) }
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+
+        if !isEditMode {
+            var items = [ActionSheetItem]()
+            
+            items.append(ActionSheetTitle(title: NSLocalizedString("_delete_selected_files_", comment: "")))
+            items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
+            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+            
+            let actionSheet = ActionSheet(items: items) { sheet, item in
+                if item is ActionSheetDangerButton { self.deleteItem(with: fileID) }
+                if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+            }
+            
+            actionSheet.present(in: self, from: sender as! UIButton)
+        } else {
+            let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
+            let indexPath = collectionView.indexPathForItem(at: buttonPosition)
+            collectionView(self.collectionView, didSelectItemAt: indexPath!)
         }
-        
-        actionSheet.present(in: self, from: sender as! UIButton)
     }
     
     func tapMoreGridItem(with fileID: String, sender: Any) {
         
-        var items = [ActionSheetItem]()
-        let appearanceDelete = ActionSheetItemAppearance.init()
-        appearanceDelete.textColor = UIColor.red
-        
-        items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon)))
-        let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: UIColor.red))
-        itemDelete.customAppearance = appearanceDelete
-        items.append(itemDelete)
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
-        let actionSheet = ActionSheet(items: items) { sheet, item in
-            if item.value as? Int == 0 { self.restoreItem(with: fileID) }
-            if item.value as? Int == 1 { self.deleteItem(with: fileID) }
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+        if !isEditMode {
+            var items = [ActionSheetItem]()
+            let appearanceDelete = ActionSheetItemAppearance.init()
+            appearanceDelete.textColor = UIColor.red
+            
+            items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon)))
+            let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: UIColor.red))
+            itemDelete.customAppearance = appearanceDelete
+            items.append(itemDelete)
+            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+            
+            let actionSheet = ActionSheet(items: items) { sheet, item in
+                if item.value as? Int == 0 { self.restoreItem(with: fileID) }
+                if item.value as? Int == 1 { self.deleteItem(with: fileID) }
+                if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+            }
+            
+            /*
+            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+                return
+            }
+            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)) {
+                actionSheet.headerView = UIImageView(image: UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)))
+                actionSheet.headerView?.frame.size.height = 150
+            }
+            */
+            
+            actionSheet.present(in: self, from: sender as! UIButton)
+        } else {
+            let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
+            let indexPath = collectionView.indexPathForItem(at: buttonPosition)
+            collectionView(self.collectionView, didSelectItemAt: indexPath!)
         }
-        
-        /*
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
-            return
-        }
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)) {
-            actionSheet.headerView = UIImageView(image: UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)))
-            actionSheet.headerView?.frame.size.height = 150
-        }
-        */
-        
-        actionSheet.present(in: self, from: sender as! UIButton)
     }
     
     // MARK: DROP-DOWN-MENU
