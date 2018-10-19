@@ -130,6 +130,8 @@
 		F7169A1E1EE590930086BD69 /* NCSharesCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7169A1B1EE590930086BD69 /* NCSharesCell.xib */; };
 		F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7226EDB1EE4089300EBECB1 /* Main.storyboard */; };
 		F726EEEC1FED1C820030B9C8 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */; };
+		F729B92B217A2E4E00FE2150 /* NCActionSheetHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = F729B92A217A2E4E00FE2150 /* NCActionSheetHeaderView.xib */; };
+		F729B92D217A2F1B00FE2150 /* NCActionSheetHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F729B92C217A2F1B00FE2150 /* NCActionSheetHeaderView.swift */; };
 		F72AAECA1E5C60C700BB17E1 /* AHKActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */; };
 		F72AAECB1E5C60C700BB17E1 /* AHKActionSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F72AAEC51E5C60C700BB17E1 /* AHKActionSheetViewController.m */; };
 		F72D0FF9210B6638009C96B7 /* Protobuf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F72D0FEF210B6638009C96B7 /* Protobuf.framework */; };
@@ -910,6 +912,8 @@
 		F7229B491DF71BB300E8C4E7 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = SOURCE_ROOT; };
 		F726EEEB1FED1C820030B9C8 /* NCEndToEndInitialize.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCEndToEndInitialize.swift; sourceTree = "<group>"; };
 		F7296A661C8880ED001A7809 /* CCloadItemData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCloadItemData.swift; sourceTree = "<group>"; };
+		F729B92A217A2E4E00FE2150 /* NCActionSheetHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCActionSheetHeaderView.xib; sourceTree = "<group>"; };
+		F729B92C217A2F1B00FE2150 /* NCActionSheetHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCActionSheetHeaderView.swift; sourceTree = "<group>"; };
 		F72AAEC21E5C60C700BB17E1 /* AHKActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheet.h; sourceTree = "<group>"; };
 		F72AAEC31E5C60C700BB17E1 /* AHKActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AHKActionSheet.m; sourceTree = "<group>"; };
 		F72AAEC41E5C60C700BB17E1 /* AHKActionSheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AHKActionSheetViewController.h; sourceTree = "<group>"; };
@@ -2890,6 +2894,8 @@
 				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
 				F7417DB2216CE925007D05F5 /* NCTrashHeaderFooterMenu.swift */,
 				F78F74352163781100C2ADAD /* NCTrash.swift */,
+				F729B92A217A2E4E00FE2150 /* NCActionSheetHeaderView.xib */,
+				F729B92C217A2F1B00FE2150 /* NCActionSheetHeaderView.swift */,
 				F7ED7EDB216B83D5007AB4D9 /* NCTrashListCell.xib */,
 				F7ED7EDD216B85DA007AB4D9 /* NCTrashListCell.swift */,
 				F7417DB4216CFE8E007D05F5 /* NCTrashGridCell.xib */,
@@ -3813,6 +3819,7 @@
 				F7D423471F0596AC009C9782 /* Reader-Mark-Y.png in Resources */,
 				F7D423431F0596AC009C9782 /* Reader-Export@3x.png in Resources */,
 				F7D4233C1F0596AC009C9782 /* Reader-Button-N@2x.png in Resources */,
+				F729B92B217A2E4E00FE2150 /* NCActionSheetHeaderView.xib in Resources */,
 				F7D423411F0596AC009C9782 /* Reader-Export.png in Resources */,
 				F77B0F481D118A16002130FE /* synchronized.gif in Resources */,
 				F7417DB5216CFE8E007D05F5 /* NCTrashGridCell.xib in Resources */,
@@ -4259,6 +4266,7 @@
 				F762CB171EACB66200B38484 /* XLFormRegexValidator.m in Sources */,
 				F758B44F212C516300515F55 /* Error.swift in Sources */,
 				F7622FBE2175FCC0000383FF /* ActionSheetCollectionItemAppearance.swift in Sources */,
+				F729B92D217A2F1B00FE2150 /* NCActionSheetHeaderView.swift in Sources */,
 				F73CC0691E813DFF006E3047 /* BKPasscodeDummyViewController.m in Sources */,
 				F762CB1A1EACB66200B38484 /* XLForm.m in Sources */,
 				F73B4EFC1F470D9100BBEE4B /* LangGreekModel.cpp in Sources */,

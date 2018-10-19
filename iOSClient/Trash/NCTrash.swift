@@ -233,7 +233,6 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if !isEditMode {
             var items = [ActionSheetItem]()
             
-            items.append(ActionSheetTitle(title: NSLocalizedString("_delete_selected_files_", comment: "")))
             items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
@@ -241,6 +240,10 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 if item is ActionSheetDangerButton { self.deleteItem(with: fileID) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
+            
+            let headerView = actionSheetHeader(with: fileID)
+            actionSheet.headerView = headerView
+            actionSheet.headerView?.frame.size.height = 50
             
             actionSheet.present(in: self, from: sender as! UIButton)
         } else {
@@ -269,15 +272,9 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            /*
-            guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
-                return
-            }
-            if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)) {
-                actionSheet.headerView = UIImageView(image: UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)))
-                actionSheet.headerView?.frame.size.height = 150
-            }
-            */
+            let headerView = actionSheetHeader(with: fileID)
+            actionSheet.headerView = headerView
+            actionSheet.headerView?.frame.size.height = 50
             
             actionSheet.present(in: self, from: sender as! UIButton)
         } else {
@@ -732,6 +729,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
     
     // MARK: UTILITY
+    
     private func cellBlurEffect(with frame: CGRect) -> UIView {
         
         let blurEffect = UIBlurEffect(style: .extraLight)
@@ -744,6 +742,31 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         return blurEffectView
     }
     
+    private func actionSheetHeader(with fileID: String) -> UIView? {
+        
+        var image: UIImage?
+
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+            return nil
+        }
+        
+        // Header
+        if tableTrash.iconName.count > 0 {
+            image = UIImage.init(named: tableTrash.iconName)
+        } else {
+            image = UIImage.init(named: "file")
+        }
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName))
+        }
+        
+        let headerView = UINib(nibName: "NCActionSheetHeaderView", bundle: nil).instantiate(withOwner: self, options: nil).first as! NCActionSheetHeaderView
+        headerView.imageItem.image = image
+        headerView.label.text = tableTrash.trashbinFileName
+        headerView.label.textColor = NCBrandColor.sharedInstance.icon
+        
+        return headerView
+    }
 }
 
 class ListLayout: UICollectionViewFlowLayout {
