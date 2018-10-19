@@ -12,9 +12,9 @@ import UIKit
 class NCTrashGridCell: UICollectionViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var more: UIImageView!
-
+    @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMoreGrid: UIButton!
 
     var delegate: NCTrashGridDelegate?
@@ -25,7 +25,7 @@ class NCTrashGridCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+        imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
     }
     
     @IBAction func touchUpInsideMoreGrid(_ sender: Any) {

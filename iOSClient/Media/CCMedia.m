@@ -923,7 +923,7 @@
     UIVisualEffectView *effect = [cell viewWithTag:200];
 
     UIImageView *checkedOverlay = [cell viewWithTag:300];
-    checkedOverlay.image = [UIImage imageNamed:@"checked"];
+    checkedOverlay.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"checkedYes"] multiplier:2 color:[NCBrandColor sharedInstance].brand];
     
     UIImageView *videoOverlay = [cell viewWithTag:400];
     videoOverlay.image = [UIImage imageNamed:@"VideoOverlay"];

@@ -606,6 +606,8 @@
 "_trash_restore_all_"               = "Restore all files";
 "_trash_delete_all_"                = "Empty trash";
 "_trash_no_trash_"                  = "No files yet";
+"_trash_restore_selected_"          = "Restore selected files";
+"_trash_delete_selected_"           = "Deleted selected files";
 
 // Intro
 

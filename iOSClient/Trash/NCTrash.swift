@@ -115,26 +115,6 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
     // MARK: TAP EVENT
     
-    func tapRestoreItem(with fileID: String, sender: Any) {
-        restoreItem(with: fileID)
-    }
-    
-    func tapMoreItem(with fileID: String, sender: Any) {
-        
-        var items = [ActionSheetItem]()
-        
-        items.append(ActionSheetTitle(title: NSLocalizedString("_delete_selected_files_", comment: "")))
-        items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
-        let actionSheet = ActionSheet(items: items) { sheet, item in
-            if item is ActionSheetDangerButton { self.deleteItem(with: fileID) }
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-        }
-        
-        actionSheet.present(in: self, from: sender as! UIButton)
-    }
-    
     func tapSwitchHeaderMenu(sender: Any) {
         
         if collectionView.collectionViewLayout == gridLayout {
@@ -144,7 +124,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.collectionView.setCollectionViewLayout(self.listLayout, animated: false, completion: { (_) in
                     self.collectionView.reloadData()
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
-                }) 
+                })
             })
             CCUtility.setLayoutTrash("list")
         } else {
@@ -158,58 +138,6 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             })
             CCUtility.setLayoutTrash("grid")
         }
-    }
-    
-    func tapMoreGridItem(with fileID: String, sender: Any) {
-        
-        var items = [ActionSheetItem]()
-        let appearanceDelete = ActionSheetItemAppearance.init()
-        appearanceDelete.textColor = UIColor.red
-        
-        items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon)))
-        let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: UIColor.red))
-        itemDelete.customAppearance = appearanceDelete
-        items.append(itemDelete)
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
-        let actionSheet = ActionSheet(items: items) { sheet, item in
-            if item.value as? Int == 0 { self.restoreItem(with: fileID) }
-            if item.value as? Int == 1 { self.deleteItem(with: fileID) }
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-        }
-        
-        /*
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
-            return
-        }
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)) {
-            actionSheet.headerView = UIImageView(image: UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)))
-            actionSheet.headerView?.frame.size.height = 150
-        }
-        */
-        
-        actionSheet.present(in: self, from: sender as! UIButton)
-    }
-    
-    func tapMoreHeaderMenu(sender: Any) {
-
-        var menuView: DropdownMenu?
-        
-        let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_all_", comment: ""))
-        let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_all_", comment: ""))
-        
-        menuView = DropdownMenu(navigationController: self.navigationController!, items: [item1, item2], selectedRow: -1)
-        menuView?.token = "tapMoreHeaderMenu"
-        menuView?.delegate = self
-        menuView?.rowHeight = 50
-        menuView?.tableView.alwaysBounceVertical = false
-        
-        let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
-        let headerRect = self.collectionView.convert(header.bounds, from: self.view)
-        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
-        menuView?.topOffsetY = CGFloat(menuOffsetY)
-        
-        menuView?.showMenu()
     }
     
     func tapOrderHeaderMenu(sender: Any) {
@@ -253,6 +181,93 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.showMenu()
     }
     
+    func tapMoreHeaderMenu(sender: Any) {
+        
+        var menuView: DropdownMenu?
+        
+        if isEditMode {
+            
+            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
+            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_selected_", comment: ""))
+            let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_selected_", comment: ""))
+            
+            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1, item2], selectedRow: -1)
+            menuView?.token = "tapMoreHeaderMenuSelect"
+            
+        } else {
+            
+            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
+            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_all_", comment: ""))
+            let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_all_", comment: ""))
+            
+            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1, item2], selectedRow: -1)
+            menuView?.token = "tapMoreHeaderMenu"
+        }
+        
+        
+        menuView?.delegate = self
+        menuView?.rowHeight = 50
+        menuView?.tableView.alwaysBounceVertical = false
+        
+        let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
+        let headerRect = self.collectionView.convert(header.bounds, from: self.view)
+        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
+        menuView?.topOffsetY = CGFloat(menuOffsetY)
+        
+        menuView?.showMenu()
+    }
+    
+    func tapRestoreItem(with fileID: String, sender: Any) {
+        restoreItem(with: fileID)
+    }
+    
+    func tapMoreItem(with fileID: String, sender: Any) {
+        
+        var items = [ActionSheetItem]()
+        
+        items.append(ActionSheetTitle(title: NSLocalizedString("_delete_selected_files_", comment: "")))
+        items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
+        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        
+        let actionSheet = ActionSheet(items: items) { sheet, item in
+            if item is ActionSheetDangerButton { self.deleteItem(with: fileID) }
+            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+        }
+        
+        actionSheet.present(in: self, from: sender as! UIButton)
+    }
+    
+    func tapMoreGridItem(with fileID: String, sender: Any) {
+        
+        var items = [ActionSheetItem]()
+        let appearanceDelete = ActionSheetItemAppearance.init()
+        appearanceDelete.textColor = UIColor.red
+        
+        items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon)))
+        let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: UIColor.red))
+        itemDelete.customAppearance = appearanceDelete
+        items.append(itemDelete)
+        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        
+        let actionSheet = ActionSheet(items: items) { sheet, item in
+            if item.value as? Int == 0 { self.restoreItem(with: fileID) }
+            if item.value as? Int == 1 { self.deleteItem(with: fileID) }
+            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+        }
+        
+        /*
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+            return
+        }
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)) {
+            actionSheet.headerView = UIImageView(image: UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)))
+            actionSheet.headerView?.frame.size.height = 150
+        }
+        */
+        
+        actionSheet.present(in: self, from: sender as! UIButton)
+    }
+    
     // MARK: DROP-DOWN-MENU
 
     func dropdownMenu(_ dropdownMenu: DropdownMenu, didSelectRowAt indexPath: IndexPath) {
@@ -286,13 +301,21 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
         
+            // Select
             if indexPath.row == 0 {
+                isEditMode = true
+                collectionView.reloadData()
+            }
+            
+            // Restore ALL
+            if indexPath.row == 1 {
                 for record: tableTrash in self.datasource {
                     restoreItem(with: record.fileID)
                 }
             }
             
-            if indexPath.row == 1 {
+            // Delete ALL
+            if indexPath.row == 2 {
                 
                 var items = [ActionSheetItem]()
                 
@@ -311,6 +334,51 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 actionSheet.present(in: self, from: self.view)
             }
+        }
+        
+        if dropdownMenu.token == "tapMoreHeaderMenuSelect" {
+            
+            // Cancel
+            if indexPath.row == 0 {
+                isEditMode = false
+                selectFileID.removeAll()
+                collectionView.reloadData()
+            }
+            
+            // Restore selected files
+            if indexPath.row == 1 {
+                for fileID in selectFileID {
+                    restoreItem(with: fileID)
+                }
+                isEditMode = false
+                selectFileID.removeAll()
+                collectionView.reloadData()
+            }
+            
+            // Delete selected files
+            if indexPath.row == 2 {
+                
+                var items = [ActionSheetItem]()
+                
+                items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_selected_", comment: "")))
+                items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
+                items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+                
+                let actionSheet = ActionSheet(items: items) { sheet, item in
+                    if item is ActionSheetDangerButton {
+                        for fileID in self.selectFileID {
+                            self.deleteItem(with: fileID)
+                        }
+                        self.isEditMode = false
+                        self.selectFileID.removeAll()
+                        self.collectionView.reloadData()
+                    }
+                    if item is ActionSheetCancelButton { return }
+                }
+                
+                actionSheet.present(in: self, from: self.view)
+            }
+            
         }
     }
     
@@ -551,6 +619,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if collectionView.collectionViewLayout == listLayout {
             
+            // LIST
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-list", for: indexPath) as! NCTrashListCell
             cell.delegate = self
             
@@ -566,10 +635,33 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size)
             }
             
+            if isEditMode {
+                cell.imageItemLeftConstraint.constant = 45
+                cell.imageSelect.isHidden = false
+                
+                if selectFileID.contains(tableTrash.fileID) {
+                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
+                    
+                    let blurEffect = UIBlurEffect(style: .extraLight)
+                    let blurEffectView = UIVisualEffectView(effect: blurEffect)
+                    blurEffectView.frame = cell.bounds
+                    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+                    cell.backgroundView = blurEffectView
+                } else {
+                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
+                    cell.backgroundView = nil
+                }
+            } else {
+                cell.imageItemLeftConstraint.constant = 10
+                cell.imageSelect.isHidden = true
+                cell.backgroundView = nil
+            }
+            
             return cell
         
         } else {
             
+            // GRID
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-grid", for: indexPath) as! NCTrashGridCell
             cell.delegate = self
             
@@ -583,6 +675,16 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 cell.imageItem.image = image
             }
             
+            if isEditMode {
+                cell.imageSelect.isHidden = false
+                if selectFileID.contains(tableTrash.fileID) {
+                    cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
+                } else {
+                    cell.imageSelect.isHidden = true
+                }
+            } else {
+                cell.imageSelect.isHidden = true
+            }
             return cell
         }
     }
@@ -590,6 +692,16 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         let tableTrash = datasource[indexPath.item]
+
+        if isEditMode {
+            if let index = selectFileID.index(of: tableTrash.fileID) {
+                selectFileID.remove(at: index)
+            } else {
+                selectFileID.append(tableTrash.fileID)
+            }
+            collectionView.reloadItems(at: [indexPath])
+            return
+        }
         
         if tableTrash.directory {
         
@@ -598,14 +710,6 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
             self.navigationController?.pushViewController(ncTrash, animated: true)
         }
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        
-        if !isEditMode {
-            return
-        }
-        
     }
 }
 
@@ -617,7 +721,7 @@ class ListLayout: UICollectionViewFlowLayout {
         super.init()
         
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
     
     required init?(coder aDecoder: NSCoder) {

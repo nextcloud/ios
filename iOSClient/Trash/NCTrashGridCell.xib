@@ -19,10 +19,10 @@
                 <rect key="frame" x="0.0" y="0.0" width="220" height="265"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="ImageItem">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
                         <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eU3-lY-fKr" userLabel="Label Title">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eU3-lY-fKr" userLabel="labelTitle">
                         <rect key="frame" x="0.0" y="220" width="220" height="14.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <nil key="textColor"/>
@@ -38,15 +38,15 @@
                             <action selector="touchUpInsideMoreGrid:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="bg0-Yq-0J6"/>
                         </connections>
                     </button>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3sA-NC-kIg" userLabel="more">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="3sA-NC-kIg" userLabel="imageMore">
                         <rect key="frame" x="100" y="239.5" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="20" id="hoH-4o-Tff"/>
                             <constraint firstAttribute="height" constant="20" id="vGK-h7-x3M"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="selected">
-                        <rect key="frame" x="97.5" y="97.5" width="25" height="25"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
+                        <rect key="frame" x="190" y="190" width="25" height="25"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="25" id="SoZ-J3-98x"/>
                             <constraint firstAttribute="width" constant="25" id="cZG-gx-gwt"/>
@@ -56,13 +56,13 @@
             </view>
             <constraints>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="4Yq-Nh-z1l"/>
-                <constraint firstItem="DHy-Up-3Bh" firstAttribute="centerX" secondItem="5Ci-V1-hf5" secondAttribute="centerX" id="A2c-XO-Leg"/>
+                <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-30" id="I68-jJ-Ea7"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="eU3-lY-fKr" secondAttribute="trailing" id="Lu1-AM-kPq"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="45" id="eEC-eB-alE"/>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="gZe-FC-8XQ"/>
-                <constraint firstItem="DHy-Up-3Bh" firstAttribute="centerY" secondItem="5Ci-V1-hf5" secondAttribute="centerY" id="pph-kE-ffM"/>
+                <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-30" id="ib0-sc-DXe"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
                 <constraint firstItem="3sA-NC-kIg" firstAttribute="centerY" secondItem="EJs-Ro-nbe" secondAttribute="centerY" id="r4I-Ey-m5L"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" id="uL8-ea-AWa"/>
@@ -74,8 +74,9 @@
             <connections>
                 <outlet property="buttonMoreGrid" destination="EJs-Ro-nbe" id="sUc-vE-XKf"/>
                 <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
+                <outlet property="imageMore" destination="3sA-NC-kIg" id="yZE-cI-zm0"/>
+                <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
-                <outlet property="more" destination="3sA-NC-kIg" id="LTq-2s-hq2"/>
             </connections>
             <point key="canvasLocation" x="88" y="141.67916041979012"/>
         </collectionViewCell>

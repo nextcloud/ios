@@ -12,12 +12,14 @@ import UIKit
 class NCTrashListCell: UICollectionViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
-    
+    @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
+    @IBOutlet weak var imageSelect: UIImageView!
+
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
     
-    @IBOutlet weak var more: UIImageView!
-    @IBOutlet weak var restore: UIImageView!
+    @IBOutlet weak var imageRestore: UIImageView!
+    @IBOutlet weak var imageMore: UIImageView!
 
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonRestore: UIButton!
@@ -32,8 +34,8 @@ class NCTrashListCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-        more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+        imageRestore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+        imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
     }
