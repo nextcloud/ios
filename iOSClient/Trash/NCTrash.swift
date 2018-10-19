@@ -641,12 +641,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 
                 if selectFileID.contains(tableTrash.fileID) {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
-                    
-                    let blurEffect = UIBlurEffect(style: .extraLight)
-                    let blurEffectView = UIVisualEffectView(effect: blurEffect)
-                    blurEffectView.frame = cell.bounds
-                    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-                    cell.backgroundView = blurEffectView
+                    cell.backgroundView = cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
                     cell.backgroundView = nil
@@ -679,11 +674,14 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 cell.imageSelect.isHidden = false
                 if selectFileID.contains(tableTrash.fileID) {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
+                    cell.backgroundView = cellBlurEffect(with: cell.bounds)
                 } else {
                     cell.imageSelect.isHidden = true
+                    cell.backgroundView = nil
                 }
             } else {
                 cell.imageSelect.isHidden = true
+                cell.backgroundView = nil
             }
             return cell
         }
@@ -711,6 +709,20 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             self.navigationController?.pushViewController(ncTrash, animated: true)
         }
     }
+    
+    // MARK: UTILITY
+    private func cellBlurEffect(with frame: CGRect) -> UIView {
+        
+        let blurEffect = UIBlurEffect(style: .extraLight)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        
+        blurEffectView.frame = frame
+        blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurEffectView.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.2)
+        
+        return blurEffectView
+    }
+    
 }
 
 class ListLayout: UICollectionViewFlowLayout {
@@ -720,8 +732,11 @@ class ListLayout: UICollectionViewFlowLayout {
     override init() {
         super.init()
         
+        minimumInteritemSpacing = 0
+        minimumLineSpacing = 1
+        
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -756,6 +771,8 @@ class GridLayout: UICollectionViewFlowLayout {
         super.init()
         
         minimumInteritemSpacing = 0
+        minimumLineSpacing = 1
+
         self.scrollDirection = .vertical
         self.sectionInset = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
     }
