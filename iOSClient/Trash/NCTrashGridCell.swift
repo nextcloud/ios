@@ -14,12 +14,9 @@ class NCTrashGridCell: UICollectionViewCell {
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var more: UIImageView!
-    @IBOutlet weak var restore: UIImageView!
 
-    @IBOutlet weak var buttonMore: UIButton!
-    @IBOutlet weak var buttonRestore: UIButton!
+    @IBOutlet weak var buttonMoreGrid: UIButton!
 
-    
     var delegate: NCTrashGridDelegate?
     
     var fileID = ""
@@ -28,20 +25,14 @@ class NCTrashGridCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        restore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
     }
     
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreItem(with: fileID, sender: sender)
-    }
-    
-    @IBAction func touchUpInsideRestore(_ sender: Any) {
-        delegate?.tapRestoreItem(with: fileID, sender: sender)
+    @IBAction func touchUpInsideMoreGrid(_ sender: Any) {
+        delegate?.tapMoreGridItem(with: fileID, sender: sender)
     }
 }
 
 protocol NCTrashGridDelegate {
-    func tapRestoreItem(with fileID: String, sender: Any)
-    func tapMoreItem(with fileID: String, sender: Any)
+    func tapMoreGridItem(with fileID: String, sender: Any)
 }

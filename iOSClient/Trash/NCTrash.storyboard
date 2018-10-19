@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EFX-fO-Oip">
-    <device id="retina4_7" orientation="portrait">
+    <device id="retina5_9" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
@@ -15,11 +15,11 @@
             <objects>
                 <viewController storyboardIdentifier="NCTrash.storyboard" id="EFX-fO-Oip" customClass="NCTrash" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="QEs-gO-Cmp">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Zaz-Cl-qpZ">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="734"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="fF1-wd-0xN">
                                     <size key="itemSize" width="0.0" height="0.0"/>
@@ -33,7 +33,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hva-qI-4Kl" userLabel="Separator">
-                                            <rect key="frame" x="0.0" y="48" width="375" height="1"/>
+                                            <rect key="frame" x="0.0" y="48" width="414" height="1"/>
                                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
@@ -41,7 +41,7 @@
                                             </constraints>
                                         </view>
                                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBv-v2-Zec" userLabel="buttonSwitch">
-                                            <rect key="frame" x="12" y="12.5" width="25" height="25"/>
+                                            <rect key="frame" x="12" y="12.666666666666664" width="25" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="25" id="0mp-3J-eb3"/>
                                                 <constraint firstAttribute="width" constant="25" id="DxY-uU-Znk"/>
@@ -52,7 +52,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qqn-cs-A3P" userLabel="buttonSwitch">
-                                            <rect key="frame" x="338" y="12.5" width="25" height="25"/>
+                                            <rect key="frame" x="377" y="12.666666666666664" width="25" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="25" id="2OK-Fr-IGe"/>
                                                 <constraint firstAttribute="height" constant="25" id="HAe-ET-Q3h"/>
@@ -63,9 +63,12 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0q4-Qd-ic4" userLabel="buttonOrder">
-                                            <rect key="frame" x="55" y="11" width="233" height="28"/>
+                                            <rect key="frame" x="55" y="11" width="200" height="28"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" constant="200" id="n74-Xy-Qpd"/>
+                                            </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                            <state key="normal" title="Order">
+                                            <state key="normal" title="Sort by name (from A to Z)">
                                                 <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
                                             </state>
                                             <connections>
@@ -84,7 +87,6 @@
                                         <constraint firstItem="gBv-v2-Zec" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="OEU-E8-r92"/>
                                         <constraint firstItem="hva-qI-4Kl" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" id="a0G-P5-ZTU"/>
                                         <constraint firstAttribute="bottom" secondItem="hva-qI-4Kl" secondAttribute="bottom" constant="1" id="ixp-nm-HUt"/>
-                                        <constraint firstItem="Qqn-cs-A3P" firstAttribute="leading" secondItem="0q4-Qd-ic4" secondAttribute="trailing" constant="50" id="tog-PK-QII"/>
                                     </constraints>
                                     <connections>
                                         <outlet property="buttonMore" destination="Qqn-cs-A3P" id="9hu-4g-sm5"/>
@@ -98,7 +100,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5ZS-UE-CHl" userLabel="LabelFooter">
-                                            <rect key="frame" x="10" y="17" width="355" height="16"/>
+                                            <rect key="frame" x="10" y="17" width="394" height="16"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -138,7 +140,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="moreBig" width="80" height="80"/>
-        <image name="switchList" width="80" height="80"/>
+        <image name="moreBig" width="120" height="120"/>
+        <image name="switchList" width="25" height="25"/>
     </resources>
 </document>

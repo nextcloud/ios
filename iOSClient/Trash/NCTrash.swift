@@ -158,6 +158,37 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
     
+    func tapMoreGridItem(with fileID: String, sender: Any) {
+        
+        var items = [ActionSheetItem]()
+        let appearanceDelete = ActionSheetItemAppearance.init()
+        appearanceDelete.textColor = UIColor.red
+        
+        items.append(ActionSheetItem(title: NSLocalizedString("_restore_", comment: ""), value: 0, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon)))
+        let itemDelete = ActionSheetItem(title: NSLocalizedString("_delete_", comment: ""), value: 1, image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: UIColor.red))
+        itemDelete.customAppearance = appearanceDelete
+        items.append(itemDelete)
+        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        
+        let actionSheet = ActionSheet(items: items) { sheet, item in
+            if item.value as? Int == 0 { self.restoreItem(with: fileID) }
+            if item.value as? Int == 1 { self.deleteItem(with: fileID) }
+            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+        }
+        
+        /*
+        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
+            return
+        }
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)) {
+            actionSheet.headerView = UIImageView(image: UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(fileID, fileNameView: tableTrash.fileName)))
+            actionSheet.headerView?.frame.size.height = 150
+        }
+        */
+        
+        actionSheet.present(in: self, from: sender as! UIButton)
+    }
+    
     func tapMoreHeaderMenu(sender: Any) {
 
         var menuView: DropdownMenu?
