@@ -201,7 +201,12 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.delegate = self
         menuView?.rowHeight = 50
         menuView?.tableView.alwaysBounceVertical = false
-        menuView?.topOffsetY = CGFloat(highHeader-2)
+        
+        let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
+        let headerRect = self.collectionView.convert(header.bounds, from: self.view)
+        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
+        menuView?.topOffsetY = CGFloat(menuOffsetY)
+        
         menuView?.showMenu()
     }
     
@@ -237,7 +242,12 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.rowHeight = 50
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
-        menuView?.topOffsetY = CGFloat(highHeader-2)
+        
+        let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
+        let headerRect = self.collectionView.convert(header.bounds, from: self.view)
+        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
+        menuView?.topOffsetY = CGFloat(menuOffsetY)
+        
         menuView?.showMenu()
     }
     
