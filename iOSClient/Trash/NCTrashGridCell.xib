@@ -45,15 +45,24 @@
                             <constraint firstAttribute="height" constant="20" id="vGK-h7-x3M"/>
                         </constraints>
                     </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="selected">
+                        <rect key="frame" x="97.5" y="97.5" width="25" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="25" id="SoZ-J3-98x"/>
+                            <constraint firstAttribute="width" constant="25" id="cZG-gx-gwt"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
             </view>
             <constraints>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="4Yq-Nh-z1l"/>
+                <constraint firstItem="DHy-Up-3Bh" firstAttribute="centerX" secondItem="5Ci-V1-hf5" secondAttribute="centerX" id="A2c-XO-Leg"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="eU3-lY-fKr" secondAttribute="trailing" id="Lu1-AM-kPq"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="45" id="eEC-eB-alE"/>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="gZe-FC-8XQ"/>
+                <constraint firstItem="DHy-Up-3Bh" firstAttribute="centerY" secondItem="5Ci-V1-hf5" secondAttribute="centerY" id="pph-kE-ffM"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
                 <constraint firstItem="3sA-NC-kIg" firstAttribute="centerY" secondItem="EJs-Ro-nbe" secondAttribute="centerY" id="r4I-Ey-m5L"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="top" secondItem="eU3-lY-fKr" secondAttribute="bottom" id="uL8-ea-AWa"/>

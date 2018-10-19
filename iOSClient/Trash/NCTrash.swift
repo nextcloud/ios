@@ -18,6 +18,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     var datasource = [tableTrash]()
     var datasourceSorted = ""
     var datasourceAscending = true
+    var isEditMode = false
+    var selectFileID = [String]()
     
     var listLayout: ListLayout!
     var gridLayout: GridLayout!
@@ -596,6 +598,14 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
             self.navigationController?.pushViewController(ncTrash, animated: true)
         }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        
+        if !isEditMode {
+            return
+        }
+        
     }
 }
 
