@@ -531,9 +531,11 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             if self.datasource.count == 0 {
                 trashHeader.buttonSwitch.isEnabled = false
+                trashHeader.buttonOrder.isEnabled = false
                 trashHeader.buttonMore.isEnabled = false
             } else {
                 trashHeader.buttonSwitch.isEnabled = true
+                trashHeader.buttonOrder.isEnabled = true
                 trashHeader.buttonMore.isEnabled = true
             }
             
