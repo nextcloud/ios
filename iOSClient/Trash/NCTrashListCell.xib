@@ -27,17 +27,27 @@
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="Label Title">
-                        <rect key="frame" x="55" y="13" width="440" height="18"/>
+                        <rect key="frame" x="55" y="13" width="460" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" tag="102" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AXX-71-9Q6" userLabel="Label Info File">
-                        <rect key="frame" x="55" y="31" width="440" height="15"/>
+                        <rect key="frame" x="55" y="31" width="460" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
+                        <rect key="frame" x="560" y="0.0" width="40" height="60"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="40" id="ZgH-mI-l2k"/>
+                            <constraint firstAttribute="height" constant="60" id="woC-64-Tyc"/>
+                        </constraints>
+                        <connections>
+                            <action selector="touchUpInsideMore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="mrd-cC-VV8"/>
+                        </connections>
+                    </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="More">
                         <rect key="frame" x="565" y="20" width="20" height="20"/>
                         <constraints>
@@ -45,28 +55,18 @@
                             <constraint firstAttribute="height" constant="20" id="Jet-eo-x1M" userLabel="height = 20"/>
                         </constraints>
                     </imageView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
-                        <rect key="frame" x="550" y="0.0" width="50" height="60"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="50" id="ZgH-mI-l2k"/>
-                            <constraint firstAttribute="height" constant="60" id="woC-64-Tyc"/>
-                        </constraints>
-                        <connections>
-                            <action selector="touchUpInsideMore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="mrd-cC-VV8"/>
-                        </connections>
-                    </button>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="nwZ-pi-Igj" userLabel="restore">
-                        <rect key="frame" x="515" y="20" width="20" height="20"/>
+                        <rect key="frame" x="530" y="20" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="20" id="5Zc-h7-ZRJ"/>
                             <constraint firstAttribute="height" constant="20" id="xvo-pN-hfE"/>
                         </constraints>
                     </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3mk-e2-iDg" userLabel="buttonRestore">
-                        <rect key="frame" x="500" y="0.0" width="50" height="60"/>
+                        <rect key="frame" x="520" y="0.0" width="40" height="60"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="60" id="c3w-wJ-nqd"/>
-                            <constraint firstAttribute="width" constant="50" id="eC4-Ee-c7B"/>
+                            <constraint firstAttribute="width" constant="40" id="eC4-Ee-c7B"/>
                         </constraints>
                         <connections>
                             <action selector="touchUpInsideRestore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="xMV-fb-0ta"/>
@@ -91,10 +91,10 @@
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="3mk-e2-iDg" secondAttribute="trailing" id="PxA-lT-Gll"/>
                 <constraint firstItem="AXX-71-9Q6" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="Qvq-r5-AX9"/>
                 <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" secondItem="AXX-71-9Q6" secondAttribute="trailing" constant="5" id="UtX-Ca-aBN"/>
-                <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerX" secondItem="yhy-xd-w5C" secondAttribute="centerX" id="Y8o-r5-jeN"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="ZO7-Ny-L3I"/>
                 <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" secondItem="UtT-L6-mgW" secondAttribute="trailing" constant="5" id="cEw-b3-odo"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="bottom" secondItem="AXX-71-9Q6" secondAttribute="bottom" constant="14" id="d06-sn-I3Y"/>
+                <constraint firstItem="dgL-g5-Nkc" firstAttribute="leading" secondItem="yhy-xd-w5C" secondAttribute="trailing" constant="-35" id="hTf-Sh-0hs"/>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="trailing" secondItem="Egg-cb-EhZ" secondAttribute="trailing" id="k8f-bU-D6I"/>
                 <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="ldm-kv-P98"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="Gu8-oz-zWa" secondAttribute="leading" constant="5" id="mBb-ff-7HD"/>
