@@ -395,8 +395,6 @@
             status = k_metadataStatusNormal;
         }
         
-        NSString *ext = [[metadata.fileNameView pathExtension] uppercaseString];
-
         if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO && status == k_metadataStatusNormal) {
             
             if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
@@ -413,16 +411,10 @@
                     self.navigationItem.titleView = nil;
                     self.title = metadata.fileNameView;
                     
-                    if (([CCUtility getOptimizedPhoto] == YES && errorCode != 0) || [CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
-                        [self downloadPhotoBrowser:metadata serverUrl:serverUrl];
-                    }
-                    
                     [self.photoBrowser reloadData];
                 }];
             } else {
-                if ([CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
-                    [self downloadPhotoBrowser:metadata serverUrl:serverUrl];
-                }
+                [self downloadPhotoBrowser:metadata serverUrl:serverUrl];
             }
         }
     }

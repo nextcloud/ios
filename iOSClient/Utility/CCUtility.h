@@ -70,9 +70,6 @@
 + (BOOL)getOnlyLockDir;
 + (void)setOnlyLockDir:(BOOL)lockDir;
 
-+ (BOOL)getOptimizedPhoto;
-+ (void)setOptimizedPhoto:(BOOL)resize;
-
 + (NSString *)getOrderSettings;
 + (void)setOrderSettings:(NSString *)order;
 

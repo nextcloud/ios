@@ -1226,14 +1226,6 @@
         // Remove icon B/N
         [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
         
-        // Optimization
-        if (([CCUtility getOptimizedPhoto] || [metadata.sessionSelector isEqualToString:selectorUploadAutoUploadAll]) && ([metadata.typeFile isEqualToString:k_metadataTypeFile_image] || [metadata.typeFile isEqualToString:k_metadataTypeFile_video]) && isE2EEDirectory == NO) {
-            
-            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-
-            [[NSFileManager defaultManager] removeItemAtPath:[CCUtility getDirectoryProviderStorageFileID:metadata.fileID fileNameView:metadata.fileNameView] error:nil];
-        }
-        
         // Copy photo or video in the photo album for auto upload
         if ([metadata.assetLocalIdentifier length] > 0 && ([metadata.sessionSelector isEqualToString:selectorUploadAutoUpload] || [metadata.sessionSelector isEqualToString:selectorUploadFile])) {
             

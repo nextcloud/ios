@@ -75,18 +75,6 @@
     row.action.formSelector = @selector(clearActivity:);
     [section addFormRow:row];
     
-    // Section OTTIMIZATIONS -------------------------------------------------
-    
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    section.footerTitle = NSLocalizedString(@"_optimized_photos_how_", nil);
-    
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@"optimizedphoto" rowType:XLFormRowDescriptorTypeBooleanSwitch title:NSLocalizedString(@"_optimized_photos_", nil)];
-    if ([CCUtility getOptimizedPhoto]) row.value = @"1";
-    else row.value = @"0";
-    [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
-    [section addFormRow:row];
-    
     // Section HIDDEN FILES -------------------------------------------------
 
     section = [XLFormSectionDescriptor formSection];
@@ -195,11 +183,6 @@
         
         // Clear Date read Activity for force reload datasource
         appDelegate.activeActivity.storeDateFirstActivity = nil;
-    }
-    
-    if ([rowDescriptor.tag isEqualToString:@"optimizedphoto"]) {
-        
-        [CCUtility setOptimizedPhoto:[[rowDescriptor.value valueData] boolValue]];
     }
     
     if ([rowDescriptor.tag isEqualToString:@"showHiddenFiles"]) {

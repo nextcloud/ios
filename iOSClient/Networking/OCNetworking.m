@@ -461,18 +461,6 @@
 
             [preview writeToFile:file atomically:YES];
             
-            // Optimization Photo
-            NSString *ext = [[metadata.fileNameView pathExtension] uppercaseString];
-
-            if ([CCUtility getOptimizedPhoto] && [metadata.typeFile isEqualToString:k_metadataTypeFile_image] && [ext isEqualToString:@"GIF"] == NO) {
-                
-                NSString *file = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
-                
-                [preview writeToFile:file atomically:YES];
-                
-                [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
-            }
-            
             completion(nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {

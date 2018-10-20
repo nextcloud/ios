@@ -180,25 +180,6 @@
     [UICKeyChainStore setString:sLockDir forKey:@"onlylockdir" service:k_serviceShareKeyChain];
 }
 
-+ (BOOL)getOptimizedPhoto
-{
-    NSString *result = [UICKeyChainStore stringForKey:@"optimizedphoto" service:k_serviceShareKeyChain];
-    
-    if (result == nil) {
-        
-        [self setOptimizedPhoto:NO];
-        return NO;
-    }
-    
-    return [result boolValue];
-}
-
-+ (void)setOptimizedPhoto:(BOOL)resize
-{
-    NSString *sOptimizedPhoto = (resize) ? @"true" : @"false";
-    [UICKeyChainStore setString:sOptimizedPhoto forKey:@"optimizedphoto" service:k_serviceShareKeyChain];
-}
-
 + (NSString *)getOrderSettings
 {
     NSString *order = [UICKeyChainStore stringForKey:@"order" service:k_serviceShareKeyChain];
