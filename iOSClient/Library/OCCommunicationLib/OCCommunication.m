@@ -29,7 +29,7 @@
 //  Add : getActivityServer
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 
 

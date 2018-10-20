@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 13/10/17.
-//  Copyright © 2017 TWS. All rights reserved.
+//  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //

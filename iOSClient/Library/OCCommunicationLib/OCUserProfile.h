@@ -3,7 +3,7 @@
 //  ownCloud iOS library
 //
 //  Created by Marino Faggiana on 16/02/17.
-//  Copyright © 2017 TWS. All rights reserved.
+//  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
