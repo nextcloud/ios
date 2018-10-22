@@ -770,7 +770,9 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
         
         // Header
-        if tableTrash.iconName.count > 0 {
+        if tableTrash.directory {
+            image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+        } else if tableTrash.iconName.count > 0 {
             image = UIImage.init(named: tableTrash.iconName)
         } else {
             image = UIImage.init(named: "file")
