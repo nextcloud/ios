@@ -605,6 +605,12 @@
 "_trash_restore_selected_"          = "Restore selected files";
 "_trash_delete_selected_"           = "Deleted selected files";
 
+// On the device
+
+"_on_the_device_"                   = "On the device";
+"_set_available_offline_"           = "Set as available offline";
+"_remove_available_offline_"        = "Remove as available offline";
+
 // Intro
 
 "_intro_1_title_"                   = "Keep your data secure and under your control";
