@@ -51,7 +51,7 @@
                                                 <action selector="touchUpInsideSwitch:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="wkS-i9-OsH"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qqn-cs-A3P" userLabel="buttonSwitch">
+                                        <button hidden="YES" opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qqn-cs-A3P" userLabel="buttonSwitch">
                                             <rect key="frame" x="338" y="12.666666666666664" width="25" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="25" id="2OK-Fr-IGe"/>
