@@ -28,6 +28,7 @@ class NCTrashHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
     @IBOutlet weak var buttonOrder: UIButton!
+    @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var separator: UIView!
     
     var delegate: NCTrashHeaderMenuDelegate?

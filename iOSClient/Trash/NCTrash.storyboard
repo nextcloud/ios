@@ -33,7 +33,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hva-qI-4Kl" userLabel="Separator">
-                                            <rect key="frame" x="0.0" y="48" width="414" height="1"/>
+                                            <rect key="frame" x="0.0" y="48" width="375" height="1"/>
                                             <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                             <constraints>
@@ -52,7 +52,7 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qqn-cs-A3P" userLabel="buttonSwitch">
-                                            <rect key="frame" x="377" y="12.666666666666664" width="25" height="25"/>
+                                            <rect key="frame" x="338" y="12.666666666666664" width="25" height="25"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="25" id="2OK-Fr-IGe"/>
                                                 <constraint firstAttribute="height" constant="25" id="HAe-ET-Q3h"/>
@@ -63,9 +63,9 @@
                                             </connections>
                                         </button>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0q4-Qd-ic4" userLabel="buttonOrder">
-                                            <rect key="frame" x="55" y="11" width="200" height="28"/>
+                                            <rect key="frame" x="55" y="11" width="230" height="28"/>
                                             <constraints>
-                                                <constraint firstAttribute="width" constant="200" id="n74-Xy-Qpd"/>
+                                                <constraint firstAttribute="width" constant="230" id="n74-Xy-Qpd"/>
                                             </constraints>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <state key="normal" title="Sort by name (from A to Z)">
@@ -91,6 +91,7 @@
                                     <connections>
                                         <outlet property="buttonMore" destination="Qqn-cs-A3P" id="9hu-4g-sm5"/>
                                         <outlet property="buttonOrder" destination="0q4-Qd-ic4" id="A8C-el-YQr"/>
+                                        <outlet property="buttonOrderWidthConstraint" destination="n74-Xy-Qpd" id="1yu-SR-FZN"/>
                                         <outlet property="buttonSwitch" destination="gBv-v2-Zec" id="yBa-g0-ChU"/>
                                         <outlet property="separator" destination="hva-qI-4Kl" id="rP4-bg-nt9"/>
                                     </connections>
@@ -100,7 +101,7 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5ZS-UE-CHl" userLabel="LabelFooter">
-                                            <rect key="frame" x="10" y="17" width="394" height="16"/>
+                                            <rect key="frame" x="10" y="17" width="355" height="16"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>

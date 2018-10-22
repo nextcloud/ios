@@ -568,7 +568,11 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 title = NSLocalizedString("_order_by_", comment: "") + " " + datasourceSorted
             }
             
-            trashHeader.buttonOrder.setTitle(title + "  ▽", for: .normal)
+            title = title + "  ▽"
+            let size = title.size(withAttributes:[.font: trashHeader.buttonOrder.titleLabel?.font as Any])
+            
+            trashHeader.buttonOrder.setTitle(title, for: .normal)
+            trashHeader.buttonOrderWidthConstraint.constant = size.width + 5
             
             return trashHeader
             
