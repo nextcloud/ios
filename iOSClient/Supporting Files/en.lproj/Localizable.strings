@@ -138,7 +138,9 @@
 "_contact_by_email_"            = "Contact us by email";
 "_clear_cache_"                 = "Clear cache (%@ used)";
 "_clear_cache_no_size_"         = "Clear cache";
-"_exit_"                        = "Exit";
+"_clear_cache_footer_"          = "Clear downloaded and offline files";
+"_exit_"                        = "Reset application";
+"_exit_footer_"                 = "Remove all accounts and local data";
 "_funct_not_enabled_"           = "Functionality not enabled";
 "_passcode_activate_"           = "Password lock on";
 "_disabling_passcode_"          = "Removing password lock";

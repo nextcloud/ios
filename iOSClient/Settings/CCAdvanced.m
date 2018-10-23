@@ -118,7 +118,8 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
-    
+    section.footerTitle = NSLocalizedString(@"_clear_cache_footer_", nil);
+
     // Clear cache
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"azzeracache" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_clear_cache_no_size_", nil)];
     [row.cellConfig setObject:[UIFont systemFontOfSize:15.0]forKey:@"textLabel.font"];
@@ -132,6 +133,7 @@
     
     section = [XLFormSectionDescriptor formSection];
     [form addFormSection:section];
+    section.footerTitle = NSLocalizedString(@"_exit_footer_", nil);
     
     // Exit
     row = [XLFormRowDescriptor formRowDescriptorWithTag:@"esci" rowType:XLFormRowDescriptorTypeButton title:NSLocalizedString(@"_exit_", nil)];
