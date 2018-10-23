@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 21/09/18.
-//  Copyright © 2018 TWS. All rights reserved.
+//  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 
 import Foundation
@@ -17,20 +17,29 @@ class NCViewerMedia: NSObject {
         return viewMedia
     }()
 
-    var viewDetail: CCDetail!
+    var detail: CCDetail!
     var metadata: tableMetadata!
     var videoURL: URL!
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    
-    @objc func viewMedia(_ metadata: tableMetadata, viewDetail: CCDetail, width: Int, height: Int) {
+    var safeAreaBottom: Int = 0
+
+    @objc func viewMedia(_ metadata: tableMetadata, detail: CCDetail) {
         
         var videoURLProxy: URL!
 
-        self.viewDetail = viewDetail
+        self.detail = detail
         self.metadata = metadata
         
         guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
             return
+        }
+        
+        guard let rootView = UIApplication.shared.keyWindow else {
+            return
+        }
+        
+        if #available(iOS 11.0, *) {
+            safeAreaBottom = Int(rootView.safeAreaInsets.bottom)
         }
         
         if CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
@@ -55,18 +64,18 @@ class NCViewerMedia: NSObject {
             KTVHTTPCache.downloadSetAdditionalHeaders(["Authorization":authValue, "User-Agent":CCUtility.getUserAgent()])
             
             // Disable Button Action (the file is in download via Proxy Server)
-            viewDetail.buttonAction.isEnabled = false
+            detail.buttonAction.isEnabled = false
         }
         
         appDelegate.player = AVPlayer(url: videoURLProxy)
         appDelegate.playerController = AVPlayerViewController()
         
         appDelegate.playerController.player = appDelegate.player
-        appDelegate.playerController.view.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        appDelegate.playerController.view.frame = CGRect(x: 0, y: 0, width: Int(rootView.bounds.size.width), height: Int(rootView.bounds.size.height) - Int(k_detail_Toolbar_Height) - safeAreaBottom - 1)
         appDelegate.playerController.allowsPictureInPicturePlayback = false
-        viewDetail.addChild(appDelegate.playerController)
-        viewDetail.view.addSubview(appDelegate.playerController.view)
-        appDelegate.playerController.didMove(toParent: viewDetail)
+        detail.addChild(appDelegate.playerController)
+        detail.view.addSubview(appDelegate.playerController.view)
+        appDelegate.playerController.didMove(toParent: detail)
         
         NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: nil) { (notification) in
             let player = notification.object as! AVPlayerItem
@@ -75,7 +84,7 @@ class NCViewerMedia: NSObject {
         
         appDelegate.player.addObserver(self, forKeyPath: "rate", options: [], context: nil)
         
-        viewDetail.isMediaObserver = true
+        detail.isMediaObserver = true
         
         appDelegate.player.play()
     }
@@ -104,7 +113,7 @@ class NCViewerMedia: NSObject {
                 NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: NCManageDatabase.sharedInstance.getServerUrl(self.metadata.directoryID), fileID: self.metadata.fileID, action: k_action_MOD)
                 
                 // Enabled Button Action (the file is in local)
-                self.viewDetail.buttonAction.isEnabled = true
+                self.detail.buttonAction.isEnabled = true
             }
         }
     }

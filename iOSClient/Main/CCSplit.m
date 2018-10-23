@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 09/10/15.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -153,8 +153,6 @@
 
 - (void)introFinishSelector:(NSInteger)selector
 {
-    [CCUtility setIntro:YES];
-    
     switch (selector) {
             
         case k_intro_login:

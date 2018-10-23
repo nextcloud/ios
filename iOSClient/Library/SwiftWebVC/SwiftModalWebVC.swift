@@ -8,84 +8,40 @@
 
 import UIKit
 
-public protocol SwiftModalWebVCDelegate: class {
-    func didStartLoading()
-    func didReceiveServerRedirectForProvisionalNavigation(url: URL)
-    func didFinishLoading(success: Bool, url: URL)
-    func webDismiss()
-    func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
+@objc public protocol SwiftModalWebVCDelegate: class {
+    @objc func didStartLoading()
+    @objc func didReceiveServerRedirectForProvisionalNavigation(url: URL)
+    @objc func didFinishLoading(success: Bool, url: URL)
+    @objc func webDismiss()
+    @objc func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
 }
 
 public class SwiftModalWebVC: UINavigationController {
     
-    public weak var delegateWeb: SwiftModalWebVCDelegate?
-    
-    public enum SwiftModalWebVCTheme {
-        case lightBlue, lightBlack, dark, custom
-    }
+    @objc public weak var delegateWeb: SwiftModalWebVCDelegate?
     
     weak var webViewDelegate: UIWebViewDelegate? = nil
     
-    public convenience init(urlString: String) {
-        self.init(pageURL: URL(string: urlString)!)
+    @objc public convenience init(urlString: String, colorText: UIColor, colorDoneButton: UIColor, doneButtonVisible: Bool, hideToolbar: Bool = false) {
+        let url = URL(string: urlString)!
+        self.init(request: URLRequest(url: url), colorText: colorText, colorDoneButton: colorDoneButton, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
     }
     
-    public convenience init(urlString: String, theme: SwiftModalWebVCTheme) {
-        self.init(pageURL: URL(string: urlString)!, theme: theme)
-    }
-    
-    public convenience init(urlString: String, theme: SwiftModalWebVCTheme, color: UIColor, colorText: UIColor, doneButtonVisible: Bool, hideToolbar: Bool = false) {
-        self.init(pageURL: URL(string: urlString)!, theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
-    }
-    
-    public convenience init(pageURL: URL) {
-        self.init(request: URLRequest(url: pageURL))
-    }
-    
-    public convenience init(pageURL: URL, theme: SwiftModalWebVCTheme, color : UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
-        self.init(request: URLRequest(url: pageURL), theme: theme, color: color, colorText: colorText, doneButtonVisible: doneButtonVisible, hideToolbar: hideToolbar)
-    }
-   
-    public init(request: URLRequest, theme: SwiftModalWebVCTheme = .dark, color: UIColor = UIColor.clear, colorText: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
+    public init(request: URLRequest, colorText: UIColor = UIColor.white, colorDoneButton: UIColor = UIColor.black, doneButtonVisible: Bool = false, hideToolbar: Bool = false) {
         
         let webViewController = SwiftWebVC(aRequest: request, hideToolbar: hideToolbar)
         webViewController.storedStatusColor = UINavigationBar.appearance().barStyle
         
         super.init(rootViewController: webViewController)
 
-        let doneButton = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCDismiss"),
-                                         style: UIBarButtonItem.Style.plain,
-                                         target: webViewController,
-                                         action: #selector(SwiftWebVC.doneButtonTapped))
+        let doneButton = UIBarButtonItem(image: SwiftWebVC.bundledImage(named: "SwiftWebVCDismiss"), style: UIBarButtonItem.Style.plain, target: webViewController, action: #selector(SwiftWebVC.doneButtonTapped))
     
-        switch theme {
-        case .lightBlue:
-            doneButton.tintColor = nil
-            webViewController.buttonColor = nil
-            webViewController.titleColor = UIColor.black
-            UINavigationBar.appearance().barStyle = UIBarStyle.default
-        case .lightBlack:
-            doneButton.tintColor = UIColor.darkGray
-            webViewController.buttonColor = UIColor.darkGray
-            webViewController.titleColor = UIColor.black
-            UINavigationBar.appearance().barStyle = UIBarStyle.default
-        case .dark:
-            doneButton.tintColor = UIColor.white
-            webViewController.buttonColor = UIColor.white
-            webViewController.titleColor = UIColor.groupTableViewBackground
-            UINavigationBar.appearance().barStyle = UIBarStyle.black
-        case .custom:
-            doneButton.tintColor = colorText
-            webViewController.buttonColor = colorText
-            webViewController.titleColor = colorText
-            webViewController.view.backgroundColor = color
-
-            self.navigationBar.isTranslucent = false
-            UINavigationBar.appearance().barTintColor = color
-            
-            self.toolbar.isTranslucent = false
-            self.toolbar.barTintColor = color
-        }
+        doneButton.tintColor = colorDoneButton
+        webViewController.buttonColor = colorText
+        webViewController.titleColor = colorText
+        webViewController.view.backgroundColor = UIColor.clear
+        
+        UINavigationBar.appearance().barStyle = UIBarStyle.default
         
         if (doneButtonVisible == true) {
             if (UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad) {
@@ -142,7 +98,6 @@ extension SwiftModalWebVC: SwiftWebVCDelegate {
     }
     
     public func decidePolicyForNavigationAction(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        
-        self.delegateWeb?.decidePolicyForNavigationAction(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)        
+        self.delegateWeb?.decidePolicyForNavigationAction(webView, decidePolicyFor: navigationAction, decisionHandler: decisionHandler)
     }
 }

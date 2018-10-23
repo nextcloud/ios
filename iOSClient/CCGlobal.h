@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 13/10/14.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -34,6 +34,9 @@
 //DispatchQueue.main.async
 //DispatchQueue.main.asyncAfter(deadline: .now() + 0.1)
 //DispatchQueue.global().async
+
+//#if targetEnvironment(simulator)
+//#endif
 
 #define CALL_ORIGIN NSLog(@"Origin: [%@]", [[[[NSThread callStackSymbols] objectAtIndex:1] componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"[]"]] objectAtIndex:1])
 
@@ -292,14 +295,19 @@
 // Flow Version
 #define k_flow_version_available                        12
 
+// Trash Version
+#define k_trash_version_available                       14
+
 // Cell Reload Data Source
 #define k_action_NULL                                   0
 #define k_action_MOD                                    1
 #define k_action_DEL                                    2
 
 // Nextcloud unsupported
-#define k_nextcloud_unsupported                         12
+#define k_nextcloud_unsupported                         11
 
+// Toolbar Detail
+#define k_detail_Toolbar_Height                         49
 
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 06/05/17.
-//  Copyright © 2017 TWS. All rights reserved.
+//  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -284,6 +284,27 @@ class tableTag: Object {
     @objc dynamic var fileID = ""
     @objc dynamic var tagIOS: Data? = nil
     
+    override static func primaryKey() -> String {
+        return "fileID"
+    }
+}
+
+class tableTrash: Object {
+    
+    @objc dynamic var account = ""
+    @objc dynamic var date = NSDate()
+    @objc dynamic var directory: Bool = false
+    @objc dynamic var fileID = ""
+    @objc dynamic var fileName = ""
+    @objc dynamic var filePath = ""
+    @objc dynamic var iconName = ""
+    @objc dynamic var size: Double = 0
+    @objc dynamic var thumbnailExists: Bool = false
+    @objc dynamic var typeFile = ""
+    @objc dynamic var trashbinFileName = ""
+    @objc dynamic var trashbinOriginalLocation = ""
+    @objc dynamic var trashbinDeletionTime = NSDate()
+
     override static func primaryKey() -> String {
         return "fileID"
     }

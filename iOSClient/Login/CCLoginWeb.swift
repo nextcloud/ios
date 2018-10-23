@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 07/04/17.
-//  Copyright © 2017 TWS. All rights reserved.
+//  Copyright © 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -36,23 +36,18 @@ public class CCLoginWeb: UIViewController {
     
     var viewController: UIViewController?
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var doneButtonVisible: Bool = false
     
-    @objc func presentModalWithDefaultTheme(_ vc: UIViewController) {
+    @objc func open(_ vc: UIViewController) {
         
         var urlString = urlBase
         self.viewController = vc
         
-        if (loginType == k_login_Add || loginType == k_login_Modify_Password) {
-            doneButtonVisible = true
-        }
-        
         // ADD k_flowEndpoint for Web Flow
-        if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.loginPreferredProviders) {
+        if (NCBrandOptions.sharedInstance.use_login_web_personalized == false && urlBase != NCBrandOptions.sharedInstance.linkloginPreferredProviders) {
             urlString =  urlBase+k_flowEndpoint
         }
         
-        let webVC = SwiftModalWebVC(urlString: urlString, theme: .custom, color: NCBrandColor.sharedInstance.customer, colorText: NCBrandColor.sharedInstance.customerText, doneButtonVisible: doneButtonVisible, hideToolbar: true)
+        let webVC = SwiftModalWebVC(urlString: urlString, colorText: UIColor.black, colorDoneButton: UIColor.black, doneButtonVisible: true, hideToolbar: true)
         webVC.delegateWeb = self
 
         vc.present(webVC, animated: false, completion: nil)
@@ -120,6 +115,9 @@ extension CCLoginWeb: SwiftModalWebVCDelegate {
                     }
                     
                     if (loginType == k_login_Add || loginType == k_login_Add_Forced) {
+                        
+                        // STOP Intro
+                        CCUtility.setIntro(true)
                         
                         // LOGOUT
                         appDelegate.unsubscribingNextcloudServerPushNotification()

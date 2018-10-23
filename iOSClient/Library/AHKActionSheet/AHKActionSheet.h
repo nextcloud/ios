@@ -7,7 +7,7 @@
 //
 
 //  Modify by Marino Faggiana on 11/01/17.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //

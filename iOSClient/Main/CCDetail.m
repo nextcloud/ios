@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 16/01/15.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -184,7 +184,7 @@
         
         self.edgesForExtendedLayout = UIRectEdgeAll;
         [self createToolbar];
-        [self viewMedia];
+        [[NCViewerMedia sharedInstance] viewMedia:self.metadataDetail detail:self];
     }
     
     // DOCUMENT
@@ -225,7 +225,7 @@
             
             [ocNetworking createLinkRichdocumentsWithFileID:self.metadataDetail.fileID success:^(NSString *link) {
                 
-                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link viewDetail:self];
+                [[NCViewerRichdocument sharedInstance] viewRichDocumentAt:link detail:self];
                 
             } failure:^(NSString *message, NSInteger errorCode) {
                 
@@ -238,7 +238,7 @@
         
         self.edgesForExtendedLayout = UIRectEdgeBottom;
         [self createToolbar];
-        [self viewDocument];
+        [[NCViewerDocumentWeb sharedInstance] viewDocumentWebAt:self.metadataDetail detail:self];
     }
 }
 
@@ -288,92 +288,6 @@
     self.toolbar.tintColor = [NCBrandColor sharedInstance].brandElement;
 
     [self.view addSubview:self.toolbar];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== View Document =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)viewDocument
-{
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
-    
-    if ([CCUtility fileProviderStorageExists:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] == NO) {
-        
-        [self.navigationController popViewControllerAnimated:YES];
-        return;
-    }
-    
-    NSString *fileNamePath = [NSTemporaryDirectory() stringByAppendingString:self.metadataDetail.fileNameView];
-    
-    [[NSFileManager defaultManager] removeItemAtPath:fileNamePath error:nil];
-    [[NSFileManager defaultManager] linkItemAtPath:[CCUtility getDirectoryProviderStorageFileID:self.metadataDetail.fileID fileNameView:self.metadataDetail.fileNameView] toPath:fileNamePath error:nil];
-    
-    NSURL *url = [NSURL fileURLWithPath:fileNamePath];
-
-    WKPreferences *wkPreferences = [[WKPreferences alloc] init];
-    wkPreferences.javaScriptEnabled = true;
-    WKWebViewConfiguration *wkConfig = [[WKWebViewConfiguration alloc] init];
-    wkConfig.preferences = wkPreferences;
-    
-    self.webView = [[WKWebView alloc] initWithFrame:(CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom)) configuration:wkConfig];
-    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-    [self.webView setBackgroundColor:[NCBrandColor sharedInstance].backgroundView];
-    [self.webView setOpaque:NO];
-    
-    if ( [fileNameExtension isEqualToString:@"CSS"] || [fileNameExtension isEqualToString:@"PY"] || [fileNameExtension isEqualToString:@"XML"] || [fileNameExtension isEqualToString:@"JS"] ) {
-        
-        NSString *dataFile = [[NSString alloc] initWithData:[NSData dataWithContentsOfURL:url] encoding:NSASCIIStringEncoding];
-        
-        if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-            [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"40",@"Sans-Serif",dataFile] baseURL:nil];
-        }else{
-            [self.webView  loadHTMLString:[NSString stringWithFormat:@"<div style='font-size:%@;font-family:%@;'><pre>%@",@"20",@"Sans-Serif",dataFile] baseURL:nil];
-        }
-        
-    } else if ([CCUtility isDocumentModifiableExtension:fileNameExtension]) {
-        
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-        NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
-        
-        NSMutableURLRequest *headRequest = [NSMutableURLRequest requestWithURL:url];
-        [headRequest setHTTPMethod:@"HEAD"];
-        
-        NSURLSessionDataTask *task = [session dataTaskWithRequest:headRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                NSString *encodingName = [[NCUchardet sharedNUCharDet] encodingStringDetectWithData:data];
-                [self.webView loadData:[NSData dataWithContentsOfURL: url] MIMEType:response.MIMEType characterEncodingName:encodingName baseURL:url];
-            });
-        }];
-        
-        [task resume];
-        
-    } else {
-        
-        [self.webView loadRequest:[NSMutableURLRequest requestWithURL:url]];
-    }
-    
-    [self.view addSubview:self.webView];
-}
-
-#pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== View Media =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)viewMedia
-{
-    CGFloat safeAreaBottom = 0;
-    
-    if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
-    }
-    
-    [[NCViewerMedia sharedInstance] viewMedia:self.metadataDetail viewDetail:self width:self.view.bounds.size.width height:self.view.bounds.size.height - TOOLBAR_HEIGHT - safeAreaBottom];
 }
 
 #pragma --------------------------------------------------------------------------------------------
@@ -481,8 +395,6 @@
             status = k_metadataStatusNormal;
         }
         
-        NSString *ext = [[metadata.fileNameView pathExtension] uppercaseString];
-
         if ([CCUtility fileProviderStorageExists:metadata.fileID fileNameView:metadata.fileNameView] == NO && status == k_metadataStatusNormal) {
             
             if ([[NSFileManager defaultManager] fileExistsAtPath:[CCUtility getDirectoryProviderStorageIconFileID:metadata.fileID fileNameView:metadata.fileNameView]] == NO) {
@@ -499,16 +411,10 @@
                     self.navigationItem.titleView = nil;
                     self.title = metadata.fileNameView;
                     
-                    if (([CCUtility getOptimizedPhoto] == YES && errorCode != 0) || [CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
-                        [self downloadPhotoBrowser:metadata serverUrl:serverUrl];
-                    }
-                    
                     [self.photoBrowser reloadData];
                 }];
             } else {
-                if ([CCUtility getOptimizedPhoto] == NO || [ext isEqualToString:@"GIF"]) {
-                    [self downloadPhotoBrowser:metadata serverUrl:serverUrl];
-                }
+                [self downloadPhotoBrowser:metadata serverUrl:serverUrl];
             }
         }
     }

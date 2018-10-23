@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 09/04/15.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -50,8 +50,6 @@
 @property (nonatomic, weak) IBOutlet UIImageView *imagePassword;
 
 @property (nonatomic, weak) IBOutlet UIImageView *loadingBaseUrl;
-
-@property (nonatomic, weak) IBOutlet UILabel *preferredProviders;
 
 @property (nonatomic, weak) IBOutlet UIButton *login;
 @property (nonatomic, weak) IBOutlet UIButton *annulla;

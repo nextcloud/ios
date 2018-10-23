@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 02/02/16.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -178,25 +178,6 @@
 {
     NSString *sLockDir = (lockDir) ? @"true" : @"false";
     [UICKeyChainStore setString:sLockDir forKey:@"onlylockdir" service:k_serviceShareKeyChain];
-}
-
-+ (BOOL)getOptimizedPhoto
-{
-    NSString *result = [UICKeyChainStore stringForKey:@"optimizedphoto" service:k_serviceShareKeyChain];
-    
-    if (result == nil) {
-        
-        [self setOptimizedPhoto:NO];
-        return NO;
-    }
-    
-    return [result boolValue];
-}
-
-+ (void)setOptimizedPhoto:(BOOL)resize
-{
-    NSString *sOptimizedPhoto = (resize) ? @"true" : @"false";
-    [UICKeyChainStore setString:sOptimizedPhoto forKey:@"optimizedphoto" service:k_serviceShareKeyChain];
 }
 
 + (NSString *)getOrderSettings
@@ -574,6 +555,25 @@
 {
     return [UICKeyChainStore stringForKey:@"ncPushToken" service:k_serviceShareKeyChain];
 }
+
++ (NSString *)getLayoutTrash
+{
+    NSString *layout = [UICKeyChainStore stringForKey:@"layoutTrash" service:k_serviceShareKeyChain];
+    
+    // Default
+    if (layout == nil) {
+        [self setLayoutTrash:@"list"];
+        return @"list";
+    }
+    
+    return layout;
+}
+
++ (void)setLayoutTrash:(NSString *)layout
+{
+    [UICKeyChainStore setString:layout forKey:@"layoutTrash" service:k_serviceShareKeyChain];
+}
+
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====

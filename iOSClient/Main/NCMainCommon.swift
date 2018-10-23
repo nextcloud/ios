@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 18/07/18.
-//  Copyright © 2018 TWS. All rights reserved.
+//  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -241,7 +241,7 @@ class NCMainCommon: NSObject {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderEncrypted"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                     cell.imageTitleSegue = UIImage.init(named: "lock")
                 } else if metadata.fileName == autoUploadFileName && serverUrl == autoUploadDirectory {
-                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderMedia"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                    cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folderAutomaticUpload"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                     cell.imageTitleSegue = UIImage.init(named: "media")
                 } else if isShare {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder_shared_with_me"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
@@ -298,13 +298,13 @@ class NCMainCommon: NSObject {
                 
                 // Share
                 if (isShare) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (isMounted) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "shareMounted"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesLink != nil) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "sharebylink"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 } else if (sharesUserAndGroup != nil) {
-                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+                    cell.shared.image =  CCGraphics.changeThemingColorImage(UIImage.init(named: "share"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
                 }
             }
             
@@ -318,7 +318,7 @@ class NCMainCommon: NSObject {
             }
             
             // More Image
-            cell.more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.icon)
+            cell.more.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 1, color: NCBrandColor.sharedInstance.optionItem)
             
             return cell
             
@@ -337,7 +337,7 @@ class NCMainCommon: NSObject {
             cell.labelTitle.textColor = UIColor.black
             cell.labelTitle.text = metadata.fileNameView
             
-            cell.transferButton.tintColor = NCBrandColor.sharedInstance.icon
+            cell.transferButton.tintColor = NCBrandColor.sharedInstance.optionItem
             
             var progress: CGFloat = 0.0
             var totalBytes: Double = 0.0
@@ -550,7 +550,9 @@ class NCMainCommon: NSObject {
             
             self.appDelegate.filterFileID.add(metadata.fileID)
             
-            ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, completion: { (message, errorCode) in
+            let path = serverUrl + "/" + metadata.fileName
+            
+            ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
                 
                 count += 1
 
@@ -572,15 +574,17 @@ class NCMainCommon: NSObject {
                         NCManageDatabase.sharedInstance.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, serverUrl, metadata.fileName))
                     }
                     
-                } else {
-                    
                     self.appDelegate.filterFileID.remove(metadata.fileID)
+                    
+                } else {
                     
                     completionErrorCode = errorCode
                     completionMessage = ""
                     if message != nil {
                         completionMessage = message!
                     }
+                    
+                    self.appDelegate.filterFileID.remove(metadata.fileID)
                 }
                 
                 if count == metadatas.count {

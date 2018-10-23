@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 04/09/14.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -49,6 +49,7 @@
 
 @property (nonatomic, strong) NSString *serverUrl;
 @property (nonatomic, strong) tableMetadata *passMetadata;
+@property (nonatomic, strong) NSString *type;
 
 //BKPasscodeViewController
 @property (nonatomic) NSUInteger failedAttempts;
@@ -67,7 +68,7 @@
 
 @protocol CCMoveDelegate <NSObject>
 
-@optional - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title;
+@optional - (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type;
 @optional - (void)dismissMove;
 @optional - (void)selectMetadata:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl;
 

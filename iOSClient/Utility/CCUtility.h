@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 02/02/16.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -69,9 +69,6 @@
 
 + (BOOL)getOnlyLockDir;
 + (void)setOnlyLockDir:(BOOL)lockDir;
-
-+ (BOOL)getOptimizedPhoto;
-+ (void)setOptimizedPhoto:(BOOL)resize;
 
 + (NSString *)getOrderSettings;
 + (void)setOrderSettings:(NSString *)order;
@@ -154,6 +151,9 @@
 + (NSData *)getPushNotificationPrivateKey;
 + (void)setPushNotificationToken:(NSString *)token;
 + (NSString *)getPushNotificationToken;
+
++ (NSString *)getLayoutTrash;
++ (void)setLayoutTrash:(NSString *)layout;
 
 // ===== Varius =====
 

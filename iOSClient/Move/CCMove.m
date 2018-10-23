@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 04/09/14.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -190,7 +190,7 @@
     if ([self.delegate respondsToSelector:@selector(dismissMove)])
         [self.delegate dismissMove];
     
-    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNameView];
+    [self.delegate moveServerUrlTo:_serverUrl title:self.passMetadata.fileNameView type:self.type];
         
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -371,8 +371,22 @@
     NSString *directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:_serverUrl];
     if (!directoryID) return 0;
 
-    if (self.includeImages) predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == %@ AND (directory == true OR typeFile == 'image')", directoryID, [NSNumber numberWithBool:self.includeDirectoryE2EEncryption]];
-    else predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == %@ AND directory == true", directoryID, [NSNumber numberWithBool:self.includeDirectoryE2EEncryption]];
+    if (self.includeDirectoryE2EEncryption) {
+        
+        if (self.includeImages) {
+            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND (directory == true OR typeFile == 'image')", directoryID];
+        } else {
+            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND directory == true", directoryID];
+        }
+        
+    } else {
+        
+        if (self.includeImages) {
+            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", directoryID];
+        } else {
+            predicateDataSource = [NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == false AND directory == true", directoryID];
+        }
+    }
     
     NSArray *result = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:predicateDataSource sorted:nil ascending:NO];
     
@@ -406,7 +420,7 @@
         if (metadata.e2eEncrypted)
             cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderEncrypted"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         else if ([metadata.fileName isEqualToString:_autoUploadFileName] && [self.serverUrl isEqualToString:_autoUploadDirectory])
-            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+            cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderAutomaticUpload"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         else
             cell.imageView.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
         
@@ -517,6 +531,7 @@
     viewController.hideCreateFolder = self.hideCreateFolder;
     viewController.hideMoveutton = self.hideMoveutton;
     viewController.selectFile = self.selectFile;
+    viewController.type = self.type;
     viewController.networkingOperationQueue = self.networkingOperationQueue;
 
     viewController.passMetadata = metadata;

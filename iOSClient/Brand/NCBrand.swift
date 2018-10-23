@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 24/04/17.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -46,6 +46,7 @@ class NCBrandColor: NSObject {
     @objc public var tabBar:                UIColor = .white
     @objc public let nextcloud:             UIColor = UIColor(red: 0.0/255.0, green: 130.0/255.0, blue: 201.0/255.0, alpha: 1.0)
     @objc public let icon:                  UIColor = UIColor(red: 104.0/255.0, green: 104.0/255.0, blue: 104.0/255.0, alpha: 1.0)
+    @objc public let optionItem:            UIColor = UIColor(red: 178.0/255.0, green: 178.0/255.0, blue: 178.0/255.0, alpha: 1.0)
     @objc public let graySoft:              UIColor = UIColor(red: 162.0/255.0, green: 162.0/255.0, blue: 162.0/255.0, alpha: 0.5)
     @objc public let yellowFavorite:        UIColor = UIColor(red: 248.0/255.0, green: 205.0/255.0, blue: 70.0/255.0, alpha: 1.0)
 
@@ -73,9 +74,9 @@ class NCBrandColor: NSObject {
     @objc public let textCopyrightNextcloudiOS:         String = "Nextcloud for iOS %@ © 2018 T.W.S. Inc."
     @objc public let textCopyrightNextcloudServer:      String = "Nextcloud Server %@"
     @objc public let loginBaseUrl:                      String = "https://cloud.twsweb.it"
-    @objc public let loginPreferredProviders:           String = "https://nextcloud.com/register";
     @objc public let pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
-    @objc public let linkLoginProvider:                 String = "https://nextcloud.com/providers"
+    @objc public let linkLoginHost:                     String = "https://nextcloud.com/install"
+    @objc public let linkloginPreferredProviders:       String = "https://nextcloud.com/signup";
     @objc public let textLoginProvider:                 String = "_login_bottom_label_"
     @objc public let middlewarePingUrl:                 String = ""
     @objc public let webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
@@ -98,7 +99,6 @@ class NCBrandColor: NSObject {
     @objc public let use_storeLocalAutoUploadAll:       Bool = false
     
     @objc public let disable_intro:                     Bool = false
-    @objc public let disable_linkLoginProvider:         Bool = false
     @objc public let disable_request_login_url:         Bool = false
     @objc public let disable_multiaccount:              Bool = false
     @objc public let disable_manage_account:            Bool = false

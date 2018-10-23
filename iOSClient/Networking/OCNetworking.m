@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 10/05/15.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -153,7 +153,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
     
@@ -196,7 +196,7 @@
                 
                 // Error
                 if (errorCode == 503)
-                    message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+                    message = NSLocalizedString(@"_server_error_retry_", nil);
                 else
                     message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
                 
@@ -225,10 +225,16 @@
                 serverVersionString = [jsongParsed valueForKey:@"versionstring"];
                 
                 NSArray *arrayVersion = [serverVersionString componentsSeparatedByString:@"."];
-                if (arrayVersion.count >= 3) {
+                
+                if (arrayVersion.count == 1) {
                     versionMajor = [arrayVersion[0] integerValue];
-                    versionMicro = [arrayVersion[1] integerValue];
-                    versionMinor = [arrayVersion[2] integerValue];
+                } else if (arrayVersion.count == 2) {
+                    versionMajor = [arrayVersion[0] integerValue];
+                    versionMinor = [arrayVersion[1] integerValue];
+                } else if (arrayVersion.count >= 3) {
+                    versionMajor = [arrayVersion[0] integerValue];
+                    versionMinor = [arrayVersion[1] integerValue];
+                    versionMicro = [arrayVersion[2] integerValue];
                 }
                 
                 success(serverProductName, versionMajor, versionMicro, versionMinor);
@@ -296,7 +302,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
@@ -340,7 +346,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
@@ -387,7 +393,47 @@
             
             // Error
             if (errorCode == 503)
-                message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+                message = NSLocalizedString(@"_server_error_retry_", nil);
+            else
+                message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+            
+            completion(message, errorCode);
+        }];
+    }
+}
+
+- (void)downloadPreviewTrashWithFileID:(NSString *)fileID fileName:(NSString *)fileName completion:(void (^)(NSString *message, NSInteger errorCode))completion
+{
+    NSString *file = [NSString stringWithFormat:@"%@/%@.ico", [CCUtility getDirectoryProviderStorageFileID:fileID], fileName];
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:file]) {
+        
+        completion(nil, 0);
+        
+    } else {
+        
+        OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+        
+        [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+        [communication setUserAgent:[CCUtility getUserAgent]];
+        
+        [communication getRemotePreviewTrashByServer:_activeUrl ofFileID:fileID onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSData *preview, NSString *redirectedServer) {
+            
+            [preview writeToFile:file atomically:YES];
+            
+            completion(nil, 0);
+            
+        } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+            
+            NSString *message;
+            
+            NSInteger errorCode = response.statusCode;
+            if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+                errorCode = error.code;
+            
+            // Error
+            if (errorCode == 503)
+                message = NSLocalizedString(@"_server_error_retry_", nil);
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
@@ -415,18 +461,6 @@
 
             [preview writeToFile:file atomically:YES];
             
-            // Optimization Photo
-            NSString *ext = [[metadata.fileNameView pathExtension] uppercaseString];
-
-            if ([CCUtility getOptimizedPhoto] && [metadata.typeFile isEqualToString:k_metadataTypeFile_image] && [ext isEqualToString:@"GIF"] == NO) {
-                
-                NSString *file = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadata.fileID], metadata.fileNameView];
-                
-                [preview writeToFile:file atomically:YES];
-                
-                [[NCManageDatabase sharedInstance] addLocalFileWithMetadata:metadata];
-            }
-            
             completion(nil, 0);
             
         } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
@@ -439,7 +473,7 @@
             
             // Error
             if (errorCode == 503)
-                message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+                message = NSLocalizedString(@"_server_error_retry_", nil);
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
@@ -485,7 +519,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:account]) {
             
-            failure(NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil), k_CCErrorUserNotAvailble);
+            failure(NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
             
         } else {
             
@@ -497,7 +531,7 @@
                 
                 [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 #endif
-                failure(NSLocalizedStringFromTable(@"Read Folder WebDAV : [items NULL] please fix", @"Server error", nil), k_CCErrorInternalError);
+                failure(NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
 
             } else {
                 
@@ -597,7 +631,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
@@ -656,7 +690,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:account]) {
             
-            failure(NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil), k_CCErrorUserNotAvailble);
+            failure(NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
             
         } else {
             
@@ -680,7 +714,7 @@
                     
                 } else {
                     
-                    failure(NSLocalizedStringFromTable(@"Directory not found", @"Error", nil), k_CCErrorInternalError);
+                    failure(NSLocalizedString(@"Directory not found", nil), k_CCErrorInternalError);
                 }
             }
             
@@ -692,7 +726,7 @@
                 
                 [appDelegate messageNotification:@"Server error" description:@"Read File WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
 #endif
-                failure(NSLocalizedStringFromTable(@"Read File WebDAV : [items NULL] please fix", @"Server error", nil), k_CCErrorInternalError);
+                failure(NSLocalizedString(@"Read File WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
             }
         }
         
@@ -706,7 +740,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
@@ -751,7 +785,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
             if ([self.delegate respondsToSelector:@selector(searchSuccessFailure:metadatas:message:errorCode:)])
-                [self.delegate searchSuccessFailure:_metadataNet metadatas:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+                [self.delegate searchSuccessFailure:_metadataNet metadatas:nil message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
 
             [self complete];
             return;
@@ -824,7 +858,7 @@
         if ([self.delegate respondsToSelector:@selector(searchSuccessFailure:metadatas:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate searchSuccessFailure:_metadataNet metadatas:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate searchSuccessFailure:_metadataNet metadatas:nil message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate searchSuccessFailure:_metadataNet metadatas:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -864,7 +898,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
@@ -896,7 +930,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:account]) {
             
-            failure(NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil), k_CCErrorUserNotAvailble);
+            failure(NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
             
         } else {
         
@@ -976,7 +1010,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
 
@@ -1010,7 +1044,7 @@
 
         if (![[[NCManageDatabase sharedInstance] getAccountActive].account isEqualToString:account]) {
             
-            failure(NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil), k_CCErrorUserNotAvailble);
+            failure(NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
             
         } else {
             
@@ -1040,7 +1074,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:path fileID:@"" action:k_activityDebugActionCreateFolder selector:@"" note:NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:path fileID:@"" action:k_activityDebugActionCreateFolder selector:@"" note:NSLocalizedString(@"_not_possible_create_folder_", nil) type:k_activityTypeFailure verbose:k_activityVerboseDefault activeUrl:_activeUrl];
 
         failure(message, errorCode);
 
@@ -1052,9 +1086,9 @@
             message = nil;
         else {
             if (error.code == OCErrorForbidenCharacters)
-                message = NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
+                message = NSLocalizedString(@"_forbidden_characters_from_server_", nil);
             else
-                message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
+                message = NSLocalizedString(@"_unknow_response_server_", nil);
         }
         
         failure(message, error.code);
@@ -1065,16 +1099,16 @@
 #pragma mark =====  Delete =====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)deleteFileOrFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl completion:(void (^)(NSString *message, NSInteger errorCode))completion
+- (void)deleteFileOrFolder:(NSString *)path completion:(void (^)(NSString *message, NSInteger errorCode))completion
 {    
-    NSString *serverFilePath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
+//    NSString *serverFilePath = [NSString stringWithFormat:@"%@/%@", serverUrl, fileName];
     
     OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
 
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication deleteFileOrFolder:serverFilePath onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
+    [communication deleteFileOrFolder:path onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *redirectedServer) {
         
         completion(nil, 0);
         
@@ -1088,7 +1122,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
@@ -1097,7 +1131,7 @@
             [[CCCertificate sharedManager] presentViewControllerCertificateWithTitle:[error localizedDescription] viewController:(UIViewController *)self.delegate delegate:self];
         
         // Activity
-        [[NCManageDatabase sharedInstance] addActivityClient:serverUrl fileID:@"" action:k_activityDebugActionDeleteFileFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionDeleteFileFolder selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
         
         completion(message, errorCode);
     }];
@@ -1157,13 +1191,13 @@
         NSString *message;
         
         if (error.code == OCErrorMovingTheDestinyAndOriginAreTheSame) {
-            message = NSLocalizedStringFromTable(@"_error_folder_destiny_is_the_same_", @"Error", nil);
+            message = NSLocalizedString(@"_error_folder_destiny_is_the_same_", nil);
         } else if (error.code == OCErrorMovingFolderInsideHimself) {
-            message = NSLocalizedStringFromTable(@"_error_folder_destiny_is_the_same_", @"Error", nil);
+            message = NSLocalizedString(@"_error_folder_destiny_is_the_same_", nil);
         } else if (error.code == OCErrorMovingDestinyNameHaveForbiddenCharacters) {
-            message = NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
+            message = NSLocalizedString(@"_forbidden_characters_from_server_", nil);
         } else {
-            message = NSLocalizedStringFromTable(@"_unknow_response_server_", @"Error", nil);
+            message = NSLocalizedString(@"_unknow_response_server_", nil);
         }
         
         failure(message, error.code);
@@ -1189,7 +1223,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
             if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)])
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -1226,7 +1260,7 @@
         if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1247,7 +1281,7 @@
     [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
     [communication setUserAgent:[CCUtility getUserAgent]];
     
-    [communication shareFileOrFolderByServer:[_activeUrl stringByAppendingString:@"/"] andFileOrFolderPath:[_metadataNet.fileName encodeString:NSUTF8StringEncoding] andPassword:[_metadataNet.password encodeString:NSUTF8StringEncoding] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
+    [communication shareFileOrFolderByServer:[_activeUrl stringByAppendingString:@"/"] andFileOrFolderPath:[_metadataNet.fileName encodeString:NSUTF8StringEncoding] andPassword:[_metadataNet.password encodeString:NSUTF8StringEncoding] andPermission:_metadataNet.sharePermission onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSString *token, NSString *redirectedServer) {
         
         [self readShareServer];
         
@@ -1261,7 +1295,7 @@
         if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1297,7 +1331,7 @@
         if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1337,7 +1371,7 @@
         if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1378,7 +1412,7 @@
         if ([self.delegate respondsToSelector:@selector(shareFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate shareFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate shareFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate shareFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1415,7 +1449,7 @@
         if ([self.delegate respondsToSelector:@selector(getUserAndGroupFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate getUserAndGroupFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getUserAndGroupFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate getUserAndGroupFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1443,7 +1477,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
             if ([self.delegate respondsToSelector:@selector(getSharePermissionsFileFailure:message:errorCode:)])
-                [self.delegate getSharePermissionsFileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+                [self.delegate getSharePermissionsFileFailure:_metadataNet message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -1464,7 +1498,7 @@
         if ([self.delegate respondsToSelector:@selector(getSharePermissionsFileFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate getSharePermissionsFileFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getSharePermissionsFileFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate getSharePermissionsFileFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1520,7 +1554,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
@@ -1545,7 +1579,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
             if ([self.delegate respondsToSelector:@selector(getExternalSitesServerSuccessFailure:listOfExternalSites:message:errorCode:)])
-                [self.delegate getExternalSitesServerSuccessFailure:_metadataNet listOfExternalSites:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+                [self.delegate getExternalSitesServerSuccessFailure:_metadataNet listOfExternalSites:nil message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -1566,7 +1600,7 @@
         if ([self.delegate respondsToSelector:@selector(getExternalSitesServerSuccessFailure:listOfExternalSites:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate getExternalSitesServerSuccessFailure:_metadataNet listOfExternalSites:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getExternalSitesServerSuccessFailure:_metadataNet listOfExternalSites:nil message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate getExternalSitesServerSuccessFailure:_metadataNet listOfExternalSites:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1605,7 +1639,7 @@
         if ([self.delegate respondsToSelector:@selector(getExternalSitesServerFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate getExternalSitesServerFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getExternalSitesServerFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate getExternalSitesServerFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1637,7 +1671,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
             if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccessFailure:listOfNotifications:message:errorCode:)])
-                [self.delegate getNotificationServerSuccessFailure:_metadataNet listOfNotifications:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+                [self.delegate getNotificationServerSuccessFailure:_metadataNet listOfNotifications:nil message:NSLocalizedString(@"_error_user_not_available_",  nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -1658,7 +1692,7 @@
         if ([self.delegate respondsToSelector:@selector(getNotificationServerSuccessFailure:listOfNotifications:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate getNotificationServerSuccessFailure:_metadataNet listOfNotifications:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getNotificationServerSuccessFailure:_metadataNet listOfNotifications:nil message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate getNotificationServerSuccessFailure:_metadataNet listOfNotifications:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1689,7 +1723,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
             if ([self.delegate respondsToSelector:@selector(setNotificationServerSuccessFailure:message:errorCode:)])
-                [self.delegate setNotificationServerSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+                [self.delegate setNotificationServerSuccessFailure:_metadataNet message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -1710,7 +1744,7 @@
         if ([self.delegate respondsToSelector:@selector(setNotificationServerSuccessFailure:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate setNotificationServerSuccessFailure:_metadataNet message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate setNotificationServerSuccessFailure:_metadataNet message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate setNotificationServerSuccessFailure:_metadataNet message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1759,7 +1793,7 @@
             
             // Error
             if (errorCode == 503)
-                message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+                message = NSLocalizedString(@"_server_error_retry_", nil);
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
@@ -1779,7 +1813,7 @@
     
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
 
@@ -1813,7 +1847,7 @@
             
             // Error
             if (errorCode == 503)
-                message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+                message = NSLocalizedString(@"_server_error_retry_", nil);
             else
                 message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
             
@@ -1833,7 +1867,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
@@ -1861,7 +1895,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
             if ([self.delegate respondsToSelector:@selector(getUserProfileSuccessFailure:userProfile:message:errorCode:)])
-                [self.delegate getUserProfileSuccessFailure:_metadataNet userProfile:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+                [self.delegate getUserProfileSuccessFailure:_metadataNet userProfile:nil message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -1882,7 +1916,7 @@
         if ([self.delegate respondsToSelector:@selector(getUserProfileSuccessFailure:userProfile:message:errorCode:)]) {
             
             if (errorCode == 503)
-                [self.delegate getUserProfileSuccessFailure:_metadataNet userProfile:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getUserProfileSuccessFailure:_metadataNet userProfile:nil message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate getUserProfileSuccessFailure:_metadataNet userProfile:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -1912,7 +1946,7 @@
         tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
         if (![recordAccount.account isEqualToString:_metadataNet.account]) {
             if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccessFailure:capabilities:message:errorCode:)])
-                [self.delegate getCapabilitiesOfServerSuccessFailure:_metadataNet capabilities:nil message:NSLocalizedStringFromTable(@"_error_user_not_available_", @"Error", nil) errorCode:k_CCErrorUserNotAvailble];
+                [self.delegate getCapabilitiesOfServerSuccessFailure:_metadataNet capabilities:nil message:NSLocalizedString(@"_error_user_not_available_", nil) errorCode:k_CCErrorUserNotAvailble];
             
             [self complete];
             return;
@@ -1933,7 +1967,7 @@
         if ([self.delegate respondsToSelector:@selector(getCapabilitiesOfServerSuccessFailure:capabilities:message:errorCode:)]) {
 
             if (errorCode == 503)
-                [self.delegate getCapabilitiesOfServerSuccessFailure:_metadataNet capabilities:nil message:NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil) errorCode:errorCode];
+                [self.delegate getCapabilitiesOfServerSuccessFailure:_metadataNet capabilities:nil message:NSLocalizedString(@"_server_error_retry_", nil) errorCode:errorCode];
             else
                 [self.delegate getCapabilitiesOfServerSuccessFailure:_metadataNet capabilities:nil message:[error.userInfo valueForKey:@"NSLocalizedDescription"] errorCode:errorCode];
         }
@@ -2218,7 +2252,7 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         
@@ -2252,7 +2286,92 @@
         
         // Error
         if (errorCode == 503)
-            message = NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            message = NSLocalizedString(@"_server_error_retry_", nil);
+        else
+            message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
+        
+        // Activity
+        [[NCManageDatabase sharedInstance] addActivityClient:_activeUrl fileID:@"" action:k_activityDebugActionUnsubscribingServerPush selector:@"" note:[error.userInfo valueForKey:@"NSLocalizedDescription"] type:k_activityTypeFailure verbose:k_activityVerboseHigh activeUrl:_activeUrl];
+        
+        failure(message, errorCode);
+    }];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark =====  Trash =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)listingTrash:(NSString *)serverUrl path:(NSString *)path account:(NSString *)account success:(void(^)(NSArray *items))success failure:(void (^)(NSString *message, NSInteger errorCode))failure
+{
+    OCCommunication *communication = [CCNetworking sharedNetworking].sharedOCCommunication;
+    
+    [communication setCredentialsWithUser:_activeUser andUserID:_activeUserID andPassword:_activePassword];
+    [communication setUserAgent:[CCUtility getUserAgent]];
+    
+    [communication listingTrash:[serverUrl stringByAppendingString:path] onCommunication:communication successRequest:^(NSHTTPURLResponse *response, NSArray *items, NSString *redirectedServer) {
+        
+        // Test active account
+        tableAccount *recordAccount = [[NCManageDatabase sharedInstance] getAccountActive];
+        if (![recordAccount.account isEqualToString:account]) {
+            
+            failure(NSLocalizedString(@"_error_user_not_available_", nil), k_CCErrorUserNotAvailble);
+            
+        } else {
+            
+            // Check items > 0
+            if ([items count] == 0) {
+                
+#ifndef EXTENSION
+                AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+                
+                [appDelegate messageNotification:@"Server error" description:@"Read Folder WebDAV : [items NULL] please fix" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:k_CCErrorInternalError];
+#endif
+                failure(NSLocalizedString(@"Read Folder WebDAV : [items NULL] please fix", nil), k_CCErrorInternalError);
+                
+            } else {
+                
+                NSMutableArray *listTrash = [NSMutableArray new];
+                
+                //OCFileDto *itemDtoFolder = [items objectAtIndex:0];
+
+                if ([items count] > 1) {
+                    for (NSUInteger i=1; i < [items count]; i++) {
+                        
+                        OCFileDto *itemDto = [items objectAtIndex:i];
+                        tableTrash *trash = [tableTrash new];
+                        
+                        trash.account = account;
+                        trash.date = [NSDate dateWithTimeIntervalSince1970:itemDto.date];
+                        trash.directory = itemDto.isDirectory;
+                        trash.fileID = itemDto.ocId;
+                        trash.fileName = itemDto.fileName;
+                        trash.filePath = itemDto.filePath;
+                        trash.size = itemDto.size;
+                        trash.trashbinFileName = itemDto.trashbinFileName;
+                        trash.trashbinOriginalLocation = itemDto.trashbinOriginalLocation;
+                        trash.trashbinDeletionTime = [NSDate dateWithTimeIntervalSince1970:itemDto.trashbinDeletionTime];
+
+                        [CCUtility insertTypeFileIconName:trash.trashbinFileName metadata:(tableMetadata *)trash];
+
+                        [listTrash addObject:trash];
+                    }
+                }
+                
+                success(listTrash);
+            }
+        }
+        
+    } failureRequest:^(NSHTTPURLResponse *response, NSError *error, NSString *redirectedServer) {
+        
+        NSString *message;
+        
+        NSInteger errorCode = response.statusCode;
+        if (errorCode == 0 || (errorCode >= 200 && errorCode < 300))
+            errorCode = error.code;
+        
+        // Error
+        if (errorCode == 503)
+            message = NSLocalizedString(@"_server_error_retry_", nil);
         else
             message = [error.userInfo valueForKey:@"NSLocalizedDescription"];
         

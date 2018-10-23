@@ -3,7 +3,7 @@
 //  Files
 //
 //  Created by Marino Faggiana on 26/03/18.
-//  Copyright © 2018 TWS. All rights reserved.
+//  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //

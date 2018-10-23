@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 21/08/18.
-//  Copyright (c) 2018 TWS. All rights reserved.
+//  Copyright (c) 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -312,17 +312,8 @@ class DragDropViewController: UIViewController {
             let fileName = CCUtility.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, keyFileName: k_keyFileNameMask, keyFileNameType: k_keyFileNameType, keyFileNameOriginal: k_keyFileNameOriginal)!
             let fileNamePath = CCUtility.getDirectoryScan() + "/" + fileName
             
-            guard var image = pasteboard.image else {
+            guard let image = pasteboard.image else {
                 return
-            }
-            
-            // A4 74 DPI : 595 x 842 px
-            
-            let imageWidthInPixels = image.size.width * image.scale
-            let imageHeightInPixels = image.size.height * image.scale
-            
-            if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
-                image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
             }
             
             do {
@@ -359,8 +350,19 @@ extension DragDropViewController : UICollectionViewDataSource {
                 return cell
             }
             
-            cell.customImageView?.image = UIImage(data: data)
-//            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
+            guard var image = UIImage(data: data) else {
+                return cell
+            }
+            
+            let imageWidthInPixels = image.size.width * image.scale
+            let imageHeightInPixels = image.size.height * image.scale
+            
+            // 72 DPI
+            if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
+                image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
+            }
+            
+            cell.customImageView?.image = image
             cell.delete.addTarget(self, action: #selector(deleteSource(_:)), for: .touchUpInside)
 
             return cell
@@ -369,12 +371,20 @@ extension DragDropViewController : UICollectionViewDataSource {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell2", for: indexPath) as! ScanCell
             
-            let image = self.imagesDestination[indexPath.row]
+            var image = self.imagesDestination[indexPath.row]
+            
+            let imageWidthInPixels = image.size.width * image.scale
+            let imageHeightInPixels = image.size.height * image.scale
+            
+            // 72 DPI 
+            if imageWidthInPixels > 595 || imageHeightInPixels > 842  {
+                image = CCGraphics.scale(image, to: CGSize(width: 595, height: 842), isAspectRation: true)
+            }
             
             cell.customImageView?.image = self.filter(image: image)
             cell.customLabel.text = NSLocalizedString("_scan_document_pdf_page_", comment: "") + " " + "\(indexPath.row+1)"
-//            cell.delete.setImage(CCGraphics.changeThemingColorImage(UIImage(named: "no_red"), multiplier:2, color: NCBrandColor.sharedInstance.icon).withRenderingMode(.alwaysOriginal), for: .normal)
             cell.delete.addTarget(self, action: #selector(deleteDestination(_:)), for: .touchUpInside)
+            cell.rotate.addTarget(self, action: #selector(rotateDestination(_:)), for: .touchUpInside)
             
             return cell
         }
@@ -407,6 +417,41 @@ extension DragDropViewController : UICollectionViewDataSource {
         } else {
             save.isEnabled = true
         }
+    }
+    
+    @objc func rotateDestination(_ sender:UIButton) {
+        
+        let buttonPosition:CGPoint =  sender.convert(.zero, to: self.collectionViewDestination)
+        let indexPath:IndexPath = self.collectionViewDestination.indexPathForItem(at: buttonPosition)!
+        
+        let image = self.imagesDestination[indexPath.row]
+        imagesDestination[indexPath.row] = image.rotate(radians: .pi/2)!
+        
+        self.collectionViewDestination.reloadData()
+    }
+}
+
+extension UIImage {
+    func rotate(radians: Float) -> UIImage? {
+        var newSize = CGRect(origin: CGPoint.zero, size: self.size).applying(CGAffineTransform(rotationAngle: CGFloat(radians))).size
+        // Trim off the extremely small float value to prevent core graphics from rounding it up
+        newSize.width = floor(newSize.width)
+        newSize.height = floor(newSize.height)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, true, self.scale)
+        let context = UIGraphicsGetCurrentContext()!
+        
+        // Move origin to middle
+        context.translateBy(x: newSize.width/2, y: newSize.height/2)
+        // Rotate around middle
+        context.rotate(by: CGFloat(radians))
+        // Draw the image at its center
+        self.draw(in: CGRect(x: -self.size.width/2, y: -self.size.height/2, width: self.size.width, height: self.size.height))
+        
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
     }
 }
 

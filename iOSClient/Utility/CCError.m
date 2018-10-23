@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 04/02/16.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -30,58 +30,58 @@
     switch (errorCode) {
             
         case kCFURLErrorCancelled:                      // -999
-            return NSLocalizedStringFromTable(@"_cancelled_by_user", @"Error", nil);
+            return NSLocalizedString(@"_cancelled_by_user", nil);
             break;
         case kCFURLErrorTimedOut:                       // -1001
-            return NSLocalizedStringFromTable(@"_time_out_", @"Error", nil);
+            return NSLocalizedString(@"_time_out_", nil);
             break;
         case kCFURLErrorCannotConnectToHost:            // -1004
-            return NSLocalizedStringFromTable(@"_server_down_", @"Error", nil);
+            return NSLocalizedString(@"_server_down_", nil);
             break;
         case kCFURLErrorNetworkConnectionLost:          // -1005
-            return NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil);
+            return NSLocalizedString(@"_not_possible_connect_to_server_", nil);
             break;
         case kCFURLErrorNotConnectedToInternet:         // -1009
-            return NSLocalizedStringFromTable(@"_not_connected_internet_", @"Error", nil);
+            return NSLocalizedString(@"_not_connected_internet_", nil);
             break;
         case kCFURLErrorBadServerResponse:              // -1011
-            return NSLocalizedString(@"_error_",nil);
+            return NSLocalizedString(@"_error_", nil);
             break;
         case kCFURLErrorUserCancelledAuthentication:    // -1012
-            return NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil);
+            return NSLocalizedString(@"_not_possible_connect_to_server_", nil);
             break;
         case kCFURLErrorUserAuthenticationRequired:     // -1013
-            return NSLocalizedStringFromTable(@"_user_autentication_required_", @"Error", nil);
+            return NSLocalizedString(@"_user_autentication_required_", nil);
             break;
         case kCFURLErrorSecureConnectionFailed:         // -1200
-            return NSLocalizedStringFromTable(@"_ssl_connection_error_", @"Error", nil);
+            return NSLocalizedString(@"_ssl_connection_error_", nil);
             break;
         case kCFURLErrorServerCertificateUntrusted:     // -1202
-            return NSLocalizedStringFromTable(@"_ssl_certificate_untrusted_", @"Error", nil);
+            return NSLocalizedString(@"_ssl_certificate_untrusted_", nil);
             break;
         case 101:                                       // 101
-            return NSLocalizedStringFromTable(@"_forbidden_characters_from_server_", @"Error", nil);
+            return NSLocalizedString(@"_forbidden_characters_from_server_", nil);
             break;
         case 400:                                       // 400
-            return NSLocalizedStringFromTable(@"_bad_request_", @"Error", nil);
+            return NSLocalizedString(@"_bad_request_", nil);
             break;
         case 403:                                       // 403
-            return NSLocalizedStringFromTable(@"_error_not_permission_", @"Error", nil);
+            return NSLocalizedString(@"_error_not_permission_", nil);
             break;
         case 404:                                       // 404 Not Found. When for example we try to access a path that now not exist
-            return NSLocalizedStringFromTable(@"_error_path_", @"Error", nil);
+            return NSLocalizedString(@"_error_path_", nil);
             break;
         case 423:                                       // 423 WebDAV Locked : The resource that is being accessed is locked
-            return NSLocalizedStringFromTable(@"_webdav_locked_", @"Error", nil);
+            return NSLocalizedString(@"_webdav_locked_", nil);
             break;
         case 500:
-            return NSLocalizedStringFromTable(@"_internal_server_", @"Error", nil);
+            return NSLocalizedString(@"_internal_server_", nil);
             break;
         case 503:
-            return NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            return NSLocalizedString(@"_server_error_retry_", nil);
             break;
         case 507:
-            return NSLocalizedStringFromTable(@"_user_over_quota_", @"Error", nil);
+            return NSLocalizedString(@"_user_over_quota_", nil);
             break;
         default:
             if (withNumberError) return [NSString stringWithFormat:@"%ld", (long)errorCode];
@@ -99,46 +99,46 @@
     
     switch (errorCode) {
         case 304:
-            return NSLocalizedStringFromTable(@"_folder_contents_nochanged_", @"Error", nil);
+            return NSLocalizedString(@"_folder_contents_nochanged_", nil);
             break;
         case 400:
             return NSLocalizedString(@"_error_",nil);
             break;
         case 401:
-            return NSLocalizedStringFromTable(@"_reauthenticate_user_", @"Error", nil);
+            return NSLocalizedString(@"_reauthenticate_user_", nil);
             break;
         case 403:
-            return NSLocalizedStringFromTable(@"_file_already_exists_", @"Error", nil);
+            return NSLocalizedString(@"_file_already_exists_", nil);
             break;
         case 404:
-            return NSLocalizedStringFromTable(@"_file_folder_not_exists_", @"Error", nil);
+            return NSLocalizedString(@"_file_folder_not_exists_", nil);
             break;
         case 405:
-            return NSLocalizedStringFromTable(@"_method_not_expected_", @"Error", nil);
+            return NSLocalizedString(@"_method_not_expected_", nil);
             break;
         case 406:
-            return NSLocalizedStringFromTable(@"_too_many_files_", @"Error", nil);
+            return NSLocalizedString(@"_too_many_files_", nil);
             break;
         case 409:
-            return NSLocalizedStringFromTable(@"_file_already_exists_", @"Error", nil);
+            return NSLocalizedString(@"_file_already_exists_", nil);
             break;
         case 411:
-            return NSLocalizedStringFromTable(@"_too_many_files_", @"Error", nil);
+            return NSLocalizedString(@"_too_many_files_", nil);
             break;
         case 415:
-            return NSLocalizedStringFromTable(@"_images_invalid_converted_", @"Error", nil);
+            return NSLocalizedString(@"_images_invalid_converted_", nil);
             break;
         case 429:
-            return NSLocalizedStringFromTable(@"_too_many_request_", @"Error", nil);
+            return NSLocalizedString(@"_too_many_request_", nil);
             break;
         case 500:
-            return NSLocalizedStringFromTable(@"_internal_server_", @"Error", nil);
+            return NSLocalizedString(@"_internal_server_", nil);
             break;
         case 503:
-            return NSLocalizedStringFromTable(@"_server_error_retry_", @"Error", nil);
+            return NSLocalizedString(@"_server_error_retry_", nil);
             break;
         case 507:
-            return NSLocalizedStringFromTable(@"_user_over_quota_", @"Error", nil);
+            return NSLocalizedString(@"_user_over_quota_", nil);
             break;
         default:
             return [NSString stringWithFormat:@"Error code %ld", (long)errorCode];
@@ -159,28 +159,28 @@
             errorHTTP = @"";
             break;
         case kOCErrorSharedAPIWrong:            // 400
-            errorHTTP = NSLocalizedStringFromTable(@"_api_wrong_", @"Error", nil);
+            errorHTTP = NSLocalizedString(@"_api_wrong_", nil);
             break;
         case kOCErrorServerUnauthorized:        // 401
-            errorHTTP = NSLocalizedStringFromTable(@"_bad_username_password_", @"Error", nil);
+            errorHTTP = NSLocalizedString(@"_bad_username_password_", nil);
             break;
         case kOCErrorServerForbidden:           // 403 Forbidden
-            errorHTTP = NSLocalizedStringFromTable(@"_error_not_permission_", @"Error", nil);
+            errorHTTP = NSLocalizedString(@"_error_not_permission_", nil);
             break;
         case kOCErrorServerPathNotFound:        // 404 Not Found. When for example we try to access a path that now not exist
-            errorHTTP = NSLocalizedStringFromTable(@"_error_path_", @"Error", nil);
+            errorHTTP = NSLocalizedString(@"_error_path_", nil);
             break;
         case kOCErrorServerMethodNotPermitted:  // 405 Method not permitted
-            errorHTTP = NSLocalizedStringFromTable(@"_not_possible_create_folder_", @"Error", nil);
+            errorHTTP = NSLocalizedString(@"_not_possible_create_folder_", nil);
             break;
         case kOCErrorProxyAuth:                 // 407 Error credential
-            errorHTTP = NSLocalizedStringFromTable(@"_error_proxy_auth_", @"Error", nil);
+            errorHTTP = NSLocalizedString(@"_error_proxy_auth_", nil);
             break;
         case kOCErrorServerTimeout:             // 408 timeout
-            errorHTTP = NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil);
+            errorHTTP = NSLocalizedString(@"_not_possible_connect_to_server_", nil);
             break;
         case 423:                               // 423 Locked
-            errorHTTP = NSLocalizedStringFromTable(@"_file_directory_locked_", @"Error", nil);
+            errorHTTP = NSLocalizedString(@"_file_directory_locked_", nil);
             break;
         default:                                // Default
             errorHTTP = [NSString stringWithFormat:@"Error code %ld", (long)errorCode];

@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 04/09/14.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -336,7 +336,7 @@
                 _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginBaseUrl];
                 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb presentModalWithDefaultTheme:delegate];
+                    [_activeLoginWeb open:delegate];
                 });
             }
             return;
@@ -361,13 +361,13 @@
                 _activeLoginWeb.loginType = loginType;
                 
                 if (selector == k_intro_signup) {
-                    _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginPreferredProviders];
+                    _activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] linkloginPreferredProviders];
                 } else {
                     _activeLoginWeb.urlBase = self.activeUrl;
                 }
 
                 dispatch_async(dispatch_get_main_queue(), ^ {
-                    [_activeLoginWeb presentModalWithDefaultTheme:delegate];
+                    [_activeLoginWeb open:delegate];
                 });
             }
             
@@ -812,7 +812,13 @@
     CGFloat safeAreaBottom = 0;
     
     if (@available(iOS 11, *)) {
-        safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
+        UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+        if (orientation == UIInterfaceOrientationLandscapeLeft || orientation == UIInterfaceOrientationLandscapeRight) {
+            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.right/2;
+            if (safeAreaBottom > 0) safeAreaBottom -= 5;
+        } else {
+            safeAreaBottom = [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom/2;
+        }
     }
     
     [self aspectTabBar:tabBarController.tabBar hidden:NO];
@@ -820,14 +826,14 @@
     // File
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFile];
     [item setTitle:NSLocalizedString(@"_home_", nil)];
-    item.image = [UIImage imageNamed:@"folder"];
-    item.selectedImage = [UIImage imageNamed:@"folder"];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
-    item.image = [UIImage imageNamed:@"favorite"];
-    item.selectedImage = [UIImage imageNamed:@"favorite"];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     
     // (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
@@ -838,14 +844,14 @@
     // Media
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMedia];
     [item setTitle:NSLocalizedString(@"_media_", nil)];
-    item.image = [UIImage imageNamed:@"media"];
-    item.selectedImage = [UIImage imageNamed:@"media"];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
     [item setTitle:NSLocalizedString(@"_more_", nil)];
-    item.image = [UIImage imageNamed:@"tabBarMore"];
-    item.selectedImage = [UIImage imageNamed:@"tabBarMore"];
+    item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     
     // Plus Button
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
@@ -866,7 +872,7 @@
     if (safeAreaBottom == 0) {
         constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:multiplier constant:0];
     } else {
-        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:+5];
+        constraint = [NSLayoutConstraint constraintWithItem:buttonPlus attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:tabBarController.tabBar attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:5];
     }
     [tabBarController.view addConstraint:constraint];
     
@@ -1251,19 +1257,33 @@
     tableMetadata *metadataForUpload, *metadataForDownload;
     long counterDownload = 0, counterUpload = 0;
     NSUInteger sizeDownload = 0, sizeUpload = 0;
-    
+    BOOL isE2EE = false;
+
+    long maxConcurrentOperationDownload = k_maxConcurrentOperationDownload;
+    long maxConcurrentOperationUpload = k_maxConcurrentOperationUpload;
+
     // Test Maintenance
     if (self.maintenanceMode)
         return;
     
-    // E2EE : not in background
-    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground) {
-        tableMetadata *metadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND (status == %d OR status == %d)", self.activeAccount, k_metadataStatusInUpload, k_metadataStatusUploading]];
-        if (metadata) {
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]];
-            if (directory != nil)
-                return;
+    // Detect E2EE
+    NSArray *metadatasForE2EE = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status != %d", self.activeAccount, k_metadataStatusNormal] sorted:nil ascending:NO];
+    for (tableMetadata *metadata in metadatasForE2EE) {
+        if ([[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND e2eEncrypted == 1", metadata.directoryID]] != nil) {
+            isE2EE = true;
+            break;
         }
+    }
+    
+    // E2EE : not in background
+    if ([[UIApplication sharedApplication] applicationState] == UIApplicationStateBackground && isE2EE) {
+        return;
+    }
+    
+    // E2EE : only 1 operation
+    if (isE2EE) {
+        maxConcurrentOperationDownload = 1;
+        maxConcurrentOperationUpload = 1;
     }
     
     // Stop Timer
@@ -1287,7 +1307,7 @@
 
     // ------------------------- <selector Download> -------------------------
     
-    while (counterDownload < k_maxConcurrentOperationDownload) {
+    while (counterDownload < maxConcurrentOperationDownload) {
         
         metadataForDownload = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND status == %d", _activeAccount, k_metadataStatusWaitDownload]];
         if (metadataForDownload) {
@@ -1306,7 +1326,7 @@
   
     // ------------------------- <selector Upload> -------------------------
     
-    while (counterUpload < k_maxConcurrentOperationUpload) {
+    while (counterUpload < maxConcurrentOperationUpload) {
         
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
@@ -1333,7 +1353,7 @@
     
     // ------------------------- <selector Auto Upload> -------------------------
     
-    while (counterUpload < k_maxConcurrentOperationUpload) {
+    while (counterUpload < maxConcurrentOperationUpload) {
 
         if (sizeUpload > k_maxSizeOperationUpload) {
             break;
@@ -1368,7 +1388,7 @@
 
     } else {
         
-        while (counterUpload < k_maxConcurrentOperationUpload) {
+        while (counterUpload < maxConcurrentOperationUpload) {
 
             if (sizeUpload > k_maxSizeOperationUpload) {
                 break;

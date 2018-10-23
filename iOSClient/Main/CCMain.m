@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 04/09/14.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -37,7 +37,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <CCActionsRenameDelegate, CCActionsSearchDelegate, UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
 {
     AppDelegate *appDelegate;
         
@@ -49,9 +49,6 @@
     NSMutableArray *_queueSelector;
     
     UIImageView *_ImageTitleHomeCryptoCloud;
-    
-    NSString *_directoryGroupBy;
-    NSString *_directoryOrder;
     
     NSUInteger _failedAttempts;
     NSDate *_lockUntilDate;
@@ -97,9 +94,6 @@
     if (self = [super initWithCoder:aDecoder])  {
         
         appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-
-        _directoryOrder = [CCUtility getOrderSettings];
-        _directoryGroupBy = [CCUtility getGroupBySettings];
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(initializeMain:) name:@"initializeMain" object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(clearDateReadDataSource:) name:@"clearDateReadDataSource" object:nil];
@@ -146,10 +140,6 @@
     // Register cell
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMain" bundle:nil] forCellReuseIdentifier:@"CellMain"];
     [self.tableView registerNib:[UINib nibWithNibName:@"CCCellMainTransfer" bundle:nil] forCellReuseIdentifier:@"CellMainTransfer"];
-    
-    // Order & GroupBy
-    _directoryOrder = [CCUtility getOrderSettings];
-    _directoryGroupBy = [CCUtility getGroupBySettings];
     
     // long press recognizer TableView
     UILongPressGestureRecognizer* longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(onLongPressTableView:)];
@@ -1447,8 +1437,21 @@
 {
     NSString *startDirectory = [CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl];
     
-    [[CCActions sharedInstance] search:startDirectory fileName:_searchFileName etag:@"" depth:@"infinity" date:nil contenType:nil selector:selectorSearchFiles delegate:self];
-
+    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+    
+    metadataNet.action = actionSearch;
+    metadataNet.contentType = nil;
+    metadataNet.date = nil;
+    metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory];
+    metadataNet.fileName = _searchFileName;
+    metadataNet.etag = @"";
+    metadataNet.depth = @"infinity";
+    metadataNet.priority = NSOperationQueuePriorityHigh;
+    metadataNet.selector = selectorSearchFiles;
+    metadataNet.serverUrl = startDirectory;
+    
+    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+    
     _noFilesSearchTitle = @"";
     _noFilesSearchDescription = NSLocalizedString(@"_search_in_progress_", nil);
     
@@ -1591,6 +1594,39 @@
 
 - (void)renameSuccess:(CCMetadataNet *)metadataNet
 {
+    // Rename metadata
+    (void) [[NCManageDatabase sharedInstance] renameMetadataWithFileNameTo:metadataNet.fileNameTo fileID:metadataNet.fileID];
+    
+    if (metadataNet.directory) {
+        
+        NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
+        NSString *serverUrlTo = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileNameTo];
+
+        tableDirectory *directoryTable = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, serverUrl]];
+        if (directoryTable == nil) {
+            [self renameMoveFileOrFolderFailure:metadataNet message:@"Internal error, ServerUrl not found" errorCode:0];
+            return;
+        }
+        
+        [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl serverUrlTo:serverUrlTo etag:nil fileID:nil encrypted:directoryTable.e2eEncrypted];
+
+    } else {
+        
+        [[NCManageDatabase sharedInstance] setLocalFileWithFileID:metadataNet.fileID date:nil exifDate:nil exifLatitude:nil exifLongitude:nil fileName:metadataNet.fileNameTo etag:nil];
+        
+        // Move file system
+
+        NSString *atPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadataNet.fileID], metadataNet.fileName];
+        NSString *toPath = [NSString stringWithFormat:@"%@/%@", [CCUtility getDirectoryProviderStorageFileID:metadataNet.fileID], metadataNet.fileNameTo];
+        
+        [[NSFileManager defaultManager] moveItemAtPath:atPath toPath:toPath error:nil];
+        
+        NSString *atPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadataNet.fileID fileNameView:metadataNet.fileName];
+        NSString *toPathIcon = [CCUtility getDirectoryProviderStorageIconFileID:metadataNet.fileID fileNameView:metadataNet.fileNameTo];
+        
+        [[NSFileManager defaultManager] moveItemAtPath:atPathIcon toPath:toPathIcon error:nil];
+    }
+    
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:metadataNet.serverUrl fileID:metadataNet.fileID action:k_action_MOD];
 }
 
@@ -1644,12 +1680,57 @@
     } else  {
         
         // Plain
-        [[CCActions sharedInstance] renameFileOrFolder:metadata fileName:fileName delegate:self];
+        
+        NSString *fileNameNew = [CCUtility removeForbiddenCharactersServer:fileName];
+        NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+        
+        if ([fileName length] == 0 || [fileName isEqualToString:metadata.fileNameView]) {
+            return;
+        }
+        
+        // Verify if exists the fileName TO
+        OCnetworking *ocNetworking = [[OCnetworking alloc] initWithDelegate:nil metadataNet:nil withUser:appDelegate.activeUser withUserID:appDelegate.activeUserID withPassword:appDelegate.activePassword withUrl:appDelegate.activeUrl];
+        
+        [ocNetworking readFile:fileNameNew serverUrl:serverUrl account:appDelegate.activeAccount success:^(tableMetadata *metadata) {
+            
+            UIAlertController * alert= [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:NSLocalizedString(@"_file_already_exists_", nil) preferredStyle:UIAlertControllerStyleAlert];
+            UIAlertAction* ok = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * action) {
+            }];
+            [alert addAction:ok];
+            [self presentViewController:alert animated:YES completion:nil];
+            
+        } failure:^(NSString *message, NSInteger errorCode) {
+            
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+            
+            metadataNet.action = actionMoveFileOrFolder;
+            metadataNet.directory = metadata.directory;
+            metadataNet.fileID = metadata.fileID;
+            metadataNet.fileName = metadata.fileName;
+            metadataNet.fileNameTo = fileNameNew;
+            metadataNet.fileNameView = metadata.fileNameView;
+            metadataNet.selector = selectorRename;
+            metadataNet.serverUrl = serverUrl;
+            metadataNet.serverUrlTo = serverUrl;
+            
+            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
+        }];
     }
 }
 
 - (void)renameMoveFileOrFolderFailure:(CCMetadataNet *)metadataNet message:(NSString *)message errorCode:(NSInteger)errorCode
 {
+    if ([message length] > 0) {
+        
+        if ([metadataNet.selector isEqualToString:selectorRename]) {
+            [appDelegate messageNotification:@"_rename_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+        
+        if ([metadataNet.selector isEqualToString:selectorMove]) {
+            [appDelegate messageNotification:@"_move_" description:message visible:true delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:errorCode];
+        }
+    }
+    
     if ([metadataNet.selector isEqualToString:selectorMove]) {
         
         [_hud hideHud];
@@ -1784,7 +1865,7 @@
 }
 
 // DELEGATE : Move
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
 {
     [_queueSelector removeAllObjects];
     
@@ -2054,7 +2135,7 @@
     [self tableViewReloadData];
 }
 
-- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password
+- (void)share:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl password:(NSString *)password permission:(NSInteger)permission
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
     
@@ -2062,6 +2143,7 @@
     metadataNet.fileID = metadata.fileID;
     metadataNet.fileName = [CCUtility returnFileNamePathFromFileName:metadata.fileName serverUrl:serverUrl activeUrl:appDelegate.activeUrl];
     metadataNet.fileNameView = metadata.fileNameView;
+    metadataNet.sharePermission = permission;
     metadataNet.password = password;
     metadataNet.selector = selectorShare;
     metadataNet.serverUrl = serverUrl;
@@ -2322,42 +2404,6 @@
 }
 
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ===== Order Table & GroupBy & DirectoryOnTop =====
-#pragma --------------------------------------------------------------------------------------------
-
-- (void)orderTable:(NSString *)order
-{
-    [CCUtility setOrderSettings:order];
-    
-    // Clear data-read of DataSource
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-}
-
-- (void)ascendingTable:(BOOL)ascending
-{
-    [CCUtility setAscendingSettings:ascending];
-    
-    // Clear data-read of DataSource
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-}
-
-- (void)directoryOnTop:(BOOL)directoryOnTop
-{
-    [CCUtility setDirectoryOnTop:directoryOnTop];
-    
-    // Clear data-read of DataSource
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-}
-
-- (void)tableGroupBy:(NSString *)groupBy
-{
-    [CCUtility setGroupBySettings:groupBy];
-    
-    // Clear data-read of DataSource
-    [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
-}
-
-#pragma --------------------------------------------------------------------------------------------
 #pragma mark ==== Menu LOGO ====
 #pragma --------------------------------------------------------------------------------------------
 
@@ -2553,114 +2599,122 @@
 
 - (void)createReMainMenu
 {
-    __block NSString *nuovoOrdinamento;
-    NSString *titoloNuovo, *titoloAttuale;
-    BOOL ascendente;
-    __block BOOL nuovoAscendente;
-    UIImage *image;
+    NSString *title;
+    NSString *groupBy = [CCUtility getGroupBySettings];
+    NSString *sorted = [CCUtility getOrderSettings];
+    BOOL ascending = [CCUtility getAscendingSettings];
     
     // ITEM SELECT ----------------------------------------------------------------------------------------------------
     
     appDelegate.selezionaItem = [[REMenuItem alloc] initWithTitle:NSLocalizedString(@"_select_", nil)subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"select"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([sectionDataSource.allRecordsDataSource count] > 0) {
-                [self tableViewSelect:YES];
-            }
+        if ([sectionDataSource.allRecordsDataSource count] > 0) [self tableViewSelect:YES];
+    }];
+    
+    // ITEM ORDER ----------------------------------------------------------------------------------------------------
+
+    if ([sorted isEqualToString:@"fileName"] && ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_name_a_z_", nil)]; }
+    else title = NSLocalizedString(@"_order_by_name_a_z_", nil);
+    
+    appDelegate.sortFileNameAZItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortFileNameAZ"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        [CCUtility setOrderSettings:@"fileName"];
+        [CCUtility setAscendingSettings:true];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
     }];
 
-    // ITEM ORDER ----------------------------------------------------------------------------------------------------
+    if ([sorted isEqualToString:@"fileName"] && !ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_name_z_a_", nil)]; }
+    else title = NSLocalizedString(@"_order_by_name_z_a_", nil);
     
-    if ([_directoryOrder isEqualToString:@"fileName"]) {
-        
-        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrdeyByDate"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-        titoloNuovo = NSLocalizedString(@"_order_by_date_", nil);
-        titoloAttuale = NSLocalizedString(@"_current_order_name_", nil);
-        nuovoOrdinamento = @"date";
-    }
-    
-    if ([_directoryOrder isEqualToString:@"date"]) {
-        
-        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrderByFileName"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-        titoloNuovo = NSLocalizedString(@"_order_by_name_", nil);
-        titoloAttuale = NSLocalizedString(@"_current_order_date_", nil);
-        nuovoOrdinamento = @"fileName";
-    }
-    
-    appDelegate.ordinaItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:titoloAttuale image:image highlightedImage:nil action:^(REMenuItem *item) {
-        [self orderTable:nuovoOrdinamento];
+    appDelegate.sortFileNameZAItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortFileNameZA"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        [CCUtility setOrderSettings:@"fileName"];
+        [CCUtility setAscendingSettings:false];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
     }];
     
-    // ITEM ASCENDING -----------------------------------------------------------------------------------------------------
+    if ([sorted isEqualToString:@"date"] && !ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_date_more_recent_", nil)]; }
+    else title = NSLocalizedString(@"_order_by_date_more_recent_", nil);
     
-    ascendente = [CCUtility getAscendingSettings];
-    
-    if (ascendente)  {
-        
-        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrdinamentoDiscendente"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-        titoloNuovo = NSLocalizedString(@"_sort_descending_", nil);
-        titoloAttuale = NSLocalizedString(@"_current_sort_ascending_", nil);
-        nuovoAscendente = false;
-    }
-    
-    if (!ascendente) {
-        
-        image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuOrdinamentoAscendente"] multiplier:2 color:[NCBrandColor sharedInstance].icon];
-        titoloNuovo = NSLocalizedString(@"_sort_ascending_", nil);
-        titoloAttuale = NSLocalizedString(@"_current_sort_descending_", nil);
-        nuovoAscendente = true;
-    }
-    
-    appDelegate.ascendenteItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:titoloAttuale image:image highlightedImage:nil action:^(REMenuItem *item) {
-        [self ascendingTable:nuovoAscendente];
+    appDelegate.sortDateMoreRecentItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortDateMoreRecent"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        [CCUtility setOrderSettings:@"date"];
+        [CCUtility setAscendingSettings:false];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
     }];
     
+    if ([sorted isEqualToString:@"date"] && ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_date_less_recent_", nil)]; }
+    else title = NSLocalizedString(@"_order_by_date_less_recent_", nil);
     
-    // ITEM ALPHABETIC -----------------------------------------------------------------------------------------------------
-    
-    if ([_directoryGroupBy isEqualToString:@"alphabetic"])  { titoloNuovo = NSLocalizedString(@"_group_alphabetic_yes_", nil); }
-    else { titoloNuovo = NSLocalizedString(@"_group_alphabetic_no_", nil); }
-    
-    appDelegate.alphabeticItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByAlphabetic"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([_directoryGroupBy isEqualToString:@"alphabetic"]) [self tableGroupBy:@"none"];
-            else [self tableGroupBy:@"alphabetic"];
+    appDelegate.sortDateLessRecentItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortDateLessRecent"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        [CCUtility setOrderSettings:@"date"];
+        [CCUtility setAscendingSettings:true];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
     }];
     
-    // ITEM TYPEFILE -------------------------------------------------------------------------------------------------------
+    if ([sorted isEqualToString:@"size"] && ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_size_smallest_", nil)]; }
+    else title = NSLocalizedString(@"_order_by_size_smallest_", nil);
     
-    if ([_directoryGroupBy isEqualToString:@"typefile"])  { titoloNuovo = NSLocalizedString(@"_group_typefile_yes_", nil); }
-    else { titoloNuovo = NSLocalizedString(@"_group_typefile_no_", nil); }
+    appDelegate.sortSmallestItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortSmallest"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        [CCUtility setOrderSettings:@"size"];
+        [CCUtility setAscendingSettings:true];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
+    }];
     
-    appDelegate.typefileItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([_directoryGroupBy isEqualToString:@"typefile"]) [self tableGroupBy:@"none"];
-            else [self tableGroupBy:@"typefile"];
+    if ([sorted isEqualToString:@"size"] && !ascending) { title = [NSString stringWithFormat:@"✓ %@", NSLocalizedString(@"_order_by_size_largest_", nil)]; }
+    else title = NSLocalizedString(@"_order_by_size_largest_", nil);
+    
+    appDelegate.sortLargestItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"sortLargest"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        [CCUtility setOrderSettings:@"size"];
+        [CCUtility setAscendingSettings:false];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
+    }];
+    
+    // ITEM GROUP ALPHABETIC -----------------------------------------------------------------------------------------------------
+    
+    if ([groupBy isEqualToString:@"alphabetic"])  { title = NSLocalizedString(@"_group_alphabetic_yes_", nil); }
+    else { title = NSLocalizedString(@"_group_alphabetic_no_", nil); }
+    
+    appDelegate.alphabeticItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByAlphabetic"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        if ([groupBy isEqualToString:@"alphabetic"]) [CCUtility setGroupBySettings:@"none"];
+        else [CCUtility setGroupBySettings:@"alphabetic"];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
+    }];
+    
+    // ITEM GROUP TYPEFILE -------------------------------------------------------------------------------------------------------
+    
+    if ([groupBy isEqualToString:@"typefile"])  { title = NSLocalizedString(@"_group_typefile_yes_", nil); }
+    else { title = NSLocalizedString(@"_group_typefile_no_", nil); }
+    
+    appDelegate.typefileItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"file"] multiplier:1 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        if ([groupBy isEqualToString:@"typefile"]) [CCUtility setGroupBySettings:@"none"];
+        else [CCUtility setGroupBySettings:@"typefile"];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
     }];
    
-
-    // ITEM DATE -------------------------------------------------------------------------------------------------------
+    // ITEM GROUP DATE -------------------------------------------------------------------------------------------------------
     
-    if ([_directoryGroupBy isEqualToString:@"date"])  { titoloNuovo = NSLocalizedString(@"_group_date_yes_", nil); }
-    else { titoloNuovo = NSLocalizedString(@"_group_date_no_", nil); }
+    if ([groupBy isEqualToString:@"date"])  { title = NSLocalizedString(@"_group_date_yes_", nil); }
+    else { title = NSLocalizedString(@"_group_date_no_", nil); }
     
-    appDelegate.dateItem = [[REMenuItem alloc] initWithTitle:titoloNuovo   subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByDate"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([_directoryGroupBy isEqualToString:@"date"]) [self tableGroupBy:@"none"];
-            else [self tableGroupBy:@"date"];
+    appDelegate.dateItem = [[REMenuItem alloc] initWithTitle:title   subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"MenuGroupByDate"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        if ([groupBy isEqualToString:@"date"]) [CCUtility setGroupBySettings:@"none"];
+        else [CCUtility setGroupBySettings:@"date"];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
     }];
     
     // ITEM DIRECTORY ON TOP ------------------------------------------------------------------------------------------------
     
-    if ([CCUtility getDirectoryOnTop])  { titoloNuovo = NSLocalizedString(@"_directory_on_top_yes_", nil); }
-    else { titoloNuovo = NSLocalizedString(@"_directory_on_top_no_", nil); }
+    if ([CCUtility getDirectoryOnTop])  { title = NSLocalizedString(@"_directory_on_top_yes_", nil); }
+    else { title = NSLocalizedString(@"_directory_on_top_no_", nil); }
     
-    appDelegate.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:titoloNuovo subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
-            if ([CCUtility getDirectoryOnTop])
-                [self directoryOnTop:NO];
-            else
-                [self directoryOnTop:YES];
+    appDelegate.directoryOnTopItem = [[REMenuItem alloc] initWithTitle:title subtitle:@"" image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:1 color:[NCBrandColor sharedInstance].icon] highlightedImage:nil action:^(REMenuItem *item) {
+        if ([CCUtility getDirectoryOnTop]) [CCUtility setDirectoryOnTop:NO];
+        else [CCUtility setDirectoryOnTop:YES];
+        [[NSNotificationCenter defaultCenter] postNotificationOnMainThreadName:@"clearDateReadDataSource" object:nil];
     }];
     
-
     // REMENU --------------------------------------------------------------------------------------------------------------
 
-    appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.ordinaItem, appDelegate.ascendenteItem, appDelegate.alphabeticItem, appDelegate.typefileItem, appDelegate.dateItem, appDelegate.directoryOnTopItem]];
+    appDelegate.reMainMenu = [[REMenu alloc] initWithItems:@[appDelegate.selezionaItem, appDelegate.sortFileNameAZItem, appDelegate.sortFileNameZAItem, appDelegate.sortDateMoreRecentItem, appDelegate.sortDateLessRecentItem, appDelegate.sortSmallestItem, appDelegate.sortLargestItem,appDelegate.alphabeticItem, appDelegate.typefileItem, appDelegate.dateItem, appDelegate.directoryOnTopItem]];
+    
+    appDelegate.reMainMenu.itemHeight = 40;
     
     appDelegate.reMainMenu.imageOffset = CGSizeMake(5, -1);
     
@@ -2777,6 +2831,8 @@
             appDelegate.reSelectMenu = [[REMenu alloc] initWithItems:@[appDelegate.selectAllItem, appDelegate.moveItem, appDelegate.downloadItem, appDelegate.saveItem, appDelegate.deleteItem]];
         }
     }
+    
+    appDelegate.reSelectMenu.itemHeight = 50;
 
     appDelegate.reSelectMenu.imageOffset = CGSizeMake(5, -1);
     
@@ -3516,26 +3572,6 @@
         
         if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
-            [actionSheet addButtonWithTitle:NSLocalizedString(@"_folder_automatic_upload_", nil)
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folderMedia"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
-                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
-                                     height:50.0
-                                       type:AHKActionSheetButtonTypeDefault
-                                    handler:^(AHKActionSheet *as) {
-                                        
-                                        // Settings new folder Automatatic upload
-                                        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:self.metadata.fileName];
-                                        [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:appDelegate.activeUrl];
-                                        
-                                        // Clear data (old) Auto Upload
-                                        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:_autoUploadDirectory directoryID:nil];
-                                                                                
-                                        [self readFolder:serverUrl];
-                                    }];
-        }
-
-        if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
-            
             [actionSheet addButtonWithTitle:titoloLock
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"settingsPasscodeYES"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
@@ -3722,8 +3758,6 @@
 - (void)clearDateReadDataSource:(NSNotification *)notification
 {
     _dateReadDataSource = Nil;
-    _directoryGroupBy = [CCUtility getGroupBySettings];
-    _directoryOrder = [CCUtility getOrderSettings];
     
     [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
 }
@@ -3746,7 +3780,7 @@
             }
         }
         
-        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:_directoryGroupBy filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
+        sectionDataSource = [CCSectionMetadata creataDataSourseSectionMetadata:metadatas listProgressMetadata:nil groupByField:[CCUtility getGroupBySettings] filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
 
         [self tableViewReloadData];
         
@@ -3830,9 +3864,9 @@
     
     CCSectionDataSourceMetadata *sectionDataSourceTemp = [CCSectionDataSourceMetadata new];
 
-    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:_directoryOrder ascending:[CCUtility getAscendingSettings]];
+    NSArray *recordsTableMetadata = [[NCManageDatabase sharedInstance] getMetadatasWithPredicate:[NSPredicate predicateWithFormat:@"directoryID == %@ AND status != %i", directoryID, k_metadataStatusHide] sorted:[CCUtility getOrderSettings] ascending:[CCUtility getAscendingSettings]];
     
-    sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:_directoryGroupBy filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
+    sectionDataSourceTemp = [CCSectionMetadata creataDataSourseSectionMetadata:recordsTableMetadata listProgressMetadata:nil groupByField:[CCUtility getGroupBySettings] filterFileID:appDelegate.filterFileID filterTypeFileImage:NO filterTypeFileVideo:NO activeAccount:appDelegate.activeAccount];
     
     if (withReloadData) {
         sectionDataSource = sectionDataSourceTemp;
@@ -3962,7 +3996,7 @@
     if ([sectionTitle isKindOfClass:[NSString class]] && [sectionTitle rangeOfString:@"download"].location != NSNotFound) return 18.f;
     if ([sectionTitle isKindOfClass:[NSString class]] && [sectionTitle rangeOfString:@"upload"].location != NSNotFound) return 18.f;
     
-    if ([_directoryGroupBy isEqualToString:@"none"] && [sections count] <= 1) return 0.0f;
+    if ([[CCUtility getGroupBySettings] isEqualToString:@"none"] && [sections count] <= 1) return 0.0f;
     
     return 20.f;
 }
@@ -4003,7 +4037,7 @@
         visualEffectView.backgroundColor = [[NCBrandColor sharedInstance].brand colorWithAlphaComponent:0.2];
     }
     
-    if ([_directoryGroupBy isEqualToString:@"alphabetic"]) {
+    if ([[CCUtility getGroupBySettings] isEqualToString:@"alphabetic"]) {
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
             shift = - 35;
@@ -4050,7 +4084,7 @@
 
 - (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView
 {
-    if ([_directoryGroupBy isEqualToString:@"alphabetic"])
+    if ([[CCUtility getGroupBySettings] isEqualToString:@"alphabetic"])
         return [[UILocalizedIndexedCollation currentCollation] sectionIndexTitles];
     else
         return nil;
@@ -4139,7 +4173,7 @@
         ((CCCellMain *)cell).delegate = self;
 
         // LEFT
-        ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:2 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
+        ((CCCellMain *)cell).leftButtons = @[[MGSwipeButton buttonWithTitle:@"" icon:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"favorite"] multiplier:1 color:[UIColor whiteColor]] backgroundColor:[NCBrandColor sharedInstance].yellowFavorite padding:25]];
         
         ((CCCellMain *)cell).leftExpansion.buttonIndex = 0;
         ((CCCellMain *)cell).leftExpansion.fillOnTrigger = NO;

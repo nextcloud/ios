@@ -3,7 +3,7 @@
 //  PickerFileProvider
 //
 //  Created by Marino Faggiana on 28/05/18.
-//  Copyright © 2018 TWS. All rights reserved.
+//  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -32,7 +32,10 @@ extension FileProviderExtension {
     func deleteFile(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, parentItemIdentifier: NSFileProviderItemIdentifier, metadata: tableMetadata, serverUrl: String) {
         
         let ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: providerData.accountUser, withUserID: providerData.accountUserID, withPassword: providerData.accountPassword, withUrl: providerData.accountUrl)
-        ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, completion: { (message, errorCode) in
+        
+        let path = serverUrl + "/" + metadata.fileName
+        
+        ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
             
             if errorCode == 0 || errorCode == 404 {
                 self.deleteFileSystem(for: metadata, serverUrl: serverUrl, itemIdentifier: itemIdentifier)

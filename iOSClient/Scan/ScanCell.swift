@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 21/08/18.
-//  Copyright (c) 2018 TWS. All rights reserved.
+//  Copyright (c) 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -28,4 +28,5 @@ class ScanCell: UICollectionViewCell {
     @IBOutlet weak var customImageView: UIImageView!
     @IBOutlet weak var customLabel: UILabel!
     @IBOutlet weak var delete: UIButton!
+    @IBOutlet weak var rotate: UIButton!
 }

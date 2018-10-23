@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 01/09/15.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -25,7 +25,8 @@
 #import "CCMain.h"
 #import "CCManageLocation.h"
 #import "CCMedia.h"
+#import "CCMove.h"
 
-@interface CCManageAutoUpload : XLFormViewController
+@interface CCManageAutoUpload : XLFormViewController <CCMoveDelegate>
 
 @end

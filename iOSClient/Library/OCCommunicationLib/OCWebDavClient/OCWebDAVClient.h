@@ -31,7 +31,7 @@
 //  Add : getActivityServer
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 
 
@@ -348,7 +348,7 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
  * @param failure A block callback, to be fired upon the failure of the request, with two arguments: the request operation and error.
  *
  */
-- (void)shareByLinkFileOrFolderByServer:(NSString * _Nonnull)serverPath andPath:(NSString * _Nonnull) filePath andPassword:(NSString * _Nonnull)password
+- (void)shareByLinkFileOrFolderByServer:(NSString * _Nonnull)serverPath andPath:(NSString * _Nonnull) filePath andPassword:(NSString * _Nonnull)password andPermission:(NSInteger)permission
                         onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication
                                 success:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id _Nonnull))success
                                 failure:(void(^ _Nonnull)(NSHTTPURLResponse * _Nonnull, id  _Nullable responseObject, NSError * _Nonnull))failure;
@@ -508,6 +508,8 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 
 - (OCHTTPRequestOperation *) getRemotePreviewByServer:(NSString * _Nonnull)serverPath ofFilePath:(NSString *_Nonnull)filePath  withWidth:(NSInteger)fileWidth andHeight:(NSInteger)fileHeight andA:(NSInteger)a andMode:(NSString * _Nonnull)mode onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
+- (OCHTTPRequestOperation *) getRemotePreviewTrashByServer:(NSString * _Nonnull)serverPath ofFileID:(NSString *_Nonnull)fileID onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
 #pragma mark - Notification
 
 ///-----------------------------------
@@ -657,5 +659,12 @@ extern NSString * _Nullable OCWebDAVModificationDateKey;
 - (void)createLinkRichdocuments:(NSString *_Nonnull)serverPath fileID:(NSString * _Nonnull)fileID onCommunication:(OCCommunication * _Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
 
 - (void)createAssetRichdocuments:(NSString *_Nonnull)serverPath path:(NSString *_Nonnull)path onCommunication:(OCCommunication *_Nonnull)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *operation, id  _Nullable responseObject, NSError *error))failure;
+
+
+///-----------------------------------
+/// Trash
+///-----------------------------------
+
+- (void)listTrash:(NSString *)path onCommunication:(OCCommunication *)sharedOCCommunication success:(void(^)(NSHTTPURLResponse *operation, id response))success failure:(void(^)(NSHTTPURLResponse *response, id  _Nullable responseObject, NSError *error))failure;
 
 @end

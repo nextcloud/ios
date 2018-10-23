@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 09/04/15.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -94,29 +94,16 @@
     [self.loginTypeView setTitle:NSLocalizedString(@"_traditional_login_", nil) forState:UIControlStateNormal];
     [self.loginTypeView setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
 
-    // Preferred providers
-    self.preferredProviders.text = NSLocalizedString([NCBrandOptions sharedInstance].textLoginProvider, nil);
-    self.preferredProviders.textColor = [UIColor whiteColor];
-    self.preferredProviders.userInteractionEnabled = YES;
-    if ([NCBrandOptions sharedInstance].disable_linkLoginProvider) {
-        self.preferredProviders.hidden = YES;
-    }
-    
-    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(loginPreferredProviders)];
-    [self.preferredProviders addGestureRecognizer:tapGesture];
-    
+   
     if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
         
         // Portrait
-        if ([NCBrandOptions sharedInstance].disable_linkLoginProvider == NO)
-            self.preferredProviders.hidden = NO;
         self.loginTypeView.hidden = NO;
         
     } else {
         
         // Landscape
         if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
-            self.preferredProviders.hidden = YES;
             self.loginTypeView.hidden = YES;
         }
     }
@@ -129,7 +116,6 @@
     }
 
     if (_loginType == k_login_Add ) {
-        // Login Flow ?
         _imageUser.hidden = YES;
         _user.hidden = YES;
         _imagePassword.hidden = YES;
@@ -137,8 +123,6 @@
     }
     
     if (_loginType == k_login_Add_Forced) {
-        _annulla.hidden = YES;
-        // Login Flow ?
         _imageUser.hidden = YES;
         _user.hidden = YES;
         _imagePassword.hidden = YES;
@@ -189,15 +173,12 @@
         if (self.view.frame.size.width == ([[UIScreen mainScreen] bounds].size.width*([[UIScreen mainScreen] bounds].size.width<[[UIScreen mainScreen] bounds].size.height))+([[UIScreen mainScreen] bounds].size.height*([[UIScreen mainScreen] bounds].size.width>[[UIScreen mainScreen] bounds].size.height))) {
             
             // Portrait
-            if ([NCBrandOptions sharedInstance].disable_linkLoginProvider == NO)
-                self.preferredProviders.hidden = NO;
             self.loginTypeView.hidden = NO;
             
         } else {
             
             // Landscape
             if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
-                self.preferredProviders.hidden = YES;
                 self.loginTypeView.hidden = YES;
             }
         }
@@ -238,7 +219,7 @@
             appDelegate.activeLoginWeb.delegate = self;
             appDelegate.activeLoginWeb.urlBase = self.baseUrl.text;
             
-            [appDelegate.activeLoginWeb presentModalWithDefaultTheme:self];
+            [appDelegate.activeLoginWeb open:self];
         }
         
         // NO Login Flow available
@@ -324,17 +305,6 @@
 #pragma mark == Action ==
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)loginPreferredProviders
-{
-//    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NCBrandOptions sharedInstance].linkLoginProvider]];
-    appDelegate.activeLoginWeb = [CCLoginWeb new];
-    appDelegate.activeLoginWeb.loginType = _loginType;
-    appDelegate.activeLoginWeb.delegate = self;
-    appDelegate.activeLoginWeb.urlBase = [[NCBrandOptions sharedInstance] loginPreferredProviders];
-        
-    [appDelegate.activeLoginWeb presentModalWithDefaultTheme:self];
-}
-
 - (IBAction)handlebaseUrlchange:(id)sender
 {
     if ([self.baseUrl.text length] > 0 && !_user.hidden && !_password.hidden)
@@ -380,9 +350,11 @@
                 [self dismissViewControllerAnimated:YES completion:nil];
                 
             } else {
+
+                // STOP Intro
+                [CCUtility setIntro:YES];
                 
                 // LOGOUT
-                
                 [appDelegate unsubscribingNextcloudServerPushNotification];
                 
                 [[NCManageDatabase sharedInstance] deleteAccount:account];
@@ -404,7 +376,7 @@
             
             if (errorCode != NSURLErrorServerCertificateUntrusted) {
                 
-                NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedStringFromTable(@"_not_possible_connect_to_server_", @"Error", nil), message];
+                NSString *messageAlert = [NSString stringWithFormat:@"%@.\n%@", NSLocalizedString(@"_not_possible_connect_to_server_", nil), message];
                 
                 UIAlertController *alertController = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"_error_", nil) message:messageAlert preferredStyle:UIAlertControllerStyleAlert];
                 UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"_ok_", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {}];

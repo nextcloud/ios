@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 05/11/15.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -22,10 +22,10 @@
 //
 
 #import "CCIntro.h"
-
+#import "AppDelegate.h"
 #import "NCBridgeSwift.h"
 
-@interface CCIntro ()
+@interface CCIntro () <SwiftModalWebVCDelegate>
 {
     int titlePositionY;
     int descPositionY;
@@ -89,45 +89,56 @@
     
     if (height <= 568) {
         titleIconPositionY = 20;
+        titlePositionY = height / 2 + 40.0;
+        descPositionY  = height / 2;
+        buttonPosition = height / 2 + 50.0;
     } else {
         titleIconPositionY = 100;
+        titlePositionY = height / 2 + 40.0;
+        descPositionY  = height / 2;
+        buttonPosition = height / 2 + 120.0;
     }
-    
-    titlePositionY = height / 2 + 40.0;
-    descPositionY  = height / 2;
-    buttonPosition = height / 2 + 120.0;
     
     // Button
     
-    UIView *buttonView = [[UIView alloc] initWithFrame:CGRectMake(0,0, self.rootView.bounds.size.width, 100.0)];
+    UIView *buttonView = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.rootView.bounds.size.width,220)];
     buttonView.userInteractionEnabled = YES ;
     
     UIButton *buttonLogin = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     buttonLogin.frame = CGRectMake(50.0, 0.0, width - 100.0, 40.0);
     buttonLogin.layer.cornerRadius = 3;
     buttonLogin.clipsToBounds = YES;
-    [buttonLogin setTitle:[NSLocalizedStringFromTable(@"_log_in_", @"Intro", nil) uppercaseString] forState:UIControlStateNormal];
+    [buttonLogin setTitle:[NSLocalizedString(@"_log_in_", nil) uppercaseString] forState:UIControlStateNormal];
     buttonLogin.titleLabel.font = [UIFont systemFontOfSize:14];
     [buttonLogin setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     buttonLogin.backgroundColor = [[NCBrandColor sharedInstance] customerText];
     [buttonLogin addTarget:self action:@selector(login:) forControlEvents:UIControlEventTouchDown];
     
     [buttonView addSubview:buttonLogin];
-
-    if (![NCBrandOptions sharedInstance].disable_linkLoginProvider) {
+    
+    UIButton *buttonSignUp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
+    buttonSignUp.layer.cornerRadius = 3;
+    buttonSignUp.clipsToBounds = YES;
+    [buttonSignUp setTitle:[NSLocalizedString(@"_sign_up_", nil) uppercaseString] forState:UIControlStateNormal];
+    buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:14];
+    [buttonSignUp setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    buttonSignUp.backgroundColor = [UIColor colorWithRed:25.0/255.0 green:89.0/255.0 blue:141.0/255.0 alpha:1.000];
+    [buttonSignUp addTarget:self action:@selector(signUp:) forControlEvents:UIControlEventTouchDown];
         
-        UIButton *buttonSignUp = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-        buttonSignUp.frame = CGRectMake(50.0, 60.0, width - 100.0, 40.0);
-        buttonSignUp.layer.cornerRadius = 3;
-        buttonSignUp.clipsToBounds = YES;
-        [buttonSignUp setTitle:[NSLocalizedStringFromTable(@"_sign_up_", @"Intro", nil) uppercaseString] forState:UIControlStateNormal];
-        buttonSignUp.titleLabel.font = [UIFont systemFontOfSize:14];
-        [buttonSignUp setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        buttonSignUp.backgroundColor = [UIColor colorWithRed:25.0/255.0 green:89.0/255.0 blue:141.0/255.0 alpha:1.000];
-        [buttonSignUp addTarget:self action:@selector(signUp:) forControlEvents:UIControlEventTouchDown];
-        
-        [buttonView addSubview:buttonSignUp];
-    }
+    [buttonView addSubview:buttonSignUp];
+    
+    UIButton *buttonHost = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    buttonHost.frame = CGRectMake(50.0, 200.0, width - 100.0, 20.0);
+    buttonHost.layer.cornerRadius = 3;
+    buttonHost.clipsToBounds = YES;
+    [buttonHost setTitle:NSLocalizedString(@"_host_your_own_server", nil) forState:UIControlStateNormal];
+    buttonHost.titleLabel.font = [UIFont systemFontOfSize:14];
+    [buttonHost setTitleColor:[UIColor lightGrayColor] forState:UIControlStateNormal];
+    buttonHost.backgroundColor = [UIColor clearColor];
+    [buttonHost addTarget:self action:@selector(host:) forControlEvents:UIControlEventTouchDown];
+    
+    [buttonView addSubview:buttonHost];
     
     // Pages
     
@@ -136,16 +147,11 @@
     page1.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro1"]];
     page1.titleIconPositionY = titleIconPositionY;
 
-    page1.title = NSLocalizedStringFromTable(@"_intro_1_title_", @"Intro", nil);
+    page1.title = NSLocalizedString(@"_intro_1_title_", nil);
     page1.titlePositionY = titlePositionY;
     page1.titleColor = [[NCBrandColor sharedInstance] customerText];
-    page1.titleFont = [UIFont systemFontOfSize:20];
-    
-    page1.desc = NSLocalizedStringFromTable(@"_intro_1_text_",  @"Intro", nil);
-    page1.descPositionY = descPositionY;
-    page1.descColor = [[NCBrandColor sharedInstance] customerText];
-    page1.descFont = [UIFont systemFontOfSize:14];
-    
+    page1.titleFont = [UIFont systemFontOfSize:23];
+
     page1.bgColor = [[NCBrandColor sharedInstance] customer];
     page1.showTitleView = YES;
 
@@ -154,15 +160,10 @@
     page2.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro2"]];
     page2.titleIconPositionY = titleIconPositionY;
 
-    page2.title = NSLocalizedStringFromTable(@"_intro_2_title_",  @"Intro", nil);
+    page2.title = NSLocalizedString(@"_intro_2_title_", nil);
     page2.titlePositionY = titlePositionY;
     page2.titleColor = [[NCBrandColor sharedInstance] customerText];
-    page2.titleFont = [UIFont systemFontOfSize:20];
-    
-    page2.desc = NSLocalizedStringFromTable(@"_intro_2_text_",  @"Intro", nil);
-    page2.descPositionY = descPositionY;
-    page2.descColor = [[NCBrandColor sharedInstance] customerText];
-    page2.descFont = [UIFont systemFontOfSize:14];
+    page2.titleFont = [UIFont systemFontOfSize:23];
     
     page2.bgColor = [[NCBrandColor sharedInstance] customer];
     page2.showTitleView = YES;
@@ -172,22 +173,30 @@
     page3.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro3"]];
     page3.titleIconPositionY = titleIconPositionY;
 
-    page3.title = NSLocalizedStringFromTable(@"_intro_3_title_",  @"Intro", nil);
+    page3.title = NSLocalizedString(@"_intro_3_title_", nil);
     page3.titlePositionY = titlePositionY;
     page3.titleColor = [[NCBrandColor sharedInstance] customerText];
-    page3.titleFont = [UIFont systemFontOfSize:20];
-    
-    page3.desc = NSLocalizedStringFromTable(@"_intro_3_text_",  @"Intro", nil);
-    page3.descPositionY = descPositionY;
-    page3.descColor = [[NCBrandColor sharedInstance] customerText];
-    page3.descFont = [UIFont systemFontOfSize:14];
+    page3.titleFont = [UIFont systemFontOfSize:23];
     
     page3.bgColor = [[NCBrandColor sharedInstance] customer];
     page3.showTitleView = YES;
 
+    EAIntroPage *page4 = [EAIntroPage page];
+    
+    page4.titleIconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"intro4"]];
+    page4.titleIconPositionY = titleIconPositionY;
+    
+    page4.title = NSLocalizedString(@"_intro_4_title_", nil);
+    page4.titlePositionY = titlePositionY;
+    page4.titleColor = [[NCBrandColor sharedInstance] customerText];
+    page4.titleFont = [UIFont systemFontOfSize:23];
+    
+    page4.bgColor = [[NCBrandColor sharedInstance] customer];
+    page4.showTitleView = YES;
+    
     // INTRO
     
-    self.intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1,page2,page3]];
+    self.intro = [[EAIntroView alloc] initWithFrame:self.rootView.bounds andPages:@[page1,page2,page3,page4]];
 
     self.intro.tapToNext = NO;
     self.intro.pageControl.pageIndicatorTintColor = [UIColor whiteColor];
@@ -218,6 +227,45 @@
     
     [self.intro setDelegate:self];
     [self.intro showInView:self.rootView animateDuration:0];
+}
+
+#pragma --------------------------------------------------------------------------------------------
+#pragma mark ===== Web =====
+#pragma --------------------------------------------------------------------------------------------
+
+- (void)host:(id)sender
+{
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    
+    SwiftModalWebVC *webVC = [[SwiftModalWebVC alloc] initWithUrlString:[NCBrandOptions sharedInstance].linkLoginHost colorText:[UIColor whiteColor] colorDoneButton:[UIColor blackColor] doneButtonVisible:YES hideToolbar:NO];    
+    webVC.delegateWeb = self;
+    
+    [appDelegate.window.rootViewController presentViewController:webVC animated:YES completion:nil];
+}
+    
+- (void)didStartLoading
+{
+    
+}
+
+- (void)didReceiveServerRedirectForProvisionalNavigationWithUrl:(NSURL *)url
+{
+    
+}
+
+- (void)didFinishLoadingWithSuccess:(BOOL)success url:(NSURL *)url
+{
+    
+}
+
+- (void)webDismiss
+{
+    
+}
+
+- (void)decidePolicyForNavigationAction:(WKWebView *)webView decidePolicyFor:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
+{
+    decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 @end

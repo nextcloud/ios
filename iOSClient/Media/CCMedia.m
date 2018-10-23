@@ -3,7 +3,7 @@
 //  Nextcloud iOS
 //
 //  Created by Marino Faggiana on 29/07/15.
-//  Copyright (c) 2017 TWS. All rights reserved.
+//  Copyright (c) 2017 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
 //
@@ -435,7 +435,7 @@
 
 - (UIImage *)imageForEmptyDataSet:(UIScrollView *)scrollView
 {
-    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"mediaNoRecord"] multiplier:2 color:[NCBrandColor sharedInstance].graySoft];
+    return [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"mediaNoRecord"] multiplier:1 color:[NCBrandColor sharedInstance].graySoft];
 }
 
 - (NSAttributedString *)titleForEmptyDataSet:(UIScrollView *)scrollView
@@ -623,18 +623,45 @@
 #pragma mark ==== Change Start directory ====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title
+- (void)moveServerUrlTo:(NSString *)serverUrlTo title:(NSString *)title type:(NSString *)type
 {
-    NSString *oldStartDirectoryMediaTabView = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
-    
-    if (![serverUrlTo isEqualToString:oldStartDirectoryMediaTabView]) {
+    if ([type isEqualToString:@"mediaFolder"]) {
         
-        // Save Start Directory
-        [[NCManageDatabase sharedInstance] setAccountStartDirectoryMediaTabView:serverUrlTo];
+        NSString *oldStartDirectoryMediaTabView = [[NCManageDatabase sharedInstance] getAccountStartDirectoryMediaTabView:[CCUtility getHomeServerUrlActiveUrl:appDelegate.activeUrl]];
         
-        // search PhotoVideo with new start directory
-        [self searchPhotoVideo];
+        if (![serverUrlTo isEqualToString:oldStartDirectoryMediaTabView]) {
+            
+            // Save Start Directory
+            [[NCManageDatabase sharedInstance] setAccountStartDirectoryMediaTabView:serverUrlTo];
+            
+            // search PhotoVideo with new start directory
+            [self searchPhotoVideo];
+        }
     }
+    
+    /*
+    if ([type isEqualToString:@"automaticUploadFolder"]) {
+        
+        if (title == nil) {
+            [appDelegate messageNotification:@"_error_" description:@"_media_error_select_folder_" visible:YES delay:k_dismissAfterSecond type:TWMessageBarMessageTypeError errorCode:0];
+            return;
+        }
+        
+        NSString *serverUrl = [NSURL URLWithString:serverUrlTo].URLByDeletingLastPathComponent.absoluteString;
+        if ([[serverUrl substringFromIndex:[serverUrl length] - 1] isEqualToString:@"/"])
+            serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+
+        // Clear data (old) Auto Upload
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] directoryID:nil];
+        
+        // Settings new folder Automatatic upload
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadFileName:title];
+        [[NCManageDatabase sharedInstance] setAccountAutoUploadDirectory:serverUrl activeUrl:appDelegate.activeUrl];
+        
+        // Clear data new Auto Upload
+        [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:serverUrl directoryID:nil];
+    }
+    */
 }
 
 - (void)selectStartDirectoryPhotosTab
@@ -644,12 +671,16 @@
     CCMove *viewController = (CCMove *)navigationController.topViewController;
     
     viewController.delegate = self;
-    viewController.move.title = NSLocalizedString(@"_select_dir_media_tab_", nil);
+    viewController.move.title = NSLocalizedString(@"_select_", nil);
     viewController.tintColor = [NCBrandColor sharedInstance].brandText;
     viewController.barTintColor = [NCBrandColor sharedInstance].brand;
     viewController.tintColorTitle = [NCBrandColor sharedInstance].brandText;
     viewController.networkingOperationQueue = appDelegate.netQueue;
     viewController.hideCreateFolder = YES;
+    
+    // TYPE
+    viewController.type = @"mediaFolder";
+    
     // E2EE
     viewController.includeDirectoryE2EEncryption = NO;
     
@@ -711,7 +742,20 @@
             isSearchMode = YES;
             [self editingModeNO];
             
-            [[CCActions sharedInstance] search:startDirectory fileName:@"" etag:metadata.etag depth:@"infinity" date:[NSDate distantPast] contenType:@[@"image/%", @"video/%"] selector:selectorSearchContentType delegate:self];
+            CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
+            
+            metadataNet.action = actionSearch;
+            metadataNet.contentType = @[@"image/%", @"video/%"];
+            metadataNet.date = [NSDate distantPast];
+            metadataNet.directoryID = [[NCManageDatabase sharedInstance] getDirectoryID:startDirectory];
+            metadataNet.fileName = @"";
+            metadataNet.etag = metadata.etag;
+            metadataNet.depth = @"infinity";
+            metadataNet.priority = NSOperationQueuePriorityHigh;
+            metadataNet.selector = selectorSearchContentType;
+            metadataNet.serverUrl = startDirectory;
+            
+            [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
             
         } else {
             [self reloadDatasource:nil action:k_action_NULL];
@@ -879,7 +923,7 @@
     UIVisualEffectView *effect = [cell viewWithTag:200];
 
     UIImageView *checkedOverlay = [cell viewWithTag:300];
-    checkedOverlay.image = [UIImage imageNamed:@"checked"];
+    checkedOverlay.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"checkedYes"] multiplier:2 color:[NCBrandColor sharedInstance].brand];
     
     UIImageView *videoOverlay = [cell viewWithTag:400];
     videoOverlay.image = [UIImage imageNamed:@"VideoOverlay"];
