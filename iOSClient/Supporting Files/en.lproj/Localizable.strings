@@ -136,8 +136,7 @@
 "_app_version_"                 = "Application version";
 "_app_in_use_"                  = "Application in use";
 "_contact_by_email_"            = "Contact us by email";
-"_clear_cache_"                 = "Clear cache (%@ used)";
-"_clear_cache_no_size_"         = "Clear cache";
+"_clear_cache_"                 = "Clear cache";
 "_clear_cache_footer_"          = "Clear downloaded and offline files";
 "_exit_"                        = "Reset application";
 "_exit_footer_"                 = "Remove all accounts and local data";
