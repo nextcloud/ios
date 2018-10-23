@@ -77,7 +77,6 @@ class NCBrandColor: NSObject {
     @objc public let pushNotificationServerProxy:       String = "https://push-notifications.nextcloud.com"
     @objc public let linkLoginHost:                     String = "https://nextcloud.com/install"
     @objc public let linkloginPreferredProviders:       String = "https://nextcloud.com/signup";
-    @objc public let textLoginProvider:                 String = "_login_bottom_label_"
     @objc public let middlewarePingUrl:                 String = ""
     @objc public let webLoginAutenticationProtocol:     String = "nc://"                                            // example "abc://"
     // Personalized
