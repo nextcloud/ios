@@ -1,8 +1,8 @@
 //
-//  NCTrashGridCell.swift
+//  NCOnDeviceGridCell.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 08/10/2018.
+//  Created by Marino Faggiana on 24/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -24,7 +24,7 @@
 import Foundation
 import UIKit
 
-class NCTrashGridCell: UICollectionViewCell {
+class NCOnDeviceGridCell: UICollectionViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -32,7 +32,7 @@ class NCTrashGridCell: UICollectionViewCell {
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMoreGrid: UIButton!
 
-    var delegate: NCTrashGridCellDelegate?
+    var delegate: NCOnDeviceGridCellDelegate?
     
     var fileID = ""
     var indexPath = IndexPath()
@@ -48,6 +48,6 @@ class NCTrashGridCell: UICollectionViewCell {
     }
 }
 
-protocol NCTrashGridCellDelegate {
+protocol NCOnDeviceGridCellDelegate {
     func tapMoreGridItem(with fileID: String, sender: Any)
 }

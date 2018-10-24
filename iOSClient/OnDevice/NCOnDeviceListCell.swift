@@ -1,8 +1,8 @@
 //
-//  NCTrashGridCell.swift
+//  NCOnDeviceListCell.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 08/10/2018.
+//  Created by Marino Faggiana on 24/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -24,15 +24,24 @@
 import Foundation
 import UIKit
 
-class NCTrashGridCell: UICollectionViewCell {
+class NCOnDeviceListCell: UICollectionViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
-    @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var imageMore: UIImageView!
-    @IBOutlet weak var buttonMoreGrid: UIButton!
 
-    var delegate: NCTrashGridCellDelegate?
+    @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelInfo: UILabel!
+    
+    @IBOutlet weak var imageRestore: UIImageView!
+    @IBOutlet weak var imageMore: UIImageView!
+
+    @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var buttonRestore: UIButton!
+    
+    @IBOutlet weak var separator: UIView!
+
+    var delegate: NCOnDeviceListCellDelegate?
     
     var fileID = ""
     var indexPath = IndexPath()
@@ -40,14 +49,22 @@ class NCTrashGridCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
        
+        imageRestore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
         imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
+        
+        separator.backgroundColor = NCBrandColor.sharedInstance.seperator
     }
     
-    @IBAction func touchUpInsideMoreGrid(_ sender: Any) {
-        delegate?.tapMoreGridItem(with: fileID, sender: sender)
+    @IBAction func touchUpInsideMore(_ sender: Any) {
+        delegate?.tapMoreItem(with: fileID, sender: sender)
+    }
+    
+    @IBAction func touchUpInsideRestore(_ sender: Any) {
+        delegate?.tapRestoreItem(with: fileID, sender: sender)
     }
 }
 
-protocol NCTrashGridCellDelegate {
-    func tapMoreGridItem(with fileID: String, sender: Any)
+protocol NCOnDeviceListCellDelegate {
+    func tapRestoreItem(with fileID: String, sender: Any)
+    func tapMoreItem(with fileID: String, sender: Any)
 }

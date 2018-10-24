@@ -1,8 +1,8 @@
 //
-//  NCTrash.swift
+//  NCOnDevice.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 02/10/2018.
+//  Created by Marino Faggiana on 24/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListCellDelegate, NCTrashGridCellDelegate, NCTrashHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCOnDeviceListCellDelegate, NCOnDeviceGridCellDelegate, NCOnDeviceHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -36,8 +36,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     var isEditMode = false
     var selectFileID = [String]()
     
-    var listLayout: ListLayoutTrash!
-    var gridLayout: GridLayoutTrash!
+    var listLayout: ListLayoutOnDevice!
+    var gridLayout: GridLayoutOnDevice!
     
     private let highHeader: CGFloat = 50
     
@@ -46,13 +46,13 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell-list")
-        collectionView.register(UINib.init(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
+        collectionView.register(UINib.init(nibName: "NCOnDeviceListCell", bundle: nil), forCellWithReuseIdentifier: "cell-list")
+        collectionView.register(UINib.init(nibName: "NCOnDeviceGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
         collectionView.alwaysBounceVertical = true
 
-        listLayout = ListLayoutTrash()
-        gridLayout = GridLayoutTrash()
+        listLayout = ListLayoutOnDevice()
+        gridLayout = GridLayoutOnDevice()
         
         if CCUtility.getLayoutTrash() == "list" {
             collectionView.collectionViewLayout = listLayout
@@ -188,7 +188,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
         
-        let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
+        let header = (sender as? UIButton)?.superview as! NCOnDeviceHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
@@ -224,7 +224,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.rowHeight = 50
         menuView?.tableView.alwaysBounceVertical = false
         
-        let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
+        let header = (sender as? UIButton)?.superview as! NCOnDeviceHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
@@ -413,25 +413,6 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
     
-    /*
-    func dropdownMenuWillDismiss(_ dropdownMenu: DropdownMenu) {
-        if dropdownMenu.token == "tapOrderHeaderMenu" {
-            let trashHeader = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(row: 0, section: 0)) as! NCTrashHeaderMenu
-            let title = String(trashHeader.buttonOrder.title(for: .normal)!.dropLast()) + "▽"
-            trashHeader.buttonOrder.setTitle(title, for: .normal)
-        }
-    }
-    
-    func dropdownMenuWillShow(_ dropdownMenu: DropdownMenu) {
-        
-        if dropdownMenu.token == "tapOrderHeaderMenu" {
-            let trashHeader = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(row: 0, section: 0)) as! NCTrashHeaderMenu
-            let title = String(trashHeader.buttonOrder.title(for: .normal)!.dropLast()) + "△"
-            trashHeader.buttonOrder.setTitle(title, for: .normal)
-        }
-    }
-    */
-    
     // MARK: NC API
     
     @objc func loadListingTrash() {
@@ -531,24 +512,24 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if kind == UICollectionView.elementKindSectionHeader {
             
-            let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headerMenu", for: indexPath) as! NCTrashHeaderMenu
+            let onDeviceHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headerMenu", for: indexPath) as! NCOnDeviceHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
-                trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                onDeviceHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
             } else {
-                trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                onDeviceHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
             }
             
-            trashHeader.delegate = self
+            onDeviceHeader.delegate = self
             
             if self.datasource.count == 0 {
-                trashHeader.buttonSwitch.isEnabled = false
-                trashHeader.buttonOrder.isEnabled = false
-                trashHeader.buttonMore.isEnabled = false
+                onDeviceHeader.buttonSwitch.isEnabled = false
+                onDeviceHeader.buttonOrder.isEnabled = false
+                onDeviceHeader.buttonMore.isEnabled = false
             } else {
-                trashHeader.buttonSwitch.isEnabled = true
-                trashHeader.buttonOrder.isEnabled = true
-                trashHeader.buttonMore.isEnabled = true
+                onDeviceHeader.buttonSwitch.isEnabled = true
+                onDeviceHeader.buttonOrder.isEnabled = true
+                onDeviceHeader.buttonMore.isEnabled = true
             }
             
             // Order (∨∧▽△)
@@ -569,18 +550,18 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             }
             
             title = title + "  ▽"
-            let size = title.size(withAttributes:[.font: trashHeader.buttonOrder.titleLabel?.font as Any])
+            let size = title.size(withAttributes:[.font: onDeviceHeader.buttonOrder.titleLabel?.font as Any])
             
-            trashHeader.buttonOrder.setTitle(title, for: .normal)
-            trashHeader.buttonOrderWidthConstraint.constant = size.width + 5
+            onDeviceHeader.buttonOrder.setTitle(title, for: .normal)
+            onDeviceHeader.buttonOrderWidthConstraint.constant = size.width + 5
             
-            return trashHeader
+            return onDeviceHeader
             
         } else {
             
-            let trashFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerMenu", for: indexPath) as! NCTrashFooterMenu
+            let onDeviceFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerMenu", for: indexPath) as! NCOnDeviceFooterMenu
             
-            trashFooter.labelFooter.textColor = NCBrandColor.sharedInstance.icon
+            onDeviceFooter.labelFooter.textColor = NCBrandColor.sharedInstance.icon
             
             var folders: Int = 0, foldersText = ""
             var files: Int = 0, filesText = ""
@@ -608,14 +589,14 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             }
            
             if foldersText == "" {
-                trashFooter.labelFooter.text = filesText
+                onDeviceFooter.labelFooter.text = filesText
             } else if filesText == "" {
-                trashFooter.labelFooter.text = foldersText
+                onDeviceFooter.labelFooter.text = foldersText
             } else {
-                trashFooter.labelFooter.text = foldersText + ", " + filesText
+                onDeviceFooter.labelFooter.text = foldersText + ", " + filesText
             }
             
-            return trashFooter
+            return onDeviceFooter
         }
     }
     
@@ -657,7 +638,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if collectionView.collectionViewLayout == listLayout {
             
             // LIST
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-list", for: indexPath) as! NCTrashListCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-list", for: indexPath) as! NCOnDeviceListCell
             cell.delegate = self
             
             cell.fileID = tableTrash.fileID
@@ -694,7 +675,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         } else {
             
             // GRID
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-grid", for: indexPath) as! NCTrashGridCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-grid", for: indexPath) as! NCOnDeviceGridCell
             cell.delegate = self
             
             cell.fileID = tableTrash.fileID
@@ -740,7 +721,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if tableTrash.directory {
         
-            let ncTrash:NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as! NCTrash
+            let ncTrash:NCTrash = UIStoryboard(name: "NCOnDevice", bundle: nil).instantiateInitialViewController() as! NCTrash
             ncTrash.path = tableTrash.filePath + tableTrash.fileName
             ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
             self.navigationController?.pushViewController(ncTrash, animated: true)
@@ -790,7 +771,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     }
 }
 
-class ListLayoutTrash: UICollectionViewFlowLayout {
+class ListLayoutOnDevice: UICollectionViewFlowLayout {
     
     let itemHeight: CGFloat = 60
     
@@ -828,7 +809,7 @@ class ListLayoutTrash: UICollectionViewFlowLayout {
     }
 }
 
-class GridLayoutTrash: UICollectionViewFlowLayout {
+class GridLayoutOnDevice: UICollectionViewFlowLayout {
     
     let heightLabelPlusButton: CGFloat = 45
     let preferenceWidth: CGFloat = 110

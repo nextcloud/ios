@@ -41,7 +41,7 @@ class NCTrashListCell: UICollectionViewCell {
     
     @IBOutlet weak var separator: UIView!
 
-    var delegate: NCTrashListDelegate?
+    var delegate: NCTrashListCellDelegate?
     
     var fileID = ""
     var indexPath = IndexPath()
@@ -64,7 +64,7 @@ class NCTrashListCell: UICollectionViewCell {
     }
 }
 
-protocol NCTrashListDelegate {
+protocol NCTrashListCellDelegate {
     func tapRestoreItem(with fileID: String, sender: Any)
     func tapMoreItem(with fileID: String, sender: Any)
 }
