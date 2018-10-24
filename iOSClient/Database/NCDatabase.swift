@@ -186,6 +186,7 @@ class tableLocalFile: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
+    @objc dynamic var onDevice: Bool = false
     @objc dynamic var size: Double = 0
     
     override static func primaryKey() -> String {

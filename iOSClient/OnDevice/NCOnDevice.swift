@@ -29,7 +29,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
-    var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
+    var titleCurrentFolder = NSLocalizedString("_on_device_", comment: "")
     var datasource = [tableTrash]()
     var datasourceSorted = ""
     var datasourceAscending = true
@@ -115,14 +115,22 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "trashNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.graySoft)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "filesNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.graySoft)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n"+NSLocalizedString("_trash_no_trash_", comment: "")
+        let text = "\n"+NSLocalizedString("_files_no_files_", comment: "")
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
+    
+    /*
+    func description(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+        let text = "\n"+NSLocalizedString("_no_file_pull_down_", comment: "")
+        let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        return NSAttributedString.init(string: text, attributes: attributes)
+    }
+    */
     
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
