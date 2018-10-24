@@ -123,6 +123,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
             functionMenu.append(item)
         }
         
+#if targetEnvironment(simulator)
+        // ITEM : OnDevice
+        item = OCExternalSites.init()
+        item.name = "_on_device_"
+        item.icon = "onDevice"
+        item.url = "segueOnDevice"
+        functionMenu.append(item)
+#endif
+        
         // ITEM : Trash
         let capabilities = NCManageDatabase.sharedInstance.getCapabilites()
         if capabilities != nil && capabilities!.versionMajor >= Int(k_trash_version_available) {
