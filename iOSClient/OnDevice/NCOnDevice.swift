@@ -30,7 +30,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_on_device_", comment: "")
-    var datasource = [tableTrash]()
+    var datasource = [tableMetadata]()
     var datasourceSorted = ""
     var datasourceAscending = true
     var isEditMode = false
@@ -70,7 +70,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self;
@@ -90,14 +90,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
         datasourceSorted = CCUtility.getOrderSettings()
         datasourceAscending = CCUtility.getAscendingSettings()
         
-        guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending) else {
-            return
-        }
-        
-        self.datasource = datasource
-        collectionView.reloadData()
-        
-        loadListingTrash()
+        loadDatasource()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -242,38 +235,12 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     
     func tapRestoreItem(with fileID: String, sender: Any) {
         
-        if !isEditMode {
-            restoreItem(with: fileID)
-        } else {
-            let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
-            let indexPath = collectionView.indexPathForItem(at: buttonPosition)
-            collectionView(self.collectionView, didSelectItemAt: indexPath!)
-        }
+        
     }
     
     func tapMoreItem(with fileID: String, sender: Any) {
 
-        if !isEditMode {
-            var items = [ActionSheetItem]()
-            
-            items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-            items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-            
-            let actionSheet = ActionSheet(items: items) { sheet, item in
-                if item is ActionSheetDangerButton { self.deleteItem(with: fileID) }
-                if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-            }
-            
-            let headerView = actionSheetHeader(with: fileID)
-            actionSheet.headerView = headerView
-            actionSheet.headerView?.frame.size.height = 50
-            
-            actionSheet.present(in: self, from: sender as! UIButton)
-        } else {
-            let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
-            let indexPath = collectionView.indexPathForItem(at: buttonPosition)
-            collectionView(self.collectionView, didSelectItemAt: indexPath!)
-        }
+        
     }
     
     func tapMoreGridItem(with fileID: String, sender: Any) {
@@ -290,8 +257,8 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
             let actionSheet = ActionSheet(items: items) { sheet, item in
-                if item.value as? Int == 0 { self.restoreItem(with: fileID) }
-                if item.value as? Int == 1 { self.deleteItem(with: fileID) }
+                if item.value as? Int == 0 {  }
+                if item.value as? Int == 1 {  }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
@@ -330,188 +297,37 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
             datasourceSorted = CCUtility.getOrderSettings()
             datasourceAscending = CCUtility.getAscendingSettings()
             
-            guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending) else {
-                return
-            }
-            
-            self.datasource = datasource
-            collectionView.reloadData()
+            loadDatasource()
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
         
-            // Select
-            if indexPath.row == 0 {
-                isEditMode = true
-                collectionView.reloadData()
-            }
-            
-            // Restore ALL
-            if indexPath.row == 1 {
-                for record: tableTrash in self.datasource {
-                    restoreItem(with: record.fileID)
-                }
-            }
-            
-            // Delete ALL
-            if indexPath.row == 2 {
-                
-                var items = [ActionSheetItem]()
-                
-                items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_all_", comment: "")))
-                items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-                items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-                
-                let actionSheet = ActionSheet(items: items) { sheet, item in
-                    if item is ActionSheetDangerButton {
-                        for record: tableTrash in self.datasource {
-                            self.deleteItem(with: record.fileID)
-                        }
-                    }
-                    if item is ActionSheetCancelButton { return }
-                }
-                
-                actionSheet.present(in: self, from: self.view)
-            }
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenuSelect" {
-            
-            // Cancel
-            if indexPath.row == 0 {
-                isEditMode = false
-                selectFileID.removeAll()
-                collectionView.reloadData()
-            }
-            
-            // Restore selected files
-            if indexPath.row == 1 {
-                for fileID in selectFileID {
-                    restoreItem(with: fileID)
-                }
-                isEditMode = false
-                selectFileID.removeAll()
-                collectionView.reloadData()
-            }
-            
-            // Delete selected files
-            if indexPath.row == 2 {
-                
-                var items = [ActionSheetItem]()
-                
-                items.append(ActionSheetTitle(title: NSLocalizedString("_trash_delete_selected_", comment: "")))
-                items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-                items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-                
-                let actionSheet = ActionSheet(items: items) { sheet, item in
-                    if item is ActionSheetDangerButton {
-                        for fileID in self.selectFileID {
-                            self.deleteItem(with: fileID)
-                        }
-                        self.isEditMode = false
-                        self.selectFileID.removeAll()
-                        self.collectionView.reloadData()
-                    }
-                    if item is ActionSheetCancelButton { return }
-                }
-                
-                actionSheet.present(in: self, from: self.view)
-            }
             
         }
     }
     
     // MARK: NC API
     
-    @objc func loadListingTrash() {
-        
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        ocNetworking?.listingTrash(appDelegate.activeUrl, path:path, account: appDelegate.activeAccount, success: { (item) in
-            
-            self.refreshControl.endRefreshing()
-
-            NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
-            NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
-            
-            let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted, ascending: self.datasourceAscending)
-            if (results != nil) {
-                self.datasource = results!
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.collectionView.reloadData()
-                }
-            }
-            
-        }, failure: { (message, errorCode) in
-            
-            self.refreshControl.endRefreshing()
-            print("error " + message!)
-        })
-    }
-    
-    func restoreItem(with fileID: String) {
-        
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
-            return
-        }
-        
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-                
-        let fileName = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = appDelegate.activeUrl + k_dav + "/trashbin/" + appDelegate.activeUserID + "/restore/" + tableTrash.fileName
-        
-        ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
-            
-            NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
-            guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted, ascending: self.datasourceAscending) else {
-                return
-            }
-            self.datasource = datasource
-            self.collectionView.reloadData()
-            
-        }, failure: { (message, errorCode) in
-            
-            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-        })
-    }
-    
-    func deleteItem(with fileID: String) {
-        
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
-            return
-        }
-        
-        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
-        
-        let path = appDelegate.activeUrl + tableTrash.filePath + tableTrash.fileName
-
-        ocNetworking?.deleteFileOrFolder(path, completion: { (message, errorCode) in
-            
-            if errorCode == 0 {
-                
-                NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
-                guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted, ascending: self.datasourceAscending) else {
-                    return
-                }
-                self.datasource = datasource
-                self.collectionView.reloadData()
-                
-            } else {
-                
-                self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
-            }
-        })
-    }
-    
-    func downloadThumbnail(with tableTrash: tableTrash, indexPath: IndexPath) {
+    func downloadThumbnail(with tableMetadata: tableMetadata, indexPath: IndexPath) {
                 
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
-        ocNetworking?.downloadPreviewTrash(withFileID: tableTrash.fileID, fileName: tableTrash.fileName, completion: { (message, errorCode) in
-            if errorCode == 0 && CCUtility.fileProviderStorageIconExists(tableTrash.fileID, fileNameView: tableTrash.fileName) {
+        ocNetworking?.downloadPreviewTrash(withFileID: tableMetadata.fileID, fileName: tableMetadata.fileName, completion: { (message, errorCode) in
+            if errorCode == 0 && CCUtility.fileProviderStorageIconExists(tableMetadata.fileID, fileNameView: tableMetadata.fileName) {
                 self.collectionView.reloadItems(at: [indexPath])
             }
         })
+    }
+    
+    // MARK: DATASOURCE
+    @objc func loadDatasource() {
+        
+        let directoryes = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
+        
+        collectionView.reloadData()
     }
     
     // MARK: COLLECTIONVIEW METHODS
@@ -575,7 +391,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
             var files: Int = 0, filesText = ""
             var size: Double = 0
             
-            for record: tableTrash in self.datasource {
+            for record: tableMetadata in self.datasource {
                 if record.directory {
                     folders += 1
                 } else {
@@ -626,20 +442,20 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let tableTrash = datasource[indexPath.item]
+        let tableMetadata = datasource[indexPath.item]
         var image: UIImage?
         
-        if tableTrash.iconName.count > 0 {
-            image = UIImage.init(named: tableTrash.iconName)
+        if tableMetadata.iconName.count > 0 {
+            image = UIImage.init(named: tableMetadata.iconName)
         } else {
             image = UIImage.init(named: "file")
         }
         
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName))
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(tableMetadata.fileID, fileNameView: tableMetadata.fileName)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableMetadata.fileID, fileNameView: tableMetadata.fileName))
         } else {
-            if tableTrash.thumbnailExists && !CCUtility.fileProviderStorageIconExists(tableTrash.fileID, fileNameView: tableTrash.fileName) {
-                downloadThumbnail(with: tableTrash, indexPath: indexPath)
+            if tableMetadata.thumbnailExists && !CCUtility.fileProviderStorageIconExists(tableMetadata.fileID, fileNameView: tableMetadata.fileName) {
+                downloadThumbnail(with: tableMetadata, indexPath: indexPath)
             }
         }
         
@@ -649,23 +465,23 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-list", for: indexPath) as! NCOnDeviceListCell
             cell.delegate = self
             
-            cell.fileID = tableTrash.fileID
+            cell.fileID = tableMetadata.fileID
             cell.indexPath = indexPath
-            cell.labelTitle.text = tableTrash.trashbinFileName
+            cell.labelTitle.text = tableMetadata.fileNameView
             
-            if tableTrash.directory {
+            if tableMetadata.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date)
+                cell.labelInfo.text = CCUtility.dateDiff(tableMetadata.date as Date)
             } else {
                 cell.imageItem.image = image
-                cell.labelInfo.text = CCUtility.dateDiff(tableTrash.date as Date) + " " + CCUtility.transformedSize(tableTrash.size)
+                cell.labelInfo.text = CCUtility.dateDiff(tableMetadata.date as Date) + " " + CCUtility.transformedSize(tableMetadata.size)
             }
             
             if isEditMode {
                 cell.imageItemLeftConstraint.constant = 45
                 cell.imageSelect.isHidden = false
                 
-                if selectFileID.contains(tableTrash.fileID) {
+                if selectFileID.contains(tableMetadata.fileID) {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
                     cell.backgroundView = cellBlurEffect(with: cell.bounds)
                 } else {
@@ -686,11 +502,11 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-grid", for: indexPath) as! NCOnDeviceGridCell
             cell.delegate = self
             
-            cell.fileID = tableTrash.fileID
+            cell.fileID = tableMetadata.fileID
             cell.indexPath = indexPath
-            cell.labelTitle.text = tableTrash.trashbinFileName
+            cell.labelTitle.text = tableMetadata.fileNameView
             
-            if tableTrash.directory {
+            if tableMetadata.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
             } else {
                 cell.imageItem.image = image
@@ -698,7 +514,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
             
             if isEditMode {
                 cell.imageSelect.isHidden = false
-                if selectFileID.contains(tableTrash.fileID) {
+                if selectFileID.contains(tableMetadata.fileID) {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: UIColor.white)
                     cell.backgroundView = cellBlurEffect(with: cell.bounds)
                 } else {
@@ -715,23 +531,23 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        let tableTrash = datasource[indexPath.item]
+        let tableMetadata = datasource[indexPath.item]
 
         if isEditMode {
-            if let index = selectFileID.index(of: tableTrash.fileID) {
+            if let index = selectFileID.index(of: tableMetadata.fileID) {
                 selectFileID.remove(at: index)
             } else {
-                selectFileID.append(tableTrash.fileID)
+                selectFileID.append(tableMetadata.fileID)
             }
             collectionView.reloadItems(at: [indexPath])
             return
         }
         
-        if tableTrash.directory {
+        if tableMetadata.directory {
         
-            let ncTrash:NCTrash = UIStoryboard(name: "NCOnDevice", bundle: nil).instantiateInitialViewController() as! NCTrash
-            ncTrash.path = tableTrash.filePath + tableTrash.fileName
-            ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
+            let ncTrash:NCOnDevice = UIStoryboard(name: "NCOnDevice", bundle: nil).instantiateInitialViewController() as! NCOnDevice
+            ncTrash.path = tableMetadata.fileName
+            ncTrash.titleCurrentFolder = tableMetadata.fileNameView
             self.navigationController?.pushViewController(ncTrash, animated: true)
         }
     }
