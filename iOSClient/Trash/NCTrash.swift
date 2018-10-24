@@ -852,7 +852,6 @@ class GridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 
-
                 let numItems: Int = Int(collectionView.frame.width / preferenceWidth)                
                 let itemWidth: CGFloat = (collectionView.frame.width - (marginLeftRight * 2) - CGFloat(numItems)) / CGFloat(numItems)
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
