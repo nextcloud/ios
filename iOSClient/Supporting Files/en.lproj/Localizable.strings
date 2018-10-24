@@ -606,9 +606,9 @@
 "_trash_restore_selected_"          = "Restore selected files";
 "_trash_delete_selected_"           = "Deleted selected files";
 
-// On the device
+// On device
 
-"_on_the_device_"                   = "On the device";
+"_on_device_"                       = "On device";
 "_set_available_offline_"           = "Set as available offline";
 "_remove_available_offline_"        = "Remove as available offline";
 
