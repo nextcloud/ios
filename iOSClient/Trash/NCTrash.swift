@@ -124,6 +124,12 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         return NSAttributedString.init(string: text, attributes: attributes)
     }
     
+    func description(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
+        let text = "\n"+NSLocalizedString("_trash_no_trash_description_", comment: "")
+        let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
+        return NSAttributedString.init(string: text, attributes: attributes)
+    }
+    
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
     }
