@@ -831,15 +831,17 @@ class ListLayout: UICollectionViewFlowLayout {
 class GridLayout: UICollectionViewFlowLayout {
     
     let heightLabelPlusButton: CGFloat = 45
-
+    let preferenceWidth: CGFloat = 110
+    let marginLeftRight: CGFloat = 5
+    
     override init() {
         super.init()
         
-        minimumInteritemSpacing = 0
+        minimumInteritemSpacing = 1
         minimumLineSpacing = 1
 
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 10, left: 12, bottom: 10, right: 12)
+        self.sectionInset = UIEdgeInsets(top: 10, left: marginLeftRight, bottom: 10, right:  marginLeftRight)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -850,7 +852,9 @@ class GridLayout: UICollectionViewFlowLayout {
         get {
             if let collectionView = collectionView {
                 
-                let itemWidth: CGFloat = (collectionView.frame.width/CGFloat(collectionView.bounds.width / 90.0))
+
+                let numItems: Int = Int(collectionView.frame.width / preferenceWidth)                
+                let itemWidth: CGFloat = (collectionView.frame.width - (marginLeftRight * 2) - CGFloat(numItems)) / CGFloat(numItems)
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
                 return CGSize(width: itemWidth, height: itemHeight)
             }
