@@ -1119,6 +1119,29 @@ class NCManageDatabase: NSObject {
             print("[LOG] Could not write to database: ", error)
         }
     }
+    
+    @objc func setDirectory(serverUrl: String, onDevice: Bool) {
+        
+        guard let tableAccount = self.getAccountActive() else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableDirectory.self).filter("account = %@ AND serverUrl = %@", tableAccount.account, serverUrl).first else {
+                    realm.cancelWrite()
+                    return
+                }
+                
+                result.onDevice = onDevice
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
+        }
+    }
 
     //MARK: -
     //MARK: Table e2e Encryption
@@ -1538,6 +1561,29 @@ class NCManageDatabase: NSObject {
             return Array(results.map { tableLocalFile.init(value:$0) })
         } else {
             return nil
+        }
+    }
+    
+    @objc func setLocalFile(fileID: String, onDevice: Bool) {
+        
+        guard self.getAccountActive() != nil else {
+            return
+        }
+        
+        let realm = try! Realm()
+        
+        do {
+            try realm.write {
+                
+                guard let result = realm.objects(tableLocalFile.self).filter("fileID = %@", fileID).first else {
+                    realm.cancelWrite()
+                    return
+                }
+                
+                result.onDevice = onDevice
+            }
+        } catch let error {
+            print("[LOG] Could not write to database: ", error)
         }
     }
 

@@ -111,6 +111,7 @@ class tableDirectory: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var lock: Bool = false
+    @objc dynamic var onDevice: Bool = false
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     
