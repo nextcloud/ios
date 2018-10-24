@@ -137,9 +137,9 @@
 "_app_in_use_"                  = "Application in use";
 "_contact_by_email_"            = "Contact us by email";
 "_clear_cache_"                 = "Clear cache";
-"_clear_cache_footer_"          = "Clear downloaded and offline files";
+"_clear_cache_footer_"          = "Clear downloaded and offline files from the app";
 "_exit_"                        = "Reset application";
-"_exit_footer_"                 = "Remove all accounts and local data";
+"_exit_footer_"                 = "Remove all accounts and local data from the app";
 "_funct_not_enabled_"           = "Functionality not enabled";
 "_passcode_activate_"           = "Password lock on";
 "_disabling_passcode_"          = "Removing password lock";
