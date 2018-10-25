@@ -19,7 +19,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="600" height="60"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="w2m-Vw-hpd" userLabel="ImageItem">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="w2m-Vw-hpd" userLabel="ImageItem">
                         <rect key="frame" x="45" y="10" width="40" height="40"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="40" id="Dpd-Xj-z4U"/>

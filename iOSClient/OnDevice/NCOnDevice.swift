@@ -325,8 +325,27 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     // MARK: DATASOURCE
     @objc func loadDatasource(withSynchronized: Bool = false) {
         
+        datasource.removeAll()
+        
         let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
-        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), sorted: "fileName", ascending: true)
+        if directories != nil {
+            for directory: tableDirectory in directories! {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", directory.fileID)) else {
+                    continue
+                }
+                datasource.append(metadata)
+            }
+        }
+        
+        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
+        if files != nil {
+            for file: tableLocalFile in files! {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", file.fileID)) else {
+                    continue
+                }
+                datasource.append(metadata)
+            }
+        }
         
         collectionView.reloadData()
     }
