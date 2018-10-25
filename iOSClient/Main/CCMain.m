@@ -3601,11 +3601,13 @@
                                     handler:^(AHKActionSheet *as) {
                                         if (directoryOnDevice == nil) {
                                             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:true];
+                                            [[CCSynchronize sharedSynchronize] readFolder:dirServerUrl selector:selectorReadFolderWithDownload];
                                         } else if (directoryOnDevice.serverUrl.length == dirServerUrl.length) {
                                             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:false];
                                         } else if (directoryOnDevice.serverUrl.length > dirServerUrl.length) {
                                             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:directoryOnDevice.serverUrl onDevice:false];
                                             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:true];
+                                            [[CCSynchronize sharedSynchronize] readFolder:dirServerUrl selector:selectorReadFolderWithDownload];
                                         }
                                     }];
         }
