@@ -70,7 +70,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(loadDatasource(withSynchronized:)), for: .valueChanged)
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self;
@@ -90,7 +90,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
         datasourceSorted = CCUtility.getOrderSettings()
         datasourceAscending = CCUtility.getAscendingSettings()
         
-        loadDatasource()
+        loadDatasource(withSynchronized: false)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -108,7 +108,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     }
     
     func image(forEmptyDataSet scrollView: UIScrollView) -> UIImage? {
-        return CCGraphics.changeThemingColorImage(UIImage.init(named: "filesNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.graySoft)
+        return CCGraphics.changeThemingColorImage(UIImage.init(named: "filesNoFiles"), multiplier: 2, color: NCBrandColor.sharedInstance.brandElement)
     }
     
     func title(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
@@ -297,7 +297,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
             datasourceSorted = CCUtility.getOrderSettings()
             datasourceAscending = CCUtility.getAscendingSettings()
             
-            loadDatasource()
+            loadDatasource(withSynchronized: false)
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
@@ -323,9 +323,11 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     }
     
     // MARK: DATASOURCE
-    @objc func loadDatasource() {
+    @objc func loadDatasource(withSynchronized: Bool = false) {
         
-        let directoryes = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
+        let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
+        
+        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), sorted: "fileNameView", ascending: true)
         
         collectionView.reloadData()
     }
