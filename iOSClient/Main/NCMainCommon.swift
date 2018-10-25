@@ -767,6 +767,12 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
                 appDelegate.activeMain.copyFile(toPasteboard: metadata)
             }
             
+            // Set as available offline
+            if selector == selectorLoadOnDevice {
+                
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, onDevice: true)
+            }
+            
             //selectorLoadViewImage
             if selector == selectorLoadViewImage {
                 

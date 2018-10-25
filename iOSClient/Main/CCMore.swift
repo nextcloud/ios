@@ -114,15 +114,6 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         item.url = "segueShares"
         functionMenu.append(item)
 
-        // ITEM : Scan
-        if #available(iOS 11.0, *) {
-            item = OCExternalSites.init()
-            item.name = "_scanned_images_"
-            item.icon = "scan"
-            item.url = "openStoryboardScan"
-            functionMenu.append(item)
-        }
-        
 #if targetEnvironment(simulator)
         // ITEM : OnDevice
         item = OCExternalSites.init()
@@ -131,6 +122,15 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         item.url = "segueOnDevice"
         functionMenu.append(item)
 #endif
+        
+        // ITEM : Scan
+        if #available(iOS 11.0, *) {
+            item = OCExternalSites.init()
+            item.name = "_scanned_images_"
+            item.icon = "scan"
+            item.url = "openStoryboardScan"
+            functionMenu.append(item)
+        }
         
         // ITEM : Trash
         let capabilities = NCManageDatabase.sharedInstance.getCapabilites()

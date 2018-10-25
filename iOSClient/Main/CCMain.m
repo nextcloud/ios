@@ -3570,6 +3570,24 @@
                                     }];
         }
         
+        if (!lockDirectory && !isFolderEncrypted) {
+            
+            NSString *title, *serverUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:self.metadata.fileName];
+            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND onDevice == true", appDelegate.activeAccount, serverUrl]];
+            if (directory == nil) { title = NSLocalizedString(@"_set_available_offline_", nil); }
+            else { title = NSLocalizedString(@"_remove_available_offline_", nil); }
+            
+            [actionSheet addButtonWithTitle:title
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"onDevice"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        if (directory == nil) { [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl onDevice:true];
+                                        } else { [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl onDevice:false]; }
+                                    }];
+        }
+        
         if (!([self.metadata.fileName isEqualToString:_autoUploadFileName] == YES && [serverUrl isEqualToString:_autoUploadDirectory] == YES)) {
             
             [actionSheet addButtonWithTitle:titoloLock
@@ -3735,6 +3753,40 @@
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
                                         [self moveOpenWindow:[[NSArray alloc] initWithObjects:indexPath, nil]];
+                                    }];
+        }
+        
+        if (!_metadataFolder.e2eEncrypted) {
+            
+            NSString *title;
+            tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", self.metadata.fileID]];
+
+            if (localFile == nil || localFile.onDevice == false) { title = NSLocalizedString(@"_set_available_offline_", nil); }
+            else { title = NSLocalizedString(@"_remove_available_offline_", nil); }
+            
+            [actionSheet addButtonWithTitle:title
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"onDevice"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                            backgroundColor:[NCBrandColor sharedInstance].backgroundView
+                                     height:50.0
+                                       type:AHKActionSheetButtonTypeDefault
+                                    handler:^(AHKActionSheet *as) {
+                                        
+                                        if (localFile == nil) {
+                                            self.metadata.session = k_download_session;
+                                            self.metadata.sessionError = @"";
+                                            self.metadata.sessionSelector = selectorLoadOnDevice;
+                                            self.metadata.status = k_metadataStatusWaitDownload;
+                                            
+                                            // Add Metadata for Download
+                                            (void)[[NCManageDatabase sharedInstance] addMetadata:self.metadata];
+                                            [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
+                                            
+                                            [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
+                                        } else if (localFile.onDevice == false) {
+                                            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID onDevice:true];
+                                        } else {
+                                            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID onDevice:false];
+                                        }
                                     }];
         }
         

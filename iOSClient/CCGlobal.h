@@ -190,6 +190,7 @@
 #define selectorLoadModelView                           @"loadModelView"
 #define selectorLoadViewImage                           @"loadViewImage"
 #define selectorLoadCopy                                @"loadCopy"
+#define selectorLoadOnDevice                            @"loadOnDevice"
 #define selectorMove                                    @"move"
 #define selectorOpenIn                                  @"openIn"
 #define selectorOpenWindowShare                         @"openWindowShare"
