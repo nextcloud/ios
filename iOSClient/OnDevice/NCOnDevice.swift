@@ -326,8 +326,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     @objc func loadDatasource(withSynchronized: Bool = false) {
         
         let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
-        
-        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), sorted: "fileNameView", ascending: true)
+        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), sorted: "fileName", ascending: true)
         
         collectionView.reloadData()
     }

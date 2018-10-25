@@ -3482,13 +3482,24 @@
     if (self.metadata.directory) {
         
         BOOL lockDirectory = NO;
+        BOOL optionOnDevice = NO;
         NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:self.metadata.fileName];
+        NSString *firstServerUrl = [CCUtility firtsPathComponentFromServerUrl:dirServerUrl activeUrl:appDelegate.activeUrl];
         BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:[NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName] account:appDelegate.activeAccount];
         
         // Directory bloccata ?
-        tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, dirServerUrl]];
+        tableDirectory *directoryForLock = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", appDelegate.activeAccount, dirServerUrl]];
+        if (directoryForLock.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil) lockDirectory = YES;
         
-        if (directory.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil) lockDirectory = YES;
+        // Directory set as offline ?
+        tableDirectory *directoryOnDevice = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl CONTAINS %@ AND onDevice == true", appDelegate.activeAccount, firstServerUrl]];
+        if (directoryOnDevice == nil) {
+            optionOnDevice = YES;
+        } else if (directoryOnDevice.serverUrl.length == dirServerUrl.length) {
+            optionOnDevice = YES;
+        } else if (directoryOnDevice.serverUrl.length > dirServerUrl.length) {
+            optionOnDevice = YES;
+        }
         
         [actionSheet addButtonWithTitle:self.metadata.fileNameView
                                   image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"folder"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement]
@@ -3570,12 +3581,17 @@
                                     }];
         }
         
-        if (!lockDirectory && !isFolderEncrypted) {
+        if (!lockDirectory && !isFolderEncrypted && optionOnDevice) {
             
-            NSString *title, *serverUrl = [CCUtility stringAppendServerUrl:_serverUrl addFileName:self.metadata.fileName];
-            tableDirectory *directory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@ AND onDevice == true", appDelegate.activeAccount, serverUrl]];
-            if (directory == nil) { title = NSLocalizedString(@"_set_available_offline_", nil); }
-            else { title = NSLocalizedString(@"_remove_available_offline_", nil); }
+            NSString *title;
+            
+            if (directoryOnDevice == nil) {
+                title = NSLocalizedString(@"_set_available_offline_", nil);
+            } else if (directoryOnDevice.serverUrl.length == dirServerUrl.length) {
+                title = NSLocalizedString(@"_remove_available_offline_", nil);
+            } else if (directoryOnDevice.serverUrl.length > dirServerUrl.length) {
+                title = NSLocalizedString(@"_set_available_offline_", nil);
+            }
             
             [actionSheet addButtonWithTitle:title
                                       image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"onDevice"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
@@ -3583,8 +3599,14 @@
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        if (directory == nil) { [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl onDevice:true];
-                                        } else { [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:serverUrl onDevice:false]; }
+                                        if (directoryOnDevice == nil) {
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:true];
+                                        } else if (directoryOnDevice.serverUrl.length == dirServerUrl.length) {
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:false];
+                                        } else if (directoryOnDevice.serverUrl.length > dirServerUrl.length) {
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:directoryOnDevice.serverUrl onDevice:false];
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:true];
+                                        }
                                     }];
         }
         

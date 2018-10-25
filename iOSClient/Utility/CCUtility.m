@@ -1016,13 +1016,27 @@
 
 + (NSString *)deletingLastPathComponentFromServerUrl:(NSString *)serverUrl
 {
-    //NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]] URLByDeletingLastPathComponent]; DEPRECATED iOS9
-    
     NSURL *url = [[NSURL URLWithString:[serverUrl stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]] URLByDeletingLastPathComponent];
     
     NSString *pather = [[url absoluteString] stringByRemovingPercentEncoding];
     
     return [pather substringToIndex: [pather length] - 1];
+}
+
++ (NSString *)firtsPathComponentFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
+{
+    NSString *firstPath = serverUrl;
+
+    NSURL *serverUrlURL = [NSURL URLWithString:serverUrl];
+    NSURL *activeUrlURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@%@/", activeUrl, k_webDAV]];
+    
+    while ([[serverUrlURL absoluteString] isEqualToString:[activeUrlURL absoluteString]] == false) {
+        firstPath = [serverUrlURL absoluteString];
+        serverUrlURL = [serverUrlURL URLByDeletingLastPathComponent];
+    }
+    
+    if ([firstPath hasSuffix:@"/"]) firstPath = [firstPath substringToIndex:[firstPath length] - 1];
+    return firstPath;
 }
 
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
