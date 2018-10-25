@@ -1050,18 +1050,16 @@
         
         for (tableMetadata *metadata in selectedMetadatas) {
             
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
+            if (serverUrl == nil) continue;
+            
             if (metadata.directory) {
                 
-                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-                    
-                if (serverUrl) {
-                    serverUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName];
-                    [[CCSynchronize sharedSynchronize] readFolder:serverUrl selector:selectorReadFolderWithDownload];
-                }
+                [[CCSynchronize sharedSynchronize] readFolder:[CCUtility stringAppendServerUrl:serverUrl addFileName:metadata.fileName] selector:selectorReadFolderWithDownload];
                     
             } else {
-                    
-                [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
+                
+                [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload];
             }
         }
         

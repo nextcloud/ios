@@ -839,6 +839,41 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
     }
 }
 
+//MARK: -
 
+class NCFunctionMain: NSObject {
+    
+    @objc static let sharedInstance: NCFunctionMain = {
+        let instance = NCFunctionMain()
+        return instance
+    }()
+    
+    let appDelegate = UIApplication.shared.delegate as! AppDelegate
+    
+    @objc func synchronizeOnDevice() {
+        
+        let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
+        if (directories != nil) {
+            for directory: tableDirectory in directories! {
+                
+                CCSynchronize.shared()?.readFile(forFolder: "", serverUrl: "", selector: selectorReadFolderWithDownload)
+            }
+        }
+        
+        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), sorted: "fileName", ascending: true)
+        if (files != nil) {
+            for file: tableLocalFile in files! {
+                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", file.fileID)) else {
+                    continue
+                }
+                guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+                    continue
+                }
+                CCSynchronize.shared()?.readFile(metadata.fileID, fileName: metadata.fileName, serverUrl: serverUrl, selector: selectorReadFileFolderWithDownload)
+            }
+        }
+    
+    }
+}
 
 

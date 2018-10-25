@@ -38,7 +38,7 @@
 
 - (void)readFolder:(NSString *)serverUrl selector:(NSString *)selector;
 - (void)readFileForFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector;
-- (void)readFile:(tableMetadata *)metadata selector:(NSString *)selector;
+- (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector;
 
 - (void)verifyChangeMedatas:(NSArray *)allRecordMetadatas serverUrl:(NSString *)serverUrl account:(NSString *)account withDownload:(BOOL)withDownload;
 

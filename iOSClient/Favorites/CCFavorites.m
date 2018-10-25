@@ -250,9 +250,9 @@
                 } else {
                     
                     if ([CCUtility getFavoriteOffline])
-                        [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFileWithDownload];
+                        [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFileWithDownload];
                     else
-                        [[CCSynchronize sharedSynchronize] readFile:metadata selector:selectorReadFile];
+                        [[CCSynchronize sharedSynchronize] readFile:metadata.fileID fileName:metadata.fileName serverUrl:serverUrl selector:selectorReadFile];
                 }
                 
                 father = serverUrlSon;

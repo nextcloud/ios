@@ -244,16 +244,13 @@
     [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
 }
 
-- (void)readFile:(tableMetadata *)metadata selector:(NSString *)selector
+- (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
 {
-    NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadata.directoryID];
-    if (!serverUrl) return;
-        
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
         
     metadataNet.action = actionReadFile;
-    metadataNet.fileID = metadata.fileID;
-    metadataNet.fileName = metadata.fileName;
+    metadataNet.fileID = fileID;
+    metadataNet.fileName = fileName;
     metadataNet.priority = NSOperationQueuePriorityLow;
     metadataNet.selector = selector;
     metadataNet.serverUrl = serverUrl;
