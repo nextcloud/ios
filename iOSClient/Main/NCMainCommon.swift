@@ -266,6 +266,11 @@ class NCMainCommon: NSObject {
                     cell.status.image = UIImage.init(named: "passcode")
                 }
                 
+                // Available offline
+                if tableDirectory != nil && tableDirectory!.onDevice {
+                    cell.favorite.image = UIImage.init(named: "flagOnDevice")
+                }
+                
             } else {
                 
                 let iconFileExists = FileManager.default.fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
@@ -294,6 +299,11 @@ class NCMainCommon: NSObject {
                 let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", appDelegate.activeAccount, metadata.fileName))
                 if tableE2eEncryption != nil &&  NCUtility.sharedInstance.isEncryptedMetadata(metadata) {
                     cell.status.image = UIImage.init(named: "encrypted")
+                }
+                
+                // Available offline
+                if tableLocalFile != nil && tableLocalFile!.onDevice {
+                    cell.favorite.image = UIImage.init(named: "flagOnDevice")
                 }
                 
                 // Share

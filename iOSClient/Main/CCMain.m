@@ -3602,6 +3602,7 @@
                                             [[CCSynchronize sharedSynchronize] readFolder:dirServerUrl selector:selectorReadFolderWithDownload];
                                         } else if (directoryOnDevice.serverUrl.length == dirServerUrl.length) {
                                             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:false];
+                                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                         } else if (directoryOnDevice.serverUrl.length > dirServerUrl.length) {
                                             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:directoryOnDevice.serverUrl onDevice:false];
                                             [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:true];
@@ -3806,8 +3807,10 @@
                                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
                                         } else if (localFile.onDevice == false) {
                                             [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID onDevice:true];
+                                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                         } else {
                                             [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID onDevice:false];
+                                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                         }
                                     }];
         }
