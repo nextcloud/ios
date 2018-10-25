@@ -115,11 +115,11 @@ class CCMore: UIViewController, UITableViewDelegate, UITableViewDataSource, CCLo
         functionMenu.append(item)
 
 #if targetEnvironment(simulator)
-        // ITEM : OnDevice
+        // ITEM : Offline
         item = OCExternalSites.init()
-        item.name = "_on_device_"
-        item.icon = "onDevice"
-        item.url = "segueOnDevice"
+        item.name = "_manage_file_offline_"
+        item.icon = "offline"
+        item.url = "segueOffline"
         functionMenu.append(item)
 #endif
         

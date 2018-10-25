@@ -574,9 +574,9 @@
     [UICKeyChainStore setString:layout forKey:@"layoutTrash" service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getLayoutOnDevice
++ (NSString *)getLayoutOffline
 {
-    NSString *layout = [UICKeyChainStore stringForKey:@"layoutOnDevice" service:k_serviceShareKeyChain];
+    NSString *layout = [UICKeyChainStore stringForKey:@"layoutOffline" service:k_serviceShareKeyChain];
     
     // Default
     if (layout == nil) {
@@ -587,9 +587,9 @@
     return layout;
 }
 
-+ (void)setLayoutOnDevice:(NSString *)layout
++ (void)setLayoutOffline:(NSString *)layout
 {
-    [UICKeyChainStore setString:layout forKey:@"layoutOnDevice" service:k_serviceShareKeyChain];
+    [UICKeyChainStore setString:layout forKey:@"layoutOffline" service:k_serviceShareKeyChain];
 }
 
 

@@ -607,7 +607,7 @@
                         <segue destination="Gtp-25-3Em" kind="show" identifier="segueTransfers" id="OLL-6n-NHS"/>
                         <segue destination="7jW-Ey-7M7" kind="show" identifier="segueShares" id="EzC-w0-JAm"/>
                         <segue destination="WTp-0D-Gpe" kind="show" identifier="segueTrash" id="bPq-YD-SUy"/>
-                        <segue destination="biz-Qc-WHi" kind="show" identifier="segueOnDevice" id="Pdi-HO-f4O"/>
+                        <segue destination="biz-Qc-WHi" kind="show" identifier="segueOffline" id="Pdi-HO-f4O"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="D7n-Z1-9wU" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -622,10 +622,10 @@
             </objects>
             <point key="canvasLocation" x="10863" y="240"/>
         </scene>
-        <!--NCOnDevice.storyboard-->
+        <!--NCOffline.storyboard-->
         <scene sceneID="mwv-1V-aJg">
             <objects>
-                <viewControllerPlaceholder storyboardIdentifier="NCOnDevice.storyboard" storyboardName="NCOnDevice" referencedIdentifier="NCOnDevice.storyboard" id="biz-Qc-WHi" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardIdentifier="NCOnDevice.storyboard" storyboardName="NCOffline" referencedIdentifier="NCOffline.storyboard" id="biz-Qc-WHi" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="d9n-lT-FK4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="10882" y="420"/>

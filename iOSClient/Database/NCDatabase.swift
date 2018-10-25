@@ -111,7 +111,7 @@ class tableDirectory: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var lock: Bool = false
-    @objc dynamic var onDevice: Bool = false
+    @objc dynamic var offline: Bool = false
     @objc dynamic var permissions = ""
     @objc dynamic var serverUrl = ""
     
@@ -187,7 +187,7 @@ class tableLocalFile: Object {
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileID = ""
     @objc dynamic var fileName = ""
-    @objc dynamic var onDevice: Bool = false
+    @objc dynamic var offline: Bool = false
     @objc dynamic var size: Double = 0
     
     override static func primaryKey() -> String {

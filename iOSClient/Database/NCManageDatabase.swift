@@ -1120,7 +1120,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setDirectory(serverUrl: String, onDevice: Bool) {
+    @objc func setDirectory(serverUrl: String, offline: Bool) {
         
         guard let tableAccount = self.getAccountActive() else {
             return
@@ -1136,7 +1136,7 @@ class NCManageDatabase: NSObject {
                     return
                 }
                 
-                result.onDevice = onDevice
+                result.offline = offline
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)
@@ -1564,7 +1564,7 @@ class NCManageDatabase: NSObject {
         }
     }
     
-    @objc func setLocalFile(fileID: String, onDevice: Bool) {
+    @objc func setLocalFile(fileID: String, offline: Bool) {
         
         guard self.getAccountActive() != nil else {
             return
@@ -1580,7 +1580,7 @@ class NCManageDatabase: NSObject {
                     return
                 }
                 
-                result.onDevice = onDevice
+                result.offline = offline
             }
         } catch let error {
             print("[LOG] Could not write to database: ", error)

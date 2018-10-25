@@ -163,13 +163,13 @@
 		F732BA061D76CE1500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F732BA0B1D76DBA500E9878B /* CCNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F732BA041D76CE1500E9878B /* CCNetworking.m */; };
 		F734E5891F019D860060CB77 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
-		F73747F8218059CA00908896 /* NCOnDevice.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73747F1218059CA00908896 /* NCOnDevice.storyboard */; };
-		F73747F9218059CA00908896 /* NCOnDeviceListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73747F2218059CA00908896 /* NCOnDeviceListCell.swift */; };
-		F73747FA218059CA00908896 /* NCOnDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73747F3218059CA00908896 /* NCOnDevice.swift */; };
-		F73747FB218059CA00908896 /* NCOnDeviceGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73747F4218059CA00908896 /* NCOnDeviceGridCell.swift */; };
-		F73747FC218059CA00908896 /* NCOnDeviceGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73747F5218059CA00908896 /* NCOnDeviceGridCell.xib */; };
-		F73747FD218059CA00908896 /* NCOnDeviceListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73747F6218059CA00908896 /* NCOnDeviceListCell.xib */; };
-		F73747FE218059CA00908896 /* NCOnDeviceHeaderFooterMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73747F7218059CA00908896 /* NCOnDeviceHeaderFooterMenu.swift */; };
+		F7381ED221821281000B1560 /* NCOfflineListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381ECB21821280000B1560 /* NCOfflineListCell.swift */; };
+		F7381ED321821281000B1560 /* NCOffline.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381ECC21821280000B1560 /* NCOffline.swift */; };
+		F7381ED421821281000B1560 /* NCOfflineGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381ECD21821280000B1560 /* NCOfflineGridCell.swift */; };
+		F7381ED521821281000B1560 /* NCOfflineHeaderFooterMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7381ECE21821280000B1560 /* NCOfflineHeaderFooterMenu.swift */; };
+		F7381ED621821281000B1560 /* NCOffline.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7381ECF21821280000B1560 /* NCOffline.storyboard */; };
+		F7381ED721821281000B1560 /* NCOfflineGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7381ED021821280000B1560 /* NCOfflineGridCell.xib */; };
+		F7381ED821821281000B1560 /* NCOfflineListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7381ED121821280000B1560 /* NCOfflineListCell.xib */; };
 		F738E8421F90FFD100F95C8E /* NCManageEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */; };
 		F73B4EEE1F470D9100BBEE4B /* Big5Freq.tab in Resources */ = {isa = PBXBuildFile; fileRef = F73B4EAD1F470D9100BBEE4B /* Big5Freq.tab */; };
 		F73B4EEF1F470D9100BBEE4B /* CharDistribution.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F73B4EAE1F470D9100BBEE4B /* CharDistribution.cpp */; };
@@ -947,13 +947,13 @@
 		F732093B201B81E4008A0888 /* es-419 */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-419"; path = "es-419.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F732BA031D76CE1500E9878B /* CCNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNetworking.h; sourceTree = "<group>"; };
 		F732BA041D76CE1500E9878B /* CCNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCNetworking.m; sourceTree = "<group>"; };
-		F73747F1218059CA00908896 /* NCOnDevice.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOnDevice.storyboard; sourceTree = "<group>"; };
-		F73747F2218059CA00908896 /* NCOnDeviceListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOnDeviceListCell.swift; sourceTree = "<group>"; };
-		F73747F3218059CA00908896 /* NCOnDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOnDevice.swift; sourceTree = "<group>"; };
-		F73747F4218059CA00908896 /* NCOnDeviceGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOnDeviceGridCell.swift; sourceTree = "<group>"; };
-		F73747F5218059CA00908896 /* NCOnDeviceGridCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOnDeviceGridCell.xib; sourceTree = "<group>"; };
-		F73747F6218059CA00908896 /* NCOnDeviceListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOnDeviceListCell.xib; sourceTree = "<group>"; };
-		F73747F7218059CA00908896 /* NCOnDeviceHeaderFooterMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOnDeviceHeaderFooterMenu.swift; sourceTree = "<group>"; };
+		F7381ECB21821280000B1560 /* NCOfflineListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOfflineListCell.swift; sourceTree = "<group>"; };
+		F7381ECC21821280000B1560 /* NCOffline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOffline.swift; sourceTree = "<group>"; };
+		F7381ECD21821280000B1560 /* NCOfflineGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOfflineGridCell.swift; sourceTree = "<group>"; };
+		F7381ECE21821280000B1560 /* NCOfflineHeaderFooterMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOfflineHeaderFooterMenu.swift; sourceTree = "<group>"; };
+		F7381ECF21821280000B1560 /* NCOffline.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOffline.storyboard; sourceTree = "<group>"; };
+		F7381ED021821280000B1560 /* NCOfflineGridCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineGridCell.xib; sourceTree = "<group>"; };
+		F7381ED121821280000B1560 /* NCOfflineListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineListCell.xib; sourceTree = "<group>"; };
 		F738E8401F90FFD100F95C8E /* NCManageEndToEndEncryption.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NCManageEndToEndEncryption.h; sourceTree = "<group>"; };
 		F738E8411F90FFD100F95C8E /* NCManageEndToEndEncryption.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NCManageEndToEndEncryption.m; sourceTree = "<group>"; };
 		F73B4EAD1F470D9100BBEE4B /* Big5Freq.tab */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Big5Freq.tab; sourceTree = "<group>"; };
@@ -2132,18 +2132,18 @@
 			path = "Notification Service Extension";
 			sourceTree = "<group>";
 		};
-		F73747F0218059CA00908896 /* OnDevice */ = {
+		F7381ECA21821280000B1560 /* Offline */ = {
 			isa = PBXGroup;
 			children = (
-				F73747F1218059CA00908896 /* NCOnDevice.storyboard */,
-				F73747F3218059CA00908896 /* NCOnDevice.swift */,
-				F73747F4218059CA00908896 /* NCOnDeviceGridCell.swift */,
-				F73747F5218059CA00908896 /* NCOnDeviceGridCell.xib */,
-				F73747F7218059CA00908896 /* NCOnDeviceHeaderFooterMenu.swift */,
-				F73747F2218059CA00908896 /* NCOnDeviceListCell.swift */,
-				F73747F6218059CA00908896 /* NCOnDeviceListCell.xib */,
+				F7381ECB21821280000B1560 /* NCOfflineListCell.swift */,
+				F7381ECC21821280000B1560 /* NCOffline.swift */,
+				F7381ECD21821280000B1560 /* NCOfflineGridCell.swift */,
+				F7381ECE21821280000B1560 /* NCOfflineHeaderFooterMenu.swift */,
+				F7381ECF21821280000B1560 /* NCOffline.storyboard */,
+				F7381ED021821280000B1560 /* NCOfflineGridCell.xib */,
+				F7381ED121821280000B1560 /* NCOfflineListCell.xib */,
 			);
-			path = OnDevice;
+			path = Offline;
 			sourceTree = "<group>";
 		};
 		F73B4EAC1F470D9100BBEE4B /* src */ = {
@@ -3466,7 +3466,7 @@
 				F7F9E3451BC26B19004B9223 /* Move */,
 				F74D3DB81BAC1941000BAE4B /* Networking */,
 				F7C5259A1E3B441D00FFE02C /* Notification */,
-				F73747F0218059CA00908896 /* OnDevice */,
+				F7381ECA21821280000B1560 /* Offline */,
 				F7FCFFD51D70798C000E6E29 /* PeekPop */,
 				F7BE6E2A1D2D5C3B00106933 /* QuickActions */,
 				F7FE125B1BAC03FB0041924B /* Security */,
@@ -3821,6 +3821,7 @@
 				F7F54CF81E5B14C700E19C62 /* PlayButtonOverlayLargeTap@2x.png in Resources */,
 				F73B4EEE1F470D9100BBEE4B /* Big5Freq.tab in Resources */,
 				F7D4233B1F0596AC009C9782 /* Reader-Button-N.png in Resources */,
+				F7381ED721821281000B1560 /* NCOfflineGridCell.xib in Resources */,
 				F7F54CF31E5B14C700E19C62 /* ImageSelectedSmallOn@3x.png in Resources */,
 				F7D423441F0596AC009C9782 /* Reader-Mark-N.png in Resources */,
 				F7F54CFA1E5B14C700E19C62 /* UIBarButtonItemArrowLeft.png in Resources */,
@@ -3846,19 +3847,19 @@
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
 				F7ED7EDC216B83D5007AB4D9 /* NCTrashListCell.xib in Resources */,
 				F7D423471F0596AC009C9782 /* Reader-Mark-Y.png in Resources */,
-				F73747FD218059CA00908896 /* NCOnDeviceListCell.xib in Resources */,
 				F7D423431F0596AC009C9782 /* Reader-Export@3x.png in Resources */,
 				F7D4233C1F0596AC009C9782 /* Reader-Button-N@2x.png in Resources */,
 				F729B92B217A2E4E00FE2150 /* NCActionSheetHeaderView.xib in Resources */,
 				F7D423411F0596AC009C9782 /* Reader-Export.png in Resources */,
+				F7381ED621821281000B1560 /* NCOffline.storyboard in Resources */,
 				F77B0F481D118A16002130FE /* synchronized.gif in Resources */,
 				F7417DB5216CFE8E007D05F5 /* NCTrashGridCell.xib in Resources */,
 				F7D4233E1F0596AC009C9782 /* Reader-Email.png in Resources */,
 				F762CB981EACB84400B38484 /* icon-info@2x.png in Resources */,
-				F73747FC218059CA00908896 /* NCOnDeviceGridCell.xib in Resources */,
 				F7D423361F0596AC009C9782 /* AppIcon-167.png in Resources */,
 				F7F54CF71E5B14C700E19C62 /* PlayButtonOverlayLargeTap.png in Resources */,
 				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
+				F7381ED821821281000B1560 /* NCOfflineListCell.xib in Resources */,
 				F77B0F4D1D118A16002130FE /* CCShare.storyboard in Resources */,
 				F7F54D021E5B14C700E19C62 /* UIBarButtonItemGrid@3x.png in Resources */,
 				F7F54CEA1E5B14C700E19C62 /* ImageSelectedOff@3x.png in Resources */,
@@ -3911,7 +3912,6 @@
 				F7D423481F0596AC009C9782 /* Reader-Mark-Y@2x.png in Resources */,
 				F7D4233F1F0596AC009C9782 /* Reader-Email@2x.png in Resources */,
 				F73B4EF11F470D9100BBEE4B /* EUCKRFreq.tab in Resources */,
-				F73747F8218059CA00908896 /* NCOnDevice.storyboard in Resources */,
 				F774DF111FCC26BE002AF9FC /* iTunesArtwork@3x.png in Resources */,
 				F762CB961EACB84400B38484 /* icon-error@2x.png in Resources */,
 				F7D4234A1F0596AC009C9782 /* Reader-Print.png in Resources */,
@@ -4192,7 +4192,6 @@
 				F7B1FBC61E72E3D1001781FE /* SwiftModalWebVC.swift in Sources */,
 				F7622FD02175FCC0000383FF /* ActionSheetCustomItem.swift in Sources */,
 				F7A5541F204EF8AF008468EC /* TOScrollBar.m in Sources */,
-				F73747FE218059CA00908896 /* NCOnDeviceHeaderFooterMenu.swift in Sources */,
 				F7A321651E9E37960069AD1B /* CCActivity.m in Sources */,
 				F7FB1D3E215E191D00D669EA /* NCViewerDocumentWeb.swift in Sources */,
 				F712AC902175E56F0061158E /* CTAssetSelectionLabel.m in Sources */,
@@ -4215,6 +4214,7 @@
 				F7622FB92175FCC0000383FF /* ActionSheetSectionMarginAppearance.swift in Sources */,
 				F7622FC72175FCC0000383FF /* UIView+Empty.swift in Sources */,
 				F70022CB1EC4C9100080073F /* OCSharedDto.m in Sources */,
+				F7381ED221821281000B1560 /* NCOfflineListCell.swift in Sources */,
 				F7CA1ED320E7E3FE002CC65E /* PKStopDownloadButton.m in Sources */,
 				F712ACA12175E56F0061158E /* CTAssetsViewControllerTransition.m in Sources */,
 				F762CB111EACB66200B38484 /* NSString+XLFormAdditions.m in Sources */,
@@ -4284,17 +4284,14 @@
 				F77B0E4F1D118A16002130FE /* CCManageAutoUpload.m in Sources */,
 				F712ACAC2175E56F0061158E /* UICollectionView+CTAssetsPickerController.m in Sources */,
 				F7FCFFE01D707B83000E6E29 /* CCPeekPop.m in Sources */,
-				F73747FB218059CA00908896 /* NCOnDeviceGridCell.swift in Sources */,
 				F7BAADC81ED5A87C00B7EAD4 /* NCDatabase.swift in Sources */,
 				F7622FD32175FCC0000383FF /* ActionSheetLinkItem.swift in Sources */,
-				F73747FA218059CA00908896 /* NCOnDevice.swift in Sources */,
 				F712AC922175E56F0061158E /* CTAssetItemViewController.m in Sources */,
 				F77B0E541D118A16002130FE /* CCMove.m in Sources */,
 				F7622FC42175FCC0000383FF /* ActionSheetPopoverPresenter.swift in Sources */,
 				F712ACA72175E56F0061158E /* CTAssetCollectionViewCell.m in Sources */,
 				F7A5541E204EF8AF008468EC /* TOScrollBarGestureRecognizer.m in Sources */,
 				F7622FCB2175FCC0000383FF /* ActionSheetDangerButton.swift in Sources */,
-				F73747F9218059CA00908896 /* NCOnDeviceListCell.swift in Sources */,
 				F758B452212C516300515F55 /* Quadrilateral.swift in Sources */,
 				F712AC952175E56F0061158E /* CTAssetScrollView.m in Sources */,
 				F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
@@ -4319,6 +4316,7 @@
 				F7ED7EDE216B85DA007AB4D9 /* NCTrashListCell.swift in Sources */,
 				F762CB101EACB66200B38484 /* NSPredicate+XLFormAdditions.m in Sources */,
 				F7622FCF2175FCC0000383FF /* ActionSheetMultiSelectToggleItem.swift in Sources */,
+				F7381ED321821281000B1560 /* NCOffline.swift in Sources */,
 				F7D4237E1F0596C6009C9782 /* ReaderDocument.m in Sources */,
 				F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */,
 				F7D4237C1F0596C6009C9782 /* ReaderContentTile.m in Sources */,
@@ -4380,6 +4378,7 @@
 				F7622FAD2175FCC0000383FF /* ActionSheetMargin.swift in Sources */,
 				F77B0E9B1D118A16002130FE /* CCBKPasscode.m in Sources */,
 				F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */,
+				F7381ED521821281000B1560 /* NCOfflineHeaderFooterMenu.swift in Sources */,
 				F7169A1D1EE590930086BD69 /* NCSharesCell.m in Sources */,
 				F77B0EA61D118A16002130FE /* NSString+TruncateToWidth.m in Sources */,
 				F70022C21EC4C9100080073F /* OCNotifications.m in Sources */,
@@ -4482,6 +4481,7 @@
 				F73CC06C1E813DFF006E3047 /* BKPasscodeField.m in Sources */,
 				F77B0ED51D118A16002130FE /* PHAsset+Utility.m in Sources */,
 				F7622FD22175FCC0000383FF /* ActionSheetSelectItem.swift in Sources */,
+				F7381ED421821281000B1560 /* NCOfflineGridCell.swift in Sources */,
 				F73B4EFD1F470D9100BBEE4B /* LangHebrewModel.cpp in Sources */,
 				F70022CE1EC4C9100080073F /* OCShareUser.m in Sources */,
 				F77B0ED91D118A16002130FE /* main.m in Sources */,

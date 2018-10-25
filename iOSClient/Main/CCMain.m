@@ -3480,7 +3480,7 @@
     if (self.metadata.directory) {
         
         BOOL lockDirectory = NO;
-        BOOL optionOnDevice = NO;
+        BOOL optionOffline = NO;
         NSString *dirServerUrl = [CCUtility stringAppendServerUrl:serverUrl addFileName:self.metadata.fileName];
         NSString *firstServerUrl = [CCUtility firtsPathComponentFromServerUrl:dirServerUrl activeUrl:appDelegate.activeUrl];
         BOOL isFolderEncrypted = [CCUtility isFolderEncrypted:[NSString stringWithFormat:@"%@/%@", self.serverUrl, self.metadata.fileName] account:appDelegate.activeAccount];
@@ -3490,13 +3490,13 @@
         if (directoryForLock.lock && [[CCUtility getBlockCode] length] && appDelegate.sessionePasscodeLock == nil) lockDirectory = YES;
         
         // Directory set as offline ?
-        tableDirectory *directoryOnDevice = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl CONTAINS %@ AND onDevice == true", appDelegate.activeAccount, firstServerUrl]];
-        if (directoryOnDevice == nil) {
-            optionOnDevice = YES;
-        } else if (directoryOnDevice.serverUrl.length == dirServerUrl.length) {
-            optionOnDevice = YES;
-        } else if (directoryOnDevice.serverUrl.length > dirServerUrl.length) {
-            optionOnDevice = YES;
+        tableDirectory *directoryOffline = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl CONTAINS %@ AND offline == true", appDelegate.activeAccount, firstServerUrl]];
+        if (directoryOffline == nil) {
+            optionOffline = YES;
+        } else if (directoryOffline.serverUrl.length == dirServerUrl.length) {
+            optionOffline = YES;
+        } else if (directoryOffline.serverUrl.length > dirServerUrl.length) {
+            optionOffline = YES;
         }
         
         [actionSheet addButtonWithTitle:self.metadata.fileNameView
@@ -3579,33 +3579,33 @@
                                     }];
         }
         
-        if (!lockDirectory && !isFolderEncrypted && optionOnDevice) {
+        if (!lockDirectory && !isFolderEncrypted && optionOffline) {
             
             NSString *title;
             
-            if (directoryOnDevice == nil) {
+            if (directoryOffline == nil) {
                 title = NSLocalizedString(@"_set_available_offline_", nil);
-            } else if (directoryOnDevice.serverUrl.length == dirServerUrl.length) {
+            } else if (directoryOffline.serverUrl.length == dirServerUrl.length) {
                 title = NSLocalizedString(@"_remove_available_offline_", nil);
-            } else if (directoryOnDevice.serverUrl.length > dirServerUrl.length) {
+            } else if (directoryOffline.serverUrl.length > dirServerUrl.length) {
                 title = NSLocalizedString(@"_set_available_offline_", nil);
             }
             
             [actionSheet addButtonWithTitle:title
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"onDevice"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"offline"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
                                     handler:^(AHKActionSheet *as) {
-                                        if (directoryOnDevice == nil) {
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:true];
+                                        if (directoryOffline == nil) {
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:true];
                                             [[CCSynchronize sharedSynchronize] readFolder:dirServerUrl selector:selectorReadFolderWithDownload];
-                                        } else if (directoryOnDevice.serverUrl.length == dirServerUrl.length) {
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:false];
+                                        } else if (directoryOffline.serverUrl.length == dirServerUrl.length) {
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:false];
                                             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                                        } else if (directoryOnDevice.serverUrl.length > dirServerUrl.length) {
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:directoryOnDevice.serverUrl onDevice:false];
-                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl onDevice:true];
+                                        } else if (directoryOffline.serverUrl.length > dirServerUrl.length) {
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:directoryOffline.serverUrl offline:false];
+                                            [[NCManageDatabase sharedInstance] setDirectoryWithServerUrl:dirServerUrl offline:true];
                                             [[CCSynchronize sharedSynchronize] readFolder:dirServerUrl selector:selectorReadFolderWithDownload];
                                         }
                                     }];
@@ -3784,11 +3784,11 @@
             NSString *title;
             tableLocalFile *localFile = [[NCManageDatabase sharedInstance] getTableLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", self.metadata.fileID]];
 
-            if (localFile == nil || localFile.onDevice == false) { title = NSLocalizedString(@"_set_available_offline_", nil); }
+            if (localFile == nil || localFile.offline == false) { title = NSLocalizedString(@"_set_available_offline_", nil); }
             else { title = NSLocalizedString(@"_remove_available_offline_", nil); }
             
             [actionSheet addButtonWithTitle:title
-                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"onDevice"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
+                                      image:[CCGraphics changeThemingColorImage:[UIImage imageNamed:@"offline"] multiplier:2 color:[NCBrandColor sharedInstance].icon]
                             backgroundColor:[NCBrandColor sharedInstance].backgroundView
                                      height:50.0
                                        type:AHKActionSheetButtonTypeDefault
@@ -3797,7 +3797,7 @@
                                         if (localFile == nil) {
                                             self.metadata.session = k_download_session;
                                             self.metadata.sessionError = @"";
-                                            self.metadata.sessionSelector = selectorLoadOnDevice;
+                                            self.metadata.sessionSelector = selectorLoadOffline;
                                             self.metadata.status = k_metadataStatusWaitDownload;
                                             
                                             // Add Metadata for Download
@@ -3805,11 +3805,11 @@
                                             [appDelegate performSelectorOnMainThread:@selector(loadAutoDownloadUpload) withObject:nil waitUntilDone:YES];
                                             
                                             [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:self.metadata.fileID action:k_action_MOD];
-                                        } else if (localFile.onDevice == false) {
-                                            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID onDevice:true];
+                                        } else if (localFile.offline == false) {
+                                            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID offline:true];
                                             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                         } else {
-                                            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID onDevice:false];
+                                            [[NCManageDatabase sharedInstance] setLocalFileWithFileID:self.metadata.fileID offline:false];
                                             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                                         }
                                     }];

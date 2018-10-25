@@ -261,7 +261,7 @@ class NCService: NSObject, OCNetworkingDelegate {
             // Call func thath required the userdID
             appDelegate.activeFavorites.listingFavorites()
             appDelegate.activeMedia.searchPhotoVideo()
-            NCFunctionMain.sharedInstance.synchronizeOnDevice()
+            NCFunctionMain.sharedInstance.synchronizeOffline()
             
             DispatchQueue.global(qos: .default).async {
                 

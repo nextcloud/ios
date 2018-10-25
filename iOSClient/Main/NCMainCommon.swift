@@ -267,8 +267,8 @@ class NCMainCommon: NSObject {
                 }
                 
                 // Available offline
-                if tableDirectory != nil && tableDirectory!.onDevice {
-                    cell.favorite.image = UIImage.init(named: "flagOnDevice")
+                if tableDirectory != nil && tableDirectory!.offline {
+                    cell.favorite.image = UIImage.init(named: "offlineFlag")
                 }
                 
             } else {
@@ -302,8 +302,8 @@ class NCMainCommon: NSObject {
                 }
                 
                 // Available offline
-                if tableLocalFile != nil && tableLocalFile!.onDevice {
-                    cell.favorite.image = UIImage.init(named: "flagOnDevice")
+                if tableLocalFile != nil && tableLocalFile!.offline {
+                    cell.favorite.image = UIImage.init(named: "offlineFlag")
                 }
                 
                 // Share
@@ -778,9 +778,9 @@ class NCNetworkingMain: NSObject, CCNetworkingDelegate {
             }
             
             // Set as available offline
-            if selector == selectorLoadOnDevice {
+            if selector == selectorLoadOffline {
                 
-                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, onDevice: true)
+                NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: true)
             }
             
             //selectorLoadViewImage
@@ -860,16 +860,16 @@ class NCFunctionMain: NSObject {
     
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    @objc func synchronizeOnDevice() {
+    @objc func synchronizeOffline() {
         
-        let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
+        let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
         if (directories != nil) {
             for directory: tableDirectory in directories! {
                 CCSynchronize.shared()?.readFolder(directory.serverUrl, selector: selectorReadFolderWithDownload)
             }
         }
         
-        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
+        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
         if (files != nil) {
             for file: tableLocalFile in files! {
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", file.fileID)) else {
