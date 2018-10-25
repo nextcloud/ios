@@ -12,10 +12,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.22.5] - 2018-10-24
 - See https://github.com/nextcloud/ios/milestone/40
-- Improvements for scanning of documents incl. rotating of images
-- Set permissions of a share while creating the share
+
+### Fixed
 - Fix of feature "Most Compatible" for HEIC/JPEG
 - Fix design issues
+
+### Added
+- Improvements for scanning of documents incl. rotating of images
+- Set permissions of a share while creating the share
+- Added API & View for Trash (Deleted files)
 
 ## [2.22.4] - 2018-09-26
 - See https://github.com/nextcloud/ios/milestone/39
