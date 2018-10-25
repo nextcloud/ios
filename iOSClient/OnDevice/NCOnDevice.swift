@@ -28,7 +28,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var path = ""
+    var serverUrl = ""
     var titleCurrentFolder = NSLocalizedString("_on_device_", comment: "")
     var datasource = [tableMetadata]()
     var datasourceSorted = ""
@@ -54,7 +54,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
         listLayout = ListLayoutOnDevice()
         gridLayout = GridLayoutOnDevice()
         
-        if CCUtility.getLayoutTrash() == "list" {
+        if CCUtility.getLayoutOnDevice() == "list" {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -82,9 +82,8 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
         
         self.navigationItem.title = titleCurrentFolder
 
-        if path == "" {
-            let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
-            path = k_dav + "/trashbin/" + userID! + "/trash/"
+        if serverUrl == "" {
+            serverUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl)
         }
         
         datasourceSorted = CCUtility.getOrderSettings()
@@ -142,7 +141,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            CCUtility.setLayoutTrash("list")
+            CCUtility.setLayoutOnDevice("list")
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -152,7 +151,7 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            CCUtility.setLayoutTrash("grid")
+            CCUtility.setLayoutOnDevice("grid")
         }
     }
     
@@ -565,10 +564,10 @@ class NCOnDevice: UIViewController ,UICollectionViewDataSource, UICollectionView
         
         if tableMetadata.directory {
         
-            let ncTrash:NCOnDevice = UIStoryboard(name: "NCOnDevice", bundle: nil).instantiateInitialViewController() as! NCOnDevice
-            ncTrash.path = tableMetadata.fileName
-            ncTrash.titleCurrentFolder = tableMetadata.fileNameView
-            self.navigationController?.pushViewController(ncTrash, animated: true)
+            let ncOnDevice:NCOnDevice = UIStoryboard(name: "NCOnDevice", bundle: nil).instantiateInitialViewController() as! NCOnDevice
+            ncOnDevice.serverUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: tableMetadata.fileName)
+            ncOnDevice.titleCurrentFolder = tableMetadata.fileNameView
+            self.navigationController?.pushViewController(ncOnDevice, animated: true)
         }
     }
     

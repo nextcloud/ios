@@ -574,6 +574,24 @@
     [UICKeyChainStore setString:layout forKey:@"layoutTrash" service:k_serviceShareKeyChain];
 }
 
++ (NSString *)getLayoutOnDevice
+{
+    NSString *layout = [UICKeyChainStore stringForKey:@"layoutOnDevice" service:k_serviceShareKeyChain];
+    
+    // Default
+    if (layout == nil) {
+        [self setLayoutTrash:@"list"];
+        return @"list";
+    }
+    
+    return layout;
+}
+
++ (void)setLayoutOnDevice:(NSString *)layout
+{
+    [UICKeyChainStore setString:layout forKey:@"layoutOnDevice" service:k_serviceShareKeyChain];
+}
+
 
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====

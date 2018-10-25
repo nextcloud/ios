@@ -154,6 +154,8 @@
 
 + (NSString *)getLayoutTrash;
 + (void)setLayoutTrash:(NSString *)layout;
++ (NSString *)getLayoutOnDevice;
++ (void)setLayoutOnDevice:(NSString *)layout;
 
 // ===== Varius =====
 
