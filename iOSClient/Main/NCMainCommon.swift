@@ -855,12 +855,11 @@ class NCFunctionMain: NSObject {
         let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
         if (directories != nil) {
             for directory: tableDirectory in directories! {
-                
-                CCSynchronize.shared()?.readFile(forFolder: "", serverUrl: "", selector: selectorReadFolderWithDownload)
+                CCSynchronize.shared()?.readFolder(directory.serverUrl, selector: selectorReadFolderWithDownload)
             }
         }
         
-        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", appDelegate.activeAccount), sorted: "fileName", ascending: true)
+        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND onDevice == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
         if (files != nil) {
             for file: tableLocalFile in files! {
                 guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", file.fileID)) else {

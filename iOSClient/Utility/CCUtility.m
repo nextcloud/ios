@@ -1039,6 +1039,17 @@
     return firstPath;
 }
 
++ (NSString *)getLastPathFromServerUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
+{
+    if ([serverUrl isEqualToString:activeUrl])
+        return @"";
+    
+    NSURL *serverUrlURL = [NSURL URLWithString:serverUrl];
+    NSString *fileName = [serverUrlURL lastPathComponent];
+
+    return fileName;
+}
+
 + (NSString *)returnFileNamePathFromFileName:(NSString *)metadataFileName serverUrl:(NSString *)serverUrl activeUrl:(NSString *)activeUrl
 {
     NSString *fileName = [NSString stringWithFormat:@"%@/%@", [serverUrl stringByReplacingOccurrencesOfString:[CCUtility getHomeServerUrlActiveUrl:activeUrl] withString:@""], metadataFileName];

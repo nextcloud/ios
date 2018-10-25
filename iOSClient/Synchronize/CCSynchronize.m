@@ -231,19 +231,6 @@
 #pragma mark ===== Read File for Folder & Read File=====
 #pragma --------------------------------------------------------------------------------------------
 
-- (void)readFileForFolder:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
-{
-    CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
-    
-    metadataNet.action = actionReadFile;
-    metadataNet.fileName = fileName;
-    metadataNet.priority = NSOperationQueuePriorityLow;
-    metadataNet.selector = selector;
-    metadataNet.serverUrl = serverUrl;
-    
-    [appDelegate addNetworkingOperationQueue:appDelegate.netQueue delegate:self metadataNet:metadataNet];
-}
-
 - (void)readFile:(NSString *)fileID fileName:(NSString *)fileName serverUrl:(NSString *)serverUrl selector:(NSString *)selector
 {
     CCMetadataNet *metadataNet = [[CCMetadataNet alloc] initWithAccount:appDelegate.activeAccount];
