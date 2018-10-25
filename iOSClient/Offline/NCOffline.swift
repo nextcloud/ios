@@ -246,6 +246,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         }
         
         if !isEditMode {
+            
             var items = [ActionSheetItem]()
             let appearanceDelete = ActionSheetItemAppearance.init()
             appearanceDelete.textColor = UIColor.red
@@ -263,12 +264,11 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             let actionSheet = ActionSheet(items: items) { sheet, item in
                 if item.value as? Int == 0 {
                     if metadata.directory {
-                        let serverUrlDir = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
-                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: serverUrlDir!, offline: false)
-                        self.loadDatasource(withSynchronized: false)
+                        NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!, offline: false)
                     } else {
                         NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
                     }
+                    self.loadDatasource(withSynchronized: false)
                 }
                 if item.value as? Int == 1 { self.appDelegate.activeMain.openWindowShare(metadata) }
                 if item.value as? Int == 2 {  }
@@ -281,6 +281,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
             actionSheet.present(in: self, from: sender as! UIButton)
         } else {
+            
             let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
             collectionView(self.collectionView, didSelectItemAt: indexPath!)
