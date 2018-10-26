@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCOfflineHeaderMenu: UICollectionReusableView {
+class NCOfflineHeader: UICollectionReusableView {
     
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
@@ -31,7 +31,7 @@ class NCOfflineHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var separator: UIView!
     
-    var delegate: NCOfflineHeaderMenuDelegate?
+    var delegate: NCOfflineHeaderDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -86,25 +86,25 @@ class NCOfflineHeaderMenu: UICollectionReusableView {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreHeaderMenu(sender: sender)
+        delegate?.tapMoreHeader(sender: sender)
     }
     
     @IBAction func touchUpInsideSwitch(_ sender: Any) {
-        delegate?.tapSwitchHeaderMenu(sender: sender)
+        delegate?.tapSwitchHeader(sender: sender)
     }
     
     @IBAction func touchUpInsideOrder(_ sender: Any) {
-        delegate?.tapOrderHeaderMenu(sender: sender)
+        delegate?.tapOrderHeader(sender: sender)
     }
 }
 
-protocol NCOfflineHeaderMenuDelegate {
-    func tapSwitchHeaderMenu(sender: Any)
-    func tapMoreHeaderMenu(sender: Any)
-    func tapOrderHeaderMenu(sender: Any)
+protocol NCOfflineHeaderDelegate {
+    func tapSwitchHeader(sender: Any)
+    func tapMoreHeader(sender: Any)
+    func tapOrderHeader(sender: Any)
 }
 
-class NCOfflineSectionFooter: UICollectionReusableView {
+class NCOfflineFooter: UICollectionReusableView {
     
     @IBOutlet weak var labelFooter: UILabel!
 

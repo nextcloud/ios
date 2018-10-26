@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCOfflineListCellDelegate, NCOfflineGridCellDelegate, NCOfflineHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCOfflineListCellDelegate, NCOfflineGridCellDelegate, NCOfflineHeaderDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -51,7 +51,9 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         collectionView.register(UINib.init(nibName: "NCOfflineGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
         // Header - Footer
-        collectionView.register(UINib.init(nibName: "NCOfflineHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerMenu")
+        collectionView.register(UINib.init(nibName: "NCOfflineHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
+        collectionView.register(UINib.init(nibName: "NCOfflineFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
+        collectionView.register(UINib.init(nibName: "NCOfflineSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
         collectionView.register(UINib.init(nibName: "NCOfflineSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
         collectionView.alwaysBounceVertical = true
@@ -123,7 +125,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
 
     // MARK: TAP EVENT
     
-    func tapSwitchHeaderMenu(sender: Any) {
+    func tapSwitchHeader(sender: Any) {
         
         if collectionView.collectionViewLayout == gridLayout {
             // list layout
@@ -148,7 +150,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         }
     }
     
-    func tapOrderHeaderMenu(sender: Any) {
+    func tapOrderHeader(sender: Any) {
         
         var menuView: DropdownMenu?
         var selectedRow = 0
@@ -181,7 +183,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
         
-        let header = (sender as? UIButton)?.superview as! NCOfflineHeaderMenu
+        let header = (sender as? UIButton)?.superview as! NCOfflineHeader
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
@@ -189,7 +191,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         menuView?.showMenu()
     }
     
-    func tapMoreHeaderMenu(sender: Any) {
+    func tapMoreHeader(sender: Any) {
         
         var menuView: DropdownMenu?
         
@@ -217,7 +219,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         menuView?.rowHeight = 50
         menuView?.tableView.alwaysBounceVertical = false
         
-        let header = (sender as? UIButton)?.superview as! NCOfflineHeaderMenu
+        let header = (sender as? UIButton)?.superview as! NCOfflineHeader
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
@@ -358,7 +360,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 }
             }
             
-            //let sectionDataSource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "", filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount) as CCSectionDataSourceMetadata
+            let sectionDataSource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "", filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount) as CCSectionDataSourceMetadata
             
             datasource = metadatas
             
@@ -377,30 +379,45 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
-        if kind == UICollectionView.elementKindSectionHeader {
+        if (indexPath.section == 0) {
+            if kind == UICollectionView.elementKindSectionHeader {
+                
+                let offlineHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as! NCOfflineHeader
+                
+                if collectionView.collectionViewLayout == gridLayout {
+                    offlineHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                } else {
+                    offlineHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                }
+                
+                offlineHeader.delegate = self
+                
+                offlineHeader.setStatusButton(datasource: datasource)
+                offlineHeader.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
+                
+                return offlineHeader
             
-            let offlineHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headerMenu", for: indexPath) as! NCOfflineHeaderMenu
-            
-            if collectionView.collectionViewLayout == gridLayout {
-                offlineHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
             } else {
-                offlineHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                
+                let offlineFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath) as! NCOfflineFooter
+                
+                offlineFooter.setTitleLabelFooter(datasource: datasource)
+                
+                return offlineFooter
             }
             
-            offlineHeader.delegate = self
-            
-            offlineHeader.setStatusButton(datasource: datasource)
-            offlineHeader.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
-            
-            return offlineHeader
-            
         } else {
-            
-            let offlineFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCOfflineSectionFooter
-            
-            offlineFooter.setTitleLabelFooter(datasource: datasource)
-
-            return offlineFooter
+        
+            if kind == UICollectionView.elementKindSectionHeader {
+                
+                let offlineSectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCOfflineSectionHeader
+                return offlineSectionHeader
+                
+            } else {
+                
+                let offlineSectionFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCOfflineSectionFooter
+                return offlineSectionFooter
+            }
         }
     }
     
@@ -413,11 +430,15 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return 1+1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return datasource.count
+        if section == 0 {
+            return 0
+        } else {
+            return datasource.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
