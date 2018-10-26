@@ -70,7 +70,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         // Configure Refresh Control
         refreshControl.tintColor = NCBrandColor.sharedInstance.brandText
         refreshControl.backgroundColor = NCBrandColor.sharedInstance.brand
-        refreshControl.addTarget(self, action: #selector(loadDatasource(withSynchronized:)), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(loadDatasource), for: .valueChanged)
         
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self;
@@ -85,7 +85,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         datasourceSorted = CCUtility.getOrderSettings()
         datasourceAscending = CCUtility.getAscendingSettings()
         
-        loadDatasource(withSynchronized: false)
+        loadDatasource()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -264,7 +264,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                     } else {
                         NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
                     }
-                    self.loadDatasource(withSynchronized: false)
+                    self.loadDatasource()
                 }
                 if item.value as? Int == 1 { self.appDelegate.activeMain.openWindowShare(metadata) }
                 if item.value as? Int == 2 {  }
@@ -307,7 +307,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             datasourceSorted = CCUtility.getOrderSettings()
             datasourceAscending = CCUtility.getAscendingSettings()
             
-            loadDatasource(withSynchronized: false)
+            loadDatasource()
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
@@ -333,19 +333,21 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     }
     
     // MARK: DATASOURCE
-    @objc func loadDatasource(withSynchronized: Bool = false) {
+    @objc func loadDatasource() {
         
         datasource.removeAll()
         
         if directoryID == "" {
         
+            var metadatas = [tableMetadata]()
+
             let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
             if directories != nil {
                 for directory: tableDirectory in directories! {
                     guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", directory.fileID)) else {
                         continue
                     }
-                    datasource.append(metadata)
+                    metadatas.append(metadata)
                 }
             }
             
@@ -355,9 +357,13 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                     guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", file.fileID)) else {
                         continue
                     }
-                    datasource.append(metadata)
+                    metadatas.append(metadata)
                 }
             }
+            
+            //let sectionDataSource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "", filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount) as CCSectionDataSourceMetadata
+            
+            datasource = metadatas
             
         } else {
         

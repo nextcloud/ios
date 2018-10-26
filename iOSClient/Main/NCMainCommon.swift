@@ -259,16 +259,14 @@ class NCMainCommon: NSObject {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                 }
                 
-                // Image Status Lock Passcode
+                // Status image: offline - passcode
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
+                if tableDirectory != nil && tableDirectory!.offline {
+                    cell.status.image = UIImage.init(named: "offlineFlag")
+                }
                 if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
                     cell.status.image = UIImage.init(named: "passcode")
-                }
-                
-                // Available offline
-                if tableDirectory != nil && tableDirectory!.offline {
-                    cell.favorite.image = UIImage.init(named: "offlineFlag")
                 }
                 
             } else {
@@ -295,15 +293,13 @@ class NCMainCommon: NSObject {
                     cell.local.image = UIImage.init(named: "local")
                 }
                 
-                // Status Image
+                // Status image: offline - encrypted
+                if tableLocalFile != nil && tableLocalFile!.offline {
+                    cell.status.image = UIImage.init(named: "offlineFlag")
+                }
                 let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", appDelegate.activeAccount, metadata.fileName))
                 if tableE2eEncryption != nil &&  NCUtility.sharedInstance.isEncryptedMetadata(metadata) {
                     cell.status.image = UIImage.init(named: "encrypted")
-                }
-                
-                // Available offline
-                if tableLocalFile != nil && tableLocalFile!.offline {
-                    cell.favorite.image = UIImage.init(named: "offlineFlag")
                 }
                 
                 // Share
