@@ -372,6 +372,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             }
         }
         
+        self.refreshControl.endRefreshing()
+        
         collectionView.reloadData()
     }
     
@@ -380,6 +382,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         
         if (indexPath.section == 0) {
+            
             if kind == UICollectionView.elementKindSectionHeader {
                 
                 let offlineHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as! NCOfflineHeader
@@ -426,7 +429,11 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: highHeader)
+        if section == 0 {
+            return CGSize(width: collectionView.frame.width, height: 0)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: highHeader)
+        }
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -440,6 +447,16 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             return datasource.count
         }
     }
+    
+    /*
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        if section == 0 {
+            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        } else {
+            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        }
+    }
+    */
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
