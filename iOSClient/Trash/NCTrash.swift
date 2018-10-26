@@ -808,7 +808,7 @@ class ListLayoutTrash: UICollectionViewFlowLayout {
     override init() {
         super.init()
         
-        sectionHeadersPinToVisibleBounds = true
+        sectionHeadersPinToVisibleBounds = false
 
         minimumInteritemSpacing = 0
         minimumLineSpacing = 1
@@ -850,7 +850,7 @@ class GridLayoutTrash: UICollectionViewFlowLayout {
     override init() {
         super.init()
         
-        sectionHeadersPinToVisibleBounds = true
+        sectionHeadersPinToVisibleBounds = false
         
         minimumInteritemSpacing = 1
         minimumLineSpacing = 1
