@@ -23,99 +23,11 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="fF1-wd-0xN">
                                     <size key="itemSize" width="0.0" height="0.0"/>
-                                    <size key="headerReferenceSize" width="50" height="50"/>
-                                    <size key="footerReferenceSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells/>
-                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="headerMenu" id="AQ6-rS-Wxb" customClass="NCTrashHeaderMenu" customModule="Nextcloud" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hva-qI-4Kl" userLabel="Separator">
-                                            <rect key="frame" x="0.0" y="48" width="375" height="1"/>
-                                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="1" id="5Wf-y6-RCg"/>
-                                            </constraints>
-                                        </view>
-                                        <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gBv-v2-Zec" userLabel="buttonSwitch">
-                                            <rect key="frame" x="12" y="12.666666666666664" width="25" height="25"/>
-                                            <constraints>
-                                                <constraint firstAttribute="height" constant="25" id="0mp-3J-eb3"/>
-                                                <constraint firstAttribute="width" constant="25" id="DxY-uU-Znk"/>
-                                            </constraints>
-                                            <state key="normal" image="switchList"/>
-                                            <connections>
-                                                <action selector="touchUpInsideSwitch:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="wkS-i9-OsH"/>
-                                            </connections>
-                                        </button>
-                                        <button hidden="YES" opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Qqn-cs-A3P" userLabel="buttonSwitch">
-                                            <rect key="frame" x="338" y="12.666666666666664" width="25" height="25"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="25" id="2OK-Fr-IGe"/>
-                                                <constraint firstAttribute="height" constant="25" id="HAe-ET-Q3h"/>
-                                            </constraints>
-                                            <state key="normal" image="moreBig"/>
-                                            <connections>
-                                                <action selector="touchUpInsideMore:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="F2B-LW-hs5"/>
-                                            </connections>
-                                        </button>
-                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0q4-Qd-ic4" userLabel="buttonOrder">
-                                            <rect key="frame" x="55" y="11" width="230" height="28"/>
-                                            <constraints>
-                                                <constraint firstAttribute="width" constant="230" id="n74-Xy-Qpd"/>
-                                            </constraints>
-                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                            <state key="normal" title="Sort by name (from A to Z)">
-                                                <color key="titleColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            </state>
-                                            <connections>
-                                                <action selector="touchUpInsideOrder:" destination="AQ6-rS-Wxb" eventType="touchUpInside" id="bwn-i4-jiF"/>
-                                            </connections>
-                                        </button>
-                                    </subviews>
-                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    <constraints>
-                                        <constraint firstItem="0q4-Qd-ic4" firstAttribute="leading" secondItem="gBv-v2-Zec" secondAttribute="trailing" constant="18" id="86t-HS-JzM"/>
-                                        <constraint firstItem="0q4-Qd-ic4" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="APZ-gg-uLs"/>
-                                        <constraint firstItem="Qqn-cs-A3P" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="Cgb-zq-vQE"/>
-                                        <constraint firstAttribute="trailing" secondItem="Qqn-cs-A3P" secondAttribute="trailing" constant="12" id="FJp-2Z-jvg"/>
-                                        <constraint firstItem="gBv-v2-Zec" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" constant="12" id="Glf-95-Dxh"/>
-                                        <constraint firstAttribute="trailing" secondItem="hva-qI-4Kl" secondAttribute="trailing" id="Nq8-X5-7Cq"/>
-                                        <constraint firstItem="gBv-v2-Zec" firstAttribute="centerY" secondItem="AQ6-rS-Wxb" secondAttribute="centerY" id="OEU-E8-r92"/>
-                                        <constraint firstItem="hva-qI-4Kl" firstAttribute="leading" secondItem="AQ6-rS-Wxb" secondAttribute="leading" id="a0G-P5-ZTU"/>
-                                        <constraint firstAttribute="bottom" secondItem="hva-qI-4Kl" secondAttribute="bottom" constant="1" id="ixp-nm-HUt"/>
-                                    </constraints>
-                                    <connections>
-                                        <outlet property="buttonMore" destination="Qqn-cs-A3P" id="9hu-4g-sm5"/>
-                                        <outlet property="buttonOrder" destination="0q4-Qd-ic4" id="A8C-el-YQr"/>
-                                        <outlet property="buttonOrderWidthConstraint" destination="n74-Xy-Qpd" id="1yu-SR-FZN"/>
-                                        <outlet property="buttonSwitch" destination="gBv-v2-Zec" id="yBa-g0-ChU"/>
-                                        <outlet property="separator" destination="hva-qI-4Kl" id="rP4-bg-nt9"/>
-                                    </connections>
-                                </collectionReusableView>
-                                <collectionReusableView key="sectionFooterView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="footerMenu" id="KIO-gv-emq" customClass="NCTrashFooterMenu" customModule="Nextcloud" customModuleProvider="target">
-                                    <rect key="frame" x="0.0" y="50" width="375" height="50"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5ZS-UE-CHl" userLabel="LabelFooter">
-                                            <rect key="frame" x="10" y="17" width="355" height="16"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                            <nil key="textColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                    <constraints>
-                                        <constraint firstItem="5ZS-UE-CHl" firstAttribute="centerY" secondItem="KIO-gv-emq" secondAttribute="centerY" id="5Ip-b9-luC"/>
-                                        <constraint firstAttribute="trailing" secondItem="5ZS-UE-CHl" secondAttribute="trailing" constant="10" id="6rY-5r-1Mf"/>
-                                        <constraint firstItem="5ZS-UE-CHl" firstAttribute="leading" secondItem="KIO-gv-emq" secondAttribute="leading" constant="10" id="JLx-VS-sTx"/>
-                                    </constraints>
-                                    <connections>
-                                        <outlet property="labelFooter" destination="5ZS-UE-CHl" id="zcJ-1o-Jtw"/>
-                                    </connections>
-                                </collectionReusableView>
                                 <connections>
                                     <outlet property="dataSource" destination="EFX-fO-Oip" id="2On-qP-zuG"/>
                                     <outlet property="delegate" destination="EFX-fO-Oip" id="s3n-CL-8X2"/>
@@ -140,8 +52,4 @@
             <point key="canvasLocation" x="256.80000000000001" y="228.93553223388307"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="moreBig" width="120" height="120"/>
-        <image name="switchList" width="25" height="25"/>
-    </resources>
 </document>

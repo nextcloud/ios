@@ -49,6 +49,10 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         collectionView.register(UINib.init(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "cell-list")
         collectionView.register(UINib.init(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
+        collectionView.register(UINib.init(nibName: "NCTrashHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerMenu")
+        collectionView.register(UINib.init(nibName: "NCTrashSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
+
+
         collectionView.alwaysBounceVertical = true
 
         listLayout = ListLayoutTrash()
@@ -584,7 +588,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
         } else {
             
-            let trashFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerMenu", for: indexPath) as! NCTrashFooterMenu
+            let trashFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCTrashSectionFooter
             
             trashFooter.labelFooter.textColor = NCBrandColor.sharedInstance.icon
             
@@ -803,6 +807,8 @@ class ListLayoutTrash: UICollectionViewFlowLayout {
     override init() {
         super.init()
         
+        sectionHeadersPinToVisibleBounds = true
+
         minimumInteritemSpacing = 0
         minimumLineSpacing = 1
         
@@ -842,6 +848,8 @@ class GridLayoutTrash: UICollectionViewFlowLayout {
     
     override init() {
         super.init()
+        
+        sectionHeadersPinToVisibleBounds = true
         
         minimumInteritemSpacing = 1
         minimumLineSpacing = 1

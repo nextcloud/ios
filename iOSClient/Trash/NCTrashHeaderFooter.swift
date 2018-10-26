@@ -1,5 +1,5 @@
 //
-//  NCTrashHeaderMenu.swift
+//  NCTrashHeaderFooter.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/2018.
@@ -66,12 +66,11 @@ protocol NCTrashHeaderMenuDelegate {
 
 }
 
-class NCTrashFooterMenu: UICollectionReusableView {
+class NCTrashSectionFooter: UICollectionReusableView {
     
     @IBOutlet weak var labelFooter: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        
     }
 }
