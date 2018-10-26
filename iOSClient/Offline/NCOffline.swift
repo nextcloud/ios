@@ -28,8 +28,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
-    var serverUrl = ""
     var titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
+    var directoryID = ""
     var datasource = [tableMetadata]()
     var datasourceSorted = ""
     var datasourceAscending = true
@@ -82,10 +82,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         self.navigationItem.title = titleCurrentFolder
 
-        if serverUrl == "" {
-            serverUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl)
-        }
-        
         datasourceSorted = CCUtility.getOrderSettings()
         datasourceAscending = CCUtility.getAscendingSettings()
         
@@ -341,23 +337,33 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         datasource.removeAll()
         
-        let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
-        if directories != nil {
-            for directory: tableDirectory in directories! {
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", directory.fileID)) else {
-                    continue
-                }
-                datasource.append(metadata)
-            }
-        }
+        if directoryID == "" {
         
-        let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
-        if files != nil {
-            for file: tableLocalFile in files! {
-                guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", file.fileID)) else {
-                    continue
+            let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
+            if directories != nil {
+                for directory: tableDirectory in directories! {
+                    guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", directory.fileID)) else {
+                        continue
+                    }
+                    datasource.append(metadata)
                 }
-                datasource.append(metadata)
+            }
+            
+            let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
+            if files != nil {
+                for file: tableLocalFile in files! {
+                    guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", file.fileID)) else {
+                        continue
+                    }
+                    datasource.append(metadata)
+                }
+            }
+            
+        } else {
+        
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: self.datasourceSorted, ascending: self.datasourceAscending)  {
+                
+                datasource = metadatas
             }
         }
         
@@ -565,23 +571,30 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        let tableMetadata = datasource[indexPath.item]
+        let metadata = datasource[indexPath.item]
 
         if isEditMode {
-            if let index = selectFileID.index(of: tableMetadata.fileID) {
+            if let index = selectFileID.index(of: metadata.fileID) {
                 selectFileID.remove(at: index)
             } else {
-                selectFileID.append(tableMetadata.fileID)
+                selectFileID.append(metadata.fileID)
             }
             collectionView.reloadItems(at: [indexPath])
             return
         }
         
-        if tableMetadata.directory {
+        if metadata.directory {
         
             let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
-            ncOffline.serverUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: tableMetadata.fileName)
-            ncOffline.titleCurrentFolder = tableMetadata.fileNameView
+            guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+                return
+            }
+            let serverUrlPush = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
+            guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
+                return
+            }
+            ncOffline.directoryID = directoryIDPush
+            ncOffline.titleCurrentFolder = metadata.fileNameView
             self.navigationController?.pushViewController(ncOffline, animated: true)
         }
     }
