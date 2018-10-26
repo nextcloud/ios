@@ -46,8 +46,13 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Cell
         collectionView.register(UINib.init(nibName: "NCOfflineListCell", bundle: nil), forCellWithReuseIdentifier: "cell-list")
         collectionView.register(UINib.init(nibName: "NCOfflineGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
+        
+        // Header - Footer
+        collectionView.register(UINib.init(nibName: "NCOfflineHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerMenu")
+        collectionView.register(UINib.init(nibName: "NCOfflineSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         
         collectionView.alwaysBounceVertical = true
 
@@ -111,14 +116,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         let attributes = [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 20), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
         return NSAttributedString.init(string: text, attributes: attributes)
     }
-    
-    /*
-    func description(forEmptyDataSet scrollView: UIScrollView) -> NSAttributedString? {
-        let text = "\n"+NSLocalizedString("_no_file_pull_down_", comment: "")
-        let attributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14), NSAttributedString.Key.foregroundColor: UIColor.lightGray]
-        return NSAttributedString.init(string: text, attributes: attributes)
-    }
-    */
     
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
@@ -392,80 +389,17 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
             offlineHeader.delegate = self
             
-            if self.datasource.count == 0 {
-                offlineHeader.buttonSwitch.isEnabled = false
-                offlineHeader.buttonOrder.isEnabled = false
-                offlineHeader.buttonMore.isEnabled = false
-            } else {
-                offlineHeader.buttonSwitch.isEnabled = true
-                offlineHeader.buttonOrder.isEnabled = true
-                offlineHeader.buttonMore.isEnabled = true
-            }
-            
-            // Order (∨∧▽△)
-            var title = ""
-            
-            switch datasourceSorted {
-            case "fileName":
-                if datasourceAscending == true { title = NSLocalizedString("_order_by_name_a_z_", comment: "") }
-                if datasourceAscending == false { title = NSLocalizedString("_order_by_name_z_a_", comment: "") }
-            case "date":
-                if datasourceAscending == false { title = NSLocalizedString("_order_by_date_more_recent_", comment: "") }
-                if datasourceAscending == true { title = NSLocalizedString("_order_by_date_less_recent_", comment: "") }
-            case "size":
-                if datasourceAscending == true { title = NSLocalizedString("_order_by_size_smallest_", comment: "") }
-                if datasourceAscending == false { title = NSLocalizedString("_order_by_size_largest_", comment: "") }
-            default:
-                title = NSLocalizedString("_order_by_", comment: "") + " " + datasourceSorted
-            }
-            
-            title = title + "  ▽"
-            let size = title.size(withAttributes:[.font: offlineHeader.buttonOrder.titleLabel?.font as Any])
-            
-            offlineHeader.buttonOrder.setTitle(title, for: .normal)
-            offlineHeader.buttonOrderWidthConstraint.constant = size.width + 5
+            offlineHeader.setStatusButton(datasource: datasource)
+            offlineHeader.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
             
             return offlineHeader
             
         } else {
             
-            let offlineFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footerMenu", for: indexPath) as! NCOfflineFooterMenu
+            let offlineFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCOfflineSectionFooter
             
-            offlineFooter.labelFooter.textColor = NCBrandColor.sharedInstance.icon
-            
-            var folders: Int = 0, foldersText = ""
-            var files: Int = 0, filesText = ""
-            var size: Double = 0
-            
-            for record: tableMetadata in self.datasource {
-                if record.directory {
-                    folders += 1
-                } else {
-                    files += 1
-                    size = size + record.size
-                }
-            }
-            
-            if folders > 1 {
-                foldersText = "\(folders) " + NSLocalizedString("_folders_", comment: "")
-            } else if folders == 1 {
-                foldersText = "1 " + NSLocalizedString("_folder_", comment: "")
-            }
-            
-            if files > 1 {
-                filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(size)
-            } else if files == 1 {
-                filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
-            }
-           
-            if foldersText == "" {
-                offlineFooter.labelFooter.text = filesText
-            } else if filesText == "" {
-                offlineFooter.labelFooter.text = foldersText
-            } else {
-                offlineFooter.labelFooter.text = foldersText + ", " + filesText
-            }
-            
+            offlineFooter.setTitleLabelFooter(datasource: datasource)
+
             return offlineFooter
         }
     }

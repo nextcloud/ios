@@ -1,5 +1,5 @@
 //
-//  NCTrashHeaderFooter.swift
+//  NCOfflineHeaderFooter.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/2018.
@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCTrashHeaderMenu: UICollectionReusableView {
+class NCOfflineHeaderMenu: UICollectionReusableView {
     
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
@@ -31,7 +31,7 @@ class NCTrashHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var separator: UIView!
     
-    var delegate: NCTrashHeaderMenuDelegate?
+    var delegate: NCOfflineHeaderMenuDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -72,7 +72,7 @@ class NCTrashHeaderMenu: UICollectionReusableView {
         buttonOrderWidthConstraint.constant = size.width + 5
     }
     
-    func setStatusButton(datasource: [tableTrash]) {
+    func setStatusButton(datasource: [tableMetadata]) {
         
         if datasource.count == 0 {
             buttonSwitch.isEnabled = false
@@ -98,14 +98,13 @@ class NCTrashHeaderMenu: UICollectionReusableView {
     }
 }
 
-protocol NCTrashHeaderMenuDelegate {
+protocol NCOfflineHeaderMenuDelegate {
     func tapSwitchHeaderMenu(sender: Any)
     func tapMoreHeaderMenu(sender: Any)
     func tapOrderHeaderMenu(sender: Any)
-
 }
 
-class NCTrashSectionFooter: UICollectionReusableView {
+class NCOfflineSectionFooter: UICollectionReusableView {
     
     @IBOutlet weak var labelFooter: UILabel!
 
@@ -115,13 +114,13 @@ class NCTrashSectionFooter: UICollectionReusableView {
         labelFooter.textColor = NCBrandColor.sharedInstance.icon
     }
     
-    func setTitleLabelFooter(datasource: [tableTrash]) {
+    func setTitleLabelFooter(datasource: [tableMetadata]) {
         
         var folders: Int = 0, foldersText = ""
         var files: Int = 0, filesText = ""
         var size: Double = 0
         
-        for record: tableTrash in datasource {
+        for record: tableMetadata in datasource {
             if record.directory {
                 folders += 1
             } else {
