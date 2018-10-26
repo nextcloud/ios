@@ -552,38 +552,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             trashHeader.delegate = self
             
-            if self.datasource.count == 0 {
-                trashHeader.buttonSwitch.isEnabled = false
-                trashHeader.buttonOrder.isEnabled = false
-                trashHeader.buttonMore.isEnabled = false
-            } else {
-                trashHeader.buttonSwitch.isEnabled = true
-                trashHeader.buttonOrder.isEnabled = true
-                trashHeader.buttonMore.isEnabled = true
-            }
-            
-            // Order (∨∧▽△)
-            var title = ""
-            
-            switch datasourceSorted {
-            case "fileName":
-                if datasourceAscending == true { title = NSLocalizedString("_order_by_name_a_z_", comment: "") }
-                if datasourceAscending == false { title = NSLocalizedString("_order_by_name_z_a_", comment: "") }
-            case "date":
-                if datasourceAscending == false { title = NSLocalizedString("_order_by_date_more_recent_", comment: "") }
-                if datasourceAscending == true { title = NSLocalizedString("_order_by_date_less_recent_", comment: "") }
-            case "size":
-                if datasourceAscending == true { title = NSLocalizedString("_order_by_size_smallest_", comment: "") }
-                if datasourceAscending == false { title = NSLocalizedString("_order_by_size_largest_", comment: "") }
-            default:
-                title = NSLocalizedString("_order_by_", comment: "") + " " + datasourceSorted
-            }
-            
-            title = title + "  ▽"
-            let size = title.size(withAttributes:[.font: trashHeader.buttonOrder.titleLabel?.font as Any])
-            
-            trashHeader.buttonOrder.setTitle(title, for: .normal)
-            trashHeader.buttonOrderWidthConstraint.constant = size.width + 5
+            trashHeader.setStatusButton(datasource: datasource)
+            trashHeader.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
             
             return trashHeader
             
@@ -591,40 +561,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             let trashFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCTrashSectionFooter
             
-            trashFooter.labelFooter.textColor = NCBrandColor.sharedInstance.icon
-            
-            var folders: Int = 0, foldersText = ""
-            var files: Int = 0, filesText = ""
-            var size: Double = 0
-            
-            for record: tableTrash in self.datasource {
-                if record.directory {
-                    folders += 1
-                } else {
-                    files += 1
-                    size = size + record.size
-                }
-            }
-            
-            if folders > 1 {
-                foldersText = "\(folders) " + NSLocalizedString("_folders_", comment: "")
-            } else if folders == 1 {
-                foldersText = "1 " + NSLocalizedString("_folder_", comment: "")
-            }
-            
-            if files > 1 {
-                filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(size)
-            } else if files == 1 {
-                filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
-            }
-           
-            if foldersText == "" {
-                trashFooter.labelFooter.text = filesText
-            } else if filesText == "" {
-                trashFooter.labelFooter.text = foldersText
-            } else {
-                trashFooter.labelFooter.text = foldersText + ", " + filesText
-            }
+            trashFooter.setTitleLabelFooter(datasource: datasource)
             
             return trashFooter
         }

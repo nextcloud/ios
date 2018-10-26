@@ -46,6 +46,45 @@ class NCTrashHeaderMenu: UICollectionReusableView {
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
     }
     
+    func setTitleOrder(datasourceSorted: String, datasourceAscending: Bool) {
+        
+        // Order (∨∧▽△)
+        var title = ""
+        
+        switch datasourceSorted {
+        case "fileName":
+            if datasourceAscending == true { title = NSLocalizedString("_order_by_name_a_z_", comment: "") }
+            if datasourceAscending == false { title = NSLocalizedString("_order_by_name_z_a_", comment: "") }
+        case "date":
+            if datasourceAscending == false { title = NSLocalizedString("_order_by_date_more_recent_", comment: "") }
+            if datasourceAscending == true { title = NSLocalizedString("_order_by_date_less_recent_", comment: "") }
+        case "size":
+            if datasourceAscending == true { title = NSLocalizedString("_order_by_size_smallest_", comment: "") }
+            if datasourceAscending == false { title = NSLocalizedString("_order_by_size_largest_", comment: "") }
+        default:
+            title = NSLocalizedString("_order_by_", comment: "") + " " + datasourceSorted
+        }
+        
+        title = title + "  ▽"
+        let size = title.size(withAttributes:[.font: buttonOrder.titleLabel?.font as Any])
+        
+        buttonOrder.setTitle(title, for: .normal)
+        buttonOrderWidthConstraint.constant = size.width + 5
+    }
+    
+    func setStatusButton(datasource: [tableTrash]) {
+        
+        if datasource.count == 0 {
+            buttonSwitch.isEnabled = false
+            buttonOrder.isEnabled = false
+            buttonMore.isEnabled = false
+        } else {
+            buttonSwitch.isEnabled = true
+            buttonOrder.isEnabled = true
+            buttonMore.isEnabled = true
+        }
+    }
+    
     @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreHeaderMenu(sender: sender)
     }
@@ -72,5 +111,43 @@ class NCTrashSectionFooter: UICollectionReusableView {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        labelFooter.textColor = NCBrandColor.sharedInstance.icon
+    }
+    
+    func setTitleLabelFooter(datasource: [tableTrash]) {
+        
+        var folders: Int = 0, foldersText = ""
+        var files: Int = 0, filesText = ""
+        var size: Double = 0
+        
+        for record: tableTrash in datasource {
+            if record.directory {
+                folders += 1
+            } else {
+                files += 1
+                size = size + record.size
+            }
+        }
+        
+        if folders > 1 {
+            foldersText = "\(folders) " + NSLocalizedString("_folders_", comment: "")
+        } else if folders == 1 {
+            foldersText = "1 " + NSLocalizedString("_folder_", comment: "")
+        }
+        
+        if files > 1 {
+            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(size)
+        } else if files == 1 {
+            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
+        }
+        
+        if foldersText == "" {
+            labelFooter.text = filesText
+        } else if filesText == "" {
+            labelFooter.text = foldersText
+        } else {
+            labelFooter.text = foldersText + ", " + filesText
+        }
     }
 }
