@@ -179,7 +179,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         }
         
         let item7 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByAlphabetic"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_alphabetic_no_", comment: ""))
-        let item8 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_typefile_no_", comment: ""))
+        let item8 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByFile"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_typefile_no_", comment: ""))
         let item9 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByDate"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_date_no_", comment: ""))
         
         switch datasourceGroupBy {
@@ -193,21 +193,21 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             print("")
         }
         
-        let item10 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_directory_on_top_no_", comment: ""))
+        let item10 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "foldersOnTop"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_directory_on_top_no_", comment: ""))
         
         if CCUtility.getDirectoryOnTop() {
             item10.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 2))
         }
         
-        let sectionOrder = DropdownSection(sectionIdentifier: "Order by", items: [item1, item2, item3, item4, item5, item6])
-        let sectionGroupBy = DropdownSection(sectionIdentifier: "Group by", items: [item7, item8, item9])
-        let sectionFolderOnTop = DropdownSection(sectionIdentifier: "Folder", items: [item10])
+        let sectionOrder = DropdownSection(sectionIdentifier: "", items: [item1, item2, item3, item4, item5, item6])
+        let sectionGroupBy = DropdownSection(sectionIdentifier: "", items: [item7, item8, item9])
+        let sectionFolderOnTop = DropdownSection(sectionIdentifier: "", items: [item10])
         
         menuView = DropdownMenu(navigationController: self.navigationController!, sections: [sectionOrder, sectionGroupBy, sectionFolderOnTop], selectedIndexPath: selectedIndexPath)
         menuView?.token = "tapOrderHeaderMenu"
         menuView?.delegate = self
         menuView?.rowHeight = 45
-        menuView?.sectionHeaderHeight = 30
+        menuView?.sectionHeaderHeight = 5
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.tableViewBackgroundColor = UIColor.white
