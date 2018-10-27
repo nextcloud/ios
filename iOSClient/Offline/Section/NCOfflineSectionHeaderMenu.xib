@@ -12,7 +12,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="header" id="tys-A2-nDX" customClass="NCOfflineHeader" customModule="Nextcloud" customModuleProvider="target">
+        <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="sectionHeaderMenu" id="tys-A2-nDX" customClass="NCOfflineSectionHeaderMenu" customModule="Nextcloud" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="375" height="153"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
@@ -85,6 +85,7 @@
                 <outlet property="buttonOrder" destination="0bo-yl-t5k" id="Kbw-BG-73C"/>
                 <outlet property="buttonOrderWidthConstraint" destination="jvv-Ug-l3I" id="E6N-z6-2VC"/>
                 <outlet property="buttonSwitch" destination="1LD-cd-zhc" id="Ec2-cM-CoY"/>
+                <outlet property="labelSection" destination="1yB-zO-8wr" id="Tqb-N6-ewI"/>
                 <outlet property="separator" destination="LZu-Te-clJ" id="EwO-za-LxT"/>
             </connections>
             <point key="canvasLocation" x="138.40000000000001" y="190.25487256371815"/>

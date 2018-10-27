@@ -23,12 +23,13 @@
 
 import Foundation
 
-class NCOfflineHeader: UICollectionReusableView {
+class NCOfflineSectionHeaderMenu: UICollectionReusableView {
     
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var labelSection: UILabel!
     @IBOutlet weak var separator: UIView!
     
     var delegate: NCOfflineHeaderDelegate?
@@ -102,6 +103,15 @@ protocol NCOfflineHeaderDelegate {
     func tapSwitchHeader(sender: Any)
     func tapMoreHeader(sender: Any)
     func tapOrderHeader(sender: Any)
+}
+
+class NCOfflineSectionHeader: UICollectionReusableView {
+    
+    @IBOutlet weak var labelSection: UILabel!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+    }
 }
 
 class NCOfflineFooter: UICollectionReusableView {

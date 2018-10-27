@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="50"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LabelSectionHeader" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzy-cT-Gjn" userLabel="LabelFooter">
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LabelSectionHeader" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gzy-cT-Gjn" userLabel="Label Section">
                     <rect key="frame" x="10" y="17" width="355" height="16"/>
                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                     <nil key="textColor"/>
@@ -30,6 +30,9 @@
                 <constraint firstItem="gzy-cT-Gjn" firstAttribute="leading" secondItem="Vin-9E-7nW" secondAttribute="leading" constant="10" id="hZz-MT-pHg"/>
             </constraints>
             <viewLayoutGuide key="safeArea" id="EFn-SN-cxu"/>
+            <connections>
+                <outlet property="labelSection" destination="gzy-cT-Gjn" id="yG6-wJ-CmI"/>
+            </connections>
         </collectionReusableView>
     </objects>
 </document>
