@@ -67,6 +67,7 @@
 		F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		F70BE25B2184B11500425587 /* NCOfflineLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BE25A2184B11500425587 /* NCOfflineLayout.swift */; };
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
@@ -803,6 +804,7 @@
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F70A63061D5B3467004E2AA5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
 		F70A63071D5B3467004E2AA5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
+		F70BE25A2184B11500425587 /* NCOfflineLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCOfflineLayout.swift; sourceTree = "<group>"; };
 		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
@@ -2149,6 +2151,7 @@
 			children = (
 				F7381EDE218218C9000B1560 /* NCOffline.storyboard */,
 				F7381EDA218218C9000B1560 /* NCOffline.swift */,
+				F70BE25A2184B11500425587 /* NCOfflineLayout.swift */,
 				F7632FD521836A3F00721B71 /* Section */,
 				F7632FD421836A3200721B71 /* Cell */,
 			);
@@ -2882,8 +2885,8 @@
 			isa = PBXGroup;
 			children = (
 				F7632FDD21836A7000721B71 /* NCOfflineGridCell.swift */,
-				F7632FDF21836A7100721B71 /* NCOfflineGridCell.xib */,
 				F7632FDE21836A7100721B71 /* NCOfflineListCell.swift */,
+				F7632FDF21836A7100721B71 /* NCOfflineGridCell.xib */,
 				F7632FDC21836A7000721B71 /* NCOfflineListCell.xib */,
 			);
 			path = Cell;
@@ -4200,6 +4203,7 @@
 				F70022A11EC4C9100080073F /* AFHTTPSessionManager.m in Sources */,
 				F762CB041EACB66200B38484 /* XLFormSwitchCell.m in Sources */,
 				F712AC9E2175E56F0061158E /* CTAssetThumbnailOverlay.m in Sources */,
+				F70BE25B2184B11500425587 /* NCOfflineLayout.swift in Sources */,
 				F73B4F0F1F470D9100BBEE4B /* nsMBCSSM.cpp in Sources */,
 				F754EECA21772B6100BB1CDF /* DropUpMenu.swift in Sources */,
 				F712ACA52175E56F0061158E /* CTAssetThumbnailView.m in Sources */,
