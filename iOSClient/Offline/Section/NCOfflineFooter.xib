@@ -30,7 +30,7 @@
             </constraints>
             <viewLayoutGuide key="safeArea" id="EFn-SN-cxu"/>
             <connections>
-                <outlet property="labelFooter" destination="gzy-cT-Gjn" id="1qE-fl-mMB"/>
+                <outlet property="labelSection" destination="gzy-cT-Gjn" id="hhG-DH-GJc"/>
             </connections>
         </collectionReusableView>
     </objects>

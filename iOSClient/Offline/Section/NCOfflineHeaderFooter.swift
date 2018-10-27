@@ -29,7 +29,9 @@ class NCOfflineSectionHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var buttonSwitch: UIButton!
     @IBOutlet weak var buttonOrder: UIButton!
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewLabelSection: UIView!
     @IBOutlet weak var labelSection: UILabel!
+    @IBOutlet weak var labelSectionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var separator: UIView!
     
     var delegate: NCOfflineHeaderDelegate?
@@ -43,6 +45,8 @@ class NCOfflineSectionHeaderMenu: UICollectionReusableView {
         buttonOrder.setTitleColor(NCBrandColor.sharedInstance.icon, for: .normal)
         
         buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+        
+        viewLabelSection.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.1)
         
         separator.backgroundColor = NCBrandColor.sharedInstance.seperator
     }
@@ -71,6 +75,27 @@ class NCOfflineSectionHeaderMenu: UICollectionReusableView {
         
         buttonOrder.setTitle(title, for: .normal)
         buttonOrderWidthConstraint.constant = size.width + 5
+    }
+    
+    func setTitleLabel(sectionDatasource: CCSectionDataSourceMetadata, section: Int) {
+        
+        var title = ""
+        
+        if sectionDatasource.sections.object(at: section) is String {
+            title = sectionDatasource.sections.object(at: section) as! String
+        }
+        if sectionDatasource.sections.object(at: section) is Date {
+            let titleDate = sectionDatasource.sections.object(at: section) as! Date
+            title = CCUtility.getTitleSectionDate(titleDate)
+        }
+        
+        if title.contains("download") {
+            labelSection.text = NSLocalizedString("_title_section_download_", comment: "")
+        } else if title.contains("upload") {
+            labelSection.text = NSLocalizedString("_title_section_upload_", comment: "")
+        } else {
+            labelSection.text = NSLocalizedString(title, comment: "")
+        }
     }
     
     func setStatusButton(count: Int) {
@@ -112,21 +137,43 @@ class NCOfflineSectionHeader: UICollectionReusableView {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        self.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.2)
+        self.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.1)
+    }
+    
+    func setTitleLabel(sectionDatasource: CCSectionDataSourceMetadata, section: Int) {
+        
+        var title = ""
+        
+        if sectionDatasource.sections.object(at: section) is String {
+            title = sectionDatasource.sections.object(at: section) as! String
+        }
+        if sectionDatasource.sections.object(at: section) is Date {
+            let titleDate = sectionDatasource.sections.object(at: section) as! Date
+            title = CCUtility.getTitleSectionDate(titleDate)
+        }
+        
+        if title.contains("download") {
+            labelSection.text = NSLocalizedString("_title_section_download_", comment: "")
+        } else if title.contains("upload") {
+            labelSection.text = NSLocalizedString("_title_section_upload_", comment: "")
+        } else {
+            labelSection.text = NSLocalizedString(title, comment: "")
+        }
     }
 }
 
 class NCOfflineFooter: UICollectionReusableView {
     
-    @IBOutlet weak var labelFooter: UILabel!
+    @IBOutlet weak var labelSection: UILabel!
 
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        labelFooter.textColor = NCBrandColor.sharedInstance.icon
+        self.backgroundColor = UIColor.clear
+        labelSection.textColor = NCBrandColor.sharedInstance.icon
     }
     
-    func setTitleLabelFooter(sectionDatasource: CCSectionDataSourceMetadata) {
+    func setTitleLabel(sectionDatasource: CCSectionDataSourceMetadata) {
         
         var foldersText = ""
         var filesText = ""
@@ -144,11 +191,11 @@ class NCOfflineFooter: UICollectionReusableView {
         }
         
         if foldersText == "" {
-            labelFooter.text = filesText
+            labelSection.text = filesText
         } else if filesText == "" {
-            labelFooter.text = foldersText
+            labelSection.text = foldersText
         } else {
-            labelFooter.text = foldersText + ", " + filesText
+            labelSection.text = foldersText + ", " + filesText
         }
     }
 }

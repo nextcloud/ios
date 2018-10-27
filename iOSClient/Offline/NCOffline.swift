@@ -38,7 +38,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     var gridLayout: GridLayoutOffline!
     
     private let headerMenuHeight: CGFloat = 50
-    private let sectionHeaderMenuHeight: CGFloat = 100
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
 
@@ -52,7 +51,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         collectionView.register(UINib.init(nibName: "NCOfflineGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
         // Header
-        collectionView.register(UINib.init(nibName: "NCOfflineHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerMenu")
         collectionView.register(UINib.init(nibName: "NCOfflineSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
         collectionView.register(UINib.init(nibName: "NCOfflineSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
         
@@ -211,8 +209,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.tableViewBackgroundColor = UIColor.white
         
-        let header = (sender as? UIButton)?.superview as! NCOfflineSectionHeaderMenu
-        let headerRect = self.collectionView.convert(header.bounds, from: self.view)
+        let header = (sender as? UIButton)?.superview
+        let headerRect = self.collectionView.convert(header!.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
         
@@ -247,8 +245,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         menuView?.rowHeight = 50
         menuView?.tableView.alwaysBounceVertical = false
         
-        let header = (sender as? UIButton)?.superview as! NCOfflineSectionHeaderMenu
-        let headerRect = self.collectionView.convert(header.bounds, from: self.view)
+        let header = (sender as? UIButton)?.superview
+        let headerRect = self.collectionView.convert(header!.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
         
@@ -434,10 +432,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
             if kind == UICollectionView.elementKindSectionHeader {
                 
-                var identifier = "headerMenu"
-                if CCUtility.getGroupBySettings() != "none" { identifier = "sectionHeaderMenu" }
-                
-                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! NCOfflineSectionHeaderMenu
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCOfflineSectionHeaderMenu
                 
                 if collectionView.collectionViewLayout == gridLayout {
                     header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
@@ -450,13 +445,22 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 header.setStatusButton(count: sectionDatasource.allFileID.count)
                 header.setTitleOrder(datasourceSorted: CCUtility.getOrderSettings(), datasourceAscending: CCUtility.getAscendingSettings())
                 
+                if CCUtility.getGroupBySettings() == "none" {
+                    header.labelSection.isHidden = true
+                    header.labelSectionHeightConstraint.constant = 0
+                } else {
+                    header.labelSection.isHidden = false
+                    header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+                    header.labelSectionHeightConstraint.constant = sectionHeaderHeight
+                }
+         
                 return header
             
             } else {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath) as! NCOfflineFooter
                 
-                footer.setTitleLabelFooter(sectionDatasource: sectionDatasource)
+                footer.setTitleLabel(sectionDatasource: sectionDatasource)
                 
                 return footer
             }
@@ -466,13 +470,16 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             if kind == UICollectionView.elementKindSectionHeader {
                 
                 let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCOfflineSectionHeader
+                
+                header.setTitleLabel(sectionDatasource: sectionDatasource, section: indexPath.section)
+                
                 return header
                 
             } else {
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath) as! NCOfflineFooter
                 
-                footer.setTitleLabelFooter(sectionDatasource: sectionDatasource)
+                footer.setTitleLabel(sectionDatasource: sectionDatasource)
 
                 return footer
             }
@@ -484,7 +491,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             if CCUtility.getGroupBySettings() == "none" {
                 return CGSize(width: collectionView.frame.width, height: headerMenuHeight)
             } else {
-                return CGSize(width: collectionView.frame.width, height: sectionHeaderMenuHeight)
+                return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight)
             }
         } else {
             return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
