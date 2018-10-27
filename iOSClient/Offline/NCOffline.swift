@@ -33,6 +33,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     var datasource = [tableMetadata]()
     var datasourceSorted = ""
     var datasourceAscending = true
+    var datasourceGroupBy = "none"
     var isEditMode = false
     var selectFileID = [String]()
     
@@ -91,6 +92,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
 
         datasourceSorted = CCUtility.getOrderSettings()
         datasourceAscending = CCUtility.getAscendingSettings()
+        datasourceGroupBy = CCUtility.getGroupBySettings()
         
         loadDatasource()
     }
@@ -360,7 +362,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 }
             }
             
-            let sectionDataSource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: "", filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount) as CCSectionDataSourceMetadata
+            let sectionDataSource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount) as CCSectionDataSourceMetadata
             
             datasource = metadatas
             
@@ -385,41 +387,47 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
             if kind == UICollectionView.elementKindSectionHeader {
                 
-                let offlineHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "header", for: indexPath) as! NCOfflineHeader
+                var identifier = "headerMenu"
+                if datasourceGroupBy != "none" { identifier = "sectionHeaderMenu" }
+                
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: identifier, for: indexPath) as! NCOfflineSectionHeaderMenu
                 
                 if collectionView.collectionViewLayout == gridLayout {
-                    offlineHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
                 } else {
-                    offlineHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
+                    header.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchGrid"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)
                 }
                 
-                offlineHeader.delegate = self
+                header.delegate = self
                 
-                offlineHeader.setStatusButton(datasource: datasource)
-                offlineHeader.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
+                header.setStatusButton(datasource: datasource)
+                header.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
                 
-                return offlineHeader
+                return header
             
             } else {
                 
-                let offlineFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath) as! NCOfflineFooter
+                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath) as! NCOfflineFooter
                 
-                offlineFooter.setTitleLabelFooter(datasource: datasource)
+                footer.setTitleLabelFooter(datasource: datasource)
                 
-                return offlineFooter
+                return footer
             }
             
         } else {
         
             if kind == UICollectionView.elementKindSectionHeader {
                 
-                let offlineSectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCOfflineSectionHeader
-                return offlineSectionHeader
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as! NCOfflineSectionHeader
+                return header
                 
             } else {
                 
-                let offlineSectionFooter = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as! NCOfflineSectionFooter
-                return offlineSectionFooter
+                let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath) as! NCOfflineFooter
+                
+                footer.setTitleLabelFooter(datasource: datasource)
+                
+                return footer
             }
         }
     }
