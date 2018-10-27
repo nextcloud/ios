@@ -296,7 +296,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
-            let headerView = actionSheetHeader(with: fileID)
+            let headerView = actionSheetHeader(with: metadata)
             actionSheet.headerView = headerView
             actionSheet.headerView?.frame.size.height = 50
             
@@ -663,29 +663,25 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         return blurEffectView
     }
     
-    private func actionSheetHeader(with fileID: String) -> UIView? {
+    private func actionSheetHeader(with metadata: tableMetadata) -> UIView? {
         
         var image: UIImage?
 
-        guard let tableTrash = NCManageDatabase.sharedInstance.getTrashItem(fileID: fileID) else {
-            return nil
-        }
-        
         // Header
-        if tableTrash.directory {
+        if metadata.directory {
             image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-        } else if tableTrash.iconName.count > 0 {
-            image = UIImage.init(named: tableTrash.iconName)
+        } else if metadata.iconName.count > 0 {
+            image = UIImage.init(named: metadata.iconName)
         } else {
             image = UIImage.init(named: "file")
         }
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableTrash.fileID, fileNameView: tableTrash.fileName))
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileNameView))
         }
         
         let headerView = UINib(nibName: "NCActionSheetHeaderView", bundle: nil).instantiate(withOwner: self, options: nil).first as! NCActionSheetHeaderView
         headerView.imageItem.image = image
-        headerView.label.text = tableTrash.trashbinFileName
+        headerView.label.text = metadata.fileNameView
         headerView.label.textColor = NCBrandColor.sharedInstance.icon
         
         return headerView
