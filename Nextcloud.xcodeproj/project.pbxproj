@@ -67,6 +67,7 @@
 		F70022FF1EC4C9100080073F /* UtilsFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = F70022A01EC4C9100080073F /* UtilsFramework.m */; };
 		F70A630B1D5B3467004E2AA5 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F70A630F1D5B3467004E2AA5 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
+		F70BE2592184581000425587 /* NCOfflineHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F70BE2582184581000425587 /* NCOfflineHeaderMenu.xib */; };
 		F70BFC7420E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70BFC7520E0FA7D00C67599 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F70CAE3A1F8CF31A008125FD /* NCEndToEndEncryption.m in Sources */ = {isa = PBXBuildFile; fileRef = F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */; };
@@ -427,7 +428,7 @@
 		F762CB9B1EACB84400B38484 /* TWMessageBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CB941EACB84400B38484 /* TWMessageBarManager.m */; };
 		F7632FBF21832F8700721B71 /* NCTrashHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FBE21832F8700721B71 /* NCTrashHeaderMenu.xib */; };
 		F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */; };
-		F7632FD921836A5B00721B71 /* NCOfflineHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FD621836A5B00721B71 /* NCOfflineHeader.xib */; };
+		F7632FD921836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FD621836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib */; };
 		F7632FDA21836A5B00721B71 /* NCOfflineSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FD721836A5B00721B71 /* NCOfflineSectionFooter.xib */; };
 		F7632FDB21836A5B00721B71 /* NCOfflineHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7632FD821836A5B00721B71 /* NCOfflineHeaderFooter.swift */; };
 		F7632FE021836A7100721B71 /* NCOfflineListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FDC21836A7000721B71 /* NCOfflineListCell.xib */; };
@@ -805,6 +806,7 @@
 		F70A07C8205285FB00DC1231 /* pt-PT */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "pt-PT"; path = "pt-PT.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F70A63061D5B3467004E2AA5 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcrypto.a; sourceTree = "<group>"; };
 		F70A63071D5B3467004E2AA5 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssl.a; sourceTree = "<group>"; };
+		F70BE2582184581000425587 /* NCOfflineHeaderMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineHeaderMenu.xib; sourceTree = "<group>"; };
 		F70BFC7320E0FA7C00C67599 /* NCUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCUtility.swift; sourceTree = "<group>"; };
 		F70CAE381F8CF31A008125FD /* NCEndToEndEncryption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NCEndToEndEncryption.h; sourceTree = "<group>"; };
 		F70CAE391F8CF31A008125FD /* NCEndToEndEncryption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NCEndToEndEncryption.m; sourceTree = "<group>"; };
@@ -1336,7 +1338,7 @@
 		F762CB941EACB84400B38484 /* TWMessageBarManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWMessageBarManager.m; sourceTree = "<group>"; };
 		F7632FBE21832F8700721B71 /* NCTrashHeaderMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashHeaderMenu.xib; sourceTree = "<group>"; };
 		F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashSectionFooter.xib; sourceTree = "<group>"; };
-		F7632FD621836A5B00721B71 /* NCOfflineHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineHeader.xib; sourceTree = "<group>"; };
+		F7632FD621836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineSectionHeaderMenu.xib; sourceTree = "<group>"; };
 		F7632FD721836A5B00721B71 /* NCOfflineSectionFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineSectionFooter.xib; sourceTree = "<group>"; };
 		F7632FD821836A5B00721B71 /* NCOfflineHeaderFooter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOfflineHeaderFooter.swift; sourceTree = "<group>"; };
 		F7632FDC21836A7000721B71 /* NCOfflineListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineListCell.xib; sourceTree = "<group>"; };
@@ -2897,7 +2899,8 @@
 			isa = PBXGroup;
 			children = (
 				F7632FD821836A5B00721B71 /* NCOfflineHeaderFooter.swift */,
-				F7632FD621836A5B00721B71 /* NCOfflineHeader.xib */,
+				F70BE2582184581000425587 /* NCOfflineHeaderMenu.xib */,
+				F7632FD621836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib */,
 				F73D2A752183725B00BCA11F /* NCOfflineFooter.xib */,
 				F73D2A77218372D400BCA11F /* NCOfflineSectionHeaderFooter.swift */,
 				F73D2A7321836C4700BCA11F /* NCOfflineSectionHeader.xib */,
@@ -3860,7 +3863,7 @@
 				F712AC9C2175E56F0061158E /* CTAssetsPicker.strings in Resources */,
 				F7F54CF41E5B14C700E19C62 /* PlayButtonOverlayLarge.png in Resources */,
 				F7F54D041E5B14C800E19C62 /* VideoOverlay@2x.png in Resources */,
-				F7632FD921836A5B00721B71 /* NCOfflineHeader.xib in Resources */,
+				F7632FD921836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib in Resources */,
 				F712AC932175E56F0061158E /* CTAssetsPickerController.bundle in Resources */,
 				F7F54CF51E5B14C700E19C62 /* PlayButtonOverlayLarge@2x.png in Resources */,
 				F77D49A91DC238E500CDC568 /* loading.gif in Resources */,
@@ -3935,6 +3938,7 @@
 				F7632FDA21836A5B00721B71 /* NCOfflineSectionFooter.xib in Resources */,
 				F7F54CFF1E5B14C700E19C62 /* UIBarButtonItemArrowRight@3x.png in Resources */,
 				F774DF0F1FCC26BE002AF9FC /* iTunesArtwork@1x.png in Resources */,
+				F70BE2592184581000425587 /* NCOfflineHeaderMenu.xib in Resources */,
 				F7632FE321836A7100721B71 /* NCOfflineGridCell.xib in Resources */,
 				F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
