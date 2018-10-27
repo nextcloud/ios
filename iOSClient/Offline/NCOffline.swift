@@ -51,10 +51,10 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         collectionView.register(UINib.init(nibName: "NCOfflineGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
         // Header - Footer
-        collectionView.register(UINib.init(nibName: "NCOfflineHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "header")
-        collectionView.register(UINib.init(nibName: "NCOfflineFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
+        collectionView.register(UINib.init(nibName: "NCOfflineHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerMenu")
+        collectionView.register(UINib.init(nibName: "NCOfflineSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionHeaderMenu")
         collectionView.register(UINib.init(nibName: "NCOfflineSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
-        collectionView.register(UINib.init(nibName: "NCOfflineSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
+        collectionView.register(UINib.init(nibName: "NCOfflineFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
         
         collectionView.alwaysBounceVertical = true
 
@@ -183,7 +183,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
         
-        let header = (sender as? UIButton)?.superview as! NCOfflineHeader
+        let header = (sender as? UIButton)?.superview as! NCOfflineSectionHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
@@ -219,7 +219,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         menuView?.rowHeight = 50
         menuView?.tableView.alwaysBounceVertical = false
         
-        let header = (sender as? UIButton)?.superview as! NCOfflineHeader
+        let header = (sender as? UIButton)?.superview as! NCOfflineSectionHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
@@ -437,15 +437,11 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1+1
+        return 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if section == 0 {
-            return 0
-        } else {
-            return datasource.count
-        }
+        return datasource.count
     }
     
     /*
