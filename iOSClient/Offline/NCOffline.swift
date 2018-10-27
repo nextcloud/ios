@@ -37,8 +37,11 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     var listLayout: ListLayoutOffline!
     var gridLayout: GridLayoutOffline!
     
-    private let highHeader: CGFloat = 50
-    
+    private let headerMenuHeight: CGFloat = 50
+    private let sectionHeaderMenuHeight: CGFloat = 100
+    private let sectionHeaderHeight: CGFloat = 20
+    private let footerHeight: CGFloat = 50
+
     private let refreshControl = UIRefreshControl()
 
     override func viewDidLoad() {
@@ -331,10 +334,25 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                     }
             case 1: switch indexPath.row {
                 
-                    case 0: CCUtility.setGroupBySettings("alphabetic")
-                    case 1: CCUtility.setGroupBySettings("typefile")
-                    case 2: CCUtility.setGroupBySettings("date")
-
+                    case 0:
+                    if CCUtility.getGroupBySettings() == "alphabetic" {
+                        CCUtility.setGroupBySettings("none")
+                    } else {
+                        CCUtility.setGroupBySettings("alphabetic")
+                    }
+                    case 1:
+                    if CCUtility.getGroupBySettings() == "typefile" {
+                        CCUtility.setGroupBySettings("none")
+                    } else {
+                        CCUtility.setGroupBySettings("typefile")
+                    }
+                    case 2:
+                    if CCUtility.getGroupBySettings() == "date" {
+                        CCUtility.setGroupBySettings("none")
+                    } else {
+                        CCUtility.setGroupBySettings("date")
+                    }
+    
                     default: ()
                     }
             case 2: if CCUtility.getDirectoryOnTop() {
@@ -462,24 +480,34 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: highHeader)
+        if section == 0 {
+            if CCUtility.getGroupBySettings() == "none" {
+                return CGSize(width: collectionView.frame.width, height: headerMenuHeight)
+            } else {
+                return CGSize(width: collectionView.frame.width, height: sectionHeaderMenuHeight)
+            }
+        } else {
+            return CGSize(width: collectionView.frame.width, height: sectionHeaderHeight)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: highHeader)
+        let sections = sectionDatasource.sectionArrayRow.allKeys.count
+        if (section == sections - 1) {
+            return CGSize(width: collectionView.frame.width, height: footerHeight)
+        } else {
+            return CGSize(width: collectionView.frame.width, height: 0)
+        }
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        
         let sections = sectionDatasource.sectionArrayRow.allKeys.count
         return sections
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
         let key = sectionDatasource.sections.object(at: section)
         let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
-        
         return datasource.count
     }
     
@@ -671,7 +699,7 @@ class ListLayoutOffline: UICollectionViewFlowLayout {
         minimumLineSpacing = 1
         
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 10, right: 0)
+        self.sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -711,7 +739,7 @@ class GridLayoutOffline: UICollectionViewFlowLayout {
         minimumLineSpacing = 1
 
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 10, left: marginLeftRight, bottom: 10, right:  marginLeftRight)
+        self.sectionInset = UIEdgeInsets(top: 10, left: marginLeftRight, bottom: 0, right:  marginLeftRight)
     }
     
     required init?(coder aDecoder: NSCoder) {

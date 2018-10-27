@@ -111,6 +111,8 @@ class NCOfflineSectionHeader: UICollectionReusableView {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        self.backgroundColor = NCBrandColor.sharedInstance.brand.withAlphaComponent(0.2)
     }
 }
 
