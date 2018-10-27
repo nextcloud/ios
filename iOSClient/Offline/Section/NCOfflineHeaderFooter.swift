@@ -73,9 +73,9 @@ class NCOfflineSectionHeaderMenu: UICollectionReusableView {
         buttonOrderWidthConstraint.constant = size.width + 5
     }
     
-    func setStatusButton(datasource: [tableMetadata]) {
+    func setStatusButton(count: Int) {
         
-        if datasource.count == 0 {
+        if count == 0 {
             buttonSwitch.isEnabled = false
             buttonOrder.isEnabled = false
             buttonMore.isEnabled = false

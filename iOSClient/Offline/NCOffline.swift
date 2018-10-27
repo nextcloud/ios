@@ -30,7 +30,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
     var directoryID = ""
-    var datasource = [tableMetadata]()
+    var sectionDatasource = CCSectionDataSourceMetadata()
     var datasourceSorted = ""
     var datasourceAscending = true
     var datasourceGroupBy = "none"
@@ -336,12 +336,10 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     // MARK: DATASOURCE
     @objc func loadDatasource() {
         
-        datasource.removeAll()
-        
+        var metadatas = [tableMetadata]()
+
         if directoryID == "" {
         
-            var metadatas = [tableMetadata]()
-
             let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
             if directories != nil {
                 for directory: tableDirectory in directories! {
@@ -362,16 +360,15 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 }
             }
             
-            let sectionDataSource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount) as CCSectionDataSourceMetadata
-            
-            datasource = metadatas
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
             
         } else {
         
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: self.datasourceSorted, ascending: self.datasourceAscending)  {
-                
-                datasource = metadatas
+            if let arrayMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: self.datasourceSorted, ascending: self.datasourceAscending)  {
+                metadatas = arrayMetadata
             }
+            
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
         }
         
         self.refreshControl.endRefreshing()
@@ -400,7 +397,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 
                 header.delegate = self
                 
-                header.setStatusButton(datasource: datasource)
+                header.setStatusButton(count: sectionDatasource.allFileID.count)
                 header.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
                 
                 return header
@@ -437,18 +434,20 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        if section == 0 {
-            return CGSize(width: collectionView.frame.width, height: 0)
-        } else {
-            return CGSize(width: collectionView.frame.width, height: highHeader)
-        }
+        return CGSize(width: collectionView.frame.width, height: highHeader)
     }
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        
+        let sections = sectionDatasource.sectionArrayRow.allKeys.count
+        return sections
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        let key = sectionDatasource.sections.object(at: section)
+        let datasource = sectionDatasource.sectionArrayRow.object(forKey: key) as! [tableMetadata]
+        
         return datasource.count
     }
     
@@ -464,20 +463,23 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        let tableMetadata = datasource[indexPath.item]
         var image: UIImage?
+
+        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "cell-list", for: indexPath) as! NCOfflineListCell
+        }
         
-        if tableMetadata.iconName.count > 0 {
-            image = UIImage.init(named: tableMetadata.iconName)
+        if metadata.iconName.count > 0 {
+            image = UIImage.init(named: metadata.iconName)
         } else {
             image = UIImage.init(named: "file")
         }
         
-        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(tableMetadata.fileID, fileNameView: tableMetadata.fileName)) {
-            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(tableMetadata.fileID, fileNameView: tableMetadata.fileName))
+        if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName)) {
+            image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName))
         } else {
-            if tableMetadata.thumbnailExists && !CCUtility.fileProviderStorageIconExists(tableMetadata.fileID, fileNameView: tableMetadata.fileName) {
-                downloadThumbnail(with: tableMetadata, indexPath: indexPath)
+            if metadata.thumbnailExists && !CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
+                downloadThumbnail(with: metadata, indexPath: indexPath)
             }
         }
         
@@ -487,23 +489,23 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-list", for: indexPath) as! NCOfflineListCell
             cell.delegate = self
             
-            cell.fileID = tableMetadata.fileID
+            cell.fileID = metadata.fileID
             cell.indexPath = indexPath
-            cell.labelTitle.text = tableMetadata.fileNameView
+            cell.labelTitle.text = metadata.fileNameView
             
-            if tableMetadata.directory {
+            if metadata.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                cell.labelInfo.text = CCUtility.dateDiff(tableMetadata.date as Date)
+                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date)
             } else {
                 cell.imageItem.image = image
-                cell.labelInfo.text = CCUtility.dateDiff(tableMetadata.date as Date) + " " + CCUtility.transformedSize(tableMetadata.size)
+                cell.labelInfo.text = CCUtility.dateDiff(metadata.date as Date) + " " + CCUtility.transformedSize(metadata.size)
             }
             
             if isEditMode {
                 cell.imageItemLeftConstraint.constant = 45
                 cell.imageSelect.isHidden = false
                 
-                if selectFileID.contains(tableMetadata.fileID) {
+                if selectFileID.contains(metadata.fileID) {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: NCBrandColor.sharedInstance.brand)
                     cell.backgroundView = cellBlurEffect(with: cell.bounds)
                 } else {
@@ -524,11 +526,11 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-grid", for: indexPath) as! NCOfflineGridCell
             cell.delegate = self
             
-            cell.fileID = tableMetadata.fileID
+            cell.fileID = metadata.fileID
             cell.indexPath = indexPath
-            cell.labelTitle.text = tableMetadata.fileNameView
+            cell.labelTitle.text = metadata.fileNameView
             
-            if tableMetadata.directory {
+            if metadata.directory {
                 cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
             } else {
                 cell.imageItem.image = image
@@ -536,7 +538,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
             if isEditMode {
                 cell.imageSelect.isHidden = false
-                if selectFileID.contains(tableMetadata.fileID) {
+                if selectFileID.contains(metadata.fileID) {
                     cell.imageSelect.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedYes"), multiplier: 2, color: UIColor.white)
                     cell.backgroundView = cellBlurEffect(with: cell.bounds)
                 } else {
@@ -553,8 +555,10 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        let metadata = datasource[indexPath.item]
-
+        guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
+            return
+        }
+    
         if isEditMode {
             if let index = selectFileID.index(of: metadata.fileID) {
                 selectFileID.remove(at: index)
