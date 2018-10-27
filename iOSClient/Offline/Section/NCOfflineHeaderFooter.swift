@@ -124,31 +124,21 @@ class NCOfflineFooter: UICollectionReusableView {
         labelFooter.textColor = NCBrandColor.sharedInstance.icon
     }
     
-    func setTitleLabelFooter(datasource: [tableMetadata]) {
+    func setTitleLabelFooter(sectionDatasource: CCSectionDataSourceMetadata) {
         
-        var folders: Int = 0, foldersText = ""
-        var files: Int = 0, filesText = ""
-        var size: Double = 0
+        var foldersText = ""
+        var filesText = ""
         
-        for record: tableMetadata in datasource {
-            if record.directory {
-                folders += 1
-            } else {
-                files += 1
-                size = size + record.size
-            }
-        }
-        
-        if folders > 1 {
-            foldersText = "\(folders) " + NSLocalizedString("_folders_", comment: "")
-        } else if folders == 1 {
+        if sectionDatasource.directories > 1 {
+            foldersText = "\(sectionDatasource.directories) " + NSLocalizedString("_folders_", comment: "")
+        } else if sectionDatasource.directories == 1 {
             foldersText = "1 " + NSLocalizedString("_folder_", comment: "")
         }
         
-        if files > 1 {
-            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(size)
-        } else if files == 1 {
-            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(size)
+        if sectionDatasource.files > 1 {
+            filesText = "\(sectionDatasource.files) " + NSLocalizedString("_files_", comment: "") + " " + CCUtility.transformedSize(sectionDatasource.totalSize)
+        } else if sectionDatasource.files == 1 {
+            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " " + CCUtility.transformedSize(sectionDatasource.totalSize)
         }
         
         if foldersText == "" {

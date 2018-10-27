@@ -406,7 +406,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath) as! NCOfflineFooter
                 
-                footer.setTitleLabelFooter(datasource: datasource)
+                footer.setTitleLabelFooter(sectionDatasource: sectionDatasource)
                 
                 return footer
             }
@@ -422,8 +422,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 
                 let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "footer", for: indexPath) as! NCOfflineFooter
                 
-                footer.setTitleLabelFooter(datasource: datasource)
-                
+                footer.setTitleLabelFooter(sectionDatasource: sectionDatasource)
+
                 return footer
             }
         }
