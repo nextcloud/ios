@@ -155,7 +155,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     func tapOrderHeader(sender: Any) {
         
         var menuView: DropdownMenu?
-        var selectedRow = 0
+        var selectedIndexPath = [IndexPath()]
         
         let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameAZ"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_a_z_", comment: ""))
         let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameZA"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_z_a_", comment: ""))
@@ -166,24 +166,51 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         switch datasourceSorted {
         case "fileName":
-            if datasourceAscending == true { item1.style = .highlight; selectedRow = 0 }
-            if datasourceAscending == false { item2.style = .highlight; selectedRow = 1 }
+            if datasourceAscending == true { item1.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 0)) }
+            if datasourceAscending == false { item2.style = .highlight; selectedIndexPath.append(IndexPath(row: 1, section: 0)) }
         case "date":
-            if datasourceAscending == false { item3.style = .highlight; selectedRow = 2 }
-            if datasourceAscending == true { item4.style = .highlight; selectedRow = 3 }
+            if datasourceAscending == false { item3.style = .highlight; selectedIndexPath.append(IndexPath(row: 2, section: 0)) }
+            if datasourceAscending == true { item4.style = .highlight; selectedIndexPath.append(IndexPath(row: 3, section: 0)) }
         case "size":
-            if datasourceAscending == true { item5.style = .highlight; selectedRow = 4 }
-            if datasourceAscending == false { item6.style = .highlight; selectedRow = 5 }
+            if datasourceAscending == true { item5.style = .highlight; selectedIndexPath.append(IndexPath(row: 4, section: 0)) }
+            if datasourceAscending == false { item6.style = .highlight; selectedIndexPath.append(IndexPath(row: 5, section: 0)) }
         default:
             print("")
         }
         
-        menuView = DropdownMenu(navigationController: self.navigationController!, items: [item1, item2, item3, item4, item5, item6], selectedRow: selectedRow)
+        let item7 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByAlphabetic"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_alphabetic_no_", comment: ""))
+        let item8 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "file"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_typefile_no_", comment: ""))
+        let item9 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByDate"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_date_no_", comment: ""))
+        
+        switch datasourceGroupBy {
+        case "alphabetic":
+            item7.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 1))
+        case "typefile":
+            item8.style = .highlight; selectedIndexPath.append(IndexPath(row: 1, section: 1))
+        case "date":
+            item9.style = .highlight; selectedIndexPath.append(IndexPath(row: 2, section: 1))
+        default:
+            print("")
+        }
+        
+        let item10 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_directory_on_top_no_", comment: ""))
+        
+        if CCUtility.getDirectoryOnTop() {
+            item10.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 2))
+        }
+        
+        let sectionOrder = DropdownSection(sectionIdentifier: "Order by", items: [item1, item2, item3, item4, item5, item6])
+        let sectionGroupBy = DropdownSection(sectionIdentifier: "Group by", items: [item7, item8, item9])
+        let sectionFolderOnTop = DropdownSection(sectionIdentifier: "Folder", items: [item10])
+        
+        menuView = DropdownMenu(navigationController: self.navigationController!, sections: [sectionOrder, sectionGroupBy, sectionFolderOnTop], selectedIndexPath: selectedIndexPath)
         menuView?.token = "tapOrderHeaderMenu"
         menuView?.delegate = self
-        menuView?.rowHeight = 50
+        menuView?.rowHeight = 45
+        menuView?.sectionHeaderHeight = 30
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
+        menuView?.tableViewBackgroundColor = UIColor.white
         
         let header = (sender as? UIButton)?.superview as! NCOfflineSectionHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)

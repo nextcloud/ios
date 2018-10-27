@@ -32,7 +32,7 @@ open class DropdownMenu: UIView {
     fileprivate weak var navigationController: UINavigationController!
    
     fileprivate var sections: [DropdownSection] = []
-    fileprivate var selectedIndexPath: IndexPath
+    fileprivate var selectedIndexPath: [IndexPath]
     
     open var tableView: UITableView!
     fileprivate var barCoverView: UIView?
@@ -99,7 +99,7 @@ open class DropdownMenu: UIView {
     public init(navigationController: UINavigationController, items: [DropdownItem], selectedRow: Int = 0) {
         self.navigationController = navigationController
         self.sections = [DropdownSection(sectionIdentifier: "", items: items)]
-        self.selectedIndexPath = IndexPath(row: selectedRow, section: 0)
+        self.selectedIndexPath = [IndexPath(row: selectedRow, section: 0)]
         
         super.init(frame: CGRect.zero)
         
@@ -110,7 +110,7 @@ open class DropdownMenu: UIView {
         NotificationCenter.default.addObserver(self, selector: #selector(self.updateForOrientationChange(_:)), name: UIApplication.willChangeStatusBarOrientationNotification, object: nil)
     }
     
-    public init(navigationController: UINavigationController, sections: [DropdownSection], selectedIndexPath: IndexPath = IndexPath(row: 0, section: 0), dispalySectionHeader: Bool = true, sectionHeaderStyle: SectionHeaderStyle = SectionHeaderStyle()) {
+    public init(navigationController: UINavigationController, sections: [DropdownSection], selectedIndexPath: [IndexPath], dispalySectionHeader: Bool = true, sectionHeaderStyle: SectionHeaderStyle = SectionHeaderStyle()) {
         self.navigationController = navigationController
         self.sections = sections
         self.selectedIndexPath = selectedIndexPath
@@ -351,7 +351,7 @@ extension DropdownMenu: UITableViewDataSource {
         cell.tintColor = highlightColor
         cell.backgroundColor = cellBackgroundColor
         
-        if displaySelected && indexPath == selectedIndexPath {
+        if displaySelected && selectedIndexPath.contains(indexPath) {   //indexPath == selectedIndexPath {
             cell.accessoryType = .checkmark
         } else {
             cell.accessoryType = .none
@@ -393,11 +393,11 @@ extension DropdownMenu: UITableViewDelegate {
         if displaySelected && shouldUpdateSelection {
             let item = sections[indexPath.section].items[indexPath.row]
             if item.accessoryImage  == nil {
-                let previousSelectedcell = tableView.cellForRow(at: selectedIndexPath)
-                previousSelectedcell?.accessoryType = .none
-                selectedIndexPath = indexPath
-                let cell = tableView.cellForRow(at: indexPath)
-                cell?.accessoryType = .checkmark
+//                let previousSelectedcell = tableView.cellForRow(at: selectedIndexPath)
+//                previousSelectedcell?.accessoryType = .none
+//                selectedIndexPath = indexPath
+//                let cell = tableView.cellForRow(at: indexPath)
+//                cell?.accessoryType = .checkmark
             }
         }
         tableView.deselectRow(at: indexPath, animated: true)
