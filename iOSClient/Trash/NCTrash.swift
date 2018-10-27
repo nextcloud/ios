@@ -39,6 +39,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     var listLayout: ListLayoutTrash!
     var gridLayout: GridLayoutTrash!
     
+    var actionSheet: ActionSheet?
+
     private let highHeader: CGFloat = 50
     
     private let refreshControl = UIRefreshControl()
@@ -110,6 +112,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()
+            self.actionSheet?.viewDidLayoutSubviews()
         }
     }
     
@@ -262,16 +265,16 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
-            let actionSheet = ActionSheet(items: items) { sheet, item in
+            actionSheet = ActionSheet(items: items) { sheet, item in
                 if item is ActionSheetDangerButton { self.deleteItem(with: fileID) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
             let headerView = actionSheetHeader(with: fileID)
-            actionSheet.headerView = headerView
-            actionSheet.headerView?.frame.size.height = 50
+            actionSheet?.headerView = headerView
+            actionSheet?.headerView?.frame.size.height = 50
             
-            actionSheet.present(in: self, from: sender as! UIButton)
+            actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
             let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
@@ -292,17 +295,17 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             items.append(itemDelete)
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
-            let actionSheet = ActionSheet(items: items) { sheet, item in
+            actionSheet = ActionSheet(items: items) { sheet, item in
                 if item.value as? Int == 0 { self.restoreItem(with: fileID) }
                 if item.value as? Int == 1 { self.deleteItem(with: fileID) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
             let headerView = actionSheetHeader(with: fileID)
-            actionSheet.headerView = headerView
-            actionSheet.headerView?.frame.size.height = 50
+            actionSheet?.headerView = headerView
+            actionSheet?.headerView?.frame.size.height = 50
             
-            actionSheet.present(in: self, from: sender as! UIButton)
+            actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
             let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
             let indexPath = collectionView.indexPathForItem(at: buttonPosition)
@@ -365,7 +368,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
                 items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
                 
-                let actionSheet = ActionSheet(items: items) { sheet, item in
+                actionSheet = ActionSheet(items: items) { sheet, item in
                     if item is ActionSheetDangerButton {
                         for record: tableTrash in self.datasource {
                             self.deleteItem(with: record.fileID)
@@ -374,7 +377,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     if item is ActionSheetCancelButton { return }
                 }
                 
-                actionSheet.present(in: self, from: self.view)
+                actionSheet?.present(in: self, from: self.view)
             }
         }
         
@@ -406,7 +409,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
                 items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
                 
-                let actionSheet = ActionSheet(items: items) { sheet, item in
+                actionSheet = ActionSheet(items: items) { sheet, item in
                     if item is ActionSheetDangerButton {
                         for fileID in self.selectFileID {
                             self.deleteItem(with: fileID)
@@ -418,7 +421,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     if item is ActionSheetCancelButton { return }
                 }
                 
-                actionSheet.present(in: self, from: self.view)
+                actionSheet?.present(in: self, from: self.view)
             }
             
         }
