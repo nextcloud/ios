@@ -518,16 +518,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         return datasource.count
     }
     
-    /*
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        if section == 0 {
-            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        } else {
-            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        }
-    }
-    */
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         var image: UIImage?
@@ -583,6 +573,13 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 cell.imageItemLeftConstraint.constant = 10
                 cell.imageSelect.isHidden = true
                 cell.backgroundView = nil
+            }
+            
+            // Remove last separator
+            if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
+                cell.separator.isHidden = true
+            } else {
+                cell.separator.isHidden = false
             }
             
             return cell
