@@ -48,10 +48,12 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         collectionView.register(UINib.init(nibName: "NCOfflineListCell", bundle: nil), forCellWithReuseIdentifier: "cell-list")
         collectionView.register(UINib.init(nibName: "NCOfflineGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
         
-        // Header - Footer
+        // Header
         collectionView.register(UINib.init(nibName: "NCOfflineHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerMenu")
-        collectionView.register(UINib.init(nibName: "NCOfflineSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionHeaderMenu")
+        collectionView.register(UINib.init(nibName: "NCOfflineSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
         collectionView.register(UINib.init(nibName: "NCOfflineSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
+        
+        // Footer
         collectionView.register(UINib.init(nibName: "NCOfflineFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "footer")
         
         collectionView.alwaysBounceVertical = true
@@ -201,7 +203,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         menuView?.token = "tapOrderHeaderMenu"
         menuView?.delegate = self
         menuView?.rowHeight = 45
-        menuView?.sectionHeaderHeight = 5
+        menuView?.sectionHeaderHeight = 8
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.tableViewBackgroundColor = UIColor.white
@@ -371,39 +373,34 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     // MARK: DATASOURCE
     @objc func loadDatasource() {
         
-        var metadatas = [tableMetadata]()
+        var fileIDs = [String]()
+        sectionDatasource = CCSectionDataSourceMetadata()
 
         if directoryID == "" {
         
-            let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true)
-            if directories != nil {
-                for directory: tableDirectory in directories! {
-                    guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", directory.fileID)) else {
-                        continue
-                    }
-                    metadatas.append(metadata)
+            if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true) {
+                for directory: tableDirectory in directories {
+                    fileIDs.append(directory.fileID)
+                }
+            }
+          
+            if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true) {
+                for file: tableLocalFile in files {
+                    fileIDs.append(file.fileID)
                 }
             }
             
-            let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true)
-            if files != nil {
-                for file: tableLocalFile in files! {
-                    guard let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID == %@", file.fileID)) else {
-                        continue
-                    }
-                    metadatas.append(metadata)
-                }
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND fileID IN %@", appDelegate.activeAccount, fileIDs), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())  {
+
+                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: CCUtility.getGroupBySettings(), filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
             }
-            
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: CCUtility.getGroupBySettings(), filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
             
         } else {
         
-            if let arrayMetadata = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())  {
-                metadatas = arrayMetadata
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())  {
+                
+                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: CCUtility.getGroupBySettings(), filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
             }
-            
-            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: CCUtility.getGroupBySettings(), filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
         }
         
         self.refreshControl.endRefreshing()
