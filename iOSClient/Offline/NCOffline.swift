@@ -37,6 +37,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     var listLayout: listLayoutOffline!
     var gridLayout: gridLayoutOffline!
     
+    var actionSheet: ActionSheet?
+    
     private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
     private let footerHeight: CGFloat = 50
@@ -98,6 +100,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         coordinator.animate(alongsideTransition: nil) { _ in
             self.collectionView.collectionViewLayout.invalidateLayout()
+            self.actionSheet?.viewDidLayoutSubviews()
         }
     }
     
@@ -282,7 +285,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             items.append(itemDelete)
             items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
             
-            let actionSheet = ActionSheet(items: items) { sheet, item in
+            actionSheet = ActionSheet(items: items) { sheet, item in
                 if item.value as? Int == 0 {
                     if metadata.directory {
                         NCManageDatabase.sharedInstance.setDirectory(serverUrl: CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!, offline: false)
@@ -297,10 +300,10 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             }
             
             let headerView = actionSheetHeader(with: metadata)
-            actionSheet.headerView = headerView
-            actionSheet.headerView?.frame.size.height = 50
+            actionSheet?.headerView = headerView
+            actionSheet?.headerView?.frame.size.height = 50
             
-            actionSheet.present(in: self, from: sender as! UIButton)
+            actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
             
             let buttonPosition:CGPoint = (sender as! UIButton).convert(CGPoint.zero, to:collectionView)
