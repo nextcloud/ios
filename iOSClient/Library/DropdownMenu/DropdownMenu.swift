@@ -389,17 +389,20 @@ extension DropdownMenu: UITableViewDelegate {
     }
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        /*
         let shouldUpdateSelection = delegate?.dropdownMenu(self, shouldUpdateSelectionAt: indexPath) ?? true
+        
         if displaySelected && shouldUpdateSelection {
             let item = sections[indexPath.section].items[indexPath.row]
             if item.accessoryImage  == nil {
-//                let previousSelectedcell = tableView.cellForRow(at: selectedIndexPath)
-//                previousSelectedcell?.accessoryType = .none
-//                selectedIndexPath = indexPath
-//                let cell = tableView.cellForRow(at: indexPath)
-//                cell?.accessoryType = .checkmark
+                let previousSelectedcell = tableView.cellForRow(at: selectedIndexPath)
+                previousSelectedcell?.accessoryType = .none
+                selectedIndexPath = indexPath
+                let cell = tableView.cellForRow(at: indexPath)
+                cell?.accessoryType = .checkmark
             }
         }
+        */
         tableView.deselectRow(at: indexPath, animated: true)
         hideMenu(isSelectAction: true)
         delegate?.dropdownMenu(self, didSelectRowAt: indexPath)
