@@ -259,12 +259,13 @@ class NCMainCommon: NSObject {
                     cell.file.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
                 }
                 
-                // Status image: offline - passcode
                 let lockServerUrl = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)!
                 let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.activeAccount, lockServerUrl))
+                // Local image: offline
                 if tableDirectory != nil && tableDirectory!.offline {
-                    cell.status.image = UIImage.init(named: "offlineFlag")
+                    cell.local.image = UIImage.init(named: "offlineFlag")
                 }
+                // Status image: passcode
                 if tableDirectory != nil && tableDirectory!.lock && CCUtility.getBlockCode() != nil {
                     cell.status.image = UIImage.init(named: "passcode")
                 }
@@ -287,16 +288,14 @@ class NCMainCommon: NSObject {
                     }
                 }
                 
-                // Local Image
+                // Local Image - Offline
                 let tableLocalFile = NCManageDatabase.sharedInstance.getTableLocalFile(predicate: NSPredicate(format: "fileID == %@", metadata.fileID))
                 if tableLocalFile != nil && CCUtility.fileProviderStorageExists(metadata.fileID, fileNameView: metadata.fileNameView) {
-                    cell.local.image = UIImage.init(named: "local")
+                    if tableLocalFile!.offline { cell.local.image = UIImage.init(named: "offlineFlag") }
+                    else { cell.local.image = UIImage.init(named: "local") }
                 }
                 
-                // Status image: offline - encrypted
-                if tableLocalFile != nil && tableLocalFile!.offline {
-                    cell.status.image = UIImage.init(named: "offlineFlag")
-                }
+                // Status image: encrypted
                 let tableE2eEncryption = NCManageDatabase.sharedInstance.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND fileNameIdentifier == %@", appDelegate.activeAccount, metadata.fileName))
                 if tableE2eEncryption != nil &&  NCUtility.sharedInstance.isEncryptedMetadata(metadata) {
                     cell.status.image = UIImage.init(named: "encrypted")
