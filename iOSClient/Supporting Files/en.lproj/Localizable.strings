@@ -584,7 +584,7 @@
 "_file_type_"                       = "File type";
 "_pdf_password_"                    = "PDF Password";
 "_file_creation_"                   = "File creation";
-
+"_delete_all_scanned_images_"       = "Do you want to delete all scanned images?";
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";

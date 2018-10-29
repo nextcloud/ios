@@ -1063,7 +1063,32 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
         
         NCMainCommon.sharedInstance.reloadDatasource(ServerUrl: self.serverUrl, fileID: nil, action: Int32(k_action_NULL))
         
-        self.dismiss(animated: true, completion: nil)
+        // Request delete all image scanned
+        let alertController = UIAlertController(title: "", message: NSLocalizedString("_delete_all_scanned_images_", comment: ""), preferredStyle: .alert)
+        
+        let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+            
+            let path = CCUtility.getDirectoryScan()!
+            
+            do {
+                let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
+                for filePath in filePaths {
+                    try FileManager.default.removeItem(atPath: path + filePath)
+                }
+            } catch let error as NSError {
+                print("Could not clear temp folder: \(error.debugDescription)")
+            }
+            
+            self.dismiss(animated: true, completion: nil)
+        }
+        
+        let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (action:UIAlertAction) in
+            self.dismiss(animated: true, completion: nil)
+        }
+        
+        alertController.addAction(actionYes)
+        alertController.addAction(actionNo)
+        self.present(alertController, animated: true, completion:nil)
     }
     
     func cancel() {
