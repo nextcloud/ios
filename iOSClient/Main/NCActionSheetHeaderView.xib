@@ -16,7 +16,7 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="50"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lfq-lr-NgS" userLabel="ImageItem">
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="lfq-lr-NgS" userLabel="ImageItem">
                     <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="50" id="LyU-cM-aSJ"/>

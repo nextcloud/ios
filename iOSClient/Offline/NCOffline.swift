@@ -313,7 +313,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
             let headerView = actionSheetHeader(with: metadata)
             actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 45
+            actionSheet?.headerView?.frame.size.height = 50
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {

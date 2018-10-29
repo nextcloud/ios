@@ -267,7 +267,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             let headerView = actionSheetHeader(with: fileID)
             actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 45
+            actionSheet?.headerView?.frame.size.height = 50
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
@@ -298,7 +298,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             let headerView = actionSheetHeader(with: fileID)
             actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 45
+            actionSheet?.headerView?.frame.size.height = 50
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
