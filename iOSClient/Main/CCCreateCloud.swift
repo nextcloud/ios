@@ -1073,10 +1073,10 @@ class CreateFormUploadScanDocument: XLFormViewController, CCMoveDelegate {
             do {
                 let filePaths = try FileManager.default.contentsOfDirectory(atPath: path)
                 for filePath in filePaths {
-                    try FileManager.default.removeItem(atPath: path + filePath)
+                    try FileManager.default.removeItem(atPath: path + "/" + filePath)
                 }
             } catch let error as NSError {
-                print("Could not clear temp folder: \(error.debugDescription)")
+                print("Error: \(error.debugDescription)")
             }
             
             self.dismiss(animated: true, completion: nil)
