@@ -27,19 +27,23 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var path = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
-    var datasource = [tableTrash]()
-    var datasourceSorted = ""
-    var datasourceAscending = true
-    var isEditMode = false
-    var selectFileID = [String]()
     
-    var listLayout: NCListLayoutTrash!
-    var gridLayout: NCGridLayoutTrash!
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
-    var actionSheet: ActionSheet?
+    private var isEditMode = false
+    private var selectFileID = [String]()
+    
+    private var datasource = [tableTrash]()
+    
+    private var datasourceSorted = ""
+    private var datasourceAscending = true
+    
+    private var listLayout: NCListLayoutTrash!
+    private var gridLayout: NCGridLayoutTrash!
+    
+    private var actionSheet: ActionSheet?
 
     private let highHeader: CGFloat = 50
     
@@ -89,21 +93,10 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        if path == "" {
-            let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
-            path = k_dav + "/trashbin/" + userID! + "/trash/"
-        }
-        
         datasourceSorted = CCUtility.getOrderSettings()
         datasourceAscending = CCUtility.getAscendingSettings()
         
-        guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending) else {
-            return
-        }
-        
-        self.datasource = datasource
-        collectionView.reloadData()
-        
+        loadDatasource()
         loadListingTrash()
     }
     
@@ -198,10 +191,11 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView = DropdownMenu(navigationController: self.navigationController!, items: [item1, item2, item3, item4, item5, item6], selectedRow: selectedRow)
         menuView?.token = "tapOrderHeaderMenu"
         menuView?.delegate = self
-        menuView?.rowHeight = 50
+        menuView?.rowHeight = 45
         menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
-        
+        menuView?.tableViewBackgroundColor = UIColor.white
+
         let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
@@ -233,10 +227,11 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             menuView?.token = "tapMoreHeaderMenu"
         }
         
-        
         menuView?.delegate = self
-        menuView?.rowHeight = 50
+        menuView?.rowHeight = 45
+        menuView?.highlightColor = NCBrandColor.sharedInstance.brand
         menuView?.tableView.alwaysBounceVertical = false
+        menuView?.tableViewBackgroundColor = UIColor.white
         
         let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
@@ -272,7 +267,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             let headerView = actionSheetHeader(with: fileID)
             actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 50
+            actionSheet?.headerView?.frame.size.height = 45
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
@@ -303,7 +298,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             let headerView = actionSheetHeader(with: fileID)
             actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 50
+            actionSheet?.headerView?.frame.size.height = 45
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
@@ -336,12 +331,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             datasourceSorted = CCUtility.getOrderSettings()
             datasourceAscending = CCUtility.getAscendingSettings()
             
-            guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending) else {
-                return
-            }
-            
-            self.datasource = datasource
-            collectionView.reloadData()
+            loadDatasource()
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
@@ -459,12 +449,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             NCManageDatabase.sharedInstance.deleteTrash(filePath: self.path)
             NCManageDatabase.sharedInstance.addTrashs(item as! [tableTrash])
             
-            let results = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted, ascending: self.datasourceAscending)
-            if (results != nil) {
-                self.datasource = results!
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.collectionView.reloadData()
-                }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.loadDatasource()
             }
             
         }, failure: { (message, errorCode) in
@@ -488,11 +474,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         ocNetworking?.moveFileOrFolder(fileName, fileNameTo: fileNameTo, success: {
             
             NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
-            guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted, ascending: self.datasourceAscending) else {
-                return
-            }
-            self.datasource = datasource
-            self.collectionView.reloadData()
+            
+            self.loadDatasource()
             
         }, failure: { (message, errorCode) in
             
@@ -515,11 +498,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             if errorCode == 0 {
                 
                 NCManageDatabase.sharedInstance.deleteTrash(fileID: fileID)
-                guard let datasource = NCManageDatabase.sharedInstance.getTrash(filePath: self.path, sorted: self.datasourceSorted, ascending: self.datasourceAscending) else {
-                    return
-                }
-                self.datasource = datasource
-                self.collectionView.reloadData()
+                
+                self.loadDatasource()
                 
             } else {
                 
@@ -537,6 +517,25 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                 self.collectionView.reloadItems(at: [indexPath])
             }
         })
+    }
+    
+    // MARK: DATASOURCE
+    @objc func loadDatasource() {
+        
+        datasource.removeAll()
+        
+        if path == "" {
+            let userID = (appDelegate.activeUserID as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed)
+            path = k_dav + "/trashbin/" + userID! + "/trash/"
+        }
+        
+        guard let tashItems = NCManageDatabase.sharedInstance.getTrash(filePath: path, sorted: datasourceSorted, ascending: datasourceAscending) else {
+            return
+        }
+        
+        datasource = tashItems
+        
+        collectionView.reloadData()
     }
     
     // MARK: COLLECTIONVIEW METHODS
@@ -692,8 +691,10 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         if tableTrash.directory {
         
             let ncTrash:NCTrash = UIStoryboard(name: "NCTrash", bundle: nil).instantiateInitialViewController() as! NCTrash
+            
             ncTrash.path = tableTrash.filePath + tableTrash.fileName
             ncTrash.titleCurrentFolder = tableTrash.trashbinFileName
+            
             self.navigationController?.pushViewController(ncTrash, animated: true)
         }
     }
@@ -733,6 +734,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
         
         let headerView = UINib(nibName: "NCActionSheetHeaderView", bundle: nil).instantiate(withOwner: self, options: nil).first as! NCActionSheetHeaderView
+        
         headerView.imageItem.image = image
         headerView.label.text = tableTrash.trashbinFileName
         headerView.label.textColor = NCBrandColor.sharedInstance.icon

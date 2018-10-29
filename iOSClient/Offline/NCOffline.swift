@@ -27,21 +27,25 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
-    let appDelegate = UIApplication.shared.delegate as! AppDelegate
     var titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
     var directoryID = ""
-    var sectionDatasource = CCSectionDataSourceMetadata()
-    var datasourceSorted = ""
-    var datasourceAscending = true
-    var datasourceGroupBy = ""
-    var datasourceDirectoryOnTop = false
-    var isEditMode = false
-    var selectFileID = [String]()
     
-    var listLayout: NCListLayoutOffline!
-    var gridLayout: NCGridLayoutOffline!
+    private let appDelegate = UIApplication.shared.delegate as! AppDelegate
+   
+    private var isEditMode = false
+    private var selectFileID = [String]()
     
-    var actionSheet: ActionSheet?
+    private var sectionDatasource = CCSectionDataSourceMetadata()
+    
+    private var datasourceSorted = ""
+    private var datasourceAscending = true
+    private var datasourceGroupBy = ""
+    private var datasourceDirectoryOnTop = false
+    
+    private var listLayout: NCListLayoutOffline!
+    private var gridLayout: NCGridLayoutOffline!
+    
+    private var actionSheet: ActionSheet?
     
     private let headerMenuHeight: CGFloat = 50
     private let sectionHeaderHeight: CGFloat = 20
@@ -96,8 +100,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         self.navigationItem.title = titleCurrentFolder
         
-        datasourceAscending = CCUtility.getAscendingSettings()
         datasourceSorted = CCUtility.getOrderSettings()
+        datasourceAscending = CCUtility.getAscendingSettings()
         datasourceGroupBy = CCUtility.getGroupBySettings()
         datasourceDirectoryOnTop = CCUtility.getDirectoryOnTop()
         
@@ -309,7 +313,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
             let headerView = actionSheetHeader(with: metadata)
             actionSheet?.headerView = headerView
-            actionSheet?.headerView?.frame.size.height = 50
+            actionSheet?.headerView?.frame.size.height = 45
             
             actionSheet?.present(in: self, from: sender as! UIButton)
         } else {
@@ -652,6 +656,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         if metadata.directory {
         
             let ncOffline:NCOffline = UIStoryboard(name: "NCOffline", bundle: nil).instantiateInitialViewController() as! NCOffline
+            
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                 return
             }
@@ -659,8 +664,10 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
                 return
             }
+            
             ncOffline.directoryID = directoryIDPush
             ncOffline.titleCurrentFolder = metadata.fileNameView
+            
             self.navigationController?.pushViewController(ncOffline, animated: true)
         }
     }
@@ -696,6 +703,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         }
         
         let headerView = UINib(nibName: "NCActionSheetHeaderView", bundle: nil).instantiate(withOwner: self, options: nil).first as! NCActionSheetHeaderView
+        
         headerView.imageItem.image = image
         headerView.label.text = metadata.fileNameView
         headerView.label.textColor = NCBrandColor.sharedInstance.icon
