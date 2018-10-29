@@ -31,11 +31,15 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     var titleCurrentFolder = NSLocalizedString("_manage_file_offline_", comment: "")
     var directoryID = ""
     var sectionDatasource = CCSectionDataSourceMetadata()
+    var datasourceSorted = ""
+    var datasourceAscending = true
+    var datasourceGroupBy = ""
+    var datasourceDirectoryOnTop = false
     var isEditMode = false
     var selectFileID = [String]()
     
-    var listLayout: listLayoutOffline!
-    var gridLayout: gridLayoutOffline!
+    var listLayout: NCListLayoutOffline!
+    var gridLayout: NCGridLayoutOffline!
     
     var actionSheet: ActionSheet?
     
@@ -61,8 +65,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         collectionView.alwaysBounceVertical = true
 
-        listLayout = listLayoutOffline()
-        gridLayout = gridLayoutOffline()
+        listLayout = NCListLayoutOffline()
+        gridLayout = NCGridLayoutOffline()
         
         if CCUtility.getLayoutOffline() == "list" {
             collectionView.collectionViewLayout = listLayout
@@ -91,6 +95,11 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         super.viewWillAppear(animated)
         
         self.navigationItem.title = titleCurrentFolder
+        
+        datasourceAscending = CCUtility.getAscendingSettings()
+        datasourceSorted = CCUtility.getOrderSettings()
+        datasourceGroupBy = CCUtility.getGroupBySettings()
+        datasourceDirectoryOnTop = CCUtility.getDirectoryOnTop()
         
         loadDatasource()
     }
@@ -155,7 +164,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         var menuView: DropdownMenu?
         var selectedIndexPath = [IndexPath()]
-        let datasourceAscending = CCUtility.getAscendingSettings()
         
         let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameAZ"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_a_z_", comment: ""))
         let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortFileNameZA"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_name_z_a_", comment: ""))
@@ -164,7 +172,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         let item5 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortSmallest"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_size_smallest_", comment: ""))
         let item6 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "sortLargest"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_order_by_size_largest_", comment: ""))
         
-        switch CCUtility.getOrderSettings() {
+        switch datasourceSorted {
         case "fileName":
             if datasourceAscending == true { item1.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 0)) }
             if datasourceAscending == false { item2.style = .highlight; selectedIndexPath.append(IndexPath(row: 1, section: 0)) }
@@ -182,7 +190,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         let item8 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByFile"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_typefile_no_", comment: ""))
         let item9 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "MenuGroupByDate"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_group_date_no_", comment: ""))
         
-        switch CCUtility.getGroupBySettings() {
+        switch datasourceGroupBy {
         case "alphabetic":
             item7.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 1))
         case "typefile":
@@ -195,7 +203,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         let item10 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "foldersOnTop"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title: NSLocalizedString("_directory_on_top_no_", comment: ""))
         
-        if CCUtility.getDirectoryOnTop() {
+        if datasourceDirectoryOnTop {
             item10.style = .highlight; selectedIndexPath.append(IndexPath(row: 0, section: 2))
         }
         
@@ -336,19 +344,19 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             case 1: switch indexPath.row {
                 
                     case 0:
-                    if CCUtility.getGroupBySettings() == "alphabetic" {
+                    if datasourceGroupBy == "alphabetic" {
                         CCUtility.setGroupBySettings("none")
                     } else {
                         CCUtility.setGroupBySettings("alphabetic")
                     }
                     case 1:
-                    if CCUtility.getGroupBySettings() == "typefile" {
+                    if datasourceGroupBy == "typefile" {
                         CCUtility.setGroupBySettings("none")
                     } else {
                         CCUtility.setGroupBySettings("typefile")
                     }
                     case 2:
-                    if CCUtility.getGroupBySettings() == "date" {
+                    if datasourceGroupBy == "date" {
                         CCUtility.setGroupBySettings("none")
                     } else {
                         CCUtility.setGroupBySettings("date")
@@ -356,13 +364,18 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
                     default: ()
                     }
-            case 2: if CCUtility.getDirectoryOnTop() {
+            case 2: if datasourceDirectoryOnTop {
                         CCUtility.setDirectoryOnTop(false)
                     } else {
                         CCUtility.setDirectoryOnTop(true)
                     }
             default: ()
             }
+            
+            datasourceAscending = CCUtility.getAscendingSettings()
+            datasourceSorted = CCUtility.getOrderSettings()
+            datasourceGroupBy = CCUtility.getGroupBySettings()
+            datasourceDirectoryOnTop = CCUtility.getDirectoryOnTop()
             
             loadDatasource()
         }
@@ -409,16 +422,16 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 }
             }
             
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND fileID IN %@", appDelegate.activeAccount, fileIDs), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())  {
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND fileID IN %@", appDelegate.activeAccount, fileIDs), sorted: datasourceSorted, ascending: datasourceAscending)  {
 
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: CCUtility.getGroupBySettings(), filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
+                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
             }
             
         } else {
         
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: CCUtility.getOrderSettings(), ascending: CCUtility.getAscendingSettings())  {
+            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: datasourceSorted, ascending: datasourceAscending)  {
                 
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: CCUtility.getGroupBySettings(), filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
+                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
             }
         }
         
@@ -446,9 +459,9 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 header.delegate = self
                 
                 header.setStatusButton(count: sectionDatasource.allFileID.count)
-                header.setTitleOrder(datasourceSorted: CCUtility.getOrderSettings(), datasourceAscending: CCUtility.getAscendingSettings())
+                header.setTitleOrder(datasourceSorted: datasourceSorted, datasourceAscending: datasourceAscending)
                 
-                if CCUtility.getGroupBySettings() == "none" {
+                if datasourceGroupBy == "none" {
                     header.labelSection.isHidden = true
                     header.labelSectionHeightConstraint.constant = 0
                 } else {
@@ -491,7 +504,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         if section == 0 {
-            if CCUtility.getGroupBySettings() == "none" {
+            if datasourceGroupBy == "none" {
                 return CGSize(width: collectionView.frame.width, height: headerMenuHeight)
             } else {
                 return CGSize(width: collectionView.frame.width, height: headerMenuHeight + sectionHeaderHeight)

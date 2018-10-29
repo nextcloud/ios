@@ -557,6 +557,7 @@
 		F7CA1ED720E7E3FE002CC65E /* PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1EC820E7E3FE002CC65E /* PKDownloadButton.m */; };
 		F7CA1ED820E7E3FE002CC65E /* PKBorderedButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECA20E7E3FE002CC65E /* PKBorderedButton.m */; };
 		F7CA1ED920E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m in Sources */ = {isa = PBXBuildFile; fileRef = F7CA1ECE20E7E3FE002CC65E /* NSLayoutConstraint+PKDownloadButton.m */; };
+		F7CF11B52186F770008BCD24 /* NCTrashLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CF11B42186F770008BCD24 /* NCTrashLayout.swift */; };
 		F7D423331F0596AC009C9782 /* AppIcon-076.png in Resources */ = {isa = PBXBuildFile; fileRef = F7D423161F0596AC009C9782 /* AppIcon-076.png */; };
 		F7D423341F0596AC009C9782 /* AppIcon-120.png in Resources */ = {isa = PBXBuildFile; fileRef = F7D423171F0596AC009C9782 /* AppIcon-120.png */; };
 		F7D423351F0596AC009C9782 /* AppIcon-152.png in Resources */ = {isa = PBXBuildFile; fileRef = F7D423181F0596AC009C9782 /* AppIcon-152.png */; };
@@ -1513,6 +1514,7 @@
 		F7CD0FFA1C8DDA7D006520C5 /* CCSharePermissionOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCSharePermissionOC.m; sourceTree = "<group>"; };
 		F7CE8AFA1DC1F8D8009CAE48 /* Nextcloud.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nextcloud.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7CF11B42186F770008BCD24 /* NCTrashLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashLayout.swift; sourceTree = "<group>"; };
 		F7D02A461C5F9E4400D6F972 /* CCMove.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCMove.h; sourceTree = "<group>"; };
 		F7D02A471C5F9E4400D6F972 /* CCMove.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCMove.m; sourceTree = "<group>"; };
 		F7D02A481C5F9E4400D6F972 /* CCMove.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCMove.storyboard; sourceTree = "<group>"; };
@@ -2875,8 +2877,8 @@
 			isa = PBXGroup;
 			children = (
 				F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */,
-				F7417DB2216CE925007D05F5 /* NCTrashHeaderFooter.swift */,
 				F7632FBE21832F8700721B71 /* NCTrashHeaderMenu.xib */,
+				F7417DB2216CE925007D05F5 /* NCTrashHeaderFooter.swift */,
 			);
 			path = Section;
 			sourceTree = "<group>";
@@ -2976,6 +2978,7 @@
 			children = (
 				F78F74332163757000C2ADAD /* NCTrash.storyboard */,
 				F78F74352163781100C2ADAD /* NCTrash.swift */,
+				F7CF11B42186F770008BCD24 /* NCTrashLayout.swift */,
 				F7632FC32183667400721B71 /* Section */,
 				F7632FC22183665F00721B71 /* Cell */,
 			);
@@ -4348,6 +4351,7 @@
 				F712ACA72175E56F0061158E /* CTAssetCollectionViewCell.m in Sources */,
 				F7A5541E204EF8AF008468EC /* TOScrollBarGestureRecognizer.m in Sources */,
 				F7622FCB2175FCC0000383FF /* ActionSheetDangerButton.swift in Sources */,
+				F7CF11B52186F770008BCD24 /* NCTrashLayout.swift in Sources */,
 				F758B452212C516300515F55 /* Quadrilateral.swift in Sources */,
 				F712AC952175E56F0061158E /* CTAssetScrollView.m in Sources */,
 				F70022E61EC4C9100080073F /* OCXMLServerErrorsParser.m in Sources */,
