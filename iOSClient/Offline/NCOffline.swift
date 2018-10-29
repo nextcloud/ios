@@ -234,38 +234,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     func tapMoreHeader(sender: Any) {
         
-        var menuView: DropdownMenu?
-        
-        if isEditMode {
-            
-            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "checkedNo"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_cancel_", comment: ""))
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_selected_", comment: ""))
-            let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_selected_", comment: ""))
-            
-            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1, item2], selectedRow: -1)
-            menuView?.token = "tapMoreHeaderMenuSelect"
-            
-        } else {
-            
-            let item0 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "select"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_select_", comment: ""))
-            let item1 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "restore"), multiplier: 1, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_restore_all_", comment: ""))
-            let item2 = DropdownItem(image: CCGraphics.changeThemingColorImage(UIImage.init(named: "trash"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), title:  NSLocalizedString("_trash_delete_all_", comment: ""))
-            
-            menuView = DropdownMenu(navigationController: self.navigationController!, items: [item0, item1, item2], selectedRow: -1)
-            menuView?.token = "tapMoreHeaderMenu"
-        }
-        
-        
-        menuView?.delegate = self
-        menuView?.rowHeight = 50
-        menuView?.tableView.alwaysBounceVertical = false
-        
-        let header = (sender as? UIButton)?.superview
-        let headerRect = self.collectionView.convert(header!.bounds, from: self.view)
-        let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
-        menuView?.topOffsetY = CGFloat(menuOffsetY)
-        
-        menuView?.showMenu()
     }
     
     func tapMoreItem(with fileID: String, sender: Any) {
@@ -307,7 +275,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                     self.loadDatasource()
                 }
                 if item.value as? Int == 1 { self.appDelegate.activeMain.openWindowShare(metadata) }
-                if item.value as? Int == 2 {  }
+                if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
@@ -404,6 +372,36 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
                 self.collectionView.reloadItems(at: [indexPath])
             }
         })
+    }
+    
+    func deleteItem(with metadata: tableMetadata, sender: Any) {
+        
+        var items = [ActionSheetItem]()
+        
+        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
+            return
+        }
+        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, serverUrl)) else {
+            return
+        }
+        
+        items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
+        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
+        
+        actionSheet = ActionSheet(items: items) { sheet, item in
+            if item is ActionSheetDangerButton {
+                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
+                    self.loadDatasource()
+                }
+            }
+            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
+        }
+        
+        let headerView = actionSheetHeader(with: metadata)
+        actionSheet?.headerView = headerView
+        actionSheet?.headerView?.frame.size.height = 50
+        
+        actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
     // MARK: DATASOURCE
