@@ -72,12 +72,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         listLayout = NCListLayoutOffline()
         gridLayout = NCGridLayoutOffline()
         
-        if CCUtility.getLayoutOffline() == "list" {
-            collectionView.collectionViewLayout = listLayout
-        } else {
-            collectionView.collectionViewLayout = gridLayout
-        }
-        
         // Add Refresh Control
         if #available(iOS 10.0, *) {
             collectionView.refreshControl = refreshControl
@@ -104,6 +98,12 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         datasourceAscending = CCUtility.getAscendingSettings()
         datasourceGroupBy = CCUtility.getGroupBySettings()
         datasourceDirectoryOnTop = CCUtility.getDirectoryOnTop()
+        
+        if CCUtility.getLayoutOffline() == "list" {
+            collectionView.collectionViewLayout = listLayout
+        } else {
+            collectionView.collectionViewLayout = gridLayout
+        }
         
         loadDatasource()
     }

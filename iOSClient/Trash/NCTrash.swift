@@ -65,12 +65,6 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         listLayout = NCListLayoutTrash()
         gridLayout = NCGridLayoutTrash()
         
-        if CCUtility.getLayoutTrash() == "list" {
-            collectionView.collectionViewLayout = listLayout
-        } else {
-            collectionView.collectionViewLayout = gridLayout
-        }
-        
         // Add Refresh Control
         if #available(iOS 10.0, *) {
             collectionView.refreshControl = refreshControl
@@ -95,6 +89,12 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
         datasourceSorted = CCUtility.getOrderSettings()
         datasourceAscending = CCUtility.getAscendingSettings()
+        
+        if CCUtility.getLayoutTrash() == "list" {
+            collectionView.collectionViewLayout = listLayout
+        } else {
+            collectionView.collectionViewLayout = gridLayout
+        }
         
         loadDatasource()
         loadListingTrash()
