@@ -667,9 +667,20 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             ncOffline.titleCurrentFolder = metadata.fileNameView
             
             self.navigationController?.pushViewController(ncOffline, animated: true)
+            
+        } else {
+            
+            performSegue(withIdentifier: "segueDetail", sender: self)
         }
     }
     
+    // MARK: SEGUE
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+    }
+    
+
     // MARK: UTILITY
     
     private func cellBlurEffect(with frame: CGRect) -> UIView {
