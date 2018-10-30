@@ -829,11 +829,19 @@
     item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFiles"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 10.0) {
+        item.image = item.selectedImage = [UIImage imageNamed:@"tabBarFilesIOS9"];
+    }
+    
     // Favorites
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexFavorite];
     [item setTitle:NSLocalizedString(@"_favorites_", nil)];
     item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarFavorites"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 10.0) {
+        item.image = item.selectedImage = [UIImage imageNamed:@"tabBarFavoritesIOS9"];
+    }
     
     // (PLUS)
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexPlusHide];
@@ -847,11 +855,19 @@
     item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMedia"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 10.0) {
+        item.image = item.selectedImage = [UIImage imageNamed:@"tabBarMediaIOS9"];
+    }
+    
     // More
     item = [tabBarController.tabBar.items objectAtIndex: k_tabBarApplicationIndexMore];
     [item setTitle:NSLocalizedString(@"_more_", nil)];
     item.image = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
     item.selectedImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarMore"] multiplier:2 color:[NCBrandColor sharedInstance].brandElement];
+    
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] < 10.0) {
+        item.image = item.selectedImage = [UIImage imageNamed:@"tabBarMoreIOS9"];
+    }
     
     // Plus Button
     UIImage *buttonImage = [CCGraphics changeThemingColorImage:[UIImage imageNamed:@"tabBarPlus"] multiplier:3 color:[NCBrandColor sharedInstance].brandElement];
