@@ -690,15 +690,14 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             }
         }
         
-        if let destinationNC = segue.destination as? UINavigationController {
+        if let segueNavigationController = segue.destination as? UINavigationController {
+            if let segueViewController = segueNavigationController.topViewController as? CCDetail {
             
-            let destinationVC = destinationNC.topViewController as! CCDetail
-            
-            destinationVC.metadataDetail = metadataSelect
-            destinationVC.dateFilterQuery = nil
-            destinationVC.photoDataSource = photoDataSource
-            
-            destinationVC.title = metadataSelect.fileNameView
+                segueViewController.metadataDetail = metadataSelect
+                segueViewController.dateFilterQuery = nil
+                segueViewController.photoDataSource = photoDataSource
+                segueViewController.title = metadataSelect.fileNameView
+            }
         }
     }
     
