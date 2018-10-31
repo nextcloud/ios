@@ -684,13 +684,12 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        var photoDataSource = [tableMetadata]()
-//        let test = sectionDatasource.allFileID.map { $0 }
+        let photoDataSource: NSMutableArray = []
         
         for fileID: String in sectionDatasource.allFileID as! [String] {
             let metadata = sectionDatasource.allRecordsDataSource.object(forKey: fileID) as! tableMetadata
             if metadata.typeFile == k_metadataTypeFile_image {
-                photoDataSource.append(metadata)
+                photoDataSource.add(metadata)
             }
         }
         
@@ -700,7 +699,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
             destinationVC.metadataDetail = metadataSelect
             destinationVC.dateFilterQuery = nil
-            destinationVC.photoDataSource = photoDataSource as? NSMutableArray
+            destinationVC.photoDataSource = photoDataSource
             
             destinationVC.title = metadataSelect.fileNameView
         }
