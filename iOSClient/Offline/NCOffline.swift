@@ -52,6 +52,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     private let footerHeight: CGFloat = 50
 
     private let refreshControl = UIRefreshControl()
+    
+    private var metadataSelect = tableMetadata()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -673,7 +675,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
 //            if self.splitViewController?.isCollapsed == false && appDelegate.activeMain.detailViewController.isViewLoaded && appDelegate.activeMain.detailViewController.view.window != nil {
 //                appDelegate.activeMain.navigationController?.popToRootViewController(animated: false)
 //            }
-            
+            metadataSelect = metadata
             performSegue(withIdentifier: "segueDetail", sender: self)
         }
     }
@@ -693,8 +695,14 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         }
         
         if let destinationNC = segue.destination as? UINavigationController {
+            
             let destinationVC = destinationNC.topViewController as! CCDetail
             
+            destinationVC.metadataDetail = metadataSelect
+            destinationVC.dateFilterQuery = nil
+            destinationVC.photoDataSource = photoDataSource as? NSMutableArray
+            
+            destinationVC.title = metadataSelect.fileNameView
         }
     }
     
