@@ -682,6 +682,20 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
+        var photoDataSource = [tableMetadata]()
+//        let test = sectionDatasource.allFileID.map { $0 }
+        
+        for fileID: String in sectionDatasource.allFileID as! [String] {
+            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: fileID) as! tableMetadata
+            if metadata.typeFile == k_metadataTypeFile_image {
+                photoDataSource.append(metadata)
+            }
+        }
+        
+        if let destinationNC = segue.destination as? UINavigationController {
+            let destinationVC = destinationNC.topViewController as! CCDetail
+            
+        }
     }
     
     // MARK: UTILITY
