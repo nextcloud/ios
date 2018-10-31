@@ -670,6 +670,10 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
         } else {
             
+//            if self.splitViewController?.isCollapsed == false && appDelegate.activeMain.detailViewController.isViewLoaded && appDelegate.activeMain.detailViewController.view.window != nil {
+//                appDelegate.activeMain.navigationController?.popToRootViewController(animated: false)
+//            }
+            
             performSegue(withIdentifier: "segueDetail", sender: self)
         }
     }
@@ -680,7 +684,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
     }
     
-
     // MARK: UTILITY
     
     private func cellBlurEffect(with frame: CGRect) -> UIView {
