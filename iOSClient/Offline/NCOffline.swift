@@ -672,9 +672,6 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             
         } else {
             
-//            if self.splitViewController?.isCollapsed == false && appDelegate.activeMain.detailViewController.isViewLoaded && appDelegate.activeMain.detailViewController.view.window != nil {
-//                appDelegate.activeMain.navigationController?.popToRootViewController(animated: false)
-//            }
             metadataSelect = metadata
             performSegue(withIdentifier: "segueDetail", sender: self)
         }
