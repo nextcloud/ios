@@ -619,7 +619,13 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             cell.labelTitle.text = metadata.fileNameView
             
             if metadata.directory {
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+//                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
+                
+                let image = UIImage.init(named: "folder")!
+                
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image.size.width, height: image.size.height, color: NCBrandColor.sharedInstance.brandElement)
+                
+                
             } else {
                 cell.imageItem.image = image
             }
