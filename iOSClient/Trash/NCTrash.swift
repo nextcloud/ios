@@ -85,6 +85,10 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        // Color
+        appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
+        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        
         self.navigationItem.title = titleCurrentFolder
 
         datasourceSorted = CCUtility.getOrderSettings()
