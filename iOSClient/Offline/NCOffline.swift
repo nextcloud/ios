@@ -42,8 +42,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     private var datasourceGroupBy = ""
     private var datasourceDirectoryOnTop = false
     
-    private var listLayout: NCListLayoutOffline!
-    private var gridLayout: NCGridLayoutOffline!
+    private var listLayout: NCListLayout!
+    private var gridLayout: NCGridLayout!
     
     private var actionSheet: ActionSheet?
     
@@ -71,8 +71,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         collectionView.alwaysBounceVertical = true
 
-        listLayout = NCListLayoutOffline()
-        gridLayout = NCGridLayoutOffline()
+        listLayout = NCListLayout()
+        gridLayout = NCGridLayout()
         
         // Add Refresh Control
         if #available(iOS 10.0, *) {

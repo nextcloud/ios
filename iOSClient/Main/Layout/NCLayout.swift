@@ -1,8 +1,8 @@
 //
-//  NCOfflineLayout.swift
+//  NCLayout.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 27/10/2018.
+//  Created by Marino Faggiana on 05/11/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCListLayoutOffline: UICollectionViewFlowLayout {
+class NCListLayout: UICollectionViewFlowLayout {
     
     let itemHeight: CGFloat = 60
     
@@ -31,7 +31,7 @@ class NCListLayoutOffline: UICollectionViewFlowLayout {
         super.init()
         
         sectionHeadersPinToVisibleBounds = false
-
+        
         minimumInteritemSpacing = 0
         minimumLineSpacing = 1
         
@@ -63,7 +63,7 @@ class NCListLayoutOffline: UICollectionViewFlowLayout {
     }
 }
 
-class NCGridLayoutOffline: UICollectionViewFlowLayout {
+class NCGridLayout: UICollectionViewFlowLayout {
     
     let heightLabelPlusButton: CGFloat = 45
     let preferenceWidth: CGFloat = 110
@@ -73,7 +73,7 @@ class NCGridLayoutOffline: UICollectionViewFlowLayout {
         super.init()
         
         sectionHeadersPinToVisibleBounds = false
-
+        
         minimumInteritemSpacing = 1
         minimumLineSpacing = 1
         

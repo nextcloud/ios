@@ -40,8 +40,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     private var datasourceSorted = ""
     private var datasourceAscending = true
     
-    private var listLayout: NCListLayoutTrash!
-    private var gridLayout: NCGridLayoutTrash!
+    private var listLayout: NCListLayout!
+    private var gridLayout: NCGridLayout!
     
     private var actionSheet: ActionSheet?
 
@@ -62,8 +62,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
 
         collectionView.alwaysBounceVertical = true
 
-        listLayout = NCListLayoutTrash()
-        gridLayout = NCGridLayoutTrash()
+        listLayout = NCListLayout()
+        gridLayout = NCGridLayout()
         
         // Add Refresh Control
         if #available(iOS 10.0, *) {
