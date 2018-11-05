@@ -470,9 +470,7 @@
              return;
          }
          
-         NSString *serverUrl = [NSURL URLWithString:serverUrlTo].URLByDeletingLastPathComponent.absoluteString;
-         if ([[serverUrl substringFromIndex:[serverUrl length] - 1] isEqualToString:@"/"])
-         serverUrl = [serverUrl substringToIndex:[serverUrl length] - 1];
+         NSString *serverUrl = [CCUtility deletingLastPathComponentFromServerUrl:serverUrlTo];
          
          // Clear data (old) Auto Upload
          [[NCManageDatabase sharedInstance] clearDateReadWithServerUrl:[[NCManageDatabase sharedInstance] getAccountAutoUploadDirectory:appDelegate.activeUrl] directoryID:nil];
