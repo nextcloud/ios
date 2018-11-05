@@ -545,6 +545,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         var image: UIImage?
+        var imagePreview = false
 
         guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
             return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
@@ -558,6 +559,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
         if FileManager().fileExists(atPath: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName)) {
             image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName))
+            imagePreview = true
         } else {
             if metadata.thumbnailExists && !CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
                 downloadThumbnail(with: metadata, indexPath: indexPath)
@@ -619,15 +621,16 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             cell.labelTitle.text = metadata.fileNameView
             
             if metadata.directory {
-//                cell.imageItem.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "folder"), multiplier: 3, color: NCBrandColor.sharedInstance.brandElement)
-                
-                let image = UIImage.init(named: "folder")!
-                
-                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image.size.width, height: image.size.height, color: NCBrandColor.sharedInstance.brandElement)
-                
-                
+                image = UIImage.init(named: "folder")
+                cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: NCBrandColor.sharedInstance.brandElement)
+                cell.imageItem.contentMode = .center
             } else {
                 cell.imageItem.image = image
+                if imagePreview == false {
+                    cell.imageItem.image = CCGraphics.scale(image, to: CGSize(width: image!.size.width*10, height: image!.size.height*10))
+//                    cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: nil)
+                    cell.imageItem.contentMode = .center
+                }
             }
             
             if isEditMode {
