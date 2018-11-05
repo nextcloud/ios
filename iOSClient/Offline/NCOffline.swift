@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCOfflineListCellDelegate, NCOfflineGridCellDelegate, NCOfflineHeaderDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCOfflineHeaderDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -59,8 +59,8 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         super.viewDidLoad()
         
         // Cell
-        collectionView.register(UINib.init(nibName: "NCOfflineListCell", bundle: nil), forCellWithReuseIdentifier: "cell-list")
-        collectionView.register(UINib.init(nibName: "NCOfflineGridCell", bundle: nil), forCellWithReuseIdentifier: "cell-grid")
+        collectionView.register(UINib.init(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
+        collectionView.register(UINib.init(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         // Header
         collectionView.register(UINib.init(nibName: "NCOfflineSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
@@ -547,7 +547,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         var image: UIImage?
 
         guard let metadata = NCMainCommon.sharedInstance.getMetadataFromSectionDataSourceIndexPath(indexPath, sectionDataSource: sectionDatasource) else {
-            return collectionView.dequeueReusableCell(withReuseIdentifier: "cell-list", for: indexPath) as! NCOfflineListCell
+            return collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
         }
         
         if metadata.iconName.count > 0 {
@@ -567,7 +567,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         if collectionView.collectionViewLayout == listLayout {
             
             // LIST
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-list", for: indexPath) as! NCOfflineListCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             cell.delegate = self
             
             cell.fileID = metadata.fileID
@@ -611,7 +611,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         } else {
             
             // GRID
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell-grid", for: indexPath) as! NCOfflineGridCell
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
             
             cell.fileID = metadata.fileID

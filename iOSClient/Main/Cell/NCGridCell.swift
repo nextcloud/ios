@@ -1,8 +1,8 @@
 //
-//  NCOfflineListCell.swift
+//  NCGridCell.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 24/10/2018.
+//  Created by Marino Faggiana on 08/10/2018.
 //  Copyright © 2018 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <m.faggiana@twsweb.it>
@@ -24,21 +24,14 @@
 import Foundation
 import UIKit
 
-class NCOfflineListCell: UICollectionViewCell {
+class NCGridCell: UICollectionViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
-
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var labelInfo: UILabel!
-    
-    @IBOutlet weak var imageMore: UIImageView!
-    @IBOutlet weak var buttonMore: UIButton!
-    
-    @IBOutlet weak var separator: UIView!
+    @IBOutlet weak var buttonMoreGrid: UIButton!
 
-    var delegate: NCOfflineListCellDelegate?
+    var delegate: NCGridCellDelegate?
     
     var fileID = ""
     var indexPath = IndexPath()
@@ -46,16 +39,14 @@ class NCOfflineListCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        imageMore.image = CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem)
-        
-        separator.backgroundColor = NCBrandColor.sharedInstance.seperator
+        buttonMoreGrid.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
     }
     
-    @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreItem(with: fileID, sender: sender)
+    @IBAction func touchUpInsideMoreGrid(_ sender: Any) {
+        delegate?.tapMoreGridItem(with: fileID, sender: sender)
     }
 }
 
-protocol NCOfflineListCellDelegate {
-    func tapMoreItem(with fileID: String, sender: Any)
+protocol NCGridCellDelegate {
+    func tapMoreGridItem(with fileID: String, sender: Any)
 }
