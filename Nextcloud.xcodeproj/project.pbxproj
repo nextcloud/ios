@@ -226,12 +226,10 @@
 		F73CCE261DC13788007E38D8 /* UIScrollView+EmptyDataSet.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */; };
 		F73CCE301DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
 		F73CCE321DC13798007E38D8 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */; };
-		F73D2A7421836C4700BCA11F /* NCOfflineSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73D2A7321836C4700BCA11F /* NCOfflineSectionHeader.xib */; };
-		F73D2A762183725B00BCA11F /* NCOfflineFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F73D2A752183725B00BCA11F /* NCOfflineFooter.xib */; };
 		F73D71621F2673C200E233EB /* NCText.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73D71611F2673C200E233EB /* NCText.swift */; };
 		F73D71641F2674A400E233EB /* NCText.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73D71631F2674A400E233EB /* NCText.storyboard */; };
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
-		F7417DB3216CE925007D05F5 /* NCTrashHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB2216CE925007D05F5 /* NCTrashHeaderFooter.swift */; };
+		F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */; };
 		F7434B3420E23FD700417916 /* NCDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB41ED5A87C00B7EAD4 /* NCDatabase.swift */; };
 		F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		F7434B3720E23FF200417916 /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
@@ -422,10 +420,8 @@
 		F762CB991EACB84400B38484 /* icon-success.png in Resources */ = {isa = PBXBuildFile; fileRef = F762CB911EACB84400B38484 /* icon-success.png */; };
 		F762CB9A1EACB84400B38484 /* icon-success@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = F762CB921EACB84400B38484 /* icon-success@2x.png */; };
 		F762CB9B1EACB84400B38484 /* TWMessageBarManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F762CB941EACB84400B38484 /* TWMessageBarManager.m */; };
-		F7632FBF21832F8700721B71 /* NCTrashHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FBE21832F8700721B71 /* NCTrashHeaderMenu.xib */; };
+		F7632FBF21832F8700721B71 /* NCTrashSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FBE21832F8700721B71 /* NCTrashSectionHeaderMenu.xib */; };
 		F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */; };
-		F7632FD921836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7632FD621836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib */; };
-		F7632FDB21836A5B00721B71 /* NCOfflineHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7632FD821836A5B00721B71 /* NCOfflineHeaderFooter.swift */; };
 		F7659A271DC0B726004860C4 /* EAIntroPage.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A231DC0B726004860C4 /* EAIntroPage.m */; };
 		F7659A291DC0B726004860C4 /* EAIntroView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A251DC0B726004860C4 /* EAIntroView.m */; };
 		F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A2C1DC0B72F004860C4 /* EARestrictedScrollView.m */; };
@@ -511,6 +507,10 @@
 		F78ACD4A21903F850088454D /* NCTrashListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4821903F850088454D /* NCTrashListCell.swift */; };
 		F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4921903F850088454D /* NCTrashListCell.xib */; };
 		F78ACD4F2190440D0088454D /* NCLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4E2190440D0088454D /* NCLayout.swift */; };
+		F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */; };
+		F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
+		F78ACD56219047E90088454D /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD55219047E90088454D /* NCSectionHeader.xib */; };
+		F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */; };
 		F78BFEE11D31126B00E513CF /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */; };
 		F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F78F74332163757000C2ADAD /* NCTrash.storyboard */; };
 		F78F74362163781100C2ADAD /* NCTrash.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78F74352163781100C2ADAD /* NCTrash.swift */; };
@@ -1040,12 +1040,10 @@
 		F73CCE241DC13788007E38D8 /* UIScrollView+EmptyDataSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+EmptyDataSet.m"; sourceTree = "<group>"; };
 		F73CCE291DC13798007E38D8 /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		F73CCE2A1DC13798007E38D8 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
-		F73D2A7321836C4700BCA11F /* NCOfflineSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineSectionHeader.xib; sourceTree = "<group>"; };
-		F73D2A752183725B00BCA11F /* NCOfflineFooter.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineFooter.xib; sourceTree = "<group>"; };
 		F73D71611F2673C200E233EB /* NCText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCText.swift; sourceTree = "<group>"; };
 		F73D71631F2674A400E233EB /* NCText.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCText.storyboard; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
-		F7417DB2216CE925007D05F5 /* NCTrashHeaderFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashHeaderFooter.swift; sourceTree = "<group>"; };
+		F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSectionHeaderFooter.swift; sourceTree = "<group>"; };
 		F7434B5F20E2440600417916 /* FileProviderExtension-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "FileProviderExtension-Bridging-Header.h"; sourceTree = "<group>"; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
 		F743B2C41C95BBE8006F5B4A /* CCShareInfoCMOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareInfoCMOC.m; sourceTree = "<group>"; };
@@ -1328,10 +1326,8 @@
 		F762CB921EACB84400B38484 /* icon-success@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-success@2x.png"; sourceTree = "<group>"; };
 		F762CB931EACB84400B38484 /* TWMessageBarManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWMessageBarManager.h; sourceTree = "<group>"; };
 		F762CB941EACB84400B38484 /* TWMessageBarManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWMessageBarManager.m; sourceTree = "<group>"; };
-		F7632FBE21832F8700721B71 /* NCTrashHeaderMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashHeaderMenu.xib; sourceTree = "<group>"; };
+		F7632FBE21832F8700721B71 /* NCTrashSectionHeaderMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashSectionHeaderMenu.xib; sourceTree = "<group>"; };
 		F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCTrashSectionFooter.xib; sourceTree = "<group>"; };
-		F7632FD621836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCOfflineSectionHeaderMenu.xib; sourceTree = "<group>"; };
-		F7632FD821836A5B00721B71 /* NCOfflineHeaderFooter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOfflineHeaderFooter.swift; sourceTree = "<group>"; };
 		F76344751BF259A800188725 /* synchronized.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronized.gif; sourceTree = "<group>"; };
 		F76344761BF259A800188725 /* synchronizedcrypto.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = synchronizedcrypto.gif; sourceTree = "<group>"; };
 		F7659A221DC0B726004860C4 /* EAIntroPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAIntroPage.h; sourceTree = "<group>"; };
@@ -1407,6 +1403,10 @@
 		F78ACD4821903F850088454D /* NCTrashListCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTrashListCell.swift; sourceTree = "<group>"; };
 		F78ACD4921903F850088454D /* NCTrashListCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCTrashListCell.xib; sourceTree = "<group>"; };
 		F78ACD4E2190440D0088454D /* NCLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLayout.swift; sourceTree = "<group>"; };
+		F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCSectionHeaderFooter.swift; sourceTree = "<group>"; };
+		F78ACD53219047D40088454D /* NCSectionFooter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionFooter.xib; sourceTree = "<group>"; };
+		F78ACD55219047E90088454D /* NCSectionHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
+		F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCSectionHeaderMenu.xib; sourceTree = "<group>"; };
 		F78BFEDE1D31126B00E513CF /* MainInterface.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = MainInterface.storyboard; sourceTree = "<group>"; };
 		F78D6F461F0B7CB9002F9619 /* es-MX */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "es-MX"; path = "es-MX.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F78D6F4D1F0B7CE4002F9619 /* nb-NO */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "nb-NO"; path = "nb-NO.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -1848,6 +1848,7 @@
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				F78ACD50219046AC0088454D /* Section */,
 				F78ACD4D219043E70088454D /* Layout */,
 				F78ACD3E21903BA20088454D /* Cell */,
 				F70211FA1BAC56E9003FC03E /* CCMain.h */,
@@ -2143,7 +2144,6 @@
 			children = (
 				F7381EDE218218C9000B1560 /* NCOffline.storyboard */,
 				F7381EDA218218C9000B1560 /* NCOffline.swift */,
-				F7632FD521836A3F00721B71 /* Section */,
 			);
 			path = Offline;
 			sourceTree = "<group>";
@@ -2854,19 +2854,8 @@
 			isa = PBXGroup;
 			children = (
 				F7632FC0218353AA00721B71 /* NCTrashSectionFooter.xib */,
-				F7632FBE21832F8700721B71 /* NCTrashHeaderMenu.xib */,
-				F7417DB2216CE925007D05F5 /* NCTrashHeaderFooter.swift */,
-			);
-			path = Section;
-			sourceTree = "<group>";
-		};
-		F7632FD521836A3F00721B71 /* Section */ = {
-			isa = PBXGroup;
-			children = (
-				F7632FD621836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib */,
-				F73D2A7321836C4700BCA11F /* NCOfflineSectionHeader.xib */,
-				F73D2A752183725B00BCA11F /* NCOfflineFooter.xib */,
-				F7632FD821836A5B00721B71 /* NCOfflineHeaderFooter.swift */,
+				F7632FBE21832F8700721B71 /* NCTrashSectionHeaderMenu.xib */,
+				F7417DB2216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift */,
 			);
 			path = Section;
 			sourceTree = "<group>";
@@ -2971,6 +2960,17 @@
 				F78ACD4E2190440D0088454D /* NCLayout.swift */,
 			);
 			path = Layout;
+			sourceTree = "<group>";
+		};
+		F78ACD50219046AC0088454D /* Section */ = {
+			isa = PBXGroup;
+			children = (
+				F78ACD51219046DC0088454D /* NCSectionHeaderFooter.swift */,
+				F78ACD55219047E90088454D /* NCSectionHeader.xib */,
+				F78ACD57219048040088454D /* NCSectionHeaderMenu.xib */,
+				F78ACD53219047D40088454D /* NCSectionFooter.xib */,
+			);
+			path = Section;
 			sourceTree = "<group>";
 		};
 		F78F74322163753B00C2ADAD /* Trash */ = {
@@ -3859,7 +3859,6 @@
 				F712AC9C2175E56F0061158E /* CTAssetsPicker.strings in Resources */,
 				F7F54CF41E5B14C700E19C62 /* PlayButtonOverlayLarge.png in Resources */,
 				F7F54D041E5B14C800E19C62 /* VideoOverlay@2x.png in Resources */,
-				F7632FD921836A5B00721B71 /* NCOfflineSectionHeaderMenu.xib in Resources */,
 				F712AC932175E56F0061158E /* CTAssetsPickerController.bundle in Resources */,
 				F7F54CF51E5B14C700E19C62 /* PlayButtonOverlayLarge@2x.png in Resources */,
 				F77D49A91DC238E500CDC568 /* loading.gif in Resources */,
@@ -3900,7 +3899,7 @@
 				F73D71641F2674A400E233EB /* NCText.storyboard in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
 				F7D423471F0596AC009C9782 /* Reader-Mark-Y.png in Resources */,
-				F7632FBF21832F8700721B71 /* NCTrashHeaderMenu.xib in Resources */,
+				F7632FBF21832F8700721B71 /* NCTrashSectionHeaderMenu.xib in Resources */,
 				F7D423431F0596AC009C9782 /* Reader-Export@3x.png in Resources */,
 				F7D4233C1F0596AC009C9782 /* Reader-Button-N@2x.png in Resources */,
 				F729B92B217A2E4E00FE2150 /* NCActionSheetHeaderView.xib in Resources */,
@@ -3910,7 +3909,6 @@
 				F762CB981EACB84400B38484 /* icon-info@2x.png in Resources */,
 				F7D423361F0596AC009C9782 /* AppIcon-167.png in Resources */,
 				F7F54CF71E5B14C700E19C62 /* PlayButtonOverlayLargeTap.png in Resources */,
-				F73D2A762183725B00BCA11F /* NCOfflineFooter.xib in Resources */,
 				F710E8111EF95C9C00DC2427 /* ImagesIntro.xcassets in Resources */,
 				F77B0F4D1D118A16002130FE /* CCShare.storyboard in Resources */,
 				F7F54D021E5B14C700E19C62 /* UIBarButtonItemGrid@3x.png in Resources */,
@@ -3934,12 +3932,12 @@
 				F7F54CEF1E5B14C700E19C62 /* ImageSelectedSmallOff@2x.png in Resources */,
 				F7F54CFF1E5B14C700E19C62 /* UIBarButtonItemArrowRight@3x.png in Resources */,
 				F774DF0F1FCC26BE002AF9FC /* iTunesArtwork@1x.png in Resources */,
+				F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */,
 				F77B0F611D118A16002130FE /* Acknowledgements.rtf in Resources */,
 				F77B0F631D118A16002130FE /* Localizable.strings in Resources */,
 				F7632FC1218353AA00721B71 /* NCTrashSectionFooter.xib in Resources */,
 				F7D4234C1F0596AC009C9782 /* Reader-Print@3x.png in Resources */,
 				F7F54CFB1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@2x.png in Resources */,
-				F73D2A7421836C4700BCA11F /* NCOfflineSectionHeader.xib in Resources */,
 				F76F23341ED4603700C40023 /* LaunchScreen.xib in Resources */,
 				F7C525A21E3B6DA800FFE02C /* CCNotification.storyboard in Resources */,
 				F7F54CEB1E5B14C700E19C62 /* ImageSelectedOn.png in Resources */,
@@ -3957,10 +3955,12 @@
 				F7D423381F0596AC009C9782 /* Reader-Button-H.png in Resources */,
 				F7F54CFC1E5B14C700E19C62 /* UIBarButtonItemArrowLeft@3x.png in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
+				F78ACD56219047E90088454D /* NCSectionHeader.xib in Resources */,
 				F7D423491F0596AC009C9782 /* Reader-Mark-Y@3x.png in Resources */,
 				F7D423421F0596AC009C9782 /* Reader-Export@2x.png in Resources */,
 				F7F54CE91E5B14C700E19C62 /* ImageSelectedOff@2x.png in Resources */,
 				F77B0F8A1D118A16002130FE /* CCCellMain.xib in Resources */,
+				F78ACD58219048040088454D /* NCSectionHeaderMenu.xib in Resources */,
 				F77B0F8C1D118A16002130FE /* CCCellMainTransfer.xib in Resources */,
 				F73B4EF41F470D9100BBEE4B /* JISFreq.tab in Resources */,
 				F7D423451F0596AC009C9782 /* Reader-Mark-N@2x.png in Resources */,
@@ -4253,7 +4253,6 @@
 				F7A5541F204EF8AF008468EC /* TOScrollBar.m in Sources */,
 				F7A321651E9E37960069AD1B /* CCActivity.m in Sources */,
 				F7FB1D3E215E191D00D669EA /* NCViewerDocumentWeb.swift in Sources */,
-				F7632FDB21836A5B00721B71 /* NCOfflineHeaderFooter.swift in Sources */,
 				F712AC902175E56F0061158E /* CTAssetSelectionLabel.m in Sources */,
 				F762CB0C1EACB66200B38484 /* XLFormSectionDescriptor.m in Sources */,
 				F77B0E131D118A16002130FE /* AppDelegate.m in Sources */,
@@ -4270,6 +4269,7 @@
 				F73B4F091F470D9100BBEE4B /* nsEUCKRProber.cpp in Sources */,
 				F758B460212C56A400515F55 /* ScanCollectionView.swift in Sources */,
 				F762CB021EACB66200B38484 /* XLFormSliderCell.m in Sources */,
+				F78ACD52219046DC0088454D /* NCSectionHeaderFooter.swift in Sources */,
 				F77B0E1B1D118A16002130FE /* CCGraphics.m in Sources */,
 				F7622FB92175FCC0000383FF /* ActionSheetSectionMarginAppearance.swift in Sources */,
 				F7622FC72175FCC0000383FF /* UIView+Empty.swift in Sources */,
@@ -4382,7 +4382,7 @@
 				F73CC07E1E813DFF006E3047 /* BKTouchIDSwitchView.m in Sources */,
 				F77B0E5F1D118A16002130FE /* CCSettings.m in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
-				F7417DB3216CE925007D05F5 /* NCTrashHeaderFooter.swift in Sources */,
+				F7417DB3216CE925007D05F5 /* NCTrashSectionHeaderFooter.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F712ACAF2175E56F0061158E /* NSDateFormatter+CTAssetsPickerController.m in Sources */,
 				F762CB141EACB66200B38484 /* XLFormRightImageButton.m in Sources */,

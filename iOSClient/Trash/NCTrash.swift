@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListCellDelegate, NCGridCellDelegate, NCTrashHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCTrashListCellDelegate, NCGridCellDelegate, NCTrashSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
 
@@ -57,7 +57,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         collectionView.register(UINib.init(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         
         // Header - Footer
-        collectionView.register(UINib.init(nibName: "NCTrashHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "headerMenu")
+        collectionView.register(UINib.init(nibName: "NCTrashSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
         collectionView.register(UINib.init(nibName: "NCTrashSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
 
         collectionView.alwaysBounceVertical = true
@@ -200,7 +200,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.tableViewBackgroundColor = UIColor.white
 
-        let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
+        let header = (sender as? UIButton)?.superview as! NCTrashSectionHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
@@ -237,7 +237,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.tableView.alwaysBounceVertical = false
         menuView?.tableViewBackgroundColor = UIColor.white
         
-        let header = (sender as? UIButton)?.superview as! NCTrashHeaderMenu
+        let header = (sender as? UIButton)?.superview as! NCTrashSectionHeaderMenu
         let headerRect = self.collectionView.convert(header.bounds, from: self.view)
         let menuOffsetY =  headerRect.height - headerRect.origin.y - 2
         menuView?.topOffsetY = CGFloat(menuOffsetY)
@@ -548,7 +548,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         if kind == UICollectionView.elementKindSectionHeader {
             
-            let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "headerMenu", for: indexPath) as! NCTrashHeaderMenu
+            let trashHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as! NCTrashSectionHeaderMenu
             
             if collectionView.collectionViewLayout == gridLayout {
                 trashHeader.buttonSwitch.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "switchList"), multiplier: 2, color: NCBrandColor.sharedInstance.icon), for: .normal)

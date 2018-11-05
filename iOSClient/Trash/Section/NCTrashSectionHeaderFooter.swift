@@ -1,5 +1,5 @@
 //
-//  NCTrashHeaderFooter.swift
+//  NCTrashSectionHeaderFooter.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/2018.
@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCTrashHeaderMenu: UICollectionReusableView {
+class NCTrashSectionHeaderMenu: UICollectionReusableView {
     
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
@@ -31,7 +31,7 @@ class NCTrashHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var buttonOrderWidthConstraint: NSLayoutConstraint!
     @IBOutlet weak var separator: UIView!
     
-    var delegate: NCTrashHeaderMenuDelegate?
+    var delegate: NCTrashSectionHeaderMenuDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -98,7 +98,7 @@ class NCTrashHeaderMenu: UICollectionReusableView {
     }
 }
 
-protocol NCTrashHeaderMenuDelegate {
+protocol NCTrashSectionHeaderMenuDelegate {
     func tapSwitchHeaderMenu(sender: Any)
     func tapMoreHeaderMenu(sender: Any)
     func tapOrderHeaderMenu(sender: Any)

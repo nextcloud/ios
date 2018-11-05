@@ -1,5 +1,5 @@
 //
-//  NCOfflineHeaderFooter.swift
+//  NCSectionHeaderFooter.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/2018.
@@ -23,7 +23,7 @@
 
 import Foundation
 
-class NCOfflineSectionHeaderMenu: UICollectionReusableView {
+class NCSectionHeaderMenu: UICollectionReusableView {
     
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var buttonSwitch: UIButton!
@@ -34,8 +34,8 @@ class NCOfflineSectionHeaderMenu: UICollectionReusableView {
     @IBOutlet weak var labelSectionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var separator: UIView!
     
-    var delegate: NCOfflineHeaderDelegate?
-
+    var delegate: NCSectionHeaderMenuDelegate?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -124,13 +124,13 @@ class NCOfflineSectionHeaderMenu: UICollectionReusableView {
     }
 }
 
-protocol NCOfflineHeaderDelegate {
+protocol NCSectionHeaderMenuDelegate {
     func tapSwitchHeader(sender: Any)
     func tapMoreHeader(sender: Any)
     func tapOrderHeader(sender: Any)
 }
 
-class NCOfflineSectionHeader: UICollectionReusableView {
+class NCSectionHeader: UICollectionReusableView {
     
     @IBOutlet weak var labelSection: UILabel!
     
@@ -162,10 +162,10 @@ class NCOfflineSectionHeader: UICollectionReusableView {
     }
 }
 
-class NCOfflineFooter: UICollectionReusableView {
+class NCSectionFooter: UICollectionReusableView {
     
     @IBOutlet weak var labelSection: UILabel!
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
