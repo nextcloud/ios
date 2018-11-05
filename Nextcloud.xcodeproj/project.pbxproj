@@ -1851,6 +1851,7 @@
 				F78ACD50219046AC0088454D /* Section */,
 				F78ACD4D219043E70088454D /* Layout */,
 				F78ACD3E21903BA20088454D /* Cell */,
+				F78ACD5921904E460088454D /* ActionSheetHeaderView */,
 				F70211FA1BAC56E9003FC03E /* CCMain.h */,
 				F70211FB1BAC56E9003FC03E /* CCMain.m */,
 				F7226EDB1EE4089300EBECB1 /* Main.storyboard */,
@@ -1863,8 +1864,6 @@
 				F792A77C1BC7C45400C9388E /* CCSplit.m */,
 				F7ECBA6C1E239DCD003E6328 /* CCCreateCloud.swift */,
 				F7D6650620FF341600BFBA9E /* NCMainCommon.swift */,
-				F729B92C217A2F1B00FE2150 /* NCActionSheetHeaderView.swift */,
-				F729B92A217A2E4E00FE2150 /* NCActionSheetHeaderView.xib */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -2971,6 +2970,15 @@
 				F78ACD53219047D40088454D /* NCSectionFooter.xib */,
 			);
 			path = Section;
+			sourceTree = "<group>";
+		};
+		F78ACD5921904E460088454D /* ActionSheetHeaderView */ = {
+			isa = PBXGroup;
+			children = (
+				F729B92C217A2F1B00FE2150 /* NCActionSheetHeaderView.swift */,
+				F729B92A217A2E4E00FE2150 /* NCActionSheetHeaderView.xib */,
+			);
+			path = ActionSheetHeaderView;
 			sourceTree = "<group>";
 		};
 		F78F74322163753B00C2ADAD /* Trash */ = {
