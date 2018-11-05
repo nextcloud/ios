@@ -627,8 +627,9 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             } else {
                 cell.imageItem.image = image
                 if imagePreview == false {
-                    cell.imageItem.image = CCGraphics.scale(image, to: CGSize(width: image!.size.width*10, height: image!.size.height*10))
-//                    cell.imageItem.image = CCGraphics.changeThemingColorImage(image, width: image!.size.width*6, height: image!.size.height*6, scale: 3.0, color: nil)
+                    let width = cell.imageItem.image!.size.width * 2
+                    //let scale = UIScreen.main.scale
+                    cell.imageItem.image = NCUtility.sharedInstance.resizeImage(image: image!, newWidth: width)
                     cell.imageItem.contentMode = .center
                 }
             }
