@@ -710,8 +710,6 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
         if metadata.directory {
             
-            let nc:NCSelect = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as! NCSelect
-            
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                 return
             }
@@ -721,46 +719,23 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
                 return
             }
+            guard let visualController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateViewController(withIdentifier: "NCSelect.storyboard") as? NCSelect else {
+                return
+            }
             
-            nc.directoryID = directoryIDPush
-            nc.serverUrl = serverUrlPush
-            nc.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
-            nc.includeImages = includeImages
-            nc.hideButtonCreateFolder = hideButtonCreateFolder
-            nc.selectFile = selectFile
-            nc.type = type
-            nc.titleCurrentFolder = metadata.fileNameView
+            visualController.directoryID = directoryIDPush
+            visualController.serverUrl = serverUrlPush
+            visualController.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
+            visualController.includeImages = includeImages
+            visualController.hideButtonCreateFolder = hideButtonCreateFolder
+            visualController.selectFile = selectFile
+            visualController.type = type
+            visualController.titleCurrentFolder = metadata.fileNameView
             
-            self.navigationController?.pushViewController(nc, animated: true)
+            self.navigationController?.pushViewController(visualController, animated: true)
             
         } else {
             
-            metadataSelect = metadata
-            performSegue(withIdentifier: "segueDetail", sender: self)
-        }
-    }
-    
-    // MARK: SEGUE
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        
-        let photoDataSource: NSMutableArray = []
-        
-        for fileID: String in sectionDatasource.allFileID as! [String] {
-            let metadata = sectionDatasource.allRecordsDataSource.object(forKey: fileID) as! tableMetadata
-            if metadata.typeFile == k_metadataTypeFile_image {
-                photoDataSource.add(metadata)
-            }
-        }
-        
-        if let segueNavigationController = segue.destination as? UINavigationController {
-            if let segueViewController = segueNavigationController.topViewController as? CCDetail {
-                
-                segueViewController.metadataDetail = metadataSelect
-                segueViewController.dateFilterQuery = nil
-                segueViewController.photoDataSource = photoDataSource
-                segueViewController.title = metadataSelect.fileNameView
-            }
         }
     }
     
