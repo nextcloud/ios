@@ -27,6 +27,11 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     
+    @IBOutlet fileprivate weak var navigationButtonRight: UIBarButtonItem!
+
+    @IBOutlet fileprivate weak var toolbarButtonLeft: UIBarButtonItem!
+    @IBOutlet fileprivate weak var toolbarButtonRight: UIBarButtonItem!
+
     var titleCurrentFolder = NSLocalizedString("_select_", comment: "")
     var serverUrl = ""
     var directoryID = ""
@@ -142,6 +147,18 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     func emptyDataSetShouldAllowScroll(_ scrollView: UIScrollView) -> Bool {
         return true
+    }
+    
+    
+    // MARK: ACTION
+    
+    @IBAction func actionNavigationButtonRight(_ sender: Any) {
+    }
+    
+    @IBAction func actioToolbarButtonRight(_ sender: Any) {
+    }
+    
+    @IBAction func actionToolbarButtonLeft(_ sender: Any) {
     }
     
     // MARK: TAP EVENT
@@ -282,7 +299,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                     self.loadDatasource(withLoadFolder: false)
                 }
                 if item.value as? Int == 1 { self.appDelegate.activeMain.openWindowShare(metadata) }
-                if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
+                if item.value as? Int == 2 {  print("option 2") }
                 if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
             }
             
@@ -370,45 +387,18 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     // MARK: NC API
     
-    func downloadThumbnail(with tableMetadata: tableMetadata, indexPath: IndexPath) {
+    func downloadThumbnail(with metadata: tableMetadata, indexPath: IndexPath) {
+        
+        let width = NCUtility.sharedInstance.getScreenWidthForPreview()
+        let height = NCUtility.sharedInstance.getScreenHeightForPreview()
         
         let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
         
-        ocNetworking?.downloadPreviewTrash(withFileID: tableMetadata.fileID, fileName: tableMetadata.fileName, completion: { (message, errorCode) in
-            if errorCode == 0 && CCUtility.fileProviderStorageIconExists(tableMetadata.fileID, fileNameView: tableMetadata.fileName) {
+        ocNetworking?.downloadPreview(with: metadata, serverUrl: serverUrl, withWidth: width, andHeight: height, completion: { (message, errorCode) in
+            if errorCode == 0 && CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
                 self.collectionView.reloadItems(at: [indexPath])
             }
         })
-    }
-    
-    func deleteItem(with metadata: tableMetadata, sender: Any) {
-        
-        var items = [ActionSheetItem]()
-        
-        guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
-            return
-        }
-        guard let tableDirectory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == serverUrl", appDelegate.activeAccount, serverUrl)) else {
-            return
-        }
-        
-        items.append(ActionSheetDangerButton(title: NSLocalizedString("_delete_", comment: "")))
-        items.append(ActionSheetCancelButton(title: NSLocalizedString("_cancel_", comment: "")))
-        
-        actionSheet = ActionSheet(items: items) { sheet, item in
-            if item is ActionSheetDangerButton {
-                NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
-                    self.loadDatasource(withLoadFolder: false)
-                }
-            }
-            if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
-        }
-        
-        let headerView = actionSheetHeader(with: metadata)
-        actionSheet?.headerView = headerView
-        actionSheet?.headerView?.frame.size.height = 50
-        
-        actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
     func loadFolder() {
