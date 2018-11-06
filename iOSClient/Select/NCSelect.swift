@@ -43,6 +43,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     @objc var includeDirectoryE2EEncryption = false
     @objc var includeImages = false
     @objc var type = ""
+    @objc var titleButtonDone = ""
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
     var serverUrl = ""
@@ -122,6 +123,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         toolbar.tintColor = NCBrandColor.sharedInstance.brandElement
         
         self.navigationItem.title = titleCurrentFolder
+        
+        buttonDone.title = titleButtonDone
         
         if hideButtonCreateFolder {
             buttonCreateFolder.isEnabled = false
@@ -473,6 +476,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     @objc func loadDatasource(withLoadFolder: Bool) {
         
         sectionDatasource = CCSectionDataSourceMetadata()
+        var predicate: NSPredicate?
         
         if directoryID == "" {
             
@@ -480,8 +484,25 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) ?? ""
         }
         
-        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: datasourceSorted, ascending: datasourceAscending)  {
-                
+        if includeDirectoryE2EEncryption {
+            
+            if includeImages {
+                predicate = NSPredicate(format: "directoryID == %@ AND (directory == true OR typeFile == 'image')", directoryID)
+            } else {
+                predicate = NSPredicate(format: "directoryID == %@ AND directory == true", directoryID)
+            }
+            
+        } else {
+            
+            if includeImages {
+                predicate = NSPredicate(format: "directoryID == %@ AND e2eEncrypted == false AND (directory == true OR typeFile == 'image')", directoryID)
+            } else {
+                predicate = NSPredicate(format: "directoryID == %@ AND e2eEncrypted == false AND directory == true", directoryID)
+            }
+        }
+        
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: predicate!, sorted: datasourceSorted, ascending: datasourceAscending) {
+            
             sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
         }
         
@@ -741,7 +762,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             visualController.selectFile = selectFile
             visualController.type = type
             visualController.titleCurrentFolder = metadata.fileNameView
-            visualController.metadataSelect = metadata
+            visualController.titleButtonDone = titleButtonDone
+            
+//            visualController.metadataSelect = metadata
             
             self.navigationController?.pushViewController(visualController, animated: true)
             
