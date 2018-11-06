@@ -23,18 +23,20 @@
 
 import Foundation
 
-class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
+class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     
-    @IBOutlet fileprivate weak var navigationButtonRight: UIBarButtonItem!
-
-    @IBOutlet fileprivate weak var toolbarButtonLeft: UIBarButtonItem!
-    @IBOutlet fileprivate weak var toolbarButtonRight: UIBarButtonItem!
+    @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
+    @IBOutlet fileprivate weak var buttonCreateFolder: UIBarButtonItem!
+    @IBOutlet fileprivate weak var buttonDone: UIBarButtonItem!
 
     var titleCurrentFolder = NSLocalizedString("_select_", comment: "")
     var serverUrl = ""
     var directoryID = ""
+    
+    var includeDirectoryE2EEncryption = false
+    var includeImages = false
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -149,16 +151,15 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         return true
     }
     
-    
     // MARK: ACTION
     
-    @IBAction func actionNavigationButtonRight(_ sender: Any) {
+    @IBAction func actionCancel(_ sender: Any) {
     }
     
-    @IBAction func actioToolbarButtonRight(_ sender: Any) {
+    @IBAction func actionDone(_ sender: Any) {
     }
     
-    @IBAction func actionToolbarButtonLeft(_ sender: Any) {
+    @IBAction func actionCreateFolder(_ sender: Any) {
     }
     
     // MARK: TAP EVENT
@@ -386,6 +387,17 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     }
     
     // MARK: NC API
+    
+    func createFolder(with fileName: String) {
+        
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+
+        ocNetworking?.createFolder(fileName, serverUrl: serverUrl, account: appDelegate.activeAccount, success: { (fileID, date) in
+            self.loadDatasource(withLoadFolder: true)
+        }, failure: { (message, errorCode) in
+            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+        })
+    }
     
     func downloadThumbnail(with metadata: tableMetadata, indexPath: IndexPath) {
         
@@ -693,6 +705,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             
             nc.directoryID = directoryIDPush
             nc.serverUrl = serverUrlPush
+            nc.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
+            nc.includeImages = includeImages
             nc.titleCurrentFolder = metadata.fileNameView
             
             self.navigationController?.pushViewController(nc, animated: true)

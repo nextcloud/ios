@@ -36,15 +36,15 @@
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2ha-lH-BXy">
                                 <rect key="frame" x="0.0" y="623" width="375" height="44"/>
                                 <items>
-                                    <barButtonItem title="Left" id="CIy-cf-IQn">
+                                    <barButtonItem title="Create Folder" id="CIy-cf-IQn">
                                         <connections>
-                                            <action selector="actionToolbarButtonLeft:" destination="VYq-xA-D35" id="kgc-Ce-adE"/>
+                                            <action selector="actionCreateFolder:" destination="VYq-xA-D35" id="zc8-7d-P1H"/>
                                         </connections>
                                     </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="mLU-GT-QAB"/>
-                                    <barButtonItem title="Right" id="tL8-Fx-8pT">
+                                    <barButtonItem title="Done" id="tL8-Fx-8pT">
                                         <connections>
-                                            <action selector="actioToolbarButtonRight:" destination="VYq-xA-D35" id="zcv-wE-Noj"/>
+                                            <action selector="actionDone:" destination="VYq-xA-D35" id="W2N-PO-qPY"/>
                                         </connections>
                                     </barButtonItem>
                                 </items>
@@ -63,17 +63,17 @@
                         <viewLayoutGuide key="safeArea" id="vaA-85-uNN"/>
                     </view>
                     <navigationItem key="navigationItem" id="N5K-De-4CP">
-                        <barButtonItem key="rightBarButtonItem" title="Right" id="qHj-AF-EN7">
+                        <barButtonItem key="rightBarButtonItem" title="Cancel" id="qHj-AF-EN7">
                             <connections>
-                                <action selector="actionNavigationButtonRight:" destination="VYq-xA-D35" id="H7V-FR-TAf"/>
+                                <action selector="actionCancel:" destination="VYq-xA-D35" id="LRW-H2-pbh"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="buttonCancel" destination="qHj-AF-EN7" id="Fky-XJ-BxL"/>
+                        <outlet property="buttonCreateFolder" destination="CIy-cf-IQn" id="hwe-th-X6G"/>
+                        <outlet property="buttonDone" destination="tL8-Fx-8pT" id="423-ev-cSf"/>
                         <outlet property="collectionView" destination="0HI-k1-SD0" id="xme-mG-bnz"/>
-                        <outlet property="navigationButtonRight" destination="qHj-AF-EN7" id="ijb-ca-mcN"/>
-                        <outlet property="toolbarButtonLeft" destination="CIy-cf-IQn" id="t5v-Og-7hE"/>
-                        <outlet property="toolbarButtonRight" destination="tL8-Fx-8pT" id="LcJ-Ni-K2m"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vH8-UY-9MN" userLabel="First Responder" sceneMemberID="firstResponder"/>
