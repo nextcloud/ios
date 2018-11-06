@@ -23,6 +23,10 @@
 
 import Foundation
 
+@objc protocol NCSelectDelegate {
+    @objc func dismissSelect(withServerUrl: String?, metadata: tableMetadata?, type: String)
+}
+
 class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
@@ -31,12 +35,16 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     @IBOutlet fileprivate weak var buttonCreateFolder: UIBarButtonItem!
     @IBOutlet fileprivate weak var buttonDone: UIBarButtonItem!
 
-    var titleCurrentFolder = NSLocalizedString("_select_", comment: "")
-    var serverUrl = ""
-    var directoryID = ""
-    
-    var includeDirectoryE2EEncryption = false
-    var includeImages = false
+    @objc var delegate: NCSelectDelegate?
+
+    @objc var titleCurrentFolder = NSLocalizedString("_select_", comment: "")
+    @objc var serverUrl = ""
+    @objc var directoryID = ""
+    @objc var hideButtonCreateFolder = false
+    @objc var selectFile = false
+    @objc var includeDirectoryE2EEncryption = false
+    @objc var includeImages = false
+    @objc var type = ""
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -97,6 +105,10 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         // empty Data Source
         self.collectionView.emptyDataSetDelegate = self;
         self.collectionView.emptyDataSetSource = self;
+        
+        // title button
+        buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
+        buttonCreateFolder.title = NSLocalizedString("_create_folder_", comment: "")
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -107,6 +119,11 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
         
         self.navigationItem.title = titleCurrentFolder
+        
+        if hideButtonCreateFolder {
+            buttonCreateFolder.isEnabled = false
+            buttonCreateFolder.tintColor = UIColor.clear
+        }
         
         datasourceSorted = CCUtility.getOrderSettings()
         datasourceAscending = CCUtility.getAscendingSettings()
@@ -154,6 +171,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     // MARK: ACTION
     
     @IBAction func actionCancel(_ sender: Any) {
+        delegate?.dismissSelect(withServerUrl: nil, metadata: nil, type: type)
+        self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionDone(_ sender: Any) {
@@ -707,6 +726,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             nc.serverUrl = serverUrlPush
             nc.includeDirectoryE2EEncryption = includeDirectoryE2EEncryption
             nc.includeImages = includeImages
+            nc.hideButtonCreateFolder = hideButtonCreateFolder
+            nc.selectFile = selectFile
+            nc.type = type
             nc.titleCurrentFolder = metadata.fileNameView
             
             self.navigationController?.pushViewController(nc, animated: true)

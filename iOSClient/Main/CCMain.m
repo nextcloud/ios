@@ -37,7 +37,7 @@
 #import "NCNetworkingEndToEnd.h"
 #import "PKDownloadButton.h"
 
-@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb>
+@interface CCMain () <UITextViewDelegate, createFormUploadAssetsDelegate, MGSwipeTableCellDelegate, CCLoginDelegate, CCLoginDelegateWeb, NCSelectDelegate>
 {
     AppDelegate *appDelegate;
         
@@ -1888,11 +1888,21 @@
     }
 }
 
+- (void)dismissSelectWithServerUrl:(NSString *)withServerUrl metadata:(tableMetadata *)metadata type:(NSString *)type
+{
+    if (withServerUrl == nil && metadata == nil) {
+        [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:self.serverUrl fileID:nil action:k_action_NULL];
+    } else {
+        
+    }
+}
+
 - (void)moveOpenWindow:(NSArray *)indexPaths
 {
     if (_isSelectedMode && [_selectedFileIDsMetadatas count] == 0)
         return;
     
+    /*
     UINavigationController* navigationController = [[UIStoryboard storyboardWithName:@"CCMove" bundle:nil] instantiateViewControllerWithIdentifier:@"CCMove"];
     
     CCMove *viewController = (CCMove *)navigationController.topViewController;
@@ -1905,6 +1915,27 @@
     viewController.networkingOperationQueue = appDelegate.netQueue;
     // E2EE
     viewController.includeDirectoryE2EEncryption = NO;
+    
+    [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
+    [self presentViewController:navigationController animated:YES completion:nil];
+     
+     @objc var titleCurrentFolder = NSLocalizedString("_select_", comment: "")
+     @objc var serverUrl = ""
+     @objc var directoryID = ""
+     @objc var hideButtonCreateFolder = false
+     @objc var selectFile = false
+     @objc var includeDirectoryE2EEncryption = false
+     @objc var includeImages = false
+    */
+    
+    UINavigationController *navigationController = [[UIStoryboard storyboardWithName:@"NCSelect" bundle:nil] instantiateInitialViewController];
+    NCSelect *viewController = (NCSelect *)navigationController.topViewController;
+    
+    viewController.delegate = self;
+    viewController.hideButtonCreateFolder = false;
+    viewController.selectFile = false;
+    viewController.includeDirectoryE2EEncryption = false;
+    viewController.includeImages = false;
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:navigationController animated:YES completion:nil];
