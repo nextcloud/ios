@@ -156,6 +156,8 @@
 + (void)setLayoutTrash:(NSString *)layout;
 + (NSString *)getLayoutOffline;
 + (void)setLayoutOffline:(NSString *)layout;
++ (NSString *)getLayoutSelect;
++ (void)setLayoutSelect:(NSString *)layout;
 
 // ===== Varius =====
 
