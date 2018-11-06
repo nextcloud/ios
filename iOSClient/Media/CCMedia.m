@@ -945,7 +945,7 @@
         
             imageView.image = [UIImage imageNamed:@"file_photo"];
 
-            if (metadata.thumbnailExists && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+            if (metadata.hasPreview == 1 && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
                 [self downloadThumbnail:metadata indexPath:indexPath];
             }
         }

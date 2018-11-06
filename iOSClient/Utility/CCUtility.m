@@ -1199,6 +1199,7 @@
     metadata.directoryID = directoryID;
     metadata.fileName = fileName;
     metadata.fileNameView = fileNameView;
+    metadata.hasPreview = itemDto.hasPreview;
     metadata.iconName = @"";
     metadata.permissions = itemDto.permissions;
     metadata.etag = itemDto.etag;
@@ -1258,12 +1259,13 @@
         ext = ext.uppercaseString;
         fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
 
-        // thumbnailExists
-            
-        if ([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
-            metadata.thumbnailExists = YES;
-        else
-            metadata.thumbnailExists = NO;
+        // hasPreview
+        if (metadata.hasPreview == -1) {
+            if ([ext isEqualToString:@"JPG"] || [ext isEqualToString:@"PNG"] || [ext isEqualToString:@"JPEG"] || [ext isEqualToString:@"GIF"] || [ext isEqualToString:@"BMP"] || [ext isEqualToString:@"MP3"]  || [ext isEqualToString:@"MOV"]  || [ext isEqualToString:@"MP4"]  || [ext isEqualToString:@"M4V"] || [ext isEqualToString:@"3GP"])
+                metadata.hasPreview = 1;
+            else
+                metadata.hasPreview = 0;
+        }
         
         // Type image
         if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
@@ -1344,7 +1346,6 @@
     
     metadata.date = attributes[NSFileModificationDate];
     metadata.size = [attributes[NSFileSize] longValue];
-    metadata.thumbnailExists = false;
     
     [self insertTypeFileIconName:metadata.fileNameView metadata:metadata];
     

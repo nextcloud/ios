@@ -988,7 +988,7 @@
     NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:convertedLocation];
     tableMetadata *metadata = [[NCMainCommon sharedInstance] getMetadataFromSectionDataSourceIndexPath:indexPath sectionDataSource:sectionDataSource];
     
-    if (metadata.thumbnailExists && _metadataFolder.e2eEncrypted == NO) {
+    if (metadata.hasPreview == 1) {
         CCCellMain *cell = [self.tableView cellForRowAtIndexPath:indexPath];
         
         if (cell) {
@@ -1014,7 +1014,7 @@
 
 #pragma mark -
 #pragma --------------------------------------------------------------------------------------------
-#pragma mark ==== Download Thumbnail ====
+#pragma mark ==== Download Preview ====
 #pragma --------------------------------------------------------------------------------------------
 
 - (void)downloadThumbnail:(tableMetadata *)metadata serverUrl:(NSString *)serverUrl indexPath:(NSIndexPath *)indexPath
@@ -4189,8 +4189,8 @@
         return [CCCellMain new];
     }
     
-    // Download thumbnail
-    if (metadata.thumbnailExists && !_metadataFolder.e2eEncrypted && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
+    // Download Preview
+    if (metadata.hasPreview == 1 && ![CCUtility fileProviderStorageIconExists:metadata.fileID fileNameView:metadata.fileNameView]) {
         [self downloadThumbnail:metadata serverUrl:serverUrl indexPath:indexPath];
     }
     

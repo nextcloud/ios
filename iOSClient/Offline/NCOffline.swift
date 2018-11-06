@@ -561,7 +561,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
             image = UIImage.init(contentsOfFile: CCUtility.getDirectoryProviderStorageIconFileID(metadata.fileID, fileNameView: metadata.fileName))
             imagePreview = true
         } else {
-            if metadata.thumbnailExists && !CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
+            if metadata.hasPreview == 1 && !CCUtility.fileProviderStorageIconExists(metadata.fileID, fileNameView: metadata.fileName) {
                 downloadThumbnail(with: metadata, indexPath: indexPath)
             }
         }
