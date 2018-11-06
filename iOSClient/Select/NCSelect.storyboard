@@ -74,6 +74,7 @@
                         <outlet property="buttonCreateFolder" destination="CIy-cf-IQn" id="hwe-th-X6G"/>
                         <outlet property="buttonDone" destination="tL8-Fx-8pT" id="423-ev-cSf"/>
                         <outlet property="collectionView" destination="0HI-k1-SD0" id="xme-mG-bnz"/>
+                        <outlet property="toolbar" destination="2ha-lH-BXy" id="FR2-ip-AId"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vH8-UY-9MN" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -1936,6 +1936,7 @@
     viewController.selectFile = false;
     viewController.includeDirectoryE2EEncryption = false;
     viewController.includeImages = false;
+    viewController.type = @"";
     
     [navigationController setModalPresentationStyle:UIModalPresentationFormSheet];
     [self presentViewController:navigationController animated:YES completion:nil];

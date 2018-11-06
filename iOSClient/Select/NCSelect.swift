@@ -30,21 +30,23 @@ import Foundation
 class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIGestureRecognizerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, DropdownMenuDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
     
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
-    
+    @IBOutlet fileprivate weak var toolbar: UIToolbar!
+
     @IBOutlet fileprivate weak var buttonCancel: UIBarButtonItem!
     @IBOutlet fileprivate weak var buttonCreateFolder: UIBarButtonItem!
     @IBOutlet fileprivate weak var buttonDone: UIBarButtonItem!
 
+    // external settings
     @objc var delegate: NCSelectDelegate?
-
-    @objc var titleCurrentFolder = NSLocalizedString("_select_", comment: "")
-    @objc var serverUrl = ""
-    @objc var directoryID = ""
     @objc var hideButtonCreateFolder = false
     @objc var selectFile = false
     @objc var includeDirectoryE2EEncryption = false
     @objc var includeImages = false
     @objc var type = ""
+    
+    var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
+    var serverUrl = ""
+    var directoryID = ""
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
     
@@ -116,7 +118,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
         // Color
         appDelegate.aspectNavigationControllerBar(self.navigationController?.navigationBar, online: appDelegate.reachability.isReachable(), hidden: false)
-        appDelegate.aspectTabBar(self.tabBarController?.tabBar, hidden: false)
+        toolbar.barTintColor = NCBrandColor.sharedInstance.tabBar
+        toolbar.tintColor = NCBrandColor.sharedInstance.brandElement
         
         self.navigationItem.title = titleCurrentFolder
         
@@ -176,6 +179,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     }
     
     @IBAction func actionDone(_ sender: Any) {
+        delegate?.dismissSelect(withServerUrl: serverUrl, metadata: metadataSelect, type: type)
+        self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func actionCreateFolder(_ sender: Any) {
@@ -613,6 +618,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             cell.delegate = self
             
+            cell.buttonMore.isHidden = true
+            cell.imageMore.isHidden = true
+            
             cell.fileID = metadata.fileID
             cell.indexPath = indexPath
             cell.labelTitle.text = metadata.fileNameView
@@ -656,6 +664,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             // GRID
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
+            
+            cell.buttonMoreGrid.isHidden = true
             
             cell.fileID = metadata.fileID
             cell.indexPath = indexPath
@@ -731,6 +741,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             visualController.selectFile = selectFile
             visualController.type = type
             visualController.titleCurrentFolder = metadata.fileNameView
+            visualController.metadataSelect = metadata
             
             self.navigationController?.pushViewController(visualController, animated: true)
             
