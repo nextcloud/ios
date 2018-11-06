@@ -28,6 +28,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     @IBOutlet fileprivate weak var collectionView: UICollectionView!
     
     var titleCurrentFolder = NSLocalizedString("_select_", comment: "")
+    var serverUrl = ""
     var directoryID = ""
     
     private let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -111,7 +112,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             collectionView.collectionViewLayout = gridLayout
         }
         
-        loadDatasource()
+        loadDatasource(withLoadFolder: true)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -278,7 +279,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                     } else {
                         NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, offline: false)
                     }
-                    self.loadDatasource()
+                    self.loadDatasource(withLoadFolder: false)
                 }
                 if item.value as? Int == 1 { self.appDelegate.activeMain.openWindowShare(metadata) }
                 if item.value as? Int == 2 { self.deleteItem(with: metadata, sender: sender) }
@@ -355,7 +356,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             datasourceGroupBy = CCUtility.getGroupBySettings()
             datasourceDirectoryOnTop = CCUtility.getDirectoryOnTop()
             
-            loadDatasource()
+            loadDatasource(withLoadFolder: false)
         }
         
         if dropdownMenu.token == "tapMoreHeaderMenu" {
@@ -397,7 +398,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         actionSheet = ActionSheet(items: items) { sheet, item in
             if item is ActionSheetDangerButton {
                 NCMainCommon.sharedInstance.deleteFile(metadatas: [metadata], e2ee: tableDirectory.e2eEncrypted, serverUrl: serverUrl, folderFileID: tableDirectory.fileID) { (errorCode, message) in
-                    self.loadDatasource()
+                    self.loadDatasource(withLoadFolder: false)
                 }
             }
             if item is ActionSheetCancelButton { print("Cancel buttons has the value `true`") }
@@ -410,40 +411,59 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         actionSheet?.present(in: self, from: sender as! UIButton)
     }
     
-    // MARK: DATASOURCE
-    @objc func loadDatasource() {
+    func loadFolder() {
         
-        var fileIDs = [String]()
+        let ocNetworking = OCnetworking.init(delegate: self, metadataNet: nil, withUser: appDelegate.activeUser, withUserID: appDelegate.activeUserID, withPassword: appDelegate.activePassword, withUrl: appDelegate.activeUrl)
+        
+        ocNetworking?.readFolder(serverUrl, depth: "1", account: appDelegate.activeAccount, success: { (metadatas, metadataFolder, directoryID) in
+            
+            // Update directory etag
+            NCManageDatabase.sharedInstance.setDirectory(serverUrl: self.serverUrl, serverUrlTo: nil, etag: metadataFolder?.etag, fileID: metadataFolder?.fileID, encrypted: metadataFolder!.e2eEncrypted)
+            NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d)", directoryID!, k_metadataStatusNormal, k_metadataStatusHide), clearDateReadDirectoryID: directoryID)
+            NCManageDatabase.sharedInstance.setDateReadDirectory(directoryID: directoryID!)
+            
+            _ = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: self.serverUrl)
+            
+            if let metadatasInDownload = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "directoryID == %@ AND (status == %d OR status == %d OR status == %d OR status == %d)", directoryID!, k_metadataStatusWaitDownload, k_metadataStatusInDownload, k_metadataStatusDownloading, k_metadataStatusDownloadError), sorted: nil, ascending: false) {
+                
+                _ = NCManageDatabase.sharedInstance.addMetadatas(metadatasInDownload, serverUrl: self.serverUrl)
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.loadDatasource(withLoadFolder: false)
+            }
+            
+        }, failure: { (message, errorCode) in
+            
+            self.appDelegate.messageNotification("_error_", description: message, visible: true, delay: TimeInterval(k_dismissAfterSecond), type: TWMessageBarMessageType.error, errorCode: errorCode)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.loadDatasource(withLoadFolder: false)
+            }
+        })
+    }
+    
+    // MARK: DATASOURCE
+    @objc func loadDatasource(withLoadFolder: Bool) {
+        
         sectionDatasource = CCSectionDataSourceMetadata()
         
         if directoryID == "" {
             
-            if let directories = NCManageDatabase.sharedInstance.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "serverUrl", ascending: true) {
-                for directory: tableDirectory in directories {
-                    fileIDs.append(directory.fileID)
-                }
-            }
-            
-            if let files = NCManageDatabase.sharedInstance.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", appDelegate.activeAccount), sorted: "fileName", ascending: true) {
-                for file: tableLocalFile in files {
-                    fileIDs.append(file.fileID)
-                }
-            }
-            
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND fileID IN %@", appDelegate.activeAccount, fileIDs), sorted: datasourceSorted, ascending: datasourceAscending)  {
-                
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
-            }
-            
-        } else {
-            
-            if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: datasourceSorted, ascending: datasourceAscending)  {
-                
-                sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
-            }
+            serverUrl = CCUtility.getHomeServerUrlActiveUrl(appDelegate.activeUrl)
+            directoryID = NCManageDatabase.sharedInstance.getDirectoryID(serverUrl) ?? ""
         }
         
-        self.refreshControl.endRefreshing()
+        if let metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account == %@ AND directoryID == %@", appDelegate.activeAccount, directoryID), sorted: datasourceSorted, ascending: datasourceAscending)  {
+                
+            sectionDatasource = CCSectionMetadata.creataDataSourseSectionMetadata(metadatas, listProgressMetadata: nil, groupByField: datasourceGroupBy, filterFileID: nil, filterTypeFileImage: false, filterTypeFileVideo: false, activeAccount: appDelegate.activeAccount)
+        }
+        
+        if withLoadFolder {
+            loadFolder()
+        } else {
+            self.refreshControl.endRefreshing()
+        }
         
         collectionView.reloadData()
     }
@@ -674,12 +694,15 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             guard let serverUrl = NCManageDatabase.sharedInstance.getServerUrl(metadata.directoryID) else {
                 return
             }
-            let serverUrlPush = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName)
+            guard let serverUrlPush = CCUtility.stringAppendServerUrl(serverUrl, addFileName: metadata.fileName) else {
+                return
+            }
             guard let directoryIDPush = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlPush) else {
                 return
             }
             
             nc.directoryID = directoryIDPush
+            nc.serverUrl = serverUrlPush
             nc.titleCurrentFolder = metadata.fileNameView
             
             self.navigationController?.pushViewController(nc, animated: true)
