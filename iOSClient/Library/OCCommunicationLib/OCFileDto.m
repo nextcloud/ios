@@ -28,5 +28,16 @@
 
 @implementation OCFileDto
 
+- (id)init {
+    
+    self = [super init];
+    
+    if (self) {
+        
+        self.hasPreview = -1;
+    }
+    
+    return self;
+}
 
 @end

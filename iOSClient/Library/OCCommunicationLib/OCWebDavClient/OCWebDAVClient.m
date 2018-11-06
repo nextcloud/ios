@@ -1244,6 +1244,7 @@ NSString const *OCWebDAVModificationDateKey	= @"modificationdate";
                       "<nc:trashbin-filename/>"
                       "<nc:trashbin-original-location/>"
                       "<nc:trashbin-deletion-time/>"
+                      "<nc:has-preview/>"
                       "</D:prop>"
                       "</D:propfind>"];
 
