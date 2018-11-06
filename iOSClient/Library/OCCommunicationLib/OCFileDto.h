@@ -51,5 +51,6 @@
 @property (nonatomic, copy) NSString *trashbinFileName;
 @property (nonatomic, copy) NSString *trashbinOriginalLocation;
 @property long trashbinDeletionTime;
+@property BOOL hasPreview;
 
 @end
