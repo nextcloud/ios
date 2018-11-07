@@ -556,61 +556,6 @@
     return [UICKeyChainStore stringForKey:@"ncPushToken" service:k_serviceShareKeyChain];
 }
 
-+ (NSString *)getLayoutTrash
-{
-    NSString *layout = [UICKeyChainStore stringForKey:@"layoutTrash" service:k_serviceShareKeyChain];
-    
-    // Default
-    if (layout == nil) {
-        [self setLayoutTrash:@"list"];
-        return @"list";
-    }
-    
-    return layout;
-}
-
-+ (void)setLayoutTrash:(NSString *)layout
-{
-    [UICKeyChainStore setString:layout forKey:@"layoutTrash" service:k_serviceShareKeyChain];
-}
-
-+ (NSString *)getLayoutOffline
-{
-    NSString *layout = [UICKeyChainStore stringForKey:@"layoutOffline" service:k_serviceShareKeyChain];
-    
-    // Default
-    if (layout == nil) {
-        [self setLayoutTrash:@"list"];
-        return @"list";
-    }
-    
-    return layout;
-}
-
-+ (void)setLayoutOffline:(NSString *)layout
-{
-    [UICKeyChainStore setString:layout forKey:@"layoutOffline" service:k_serviceShareKeyChain];
-}
-
-+ (NSString *)getLayoutSelect
-{
-    NSString *layout = [UICKeyChainStore stringForKey:@"layoutSelect" service:k_serviceShareKeyChain];
-    
-    // Default
-    if (layout == nil) {
-        [self setLayoutTrash:@"list"];
-        return @"list";
-    }
-    
-    return layout;
-}
-
-+ (void)setLayoutSelect:(NSString *)layout
-{
-    [UICKeyChainStore setString:layout forKey:@"layoutSelect" service:k_serviceShareKeyChain];
-}
-
-
 #pragma --------------------------------------------------------------------------------------------
 #pragma mark ===== Varius =====
 #pragma --------------------------------------------------------------------------------------------
