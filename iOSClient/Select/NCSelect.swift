@@ -44,7 +44,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     @objc var includeDirectoryE2EEncryption = false
     @objc var includeImages = false
     @objc var type = ""
-    @objc var titleButtonDone = ""
+    @objc var titleButtonDone = NSLocalizedString("_move_", comment: "")
+    @objc var layoutViewSelect = k_layout_view_move
     
     var titleCurrentFolder = NCBrandOptions.sharedInstance.brand
     var serverUrl = ""
@@ -133,7 +134,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             buttonCreateFolder.tintColor = UIColor.clear
         }
         
-        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_select)
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: layoutViewSelect)
         
         if typeLayout == "list" {
             collectionView.collectionViewLayout = listLayout
@@ -233,7 +234,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                 })
             })
             typeLayout = "list"
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_select, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.sharedInstance.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -244,7 +245,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                 })
             })
             typeLayout = "grid"
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_select, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.sharedInstance.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         }
     }
     
@@ -380,7 +381,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                     default: ()
                     }
             
-            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_select, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+            NCUtility.sharedInstance.setLayoutForView(key: layoutViewSelect, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
             
             loadDatasource(withLoadFolder: false)
         }
@@ -747,6 +748,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             visualController.includeImages = includeImages
             visualController.type = type
             visualController.titleButtonDone = titleButtonDone
+            visualController.layoutViewSelect = layoutViewSelect
 
             visualController.titleCurrentFolder = metadata.fileNameView
             visualController.serverUrl = serverUrlPush
