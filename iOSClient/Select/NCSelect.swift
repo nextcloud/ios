@@ -233,12 +233,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         return UInt(failedAttempts)
     }
     
-    func passcodeViewControllerLock(untilDate aViewController: BKPasscodeViewController!) -> Date! {
-        if lockUntilDate == nil {
-            return Date()
-        } else {
-            return lockUntilDate! as Date
-        }
+    func passcodeViewControllerLock(untilDate aViewController: BKPasscodeViewController!) -> Date? {
+        return lockUntilDate as Date?
     }
     
     @objc func passcodeViewCloseButtonPressed(_ sender: Any) {
