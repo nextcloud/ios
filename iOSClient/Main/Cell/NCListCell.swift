@@ -31,6 +31,8 @@ class NCListCell: UICollectionViewCell {
     
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
+    @IBOutlet weak var imageFavorite: UIImageView!
+    @IBOutlet weak var imageLocal: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
