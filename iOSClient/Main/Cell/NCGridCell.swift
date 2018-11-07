@@ -27,23 +27,33 @@ import UIKit
 class NCGridCell: UICollectionViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
+    
     @IBOutlet weak var imageSelect: UIImageView!
+    
     @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var buttonMoreGrid: UIButton!
+    @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
+
+    @IBOutlet weak var buttonMore: UIButton!
 
     var delegate: NCGridCellDelegate?
     
     var fileID = ""
     var indexPath = IndexPath()
-
+    
     override func awakeFromNib() {
         super.awakeFromNib()
        
-        buttonMoreGrid.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
+        buttonMore.setImage(CCGraphics.changeThemingColorImage(UIImage.init(named: "more"), multiplier: 2, color: NCBrandColor.sharedInstance.optionItem), for: UIControl.State.normal)
     }
     
-    @IBAction func touchUpInsideMoreGrid(_ sender: Any) {
+    @IBAction func touchUpInsideMore(_ sender: Any) {
         delegate?.tapMoreGridItem(with: fileID, sender: sender)
+    }
+    
+    func hideButtonMore() {
+        buttonMore.isHidden = true
+        buttonMore.isEnabled = false
+        labelTitleTrailing.constant = 10
     }
 }
 

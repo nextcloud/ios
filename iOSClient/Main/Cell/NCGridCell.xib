@@ -23,7 +23,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="220" height="220"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eU3-lY-fKr" userLabel="labelTitle">
-                        <rect key="frame" x="0.0" y="230" width="190" height="15"/>
+                        <rect key="frame" x="0.0" y="230" width="195" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
@@ -36,7 +36,7 @@
                         </constraints>
                         <state key="normal" image="more"/>
                         <connections>
-                            <action selector="touchUpInsideMoreGrid:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="bg0-Yq-0J6"/>
+                            <action selector="touchUpInsideMore:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="I1O-F9-0Sh"/>
                         </connections>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
@@ -51,9 +51,9 @@
             <constraints>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>
                 <constraint firstItem="eU3-lY-fKr" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="10" id="4Yq-Nh-z1l"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="eU3-lY-fKr" secondAttribute="trailing" constant="25" id="5SO-rO-DnZ"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="5" id="89Q-77-ulE"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
-                <constraint firstItem="EJs-Ro-nbe" firstAttribute="leading" secondItem="eU3-lY-fKr" secondAttribute="trailing" constant="5" id="FPP-2I-eKr"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="EJs-Ro-nbe" secondAttribute="trailing" id="Pfe-J0-t9I"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
@@ -64,10 +64,11 @@
             <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <size key="customSize" width="220" height="260"/>
             <connections>
-                <outlet property="buttonMoreGrid" destination="EJs-Ro-nbe" id="sUc-vE-XKf"/>
+                <outlet property="buttonMore" destination="EJs-Ro-nbe" id="BdI-ay-LuX"/>
                 <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
+                <outlet property="labelTitleTrailing" destination="5SO-rO-DnZ" id="peA-RW-j2u"/>
             </connections>
             <point key="canvasLocation" x="88" y="141.67916041979012"/>
         </collectionViewCell>

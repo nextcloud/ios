@@ -28,11 +28,14 @@ class NCListCell: UICollectionViewCell {
     
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
+    
     @IBOutlet weak var imageSelect: UIImageView!
 
     @IBOutlet weak var labelTitle: UILabel!
+    @IBOutlet weak var labelTitleTrailing: NSLayoutConstraint!
+
     @IBOutlet weak var labelInfo: UILabel!
-    
+
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
     
@@ -52,10 +55,17 @@ class NCListCell: UICollectionViewCell {
     }
     
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreItem(with: fileID, sender: sender)
+        delegate?.tapMoreListItem(with: fileID, sender: sender)
+    }
+    
+    func hideButtonMore() {
+        buttonMore.isHidden = true
+        buttonMore.isEnabled = false
+        imageMore.isHidden = true
+        labelTitleTrailing.constant = 10
     }
 }
 
 protocol NCListCellDelegate {
-    func tapMoreItem(with fileID: String, sender: Any)
+    func tapMoreListItem(with fileID: String, sender: Any)
 }

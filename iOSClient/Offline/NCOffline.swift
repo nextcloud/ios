@@ -242,7 +242,7 @@ class NCOffline: UIViewController ,UICollectionViewDataSource, UICollectionViewD
         
     }
     
-    func tapMoreItem(with fileID: String, sender: Any) {
+    func tapMoreListItem(with fileID: String, sender: Any) {
         tapMoreGridItem(with: fileID, sender: sender)
     }
     

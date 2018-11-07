@@ -245,7 +245,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         menuView?.showMenu()
     }
     
-    func tapRestoreItem(with fileID: String, sender: Any) {
+    func tapRestoreListItem(with fileID: String, sender: Any) {
         
         if !isEditMode {
             restoreItem(with: fileID)
@@ -256,7 +256,7 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         }
     }
     
-    func tapMoreItem(with fileID: String, sender: Any) {
+    func tapMoreListItem(with fileID: String, sender: Any) {
 
         if !isEditMode {
             var items = [ActionSheetItem]()

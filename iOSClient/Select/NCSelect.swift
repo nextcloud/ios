@@ -288,7 +288,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
         
     }
     
-    func tapMoreItem(with fileID: String, sender: Any) {
+    func tapMoreListItem(with fileID: String, sender: Any) {
         tapMoreGridItem(with: fileID, sender: sender)
     }
     
@@ -639,8 +639,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as! NCListCell
             cell.delegate = self
             
-            cell.buttonMore.isHidden = true
-            cell.imageMore.isHidden = true
+            // hide button more
+            cell.hideButtonMore()
             
             cell.fileID = metadata.fileID
             cell.indexPath = indexPath
@@ -686,7 +686,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as! NCGridCell
             cell.delegate = self
             
-            cell.buttonMoreGrid.isHidden = true
+            // hide button more
+            cell.hideButtonMore()
             
             cell.fileID = metadata.fileID
             cell.indexPath = indexPath
