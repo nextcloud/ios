@@ -310,6 +310,11 @@
 // Toolbar Detail
 #define k_detail_Toolbar_Height                         49
 
+// Layout View
+#define k_layout_view_select                            @"LayoutSelect"
+#define k_layout_view_trash                             @"LayoutTrash"
+#define k_layout_view_offline                           @"LayoutOffline"
+
 // -----------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------
 

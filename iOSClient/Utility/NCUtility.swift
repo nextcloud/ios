@@ -128,4 +128,28 @@ class NCUtility: NSObject {
         
         return newImage
     }
+    
+    func setLayoutForView(key: String, layout: String, sort: String, ascending: Bool, groupBy: String, directoryOnTop: Bool) {
+        
+        let string =  layout + "|" + sort + "|" + "\(ascending)" + "|" + groupBy + "|" + "\(directoryOnTop)"
+        
+        UICKeyChainStore.setString(string, forKey: key, service: k_serviceShareKeyChain)
+    }
+    
+    func getLayoutForView(key: String) -> (String, String, Bool, String, Bool) {
+        
+        guard let string = UICKeyChainStore.string(forKey: key, service: k_serviceShareKeyChain) else {
+            return ("list", "fileName", true, "none", true)
+        }
+
+        let array = string.components(separatedBy: "|")
+        if array.count == 5 {
+            let sort = NSString(string: array[2])
+            let directoryOnTop = NSString(string: array[4])
+
+            return (array[0], array[1], sort.boolValue, array[3], directoryOnTop.boolValue)
+        }
+        
+        return ("list", "fileName", true, "none", true)
+    }
 }

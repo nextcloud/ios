@@ -59,6 +59,7 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
     
     private var sectionDatasource = CCSectionDataSourceMetadata()
     
+    private var typeLayout = ""
     private var datasourceSorted = ""
     private var datasourceAscending = true
     private var datasourceGroupBy = ""
@@ -132,12 +133,9 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
             buttonCreateFolder.tintColor = UIColor.clear
         }
         
-        datasourceSorted = CCUtility.getOrderSettings()
-        datasourceAscending = CCUtility.getAscendingSettings()
-        datasourceGroupBy = CCUtility.getGroupBySettings()
-        datasourceDirectoryOnTop = CCUtility.getDirectoryOnTop()
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_select)
         
-        if CCUtility.getLayoutSelect() == "list" {
+        if typeLayout == "list" {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -234,7 +232,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            CCUtility.setLayoutSelect("list")
+            typeLayout = "list"
+            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_select, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -244,7 +243,8 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            CCUtility.setLayoutSelect("grid")
+            typeLayout = "grid"
+            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_select, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         }
     }
     
@@ -336,52 +336,51 @@ class NCSelect: UIViewController ,UICollectionViewDataSource, UICollectionViewDe
                 
             case 0: switch indexPath.row {
                 
-            case 0: CCUtility.setOrderSettings("fileName"); CCUtility.setAscendingSettings(true)
-            case 1: CCUtility.setOrderSettings("fileName"); CCUtility.setAscendingSettings(false)
+                    case 0: datasourceSorted = "fileName"; datasourceAscending = true
+                    case 1: datasourceSorted = "fileName"; datasourceAscending = false
                 
-            case 2: CCUtility.setOrderSettings("date"); CCUtility.setAscendingSettings(false)
-            case 3: CCUtility.setOrderSettings("date"); CCUtility.setAscendingSettings(true)
+                    case 2: datasourceSorted = "date"; datasourceAscending = false
+                    case 3: datasourceSorted = "date"; datasourceAscending = true
                 
-            case 4: CCUtility.setOrderSettings("size"); CCUtility.setAscendingSettings(true)
-            case 5: CCUtility.setOrderSettings("size"); CCUtility.setAscendingSettings(false)
+                    case 4: datasourceSorted = "size"; datasourceAscending = true
+                    case 5: datasourceSorted = "size"; datasourceAscending = false
                 
-            default: ()
-                }
+                    default: ()
+                    }
+                
             case 1: switch indexPath.row {
                 
-            case 0:
-                if datasourceGroupBy == "alphabetic" {
-                    CCUtility.setGroupBySettings("none")
-                } else {
-                    CCUtility.setGroupBySettings("alphabetic")
-                }
-            case 1:
-                if datasourceGroupBy == "typefile" {
-                    CCUtility.setGroupBySettings("none")
-                } else {
-                    CCUtility.setGroupBySettings("typefile")
-                }
-            case 2:
-                if datasourceGroupBy == "date" {
-                    CCUtility.setGroupBySettings("none")
-                } else {
-                    CCUtility.setGroupBySettings("date")
-                }
+                    case 0:
+                        if datasourceGroupBy == "alphabetic" {
+                            datasourceGroupBy = "none"
+                        } else {
+                            datasourceGroupBy = "alphabetic"
+                        }
+                    case 1:
+                        if datasourceGroupBy == "typefile" {
+                            datasourceGroupBy = "none"
+                        } else {
+                            datasourceGroupBy = "typefile"
+                        }
+                    case 2:
+                        if datasourceGroupBy == "date" {
+                            datasourceGroupBy = "none"
+                        } else {
+                            datasourceGroupBy = "date"
+                        }
                 
-            default: ()
-                }
-            case 2: if datasourceDirectoryOnTop {
-                CCUtility.setDirectoryOnTop(false)
-            } else {
-                CCUtility.setDirectoryOnTop(true)
-                }
-            default: ()
-            }
+                    default: ()
+                        }
+                    case 2:
+                        if datasourceDirectoryOnTop {
+                            datasourceDirectoryOnTop = false
+                        } else {
+                            datasourceDirectoryOnTop = true
+                        }
+                    default: ()
+                    }
             
-            datasourceAscending = CCUtility.getAscendingSettings()
-            datasourceSorted = CCUtility.getOrderSettings()
-            datasourceGroupBy = CCUtility.getGroupBySettings()
-            datasourceDirectoryOnTop = CCUtility.getDirectoryOnTop()
+            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_select, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
             
             loadDatasource(withLoadFolder: false)
         }

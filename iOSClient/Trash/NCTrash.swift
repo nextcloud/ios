@@ -37,8 +37,11 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
     
     private var datasource = [tableTrash]()
     
+    private var typeLayout = ""
     private var datasourceSorted = ""
     private var datasourceAscending = true
+    private var datasourceGroupBy = "none"
+    private var datasourceDirectoryOnTop = false
     
     private var listLayout: NCListLayout!
     private var gridLayout: NCGridLayout!
@@ -91,10 +94,9 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
         
         self.navigationItem.title = titleCurrentFolder
 
-        datasourceSorted = CCUtility.getOrderSettings()
-        datasourceAscending = CCUtility.getAscendingSettings()
-        
-        if CCUtility.getLayoutTrash() == "list" {
+        (typeLayout, datasourceSorted, datasourceAscending, datasourceGroupBy, datasourceDirectoryOnTop) = NCUtility.sharedInstance.getLayoutForView(key: k_layout_view_trash)
+
+        if typeLayout == "list" {
             collectionView.collectionViewLayout = listLayout
         } else {
             collectionView.collectionViewLayout = gridLayout
@@ -152,7 +154,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            CCUtility.setLayoutTrash("list")
+            typeLayout = "list"
+            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         } else {
             // grid layout
             UIView.animate(withDuration: 0.0, animations: {
@@ -162,7 +165,8 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
                     self.collectionView.setContentOffset(CGPoint(x:0,y:0), animated: false)
                 })
             })
-            CCUtility.setLayoutTrash("grid")
+            typeLayout = "grid"
+            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
         }
     }
     
@@ -320,21 +324,20 @@ class NCTrash: UIViewController ,UICollectionViewDataSource, UICollectionViewDel
             
             switch indexPath.row {
                 
-            case 0: CCUtility.setOrderSettings("fileName"); CCUtility.setAscendingSettings(true)
-            case 1: CCUtility.setOrderSettings("fileName"); CCUtility.setAscendingSettings(false)
+            case 0: datasourceSorted = "fileName"; datasourceAscending = true
+            case 1: datasourceSorted = "fileName"; datasourceAscending = false
                 
-            case 2: CCUtility.setOrderSettings("date"); CCUtility.setAscendingSettings(false)
-            case 3: CCUtility.setOrderSettings("date"); CCUtility.setAscendingSettings(true)
+            case 2: datasourceSorted = "date"; datasourceAscending = false
+            case 3: datasourceSorted = "date"; datasourceAscending = true
                 
-            case 4: CCUtility.setOrderSettings("size"); CCUtility.setAscendingSettings(true)
-            case 5: CCUtility.setOrderSettings("size"); CCUtility.setAscendingSettings(false)
+            case 4: datasourceSorted = "size"; datasourceAscending = true
+            case 5: datasourceSorted = "size"; datasourceAscending = false
                 
             default: print("")
             }
             
-            datasourceSorted = CCUtility.getOrderSettings()
-            datasourceAscending = CCUtility.getAscendingSettings()
-            
+            NCUtility.sharedInstance.setLayoutForView(key: k_layout_view_trash, layout: typeLayout, sort: datasourceSorted, ascending: datasourceAscending, groupBy: datasourceGroupBy, directoryOnTop: datasourceDirectoryOnTop)
+
             loadDatasource()
         }
         
