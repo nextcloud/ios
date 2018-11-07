@@ -255,55 +255,30 @@
     
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
             
-            // Selector : selectorReadFile, selectorReadFileWithDownload
-            if ([metadataNet.selector isEqualToString:selectorReadFile] || [metadataNet.selector isEqualToString:selectorReadFileWithDownload]) {
+            BOOL withDownload = NO;
             
-                BOOL withDownload = NO;
+            if ([metadataNet.selector isEqualToString:selectorReadFileWithDownload])
+                withDownload = YES;
             
-                if ([metadataNet.selector isEqualToString:selectorReadFileWithDownload])
-                    withDownload = YES;
-            
-                //Add/Update Metadata
-                tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
+            //Add/Update Metadata
+            tableMetadata *addMetadata = [[NCManageDatabase sharedInstance] addMetadata:metadata];
                 
-                if (addMetadata)
-                    [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:metadataNet.serverUrl account:appDelegate.activeAccount withDownload:withDownload];
-            }
-            
-            // Selector : selectorReadFileReloadFolder, selectorReadFileFolderWithDownload
-            if ([metadataNet.selector isEqualToString:selectorReadFileFolder] || [metadataNet.selector isEqualToString:selectorReadFileFolderWithDownload]) {
-                
-                NSString *serverUrl = [CCUtility stringAppendServerUrl:metadataNet.serverUrl addFileName:metadataNet.fileName];
-                tableDirectory *tableDirectory = [[NCManageDatabase sharedInstance] getTableDirectoryWithPredicate:[NSPredicate predicateWithFormat:@"account == %@ AND serverUrl == %@", metadataNet.account, serverUrl]];
-                tableMetadata *tableMetadata = [[NCManageDatabase sharedInstance] getMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadata.fileID]];
-                
-                // Verify changed etag OR was not favorite
-                if (!([tableDirectory.etag isEqualToString:metadata.etag]) || (tableMetadata == nil || tableMetadata.favorite == NO)) {
-                    
-                    if ([metadataNet.selector isEqualToString:selectorReadFileFolder])
-                        [self readFolder:serverUrl selector:selectorReadFolder];
-                    if ([metadataNet.selector isEqualToString:selectorReadFileFolderWithDownload])
-                        [self readFolder:serverUrl selector:selectorReadFolderWithDownload];
-                }
-            }
+            if (addMetadata)
+                [self verifyChangeMedatas:[[NSArray alloc] initWithObjects:addMetadata, nil] serverUrl:metadataNet.serverUrl account:appDelegate.activeAccount withDownload:withDownload];
         });
         
     } else {
         
-        // Selector : selectorReadFile, selectorReadFileWithDownload
-        if ([metadataNet.selector isEqualToString:selectorReadFile] || [metadataNet.selector isEqualToString:selectorReadFileWithDownload]) {
-            
-            // File not present, remove it
-            if (errorCode == 404) {
+        // File not present, remove it
+        if (errorCode == 404) {
                 
-                [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
-                [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
-                [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadataNet.fileID];
+            [[NCManageDatabase sharedInstance] deleteMetadataWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID] clearDateReadDirectoryID:nil];
+            [[NCManageDatabase sharedInstance] deleteLocalFileWithPredicate:[NSPredicate predicateWithFormat:@"fileID == %@", metadataNet.fileID]];
+            [[NCManageDatabase sharedInstance] deletePhotosWithFileID:metadataNet.fileID];
                 
-                NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
-                if (serverUrl)
-                    [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
-            }
+            NSString *serverUrl = [[NCManageDatabase sharedInstance] getServerUrl:metadataNet.directoryID];
+            if (serverUrl)
+                [[NCMainCommon sharedInstance] reloadDatasourceWithServerUrl:serverUrl fileID:nil action:k_action_NULL];
         }
     }
 }
